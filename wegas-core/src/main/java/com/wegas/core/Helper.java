@@ -1012,8 +1012,10 @@ public class Helper {
         // inherited   t        f         f
         // private     t        f         f
 
-        return (level == ProtectionLevel.ALL || visibility == Visibility.INTERNAL
-                || (level == ProtectionLevel.PROTECTED && visibility == Visibility.PROTECTED));
+        return (level == ProtectionLevel.ALL
+                || visibility == Visibility.INTERNAL
+                || (level == ProtectionLevel.PROTECTED && visibility == Visibility.PROTECTED)
+                || (level == ProtectionLevel.INHERITED && (visibility == Visibility.PROTECTED || visibility == Visibility.INHERITED)));
     }
 
 }

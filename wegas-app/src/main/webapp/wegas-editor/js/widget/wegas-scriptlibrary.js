@@ -203,7 +203,8 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                 }
 
                 if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "REFERENCE" ||
-                    (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO" && visibility === "INHERITED")) {
+                    (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO"
+                        && (visibility === "INTERNAL" || visibility === "PROTECTED") )) {
                     this.get("contentBox").addClass("readonly");
                     this.aceField.disable();
                 } else {
@@ -270,12 +271,23 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                     parentEl: toolbarNode
                 });
 
-                this.visibilityField = new Y.inputEx.SelectField(Y.mix(
-                    Y.mix({}, Y.Wegas.persistence.Entity.ATTRS_DEF.VISIBILITY),
-                    {
-                        parentEl: toolbarNode,
+                this.visibilityField = new Y.inputEx.SelectField({
+                            choices: [{
+                                value: "INTERNAL",
+                                label: "Model"
+                            }, {
+                                value: "PROTECTED",
+                                label: "Protected"
+                            }, {
+                                value: "INHERITED",
+                                label: "Inherited"
+                            }, {
+                                value: "PRIVATE",
+                                label: "Private"
+                            }],
+                        parentEl: toolbarNode
                     }
-                ));
+                );
 
 
                 //if (this.get("library") === "CSS") {                              // Preview button for css (will be applied on save

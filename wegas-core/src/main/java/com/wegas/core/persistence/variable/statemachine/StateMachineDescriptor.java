@@ -11,9 +11,10 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
@@ -45,7 +46,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     @OneToMany(mappedBy = "stateMachine", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @MapKeyColumn(name = "fsm_statekey")
     @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty(ignoreNull = true)
+    @WegasEntityProperty(ignoreNull = true, callback = StateMergeCallback.class, protectionLevel = ProtectionLevel.INHERITED)
     private Map<Long, State> states = new HashMap<>();
 
     /**
@@ -139,4 +140,15 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
         }
         return false;
     }
+
+    public static class StateMergeCallback implements WegasCallback {
+
+        @Override
+        public void add(Object child, Mergeable container, Object identifier) {
+            if (child instanceof State && container instanceof StateMachineDescriptor) {
+                ((State) child).setStateMachine((StateMachineDescriptor) container);
+            }
+        }
+    }
+
 }

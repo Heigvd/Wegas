@@ -11,7 +11,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
@@ -58,7 +60,7 @@ public class EvaluationDescriptorContainer extends AbstractEntity implements Sea
     @OneToMany(mappedBy = "container", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(callback = EvaluationDescriptorMergeCallback.class)
     @NotNull
     private List<EvaluationDescriptor> evaluations = new ArrayList<>();
 
@@ -176,4 +178,15 @@ public class EvaluationDescriptorContainer extends AbstractEntity implements Sea
         }
         return false;
     }
+
+
+   public class EvaluationDescriptorMergeCallback implements WegasCallback {
+
+        @Override
+        public void add(Object child, Mergeable container, Object identifier) {
+            if (child instanceof EvaluationDescriptor && container instanceof EvaluationDescriptorContainer){
+                ((EvaluationDescriptor)child).setContainer((EvaluationDescriptorContainer) container);
+            }
+        }
+   }
 }

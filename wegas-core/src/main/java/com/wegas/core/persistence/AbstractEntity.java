@@ -103,9 +103,6 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
 
     public void forceRefId(String refId) {
         logger.trace("ForceRefId {} => {}", this, refId);
-        if (this instanceof WRequirement){
-            logger.error("FUCKBIATCH");
-        }
         this.refId = refId;
     }
 

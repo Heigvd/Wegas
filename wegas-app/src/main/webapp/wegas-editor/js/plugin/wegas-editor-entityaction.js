@@ -19,7 +19,8 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         Promise = Y.Promise,
         Wegas = Y.Wegas, persistence = Wegas.persistence,
         EntityAction, EditFSMAction, EditEntityAction, NewEntityAction,
-        EditEntityArrayFieldAction, AddEntityChildAction, DuplicateEntityAction, SortEntityAction,
+        EditEntityArrayFieldAction, AddEntityChildAction, DuplicateEntityAction,
+        SortEntityAction, ResetVisibilityAction,
         DeleteEntityAction, SearchEntityAction, ToolbarMenu;
 
     var MESSAGE_DISCARD_EDITS = "Unsaved changes!";
@@ -947,6 +948,35 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         NS: "SortEntityAction"
     });
     Plugin.SortEntityAction = SortEntityAction;
+
+
+    ResetVisibilityAction = Y.Base.create("ResetVisibilityAction", EntityAction, [], {
+        execute: function() {
+            if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "MODEL") {
+                this.showOverlay();
+                Y.Wegas.Facade.Variable.cache.sendRequest({
+                    request: '/' + this.get(ENTITY).get("id") + "/visibility/" + this.get("visibility"),
+                    cfg: {
+                        method: 'PUT'
+                    },
+                    on: {
+                        success: Y.bind(this.hideOverlay, this),
+                        failure: Y.bind(this.hideOverlay, this)
+                    }
+                });
+            }
+        }
+    }, {
+        NS: "ResetVisibilityAction",
+        ATTRS:{
+            visibility: {
+                type: "string"
+            }
+        }
+    });
+    Plugin.ResetVisibilityAction = ResetVisibilityAction;
+
+
 
     /**
      * @class

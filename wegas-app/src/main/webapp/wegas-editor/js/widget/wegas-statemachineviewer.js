@@ -565,43 +565,50 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         showForm: function(state) {
             Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
                 var form, entity, cfg;
+                var stateMachine = this.get(PARENT).get(ENTITY);
                 state = state || this.get(ENTITY);
                 Plugin.EditEntityAction.destroyEditionTab();
                 this.editionHighlight();
 
                 entity = this.get(ENTITY);
-                cfg = entity.getFormCfg(undefined, this.get("parent").get(ENTITY));
+                cfg = entity.getFormCfg(undefined, stateMachine);
                 form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this), undefined, cfg);
-                form.toolbar.add(new Y.Wegas.Button({
-                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
-                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
-                    on: {
-                        click: Y.bind(function() {
-                            var editor = this.get(PARENT), state = this.get(ENTITY).toObject("id",
-                                "transitions"), newNode;
-                            state.editorPosition = new Wegas.persistence.Coordinate(state.editorPosition);
-                            state.editorPosition.set("x", state.editorPosition.get("x") + 10);
-                            state.editorPosition.set("y", state.editorPosition.get("y") + 10);
-                            newNode = editor.onNewState(this.get(ENTITY).get("@class"), state);
-                            newNode.get(BOUNDING_BOX).simulate(CLICK);
-                        }, this)
-                    }
-                }));
-                form.toolbar.add(new Y.Wegas.Button({
-                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete'), // "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
-                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
-                    on: {
-                        click: Y.bind(this.deleteSelf, this)
-                    }
-                }));
-                if (this.get(PARENT).get(ENTITY).getInitialStateId() !== this.get(SID)) {
+
+                if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO" && 
+                    stateMachine.get("visibility") !== "PRIVATE") {
+                    Y.log("Edition forbidden");
+                } else {
                     form.toolbar.add(new Y.Wegas.Button({
-                        label: Plugin.EditEntityAction.getStackedIconLabel('fa-flag-checkered', 'Make this the initial state'), // '<span class="wegas-icon state-initial"></span>Initial State',
+                        label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
                         cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                         on: {
-                            click: Y.bind(this.setAsInitial, this)
+                            click: Y.bind(function() {
+                                var editor = this.get(PARENT), state = this.get(ENTITY).toObject("id",
+                                    "transitions"), newNode;
+                                state.editorPosition = new Wegas.persistence.Coordinate(state.editorPosition);
+                                state.editorPosition.set("x", state.editorPosition.get("x") + 10);
+                                state.editorPosition.set("y", state.editorPosition.get("y") + 10);
+                                newNode = editor.onNewState(this.get(ENTITY).get("@class"), state);
+                                newNode.get(BOUNDING_BOX).simulate(CLICK);
+                            }, this)
                         }
                     }));
+                    form.toolbar.add(new Y.Wegas.Button({
+                        label: Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete'), // "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
+                        cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                        on: {
+                            click: Y.bind(this.deleteSelf, this)
+                        }
+                    }));
+                    if (this.get(PARENT).get(ENTITY).getInitialStateId() !== this.get(SID)) {
+                        form.toolbar.add(new Y.Wegas.Button({
+                            label: Plugin.EditEntityAction.getStackedIconLabel('fa-flag-checkered', 'Make this the initial state'), // '<span class="wegas-icon state-initial"></span>Initial State',
+                            cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                            on: {
+                                click: Y.bind(this.setAsInitial, this)
+                            }
+                        }));
+                    }
                 }
             }, this));
         },
@@ -815,26 +822,32 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 stateMachine = this.get("parent").get("parent").get("entity");
                 cfg = transition.getFormCfg(undefined, stateMachine);
                 form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this), undefined, cfg);
-                form.toolbar.add(new Y.Wegas.Button({
-                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
-                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
-                    on: {
-                        click: Y.bind(function() {
-                            var entity = this.get(ENTITY).toObject("id"), tr;
-                            tr = this.get(PARENT).addTransition(this.getTargetState(),
-                                new Transition({entity: new Wegas.persistence[entity["@class"]](entity)})
-                                );
-                            Y.one(tr.connection.getLabelOverlay().getElement()).simulate(CLICK);
-                        }, this)
-                    }
-                }));
-                form.toolbar.add(new Y.Wegas.Button({
-                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete'), // "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
-                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
-                    on: {
-                        click: Y.bind(this.disconnect, this)
-                    }
-                }));
+
+                if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO" && 
+                    stateMachine.get("visibility") !== "PRIVATE") {
+                    Y.log("Edition forbidden");
+                } else {
+                    form.toolbar.add(new Y.Wegas.Button({
+                        label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
+                        cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                        on: {
+                            click: Y.bind(function() {
+                                var entity = this.get(ENTITY).toObject("id"), tr;
+                                tr = this.get(PARENT).addTransition(this.getTargetState(),
+                                    new Transition({entity: new Wegas.persistence[entity["@class"]](entity)})
+                                    );
+                                Y.one(tr.connection.getLabelOverlay().getElement()).simulate(CLICK);
+                            }, this)
+                        }
+                    }));
+                    form.toolbar.add(new Y.Wegas.Button({
+                        label: Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete'), // "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
+                        cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                        on: {
+                            click: Y.bind(this.disconnect, this)
+                        }
+                    }));
+                }
             }, this));
         },
         renderUI: function() {

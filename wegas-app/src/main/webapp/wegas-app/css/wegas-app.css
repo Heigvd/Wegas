@@ -252,7 +252,8 @@ font {
 /** Hide all advanced feature while in std mode */
 .wegas-forbidden-feature,
 body:not(.wegas-internalmode) .wegas-internal-feature,
-.wegas-stdmode .wegas-advanced-feature {
+.wegas-stdmode .wegas-advanced-feature,
+body:not(.wegas-modeler-mode) .wegas-model-feature {
     display: none !important;
 }
 

@@ -11,7 +11,6 @@ import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
@@ -34,7 +33,7 @@ public final class WegasPrimitivePatch extends WegasPatch {
     private Object fromValue;
     private Object toValue;
 
-    private Mergeable toEntity;
+    //private Mergeable toEntity;
 
     /**
      * patch through getter and setter or with add/remove callback ?
@@ -73,41 +72,16 @@ public final class WegasPrimitivePatch extends WegasPatch {
         this.isField = this.setter != null;
     }
 
-    private boolean isProtected(Mergeable target, boolean bypassVisibility) {
-        AbstractEntity effectiveAbstractEntity;
-
-        if (toEntity instanceof AbstractEntity || toEntity == null) {
-            effectiveAbstractEntity = (AbstractEntity) toEntity;
-        } else {
-            Mergeable mergeableParent = toEntity;
-            do {
-                mergeableParent = mergeableParent.getMergeableParent();
-            } while (mergeableParent != null && mergeableParent instanceof AbstractEntity == false);
-            if (mergeableParent instanceof AbstractEntity) {
-                effectiveAbstractEntity = (AbstractEntity) mergeableParent;
-            } else {
-                effectiveAbstractEntity = null;
-            }
-        }
-
-        return !bypassVisibility // target is never protected when bypassing visibilities
-                && target.belongsToProtectedGameModel() // and target is protected
-                && this.toEntity != null
-                && (effectiveAbstractEntity != null && !effectiveAbstractEntity.isPersisted()
-                || this.toEntity.belongsToProtectedGameModel() // toEntity is also protected (ie allows changes from upstream)
-                );
-    }
-
     @Override
-    public LifecycleCollector apply(GameModel targetGameModel, Mergeable target, Object payload, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
+    public LifecycleCollector apply(GameModel targetGameModel, Mergeable parent, Object value, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
         if (numPass < 2) {
             try {
-                if (!isField || shouldApplyPatch(target, toEntity)) {
+                if (!isField || shouldApplyPatch(parent, toEntity)) {
                     Object oldTargetValue;
                     if (isField) {
-                        oldTargetValue = getter.invoke(target);
+                        oldTargetValue = getter.invoke(parent);
                     } else {
-                        oldTargetValue = payload;
+                        oldTargetValue = value;
                     }
                     PatchMode myMode = this.updateOrOverride(visibility, null);
                     logger.trace("MyMode: {}", myMode);
@@ -119,20 +93,20 @@ public final class WegasPrimitivePatch extends WegasPatch {
 
                     if (!initOnly || oldTargetValue == null) { // do no overwrite non-null value if initOnly is set
                         if (myMode.equals(PatchMode.OVERRIDE) || (Objects.equals(oldTargetValue, fromValue))) { // do not override user-change but in protected mode
-                            if (!Helper.isProtected(protectionLevel, visibility) || !isProtected(target, bypassVisibility)) { // prevent protected changes
+                            if (!Helper.isProtected(protectionLevel, visibility) || !isProtected(null, parent, bypassVisibility)) { // prevent protected changes
                                 if (!ignoreNull || toValue != null) {
 
                                     logger.debug("Apply {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
                                     List<WegasCallback> callbacks = this.getCallbacks(callback);
 
                                     for (WegasCallback cb : callbacks) {
-                                        cb.preUpdate(target, toValue, identifier);
+                                        cb.preUpdate(parent, toValue, identifier);
                                     }
 
                                     if (isField) {
                                         if (!parentMode.equals(PatchMode.DELETE)) { // skip delete mode
                                             logger.debug(" SET to {}", toValue);
-                                            setter.invoke(target, toValue);
+                                            setter.invoke(parent, toValue);
                                         } else {
                                             logger.debug("SKIP MODIFICATION {} : DELETE", this);
                                         }
@@ -146,13 +120,13 @@ public final class WegasPrimitivePatch extends WegasPatch {
                                                 key = identifier;
                                             }
                                             if (toValue != null) {
-                                                cb.add(toValue, target, key);
+                                                cb.add(toValue, parent, key);
                                             }
                                         }
                                     }
 
                                     for (WegasCallback cb : callbacks) {
-                                        cb.postUpdate(target, toValue, identifier);
+                                        cb.postUpdate(parent, toValue, identifier);
                                     }
                                 } else {
                                     logger.debug("REJECT IGNORE NULL {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
@@ -167,14 +141,14 @@ public final class WegasPrimitivePatch extends WegasPatch {
                         logger.debug("REJECT NO RE-INIT {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);
                     }
                 } else {
-                    logger.debug("REJECT {}: SAME_ENTITY_ONLY FAILED {} ->  {}", this, target, toEntity);
+                    logger.debug("REJECT {}: SAME_ENTITY_ONLY FAILED {} ->  {}", this, parent, toEntity);
                 }
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 Throwable cause = ex.getCause();
                 if (cause instanceof WegasRuntimeException) {
                     throw (WegasRuntimeException) cause;
                 } else {
-                    throw new RuntimeException(cause);
+                    throw new RuntimeException(cause != null ? cause : ex);
                 }
             }
         }

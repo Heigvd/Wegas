@@ -835,7 +835,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.create(scenario.getId(), res);
 
         // Add occupation to a resource
-        resourceFacade.addOccupation(res.getInstance(player).getId(), false, 1.0);
+        resourceFacade.addOccupation(res.getInstance(player).getId(), false, 1);
 
         Occupation newOccupation = ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getOccupations().get(0);
 
@@ -865,7 +865,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.create(scenario.getId(), res);
 
         // reserve Paul for the 1.0 period
-        resourceFacade.addOccupation(res.getInstance(player).getId(), true, 1.0);
+        resourceFacade.addOccupation(res.getInstance(player).getId(), true, 1);
 
         Occupation newOccupation = ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getOccupations().get(0);
         // Check resource instance has been correctly setted 

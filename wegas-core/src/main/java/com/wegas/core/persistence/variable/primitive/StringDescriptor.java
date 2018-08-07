@@ -51,7 +51,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      */
     @OneToMany(mappedBy = "parentString", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonDeserialize(using = EnumItem.ListDeserializer.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(callback = EnumItem.EnumItemMergeCallback.class)
     private List<EnumItem> allowedValues = new ArrayList<>();
 
     /**
@@ -67,7 +67,6 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
     public StringDescriptor(String name) {
         this.name = name;
     }
-
 
     /**
      * @return the validationPattern
@@ -116,7 +115,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
     @Override
     public void registerItem(EnumItem item) {
         item.setParentString(this);
-        if (item.getLabel()!= null){
+        if (item.getLabel() != null) {
             item.getLabel().setParentDescriptor(this);
         }
     }
@@ -200,6 +199,4 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
         }
 
     }
-
-
 }

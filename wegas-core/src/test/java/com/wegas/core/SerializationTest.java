@@ -368,7 +368,7 @@ public class SerializationTest {
         assignment.setTaskInstance(taskI);
         assignment.setResourceInstance(resourceI);
 
-        Occupation occupation = new Occupation(2.0);
+        Occupation occupation = new Occupation(2);
         occupation.setResourceInstance(resourceI);
 
         WRequirement req = new WRequirement("Carpenter");

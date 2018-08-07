@@ -64,6 +64,10 @@ public interface ModelScoped {
          */
         INTERNAL,
         /**
+         * Only PRIVATE is writable
+         */
+        INHERITED,
+        /**
          * Always protected
          */
         ALL

@@ -257,7 +257,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @NotNull
     @Basic(optional = false)
     //@CacheIndex
-    @WegasEntityProperty
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.INHERITED)
     protected String name;
 
     //@BatchFetch(BatchFetchType.JOIN)

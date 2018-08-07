@@ -20,7 +20,7 @@ YUI.add('wegas-model-propagator', function(Y) {
         },
         propagate: function() {
             Y.Wegas.Facade.GameModel.sendRequest({
-                request: "/propagateModel/" + this.get("gameModel").get("id"),
+                request: "/" + this.get("gameModel").get("id") + "/Propagate",
                 cfg: {
                     method: "PUT",
                     updateCache: false
@@ -31,6 +31,7 @@ YUI.add('wegas-model-propagator', function(Y) {
                         this.fire("model:propagated");
                     }, this),
                     failure: Y.bind(function(e) {
+                        this.fire("model:propagationFailed");
                         debugger;
                     }, this)
                 }
@@ -53,8 +54,9 @@ YUI.add('wegas-model-propagator', function(Y) {
             if (gameModel) {
                 actions = [{
                         "types": ["primary"],
-                        "label": "<i class='fa fa-rocket'> Propagate",
+                        "label": "<span class='propagatebutton'><i class='fa fa-rocket'> Propagate</span>",
                         "do": function() {
+                            this.get("modalBox").one(".propagatebutton").toggleClass("loading");
                             this.item(0).propagate();
                         }
                     }, {

@@ -462,6 +462,68 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             }
                         ]
                     }
+                },
+                resetVisibilityBtn: {
+                    index: 50,
+                    cfg: {
+                        type: "BUTTON",
+                        label: "Reset visibilities",
+                        cssClass: "wegas-model-feature",
+                        plugins: [
+                            {
+                                fn: "WidgetMenu",
+                                cfg: {
+                                    children: [
+                                        {
+                                            type: BUTTON,
+                                            label: "Model",
+                                            plugins: [
+                                                {
+                                                    fn: "ResetVisibilityAction",
+                                                    cfg: {
+                                                        visibility: 'INTERNAL'
+                                                    }
+                                                }
+                                            ]
+                                        }, {
+                                            type: BUTTON,
+                                            label: "Protected",
+                                            plugins: [
+                                                {
+                                                    fn: "ResetVisibilityAction",
+                                                    cfg: {
+                                                        visibility: 'PROTECTED'
+                                                    }
+                                                }
+                                            ]
+                                        }, {
+                                            type: BUTTON,
+                                            label: "Inherited",
+                                            plugins: [
+                                                {
+                                                    fn: "ResetVisibilityAction",
+                                                    cfg: {
+                                                        visibility: 'INHERITED'
+                                                    }
+                                                }
+                                            ]
+                                        }, {
+                                            type: BUTTON,
+                                            label: "Private",
+                                            plugins: [
+                                                {
+                                                    fn: "ResetVisibilityAction",
+                                                    cfg: {
+                                                        visibility: 'PRIVATE'
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
                 }
             }
         });

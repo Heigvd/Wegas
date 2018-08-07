@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
@@ -27,7 +28,7 @@ import javax.persistence.*;
 @Table(indexes = {
     @Index(columnList = "resourceinstance_id")
 })
-public class Occupation extends AbstractEntity {
+public class Occupation extends AbstractEntity implements NamedEntity {
 
     private static final long serialVersionUID = 5183770682755470296L;
     /**
@@ -42,7 +43,7 @@ public class Occupation extends AbstractEntity {
      */
     @Column(name = "wtime")
     @WegasEntityProperty
-    private double time = 0.0D;
+    private Integer time = 0;
     /**
      *
      */
@@ -76,7 +77,7 @@ public class Occupation extends AbstractEntity {
      *
      * @param time
      */
-    public Occupation(double time) {
+    public Occupation(Integer time) {
         this.time = time;
     }
 
@@ -99,16 +100,32 @@ public class Occupation extends AbstractEntity {
     }
 
     /**
+     * Use time as a discriminant
+     * @return
+     */
+    @JsonIgnore
+    @Override
+    public String getName() {
+        return time.toString();
+    }
+
+    @JsonIgnore
+    @Override
+    public void setName(String name) {
+        this.setTime(Integer.parseInt(name));
+    }
+
+    /**
      * @return the time
      */
-    public double getTime() {
+    public Integer getTime() {
         return time;
     }
 
     /**
      * @param time the time to set
      */
-    public void setTime(double time) {
+    public void setTime(Integer time) {
         this.time = time;
     }
 

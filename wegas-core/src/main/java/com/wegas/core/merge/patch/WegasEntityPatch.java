@@ -7,6 +7,7 @@
  */
 package com.wegas.core.merge.patch;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
@@ -57,7 +58,7 @@ public final class WegasEntityPatch extends WegasPatch {
     private List<WegasPatch> patches;
 
     private Mergeable fromEntity;
-    private Mergeable toEntity;
+    //private Mergeable toEntity;
 
     private List<WegasCallback> entityCallbacks;
 
@@ -209,13 +210,14 @@ public final class WegasEntityPatch extends WegasPatch {
             if (cause instanceof WegasRuntimeException) {
                 throw (WegasRuntimeException) cause;
             } else {
-                throw new RuntimeException(cause);
+                throw new RuntimeException(cause != null ? cause : ex);
             }
         }
     }
 
     @Override
-    public LifecycleCollector apply(GameModel targetGameModel, Mergeable target, Object targetObject, WegasCallback callback, PatchMode parentMode, Visibility inheritedVisibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
+    public LifecycleCollector apply(GameModel targetGameModel, Mergeable parent, Object targetObject, WegasCallback callback, PatchMode parentMode,
+            Visibility inheritedVisibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
         /**
          * Two pass patch
          * First pass update and delete
@@ -223,6 +225,7 @@ public final class WegasEntityPatch extends WegasPatch {
          */
         boolean rootPatch = false;
         boolean processCollectedData = false;
+        Mergeable target = null;
 
         if (collector == null) {
             collector = new LifecycleCollector();
@@ -235,9 +238,6 @@ public final class WegasEntityPatch extends WegasPatch {
             rootPatch = true;
         }
 
-        logger.info("{} (from {} -> to {}) on {}", this.getClass().getSimpleName(), fromEntity, toEntity, target);
-        logger.indent();
-
         do {
             if (rootPatch) {
                 numPass++;
@@ -248,13 +248,17 @@ public final class WegasEntityPatch extends WegasPatch {
                 logger.indent();
             }
             try {
-                Mergeable oTarget = target;
+                target = getMergeable(targetObject);
+
                 if (getter != null) {
-                    target = (Mergeable) getter.invoke(oTarget);
+                    target = (Mergeable) getter.invoke(parent);
                 }
+                logger.info("{} (from {} -> to {}) on {}", this.getClass().getSimpleName(), fromEntity, toEntity, target);
+                logger.indent();
 
                 if (!ignoreNull || toEntity != null) {
                     if (!initOnly || target == null) {
+                        // prevent protected changes
                         List<WegasCallback> callbacks = this.getCallbacks(callback);
 
                         Visibility visibility = null;
@@ -268,64 +272,69 @@ public final class WegasEntityPatch extends WegasPatch {
                         if (visibility == null) {
                             visibility = inheritedVisibility;
                         }
+
                         logger.debug("MODE IS: " + myMode);
 
                         if (myMode != null) {
                             switch (myMode) {
                                 case CREATE:
                                     if (numPass > 1) {
-                                        logger.debug(" CREATE CLONE");
+                                        if (!Helper.isProtected(protectionLevel, visibility) || !isProtected(target, parent, bypassVisibility)) {
+                                            logger.debug(" CREATE CLONE");
 
-                                        if (collector.getDeleted().containsKey(toEntity.getRefId())) {
-                                            // the newEntity to create has just been removed from another list -> MOVE
-                                            logger.debug(" -> MOVE JUST DELETED");
+                                            if (collector.getDeleted().containsKey(toEntity.getRefId())) {
+                                                // the newEntity to create has just been removed from another list -> MOVE
+                                                logger.debug(" -> MOVE JUST DELETED");
 
-                                            // Fetch previously deleted entity
-                                            LifecycleCollector.CollectedEntity remove = collector.getDeleted().remove(toEntity.getRefId());
+                                                // Fetch previously deleted entity
+                                                LifecycleCollector.CollectedEntity remove = collector.getDeleted().remove(toEntity.getRefId());
 
-                                            target = remove.getEntity();
+                                                target = remove.getEntity();
 
-                                            // adoption process: restored entity children are no longer orphans
-                                            collector.adopt(target);
+                                                // adoption process: restored entity children are no longer orphans
+                                                collector.adopt(target);
 
-                                            for (WegasCallback cb : callbacks) {
-                                                cb.preUpdate(target, this.toEntity, identifier);
+                                                for (WegasCallback cb : callbacks) {
+                                                    cb.preUpdate(target, this.toEntity, identifier);
+                                                }
+
+                                                for (WegasCallback cb : callbacks) {
+                                                    cb.add(target, null, identifier);
+                                                }
+
+                                                // Force update
+                                                WegasEntityPatch createPatch = new WegasEntityPatch(null, 0, null, null, null, remove.getPayload(), toEntity, true, false, false, false, this.protectionLevel);
+                                                createPatch.apply(targetGameModel, parent, target, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
+
+                                                for (WegasCallback cb : callbacks) {
+                                                    cb.postUpdate(target, this.toEntity, identifier);
+                                                }
+
+                                                if (setter != null) {
+                                                    setter.invoke(parent, target);
+                                                }
+
+                                            } else {
+
+                                                target = this.getFactory().newInstance(targetGameModel, toEntity);
+
+                                                WegasEntityPatch clone = new WegasEntityPatch(target, toEntity, true);
+
+                                                for (WegasCallback cb : callbacks) {
+                                                    cb.add(target, null, identifier);
+                                                }
+
+                                                if (setter != null) {
+                                                    setter.invoke(parent, target);
+                                                }
+
+                                                clone.apply(targetGameModel, parent, target, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
+
+                                                collector.getCreated().put(target.getRefId(), new LifecycleCollector.CollectedEntity(target, toEntity, callbacks, parent, identifier));
+
                                             }
-
-                                            for (WegasCallback cb : callbacks) {
-                                                cb.add(target, null, identifier);
-                                            }
-
-                                            // Force update
-                                            WegasEntityPatch createPatch = new WegasEntityPatch(null, 0, null, null, null, remove.getPayload(), toEntity, true, false, false, false, this.protectionLevel);
-                                            createPatch.apply(targetGameModel, target, null, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
-
-                                            for (WegasCallback cb : callbacks) {
-                                                cb.postUpdate(target, this.toEntity, identifier);
-                                            }
-
-                                            if (setter != null) {
-                                                setter.invoke(oTarget, target);
-                                            }
-
                                         } else {
-
-                                            target = this.getFactory().newInstance(targetGameModel, toEntity);
-
-                                            WegasEntityPatch clone = new WegasEntityPatch(target, toEntity, true);
-
-                                            for (WegasCallback cb : callbacks) {
-                                                cb.add(target, null, identifier);
-                                            }
-
-                                            if (setter != null) {
-                                                setter.invoke(oTarget, target);
-                                            }
-
-                                            clone.apply(targetGameModel, target, null, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
-
-                                            collector.getCreated().put(target.getRefId(), new LifecycleCollector.CollectedEntity(target, toEntity, callbacks, oTarget, identifier));
-
+                                            logger.debug("REJECT PATCH : PROHIBITED");
                                         }
                                     } else {
                                         logger.debug("SKIP CREATION DURING 1st pass");
@@ -333,26 +342,31 @@ public final class WegasEntityPatch extends WegasPatch {
                                     break;
                                 case DELETE:
                                     if (numPass < 2) {
-                                        logger.debug(" DELETE");
+                                        if (!Helper.isProtected(protectionLevel, visibility) || !isProtected(target, parent, bypassVisibility)) {
+                                            logger.debug(" DELETE");
 
-                                        if (fromEntity != null && target != null) {
+                                            if (fromEntity != null && target != null) {
 
-                                            // DELETE CHILDREN TOO TO COLLECT THEM
-                                            for (WegasPatch patch : patches) {
-                                                patch.apply(targetGameModel, target, null, new OrphanCollector(collector, target, patch.getIdentifier()), myMode, visibility, collector, numPass, bypassVisibility);
+                                                // DELETE CHILDREN TOO TO COLLECT THEM
+                                                for (WegasPatch patch : patches) {
+                                                    patch.apply(targetGameModel, target, null, new OrphanCollector(collector, target, patch.getIdentifier()), myMode, visibility, collector, numPass, bypassVisibility);
+                                                }
+
+                                                String refId = fromEntity.getRefId();
+                                                // Should include all Mergeable contained within target, so they can be reused by CREATE case
+                                                collector.getDeleted().put(refId, new LifecycleCollector.CollectedEntity(target, fromEntity, callbacks, parent, identifier));
+
+                                                for (WegasCallback cb : callbacks) {
+                                                    cb.remove(target, null, identifier);
+                                                }
+
+                                                if (setter != null) {
+                                                    setter.invoke(parent, (Object) null);
+                                                }
                                             }
 
-                                            String refId = fromEntity.getRefId();
-                                            // Should include all Mergeable contained within target, so they can be reused by CREATE case
-                                            collector.getDeleted().put(refId, new LifecycleCollector.CollectedEntity(target, fromEntity, callbacks, oTarget, identifier));
-
-                                            for (WegasCallback cb : callbacks) {
-                                                cb.remove(target, null, identifier);
-                                            }
-
-                                            if (setter != null) {
-                                                setter.invoke(oTarget, (Object) null);
-                                            }
+                                        } else {
+                                            logger.debug("REJECT PATCH : PROHIBITED");
                                         }
                                     }
                                     break;
@@ -418,12 +432,12 @@ public final class WegasEntityPatch extends WegasPatch {
              * It prevents entityManager flush to remove those orphans
              */
             for (Entry<Mergeable, Map<Object, OrphanContainer>> entry : orphans.entrySet()) {
-                Mergeable parent = entry.getKey();
+                Mergeable orphanParent = entry.getKey();
                 for (Entry<Object, OrphanContainer> entry2 : entry.getValue().entrySet()) {
                     Object fieldId = entry2.getKey();
                     OrphanContainer value = entry2.getValue();
                     if (value.areOrphansInstanceOf(VariableDescriptor.class)) {
-                        logger.info("  RESCUE ORPHAN PHASE I: {}.{} := {}", parent, fieldId, value);
+                        logger.info("  RESCUE ORPHAN PHASE I: {}.{} := {}", orphanParent, fieldId, value);
                         Object theOrphans = value.getOrphans();
                         if (vdf == null) {
                             vdf = VariableDescriptorFacade.lookup();
@@ -469,14 +483,14 @@ public final class WegasEntityPatch extends WegasPatch {
             }
 
             for (Entry<Mergeable, Map<Object, OrphanContainer>> entry : orphans.entrySet()) {
-                Mergeable parent = entry.getKey();
+                Mergeable orphanParent = entry.getKey();
                 for (Entry<Object, OrphanContainer> entry2 : entry.getValue().entrySet()) {
                     Object fieldId = entry2.getKey();
                     OrphanContainer value = entry2.getValue();
                     if (value.areOrphansInstanceOf(VariableDescriptor.class)) {
-                        logger.info("  RESCUE ORPHAN PHASE II: {}.{} := {}", parent, fieldId, value);
-                        if (parent instanceof VariableDescriptor) {
-                            VariableDescriptor p = (VariableDescriptor) parent;
+                        logger.info("  RESCUE ORPHAN PHASE II: {}.{} := {}", orphanParent, fieldId, value);
+                        if (orphanParent instanceof VariableDescriptor) {
+                            VariableDescriptor p = (VariableDescriptor) orphanParent;
                             if (deleted.containsKey(p.getRefId())) {
                                 // should restore p
                                 p.getName();

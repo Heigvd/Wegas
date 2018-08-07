@@ -221,7 +221,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 //writeOnce: "initOnly",
                 view: {
                     type: HIDDEN
-                }
+                },
+                maxWritableVisibility: "PRIVATE"
             }
         },
         EDITORNAME: "State Machine",

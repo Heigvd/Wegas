@@ -304,8 +304,23 @@ angular.module('wegas.models.scenarios', [])
                     $translate('COMMONS-SCENARIOS-COPY-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
-                }
+                };
             }
+
+            model.integrateScenario = function(modelId, scenarioId) {
+                var deferred = $q.defer(),
+                    url = "rest/Lobby/GameModel/" + modelId + "/Integrate/" + scenarioId;
+                if (modelId && scenarioId) {
+                    $http.get(ServiceURL + url, {
+                        "headers": {
+                            "managed-mode": "true"
+                        }
+                    }).success(createSuccess(deferred)).error(createError(deferred));
+
+                    return deferred.promise;
+                }
+                return deferred.promise;
+            };
 
             model.extractModel = function(name, ids) {
                 var deferred = $q.defer(),

@@ -15,6 +15,7 @@ import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -167,6 +168,13 @@ public class VariableDescriptorController {
         return variableDescriptorFacade.update(entityId, entity);
     }
 
+    @PUT
+    @Path("{id: [1-9][0-9]*}/visibility/{visibility: [A-Z]*}")
+    public VariableDescriptor resetVisibilities(@PathParam("id") Long vdId, 
+            @PathParam("visibility") ModelScoped.Visibility visibility) {
+        return variableDescriptorFacade.resetVisibility(vdId, visibility);
+    }
+
     /**
      * @param descriptorId
      * @param index
@@ -183,7 +191,6 @@ public class VariableDescriptorController {
      * @param index
      */
     @PUT
-
     @Path("{descriptorId: [1-9][0-9]*}/Move/{parentDescriptorId: [1-9][0-9]*}/{index: [0-9]*}")
     public void move(@PathParam("descriptorId") Long descriptorId,
             @PathParam("parentDescriptorId") Long parentDescriptorId,

@@ -15,7 +15,6 @@ import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.WithPermission;
@@ -104,7 +103,7 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
      *
      */
     @OneToMany(mappedBy = "state", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(callback = TransitionMergeCallback.class)
     private List<Transition> transitions = new ArrayList<>();
 
     /**
@@ -203,8 +202,8 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
      * @param onEnterEvent
      */
     public void setOnEnterEvent(Script onEnterEvent) {
-        this.touchOnEnterEvent();
         this.onEnterEvent = onEnterEvent;
+        this.touchOnEnterEvent();
     }
 
     @Override
@@ -235,7 +234,9 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
 
     public Transition addTransition(Transition t) {
         List<Transition> ts = this.getTransitions();
-        ts.add(t);
+        if (!ts.contains(t)) {
+            ts.add(t);
+        }
         this.setTransitions(ts);
         return t;
     }

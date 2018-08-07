@@ -169,7 +169,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
      * @return assigned resource containing assignment in the new order
      */
     @Override
-    public ResourceInstance moveAssignment(final Long assignmentId, final int index) {
+    public ResourceInstance moveAssignment(final Long assignmentId, final Integer index) {
         final Assignment assignment = this.findAssignment(assignmentId);
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(assignment.getResourceInstance().getId());
         resourceInstance.moveAssignment(assignment, index);
@@ -287,7 +287,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
     @Override
     public Occupation addOccupation(Long resourceInstanceId,
             Boolean editable,
-            double time) {
+            Integer time) {
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
         Occupation newOccupation = new Occupation(time);
         newOccupation.setEditable(editable);

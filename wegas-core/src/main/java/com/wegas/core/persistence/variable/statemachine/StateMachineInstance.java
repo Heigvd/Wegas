@@ -57,7 +57,7 @@ public class StateMachineInstance extends VariableInstance {
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "transitionHistory")
     @JsonIgnore
-    @WegasEntityProperty
+    @WegasEntityProperty(sameEntityOnly = true) // history refers to ids of travelled transitions
     private List<TransitionHistoryEntry> transitionHistory = new ArrayList<>();
 
     /**

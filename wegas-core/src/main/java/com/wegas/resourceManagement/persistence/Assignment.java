@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
@@ -30,7 +31,7 @@ import javax.persistence.*;
     )
 })
 @Entity
-public class Assignment extends AbstractAssignement {
+public class Assignment extends AbstractAssignement implements NamedEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -64,6 +65,18 @@ public class Assignment extends AbstractAssignement {
     @Override
     public Long getId() {
         return this.id;
+    }
+
+    @Override
+    @JsonIgnore
+    public String getName() {
+        return this.getTaskDescriptorName();
+    }
+
+    @Override
+    @JsonIgnore
+    public void setName(String name) {
+        this.setTaskDescriptorName(name);
     }
 
     /**

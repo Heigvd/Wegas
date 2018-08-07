@@ -103,6 +103,21 @@ public class GameModelController {
         return model;
     }
 
+    @GET
+    @Path("{modelId: [1-9][0-9]*}/Integrate/{scenarioId: [1-9][0-9]*}")
+    public GameModel integrate(@PathParam("modelId") Long modelId,
+            @PathParam("scenarioId") Long scenarioId) throws IOException, RepositoryException {
+
+        GameModel model = gameModelFacade.find(modelId);
+        GameModel scenario = gameModelFacade.find(scenarioId);
+
+        ArrayList<GameModel> scenarios = new ArrayList<>(1);
+        scenarios.add(scenario);
+        modelFacade.integrateScenario(model, scenarios);
+
+        return model;
+    }
+
     /**
      * Create a model
      *
@@ -114,7 +129,7 @@ public class GameModelController {
      *
      */
     @PUT
-    @Path("propagateModel/{modelId : [1-9][0-9]*}")
+    @Path("{modelId : [1-9][0-9]*}/Propagate")
     public GameModel propagateModel(@PathParam("modelId") Long modelId) throws IOException, RepositoryException {
         return modelFacade.propagateModel(modelId);
     }
@@ -174,7 +189,6 @@ public class GameModelController {
      * @throws IOException
      */
     @POST
-
     @Path("{templateGameModelId : [1-9][0-9]*}/UpdateFromPlayer/{playerId: [1-9][0-9]*}")
     public GameModel updateFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
             @PathParam("playerId") Long playerId) throws IOException {
@@ -202,7 +216,6 @@ public class GameModelController {
      * @throws IOException
      */
     @POST
-
     @Path("{templateGameModelId : [1-9][0-9]*}/CreateFromPlayer/{playerId: [1-9][0-9]*}")
     public GameModel createFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
             @PathParam("playerId") Long playerId) throws IOException {

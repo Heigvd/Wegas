@@ -156,7 +156,6 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             entity.setName(baseLabel);
         }
 
-
         if (Helper.isNullOrEmpty(entity.getName()) && !Helper.isNullOrEmpty(entity.getEditorTag())) {
             // still no name but a tag
             entity.setName(entity.getEditorTag());
@@ -330,6 +329,20 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         return newEntity;
     }
 
+    private VariableDescriptor resetVisibility(VariableDescriptor vd, Visibility visibility) {
+        vd.setVisibility(visibility);
+        if (vd instanceof DescriptorListI) {
+            for (VariableDescriptor child : (List<? extends VariableDescriptor>) ((DescriptorListI) vd).getItems()) {
+                this.resetVisibility(child, visibility);
+            }
+        }
+        return vd;
+    }
+
+    public VariableDescriptor resetVisibility(final Long vdId, Visibility visibility) {
+        return this.resetVisibility(this.find(vdId), visibility);
+    }
+
     @Override
     public void remove(VariableDescriptor entity) {
         GameModel root = entity.getRoot();
@@ -406,8 +419,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         }
     }
 
-
-    public Object executeNativeSql(String sql){
+    public Object executeNativeSql(String sql) {
         return this.getEntityManager().createNativeQuery(sql).getResultList();
     }
 

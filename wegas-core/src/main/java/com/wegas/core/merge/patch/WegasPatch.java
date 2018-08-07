@@ -9,8 +9,10 @@ package com.wegas.core.merge.patch;
 
 import com.wegas.core.IndentLogger;
 import com.wegas.core.exception.client.WegasConflictException;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
@@ -74,6 +76,8 @@ public abstract class WegasPatch {
      * setter to set the new patched value
      */
     protected Method setter;
+
+    protected Mergeable toEntity;
 
     /**
      * Some
@@ -166,7 +170,7 @@ public abstract class WegasPatch {
      * @param target
      */
     public void apply(GameModel gameModel, Mergeable target) {
-        this.apply(gameModel, target, null, null, PatchMode.UPDATE, null, null, null, false);
+        this.apply(gameModel, null, target, null, PatchMode.UPDATE, null, null, null, false);
     }
 
     /**
@@ -176,10 +180,12 @@ public abstract class WegasPatch {
      * @param target
      */
     public void applyForce(GameModel gameModel, Mergeable target) {
-        this.apply(gameModel, target, null, null, PatchMode.UPDATE, null, null, null, true);
+        this.apply(gameModel, null, target, null, PatchMode.UPDATE, null, null, null, true);
     }
 
-    protected abstract LifecycleCollector apply(GameModel targetGameModel, Mergeable entity, Object target, WegasCallback callback, PatchMode parentMode, Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility);
+    protected abstract LifecycleCollector apply(GameModel targetGameModel, Mergeable entity,
+            Object target, WegasCallback callback, PatchMode parentMode, Visibility visibility,
+            LifecycleCollector collector, Integer numPass, boolean bypassVisibility);
 
     /**
      * Guess current mode according to protectionLevel, current visibility, and parent mode and visibility
@@ -204,6 +210,13 @@ public abstract class WegasPatch {
                 break;
             case INTERNAL:
                 if (eVisibility == Visibility.INTERNAL) {
+                    return PatchMode.OVERRIDE;
+                }
+                break;
+            case INHERITED:
+                if (eVisibility == Visibility.INTERNAL
+                        || eVisibility == Visibility.PROTECTED
+                        || eVisibility == Visibility.INHERITED) {
                     return PatchMode.OVERRIDE;
                 }
                 break;
@@ -314,6 +327,44 @@ public abstract class WegasPatch {
         }
 
         return mode;
+    }
+
+    protected Mergeable getMergeable(Object targetObject) {
+        if (targetObject != null) {
+            if (targetObject instanceof Mergeable) {
+                return (Mergeable) targetObject;
+            } else {
+                throw WegasErrorMessage.error("Invalid target");
+            }
+        }
+        return null;
+    }
+
+    protected boolean isProtected(Mergeable target, Mergeable parent, boolean bypassVisibility) {
+        AbstractEntity effectiveAbstractEntity;
+
+        if (toEntity instanceof AbstractEntity || toEntity == null) {
+            effectiveAbstractEntity = (AbstractEntity) toEntity;
+        } else {
+            Mergeable mergeableParent = toEntity;
+            do {
+                mergeableParent = mergeableParent.getMergeableParent();
+            } while (mergeableParent != null && mergeableParent instanceof AbstractEntity == false);
+            if (mergeableParent instanceof AbstractEntity) {
+                effectiveAbstractEntity = (AbstractEntity) mergeableParent;
+            } else {
+                effectiveAbstractEntity = null;
+            }
+        }
+
+        Mergeable effectiveTarget = target != null ? target : parent;
+
+        return !bypassVisibility // target is never protected when bypassing visibilities
+                && effectiveTarget != null && effectiveTarget.belongsToProtectedGameModel() // and target is protected
+                && this.toEntity != null
+                && (effectiveAbstractEntity != null && !effectiveAbstractEntity.isPersisted()
+                || this.toEntity.belongsToProtectedGameModel() // toEntity is also protected (ie allows changes from upstream)
+                );
     }
 
     @Override

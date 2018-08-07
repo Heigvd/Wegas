@@ -110,14 +110,14 @@ YUI.add('wegas-editable', function(Y) {
                 };
                 if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO") {
                     Y.log("ATTRS: " + JSON.stringify(schemaMap));
-                    if (!Y.one("body.wegas-internalmode")) {
-                        if (parent) {
-                            var parentCfg = parent.getFormCfg();
-                            this._overrideFormConfig(schemaMap, this, "PRIVATE", parent.get("visibility"), parentCfg.maxWritableVisibility); // inheritedVisibility, inheritedMaxWritableVisibility
-                        } else {
-                            this._overrideFormConfig(schemaMap, this, "PRIVATE");
-                        }
+                    //if (!Y.one("body.wegas-internalmode")) {
+                    if (parent) {
+                        var parentCfg = parent.getFormCfg();
+                        this._overrideFormConfig(schemaMap, this, "PRIVATE", parent.get("visibility"), parentCfg.maxWritableVisibility); // inheritedVisibility, inheritedMaxWritableVisibility
+                    } else {
+                        this._overrideFormConfig(schemaMap, this, "PRIVATE");
                     }
+                    //}
                     Y.log("ATTRS: " + JSON.stringify(schemaMap));
                 }
                 return schemaMap;

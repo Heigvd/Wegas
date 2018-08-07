@@ -1559,6 +1559,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Duplicate " + keywords.model.singular.en,
                             'fr': "Dupliquer le " + keywords.model.singular.fr
                         },
+                        'MODELER-MODALE-VERSIONS-INTEGRATOR': {
+                            'en': "Select a scenario to integrate",
+                            'fr': "Sélectionnez un scénario à intégrer"
+                        },
+                        'MODELER-MODALE-VERSIONS-INTEGRATOR_BTN': {
+                            'en': "Integrate",
+                            'fr': "Intégrer"
+                        },
                         'MODELER-MODALE-VERSIONS-AVAILABLE-VERSIONS': {
                             'en': "Scenarios based on this model",
                             'fr': "Scénario basé sur ce modèle"

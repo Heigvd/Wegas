@@ -204,7 +204,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      * @param editable
      * @param description
      */
-    public void addOccupation(Player p, double time, Boolean editable, String description) {
+    public void addOccupation(Player p, int time, Boolean editable, String description) {
         ResourceInstance instance = this.getInstance(p);
         Occupation occupation = new Occupation();
         occupation.setDescription(description);

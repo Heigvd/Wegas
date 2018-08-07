@@ -32,7 +32,7 @@ public interface Mergeable {
         if (p != null) {
             return p.belongsToProtectedGameModel();
         } else {
-            throw WegasErrorMessage.error("Not yet implemented");
+            throw WegasErrorMessage.error("Not yet implemented (" + this.toString() + ")");
         }
     }
 
@@ -42,7 +42,7 @@ public interface Mergeable {
         if (p != null) {
             return p.getInheritedVisibility();
         } else {
-            throw WegasErrorMessage.error("Not yet implemented");
+            throw WegasErrorMessage.error("Not yet implemented (" + this.toString() + ")");
         }
     }
 

@@ -81,7 +81,7 @@ public class ResourceController {
      */
     @POST
     @Path("Reserve/{resourceId : [1-9][0-9]*}/{time : [1-9][0-9]*}")
-    public void addReservation(@PathParam("resourceId") Long resourceInstanceId, @PathParam("time") double time) {
+    public void addReservation(@PathParam("resourceId") Long resourceInstanceId, @PathParam("time") Integer time) {
         resourceFacade.addOccupation(resourceInstanceId, true, time);
     }
 

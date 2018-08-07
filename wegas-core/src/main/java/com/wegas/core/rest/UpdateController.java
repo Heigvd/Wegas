@@ -579,11 +579,11 @@ public class UpdateController {
             ResourceInstance defaultInstance = rd.getDefaultInstance();
             List<Occupation> occupations = defaultInstance.getOccupations();
 
-            HashMap<Long, List<Occupation>> map = new HashMap<>();
+            HashMap<Integer, List<Occupation>> map = new HashMap<>();
             List<Occupation> cleanList = new ArrayList<>();
 
             for (Occupation occ : occupations) {
-                Long key = ((Double) occ.getTime()).longValue();
+                int key = occ.getTime();
                 if (!map.containsKey(key)) {
                     map.put(key, new ArrayList<>());
                     cleanList.add(occ);
@@ -600,8 +600,8 @@ public class UpdateController {
             Collection<VariableInstance> resourceInstances = descriptorFacade.getInstances(rd).values();
             for (VariableInstance vi : resourceInstances) {
                 ResourceInstance resourceInstance = (ResourceInstance) vi;
-                for (Entry<Long, List<Occupation>> entry : map.entrySet()) {
-                    if (!hasOccupation(resourceInstance, entry.getKey().doubleValue())) {
+                for (Entry<Integer, List<Occupation>> entry : map.entrySet()) {
+                    if (!hasOccupation(resourceInstance, entry.getKey())) {
                         resourceFacade.addOccupation(resourceInstance.getId(), false, entry.getKey());
                         created++;
                     }

@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Patch List or Map of AbstrctEntities
@@ -152,13 +150,13 @@ public final class WegasChildrenPatch extends WegasPatch {
     }
 
     @Override
-    public LifecycleCollector apply(GameModel targetGameModel, Mergeable target, Object payload, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
+    public LifecycleCollector apply(GameModel targetGameModel, Mergeable parent, Object targetObject, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
 
         logger.debug("Apply {} {}", this.getClass().getSimpleName(), identifier);
         logger.indent();
         try {
-            if (shouldApplyPatch(target, referenceEntity)) {
-                Object children = getter.invoke(target);
+            if (shouldApplyPatch(parent, referenceEntity)) {
+                Object children = getter.invoke(parent);
 
                 if (!ignoreNull || to != null) {
                     if (!initOnly || children == null) {
@@ -212,7 +210,7 @@ public final class WegasChildrenPatch extends WegasPatch {
                                     }
 
                                     for (WegasCallback cb : callbacks) {
-                                        cb.add(child, target, identifier);
+                                        cb.add(child, parent, identifier);
                                     }
                                 }
 
@@ -239,26 +237,21 @@ public final class WegasChildrenPatch extends WegasPatch {
                                     }
 
                                     for (WegasCallback cb : callbacks) {
-                                        cb.remove(child, target, identifier);
+                                        cb.remove(child, parent, identifier);
                                     }
                                     return key;
                                 }
                             };
 
                             for (WegasCallback cb : callbacks) {
-                                cb.preUpdate(target, to, identifier);
+                                cb.preUpdate(parent, to, identifier);
                             }
 
                             logger.info("Pre Patch: target: {} from: {} to: {}", children, from, to);
                             for (WegasPatch patch : patches) {
                                 Object key = patch.getIdentifier();
                                 Object child = tmpMap.get(key);
-                                if (patch instanceof WegasPrimitivePatch) {
-                                    patch.apply(targetGameModel, target, child, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
-                                } else {
-                                    patch.apply(targetGameModel, (Mergeable) child, null, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
-                                }
-
+                                patch.apply(targetGameModel, parent, child, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
                             }
 
                             logger.info("Post Patch: target: {} from: {} to: {}", children, from, to);
@@ -338,10 +331,10 @@ public final class WegasChildrenPatch extends WegasPatch {
                                 }
                             }
 
-                            setter.invoke(target, children);
+                            setter.invoke(parent, children);
 
                             for (WegasCallback cb : callbacks) {
-                                cb.postUpdate(target, to, identifier);
+                                cb.postUpdate(parent, to, identifier);
                             }
                         } else {
                             logger.debug("SKIP: no need to delete primitives");
@@ -359,9 +352,9 @@ public final class WegasChildrenPatch extends WegasPatch {
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             Throwable cause = ex.getCause();
             if (cause instanceof WegasRuntimeException) {
-                throw (WegasRuntimeException)cause;
+                throw (WegasRuntimeException) cause;
             } else {
-                throw new RuntimeException(cause);
+                throw new RuntimeException(cause != null ? cause : ex);
             }
         }
         logger.debug(" DONE {} {}", this.getClass().getSimpleName(), identifier);
