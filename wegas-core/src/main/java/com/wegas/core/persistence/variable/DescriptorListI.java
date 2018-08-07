@@ -170,25 +170,4 @@ public interface DescriptorListI<T extends VariableDescriptor> {
     default boolean localRemove(T item) {
         return this.getItems().remove(item);
     }
-
-    public static class UpdateChild implements WegasCallback {
-
-        @Override
-        public void add(Object entity, Mergeable container, Object identifier) {
-            if (container instanceof DescriptorListI && entity instanceof VariableDescriptor) {
-                DescriptorListI parent = (DescriptorListI) container;
-                parent.addItem((VariableDescriptor) entity);
-            }
-        }
-
-        @Override
-        public Object remove(Object entity, Mergeable container, Object identifier) {
-            //DescriptorListI list = (DescriptorListI) entity;
-            if (container instanceof DescriptorListI && entity instanceof VariableDescriptor) {
-                DescriptorListI parent = (DescriptorListI) container;
-                parent.remove((VariableDescriptor) entity);
-            }
-            return null;
-        }
-    }
 }

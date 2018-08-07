@@ -42,6 +42,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -216,7 +218,7 @@ public final class WegasEntityPatch extends WegasPatch {
     }
 
     @Override
-    public LifecycleCollector apply(GameModel targetGameModel, Mergeable parent, Object targetObject, WegasCallback callback, PatchMode parentMode,
+    public LifecycleCollector apply(GameModel targetGameModel, Deque<Mergeable> ancestors, Object targetObject, WegasCallback callback, PatchMode parentMode,
             Visibility inheritedVisibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
         /**
          * Two pass patch
@@ -226,6 +228,10 @@ public final class WegasEntityPatch extends WegasPatch {
         boolean rootPatch = false;
         boolean processCollectedData = false;
         Mergeable target = null;
+        if (ancestors == null){
+            ancestors = new LinkedList<>();
+        }
+        Mergeable parent = ancestors.peekFirst();
 
         if (collector == null) {
             collector = new LifecycleCollector();
@@ -279,7 +285,7 @@ public final class WegasEntityPatch extends WegasPatch {
                             switch (myMode) {
                                 case CREATE:
                                     if (numPass > 1) {
-                                        if (!Helper.isProtected(protectionLevel, visibility) || !isProtected(target, parent, bypassVisibility)) {
+                                        if (!Helper.isProtected(protectionLevel, visibility) || !isProtected(target, ancestors, bypassVisibility)) {
                                             logger.debug(" CREATE CLONE");
 
                                             if (collector.getDeleted().containsKey(toEntity.getRefId())) {
@@ -304,7 +310,7 @@ public final class WegasEntityPatch extends WegasPatch {
 
                                                 // Force update
                                                 WegasEntityPatch createPatch = new WegasEntityPatch(null, 0, null, null, null, remove.getPayload(), toEntity, true, false, false, false, this.protectionLevel);
-                                                createPatch.apply(targetGameModel, parent, target, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
+                                                createPatch.apply(targetGameModel, ancestors, target, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
 
                                                 for (WegasCallback cb : callbacks) {
                                                     cb.postUpdate(target, this.toEntity, identifier);
@@ -328,7 +334,7 @@ public final class WegasEntityPatch extends WegasPatch {
                                                     setter.invoke(parent, target);
                                                 }
 
-                                                clone.apply(targetGameModel, parent, target, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
+                                                clone.apply(targetGameModel, ancestors, target, null, PatchMode.UPDATE, visibility, collector, null, bypassVisibility);
 
                                                 collector.getCreated().put(target.getRefId(), new LifecycleCollector.CollectedEntity(target, toEntity, callbacks, parent, identifier));
 
@@ -342,15 +348,17 @@ public final class WegasEntityPatch extends WegasPatch {
                                     break;
                                 case DELETE:
                                     if (numPass < 2) {
-                                        if (!Helper.isProtected(protectionLevel, visibility) || !isProtected(target, parent, bypassVisibility)) {
+                                        if (!Helper.isProtected(protectionLevel, visibility) || !isProtected(target, ancestors, bypassVisibility)) {
                                             logger.debug(" DELETE");
 
                                             if (fromEntity != null && target != null) {
 
                                                 // DELETE CHILDREN TOO TO COLLECT THEM
+                                                ancestors.addFirst(target);
                                                 for (WegasPatch patch : patches) {
-                                                    patch.apply(targetGameModel, target, null, new OrphanCollector(collector, target, patch.getIdentifier()), myMode, visibility, collector, numPass, bypassVisibility);
+                                                    patch.apply(targetGameModel, ancestors, null, new OrphanCollector(collector, target, patch.getIdentifier()), myMode, visibility, collector, numPass, bypassVisibility);
                                                 }
+                                                ancestors.removeFirst();
 
                                                 String refId = fromEntity.getRefId();
                                                 // Should include all Mergeable contained within target, so they can be reused by CREATE case
@@ -383,9 +391,11 @@ public final class WegasEntityPatch extends WegasPatch {
                                             }
                                         }
 
+                                        ancestors.addFirst(target);
                                         for (WegasPatch patch : patches) {
-                                            patch.apply(targetGameModel, target, null, null, myMode, visibility, collector, numPass, bypassVisibility);
+                                            patch.apply(targetGameModel, ancestors, null, null, myMode, visibility, collector, numPass, bypassVisibility);
                                         }
+                                        ancestors.removeFirst();
 
                                         if (numPass > 1) {
                                             for (WegasCallback cb : callbacks) {

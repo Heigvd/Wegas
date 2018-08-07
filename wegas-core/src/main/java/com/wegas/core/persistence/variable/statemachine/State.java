@@ -13,10 +13,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
-import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Scripted;
@@ -103,7 +101,7 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
      *
      */
     @OneToMany(mappedBy = "state", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(callback = TransitionMergeCallback.class)
+    @WegasEntityProperty
     private List<Transition> transitions = new ArrayList<>();
 
     /**
@@ -291,15 +289,4 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
             return t1.getIndex() - t2.getIndex();
         }
     }
-
-    public static class TransitionMergeCallback implements WegasCallback {
-
-        @Override
-        public void add(Object child, Mergeable container, Object identifier) {
-            if (child instanceof Transition && container instanceof State) {
-                ((State) container).addTransition((Transition) child);
-            }
-        }
-    }
-
 }

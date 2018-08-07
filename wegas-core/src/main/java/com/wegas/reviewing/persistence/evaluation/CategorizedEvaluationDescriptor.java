@@ -38,7 +38,7 @@ public class CategorizedEvaluationDescriptor
      */
     @OneToMany(mappedBy = "parentEvaluation", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonDeserialize(using = EnumItem.ListDeserializer.class)
-    @WegasEntityProperty(callback = EnumItem.EnumItemMergeCallback.class)
+    @WegasEntityProperty
     private List<EnumItem> categories = new ArrayList<>();
 
     /**

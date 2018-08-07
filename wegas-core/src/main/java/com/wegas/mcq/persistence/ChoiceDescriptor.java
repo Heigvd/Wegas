@@ -418,6 +418,17 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
 
     @JsonIgnore
     @Override
+    public DescriptorListI<? extends VariableDescriptor> getParentOrNull() {
+        if (this.getQuestion() != null) {
+            return this.getQuestion();
+        } else {
+            return super.getParentOrNull();
+        }
+    }
+
+
+    @JsonIgnore
+    @Override
     public DescriptorListI<? extends VariableDescriptor> getParent() {
         if (this.getQuestion() != null) {
             return this.getQuestion();
@@ -492,13 +503,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
     }
 
     public static class ResultMergeCallback implements WegasCallback {
-
-        @Override
-        public void add(Object child, Mergeable container, Object identifier) {
-            if (child instanceof Result && container instanceof ChoiceDescriptor) {
-                ((ChoiceDescriptor)container).addResult((Result) child);
-            }
-        }
 
         @Override
         public Object remove(Object entity, Mergeable container, Object identifier) {

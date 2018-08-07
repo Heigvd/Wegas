@@ -420,7 +420,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
         } else if (root != null) {
             return root;
         } else {
-            throw new WegasNotFoundException("ORPHAN DESCRIPTOR"); // is somebody expect this exception or return null will do the job ?
+            throw new WegasNotFoundException("ORPHAN DESCRIPTOR: " + this); // is somebody expect this exception or return null will do the job ?
         }
     }
 
@@ -831,13 +831,13 @@ abstract public class VariableDescriptor<T extends VariableInstance>
 
     @Override
     public WithPermission getMergeableParent() {
-        DescriptorListI<? extends VariableDescriptor> parent = this.getParent();
+        DescriptorListI<? extends VariableDescriptor> parent = this.getParentOrNull();
         if (parent instanceof VariableDescriptor){
             return (VariableDescriptor)parent;
         } else if (parent instanceof GameModel){
             return (GameModel) parent;
         } else{
-            throw WegasErrorMessage.error("Orphan descriptor !!!");
+            return null;
         }
     }
 

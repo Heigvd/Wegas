@@ -17,6 +17,7 @@ import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,7 +35,6 @@ public final class WegasPrimitivePatch extends WegasPatch {
     private Object toValue;
 
     //private Mergeable toEntity;
-
     /**
      * patch through getter and setter or with add/remove callback ?
      */
@@ -73,9 +73,11 @@ public final class WegasPrimitivePatch extends WegasPatch {
     }
 
     @Override
-    public LifecycleCollector apply(GameModel targetGameModel, Mergeable parent, Object value, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
+    public LifecycleCollector apply(GameModel targetGameModel, Deque<Mergeable> ancestors, Object value, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
         if (numPass < 2) {
             try {
+                Mergeable parent = ancestors != null ? ancestors.peek() : null;
+
                 if (!isField || shouldApplyPatch(parent, toEntity)) {
                     Object oldTargetValue;
                     if (isField) {
@@ -93,7 +95,7 @@ public final class WegasPrimitivePatch extends WegasPatch {
 
                     if (!initOnly || oldTargetValue == null) { // do no overwrite non-null value if initOnly is set
                         if (myMode.equals(PatchMode.OVERRIDE) || (Objects.equals(oldTargetValue, fromValue))) { // do not override user-change but in protected mode
-                            if (!Helper.isProtected(protectionLevel, visibility) || !isProtected(null, parent, bypassVisibility)) { // prevent protected changes
+                            if (!Helper.isProtected(protectionLevel, visibility) || !isProtected(null, ancestors, bypassVisibility)) { // prevent protected changes
                                 if (!ignoreNull || toValue != null) {
 
                                     logger.debug("Apply {} := {} => (from {} to {})", identifier, oldTargetValue, fromValue, toValue);

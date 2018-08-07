@@ -16,12 +16,10 @@ import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
-import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -175,7 +173,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @OneToMany(mappedBy = "root", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @OrderColumn(name = "gm_items_order")
     //@JsonManagedReference
-    @WegasEntityProperty(includeByDefault = false, callback = DescriptorListI.UpdateChild.class)
+    @WegasEntityProperty(includeByDefault = false)
     private List<VariableDescriptor> items = new ArrayList<>();
 
     /**
@@ -199,7 +197,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @OneToMany(mappedBy = "scriptlibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
-    @WegasEntityProperty(includeByDefault = false, callback = RegisterSeverScript.class)
+    @WegasEntityProperty(includeByDefault = false)
     private List<GameModelContent> scriptLibrary = new ArrayList<>();
 
     /**
@@ -207,7 +205,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @OneToMany(mappedBy = "csslibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
-    @WegasEntityProperty(includeByDefault = false, callback = RegisterStyleSheet.class)
+    @WegasEntityProperty(includeByDefault = false)
     private List<GameModelContent> cssLibrary = new ArrayList<>();
 
     /**
@@ -215,7 +213,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @OneToMany(mappedBy = "clientscriptlibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
-    @WegasEntityProperty(includeByDefault = false, callback = RegisterClientScript.class)
+    @WegasEntityProperty(includeByDefault = false)
     private List<GameModelContent> clientScriptLibrary = new ArrayList<>();
 
     /**
@@ -1115,6 +1113,10 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     @Override
     public boolean belongsToProtectedGameModel() {
+        return this.isProtected();
+    }
+
+    public boolean isProtected(){
         // only scenarios which are based on a model are protected
         // but do no protect a gameModel when the propagation process is ongoing
         return (this.getType().equals(GmType.SCENARIO) && this.getBasedOn() != null && !this.onGoingPropagation);
@@ -1248,33 +1250,5 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getType() + ", " + getName() + ")";
-    }
-
-
-    public static class RegisterSeverScript implements WegasCallback {
-        @Override
-        public void add(Object child, Mergeable container, Object identifier) {
-            if (child instanceof GameModelContent && container instanceof GameModel) {
-                ((GameModelContent) child).setScriptlibrary_GameModel((GameModel) container);
-            }
-        }
-    }
-
-    public static class RegisterClientScript implements WegasCallback {
-        @Override
-        public void add(Object child, Mergeable container, Object identifier) {
-            if (child instanceof GameModelContent && container instanceof GameModel) {
-                ((GameModelContent) child).setClientscriptlibrary_GameModel((GameModel) container);
-            }
-        }
-    }
-
-    public static class RegisterStyleSheet implements WegasCallback {
-        @Override
-        public void add(Object child, Mergeable container, Object identifier) {
-            if (child instanceof GameModelContent && container instanceof GameModel) {
-                ((GameModelContent) child).setCsslibrary_GameModel((GameModel) container);
-            }
-        }
     }
 }

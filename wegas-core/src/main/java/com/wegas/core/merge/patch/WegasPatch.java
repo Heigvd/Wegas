@@ -20,7 +20,10 @@ import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -183,8 +186,8 @@ public abstract class WegasPatch {
         this.apply(gameModel, null, target, null, PatchMode.UPDATE, null, null, null, true);
     }
 
-    protected abstract LifecycleCollector apply(GameModel targetGameModel, Mergeable entity,
-            Object target, WegasCallback callback, PatchMode parentMode, Visibility visibility,
+    protected abstract LifecycleCollector apply(GameModel targetGameModel, Deque<Mergeable> ancestors,
+            Object targetObject, WegasCallback callback, PatchMode parentMode, Visibility visibility,
             LifecycleCollector collector, Integer numPass, boolean bypassVisibility);
 
     /**
@@ -340,7 +343,7 @@ public abstract class WegasPatch {
         return null;
     }
 
-    protected boolean isProtected(Mergeable target, Mergeable parent, boolean bypassVisibility) {
+    protected boolean isProtected(Mergeable target, Deque<Mergeable> ancestors, boolean bypassVisibility) {
         AbstractEntity effectiveAbstractEntity;
 
         if (toEntity instanceof AbstractEntity || toEntity == null) {
@@ -357,7 +360,13 @@ public abstract class WegasPatch {
             }
         }
 
-        Mergeable effectiveTarget = target != null ? target : parent;
+        Mergeable effectiveTarget = null;
+
+        if (target != null && target.getMergeableParent() != null) {
+            effectiveTarget = target;
+        } else if (ancestors != null) {
+            effectiveTarget = ancestors.getLast();
+        }
 
         return !bypassVisibility // target is never protected when bypassing visibilities
                 && effectiveTarget != null && effectiveTarget.belongsToProtectedGameModel() // and target is protected

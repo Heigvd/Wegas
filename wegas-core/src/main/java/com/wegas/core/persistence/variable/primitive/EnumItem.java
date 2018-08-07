@@ -251,20 +251,4 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
         }
 
     }
-
-    public static class EnumItemMergeCallback implements WegasCallback {
-
-        @Override
-        public void add(Object child, Mergeable container, Object identifier) {
-            if (child instanceof EnumItem) {
-                EnumItem item = (EnumItem) child;
-                if (container instanceof StringDescriptor) {
-                    item.setParentString((StringDescriptor) container);
-                } else if (container instanceof CategorizedEvaluationDescriptor){
-                    item.setParentEvaluation((CategorizedEvaluationDescriptor) container);
-                }
-            }
-        }
-    }
-
 }

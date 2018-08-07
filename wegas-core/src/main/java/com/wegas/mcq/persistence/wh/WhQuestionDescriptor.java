@@ -58,7 +58,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
 
     @OneToMany(mappedBy = "parentWh", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @OrderColumn(name = "whd_items_order")
-    @WegasEntityProperty(includeByDefault = false, callback = DescriptorListI.UpdateChild.class)
+    @WegasEntityProperty(includeByDefault = false)
     private List<VariableDescriptor> items = new ArrayList<>();
 
     /**

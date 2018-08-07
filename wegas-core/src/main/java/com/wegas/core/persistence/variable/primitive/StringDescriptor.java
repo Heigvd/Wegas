@@ -51,7 +51,8 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      */
     @OneToMany(mappedBy = "parentString", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonDeserialize(using = EnumItem.ListDeserializer.class)
-    @WegasEntityProperty(callback = EnumItem.EnumItemMergeCallback.class)
+    @WegasEntityProperty
+    //@WegasEntityProperty(callback = EnumItem.EnumItemMergeCallback.class)
     private List<EnumItem> allowedValues = new ArrayList<>();
 
     /**

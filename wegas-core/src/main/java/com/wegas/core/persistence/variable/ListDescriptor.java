@@ -42,7 +42,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     //@BatchFetch(BatchFetchType.IN)
     @OneToMany(mappedBy = "parentList", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @OrderColumn(name = "ld_items_order")
-    @WegasEntityProperty(includeByDefault = false, callback = DescriptorListI.UpdateChild.class)
+    @WegasEntityProperty(includeByDefault = false)
     private List<VariableDescriptor> items = new ArrayList<>();
 
     /**

@@ -18,6 +18,7 @@ import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -150,11 +151,13 @@ public final class WegasChildrenPatch extends WegasPatch {
     }
 
     @Override
-    public LifecycleCollector apply(GameModel targetGameModel, Mergeable parent, Object targetObject, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
+    public LifecycleCollector apply(GameModel targetGameModel, Deque<Mergeable> ancestors, Object targetObject, WegasCallback callback, PatchMode parentMode, ModelScoped.Visibility visibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
 
         logger.debug("Apply {} {}", this.getClass().getSimpleName(), identifier);
         logger.indent();
         try {
+            Mergeable parent = ancestors != null ? ancestors.peek() : null;
+
             if (shouldApplyPatch(parent, referenceEntity)) {
                 Object children = getter.invoke(parent);
 
@@ -251,7 +254,7 @@ public final class WegasChildrenPatch extends WegasPatch {
                             for (WegasPatch patch : patches) {
                                 Object key = patch.getIdentifier();
                                 Object child = tmpMap.get(key);
-                                patch.apply(targetGameModel, parent, child, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
+                                patch.apply(targetGameModel, ancestors, child, registerChild, parentMode, visibility, collector, numPass, bypassVisibility);
                             }
 
                             logger.info("Post Patch: target: {} from: {} to: {}", children, from, to);
