@@ -1056,9 +1056,19 @@ YUI().use(function(Y) {
             'wegas-qrcode-css': {
                 type: CSS
             },
+            "wegas-i18n-qrcode-fr": {
+                path: 'js/i18n/i18n-qrcode-fr.js'
+            },
+            "wegas-i18n-qrcode-en": {
+                path: 'js/i18n/i18n-qrcode-en.js'
+            },
+            'wegas-i18n-qrcode': {
+                path: "js/i18n/i18n-qrcode.js",
+                requires: ['wegas-i18n', 'wegas-i18n-global']
+            },
             'wegas-qrcode-scanner': {
                 path: "js/wegas-qrcode-scanner.js",
-                requires: ['wegas-widget', 'qrcode', 'instascan', 'wegas-qrcode-css'],
+                requires: ['wegas-widget', 'qr-encoder', 'instascan', 'wegas-i18n-qrcode', 'wegas-qrcode-css'],
                 ws_provides: "QrCodeScanner"
             }
         }
@@ -1092,7 +1102,7 @@ YUI().use(function(Y) {
                 //requires: "adapter"
             },
             //https://github.com/davidshimjs/qrcodejs, Apache 2
-            qrcode: {
+            "qr-encoder": {
                 path: "qrcode/qrcode.min.js"
             }
 
