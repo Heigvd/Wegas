@@ -19,7 +19,7 @@ YUI.add("wegas-i18n-qrcode-fr", function(Y) {
             cancelScan: "Annuler le scan",
             mirror: "Inverser l'image",
             accessRights: "Pour pouvoir scanner, il faut donner au navigateur ET à ce site web le droit d'accéder à la caméra",
-            notUnderstood: "QR-code non compréhensible",
+            notUnderstood: "QR-code incompréhensible !<br/>A-t-il vraiment été créé pour ce jeu ?",
         },
     });
 });

@@ -165,11 +165,25 @@ YUI.add('wegas-qrcode-scanner', function(Y) {
                             {
                                 on: {
                                     success: Y.bind(this.hideOverlay, this),
-                                    failure: Y.bind(this.hideOverlay, this)
+                                    failure:
+                                        // The QR-code seems to be encoded properly for Wegas, but did generate an error:
+                                        Y.bind(function(e) {
+                                            this.hideOverlay();
+                                            // Hide any low-level error panel:
+                                            var panel = Y.one(".wegas-panel"),
+                                                ok = panel && panel.one(".yui3-button");
+                                            if (ok) {
+                                                YUI().use('node-event-simulate', function(Y) {
+                                                    ok.simulate("click");
+                                                });
+                                            }
+                                            this.showMessage("error", I18n.t("qrcode.notUnderstood"));
+                                            Y.log("*** " + I18n.t("qrcode.notUnderstood"));
+                                            Y.log(" Decoded QR-code: " + qrCodeValue);
+                                        }, this)
                                 }
                             }
                         );
-
                         break;
                     case "selectChoice":
                         /* payload={
@@ -224,7 +238,10 @@ YUI.add('wegas-qrcode-scanner', function(Y) {
 
                 this.toggleScanner();
             } else {
+                // The QR-code was apparently not encoded for Wegas :
                 this.showMessage("error", I18n.t("qrcode.notUnderstood"));
+                Y.log("*** " + I18n.t("qrcode.notUnderstood"));
+                Y.log(" Decoded QR-code: " + qrCodeValue);
             }
         },
         destructor: function() {
