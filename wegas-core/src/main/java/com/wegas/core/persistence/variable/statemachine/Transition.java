@@ -15,7 +15,6 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
@@ -39,7 +38,7 @@ import javax.persistence.*;
             @Index(columnList = "actiontext_id")
         }
 )
-public class Transition extends AbstractEntity implements Searchable, Scripted {
+public class Transition extends AbstractEntity implements Searchable {
 
     private static final long serialVersionUID = 1L;
 
@@ -185,14 +184,6 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     public void setPreStateImpact(Script preStateImpact) {
         this.preStateImpact = preStateImpact;
         this.touchPreStateImpact();
-    }
-
-    @Override
-    public List<Script> getScripts() {
-        List<Script> ret = new ArrayList<>();
-        ret.add(this.triggerCondition);
-        ret.add(this.preStateImpact);
-        return ret;
     }
 
     private void touchTriggerCondition(){

@@ -17,7 +17,6 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
@@ -46,7 +45,7 @@ import javax.persistence.*;
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
 })
 //@OptimisticLocking(cascade = true)
-public class State extends AbstractEntity implements Searchable, Scripted, Broadcastable {
+public class State extends AbstractEntity implements Searchable, Broadcastable {
 
     private static final long serialVersionUID = 1L;
 
@@ -202,16 +201,6 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
     public void setOnEnterEvent(Script onEnterEvent) {
         this.onEnterEvent = onEnterEvent;
         this.touchOnEnterEvent();
-    }
-
-    @Override
-    public List<Script> getScripts() {
-        List<Script> ret = new ArrayList<>();
-        ret.add(this.onEnterEvent);
-        for (Transition transition : this.getTransitions()) {
-            ret.addAll(transition.getScripts());
-        }
-        return ret;
     }
 
     /**

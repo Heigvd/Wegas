@@ -24,11 +24,9 @@ import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
-import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
@@ -50,7 +48,7 @@ import javax.persistence.*;
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class)
 })
 @WegasEntity(callback = ChoiceDescriptor.ChoiceDescriptorMergeCallback.class)
-public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> implements Scripted {
+public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
 
     private static final long serialVersionUID = 1L;
     // private static final Logger logger = LoggerFactory.getLogger(ChoiceDescriptor.class);
@@ -95,17 +93,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      */
     @WegasEntityProperty
     private Integer maxReplies = null;
-
-    @Override
-    @JsonIgnore
-    public List<Script> getScripts() {
-        List<Script> ret = new ArrayList<>();
-        //Avoid stream
-        for (Result r : this.getResults()) {
-            ret.addAll(r.getScripts());
-        }
-        return ret;
-    }
 
     /**
      *

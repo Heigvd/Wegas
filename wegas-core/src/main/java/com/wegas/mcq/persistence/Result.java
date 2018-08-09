@@ -22,7 +22,6 @@ import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Beanjection;
-import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
@@ -54,7 +53,7 @@ import javax.persistence.*;
 @NamedQueries({
     @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor.id=:choicedescriptorId AND res.name LIKE :name")
 })
-public class Result extends AbstractEntity implements Searchable, Scripted, LabelledEntity {
+public class Result extends AbstractEntity implements Searchable, LabelledEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -155,16 +154,6 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
                 || Helper.insensitiveContainsAll(this.getIgnorationAnswer(), criterias)
                 || (this.getImpact() != null && this.getImpact().containsAll(criterias))
                 || (this.getIgnorationImpact() != null && this.getIgnorationImpact().containsAll(criterias));
-    }
-
-    @Override
-    public List<Script> getScripts() {
-        List<Script> ret = new ArrayList<>();
-        ret.add(this.getImpact());
-        if (this.getIgnorationImpact() != null) {
-            ret.add(this.getIgnorationImpact());
-        }
-        return ret;
     }
 
     @Override

@@ -14,14 +14,17 @@ import com.wegas.core.ejb.ScriptCheck;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.merge.utils.MergeHelper;
+import com.wegas.core.merge.utils.WegasFieldProperties;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.Scripted;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.ejb.UserFacade;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,8 +61,8 @@ public class ScriptController {
     /**
      *
      */
-    @EJB
-    private GameModelFacade gmf;
+    @Inject
+    private GameModelFacade gameModelFacade;
     /**
      *
      */
@@ -132,7 +135,7 @@ public class ScriptController {
         script.setContent(((HashMap<String, String>) multiplayerScripts.get("script")).get("content"));
         ArrayList<Object> results = new ArrayList<>();
 
-        GameModel gm = gmf.find(gameModelId);
+        GameModel gm = gameModelFacade.find(gameModelId);
         requestFacade.getRequestManager().assertUpdateRight(gm);
 
         VariableDescriptor context;
@@ -163,21 +166,36 @@ public class ScriptController {
     @Path("Test")
     public Map<Long, WegasScriptException> testGameModel(@PathParam("gameModelId") Long gameModelId) {
         //requestFacade.getRequestManager().setEnv(RequestManager.RequestEnvironment.TEST);
-        Collection<VariableDescriptor> findAll = variableDescriptorFacade.findAll(gameModelId);
-        Player player = gmf.find(gameModelId).getPlayers().get(0);
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        Player player = gameModel.getAnyLivePlayer();
+
         Map<Long, WegasScriptException> ret = new HashMap<>();
-        findAll.stream().filter((descriptor) -> (descriptor instanceof Scripted))
-                .forEach((VariableDescriptor vd) -> {
-                    ((Scripted) vd).getScripts().stream().filter(script -> script != null)
-                            .anyMatch((Script script) -> {
-                                WegasScriptException validate = scriptCheck.validate(script, player, vd);
-                                if (validate != null) {
-                                    ret.put(vd.getId(), validate);
-                                    return true;
-                                }
-                                return false;
-                            });
-                });
+
+        MergeHelper.visitMergeable(gameModel, null, Boolean.TRUE, new MergeHelper.MergeableVisitor() {
+            @Override
+            public void visit(Mergeable target, Mergeable reference, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors) {
+                if (target instanceof Script) {
+                    Script script = (Script) target;
+
+                    VariableDescriptor vd = null;
+                    for (Mergeable ancestor : ancestors) {
+                        if (ancestor instanceof VariableDescriptor) {
+                            vd = (VariableDescriptor) ancestor;
+                            break;
+                        }
+                    }
+
+                    if (vd != null) {
+                        WegasScriptException validate = scriptCheck.validate(script, player, vd);
+                        if (validate != null) {
+                            ret.put(vd.getId(), validate);
+                        }
+                    } else {
+                        logger.error("Script {} has no parent ({})!", script);
+                    }
+                }
+            }
+        });
 
         return ret;
     }

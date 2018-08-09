@@ -21,9 +21,7 @@ import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import org.slf4j.LoggerFactory;
 
 /**

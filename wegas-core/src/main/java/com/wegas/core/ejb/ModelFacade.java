@@ -47,6 +47,7 @@ import com.wegas.reviewing.persistence.PeerReviewInstance;
 import com.wegas.reviewing.persistence.Review;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -144,7 +145,7 @@ public class ModelFacade {
     private static class ClearModel implements MergeableVisitor {
 
         @Override
-        public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field) {
+        public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors) {
             if (target instanceof ResourceInstance) {
                 ResourceInstance ri = (ResourceInstance) target;
                 ri.setActivities(new ArrayList<>());
@@ -184,7 +185,7 @@ public class ModelFacade {
     private static class PreIntegrateScenarioClear implements MergeableVisitor {
 
         @Override
-        public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field) {
+        public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors) {
             if (target instanceof StateMachineDescriptor && reference instanceof StateMachineDescriptor
                     && target instanceof TriggerDescriptor == false) {
                 StateMachineDescriptor inScenario = (StateMachineDescriptor) target;
@@ -394,7 +395,7 @@ public class ModelFacade {
                 /**
                  * Clean sub-levels: make sure no non-extractable content exist in the model
                  */
-                MergeHelper.visitMergeable(model, null, ProtectionLevel.PROTECTED, true, new ClearModel(), 0, null);
+                MergeHelper.visitMergeable(model, null, true, new ClearModel());
 
                 /*
                  * Persist GameModel
@@ -673,7 +674,7 @@ public class ModelFacade {
                      */
                     for (GameModel scenario : scenarios) {
                         if (scenario.getType().equals(GmType.SCENARIO)) {
-                            MergeHelper.visitMergeable(scenario, model, ProtectionLevel.PROTECTED, true, new PreIntegrateScenarioClear(), 0, null);
+                            MergeHelper.visitMergeable(scenario, model, true, new PreIntegrateScenarioClear());
                         }
                     }
 

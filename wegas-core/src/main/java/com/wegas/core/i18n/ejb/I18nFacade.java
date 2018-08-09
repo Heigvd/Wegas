@@ -42,6 +42,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -753,7 +754,7 @@ public class I18nFacade extends WegasAbstractFacade {
         }
 
         @Override
-        public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field) {
+        public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors) {
             if (field != null) {
                 print(field.getField().getName(), level);
             }
@@ -785,7 +786,7 @@ public class I18nFacade extends WegasAbstractFacade {
 
     public void printTranslations(GameModel target, String... languages) {
         TranslationsPrinter prettyPrinter = new TranslationsPrinter(languages, this);
-        MergeHelper.visitMergeable(target, null, ProtectionLevel.PROTECTED, Boolean.TRUE, prettyPrinter, 0, null);
+        MergeHelper.visitMergeable(target, null, Boolean.TRUE, prettyPrinter);
         logger.error("Translation for {}{}{}", target, System.lineSeparator(), prettyPrinter);
     }
 

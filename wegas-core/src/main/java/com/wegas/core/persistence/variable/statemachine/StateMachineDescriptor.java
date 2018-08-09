@@ -12,8 +12,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import java.util.*;
@@ -35,7 +33,7 @@ import javax.persistence.*;
                 query = "SELECT DISTINCT sm FROM StateMachineDescriptor sm WHERE sm.gameModel.id = :gameModelId"
         )
 )
-public class StateMachineDescriptor extends VariableDescriptor<StateMachineInstance> implements Scripted {
+public class StateMachineDescriptor extends VariableDescriptor<StateMachineInstance> {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -51,15 +49,6 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
      *
      */
     public StateMachineDescriptor() {
-    }
-
-    @Override
-    public List<Script> getScripts() {
-        List<Script> ret = new ArrayList<>();
-        for (State state : this.getStates().values()) {
-            ret.addAll(state.getScripts());
-        }
-        return ret;
     }
 
     /**

@@ -8,6 +8,7 @@
 package com.wegas.core.ejb.merge;
 
 import ch.qos.logback.classic.Level;
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.*;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.patch.WegasPatch;
@@ -65,6 +66,8 @@ public class MergeTest extends AbstractArquillianTest {
 
     @Test
     public void testTextDescriptorMerge() {
+
+        Helper.setLoggerLevel(WegasPatch.class, org.slf4j.event.Level.TRACE);
 
         TextDescriptor textD = new TextDescriptor();
         textD.setName("tScoped");
