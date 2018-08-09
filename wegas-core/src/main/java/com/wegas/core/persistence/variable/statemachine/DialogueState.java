@@ -8,11 +8,9 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
-import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
@@ -32,13 +30,6 @@ public class DialogueState extends State {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty
     private TranslatableContent text;
-
-    @Override
-    public Boolean containsAll(final List<String> criterias) {
-        return Helper.insensitiveContainsAll(getText(), criterias)
-                || super.containsAll(criterias);
-    }
-
 
     @Override
     public void setStateMachine(StateMachineDescriptor stateMachine) {

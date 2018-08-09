@@ -15,7 +15,6 @@ import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.game.GameModelLanguage;
-import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import org.slf4j.Logger;
@@ -36,7 +35,7 @@ import jdk.nashorn.api.scripting.JSObject;
     @Index(columnList = "trvalue_id")
 })
 @Entity
-public class TextInstance extends VariableInstance implements Searchable {
+public class TextInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
 
@@ -111,10 +110,5 @@ public class TextInstance extends VariableInstance implements Searchable {
         }
 
         this.setTrValue(TranslatableContent.merger(this.getTrValue(), TranslatableContent.build(lang, value)));
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(getTrValue(), criterias);
     }
 }

@@ -329,14 +329,6 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     }
 
     @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(getDescription(), criterias)
-                || this.getFeedback().containsAll(criterias)
-                || this.getFbComments().containsAll(criterias)
-                || super.containsAll(criterias);
-    }
-
-    @Override
     public void revive(GameModel gameModel, Beanjection beans) {
         super.revive(gameModel, beans);
         beans.getReviewingFacade().revivePeerReviewDescriptor(this);

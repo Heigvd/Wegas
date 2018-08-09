@@ -8,11 +8,9 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
-import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
@@ -30,12 +28,6 @@ public class DialogueTransition extends Transition {
     @JsonDeserialize(using = TranslationDeserializer.class)
     @WegasEntityProperty
     private TranslatableContent actionText;
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(getActionText(), criterias)
-                || super.containsAll(criterias);
-    }
 
     /**
      * @return the actionText

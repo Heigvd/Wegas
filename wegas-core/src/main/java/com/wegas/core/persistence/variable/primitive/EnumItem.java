@@ -18,13 +18,10 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
-import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.Orderable;
 import com.wegas.core.persistence.WithPermission;
-import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
@@ -59,7 +56,7 @@ import javax.persistence.UniqueConstraint;
             @Index(columnList = "parentstring_id")
         }
 )
-public class EnumItem extends AbstractEntity implements Searchable, LabelledEntity, Orderable {
+public class EnumItem extends AbstractEntity implements LabelledEntity, Orderable {
 
     private static final long serialVersionUID = 1L;
 
@@ -79,7 +76,7 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
     /**
      * Internal identifier
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(searchable = true)
     private String name;
 
     @Column(name = "item_order")
@@ -188,12 +185,6 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
         }
 
         return null;
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(getName(), criterias)
-                || Helper.insensitiveContainsAll(getLabel(), criterias);
     }
 
     public static class ListDeserializer extends StdDeserializer<List<EnumItem>> {

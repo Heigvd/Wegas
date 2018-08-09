@@ -44,6 +44,9 @@ public class MergeHelper {
     public interface MergeableVisitor {
 
         public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors);
+
+        default public void visitProperty(Object target, Object reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors) {
+        }
     }
 
     /**
@@ -148,8 +151,7 @@ public class MergeHelper {
 
                                                 MergeHelper.visitMergeable((Mergeable) get, refGet, fieldProtectionLevel, forceRecursion, visitor, level + 1, field, ancestors);
                                             } else {
-                                                // children are not mergeable: skip all
-                                                break;
+                                                visitor.visitProperty(get, null, protectionLevel, level, field, ancestors);
                                             }
                                         }
                                     }
@@ -188,8 +190,7 @@ public class MergeHelper {
 
                                                 MergeHelper.visitMergeable((Mergeable) get, refGet, fieldProtectionLevel, forceRecursion, visitor, level + 1, field, ancestors);
                                             } else {
-                                                // children are not mergeable: skip all
-                                                break;
+                                                visitor.visitProperty(get, null, protectionLevel, level, field, ancestors);
                                             }
                                         }
                                     }
@@ -199,15 +200,19 @@ public class MergeHelper {
 
                                     for (Entry<Object, Object> entry : childrenMap.entrySet()) {
                                         Object child = entry.getValue();
+                                        Object ref = null;
+                                        if (refMap != null) {
+                                            ref = refMap.get(entry.getKey());
+                                        }
+
                                         if (child instanceof Mergeable) {
-                                            Mergeable ref = null;
-                                            if (refMap != null) {
-                                                ref = (Mergeable) refMap.get(entry.getKey());
+                                            Mergeable mRef = null;
+                                            if (ref != null && ref instanceof Mergeable) {
+                                                mRef = (Mergeable) ref;
                                             }
-                                            MergeHelper.visitMergeable((Mergeable) child, ref, fieldProtectionLevel, forceRecursion, visitor, level + 1, field, ancestors);
+                                            MergeHelper.visitMergeable((Mergeable) child, mRef, fieldProtectionLevel, forceRecursion, visitor, level + 1, field, ancestors);
                                         } else {
-                                            // children are not mergeable: skip all
-                                            break;
+                                            visitor.visitProperty(child, ref, protectionLevel, level, field, ancestors);
                                         }
                                     }
                                 }
@@ -220,6 +225,7 @@ public class MergeHelper {
                                     referenceProperty = readMethod.invoke(reference);
                                 }
 
+                                visitor.visitProperty(targetProperty, referenceProperty, protectionLevel, level, field, ancestors);
                                 break;
                         }
                     }
@@ -229,7 +235,7 @@ public class MergeHelper {
                 }
             }
 
-            ancestors.addFirst(target);
+            ancestors.removeFirst();
         }
     }
 

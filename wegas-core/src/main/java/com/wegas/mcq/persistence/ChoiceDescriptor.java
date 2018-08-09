@@ -462,20 +462,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         }
     }
 
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        if (Helper.insensitiveContainsAll(getDescription(), criterias)
-                || super.containsAll(criterias)) {
-            return true;
-        }
-        for (Result r : this.getResults()) {
-            if (r.containsAll(criterias)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static class ChoiceDescriptorMergeCallback implements WegasCallback {
 
         @Override

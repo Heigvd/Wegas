@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
@@ -22,13 +21,10 @@ import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Beanjection;
-import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import javax.persistence.*;
 
@@ -53,7 +49,7 @@ import javax.persistence.*;
 @NamedQueries({
     @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor.id=:choicedescriptorId AND res.name LIKE :name")
 })
-public class Result extends AbstractEntity implements Searchable, LabelledEntity {
+public class Result extends AbstractEntity implements LabelledEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -80,7 +76,7 @@ public class Result extends AbstractEntity implements Searchable, LabelledEntity
     /**
      * Internal Name
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(searchable = true)
     private String name;
 
     /**
@@ -144,16 +140,6 @@ public class Result extends AbstractEntity implements Searchable, LabelledEntity
      *
      */
     public Result() {
-    }
-
-    @Override
-    public Boolean containsAll(final List<String> criterias) {
-        return Helper.insensitiveContainsAll(this.getName(), criterias)
-                || Helper.insensitiveContainsAll(this.getLabel(), criterias)
-                || Helper.insensitiveContainsAll(this.getAnswer(), criterias)
-                || Helper.insensitiveContainsAll(this.getIgnorationAnswer(), criterias)
-                || (this.getImpact() != null && this.getImpact().containsAll(criterias))
-                || (this.getIgnorationImpact() != null && this.getIgnorationImpact().containsAll(criterias));
     }
 
     @Override

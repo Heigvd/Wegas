@@ -182,12 +182,6 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
         return true;
     }
 
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return super.containsAll(criterias)
-                || this.itemsContainsAll(criterias);
-    }
-
     public static class StringDescriptorMergeCallback implements WegasCallback {
 
         @Override

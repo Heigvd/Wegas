@@ -7,17 +7,13 @@
  */
 package com.wegas.resourceManagement.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
-import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 
 /**
@@ -34,7 +30,7 @@ public class BurndownDescriptor extends VariableDescriptor<BurndownInstance> {
     @Lob
     @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(searchable = true)
     private String description;
 
 
@@ -50,11 +46,5 @@ public class BurndownDescriptor extends VariableDescriptor<BurndownInstance> {
      */
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(this.getDescription(), criterias)
-            || super.containsAll(criterias);
     }
 }

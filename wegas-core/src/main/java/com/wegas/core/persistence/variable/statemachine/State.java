@@ -17,7 +17,6 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.io.Serializable;
@@ -45,7 +44,7 @@ import javax.persistence.*;
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
 })
 //@OptimisticLocking(cascade = true)
-public class State extends AbstractEntity implements Searchable, Broadcastable {
+public class State extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
 
@@ -85,7 +84,7 @@ public class State extends AbstractEntity implements Searchable, Broadcastable {
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(searchable = true)
     private String label;
 
     /**
@@ -128,22 +127,6 @@ public class State extends AbstractEntity implements Searchable, Broadcastable {
 
     public void setStateMachineId(Long stateMachineId) {
         //this.stateMachine = stateMachine;
-    }
-
-    @Override
-    public Boolean containsAll(final List<String> criterias) {
-        if (Helper.insensitiveContainsAll(this.getLabel(), criterias)) {
-            return true;
-        }
-        if (this.getOnEnterEvent() != null && this.getOnEnterEvent().containsAll(criterias)) {
-            return true;
-        }
-        for (Transition t : this.getTransitions()) {
-            if (t.containsAll(criterias)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**

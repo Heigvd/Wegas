@@ -115,16 +115,4 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
         return !this.getInstance(p).getEnabled();
     }
 
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        if (super.containsAll(criterias)) {
-            return true;
-        }
-        for (State s : this.getStates().values()) {
-            if (s.containsAll(criterias)) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

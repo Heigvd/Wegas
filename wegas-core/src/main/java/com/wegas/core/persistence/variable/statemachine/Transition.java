@@ -15,10 +15,8 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.persistence.*;
@@ -38,7 +36,7 @@ import javax.persistence.*;
             @Index(columnList = "actiontext_id")
         }
 )
-public class Transition extends AbstractEntity implements Searchable {
+public class Transition extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -100,14 +98,6 @@ public class Transition extends AbstractEntity implements Searchable {
     @Embedded
     @WegasEntityProperty
     private Script triggerCondition;
-
-    @Override
-    public Boolean containsAll(final List<String> criterias) {
-        if (this.getPreStateImpact() != null && this.getPreStateImpact().containsAll(criterias)) {
-            return true;
-        }
-        return this.getTriggerCondition() != null && this.getTriggerCondition().containsAll(criterias);
-    }
 
     @Override
     public Long getId() {

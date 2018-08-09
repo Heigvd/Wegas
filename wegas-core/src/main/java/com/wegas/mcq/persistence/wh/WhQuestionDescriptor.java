@@ -181,12 +181,6 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
         return !this.isReplied(p);
     }
 
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(getDescription(), criterias)
-                || super.containsAll(criterias);
-    }
-
     // This method seems to be unused:
     public int getUnreadCount(Player player) {
         WhQuestionInstance instance = this.getInstance(player);

@@ -88,12 +88,6 @@ public class CategorizedEvaluationDescriptor
     }
 
     @Override
-    public Boolean containsAll(List<String> criterias) {
-        return super.containsAll(criterias)
-                || this.itemsContainsAll(criterias);
-    }
-
-    @Override
     protected CategorizedEvaluationInstance newInstance() {
         return new CategorizedEvaluationInstance();
     }

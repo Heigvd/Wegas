@@ -12,16 +12,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
-import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.WithPermission;
-import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
@@ -58,7 +55,7 @@ import javax.persistence.*;
     @JsonSubTypes.Type(value = GradeDescriptor.class)
 })
 public abstract class EvaluationDescriptor<T extends EvaluationInstance>
-        extends AbstractEntity implements LabelledEntity, Searchable {
+        extends AbstractEntity implements LabelledEntity {
 
     @OneToMany(mappedBy = "evaluationDescriptor", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<EvaluationInstance> evaluationInstances;
@@ -81,7 +78,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
     /**
      * Evaluation internal identifier
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(searchable = true)
     private String name;
 
     /**
@@ -267,12 +264,5 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getMergeableParent().getRequieredReadPermission();
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return  Helper.insensitiveContainsAll(getName(), criterias)
-                || Helper.insensitiveContainsAll(getLabel(), criterias)
-                || Helper.insensitiveContainsAll(getDescription(), criterias);
     }
 }

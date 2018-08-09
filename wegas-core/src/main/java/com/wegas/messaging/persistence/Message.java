@@ -19,7 +19,6 @@ import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.WithPermission;
-import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ import javax.persistence.*;
     @Index(columnList = "date_id"),
     @Index(columnList = "body_id")
 })
-public class Message extends AbstractEntity implements DatedEntity, Searchable {
+public class Message extends AbstractEntity implements DatedEntity {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -395,23 +394,5 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getInboxInstance().getRequieredReadPermission();
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        if (Helper.insensitiveContainsAll(getFrom(), criterias)
-                || Helper.insensitiveContainsAll(getSubject(), criterias)
-                || Helper.insensitiveContainsAll(getBody(), criterias)
-                || Helper.insensitiveContainsAll(getDate(), criterias)) {
-            return true;
-        }
-        if (this.attachments != null) {
-            for (Attachment a : this.attachments) {
-                if (a.containsAll(criterias)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }

@@ -74,21 +74,4 @@ public interface Enumeration {
         this.getEnumItems().remove(item);
         return item;
     }
-
-    /**
-     * Test criteria against each item
-     *
-     * @param criterias
-     *
-     * @return
-     */
-    default Boolean itemsContainsAll(List<String> criterias) {
-        for (EnumItem item : this.getEnumItems()) {
-            if (item.containsAll(criterias)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 }

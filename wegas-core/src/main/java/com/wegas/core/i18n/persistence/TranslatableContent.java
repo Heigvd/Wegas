@@ -18,7 +18,6 @@ import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
@@ -44,7 +43,7 @@ import org.slf4j.LoggerFactory;
     @Index(columnList = "parentdescriptor_id"),
     @Index(columnList = "parentinstance_id")
 })
-public class TranslatableContent extends AbstractEntity implements Searchable, Broadcastable {
+public class TranslatableContent extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
 
@@ -70,7 +69,7 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
      */
     @ElementCollection
     @JsonIgnore
-    @WegasEntityProperty
+    @WegasEntityProperty(searchable = true)
     private List<Translation> translations = new ArrayList<>();
 
     @Override
@@ -168,16 +167,6 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
         for (Entry<String, String> entry : translations.entrySet()) {
             this.translations.add(new Translation(entry.getKey(), entry.getValue()));
         }
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        for (Translation translation : this.translations) {
-            if (Helper.insensitiveContainsAll(translation.getTranslation(), criterias)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**

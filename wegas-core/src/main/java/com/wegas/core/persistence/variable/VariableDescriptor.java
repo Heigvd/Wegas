@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasConflictException;
-import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
@@ -153,7 +152,7 @@ import org.slf4j.LoggerFactory;
 @WegasEntity(callback = VariableDescriptor.VdMergeCallback.class)
 abstract public class VariableDescriptor<T extends VariableInstance>
         extends AbstractEntity
-        implements Searchable, LabelledEntity, Broadcastable, AcceptInjection, ModelScoped {
+        implements LabelledEntity, Broadcastable, AcceptInjection, ModelScoped {
 
     private static final long serialVersionUID = 1L;
 
@@ -181,7 +180,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @Lob
     @JsonView(value = Views.EditorI.class)
     @Column(name = "comments")
-    @WegasEntityProperty
+    @WegasEntityProperty(searchable = true)
     private String comments;
 
     /**
@@ -235,7 +234,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
      * a token to prefix the label with. For editors only
      */
     //@JsonView(Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(searchable = true)
     private String editorTag;
 
     /**
@@ -257,7 +256,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @NotNull
     @Basic(optional = false)
     //@CacheIndex
-    @WegasEntityProperty(protectionLevel = ProtectionLevel.INHERITED)
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.INHERITED, searchable = true)
     protected String name;
 
     //@BatchFetch(BatchFetchType.JOIN)
@@ -705,26 +704,6 @@ abstract public class VariableDescriptor<T extends VariableInstance>
         entities.add(this);
         map.put(this.getGameModel().getChannel(), entities);
         return map;
-    }
-
-    /**
-     * true if this descriptor or (if applicable) its default instance matches
-     * all the given criterias
-     *
-     * @param criterias
-     *
-     * @return return true if there is a match
-     */
-    @Override
-    public Boolean containsAll(final List<String> criterias) {
-        Boolean found = Helper.insensitiveContainsAll(this.getName(), criterias)
-                || Helper.insensitiveContainsAll(this.getEditorTag(), criterias)
-                || Helper.insensitiveContainsAll(this.getLabel(), criterias)
-                || Helper.insensitiveContainsAll(this.getComments(), criterias);
-        if (!found && (this.getDefaultInstance() instanceof Searchable)) {
-            return ((Searchable) this.getDefaultInstance()).containsAll(criterias);
-        }
-        return found;
     }
 
     /**

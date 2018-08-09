@@ -13,9 +13,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.EntityComparators;
-import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.GameModelLanguage;
-import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import org.slf4j.LoggerFactory;
@@ -25,15 +23,13 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import jdk.nashorn.api.scripting.JSObject;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-public class InboxInstance extends VariableInstance implements Searchable {
+public class InboxInstance extends VariableInstance {
 
     /**
      *
@@ -312,18 +308,6 @@ public class InboxInstance extends VariableInstance implements Searchable {
     public boolean isTokenMarkedAsRead(String token) {
         Message message = this.getMessageByToken(token);
         return message != null && !message.getUnread();
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        if (messages != null) {
-            for (Message m : messages) {
-                if (m.containsAll(criterias)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     @Override

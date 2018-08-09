@@ -14,7 +14,6 @@ import java.util.Iterator;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.variable.Propertable;
@@ -348,11 +347,5 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      */
     public void desactivate(Player p) {
         this.setActive(p, false);
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(getDescription(), criterias)
-                || super.containsAll(criterias);
     }
 }

@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
-import com.wegas.core.persistence.variable.Searchable;
 
 import javax.persistence.Embeddable;
 import javax.persistence.Lob;
@@ -27,14 +26,14 @@ import javax.persistence.Transient;
  */
 @Embeddable
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class Script implements Serializable, Searchable, Mergeable {
+public class Script implements Serializable, Mergeable {
 
     private static final long serialVersionUID = 1L;
     /**
      *
      */
     @Lob
-    @WegasEntityProperty
+    @WegasEntityProperty(searchable = true)
     private String content = "";
     /**
      *
@@ -74,11 +73,6 @@ public class Script implements Serializable, Searchable, Mergeable {
     public Script(String language, String content) {
         this.language = language;
         this.content = content;
-    }
-
-    @Override
-    public Boolean containsAll(final List<String> criterias) {
-        return Helper.insensitiveContainsAll(this.getContent(), criterias);
     }
 
     /**

@@ -20,13 +20,16 @@ import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.i18n.ejb.I18nFacade;
+import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.DescriptorFactory;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.merge.patch.WegasEntityPatch;
 import com.wegas.core.merge.patch.WegasPatch;
 import com.wegas.core.merge.utils.MergeHelper;
+import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -35,6 +38,7 @@ import static com.wegas.core.persistence.game.GameModel.GmType.*;
 import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
@@ -865,6 +869,57 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 }
             }
         }
+    }
+
+    public Set<Long> findMatchingDescriptorIds(Long gameModelId, String criteria) {
+        List<String> criterias = new ArrayList<>();
+        criterias.add(criteria);
+        return this.findMatchingDescriptorIds(gameModelId, criterias);
+    }
+
+    public Set<Long> findMatchingDescriptorIds(Long gameModelId, List<String> criterias) {
+        GameModel gameModel = this.find(gameModelId);
+        requestManager.assertUpdateRight(gameModel);
+
+        Set<Long> matches = new HashSet<>();
+
+        MergeHelper.visitMergeable(gameModel, null, Boolean.TRUE, new MergeHelper.MergeableVisitor() {
+            @Override
+            public void visit(Mergeable target, Mergeable reference, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors) {
+            }
+
+            @Override
+            public void visitProperty(Object target, Object reference, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors) {
+                if (field != null) {
+                    if (field.getAnnotation() != null) {
+                        if (field.getAnnotation().searchable()) {
+                            VariableDescriptor vd = null;
+                            for (Mergeable ancestor : ancestors) {
+                                if (ancestor instanceof VariableDescriptor) {
+                                    vd = (VariableDescriptor) ancestor;
+                                    break;
+                                }
+                            }
+                            if (vd != null && !matches.contains(vd.getId())) {
+                                String text = null;
+
+                                if (target != null) {
+                                    text = target.toString();
+                                }
+
+                                if (text != null && Helper.insensitiveContainsAll(text, criterias)) {
+                                    matches.add(vd.getId());
+
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        });
+
+        return matches;
     }
 
     /**

@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -269,17 +270,11 @@ public class VariableDescriptorController {
     @POST
     @Path("contains")
     @Consumes(MediaType.TEXT_PLAIN)
-    public List<Long> idsContains(@PathParam("gameModelId") Long gameModelId, String criteria) {
+    public Set<Long> idsContains(@PathParam("gameModelId") Long gameModelId, String criteria) {
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
-        Collection<VariableDescriptor> vars = gm.getVariableDescriptors();
-        List<Long> matches = new LinkedList<>();
-        for (VariableDescriptor d : vars) {
-            if (d.contains(criteria)) {
-                matches.add(d.getId());
-            }
-        }
-        return matches;
+
+        return gameModelFacade.findMatchingDescriptorIds(gameModelId, criteria);
     }
 
     /**
@@ -292,18 +287,13 @@ public class VariableDescriptorController {
     @POST
     @Path("containsAll")
     @Consumes(MediaType.TEXT_PLAIN)
-    public List<Long> idsContainsAll(@PathParam("gameModelId") Long gameModelId, String criteria) {
+    public Set<Long> idsContainsAll(@PathParam("gameModelId") Long gameModelId, String criteria) {
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
-        Collection<VariableDescriptor> vars = gm.getVariableDescriptors();
-        List<Long> matches = new LinkedList<>();
+
         List<String> criterias = new ArrayList<>(Arrays.asList(criteria.trim().split("[ ,]+")));
         criterias.remove("");
-        for (VariableDescriptor d : vars) {
-            if (d.containsAll(criterias)) {
-                matches.add(d.getId());
-            }
-        }
-        return matches;
+
+        return gameModelFacade.findMatchingDescriptorIds(gameModelId, criterias);
     }
 }

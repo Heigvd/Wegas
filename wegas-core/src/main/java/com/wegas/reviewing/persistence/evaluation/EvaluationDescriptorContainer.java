@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
-import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
@@ -33,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @see PeerReviewDescriptor
  */
 @Entity
-public class EvaluationDescriptorContainer extends AbstractEntity implements Searchable {
+public class EvaluationDescriptorContainer extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -165,15 +164,5 @@ public class EvaluationDescriptorContainer extends AbstractEntity implements Sea
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getEffectiveDescriptor().getRequieredReadPermission();
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        for (EvaluationDescriptor ed : getEvaluations()) {
-            if (ed.containsAll(criterias)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

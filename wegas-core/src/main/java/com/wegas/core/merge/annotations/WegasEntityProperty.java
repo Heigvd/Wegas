@@ -77,5 +77,10 @@ public @interface WegasEntityProperty {
     //public ModelScoped.Visibility[] cascadeOverride() default {ModelScoped.Visibility.INTERNAL, ModelScoped.Visibility.PROTECTED};
     public ModelScoped.ProtectionLevel protectionLevel() default ModelScoped.ProtectionLevel.CASCADED;
 
-
+    /**
+     * Indicate if this property is "searchable".
+     *
+     * @return is the property searchable ?
+     */
+    public boolean searchable() default false;
 }

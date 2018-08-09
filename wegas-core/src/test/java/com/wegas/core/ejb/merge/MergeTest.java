@@ -66,9 +66,6 @@ public class MergeTest extends AbstractArquillianTest {
 
     @Test
     public void testTextDescriptorMerge() {
-
-        Helper.setLoggerLevel(WegasPatch.class, org.slf4j.event.Level.TRACE);
-
         TextDescriptor textD = new TextDescriptor();
         textD.setName("tScoped");
         textD.setScope(new TeamScope());

@@ -16,13 +16,11 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
-import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
-import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
@@ -53,7 +51,7 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
             @Index(columnList = "file_id")
         }
 )
-public class Attachment extends AbstractEntity implements Serializable, Searchable {
+public class Attachment extends AbstractEntity implements Serializable {
 
     @Id
     @GeneratedValue
@@ -127,11 +125,6 @@ public class Attachment extends AbstractEntity implements Serializable, Searchab
     @Override
     public WithPermission getMergeableParent() {
         return this.getMessage();
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(getFile(), criterias);
     }
 
     public static class ListDeserializer extends StdDeserializer<List<Attachment>> {

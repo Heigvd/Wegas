@@ -294,12 +294,6 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         item.setQuestion(this);
     }
 
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(getDescription(), criterias)
-                || super.containsAll(criterias);
-    }
-
     // This method seems to be unused:
     public int getUnreadCount(Player player) {
         QuestionInstance instance = this.getInstance(player);
