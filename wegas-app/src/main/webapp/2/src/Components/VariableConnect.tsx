@@ -26,14 +26,19 @@ export function VariableConnect<D extends IVariableDescriptor>(props: {
   name: string;
   children: (
     store: {
-      state: { descriptor: D; instance: instanceOf<D> } | undefined;
+      state: { descriptor: D; instance: instanceOf<D> };
       dispatch: StoreDispatch;
     },
   ) => React.ReactNode;
 }) {
   return (
     <StoreConsumer selector={selectVar<D>(props.name)}>
-      {props.children}
+      {({ state, dispatch }) => {
+        if (state === undefined) {
+          return <span>Not found: {props.name}</span>;
+        }
+        return props.children({ state, dispatch });
+      }}
     </StoreConsumer>
   );
 }
