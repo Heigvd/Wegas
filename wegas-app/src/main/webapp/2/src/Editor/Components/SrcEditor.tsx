@@ -82,7 +82,7 @@ class SrcEditor extends React.Component<EditorProps> {
           model: model,
           minimap: { enabled: this.props.minimap },
         });
-        this.editor.onDidBlurEditor(() => {
+        this.editor.onDidBlurEditorText(() => {
           this.lastValue = this.editor!.getValue();
           this.props.onBlur!(this.lastValue);
         });
