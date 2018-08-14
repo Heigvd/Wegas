@@ -36,6 +36,9 @@ export const config: ConfigurationSchema<IListDescriptor> = {
     },
   },
   defaultInstance: {
+    value: {
+      '@class': 'ListInstance',
+    },
     view: { type: 'hidden' },
   },
   allowedTypes: {

@@ -48,7 +48,7 @@ interface IQuestionDescriptor
   extends IVariableDescriptor<IQuestionInstance>,
     IParentDescriptor {
   '@class': 'QuestionDescriptor';
-  description: null | string;
+  description: null | ITranslatableContent;
   minReplies: null | number;
   maxReplies: null | number;
   cbx: boolean;
@@ -57,18 +57,18 @@ interface IQuestionDescriptor
 }
 interface IResult extends IWegasEntity, IVersionable {
   '@class': 'Result';
-  answer: string;
+  answer: ITranslatableContent;
   choiceDescriptorId: number;
   files: string[];
-  ignorationAnswer: string;
+  ignorationAnswer: ITranslatableContent;
   ignorationImpact: IScript;
   impact: IScript;
-  label: string;
+  label: ITranslatableContent;
   name: string;
 }
 interface IChoiceDescriptor extends IVariableDescriptor<IChoiceInstance> {
   '@class': 'ChoiceDescriptor';
-  description: null | string;
+  description: null | ITranslatableContent;
   cost: number;
   duration: number;
   results: IResult[];
