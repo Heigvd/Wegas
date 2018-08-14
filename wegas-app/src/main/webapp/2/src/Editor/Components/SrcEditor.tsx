@@ -6,10 +6,10 @@ import { SizedDiv } from '../../Components/SizedDiv';
 interface EditorProps {
   value?: string;
   uri?: 'page.json';
-  minimap?: boolean;
-  language?: 'javascript' | 'css' | 'json';
-  onChange?: (value: string) => void;
-  onBlur?: (value: string) => void;
+  minimap: boolean;
+  language: 'javascript' | 'css' | 'json';
+  onChange: (value: string) => void;
+  onBlur: (value: string) => void;
 }
 const overflowHide = css({
   overflow: 'hidden',
@@ -52,7 +52,7 @@ class SrcEditor extends React.Component<EditorProps> {
       import('monaco-editor').then(monaco => {
         monaco.editor.setModelLanguage(
           this.editor!.getModel(),
-          this.props.language!,
+          this.props.language,
         );
       });
     }
@@ -84,19 +84,19 @@ class SrcEditor extends React.Component<EditorProps> {
         });
         this.editor.onDidBlurEditorText(() => {
           this.lastValue = this.editor!.getValue();
-          this.props.onBlur!(this.lastValue);
+          this.props.onBlur(this.lastValue);
         });
         this.editor.onDidChangeModelContent(() => {
           if (!this.outsideChange) {
             this.lastValue = this.editor!.getValue();
-            this.props.onChange!(this.lastValue);
+            this.props.onChange(this.lastValue);
           }
         });
       }
     });
   }
   private layout = (size: { width: number; height: number }) => {
-    if (this.editor != undefined) {
+    if (this.editor != null) {
       this.editor.layout(size);
     }
   };

@@ -3,14 +3,14 @@ import { css } from 'emotion';
 import * as Color from 'color';
 
 interface ThemeProps {
-  backgroundColor?: string;
-  primaryColor?: string;
-  lightTextColor?: string;
-  darkTextColor?: string;
-  warningColor?: string;
-  errorColor?: string;
-  successColor?: string;
-  disabledColor?: string;
+  backgroundColor: string;
+  primaryColor: string;
+  lightTextColor: string;
+  darkTextColor: string;
+  warningColor: string;
+  errorColor: string;
+  successColor: string;
+  disabledColor: string;
 }
 
 export const themeVar = {

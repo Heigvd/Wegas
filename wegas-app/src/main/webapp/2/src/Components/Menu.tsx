@@ -15,7 +15,7 @@ interface MenuProps<T extends Item<T>> {
   items: T[];
   label?: React.ReactNode;
   icon?: Props['icon'];
-  direction?: 'left' | 'down' | 'right' | 'top';
+  direction: 'left' | 'down' | 'right' | 'top';
 }
 /**
  * returns an empty string
@@ -66,7 +66,7 @@ export class Menu<T extends Item<T>> extends React.Component<MenuProps<T>> {
     }
   };
   render(): JSX.Element {
-    const { onSelect, direction = 'down', label, icon } = this.props;
+    const { onSelect, direction, label, icon } = this.props;
     return (
       <Downshift
         onStateChange={this.onStateChange}
