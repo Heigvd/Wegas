@@ -1,6 +1,9 @@
 interface IScope {
   '@class': 'TeamScope' | 'GameModelScope' /* | 'GameScope' */ | 'PlayerScope';
-  broadcastScope: 'TeamScope' /* | 'GameModelScope' */ | 'GameScope' | 'PlayerScope';
+  broadcastScope:
+    | 'TeamScope' /* | 'GameModelScope' */
+    | 'GameScope'
+    | 'PlayerScope';
 }
 interface IVariableDescriptor<T extends IVariableInstance = IVariableInstance>
   extends IWegasEntity,
@@ -28,6 +31,11 @@ interface INumberDescriptor extends IVariableDescriptor<INumberInstance> {
   minValue: number | null;
   maxValue: number | null;
   historySize: number;
+  /**
+   * Server injected value
+   * @deprecated
+   */
+  defaultValue: number;
 }
 interface IEnumItem extends IWegasEntity {
   label: ITranslatableContent;

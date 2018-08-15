@@ -67,6 +67,8 @@ export const config: ConfigurationSchema<INumberDescriptor> = {
     type: 'object',
     properties: NumberInstanceConfig,
   },
+  // Hide that redundant field
+  defaultValue: { view: { type: 'hidden' } },
 };
 export const methods: MethodConfig = {
   add: {
