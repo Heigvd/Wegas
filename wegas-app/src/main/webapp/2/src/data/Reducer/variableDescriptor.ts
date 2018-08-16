@@ -111,3 +111,12 @@ export function deleteDescriptor(
     );
   };
 }
+
+export function reset(): ThunkResult {
+  return function(dispatch, getState) {
+    const gameModelId = getState().global.currentGameModelId;
+    return VariableDescriptorAPI.reset(gameModelId).then(res =>
+      dispatch(managedMode(res)),
+    );
+  };
+}

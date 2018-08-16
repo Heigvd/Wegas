@@ -68,4 +68,7 @@ export const VariableDescriptorAPI = {
       },
     );
   },
+  reset(gameModelId: number) {
+    return managedModeRequest(`${VD_BASE(gameModelId)}/Reset`);
+  },
 };
