@@ -25,6 +25,7 @@ class PageSelector extends React.Component<
   readonly state: Readonly<PageSelectorState> = {
     index: [],
   };
+  mounted: boolean = true;
   onPageChange = (id: string) =>
     this.props.dispatch(Actions.EditorActions.pageLoadId(id));
 
@@ -48,35 +49,40 @@ class PageSelector extends React.Component<
         });
       });
   buildIndex = (index: PageIndex) => {
-    this.setState({
-      index: index
-        .map(i => ({
-          label: (
-            <span>
-              {i.name ? `${i.name} (${i.id})` : i.id}
-              <IconButton
-                icon="trash"
-                onClick={e => {
-                  e.stopPropagation();
-                  this.props
-                    .dispatch(Actions.PageActions.deletePage(i.id))
-                    .then(index => {
-                      this.buildIndex(index.payload);
-                    });
-                }}
-              />
-            </span>
-          ) as string | React.ReactElement<any>,
-          id: i.id as string | undefined,
-        }))
-        .concat([{ label: <IconButton icon="plus" />, id: undefined }]),
-    });
+    if (this.mounted) {
+      this.setState({
+        index: index
+          .map(i => ({
+            label: (
+              <span>
+                {i.name ? `${i.name} (${i.id})` : i.id}
+                <IconButton
+                  icon="trash"
+                  onClick={e => {
+                    e.stopPropagation();
+                    this.props
+                      .dispatch(Actions.PageActions.deletePage(i.id))
+                      .then(index => {
+                        this.buildIndex(index.payload);
+                      });
+                  }}
+                />
+              </span>
+            ) as string | React.ReactElement<any>,
+            id: i.id as string | undefined,
+          }))
+          .concat([{ label: <IconButton icon="plus" />, id: undefined }]),
+      });
+    }
   };
   loadIndex = () => {
     PageAPI.getIndex(GameModel.selectCurrent().id!).then(res =>
       this.buildIndex(res),
     );
   };
+  componentWillUnmount() {
+    this.mounted = false;
+  }
   render() {
     return (
       <Menu
