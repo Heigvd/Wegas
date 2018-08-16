@@ -26,24 +26,25 @@ export function getParent(vd: IVariableDescriptor): IParentDescriptor {
 export function getInstance<I extends IVariableInstance>(
   vd: IVariableDescriptor<I>,
 ) {
-  return function(self?: IPlayer): I {
+  return function(self?: IPlayer): Readonly<I> | undefined {
+    type IorUndef = Readonly<I> | undefined;
     const player = self != null ? self : Player.selectCurrent();
     switch (vd.scope['@class']) {
       case 'PlayerScope':
-        return VariableInstance.firstMatch({
+        return VariableInstance.firstMatch<IVariableInstance>({
           descriptorId: vd.id,
           scopeKey: player.id,
-        })! as I;
+        }) as IorUndef;
       case 'TeamScope':
-        return VariableInstance.firstMatch({
+        return VariableInstance.firstMatch<IVariableInstance>({
           descriptorId: vd.id,
           scopeKey: player.teamId,
-        })! as I;
+        }) as IorUndef;
       case 'GameModelScope':
-        return VariableInstance.firstMatch({
+        return VariableInstance.firstMatch<IVariableInstance>({
           descriptorId: vd.id,
           scopeKey: 0,
-        })! as I;
+        }) as IorUndef;
     }
   };
 }
