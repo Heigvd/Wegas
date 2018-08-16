@@ -38,6 +38,10 @@ const shapeStyle = css({
 
 const disabledStyle = css({
   color: themeVar.disabledColor,
+  cursor: 'not-allowed',
+  ':hover,:focus': {
+    color: themeVar.disabledColor,
+  },
 });
 
 export function IconButton(props: IconButtonProps) {
