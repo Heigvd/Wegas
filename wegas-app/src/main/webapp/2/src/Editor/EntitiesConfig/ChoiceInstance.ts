@@ -12,12 +12,14 @@ export const config: ConfigurationSchema<IChoiceInstance> = {
   },
   active: {
     type: 'boolean',
+    value: true,
     view: {
       label: 'Active',
     },
   },
   unread: {
     type: 'boolean',
+    value: true,
     view: { label: 'Unread' },
   },
   currentResultName: {
