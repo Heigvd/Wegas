@@ -50,6 +50,7 @@ export function createReduxContext<S extends Store>(store: S) {
 
   class Indirection<R> extends React.Component<{
     state: R;
+    shouldUpdate: (oldValue: R, newValue: R) => boolean;
     children: (
       store: {
         state: R;
@@ -57,8 +58,12 @@ export function createReduxContext<S extends Store>(store: S) {
       },
     ) => React.ReactNode;
   }> {
+    static defaultProps = {
+      shouldUpdate: (a: unknown, b: unknown) => !shallowIs(a, b),
+    };
     shouldComponentUpdate(prevProps: {
       state: R;
+      shouldUpdate: (oldValue: R, newValue: R) => boolean;
       dispatch: Dispatch;
       children: (
         store: {
@@ -67,7 +72,7 @@ export function createReduxContext<S extends Store>(store: S) {
         },
       ) => React.ReactNode;
     }) {
-      return !shallowIs(this.props.state, prevProps.state);
+      return this.props.shouldUpdate(prevProps.state, this.props.state);
     }
     render() {
       return this.props.children({
@@ -79,6 +84,10 @@ export function createReduxContext<S extends Store>(store: S) {
 
   function ReduxConsumer<R = State>(props: {
     selector?: ((state: State) => R);
+    /**
+     * defaults to shallow comparing selector
+     */
+    shouldUpdate?: (oldValue: R, newValue: R) => boolean;
     children: (
       store: {
         state: R;
@@ -86,11 +95,21 @@ export function createReduxContext<S extends Store>(store: S) {
       },
     ) => React.ReactNode;
   }) {
-    const { selector = id as (s: State) => State, children } = props;
+    const {
+      selector = id as (s: State) => State,
+      children,
+      shouldUpdate,
+    } = props;
     return (
       <Consumer>
         {({ state }) => {
-          return <Indirection state={selector(state)} children={children} />;
+          return (
+            <Indirection
+              state={selector(state)}
+              shouldUpdate={shouldUpdate}
+              children={children}
+            />
+          );
         }}
       </Consumer>
     );
