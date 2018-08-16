@@ -804,8 +804,8 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.116.tgz#5ccf215653e3e8c786a58390751033a9adca0eb9"
 
 "@types/node@*":
-  version "10.7.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.7.0.tgz#d384b2c8625414ab2aa18fdf989c288d6a7a8202"
+  version "10.7.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.7.1.tgz#b704d7c259aa40ee052eec678758a68d07132a2e"
 
 "@types/pako@^1.0.0":
   version "1.0.0"
@@ -860,9 +860,9 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^16.4.10":
-  version "16.4.10"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.4.10.tgz#fb577091034b25a81f829923e7d38258f43e3165"
+"@types/react@*", "@types/react@^16.4.11":
+  version "16.4.11"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.4.11.tgz#330f3d864300f71150dc2d125e48644c098f8770"
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
@@ -1079,6 +1079,10 @@ adm-zip@0.4.4:
 after@0.8.2:
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/after/-/after-0.8.2.tgz#fedb394f9f0e02aa9768e702bda23b505fae7e1f"
+
+ajv-errors@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/ajv-errors/-/ajv-errors-1.0.0.tgz#ecf021fa108fd17dfb5e6b383f2dd233e31ffc59"
 
 ajv-keywords@^2.1.0:
   version "2.1.1"
@@ -2400,8 +2404,8 @@ chrome-trace-event@^1.0.0:
     tslib "^1.9.0"
 
 ci-info@^1.0.0:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-1.1.3.tgz#710193264bb05c77b8c90d02f5aaf22216a667b2"
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-1.3.0.tgz#ea8219b0355a58692b762baf1cdd76ceb4503283"
 
 cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
   version "1.0.4"
@@ -2695,8 +2699,8 @@ compression@^1.5.2:
     vary "~1.1.2"
 
 compute-scroll-into-view@^1.0.2:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/compute-scroll-into-view/-/compute-scroll-into-view-1.0.7.tgz#ad8dbe51093c31d60cf6c2df497b2c077bd9e7d2"
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/compute-scroll-into-view/-/compute-scroll-into-view-1.0.8.tgz#ad0acd869dc6dc1069201532c025783a30ea177d"
 
 concat-map@0.0.1:
   version "0.0.1"
@@ -3163,11 +3167,10 @@ defaults@^1.0.0:
     clone "^1.0.2"
 
 define-properties@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/define-properties/-/define-properties-1.1.2.tgz#83a73f2fea569898fb737193c8f873caf6d45c94"
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/define-properties/-/define-properties-1.1.3.tgz#cf88da6cbee26fe6db7094f61d870cbd84cee9f1"
   dependencies:
-    foreach "^2.0.5"
-    object-keys "^1.0.8"
+    object-keys "^1.0.12"
 
 define-property@^0.2.5:
   version "0.2.5"
@@ -3450,9 +3453,9 @@ domutils@^1.5.1:
     dom-serializer "0"
     domelementtype "1"
 
-downshift@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/downshift/-/downshift-2.1.0.tgz#817dd71f04d56e46d8bfe9cfd7b4687615c187b1"
+downshift@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/downshift/-/downshift-2.1.1.tgz#f257a43bd609f9da001422ab71cdb3d9246b86d3"
   dependencies:
     compute-scroll-into-view "^1.0.2"
     prop-types "^15.6.0"
@@ -3837,8 +3840,8 @@ eslint-plugin-jsx-a11y@^6.0.3:
     jsx-ast-utils "^2.0.1"
 
 eslint-plugin-react@^7.7.0, eslint-plugin-react@^7.8.2:
-  version "7.11.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.11.0.tgz#b3124af974c4da978e62a57ea49a7bc26f11e76d"
+  version "7.11.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.11.1.tgz#c01a7af6f17519457d6116aa94fc6d2ccad5443c"
   dependencies:
     array-includes "^3.0.3"
     doctrine "^2.1.0"
@@ -4477,10 +4480,6 @@ for-own@^1.0.0:
   resolved "https://registry.yarnpkg.com/for-own/-/for-own-1.0.0.tgz#c63332f415cedc4b04dbfe70cf836494c53cb44b"
   dependencies:
     for-in "^1.0.1"
-
-foreach@^2.0.5:
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/foreach/-/foreach-2.0.5.tgz#0bee005018aeb260d0a3af3ae658dd0136ec1b99"
 
 foreachasync@3.x:
   version "3.0.0"
@@ -6965,7 +6964,7 @@ loader-runner@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/loader-runner/-/loader-runner-2.3.0.tgz#f482aea82d543e07921700d5a46ef26fdac6b8a2"
 
-loader-utils@^0.2.16, loader-utils@~0.2.2:
+loader-utils@^0.2.16:
   version "0.2.17"
   resolved "https://registry.yarnpkg.com/loader-utils/-/loader-utils-0.2.17.tgz#f86e6374d43205a6e6c60e9196f17c0299bfb348"
   dependencies:
@@ -8105,7 +8104,7 @@ object-copy@^0.1.0:
     define-property "^0.2.5"
     kind-of "^3.0.3"
 
-object-keys@^1.0.11, object-keys@^1.0.8:
+object-keys@^1.0.11, object-keys@^1.0.12:
   version "1.0.12"
   resolved "https://registry.yarnpkg.com/object-keys/-/object-keys-1.0.12.tgz#09c53855377575310cca62f55bb334abff7b3ed2"
 
@@ -10060,7 +10059,15 @@ sax@^1.2.4:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
 
-schema-utils@^0.4.0, schema-utils@^0.4.3, schema-utils@^0.4.4, schema-utils@^0.4.5:
+schema-utils@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/schema-utils/-/schema-utils-1.0.0.tgz#0b79a93204d7b600d4b2850d1f66c2a34951c770"
+  dependencies:
+    ajv "^6.1.0"
+    ajv-errors "^1.0.0"
+    ajv-keywords "^3.1.0"
+
+schema-utils@^0.4.0, schema-utils@^0.4.4, schema-utils@^0.4.5:
   version "0.4.7"
   resolved "https://registry.yarnpkg.com/schema-utils/-/schema-utils-0.4.7.tgz#ba74f597d2be2ea880131746ee17d0a093c68187"
   dependencies:
@@ -10256,51 +10263,51 @@ slash@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/slash/-/slash-1.0.0.tgz#c41f2f6c39fc16d1cd17ad4b5d896114ae470d55"
 
-slate-base64-serializer@^0.2.49:
-  version "0.2.49"
-  resolved "https://registry.yarnpkg.com/slate-base64-serializer/-/slate-base64-serializer-0.2.49.tgz#5f315794c9380384d53e63621cf9e52116c671b8"
+slate-base64-serializer@^0.2.52:
+  version "0.2.52"
+  resolved "https://registry.yarnpkg.com/slate-base64-serializer/-/slate-base64-serializer-0.2.52.tgz#37ce0ec006fc9d0118bc928be23035b4c9f0e1f5"
   dependencies:
     isomorphic-base64 "^1.0.2"
 
-slate-dev-environment@^0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/slate-dev-environment/-/slate-dev-environment-0.1.4.tgz#d5dd0d9a5b80b364a23bb7985202ce4e5bd3e8d3"
+slate-dev-environment@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/slate-dev-environment/-/slate-dev-environment-0.1.5.tgz#04471107c855c69ec4c2d078245c200d7cf04c82"
   dependencies:
     is-in-browser "^1.1.3"
 
-slate-dev-logger@^0.1.42:
-  version "0.1.42"
-  resolved "https://registry.yarnpkg.com/slate-dev-logger/-/slate-dev-logger-0.1.42.tgz#922c4693469e6d60deaa10adfd22b627c9632fbf"
+slate-dev-logger@^0.1.43:
+  version "0.1.43"
+  resolved "https://registry.yarnpkg.com/slate-dev-logger/-/slate-dev-logger-0.1.43.tgz#77f6ca7207fcbf453a5516f3aa8b19794d1d26dc"
 
-slate-hotkeys@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/slate-hotkeys/-/slate-hotkeys-0.2.0.tgz#eae0a3869f43cf63c57de2e8d1c6e992e0447f68"
+slate-hotkeys@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/slate-hotkeys/-/slate-hotkeys-0.2.1.tgz#900e91cd208e2fb843b072bb88d5939eebf43300"
   dependencies:
     is-hotkey "^0.1.3"
-    slate-dev-environment "^0.1.4"
+    slate-dev-environment "^0.1.5"
 
-slate-html-serializer@^0.6.21:
-  version "0.6.21"
-  resolved "https://registry.yarnpkg.com/slate-html-serializer/-/slate-html-serializer-0.6.21.tgz#869b1369a34b1364b5ad99a2240234d121d289cf"
+slate-html-serializer@^0.6.24:
+  version "0.6.24"
+  resolved "https://registry.yarnpkg.com/slate-html-serializer/-/slate-html-serializer-0.6.24.tgz#e4a575cdf14e5cb2549488cdb5c345815c65ad6c"
   dependencies:
-    slate-dev-logger "^0.1.42"
+    slate-dev-logger "^0.1.43"
     type-of "^2.0.1"
 
-slate-plain-serializer@^0.5.30:
-  version "0.5.30"
-  resolved "https://registry.yarnpkg.com/slate-plain-serializer/-/slate-plain-serializer-0.5.30.tgz#3e67a10e402500e2fbfb4dfe7eb264785ed04945"
+slate-plain-serializer@^0.5.33:
+  version "0.5.33"
+  resolved "https://registry.yarnpkg.com/slate-plain-serializer/-/slate-plain-serializer-0.5.33.tgz#c13b8da8656d2270f2da427179f40d30ae1b69f6"
   dependencies:
-    slate-dev-logger "^0.1.42"
+    slate-dev-logger "^0.1.43"
 
-slate-prop-types@^0.4.47:
-  version "0.4.47"
-  resolved "https://registry.yarnpkg.com/slate-prop-types/-/slate-prop-types-0.4.47.tgz#671023a379b30d7da87cd9cf72459422939cf43e"
+slate-prop-types@^0.4.50:
+  version "0.4.50"
+  resolved "https://registry.yarnpkg.com/slate-prop-types/-/slate-prop-types-0.4.50.tgz#2e69cb0a742e953fb2a38b85cbf7282dfd8f7548"
   dependencies:
-    slate-dev-logger "^0.1.42"
+    slate-dev-logger "^0.1.43"
 
-slate-react@^0.15.4:
-  version "0.15.4"
-  resolved "https://registry.yarnpkg.com/slate-react/-/slate-react-0.15.4.tgz#8391da45d419fe60810a546a6a839805446e8bf9"
+slate-react@^0.15.7:
+  version "0.15.7"
+  resolved "https://registry.yarnpkg.com/slate-react/-/slate-react-0.15.7.tgz#e73d399a90e85fa333c5f7b2454bad2300fdb7e5"
   dependencies:
     debug "^3.1.0"
     get-window "^1.1.1"
@@ -10311,20 +10318,20 @@ slate-react@^0.15.4:
     react-immutable-proptypes "^2.1.0"
     react-portal "^3.1.0"
     selection-is-backward "^1.0.0"
-    slate-base64-serializer "^0.2.49"
-    slate-dev-environment "^0.1.4"
-    slate-dev-logger "^0.1.42"
-    slate-hotkeys "^0.2.0"
-    slate-plain-serializer "^0.5.30"
-    slate-prop-types "^0.4.47"
+    slate-base64-serializer "^0.2.52"
+    slate-dev-environment "^0.1.5"
+    slate-dev-logger "^0.1.43"
+    slate-hotkeys "^0.2.1"
+    slate-plain-serializer "^0.5.33"
+    slate-prop-types "^0.4.50"
 
-slate-schema-violations@^0.1.28:
-  version "0.1.28"
-  resolved "https://registry.yarnpkg.com/slate-schema-violations/-/slate-schema-violations-0.1.28.tgz#58cd64c3c54680f5e88dc0ca75e93d3a7e41581e"
+slate-schema-violations@^0.1.31:
+  version "0.1.31"
+  resolved "https://registry.yarnpkg.com/slate-schema-violations/-/slate-schema-violations-0.1.31.tgz#5bc608aa54c5dce58e7a4a4a293c8192bf158845"
 
-slate@^0.37.3:
-  version "0.37.3"
-  resolved "https://registry.yarnpkg.com/slate/-/slate-0.37.3.tgz#2dc03778d859407d97b3025b5a14f3dec28f6ddb"
+slate@^0.37.6:
+  version "0.37.6"
+  resolved "https://registry.yarnpkg.com/slate/-/slate-0.37.6.tgz#874b4246ee1c988c8ab37d19d19c02099a4d05ae"
   dependencies:
     debug "^3.1.0"
     direction "^0.1.5"
@@ -10332,8 +10339,8 @@ slate@^0.37.3:
     is-empty "^1.0.0"
     is-plain-object "^2.0.4"
     lodash "^4.17.4"
-    slate-dev-logger "^0.1.42"
-    slate-schema-violations "^0.1.28"
+    slate-dev-logger "^0.1.43"
+    slate-schema-violations "^0.1.31"
     type-of "^2.0.1"
 
 slice-ansi@1.0.0:
@@ -10466,13 +10473,12 @@ source-list-map@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/source-list-map/-/source-list-map-2.0.0.tgz#aaa47403f7b245a92fbc97ea08f250d6087ed085"
 
-source-map-loader@^0.2.3:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/source-map-loader/-/source-map-loader-0.2.3.tgz#d4b0c8cd47d54edce3e6bfa0f523f452b5b0e521"
+source-map-loader@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/source-map-loader/-/source-map-loader-0.2.4.tgz#c18b0dc6e23bf66f6792437557c569a11e072271"
   dependencies:
     async "^2.5.0"
-    loader-utils "~0.2.2"
-    source-map "~0.6.1"
+    loader-utils "^1.1.0"
 
 source-map-resolve@^0.5.0, source-map-resolve@^0.5.1:
   version "0.5.2"
@@ -11340,8 +11346,8 @@ uglify-to-browserify@~1.0.0:
   resolved "https://registry.yarnpkg.com/uglify-to-browserify/-/uglify-to-browserify-1.0.2.tgz#6e0924d6bda6b5afe349e39a6d632850a0f882b7"
 
 uglifyjs-webpack-plugin@^1.2.4:
-  version "1.2.7"
-  resolved "https://registry.yarnpkg.com/uglifyjs-webpack-plugin/-/uglifyjs-webpack-plugin-1.2.7.tgz#57638dd99c853a1ebfe9d97b42160a8a507f9d00"
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/uglifyjs-webpack-plugin/-/uglifyjs-webpack-plugin-1.3.0.tgz#75f548160858163a08643e086d5fefe18a5d67de"
   dependencies:
     cacache "^10.0.4"
     find-cache-dir "^1.0.0"
@@ -11489,12 +11495,12 @@ url-join@^4.0.0:
   resolved "https://registry.yarnpkg.com/url-join/-/url-join-4.0.0.tgz#4d3340e807d3773bda9991f8305acdcc2a665d2a"
 
 url-loader@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/url-loader/-/url-loader-1.0.1.tgz#61bc53f1f184d7343da2728a1289ef8722ea45ee"
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/url-loader/-/url-loader-1.1.0.tgz#64dd296626d935c68d72ed9d9c69cf3c6ff933ac"
   dependencies:
     loader-utils "^1.1.0"
     mime "^2.0.3"
-    schema-utils "^0.4.3"
+    schema-utils "1.0.0"
 
 url-parse@^1.1.8, url-parse@^1.4.3:
   version "1.4.3"
