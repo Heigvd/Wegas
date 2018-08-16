@@ -8,6 +8,7 @@ const INLINE_SIZE_BREAKPOINT = 600;
 const cursorStyle = css({ cursor: 'pointer' });
 const itemStyle = css({
   border: '1px solid',
+  lineHeight: '2',
 });
 const listStyle = css({
   minWidth: '15em',
