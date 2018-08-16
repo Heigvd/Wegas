@@ -34,11 +34,11 @@ interface IQuestionInstance extends IVariableInstance {
 }
 interface IReply extends IWegasEntity {
   '@class': 'Reply';
-  answer: string;
+  answer: ITranslatableContent;
   choiceName: string;
   createdTime: number;
   files: string[];
-  ignorationAnswer: string;
+  ignorationAnswer: ITranslatableContent;
   ignored: boolean;
   resultName: string;
   startTime: number;
