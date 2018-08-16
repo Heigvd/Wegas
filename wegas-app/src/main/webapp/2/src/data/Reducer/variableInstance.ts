@@ -3,6 +3,9 @@ import u from 'immer';
 import { ActionType, StateActions, managedMode } from '../actions';
 import { VariableInstanceAPI } from '../../API/variableInstance.api';
 import { ThunkResult } from '../store';
+import { Player } from '../selectors';
+import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
+import { QuestionDescriptorAPI } from '../../API/questionDescriptor.api';
 
 export interface VariableInstanceState {
   [id: string]: Readonly<IVariableInstance> | undefined;
@@ -45,5 +48,48 @@ export function getAll(): ThunkResult<Promise<StateActions>> {
     return VariableInstanceAPI.getAll(gameModelId).then(res =>
       dispatch(managedMode(res)),
     );
+  };
+}
+
+export function runScript(
+  script: string | IScript,
+  player?: IPlayer,
+  context?: IVariableDescriptor,
+): ThunkResult {
+  return function(dispatch, getState) {
+    const gameModelId = getState().global.currentGameModelId;
+    const p = player != null ? player : Player.selectCurrent();
+    if (p.id == null) {
+      throw Error('Missing persisted player');
+    }
+    const finalScript: IScript =
+      'string' === typeof script
+        ? { '@class': 'Script', language: 'JavaScript', content: script }
+        : script;
+    return VariableDescriptorAPI.runScript(
+      gameModelId,
+      p.id,
+      finalScript,
+      context,
+    ).then(res => dispatch(managedMode(res)));
+  };
+}
+
+// Question specific actions
+export function selectAndValidate(
+  choice: IChoiceDescriptor,
+  player?: IPlayer,
+): ThunkResult {
+  return function(dispatch, getState) {
+    const gameModelId = getState().global.currentGameModelId;
+    const p = player != null ? player : Player.selectCurrent();
+    if (p.id == null) {
+      throw Error('Missing persisted player');
+    }
+    return QuestionDescriptorAPI.selectAndValidate(
+      gameModelId,
+      p.id,
+      choice,
+    ).then(res => dispatch(managedMode(res)));
   };
 }

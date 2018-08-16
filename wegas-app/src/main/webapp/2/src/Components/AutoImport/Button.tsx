@@ -12,7 +12,7 @@ export default function Button(props: Props) {
       {({ dispatch }) => (
         <button
           onClick={() => {
-            dispatch(Actions.VariableDescriptorActions.runScript(props.action));
+            dispatch(Actions.VariableInstanceActions.runScript(props.action));
           }}
         >
           {props.label}

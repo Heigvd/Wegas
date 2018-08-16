@@ -5,7 +5,6 @@ import { Actions as Act } from '..';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { deepRemove } from '../updateUtils';
 import { ThunkResult } from '../store';
-import { Player } from '../selectors';
 
 export interface VariableDescriptorState {
   [id: string]: Readonly<IVariableDescriptor> | undefined;
@@ -110,29 +109,5 @@ export function deleteDescriptor(
     return VariableDescriptorAPI.del(gameModelId, variableDescriptor).then(
       res => dispatch(managedMode(res)),
     );
-  };
-}
-
-export function runScript(
-  script: string | IScript,
-  player?: IPlayer,
-  context?: IVariableDescriptor,
-): ThunkResult {
-  return function(dispatch, getState) {
-    const gameModelId = getState().global.currentGameModelId;
-    const p = player != null ? player : Player.selectCurrent();
-    if (p.id == null) {
-      throw Error('Missing persisted player');
-    }
-    const finalScript: IScript =
-      'string' === typeof script
-        ? { '@class': 'Script', language: 'JavaScript', content: script }
-        : script;
-    return VariableDescriptorAPI.runScript(
-      gameModelId,
-      p.id,
-      finalScript,
-      context,
-    ).then(res => dispatch(managedMode(res)));
   };
 }

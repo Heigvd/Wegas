@@ -1,11 +1,12 @@
 import { store } from '../store';
 import { isMatch } from 'lodash-es';
+import { varIsList } from '../entities';
 
 /**
  * Find a variableDescriptor for an id
  *
  * @export
- * @param {number} [id]  variableDescriptor id
+ * @param {number} id variableDescriptor id
  * @returns {(Readonly<IVariableDescriptor> | undefined)}
  */
 export function select<T extends IVariableDescriptor = IVariableDescriptor>(
@@ -18,25 +19,30 @@ export function select<T extends IVariableDescriptor = IVariableDescriptor>(
  * @param {number[]} id Array of variableDescriptor ids
  * @returns {((Readonly<IVariableDescriptor> | undefined)[])}
  */
-export function select(
+export function select<T extends IVariableDescriptor = IVariableDescriptor>(
   id: number[],
-): (Readonly<IVariableDescriptor> | undefined)[];
-export function select(id: number | number[] | undefined) {
+): (Readonly<T> | undefined)[];
+export function select<T extends IVariableDescriptor = IVariableDescriptor>(
+  id: number | number[] | undefined,
+) {
   if (id == null) {
     return;
   }
   const state = store.getState();
   if (Array.isArray(id)) {
-    return id.map(i => state.variableDescriptors[i]);
+    return id.map(i => state.variableDescriptors[i] as T);
   }
-  return state.variableDescriptors[id];
+  return state.variableDescriptors[id] as T;
 }
 /**
  * Select first matching VariableDescriptor
  * @param key the key to search for
  * @param value the value the key should be equal
  */
-export function first<T extends IVariableDescriptor>(key: keyof T, value: any) {
+export function first<T extends IVariableDescriptor>(
+  key: keyof T,
+  value: unknown,
+) {
   const state = store.getState();
   for (const vd in state.variableDescriptors) {
     const s = state.variableDescriptors[vd] as T;
@@ -63,7 +69,10 @@ export function firstMatch<T extends IVariableDescriptor>(o: Partial<T>) {
  * @param key the key to search for
  * @param value the value the key should be equal
  */
-export function all<T extends IVariableDescriptor>(key: keyof T, value: any) {
+export function all<T extends IVariableDescriptor>(
+  key: keyof T,
+  value: unknown,
+) {
   const ret = [];
   const state = store.getState();
   for (const vd in state.variableDescriptors) {
@@ -72,5 +81,33 @@ export function all<T extends IVariableDescriptor>(key: keyof T, value: any) {
       ret.push(s);
     }
   }
+  return ret;
+}
+/**
+ * Extract nested VariableDescriptors from a given ParentDescriptor
+ */
+export function flatten<
+  T extends IVariableDescriptor,
+  E extends T['@class'][] = T['@class'][]
+>(ld: IParentDescriptor | undefined, ...cls: E) {
+  if (ld === undefined) {
+    return [];
+  }
+  const ret: T[] = [];
+  const state = store.getState();
+  ld.itemsIds.forEach(id => {
+    const descriptor = state.variableDescriptors[id];
+    if (cls.length > 0) {
+      if (descriptor !== undefined && cls.includes(descriptor['@class'])) {
+        ret.push(descriptor as T);
+      }
+    } else if (descriptor !== undefined) {
+      ret.push(descriptor as T);
+    }
+
+    if (varIsList(descriptor)) {
+      ret.push(...(flatten(descriptor, ...cls) as any));
+    }
+  });
   return ret;
 }
