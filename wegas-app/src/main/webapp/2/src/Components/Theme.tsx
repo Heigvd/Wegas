@@ -41,7 +41,7 @@ export const primaryLight = css({
 export class Theme extends React.PureComponent<ThemeProps> {
   static defaultProps = {
     backgroundColor: 'white',
-    primaryColor: 'blue',
+    primaryColor: '#1565C0',
     lightTextColor: 'white',
     darkTextColor: '#222',
     warningColor: '#ff9d00',
@@ -65,9 +65,9 @@ export class Theme extends React.PureComponent<ThemeProps> {
     const textColor = bgColor.isLight() ? darkTextColor : lightTextColor;
     const primary = Color(primaryColor);
     const primText = primary.isLight() ? darkTextColor : lightTextColor;
-    const primDark = primary.darken(0.3);
+    const primDark = primary.darken(0.33);
     const primDarkText = primDark.isLight() ? darkTextColor : lightTextColor;
-    const primLight = primary.lighten(0.3);
+    const primLight = primary.lighten(0.33);
     const primLightText = primLight.isLight() ? darkTextColor : lightTextColor;
 
     return (

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { css, cx } from 'emotion';
 import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
 import { Props } from '@fortawesome/react-fontawesome';
+import { themeVar } from '../Theme';
 
 interface IconButtonProps extends Props {
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
@@ -14,7 +15,7 @@ interface IconButtonProps extends Props {
   tabIndex?: number;
   prefixedLabel?: boolean;
 }
-const activeStyle = css({ opacity: 1 });
+const activeStyle = css({ color: themeVar.primaryDarkerColor });
 
 const shapeStyle = css({
   width: 'auto',
@@ -28,17 +29,15 @@ const shapeStyle = css({
   // height: '16px',
   textAlign: 'center',
   display: 'inline-block',
-  color: 'inherit',
-  opacity: 0.5,
+  color: themeVar.primaryColor,
   ':hover,:focus': {
-    opacity: 0.8,
+    color: themeVar.primaryLighterColor,
     outline: 'none',
   },
 });
 
 const disabledStyle = css({
-  opacity: 0.5,
-  backgroundColor: 'darkslategrey',
+  color: themeVar.disabledColor,
 });
 
 export function IconButton(props: IconButtonProps) {
