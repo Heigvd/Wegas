@@ -1,7 +1,5 @@
 import { css } from 'emotion';
 import * as React from 'react';
-import { editor, Uri } from 'monaco-editor';
-import * as t from '../../page-schema.build';
 import { SizedDiv } from '../../Components/SizedDiv';
 interface EditorProps {
   value?: string;
@@ -11,13 +9,16 @@ interface EditorProps {
   onChange: (value: string) => void;
   onBlur: (value: string) => void;
 }
+
 const overflowHide = css({
   overflow: 'hidden',
   width: '100%',
   height: '100%',
 });
 class SrcEditor extends React.Component<EditorProps> {
-  private editor: editor.IStandaloneCodeEditor | null = null;
+  private editor: ReturnType<
+    typeof import('monaco-editor').editor.create
+  > | null = null;
   private lastValue?: string = '';
   private outsideChange: boolean = false;
   private container: HTMLDivElement | null = null;
@@ -60,40 +61,42 @@ class SrcEditor extends React.Component<EditorProps> {
   }
   componentDidMount() {
     this.lastValue = this.props.value;
-    import('monaco-editor').then(monaco => {
-      if (this.container != null) {
-        monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-          validate: true,
-          schemas: [
-            {
-              fileMatch: ['page.json'],
-              uri: 'internal://page-schema.json',
-              schema: (t as any).schema,
-            },
-          ],
-        });
-        const model = monaco.editor.createModel(
-          this.props.value || '',
-          this.props.language,
-          this.props.uri ? Uri.parse(this.props.uri) : undefined,
-        );
-        this.editor = monaco.editor.create(this.container, {
-          theme: 'vs-dark',
-          model: model,
-          minimap: { enabled: this.props.minimap },
-        });
-        this.editor.onDidBlurEditorText(() => {
-          this.lastValue = this.editor!.getValue();
-          this.props.onBlur(this.lastValue);
-        });
-        this.editor.onDidChangeModelContent(() => {
-          if (!this.outsideChange) {
+    Promise.all([import('monaco-editor'), '../../page-schema.build']).then(
+      ([monaco, t]) => {
+        if (this.container != null) {
+          monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+            validate: true,
+            schemas: [
+              {
+                fileMatch: ['page.json'],
+                uri: 'internal://page-schema.json',
+                schema: (t as any).schema,
+              },
+            ],
+          });
+          const model = monaco.editor.createModel(
+            this.props.value || '',
+            this.props.language,
+            this.props.uri ? monaco.Uri.parse(this.props.uri) : undefined,
+          );
+          this.editor = monaco.editor.create(this.container, {
+            theme: 'vs-dark',
+            model: model,
+            minimap: { enabled: this.props.minimap },
+          });
+          this.editor.onDidBlurEditorText(() => {
             this.lastValue = this.editor!.getValue();
-            this.props.onChange(this.lastValue);
-          }
-        });
-      }
-    });
+            this.props.onBlur(this.lastValue);
+          });
+          this.editor.onDidChangeModelContent(() => {
+            if (!this.outsideChange) {
+              this.lastValue = this.editor!.getValue();
+              this.props.onChange(this.lastValue);
+            }
+          });
+        }
+      },
+    );
   }
   private layout = (size: { width: number; height: number }) => {
     if (this.editor != null) {

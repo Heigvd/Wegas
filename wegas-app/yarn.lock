@@ -1064,7 +1064,7 @@ acorn@^3.0.4:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-3.3.0.tgz#45e37fb39e8da3f25baee3ff5369e2bb5f22017a"
 
-acorn@^5.0.0, acorn@^5.5.0, acorn@^5.5.3, acorn@^5.6.2:
+acorn@^5.0.0, acorn@^5.3.0, acorn@^5.5.0, acorn@^5.5.3, acorn@^5.6.2:
   version "5.7.1"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.7.1.tgz#f095829297706a7c9776958c0afc8930a9b9d9d8"
 
@@ -1858,6 +1858,14 @@ better-assert@~1.0.0:
   dependencies:
     callsite "1.0.0"
 
+bfj-node4@^5.2.0:
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/bfj-node4/-/bfj-node4-5.3.1.tgz#e23d8b27057f1d0214fc561142ad9db998f26830"
+  dependencies:
+    bluebird "^3.5.1"
+    check-types "^7.3.0"
+    tryer "^1.0.0"
+
 big.js@^3.1.3:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/big.js/-/big.js-3.2.0.tgz#a5fc298b81b9e0dca2e458824784b65c52ba588e"
@@ -2359,6 +2367,10 @@ chartist@^0.11.0:
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/chartist/-/chartist-0.11.0.tgz#84ba5e05490d096d93dcfa9343ebc31ef6a3bd28"
 
+check-types@^7.3.0:
+  version "7.4.0"
+  resolved "https://registry.yarnpkg.com/check-types/-/check-types-7.4.0.tgz#0378ec1b9616ec71f774931a3c6516fad8c152f4"
+
 chokidar@1.7.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-1.7.0.tgz#798e689778151c8076b4b360e5edd28cda2bb468"
@@ -2652,7 +2664,7 @@ commander@2.16.x, commander@~2.16.0:
   version "2.16.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.16.0.tgz#f16390593996ceb4f3eeb020b31d78528f7f8a50"
 
-commander@^2.11.0, commander@^2.12.1, commander@^2.2.0:
+commander@^2.11.0, commander@^2.12.1, commander@^2.13.0, commander@^2.2.0:
   version "2.17.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.17.1.tgz#bd77ab7de6de94205ceacc72f1716d29f20a77bf"
 
@@ -3466,7 +3478,7 @@ duplexer2@0.0.2:
   dependencies:
     readable-stream "~1.1.9"
 
-duplexer@~0.1.1:
+duplexer@^0.1.1, duplexer@~0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/duplexer/-/duplexer-0.1.1.tgz#ace6ff808c1ce66b57d1ebf97977acb02334cfc1"
 
@@ -3508,6 +3520,10 @@ ecc-jsbn@~0.1.1:
 ee-first@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
+
+ejs@^2.5.7:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/ejs/-/ejs-2.6.1.tgz#498ec0d495655abc6f23cd61868d926464071aa0"
 
 electron-to-chromium@^1.2.7, electron-to-chromium@^1.3.30, electron-to-chromium@^1.3.47:
   version "1.3.58"
@@ -4327,6 +4343,10 @@ fileset@^2.0.2:
     glob "^7.0.3"
     minimatch "^3.0.3"
 
+filesize@^3.5.11:
+  version "3.6.1"
+  resolved "https://registry.yarnpkg.com/filesize/-/filesize-3.6.1.tgz#090bb3ee01b6f801a8a8be99d31710b3422bb317"
+
 fill-range@^2.1.0:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/fill-range/-/fill-range-2.2.4.tgz#eb1e773abb056dcd8df2bfdf6af59b8b3a936565"
@@ -4497,9 +4517,9 @@ fork-stream@^0.0.4:
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/fork-stream/-/fork-stream-0.0.4.tgz#db849fce77f6708a5f8f386ae533a0907b54ae70"
 
-fork-ts-checker-webpack-plugin@^0.4.3:
-  version "0.4.8"
-  resolved "https://registry.yarnpkg.com/fork-ts-checker-webpack-plugin/-/fork-ts-checker-webpack-plugin-0.4.8.tgz#a93cb5f1240a56367a1daa2ad2d46f24f8ef2861"
+fork-ts-checker-webpack-plugin@^0.4.9:
+  version "0.4.9"
+  resolved "https://registry.yarnpkg.com/fork-ts-checker-webpack-plugin/-/fork-ts-checker-webpack-plugin-0.4.9.tgz#78607899d4411fdc6faeca5b4db7654c9d8d28a2"
   dependencies:
     babel-code-frame "^6.22.0"
     chalk "^2.4.1"
@@ -5339,6 +5359,13 @@ gzip-size@^1.0.0:
   dependencies:
     browserify-zlib "^0.1.4"
     concat-stream "^1.4.1"
+
+gzip-size@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/gzip-size/-/gzip-size-4.1.0.tgz#8ae096257eabe7d69c45be2b67c448124ffb517c"
+  dependencies:
+    duplexer "^0.1.1"
+    pify "^3.0.0"
 
 handle-thing@^1.2.5:
   version "1.2.5"
@@ -6770,7 +6797,6 @@ jsonify@~0.0.0:
 
 "jsoninput@github:cigit/JSONInput":
   version "0.0.12"
-  uid "42f15fbe0a93e0ed3f211742ebfff8734378d3c8"
   resolved "https://codeload.github.com/cigit/JSONInput/tar.gz/42f15fbe0a93e0ed3f211742ebfff8734378d3c8"
   dependencies:
     immer "^1.3.1"
@@ -6789,9 +6815,9 @@ jsonschema@^1.2.4:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/jsonschema/-/jsonschema-1.2.4.tgz#a46bac5d3506a254465bc548876e267c6d0d6464"
 
-jsplumb@^2.7.15:
-  version "2.7.15"
-  resolved "https://registry.yarnpkg.com/jsplumb/-/jsplumb-2.7.15.tgz#f97b291e3eea4d10c39887c87078e5387a1dc210"
+jsplumb@^2.7.16:
+  version "2.7.16"
+  resolved "https://registry.yarnpkg.com/jsplumb/-/jsplumb-2.7.16.tgz#bfe8eb19e93b86eed57ac3061b47dbb8c9ccb426"
 
 jsprim@^1.2.2:
   version "1.4.1"
@@ -7438,6 +7464,10 @@ mem@^1.1.0:
   dependencies:
     mimic-fn "^1.0.0"
 
+memoize-one@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/memoize-one/-/memoize-one-4.0.0.tgz#fc5e2f1427a216676a62ec652cf7398cfad123db"
+
 memoizee@^0.3.9:
   version "0.3.10"
   resolved "https://registry.yarnpkg.com/memoizee/-/memoizee-0.3.10.tgz#4eca0d8aed39ec9d017f4c5c2f2f6432f42e5c8f"
@@ -7713,9 +7743,9 @@ monaco-editor-webpack-plugin@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/monaco-editor-webpack-plugin/-/monaco-editor-webpack-plugin-1.5.1.tgz#2f2ff876d522e25042e5621bc81cb9eee6743010"
 
-monaco-editor@^0.14.2:
-  version "0.14.2"
-  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.14.2.tgz#6c41773639aef7ebce30202cd12a723074a88813"
+monaco-editor@^0.14.3:
+  version "0.14.3"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.14.3.tgz#7cc4a4096a3821f52fea9b10489b527ef3034e22"
 
 mout@^1.0.0:
   version "1.1.0"
@@ -8206,6 +8236,10 @@ onetime@^2.0.0:
   resolved "https://registry.yarnpkg.com/onetime/-/onetime-2.0.1.tgz#067428230fd67443b2794b22bba528b6867962d4"
   dependencies:
     mimic-fn "^1.0.0"
+
+opener@^1.4.3:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/opener/-/opener-1.5.0.tgz#24222fb4ad423ba21f5bf38855cebe44220f6531"
 
 openurl@1.1.1:
   version "1.1.1"
@@ -10263,15 +10297,15 @@ slash@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/slash/-/slash-1.0.0.tgz#c41f2f6c39fc16d1cd17ad4b5d896114ae470d55"
 
-slate-base64-serializer@^0.2.52:
-  version "0.2.52"
-  resolved "https://registry.yarnpkg.com/slate-base64-serializer/-/slate-base64-serializer-0.2.52.tgz#37ce0ec006fc9d0118bc928be23035b4c9f0e1f5"
+slate-base64-serializer@^0.2.53:
+  version "0.2.53"
+  resolved "https://registry.yarnpkg.com/slate-base64-serializer/-/slate-base64-serializer-0.2.53.tgz#5b9448a3af1729776f4cff2e58e56f01c905014d"
   dependencies:
     isomorphic-base64 "^1.0.2"
 
-slate-dev-environment@^0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/slate-dev-environment/-/slate-dev-environment-0.1.5.tgz#04471107c855c69ec4c2d078245c200d7cf04c82"
+slate-dev-environment@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/slate-dev-environment/-/slate-dev-environment-0.2.0.tgz#c43f4a5e13cccc16ad4c3015c8ad182b6e5b5b3a"
   dependencies:
     is-in-browser "^1.1.3"
 
@@ -10279,59 +10313,60 @@ slate-dev-logger@^0.1.43:
   version "0.1.43"
   resolved "https://registry.yarnpkg.com/slate-dev-logger/-/slate-dev-logger-0.1.43.tgz#77f6ca7207fcbf453a5516f3aa8b19794d1d26dc"
 
-slate-hotkeys@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/slate-hotkeys/-/slate-hotkeys-0.2.1.tgz#900e91cd208e2fb843b072bb88d5939eebf43300"
+slate-hotkeys@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/slate-hotkeys/-/slate-hotkeys-0.2.3.tgz#843a467421c643b4a1a3c240957c8adcfa99deb3"
   dependencies:
     is-hotkey "^0.1.3"
-    slate-dev-environment "^0.1.5"
+    slate-dev-environment "^0.2.0"
 
-slate-html-serializer@^0.6.24:
-  version "0.6.24"
-  resolved "https://registry.yarnpkg.com/slate-html-serializer/-/slate-html-serializer-0.6.24.tgz#e4a575cdf14e5cb2549488cdb5c345815c65ad6c"
+slate-html-serializer@^0.6.25:
+  version "0.6.25"
+  resolved "https://registry.yarnpkg.com/slate-html-serializer/-/slate-html-serializer-0.6.25.tgz#4474e26c840f2dece94147751212f8a6557f96f6"
   dependencies:
     slate-dev-logger "^0.1.43"
     type-of "^2.0.1"
 
-slate-plain-serializer@^0.5.33:
-  version "0.5.33"
-  resolved "https://registry.yarnpkg.com/slate-plain-serializer/-/slate-plain-serializer-0.5.33.tgz#c13b8da8656d2270f2da427179f40d30ae1b69f6"
+slate-plain-serializer@^0.5.34:
+  version "0.5.34"
+  resolved "https://registry.yarnpkg.com/slate-plain-serializer/-/slate-plain-serializer-0.5.34.tgz#93c7e59a283d0a2568e3cab8dd3f3a6740936940"
   dependencies:
     slate-dev-logger "^0.1.43"
 
-slate-prop-types@^0.4.50:
-  version "0.4.50"
-  resolved "https://registry.yarnpkg.com/slate-prop-types/-/slate-prop-types-0.4.50.tgz#2e69cb0a742e953fb2a38b85cbf7282dfd8f7548"
+slate-prop-types@^0.4.51:
+  version "0.4.51"
+  resolved "https://registry.yarnpkg.com/slate-prop-types/-/slate-prop-types-0.4.51.tgz#2b6f23ea41b37a50ab6049af2668d20f48c75da1"
   dependencies:
     slate-dev-logger "^0.1.43"
 
-slate-react@^0.15.7:
-  version "0.15.7"
-  resolved "https://registry.yarnpkg.com/slate-react/-/slate-react-0.15.7.tgz#e73d399a90e85fa333c5f7b2454bad2300fdb7e5"
+slate-react@^0.15.9:
+  version "0.15.9"
+  resolved "https://registry.yarnpkg.com/slate-react/-/slate-react-0.15.9.tgz#7a11746fbe5554e5cff020f1c430e266f0d995f5"
   dependencies:
     debug "^3.1.0"
     get-window "^1.1.1"
     is-window "^1.0.2"
     keycode "^2.1.2"
     lodash "^4.1.1"
+    memoize-one "^4.0.0"
     prop-types "^15.5.8"
     react-immutable-proptypes "^2.1.0"
     react-portal "^3.1.0"
     selection-is-backward "^1.0.0"
-    slate-base64-serializer "^0.2.52"
-    slate-dev-environment "^0.1.5"
+    slate-base64-serializer "^0.2.53"
+    slate-dev-environment "^0.2.0"
     slate-dev-logger "^0.1.43"
-    slate-hotkeys "^0.2.1"
-    slate-plain-serializer "^0.5.33"
-    slate-prop-types "^0.4.50"
+    slate-hotkeys "^0.2.3"
+    slate-plain-serializer "^0.5.34"
+    slate-prop-types "^0.4.51"
 
-slate-schema-violations@^0.1.31:
-  version "0.1.31"
-  resolved "https://registry.yarnpkg.com/slate-schema-violations/-/slate-schema-violations-0.1.31.tgz#5bc608aa54c5dce58e7a4a4a293c8192bf158845"
+slate-schema-violations@^0.1.32:
+  version "0.1.32"
+  resolved "https://registry.yarnpkg.com/slate-schema-violations/-/slate-schema-violations-0.1.32.tgz#410d99165fcad3909e4e7c743a709141947cef32"
 
-slate@^0.37.6:
-  version "0.37.6"
-  resolved "https://registry.yarnpkg.com/slate/-/slate-0.37.6.tgz#874b4246ee1c988c8ab37d19d19c02099a4d05ae"
+slate@^0.37.7:
+  version "0.37.7"
+  resolved "https://registry.yarnpkg.com/slate/-/slate-0.37.7.tgz#9623125164ada94d4f49ca2579682472697f5dde"
   dependencies:
     debug "^3.1.0"
     direction "^0.1.5"
@@ -10340,7 +10375,7 @@ slate@^0.37.6:
     is-plain-object "^2.0.4"
     lodash "^4.17.4"
     slate-dev-logger "^0.1.43"
-    slate-schema-violations "^0.1.31"
+    slate-schema-violations "^0.1.32"
     type-of "^2.0.1"
 
 slice-ansi@1.0.0:
@@ -11187,6 +11222,10 @@ try-json-parse@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/try-json-parse/-/try-json-parse-0.1.1.tgz#8db01622e877e51b83140caee7c80864ad390c82"
 
+tryer@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/tryer/-/tryer-1.0.1.tgz#f2c85406800b9b0f74c9f7465b81eaad241252f8"
+
 tryor@~0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/tryor/-/tryor-0.1.2.tgz#8145e4ca7caff40acde3ccf946e8b8bb75b4172b"
@@ -11199,9 +11238,9 @@ ts-jest@^23.1.3:
     fs-extra "6.0.1"
     lodash "^4.17.10"
 
-ts-loader@^4.4.2:
-  version "4.4.2"
-  resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-4.4.2.tgz#778d4464b24436873c78f7f9e914d88194c2a248"
+ts-loader@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-4.5.0.tgz#a1ce70b2dc799941fb2197605f0d67874097859b"
   dependencies:
     chalk "^2.3.0"
     enhanced-resolve "^4.0.0"
@@ -11787,6 +11826,23 @@ webidl-conversions@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-4.0.2.tgz#a855980b1f0b6b359ba1d5d9fb39ae941faa63ad"
 
+webpack-bundle-analyzer@^2.13.1:
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/webpack-bundle-analyzer/-/webpack-bundle-analyzer-2.13.1.tgz#07d2176c6e86c3cdce4c23e56fae2a7b6b4ad526"
+  dependencies:
+    acorn "^5.3.0"
+    bfj-node4 "^5.2.0"
+    chalk "^2.3.0"
+    commander "^2.13.0"
+    ejs "^2.5.7"
+    express "^4.16.2"
+    filesize "^3.5.11"
+    gzip-size "^4.1.0"
+    lodash "^4.17.4"
+    mkdirp "^0.5.1"
+    opener "^1.4.3"
+    ws "^4.0.0"
+
 webpack-cli@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/webpack-cli/-/webpack-cli-3.1.0.tgz#d71a83687dcfeb758fdceeb0fe042f96bcf62994"
@@ -12027,6 +12083,13 @@ write@^0.2.1:
   resolved "https://registry.yarnpkg.com/write/-/write-0.2.1.tgz#5fc03828e264cea3fe91455476f7a3c566cb0757"
   dependencies:
     mkdirp "^0.5.1"
+
+ws@^4.0.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-4.1.0.tgz#a979b5d7d4da68bf54efe0408967c324869a7289"
+  dependencies:
+    async-limiter "~1.0.0"
+    safe-buffer "~5.1.0"
 
 ws@^5.2.0:
   version "5.2.2"

@@ -1,6 +1,6 @@
 import { css } from 'emotion';
 import produce from 'immer';
-import { Connection, Defaults, jsPlumb, jsPlumbInstance } from 'jsplumb';
+import { Connection, Defaults, jsPlumbInstance } from 'jsplumb';
 import * as React from 'react';
 import { IconButton } from '../../Components/Button/IconButton';
 import { VariableDescriptor } from '../../data/selectors';
@@ -245,62 +245,64 @@ class StateMachineEditor extends React.Component<
     );
   };
   componentDidMount() {
-    const plumb = jsPlumb.getInstance({
-      ...JS_PLUMB_OPTIONS,
-      Container: this.container,
-    });
-    this.setState({
-      plumb,
-    });
-    plumb.bind('connection', (info, ev) => {
-      if (ev !== undefined) {
-        // let the data create it!
-        plumb.deleteConnection(info.connection);
-        this.createTransition({
-          from: Number(info.sourceId),
-          to: Number(info.targetId),
-        });
-      }
-    });
-    plumb.bind('connectionDetached', (info, ev) => {
-      if (ev !== undefined) {
-        const trIndex = (info.connection as any).getParameter(
-          'transitionIndex',
-        );
-        // let jsPlumb remove transition the update data
-        requestAnimationFrame(() =>
-          this.removeTransition({
-            from: info.sourceId,
-            transitonIndex: trIndex,
-          }),
-        );
-      }
-    });
-    plumb.bind('connectionMoved', (info, ev) => {
-      if (ev !== undefined) {
-        const transition: IFSMDescriptor.Transition = (info.connection as any).getParameter(
-          'transition',
-        );
-        this.moveTransition(info, transition);
-      }
-    });
-    plumb.bind('connectionAborted', async connection => {
-      const left = (connection.target as HTMLElement).style.left;
-      const top = (connection.target as HTMLElement).style.top;
-      const src = connection.sourceId;
-      this.createState(
-        {
-          '@class': 'State',
-          editorPosition: {
-            '@class': 'Coordinate',
-            x: parseInt(left || '0', 10),
-            y: parseInt(top || '0', 10),
+    import('jsplumb').then(({ jsPlumb }) => {
+      const plumb = jsPlumb.getInstance({
+        ...JS_PLUMB_OPTIONS,
+        Container: this.container,
+      });
+      this.setState({
+        plumb,
+      });
+      plumb.bind('connection', (info, ev) => {
+        if (ev !== undefined) {
+          // let the data create it!
+          plumb.deleteConnection(info.connection);
+          this.createTransition({
+            from: Number(info.sourceId),
+            to: Number(info.targetId),
+          });
+        }
+      });
+      plumb.bind('connectionDetached', (info, ev) => {
+        if (ev !== undefined) {
+          const trIndex = (info.connection as any).getParameter(
+            'transitionIndex',
+          );
+          // let jsPlumb remove transition the update data
+          requestAnimationFrame(() =>
+            this.removeTransition({
+              from: info.sourceId,
+              transitonIndex: trIndex,
+            }),
+          );
+        }
+      });
+      plumb.bind('connectionMoved', (info, ev) => {
+        if (ev !== undefined) {
+          const transition: IFSMDescriptor.Transition = (info.connection as any).getParameter(
+            'transition',
+          );
+          this.moveTransition(info, transition);
+        }
+      });
+      plumb.bind('connectionAborted', async connection => {
+        const left = (connection.target as HTMLElement).style.left;
+        const top = (connection.target as HTMLElement).style.top;
+        const src = connection.sourceId;
+        this.createState(
+          {
+            '@class': 'State',
+            editorPosition: {
+              '@class': 'Coordinate',
+              x: parseInt(left || '0', 10),
+              y: parseInt(top || '0', 10),
+            },
+            version: 0,
+            transitions: [],
           },
-          version: 0,
-          transitions: [],
-        },
-        Number(src),
-      );
+          Number(src),
+        );
+      });
     });
   }
   componentWillUnmount() {

@@ -1,5 +1,5 @@
-import PusherConstructor, { Pusher } from 'pusher-js';
-import { inflate } from 'pako';
+// import PusherConstructor, { Pusher } from 'pusher-js';
+// import { inflate } from 'pako';
 import { store } from '../data/store';
 import { updatePusherStatus } from '../data/Reducer/globalState';
 import { managedMode } from '../data/actions';
@@ -62,7 +62,7 @@ function Uint8ArrayToStr(array: Uint8Array) {
 
   return out;
 }
-function processEvent(event: string, data: string | {}): [string, {}] {
+async function processEvent(event: string, data: string | {}) {
   if (event.endsWith('.gz') && typeof data === 'string') {
     const ba = [];
     const d = atob(data);
@@ -73,7 +73,9 @@ function processEvent(event: string, data: string | {}): [string, {}] {
 
     return [
       event.slice(0, -3),
-      JSON.parse(Uint8ArrayToStr(inflate(compressed))),
+      JSON.parse(
+        Uint8ArrayToStr(await import('pako').then(p => p.inflate(compressed))),
+      ),
     ];
   }
   return [event, typeof data === 'string' ? JSON.parse(data) : data];
@@ -87,36 +89,40 @@ function processEvent(event: string, data: string | {}): [string, {}] {
 export default class WebSocketListener {
   socketId?: string;
   status: any;
-  private socket: Pusher.PusherSocket;
+  private socket: import('pusher-js').Pusher.PusherSocket | null = null;
   constructor(applicationKey: string, authEndpoint: string, cluster: string) {
-    this.socket = new PusherConstructor(applicationKey, {
-      cluster,
-      authEndpoint,
-      encrypted: true,
-    });
-    this.socket.connection.bind('state_change', (state: any) => {
-      this.status = state.current;
-      this.socketId = this.socket.connection.socket_id;
-      store.dispatch(updatePusherStatus(state.current, this.socketId));
-    });
-    const channels = [
-      CHANNEL_PREFIX.GameModel + CurrentGM.id,
-      CHANNEL_PREFIX.Game + CurrentGame.id,
-      CHANNEL_PREFIX.Player + CurrentPlayerId,
-      CHANNEL_PREFIX.Team + CurrentTeamId,
-      CHANNEL_PREFIX.User + CurrentUser.id,
-    ];
+    import('pusher-js').then(Pusher => {
+      this.socket = new Pusher.default(applicationKey, {
+        cluster,
+        authEndpoint,
+        encrypted: true,
+      });
+      this.socket.connection.bind('state_change', (state: any) => {
+        this.status = state.current;
+        this.socketId = this.socket!.connection.socket_id;
+        store.dispatch(updatePusherStatus(state.current, this.socketId));
+      });
+      const channels = [
+        CHANNEL_PREFIX.GameModel + CurrentGM.id,
+        CHANNEL_PREFIX.Game + CurrentGame.id,
+        CHANNEL_PREFIX.Player + CurrentPlayerId,
+        CHANNEL_PREFIX.Team + CurrentTeamId,
+        CHANNEL_PREFIX.User + CurrentUser.id,
+      ];
 
-    channels.forEach(chan =>
-      this.socket.subscribe(chan).bind_global((event: string, data: {}) => {
-        const processed = processEvent(event, data);
-        if (processed[0].startsWith('pusher:')) {
-          //pusher events
-          return;
-        }
-        this.eventReveived(processed[0], processed[1]);
-      }),
-    );
+      channels.forEach(chan =>
+        this.socket!.subscribe(chan).bind_global(
+          async (event: string, data: {}) => {
+            const processed = await processEvent(event, data);
+            if (processed[0].startsWith('pusher:')) {
+              //pusher events
+              return;
+            }
+            this.eventReveived(processed[0], processed[1]);
+          },
+        ),
+      );
+    });
   }
   private eventReveived(event: string, data: any) {
     console.log(event, data);
@@ -140,6 +146,6 @@ export default class WebSocketListener {
     }
   }
   destructor() {
-    this.socket.disconnect();
+    this.socket!.disconnect();
   }
 }

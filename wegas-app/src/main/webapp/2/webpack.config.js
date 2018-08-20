@@ -2,8 +2,14 @@ const path = require('path');
 const webpack = require('webpack');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin;
 
 const PROD = process.env.NODE_ENV === 'production';
+const isCI =
+  typeof process.env.CI === 'string'
+    ? process.env.CI.toLowerCase() === 'true'
+    : false;
 
 const plugins = [
   new MonacoWebpackPlugin({
@@ -13,6 +19,9 @@ const plugins = [
     formatter: 'codeframe',
   }),
 ];
+if (!isCI && PROD) {
+  plugins.push(new BundleAnalyzerPlugin());
+}
 module.exports = {
   devtool: PROD ? 'source-map' : 'inline-source-map',
   entry: {
