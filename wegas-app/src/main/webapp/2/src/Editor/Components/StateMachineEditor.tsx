@@ -1,4 +1,4 @@
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import produce from 'immer';
 import { Connection, Defaults, jsPlumbInstance } from 'jsplumb';
 import * as React from 'react';
@@ -9,6 +9,8 @@ import { entityIs } from '../../data/entities';
 import { Actions } from '../../data';
 import { Toolbar } from '../../Components/Toolbar';
 import { FontAwesome } from './Views/FontAwesome';
+import { getInstance } from '../../data/methods/VariableDescriptor';
+import { themeVar } from '../../Components/Theme';
 
 const editorStyle = css({
   position: 'relative',
@@ -65,18 +67,19 @@ const JS_PLUMB_OPTIONS: Defaults = {
   ],
   PaintStyle: {
     strokeWidth: 4,
-    stroke: 'darkgray',
+    stroke: themeVar.primaryColor,
     //@ts-ignore
     outlineStroke: 'white',
     outlineWidth: 2,
   },
   HoverPaintStyle: {
-    stroke: '#03283A',
+    stroke: themeVar.primaryDarkerColor,
   },
 };
 
 interface StateMachineEditorProps {
   stateMachine: IFSMDescriptor;
+  stateMachineInstance: IFSMInstance;
   dispatch: StoreDispatch;
 }
 class StateMachineEditor extends React.Component<
@@ -226,17 +229,19 @@ class StateMachineEditor extends React.Component<
     );
   };
   editTransition = (path: [string, number]) => {
+    const stateId = path[0];
+    const transitionIndex = path[1];
     this.props.dispatch(
       Actions.EditorActions.editVariable(
         this.props.stateMachine,
-        ['states', path[0], 'transitions', String(path[1])],
+        ['states', stateId, 'transitions', String(transitionIndex)],
         undefined,
         {
           delete: (_entity, path) => {
             if (path != null) {
               this.removeTransition({
-                from: path[0],
-                transitonIndex: Number(path[1]),
+                from: stateId,
+                transitonIndex: transitionIndex,
               });
             }
           },
@@ -331,6 +336,7 @@ class StateMachineEditor extends React.Component<
   }
   render() {
     const { plumb, stateMachine } = this.state;
+    const { stateMachineInstance } = this.props;
     if (stateMachine == null) {
       return null;
     }
@@ -350,6 +356,7 @@ class StateMachineEditor extends React.Component<
               <State
                 editState={this.editState}
                 state={stateMachine.states[k]}
+                currentState={Number(k) === stateMachineInstance.currentStateId}
                 id={k}
                 initialState={
                   stateMachine.defaultInstance.currentStateId === Number(k)
@@ -368,17 +375,35 @@ class StateMachineEditor extends React.Component<
 }
 export default function ConnectedStateMachineEditor() {
   return (
-    <StoreConsumer<IVariableDescriptor | undefined>
-      selector={s =>
-        s.global.stateMachineEditor
-          ? VariableDescriptor.select(s.global.stateMachineEditor.id)
-          : undefined
-      }
+    <StoreConsumer<{
+      descriptor: IFSMDescriptor | undefined;
+      instance: IFSMInstance | undefined;
+    }>
+      selector={s => {
+        const descriptor = s.global.stateMachineEditor
+          ? VariableDescriptor.select<IFSMDescriptor>(
+              s.global.stateMachineEditor.id,
+            )
+          : undefined;
+        const instance =
+          descriptor != null ? getInstance(descriptor)() : undefined;
+        return {
+          descriptor,
+          instance,
+        };
+      }}
     >
       {({ state, dispatch }) => {
-        if (entityIs<IFSMDescriptor>(state, 'FSMDescriptor')) {
+        if (
+          entityIs<IFSMDescriptor>(state.descriptor, 'FSMDescriptor') &&
+          entityIs<IFSMInstance>(state.instance, 'FSMInstance')
+        ) {
           return (
-            <StateMachineEditor stateMachine={state} dispatch={dispatch} />
+            <StateMachineEditor
+              stateMachine={state.descriptor}
+              stateMachineInstance={state.instance}
+              dispatch={dispatch}
+            />
           );
         }
         return null;
@@ -394,6 +419,12 @@ const stateStyle = css({
   zIndex: 2,
   backgroundColor: 'rgba(255, 255, 255, 0.8)',
 });
+const initialStateStyle = css({
+  border: '3px double',
+});
+const currentStateStyle = css({
+  borderColor: themeVar.primaryColor,
+});
 const sourceStyle = css({
   display: 'inline-block',
   cursor: 'move',
@@ -407,6 +438,7 @@ class State extends React.Component<{
   id: string;
   initialState: boolean;
   plumb: jsPlumbInstance;
+  currentState: boolean;
   editState: (id: string) => void;
   deleteState: (id: string) => void;
   moveState: (id: string, pos: [number, number]) => void;
@@ -445,10 +477,13 @@ class State extends React.Component<{
   }
   onClickEdit = () => this.props.editState(this.props.id);
   render() {
-    const { state, initialState } = this.props;
+    const { state, initialState, currentState } = this.props;
     return (
       <div
-        className={stateStyle}
+        className={cx(stateStyle, {
+          [initialStateStyle]: initialState,
+          [currentStateStyle]: currentState,
+        })}
         id={this.props.id}
         ref={n => {
           this.container = n;
