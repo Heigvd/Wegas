@@ -13,7 +13,7 @@ const isCI =
 
 const plugins = [
   new MonacoWebpackPlugin({
-    languages: ['json', 'css', 'javascript'],
+    languages: ['json', 'css', 'javascript', 'typescript'],
   }),
   new ForkTsCheckerWebpackPlugin({
     formatter: 'codeframe',

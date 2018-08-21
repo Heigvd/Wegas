@@ -61,42 +61,43 @@ class SrcEditor extends React.Component<EditorProps> {
   }
   componentDidMount() {
     this.lastValue = this.props.value;
-    Promise.all([import('monaco-editor'), '../../page-schema.build']).then(
-      ([monaco, t]) => {
-        if (this.container != null) {
-          monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-            validate: true,
-            schemas: [
-              {
-                fileMatch: ['page.json'],
-                uri: 'internal://page-schema.json',
-                schema: (t as any).schema,
-              },
-            ],
-          });
-          const model = monaco.editor.createModel(
-            this.props.value || '',
-            this.props.language,
-            this.props.uri ? monaco.Uri.parse(this.props.uri) : undefined,
-          );
-          this.editor = monaco.editor.create(this.container, {
-            theme: 'vs-dark',
-            model: model,
-            minimap: { enabled: this.props.minimap },
-          });
-          this.editor.onDidBlurEditorText(() => {
+    Promise.all([
+      import('monaco-editor'),
+      import('../../page-schema.build'),
+    ]).then(([monaco, t]) => {
+      if (this.container != null) {
+        monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+          validate: true,
+          schemas: [
+            {
+              fileMatch: ['page.json'],
+              uri: 'internal://page-schema.json',
+              schema: (t as any).schema,
+            },
+          ],
+        });
+        const model = monaco.editor.createModel(
+          this.props.value || '',
+          this.props.language,
+          this.props.uri ? monaco.Uri.parse(this.props.uri) : undefined,
+        );
+        this.editor = monaco.editor.create(this.container, {
+          theme: 'vs-dark',
+          model: model,
+          minimap: { enabled: this.props.minimap },
+        });
+        this.editor.onDidBlurEditorText(() => {
+          this.lastValue = this.editor!.getValue();
+          this.props.onBlur(this.lastValue);
+        });
+        this.editor.onDidChangeModelContent(() => {
+          if (!this.outsideChange) {
             this.lastValue = this.editor!.getValue();
-            this.props.onBlur(this.lastValue);
-          });
-          this.editor.onDidChangeModelContent(() => {
-            if (!this.outsideChange) {
-              this.lastValue = this.editor!.getValue();
-              this.props.onChange(this.lastValue);
-            }
-          });
-        }
-      },
-    );
+            this.props.onChange(this.lastValue);
+          }
+        });
+      }
+    });
   }
   private layout = (size: { width: number; height: number }) => {
     if (this.editor != null) {
