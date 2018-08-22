@@ -80,6 +80,7 @@
 .yui3-skin-sam .yui3-wegas-editorchat .closed {
     height: 0px;
     overflow: hidden;
+    width: 0;
 }
 
 .yui3-skin-sam .yui3-wegas-editorchat .conversation .input {
