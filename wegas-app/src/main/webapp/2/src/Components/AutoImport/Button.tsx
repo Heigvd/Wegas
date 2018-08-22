@@ -8,7 +8,7 @@ interface Props {
 }
 export default function Button(props: Props) {
   return (
-    <StoreConsumer selector={() => undefined}>
+    <StoreConsumer selector={() => props}>
       {({ dispatch }) => (
         <button
           onClick={() => {
