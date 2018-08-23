@@ -9,7 +9,6 @@ import { Container, Node } from '../Views/TreeView';
 import { moveDescriptor } from '../../../data/Reducer/variableDescriptor';
 import { getEntityActions, getIcon, getLabel } from '../../editionConfig';
 import { StoreDispatch, StoreConsumer } from '../../../data/store';
-import { TranslatableContent } from '../../../data/i18n';
 import { State } from '../../../data/Reducer/reducers';
 import { css, cx } from 'emotion';
 import { shallowIs } from '../../../Helper/shallowIs';
@@ -17,6 +16,7 @@ import { Menu } from '../../../Components/Menu';
 import { FontAwesome } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { AddMenuParent, AddMenuChoice } from './AddMenu';
+import { editorLabel } from '../../../data/methods/VariableDescriptor';
 
 const items = children.map(i => {
   const Label = asyncSFC(async () => {
@@ -42,61 +42,90 @@ interface TreeProps {
   variables: number[];
   dispatch: StoreDispatch;
 }
-function TreeView({ variables, dispatch }: TreeProps) {
-  function onSelectCreator(variable: IVariableDescriptor, path?: string[]) {
+class TreeView extends React.Component<TreeProps, { search: string }> {
+  state = { search: '' };
+  onSelectCreator = (variable: IVariableDescriptor, path?: string[]) => {
     return () =>
       getEntityActions(variable).then(({ edit }) =>
-        dispatch(edit(variable, path)),
+        this.props.dispatch(edit(variable, path)),
       );
-  }
-  return (
-    <Toolbar>
-      <Toolbar.Header>
-        <Menu
-          items={items}
-          icon="plus"
-          onSelect={i =>
-            dispatch(Actions.EditorActions.createVariable(i.value))
-          }
-        />
-      </Toolbar.Header>
-      <Toolbar.Content>
-        <Container
-          onDropResult={({ source, target, id }) => {
-            if (
-              source.parent !== target.parent ||
-              source.index !== target.index
-            ) {
-              dispatch(
-                moveDescriptor(
-                  id as IVariableDescriptor,
-                  target.index,
-                  target.parent as IParentDescriptor,
-                ),
-              );
+  };
+  render() {
+    const { variables, dispatch } = this.props;
+    return (
+      <Toolbar>
+        <Toolbar.Header>
+          <input
+            type="string"
+            value={this.state.search}
+            placeholder="Search"
+            onChange={ev => {
+              this.setState({ search: ev.target.value });
+            }}
+          />
+          <Menu
+            items={items}
+            icon="plus"
+            onSelect={i =>
+              dispatch(Actions.EditorActions.createVariable(i.value))
             }
-          }}
-        >
-          {({ nodeProps }) => (
-            <div style={{ height: '100%' }}>
-              {variables ? (
-                variables.map(v => (
-                  <CTree
-                    nodeProps={nodeProps}
-                    key={v}
-                    variableId={v}
-                    onSelectCreator={onSelectCreator}
-                  />
-                ))
-              ) : (
-                <span>Loading ...</span>
-              )}
-            </div>
-          )}
-        </Container>
-      </Toolbar.Content>
-    </Toolbar>
-  );
+          />
+        </Toolbar.Header>
+        <Toolbar.Content>
+          <Container
+            onDropResult={({ source, target, id }) => {
+              if (
+                source.parent !== target.parent ||
+                source.index !== target.index
+              ) {
+                dispatch(
+                  moveDescriptor(
+                    id as IVariableDescriptor,
+                    target.index,
+                    target.parent as IParentDescriptor,
+                  ),
+                );
+              }
+            }}
+          >
+            {({ nodeProps }) => (
+              <div style={{ height: '100%' }}>
+                {variables ? (
+                  variables.map(v => (
+                    <CTree
+                      nodeProps={nodeProps}
+                      key={v}
+                      search={this.state.search}
+                      variableId={v}
+                      onSelectCreator={this.onSelectCreator}
+                    />
+                  ))
+                ) : (
+                  <span>Loading ...</span>
+                )}
+              </div>
+            )}
+          </Container>
+        </Toolbar.Content>
+      </Toolbar>
+    );
+  }
+}
+/**
+ * test a variable and children's editorLabel against a text
+ */
+function isMatch(variableId: number, search: string): boolean {
+  const variable = VariableDescriptor.select(variableId);
+  if (variable == null) {
+    return false;
+  }
+  if (editorLabel(variable).includes(search)) {
+    return true;
+  }
+  if (varIsList(variable)) {
+    return variable.itemsIds.some(id => isMatch(id, search));
+  }
+  return false;
 }
 const SELECTED_STYLE_WIDTH = 4;
 const editingStyle = css({
@@ -108,6 +137,7 @@ const headerStyle = css({
 function CTree(props: {
   variableId: number;
   subPath?: (string | number)[];
+  search: string;
   nodeProps: () => {};
   onSelectCreator: (
     entity: IWegasEntity,
@@ -116,14 +146,18 @@ function CTree(props: {
 }): JSX.Element {
   return (
     <StoreConsumer
-      selector={(state: State) => ({
-        variable: VariableDescriptor.select(props.variableId),
-        editing:
-          state.global.editing != null &&
-          state.global.editing.type === 'Variable' &&
-          props.variableId === state.global.editing.id &&
-          shallowIs(props.subPath || [], state.global.editing.path),
-      })}
+      selector={(state: State) => {
+        const variable = VariableDescriptor.select(props.variableId);
+        return {
+          variable,
+          match: isMatch(props.variableId, props.search),
+          editing:
+            state.global.editing != null &&
+            state.global.editing.type === 'Variable' &&
+            props.variableId === state.global.editing.id &&
+            shallowIs(props.subPath || [], state.global.editing.path),
+        };
+      }}
     >
       {({ state, dispatch }) => {
         let { variable } = state;
@@ -135,6 +169,9 @@ function CTree(props: {
             const icon = await getIcon(variable!);
             return <FontAwesome icon={icon || 'question'} fixedWidth />;
           });
+          if (!state.match) {
+            return null;
+          }
           return (
             <Node
               {...props.nodeProps()}
@@ -144,7 +181,7 @@ function CTree(props: {
                   onClick={props.onSelectCreator(variable)}
                 >
                   <Title />
-                  {TranslatableContent.toString(variable.label)}
+                  {editorLabel(variable)}
                   {entityIs<IListDescriptor>(variable, 'ListDescriptor') ||
                   entityIs<IQuestionDescriptor>(
                     variable,
@@ -168,6 +205,7 @@ function CTree(props: {
                         nodeProps={nodeProps}
                         key={i}
                         variableId={i}
+                        search={props.search}
                         onSelectCreator={props.onSelectCreator}
                       />
                     ))
@@ -176,6 +214,7 @@ function CTree(props: {
                         <CTree
                           nodeProps={nodeProps}
                           key={r.id}
+                          search={props.search}
                           variableId={r.choiceDescriptorId}
                           subPath={['results', index]}
                           onSelectCreator={function(v: IResult) {
