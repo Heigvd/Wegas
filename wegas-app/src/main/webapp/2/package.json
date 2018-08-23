@@ -47,7 +47,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.2.0",
     "@fortawesome/react-fontawesome": "0.1.2",
     "color": "^3.0.0",
-    "downshift": "^2.1.4",
+    "downshift": "^2.1.5",
     "emotion": "^9.2.6",
     "fast-json-patch": "^2.0.6",
     "immer": "^1.5.0",
@@ -67,9 +67,9 @@
     "redux": "^4.0.0",
     "redux-thunk": "^2.3.0",
     "resize-observer-polyfill": "^1.5.0",
-    "slate": "^0.38.1",
-    "slate-html-serializer": "^0.6.27",
-    "slate-react": "^0.16.1"
+    "slate": "^0.40.0",
+    "slate-html-serializer": "^0.7.0",
+    "slate-react": "^0.18.0"
   },
   "devDependencies": {
     "@types/babel-generator": "^6.25.2",

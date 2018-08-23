@@ -32,6 +32,13 @@ export function bulletList(): Generated {
             nodes: next(el.childNodes),
           };
         }
+        if (el.tagName.toLowerCase() === 'li') {
+          return {
+            object: 'block',
+            type: 'list-item',
+            nodes: next(el.childNodes),
+          };
+        }
       },
     },
     Button({ value, onChange }: ToolbarButtonProps) {
