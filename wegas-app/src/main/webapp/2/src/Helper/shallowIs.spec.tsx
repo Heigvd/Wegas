@@ -10,7 +10,9 @@ test.each([
   [true, null, null],
   [true, undefined, undefined],
   [true, { a: empty }, { a: empty }],
+  [true, { a: NaN }, { a: NaN }],
   [false, { a: undefined }, { b: undefined }],
+  [false, { b: undefined, a: undefined }, { b: undefined }],
   [false, [], [1]],
   [false, [1, 2], [2, 3]],
   [false, undefined, null],
@@ -25,7 +27,7 @@ test.each([
   [false, {}, null],
 ])(
   'Should be %s when shallow comparing %o and %o',
-  (expected: boolean, a: any, b: any) => {
+  (expected: boolean, a: unknown, b: unknown) => {
     expect(shallowIs(a, b)).toBe(expected);
   },
 );
