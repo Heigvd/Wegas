@@ -39,10 +39,10 @@
     }
   },
   "dependencies": {
-    "@babel/generator": "^7.0.0-rc.2",
-    "@babel/parser": "^7.0.0-rc.2",
-    "@babel/traverse": "^7.0.0-rc.2",
-    "@babel/types": "^7.0.0-rc.2",
+    "@babel/generator": "^7.0.0-rc.3",
+    "@babel/parser": "^7.0.0-rc.3",
+    "@babel/traverse": "^7.0.0-rc.3",
+    "@babel/types": "^7.0.0-rc.3",
     "@fortawesome/fontawesome-svg-core": "^1.2.2",
     "@fortawesome/free-solid-svg-icons": "^5.2.0",
     "@fortawesome/react-fontawesome": "0.1.2",
@@ -67,9 +67,9 @@
     "redux": "^4.0.0",
     "redux-thunk": "^2.3.0",
     "resize-observer-polyfill": "^1.5.0",
-    "slate": "^0.40.1",
-    "slate-html-serializer": "^0.7.1",
-    "slate-react": "^0.18.2"
+    "slate": "^0.40.2",
+    "slate-html-serializer": "^0.7.2",
+    "slate-react": "^0.18.3"
   },
   "devDependencies": {
     "@types/babel-generator": "^6.25.2",
@@ -79,7 +79,7 @@
     "@types/jest": "^23.3.1",
     "@types/lodash-es": "^4.17.1",
     "@types/pako": "^1.0.0",
-    "@types/react": "^16.4.11",
+    "@types/react": "^16.4.12",
     "@types/react-dnd": "^2.0.36",
     "@types/react-dnd-html5-backend": "^2.1.9",
     "@types/react-dom": "^16.0.7",
@@ -104,6 +104,6 @@
     "webpack": "^4.17.1",
     "webpack-bundle-analyzer": "^2.13.1",
     "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.5"
+    "webpack-dev-server": "^3.1.6"
   }
 }
