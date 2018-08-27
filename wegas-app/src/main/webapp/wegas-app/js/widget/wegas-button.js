@@ -259,16 +259,22 @@ YUI.add('wegas-button', function(Y) {
             }
 
             if (unreadCount > 0) {
-                // Update the content
-                target.setContent(
-                    "<span class='value'>" +
-                    (this.get('displayValue') ? unreadCount : '') +
-                    '</span>'
+                // Update the content, but only if necessary, to enable targeted CSS animations
+                var span = target.one("span"),
+                    oldval = span && span.getData("value");
+                oldval = oldval ? +oldval : -1;
+                if (oldval !== unreadCount) {
+                    target.setContent(
+                        "<span class='value' data-value='" + unreadCount + "'>" +
+                        (this.get('displayValue') ? unreadCount : '') +
+                        '</span>'
                     );
+                    bb.addClass('wegas-unreadcount');
+                }
             } else {
                 target.setContent('');
+                bb.removeClass('wegas-unreadcount');
             }
-            bb.toggleClass('wegas-unreadcount', unreadCount > 0);
         },
         /**
          * @function

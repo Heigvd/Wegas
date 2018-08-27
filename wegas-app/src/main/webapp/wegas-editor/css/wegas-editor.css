@@ -192,17 +192,28 @@
 }
 
 /* Console widget styles */
+
+.wegas-console-wysiwyg-content {
+    /*display: flex;*/
+    /*flex-direction: column;*/
+    /*height: 100%;*/
+}
+
+.wegas-console .qrcode_thumbnail {
+    
+}
+
 .wegas-console .results {
-    position: absolute;
-    height: 180px;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    /*position: absolute;*/
+    /*height: 180px;*/
+    /*bottom: 0;*/
+    /*left: 0;*/
+    /*right: 0;*/
     padding: 0.5em;
     border-top: 1px solid #f1f1f1;
     background: white;
-    z-index: 1;
     overflow: auto;
+    flex-shrink:0
 }
 
 .wegas-console .results .result {

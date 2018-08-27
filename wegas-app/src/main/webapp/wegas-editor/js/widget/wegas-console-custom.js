@@ -79,7 +79,8 @@ YUI.add('wegas-console-custom', function(Y) {
                         }, this));
                     } else {
                         cb.addClass("modal--content-advanced modal--without-menu");
-                        contentAdvanced = cb.append("<div class='content-advanced-script'></div>");
+                        cb.append("<div class='content-advanced-script'></div>");
+                        contentAdvanced = cb.one(".content-advanced-script");
                     }
                     // this.srcField = new Y.inputEx.WysiwygScript({
                     //     parentEl: contentAdvanced

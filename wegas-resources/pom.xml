@@ -55,6 +55,7 @@
                 <configuration>
                     <encoding>UTF-8</encoding>
                     <excludes>
+                        <exclude>lib/qrcode/**</exclude>
                         <exclude>lib/ace/**</exclude>
                         <exclude>lib/crafty/**</exclude>
                         <exclude>lib/diffmatchpatch/**</exclude>
