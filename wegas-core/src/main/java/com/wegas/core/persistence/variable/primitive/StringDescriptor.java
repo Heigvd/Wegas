@@ -10,6 +10,7 @@ package com.wegas.core.persistence.variable.primitive;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntity;
+import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
@@ -21,6 +22,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import jdk.nashorn.api.scripting.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,6 +144,24 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      */
     @Override
     public void setValue(Player p, String value) {
+        this.getInstance(p).setValue(value);
+    }
+
+    /**
+     *
+     * @param p
+     * @param value
+     */
+    public void setValue(Player p, TranslatableContent value) {
+        this.getInstance(p).setValue(value);
+    }
+
+    /**
+     *
+     * @param p
+     * @param value
+     */
+    public void setValue(Player p, JSObject value) {
         this.getInstance(p).setValue(value);
     }
 

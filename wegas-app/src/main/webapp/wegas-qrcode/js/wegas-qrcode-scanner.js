@@ -4,6 +4,16 @@
  *
  * Copyright (c) 2018 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
+ *
+ * NB: as of August 2018, Instascan needs this patch for iOS:
+ * https://github.com/centogram/instascan
+ *
+ * When a camera access rights issue is detected, the client game can display help instructions inside a text box
+ * following this widget. That box will then appear as this widget receives the additional class "error". Sample CSS:
+ *     .wegas-qrcode-scanner.error ~ .qrcode-help-box {
+ *         display: block;
+ *     }
+ *
  */
 
 /* global Instascan */
@@ -23,23 +33,32 @@ YUI.add('wegas-qrcode-scanner', function(Y) {
             this.handlers = {};
             this.cameras = {};
             this.mirror = this.get("mirror");
-            Instascan.Camera.getCameras();
+            this.autostart = this.get("autostart");
         },
         renderUI: function() { // Create all DOM elements
-            this.get("contentBox").setContent("v5: <i class='fa fa-4x fa-qrcode initiator'> </i>");
-
-            this.get("contentBox").append("<div class='the_scanner'>"
-                + "  <i class='mirror fa fa-4x fa-arrows-h'></i>"
-                + "  <ul class='cameras'></ul>"
+            var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream,
+                // Instascan bugfix from https://github.com/schmich/instascan/pull/112 :
+                videoAttrs = iOS ? "muted autoplay playsinline" : "muted playsinline";
+            this.get(CONTENTBOX).setContent("<button class='fa fa-qrcode initiator'><span class='fa-button-label'>" +
+                I18n.t("qrcode.startScan")+ "</span></button>");
+            this.get(CONTENTBOX).append("<div class='the_scanner'>"
+                + "  <button class='mirror fa fa-arrows-h'><span class='fa-button-label'>" +
+                    I18n.t("qrcode.mirror") + "</span></button>"
+                + "  <div class='cameras'></div>"
                 + "  <div class='preview-container'>"
-                + "    <video muted autoplay playsinline class='scanner'></video>"
+                + "    <video class='scanner' " + videoAttrs + "></video>"
                 + "  </div>"
                 + "</div>");
         },
+        syncUI: function() {
+            if (this.autostart) {
+                this.toggleScanner();
+            }
+        },
         bindUI: function() {
-            this.get("contentBox").delegate("click", this.toggleScanner, ".initiator", this);
-            this.get("contentBox").delegate("click", this.flip, ".mirror", this);
-            this.get("contentBox").delegate("click", this.changeCamera, ".cameras li", this);
+            this.get(CONTENTBOX).delegate("click", this.toggleScanner, ".initiator", this);
+            this.get(CONTENTBOX).delegate("click", this.flip, ".mirror", this);
+            this.get(CONTENTBOX).delegate("click", this.changeCamera, ".cameras .camera", this);
         },
         changeCamera: function(e) {
             this.startScanner(e.target.getData("cameraId"));
@@ -48,6 +67,11 @@ YUI.add('wegas-qrcode-scanner', function(Y) {
             if (this.scanner && this.currentCameraId !== cameraId) {
                 this.scanner.start(this.cameras[cameraId]);
                 this.currentCameraId = cameraId;
+                var cb = this.get(CONTENTBOX);
+                cb.one(".initiator .fa-button-label").setContent(I18n.t("qrcode.cancelScan"));
+                cb.all(".camera").addClass("inactive");
+                var me = cb.one('.camera[data-cameraId = "' + cameraId + '"]');
+                me && me.removeClass("inactive");
             }
         },
         stopScanner: function() {
@@ -55,6 +79,8 @@ YUI.add('wegas-qrcode-scanner', function(Y) {
                 this.scanner.stop();
             }
             this.currentCameraId = null;
+            var cb = this.get(CONTENTBOX);
+            cb.one(".initiator .fa-button-label").setContent(I18n.t("qrcode.startScan"));
         },
         flip: function() {
             this.mirror = !this.mirror;
@@ -62,7 +88,7 @@ YUI.add('wegas-qrcode-scanner', function(Y) {
                 this.scanner.stop();
 
                 var scanner = new Instascan.Scanner({
-                    video: this.get("contentBox").one(".scanner").getDOMNode(),
+                    video: this.get(CONTENTBOX).one(".scanner").getDOMNode(),
                     mirror: this.mirror,
                     scanPeriod: 5
                 });
@@ -74,8 +100,10 @@ YUI.add('wegas-qrcode-scanner', function(Y) {
             }
         },
         toggleScanner: function() {
-            console.log("StartScanning");
-            var cb = this.get("contentBox");
+            Y.log("ToggleScanner");
+            var cb = this.get(CONTENTBOX),
+                // Enable game-specific help box for solving access rights issues:
+                pt = cb.get("parentNode");
             if (!this.scanner) {
                 var scanner = new Instascan.Scanner({
                     video: cb.one(".scanner").getDOMNode(),
@@ -91,32 +119,38 @@ YUI.add('wegas-qrcode-scanner', function(Y) {
                         list.setContent();
                         for (var i in cameras) {
                             this.cameras[cameras[i].id] = cameras[i];
-                            list.append("<li class='camera' data-cameraId=" + cameras[i].id + ">" + cameras[i].name + cameras[i].id + "</li>");
+                            list.append("<button class='camera fa fa-camera' data-cameraId=" + cameras[i].id +
+                                "><span class='fa-button-label' data-cameraId=" + cameras[i].id + ">" +
+                                cameras[i].name + "</span></button>");
                         }
 
+                        pt.removeClass("error");
+                        cb.addClass("scanning");
                         this.scanner = scanner;
                         this.startScanner(cameras[0].id);
                     } else {
-                        this.showMessage("NOCAMERA");
-                        console.error('No cameras found.');
+                        this.showMessage("error", I18n.t("qrcode.noCamera"));
+                        cb.removeClass("scanning");
+                        pt.addClass("error");
                     }
                 }, this)).catch(Y.bind(function(e) {
-                    this.showMessage("error", " => " + e);
-                    console.error(e);
+                    this.showMessage("error", I18n.t("qrcode.accessRights") + "<div class='error-details'>(" + e + ")</div>");
+                    cb.removeClass("scanning");
+                    pt.addClass("error");
                 }, this));
 
-                cb.toggleClass("scanning", true);
 
             } else {
                 //cb.one(".the_scanner") && cb.one(".the_scanner").remove();
                 this.stopScanner();
                 this.scanner = null;
-                cb.toggleClass("scanning", false);
+                cb.removeClass("error");
+                cb.removeClass("scanning");
             }
         },
 
         toggleScanner_qrScanner: function() {
-            var cb = this.get("contentBox");
+            var cb = this.get(CONTENTBOX);
             if (!this.scanner) {
                 var scanner = new QrScanner(cb.one(".scanner").getDOMNode(), Y.bind(this.process, this));
                 this.scanner = scanner;
@@ -130,9 +164,6 @@ YUI.add('wegas-qrcode-scanner', function(Y) {
             }
         },
 
-        syncUI: function() {
-            var cb = this.get(CONTENTBOX);
-        },
         process: function(qrCodeValue) {
             var o = JSON.parse(qrCodeValue);
             if (o && o.type) {
@@ -149,11 +180,25 @@ YUI.add('wegas-qrcode-scanner', function(Y) {
                             {
                                 on: {
                                     success: Y.bind(this.hideOverlay, this),
-                                    failure: Y.bind(this.hideOverlay, this)
+                                    failure:
+                                        // The QR-code seems to be encoded properly for Wegas, but did generate an error:
+                                        Y.bind(function(e) {
+                                            this.hideOverlay();
+                                            // Hide any low-level error panel:
+                                            var panel = Y.one(".wegas-panel"),
+                                                ok = panel && panel.one(".yui3-button");
+                                            if (ok) {
+                                                YUI().use('node-event-simulate', function(Y) {
+                                                    ok.simulate("click");
+                                                });
+                                            }
+                                            this.showMessage("error", I18n.t("qrcode.notUnderstood"));
+                                            Y.log("*** " + I18n.t("qrcode.notUnderstood"));
+                                            Y.log(" Decoded QR-code: " + qrCodeValue);
+                                        }, this)
                                 }
                             }
                         );
-
                         break;
                     case "selectChoice":
                         /* payload={
@@ -173,7 +218,7 @@ YUI.add('wegas-qrcode-scanner', function(Y) {
                     case "cancelChoice":
                         var replies = Y.Wegas.Facade.Variable.cache.find("name", payload.choiceName).getInstance().get("replies");
                         if (replies && replies.length) {
-                            // TODO reply = first 
+                            // TODO reply = first
                             Y.Wegas.Facade.Variable.sendRequest({
                                 request: "/QuestionDescriptor/CancelReply/" + replies[0].get('id')
                                     + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
@@ -208,7 +253,10 @@ YUI.add('wegas-qrcode-scanner', function(Y) {
 
                 this.toggleScanner();
             } else {
-                Y.log("unknown code");
+                // The QR-code was apparently not encoded for Wegas :
+                this.showMessage("error", I18n.t("qrcode.notUnderstood"));
+                Y.log("*** " + I18n.t("qrcode.notUnderstood"));
+                Y.log(" Decoded QR-code: " + qrCodeValue);
             }
         },
         destructor: function() {
@@ -253,6 +301,13 @@ YUI.add('wegas-qrcode-scanner', function(Y) {
                 value: false,
                 view: {
                     label: "Mirror"
+                }
+            },
+            autostart: {
+                type: "boolean",
+                value: false,
+                view: {
+                    label: "Autostart"
                 }
             }
         }
