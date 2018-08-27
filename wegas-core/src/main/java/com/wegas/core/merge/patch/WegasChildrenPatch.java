@@ -56,7 +56,7 @@ public final class WegasChildrenPatch extends WegasPatch {
         Map<Object, Object> toMap = asMap(to);
 
         /*
-         * Go through initial children
+             * Go through initial children
          */
         for (Entry<Object, Object> entry : fromMap.entrySet()) {
             Object key = entry.getKey();
@@ -64,8 +64,8 @@ public final class WegasChildrenPatch extends WegasPatch {
             Object fromEntity = entry.getValue();
             Object toEntity = toMap.get(key);
 
+            // this patch handles delete and update cases
             if (primitive != null) {
-                // this patch handles delete and update cases
                 if (primitive) {
                     patches.add(new WegasPrimitivePatch(key, 0, null, referenceEntity, null, null, fromEntity, toEntity, false, false, false, this.protectionLevel));
                 } else {
@@ -74,14 +74,15 @@ public final class WegasChildrenPatch extends WegasPatch {
                             (Mergeable) toEntity, // null -> DELETE ; not null -> UPDATE
                             recursive, false, false, false, this.protectionLevel));
                 }
+
+                if (to != null) {
+                    // since the patch to update "to" has been created, remove "to" from the map
+                    toMap.remove(key);
+                }
+
             } else {
                 // not able yet (java8) to retrieve effective class as generic types does not exists in runtime anymore...
-                logger.error("Unable to guess patch type: ignore {}", referenceEntity);
-            }
-
-            if (to != null) {
-                // since the patch to update "to" has been created, remove "to" from the map
-                toMap.remove(key);
+                logger.debug("Unable to guess patch type: ignore {}'s {}", referenceEntity, identifier);
             }
         }
 
@@ -89,14 +90,21 @@ public final class WegasChildrenPatch extends WegasPatch {
         for (Entry<Object, Object> entry : toMap.entrySet()) {
             Object key = entry.getKey();
             Object toEntity = entry.getValue();
-            if (primitive) {
-                patches.add(new WegasPrimitivePatch(key, 0, null, referenceEntity, null, null, null, toEntity, false, false, false, this.protectionLevel));
+            if (primitive != null) {
+                if (primitive) {
+                    patches.add(new WegasPrimitivePatch(key, 0, null, referenceEntity, null, null, null, toEntity, false, false, false, this.protectionLevel));
+                } else {
+                    patches.add(new WegasEntityPatch(key, 0, userCallback, null, null,
+                            null, (Mergeable) toEntity, // from null to no null  -> CREATE
+                            recursive, false, false, false, this.protectionLevel));
+                }
+
             } else {
-                patches.add(new WegasEntityPatch(key, 0, userCallback, null, null,
-                        null, (Mergeable) toEntity, // from null to no null  -> CREATE
-                        recursive, false, false, false, this.protectionLevel));
+                // not able yet (java8) to retrieve effective class as generic types does not exists in runtime anymore...
+                logger.debug("Unable to guess patch type: ignore {}'s {}", referenceEntity, identifier);
             }
         }
+
     }
 
     /**
