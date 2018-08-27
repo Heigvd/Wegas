@@ -2,7 +2,7 @@ import * as React from 'react';
 import { css, cx } from 'emotion';
 
 const flex = css({
-  display: 'inline-flex',
+  display: 'flex',
   flexDirection: 'column',
   height: '100%',
   width: '100%',
@@ -26,7 +26,10 @@ const content = css({
 });
 
 export const Toolbar = Object.assign(
-  (props: { vertical?: boolean; children: React.ReactElement<{}>[] }) => {
+  function Toolbar(props: {
+    vertical?: boolean;
+    children: React.ReactElement<{}>[];
+  }) {
     return (
       <div
         className={cx({
