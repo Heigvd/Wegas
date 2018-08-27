@@ -84,7 +84,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     private String name;
 
     @Basic(optional = false)
-    private Integer UIVersion = 2;
+    private Integer UIVersion = 1;
 
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<GameModelLanguage> languages = new ArrayList<>();
