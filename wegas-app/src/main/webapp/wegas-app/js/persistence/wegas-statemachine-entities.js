@@ -375,7 +375,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 type: NUMBER,
                 value: 0,
                 view: {
-                    className: 'wegas-advanced-feature'
+                    className: 'wegas-advanced-feature',
+                    label: 'Index'
                 }
             }
         }
