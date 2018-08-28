@@ -25,7 +25,7 @@ public class DialogueDescriptor extends StateMachineDescriptor {
     @Override
     public void revive(GameModel gameModel, Beanjection beans) {
         super.revive(gameModel, beans);
-        for (State s : this.getStates().values()) {
+        for (State s : this.getStates()) {
             if (s instanceof DialogueState) {
                 DialogueState ds = (DialogueState) s;
                 if (ds.getText() != null) {

@@ -56,7 +56,7 @@ public final class WegasChildrenPatch extends WegasPatch {
         Map<Object, Object> toMap = asMap(to);
 
         /*
-             * Go through initial children
+         * Go through initial children
          */
         for (Entry<Object, Object> entry : fromMap.entrySet()) {
             Object key = entry.getKey();

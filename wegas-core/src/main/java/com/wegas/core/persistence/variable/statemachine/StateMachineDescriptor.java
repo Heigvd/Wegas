@@ -7,6 +7,8 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -15,6 +17,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import java.util.*;
+import java.util.Map.Entry;
 import javax.persistence.*;
 
 /**
@@ -43,7 +46,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     @MapKeyColumn(name = "fsm_statekey")
     @JsonView(Views.ExtendedI.class)
     @WegasEntityProperty(ignoreNull = true, protectionLevel = ProtectionLevel.INHERITED)
-    private Map<Long, State> states = new HashMap<>();
+    private Set<State> states = new HashSet<>();
 
     /**
      *
@@ -54,23 +57,47 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     /**
      * @return all stated mapped by index numbers
      */
-    public Map<Long, State> getStates() {
+    @JsonIgnore
+    public Set<State> getStates() {
         return states;
     }
 
+    @JsonIgnore
+    public void setStates(Set<State> states) {
+        this.states = states;
+        for (State state : states){
+            state.setStateMachine(this);
+        }
+    }
+
+
+
+    @JsonProperty(value = "states")
+    @JsonView(Views.ExtendedI.class)
+    public Map<Long, State> getStatesAsMap() {
+        Map<Long, State> map = new HashMap<>();
+        for (State state : this.states) {
+            map.put(state.getIndex(), state);
+        }
+        return map;
+    }
+
     public State addState(Long index, State state) {
-        this.getStates().put(index, state);
+        state.setIndex(index);
         state.setStateMachine(this);
+        this.getStates().add(state);
         return state;
     }
 
     /**
      * @param states
      */
-    public void setStates(Map<Long, State> states) {
-        this.states = states;
-        for (State state : states.values()) {
-            state.setStateMachine(this);
+    @JsonProperty("states")
+    public void setStatesFromMap(Map<Long, State> states) {
+        this.states.clear();
+
+        for (Entry<Long, State> entry : states.entrySet()) {
+            this.addState(entry.getKey(), entry.getValue());
         }
     }
 

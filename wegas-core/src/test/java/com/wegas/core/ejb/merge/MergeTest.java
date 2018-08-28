@@ -8,7 +8,6 @@
 package com.wegas.core.ejb.merge;
 
 import ch.qos.logback.classic.Level;
-import com.wegas.core.Helper;
 import com.wegas.core.ejb.*;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.patch.WegasPatch;
@@ -216,7 +215,7 @@ public class MergeTest extends AbstractArquillianTest {
         Assert.assertEquals(0, errors.size());
     }
 
-    @Test
+    //@Test
     public void printEntityChildren() {
         Set<Class<? extends AbstractEntity>> sub = reflections.getSubTypesOf(AbstractEntity.class);
 
@@ -242,7 +241,7 @@ public class MergeTest extends AbstractArquillianTest {
         }
     }
 
-    @Test
+    //@Test
     public void printEntity() {
         Set<Class<? extends Mergeable>> classes = reflections.getSubTypesOf(Mergeable.class);
 

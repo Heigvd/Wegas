@@ -28,6 +28,7 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.ModelScoped;
+import static com.wegas.core.persistence.variable.ModelScoped.Visibility.PRIVATE;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.EnumItem;
@@ -36,6 +37,7 @@ import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
+import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.security.persistence.User;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.ByteArrayInputStream;
@@ -51,6 +53,7 @@ import javax.naming.NamingException;
 import javax.ws.rs.core.MediaType;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -1380,7 +1383,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         Assert.assertEquals("GM2 3rd descriptor does no match", "z", gameModel2.getChildVariableDescriptors().get(2).getName());
 
 
-        /* create private t in gameModel1 */
+        /* create private t in gameModel2 */
         NumberDescriptor t = wegasFactory.createNumberDescriptor(gameModel1, null, "t", "T", ModelScoped.Visibility.PRIVATE, initialMin, initialMax, initialValue);
 
         checkNumber(gameModel1, x, initialMin, initialMax, initialValue);
@@ -1683,7 +1686,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         // create german
         i18nFacade.createLanguage(model.getId(), "de", "Deutsch");
 
-        model =gameModelFacade.find(model.getId());
+        model = gameModelFacade.find(model.getId());
 
         Assert.assertNotNull("German is missing in model", model.getLanguageByCode("de"));
 
@@ -1719,7 +1722,6 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         Assert.assertNotNull("German is missing in gameModel1", gameModel1.getLanguageByCode("de"));
         Assert.assertNotNull("German is missing in gameModel3", gameModel3.getLanguageByCode("de"));
         Assert.assertNotNull("German is missing in gameModel3", gameModel3.getLanguageByCode("de"));
-
 
         // assert internal translations have been overriden by model ones
         this.assertLabelEquals(model, gameModel1, "strModel");
@@ -1820,5 +1822,50 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         }
 
         gameModelFacade.reset(bigGameModel.getId());
+    }
+
+    @Test
+    public void testModelise_StateMachine() throws NamingException, WegasNoResultException, RepositoryException, RepositoryException {
+        GameModel gameModel1 = new GameModel();
+        gameModel1.setName("gamemodel #1");
+        gameModelFacade.createWithDebugGame(gameModel1);
+
+        StateMachineDescriptor fsm1 = wegasFactory.createStateMachineDescriptor(gameModel1, null, "fsm", "fsm", PRIVATE);
+        fsm1 = wegasFactory.createState(fsm1, 1l, "");
+        fsm1 = wegasFactory.createState(fsm1, 2l, "");
+        wegasFactory.createTransition(fsm1, 1l, 2l, "false", "", 0);
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+
+        GameModel gameModel2 = new GameModel();
+        gameModel2.setName("gamemodel #1");
+        gameModelFacade.createWithDebugGame(gameModel2);
+
+        StateMachineDescriptor fsm2 = wegasFactory.createStateMachineDescriptor(gameModel2, null, "fsm", "fsm", PRIVATE);
+        fsm2 = wegasFactory.createState(fsm2, 1l, "");
+        fsm2 = wegasFactory.createState(fsm2, 2l, "");
+        wegasFactory.createTransition(fsm2, 1l, 2l, "false", "", 0);
+
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        List<GameModel> scenarios = new ArrayList<>();
+
+        scenarios.add(gameModel1);
+        scenarios.add(gameModel2);
+
+        logger.info("Create Model");
+        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
+
+        model = modelFacade.propagateModel(model.getId());
+
+        StateMachineDescriptor modelFsm = (StateMachineDescriptor) variableDescriptorFacade.find(model, "fsm");
+
+        wegasFactory.removeState(modelFsm, 2l);
+
+        model = modelFacade.propagateModel(model.getId());
+
+        logger.debug(Helper.printGameModel(gameModelFacade.find(model.getId())));
+        logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel2.getId())));
+
     }
 }

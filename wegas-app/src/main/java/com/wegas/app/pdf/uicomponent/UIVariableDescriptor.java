@@ -22,6 +22,7 @@ import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.primitive.TextDescriptor;
 import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
+import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
@@ -47,6 +48,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIComponentBase;
 import javax.faces.component.html.HtmlGraphicImage;
@@ -665,11 +667,13 @@ public class UIVariableDescriptor extends UIComponentBase {
 
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_FOLDER);
             List<Long> keys = new ArrayList<>();
-            keys.addAll(fsm.getStates().keySet());
+            Map<Long, State> states = fsm.getStatesAsMap();
+            keys.addAll(states.keySet());
+
             Collections.sort(keys);
 
             for (Long id : keys) {
-                UIState uiState = new UIState(fsm.getStates().get(id), id, player, editorMode, defaultValues);
+                UIState uiState = new UIState(states.get(id), id, player, editorMode, defaultValues);
                 uiState.encodeAll(context);
             }
             UIHelper.endDiv(writer);

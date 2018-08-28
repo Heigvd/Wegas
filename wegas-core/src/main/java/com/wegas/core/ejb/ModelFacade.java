@@ -54,6 +54,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -140,7 +141,7 @@ public class ModelFacade {
 
     /**
      * Clear non-modelable content.
-     * Some entities do not well support model extractor process. Thus, those should be wiped out from the newly extracted model
+     * Some entities do not well support model extraction process. Thus, those should be wiped out from the newly extracted model
      */
     private static class ClearModel implements MergeableVisitor {
 
@@ -192,9 +193,24 @@ public class ModelFacade {
                 StateMachineDescriptor inModel = (StateMachineDescriptor) target;
 
                 // the state machine exists in the model.
-                // private in model: the state machine will be removed from scenario
-                // other visibility: the state machine will be completely override
-                inScenario.setStates(new HashMap<>());
+                //inScenario.setStates(new HashMap<>());
+                Set<State> inModelStates = inModel.getStates();
+
+                for (Iterator<State> it = inScenario.getStates().iterator(); it.hasNext();) {
+                    State state = it.next();
+                    boolean found = false;
+                    for (State mState : inModelStates) {
+
+                        if (mState.getIndex().equals(state.getIndex())) {
+                            state.getTransitions().clear();
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found){
+                        it.remove();
+                    }
+                }
             }
         }
     }
