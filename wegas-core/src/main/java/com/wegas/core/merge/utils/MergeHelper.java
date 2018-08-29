@@ -380,10 +380,10 @@ public class MergeHelper {
                         String translation = tr.getTranslation();
                         trTarget.updateTranslation(languageCode, translation);
                     } else {
-                        logger.error("No {} Translation in Reference {}", languageCode, trRef);
+                        logger.debug("No {} Translation in Reference {}", languageCode, trRef);
                     }
                 } else {
-                    logger.error("No TranslationContent in Reference");
+                    logger.debug("No TranslationContent in Reference");
                 }
             }
 

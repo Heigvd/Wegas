@@ -207,7 +207,7 @@ public class ModelFacade {
                             break;
                         }
                     }
-                    if (!found){
+                    if (!found) {
                         it.remove();
                     }
                 }
@@ -714,6 +714,16 @@ public class ModelFacade {
 
                         logger.debug(Helper.printGameModel(scenario));
 
+                        /*
+                         * This flush is required by several EntityRevivedEvent listener,
+                         * which opperate some SQL queries (which didn't return anything before
+                         * entites have been flushed to database
+                         *
+                         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
+                         * it will not return any result if this flush not occurs
+                         */
+                        variableDescriptorFacade.flush();
+
                         variableDescriptorFacade.reviveItems(scenario, scenario, false);
                         gameModelFacade.reset(scenario);
                         this.registerPagesPropagates(scenario);
@@ -928,6 +938,17 @@ public class ModelFacade {
 
                         logger.info("Revive {}", scenario);
                         //scenario.propagateGameModel();
+
+                        /*
+                         * This flush is required by several EntityRevivedEvent listener,
+                         * which opperate some SQL queries (which didn't return anything before
+                         * entites have been flushed to database
+                         *
+                         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
+                         * it will not return any result if this flush not occurs
+                         */
+                        variableDescriptorFacade.flush();
+
                         variableDescriptorFacade.reviveItems(scenario, scenario, false);
 
                         for (GameModelLanguage lang : gameModel.getRawLanguages()) {

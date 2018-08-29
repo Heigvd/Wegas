@@ -127,6 +127,19 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         final VariableDescriptor vd = this.find(entityId);
         //entity.setGameModel(vd.getGameModel());
         vd.merge(entity);
+
+         /*
+         * This flush is required by several EntityRevivedEvent listener,
+         * which opperate some SQL queries (which didn't return anything before
+         * entites have been flushed to database
+         *
+         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
+         * it will not return any result if this flush not occurs
+         */
+        this.getEntityManager().flush();
+
+       // flush
+
         this.revive(vd.getGameModel(), vd, false);
         return vd;
     }
@@ -166,12 +179,24 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         Helper.setUniqueLabel(entity, usedLabels, gameModel);
 
         list.addItem(entity);
+
+        /*
+         * This flush is required by several EntityRevivedEvent listener,
+         * which opperate some SQL queries (which didn't return anything before
+         * entites have been flushed to database
+         *
+         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
+         * it will not return any result if this flush not occurs
+         */
+        this.getEntityManager().flush();
+
         this.revive(gameModel, entity, true);
 
         return entity;
     }
 
     /**
+     *
      * @param gameModel
      * @param entity
      * @param propagate indicate whether default instance should be propagated
@@ -193,16 +218,6 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             }
         }
 
-        /*
-         * This flush is required by several EntityRevivedEvent listener,
-         * which opperate some SQL queries (which didn't return anything before
-         * entites have been flushed to database
-         *
-         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
-         * it will not return any result if this flush not occurs
-         */
-        this.getEntityManager().flush();
-
         this.reviveDescriptor(gameModel, entity);
         variableInstanceFacade.reviveInstance(entity.getDefaultInstance());
 
@@ -217,7 +232,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         }
     }
 
-    public void revive(GameModel gameModel, VariableDescriptor entity, boolean propagate) {
+    private void revive(GameModel gameModel, VariableDescriptor entity, boolean propagate) {
         this.shallowRevive(gameModel, entity, propagate);
         if (entity instanceof DescriptorListI) {
             this.reviveItems(gameModel, (DescriptorListI) entity, propagate); // also revive children
@@ -226,6 +241,11 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
     public void reviveDescriptor(GameModel gm, VariableDescriptor vd) {
         vd.revive(gm, getBeans());
+    }
+
+
+    public void flushAndreviveItems(GameModel gameModel, DescriptorListI entity, boolean propagate) {
+        this.reviveItems(gameModel, entity, propagate);
     }
 
     /**

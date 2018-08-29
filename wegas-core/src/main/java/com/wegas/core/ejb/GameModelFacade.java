@@ -166,6 +166,16 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         entity.setCanDuplicate(true);
         entity.setCanInstantiate(true);
 
+        /*
+         * This flush is required by several EntityRevivedEvent listener,
+         * which opperate some SQL queries (which didn't return anything before
+         * entites have been flushed to database
+         *
+         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
+         * it will not return any result if this flush not occurs
+         */
+        variableDescriptorFacade.flush();
+
         variableDescriptorFacade.reviveItems(entity, entity, true); // brand new GameModel -> revive all descriptor
         createdGameModelEvent.fire(new EntityCreated<>(entity));
     }
