@@ -209,7 +209,7 @@ public class WegasTest {
         GameModel model = client.postJSON_asString("/rest/GameModel/extractModel/" + gm1.getId() + "," + gm2.getId(),
                 "{\"@class\":\"GameModel\",\"name\":\"ModelFSM\"}", GameModel.class);
 
-        GameModel get = client.get("/rest/Editor/GameModel/" + model.getId() + "/Propagate", GameModel.class);
+        String put = client.put("/rest/GameModel/" + model.getId() + "/Propagate", GameModel.class);
     }
 
     @Test
