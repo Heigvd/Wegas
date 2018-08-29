@@ -138,10 +138,14 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             i = EditEntityAction.stackedIcon(i, 'fa-download');
                             i.tooltip = 'Export';
                             break;
-
                         case "Search for usages":
                             i = EditEntityAction.stackedIcon(i, 'fa-compass');
                             i.tooltip = 'Find usage';
+                            break;
+                        case "Reset visibilities":
+                            i = EditEntityAction.stackedIcon(i, 'fa-paw');
+                            i.tooltip = 'Reset visibilities recursively';
+                            break;
                     }
                 }
             });
@@ -968,7 +972,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         }
     }, {
         NS: "ResetVisibilityAction",
-        ATTRS:{
+        ATTRS: {
             visibility: {
                 type: "string"
             }
