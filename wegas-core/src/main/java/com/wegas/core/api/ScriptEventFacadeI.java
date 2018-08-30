@@ -27,6 +27,16 @@ public interface ScriptEventFacadeI {
     void fire(String eventName, Object param) throws WegasScriptException;
 
     /**
+     * Fire an event with some payload.
+     *
+     * @param eventName event to fire
+     * @param param     payload
+     *
+     * @throws com.wegas.core.exception.client.WegasScriptException
+     */
+    void fireLoaded(String eventName, Object param) throws WegasScriptException;
+
+    /**
      * Fire an event
      *
      * @param eventName event to fire

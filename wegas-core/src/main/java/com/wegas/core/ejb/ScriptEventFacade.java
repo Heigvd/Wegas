@@ -102,6 +102,17 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
         this.fire(requestManager.getPlayer(), eventName, param);
     }
 
+
+    /**
+     * @param eventName
+     * @param param
+     * @throws com.wegas.core.exception.client.WegasScriptException
+     */
+    @Override
+    public void fireLoaded(String eventName, Object param) throws WegasScriptException {
+        this.fire(requestManager.getPlayer(), eventName, param);
+    }
+
     /**
      * @param eventName
      * @throws com.wegas.core.exception.client.WegasScriptException
