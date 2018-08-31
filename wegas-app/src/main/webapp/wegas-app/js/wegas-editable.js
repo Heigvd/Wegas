@@ -88,7 +88,7 @@ YUI.add('wegas-editable', function(Y) {
             var i, form, schemaMap, attrCfgs, builder,
                 gameModelType;
             gameModelType = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type");
-            Y.log("GET FORM CFG for " + this.get("@class") + "/" + gameModelType);
+            //Y.log("GET FORM CFG for " + this.get("@class") + "/" + gameModelType);
             fieldsToIgnore = (fieldsToIgnore || []);
             form = form || this.constructor.EDITFORM; // And if no form is defined we check if there is a default one defined in the entity
 
@@ -109,7 +109,7 @@ YUI.add('wegas-editable', function(Y) {
                     properties: attrCfgs
                 };
                 if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO") {
-                    Y.log("ATTRS: " + JSON.stringify(schemaMap));
+                    //Y.log("ATTRS: " + JSON.stringify(schemaMap));
                     //if (!Y.one("body.wegas-internalmode")) {
                     if (parent) {
                         var parentCfg = parent.getFormCfg();
@@ -118,7 +118,7 @@ YUI.add('wegas-editable', function(Y) {
                         this._overrideFormConfig(schemaMap, this, "PRIVATE");
                     }
                     //}
-                    Y.log("ATTRS: " + JSON.stringify(schemaMap));
+                    //Y.log("ATTRS: " + JSON.stringify(schemaMap));
                 }
                 return schemaMap;
             }
@@ -148,7 +148,7 @@ YUI.add('wegas-editable', function(Y) {
                     if (parent) {
                         return parent.get("visibility");
                     } else {
-                        Y.log("Create new -> ASSUME PRIVATE");
+                        //Y.log("Create new -> ASSUME PRIVATE");
                         return "PRIVATE";
                     }
                 }
@@ -170,11 +170,11 @@ YUI.add('wegas-editable', function(Y) {
 
             if (visibility) {
                 maxVisibility = maxVisibility || "INHERITED";
-                Y.log("Visibilities: " + visibility + " <-> " + maxVisibility);
+                //Y.log("Visibilities: " + visibility + " <-> " + maxVisibility);
                 return (visibilities.indexOf(maxVisibility) >= visibilities.indexOf(visibility) ?
                     "EDITABLE" : "READONLY");
             } else {
-                Y.log("USE default mode: " + defaultMode);
+                //Y.log("USE default mode: " + defaultMode);
                 return defaultMode;
             }
         },
@@ -187,7 +187,7 @@ YUI.add('wegas-editable', function(Y) {
 
             mode = this._getMode(inheritedMode, visibility, maxWritableVisibility);
 
-            Y.log("CurrentMode: " + mode + "  -> " + JSON.stringify(entity));
+            //Y.log("CurrentMode: " + mode + "  -> " + JSON.stringify(entity));
 
             cfg.view = cfg.view || {
                 type: undefined
@@ -197,7 +197,7 @@ YUI.add('wegas-editable', function(Y) {
                 // Object
                 for (key in cfg.properties) {
                     if (cfg.properties.hasOwnProperty(key)) {
-                        Y.log("KEY: " + key);
+                        //Y.log("KEY: " + key);
                         this._overrideFormConfig(cfg.properties[key], entity && (entity.get ? entity.get(key) : entity[key]), mode, visibility, maxWritableVisibility);
                     }
                 }
@@ -217,7 +217,7 @@ YUI.add('wegas-editable', function(Y) {
                     cfg.view.type !== "hidden" &&
                     cfg.view.type !== "uneditable")) {
                     if (mode === "READONLY") {
-                        Y.log(" ->  READONLY");
+                        //Y.log(" ->  READONLY");
                         //cfg.view.type = "uneditable";
                         cfg.view.readOnly = true;
                     }
