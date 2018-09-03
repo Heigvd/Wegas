@@ -119,7 +119,11 @@ function isMatch(variableId: number, search: string): boolean {
   if (variable == null) {
     return false;
   }
-  if (editorLabel(variable).includes(search)) {
+  if (
+    editorLabel(variable)
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  ) {
     return true;
   }
   if (varIsList(variable)) {
