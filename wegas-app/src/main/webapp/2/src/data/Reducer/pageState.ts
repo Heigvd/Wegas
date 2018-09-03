@@ -74,6 +74,9 @@ export function patch(
   return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     const oldPage = Page.select(id);
+    if (oldPage === undefined) {
+      return Promise.resolve(ActionCreator.PAGE_FETCH({ pages: {} }));
+    }
     const diff = compare(oldPage, page);
     // Handle moving a page differently
     const moving = diff.findIndex(
