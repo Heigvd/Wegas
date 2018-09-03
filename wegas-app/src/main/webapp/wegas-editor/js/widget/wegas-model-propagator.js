@@ -19,6 +19,7 @@ YUI.add('wegas-model-propagator', function(Y) {
             }));
         },
         propagate: function() {
+            this.get("contentBox").setContent("Propagate Model to senarios:");
             Y.Wegas.Facade.GameModel.sendRequest({
                 request: "/" + this.get("gameModel").get("id") + "/Propagate",
                 cfg: {
@@ -31,8 +32,21 @@ YUI.add('wegas-model-propagator', function(Y) {
                         this.fire("model:propagated");
                     }, this),
                     failure: Y.bind(function(e) {
+                        var cb = this.get("contentBox");
                         this.fire("model:propagationFailed");
-                        debugger;
+                        var events = e.serverResponse.get("events");
+                        for (var i in events) {
+                            var event = events[i];
+
+                            if (event.get("@class") === "ExceptionEvent") {
+                                for (var j in event.get("val").exceptions) {
+                                    var exception = event.get("val").exceptions[j];
+                                    cb.append("<p>" +
+                                        exception.get("val").message
+                                        + "</p>");
+                                }
+                            }
+                        }
                     }, this)
                 }
             });
@@ -56,7 +70,7 @@ YUI.add('wegas-model-propagator', function(Y) {
                         "types": ["primary"],
                         "label": "<span class='propagatebutton'><i class='fa fa-rocket'> Propagate</span>",
                         "do": function() {
-                            this.get("modalBox").one(".propagatebutton").toggleClass("loading");
+                            this.get("modalBox").one(".propagatebutton").toggleClass("loading", true);
                             this.item(0).propagate();
                         }
                     }, {
@@ -99,6 +113,9 @@ YUI.add('wegas-model-propagator', function(Y) {
                 "on": {
                     "model:propagated": function() {
                         this.close();
+                    },
+                    "model:propagationFailed": function() {
+                        this.get("modalBox").one(".propagatebutton").toggleClass("loading", false);
                     }
                 }
             }).render();

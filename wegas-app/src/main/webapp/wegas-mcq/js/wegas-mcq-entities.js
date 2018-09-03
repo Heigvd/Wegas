@@ -192,6 +192,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
         EDITMENU: {
             addBtn: {
                 index: 1,
+                maxVisibility: "PROTECTED",
                 cfg: {
                     type: BUTTON,
                     label: "Add",
@@ -1086,6 +1087,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
         EDITMENU: {
             addBtn: {
                 index: 1,
+                maxVisibility: "PROTECTED",
                 cfg: {
                     type: BUTTON,
                     label: "Add",
@@ -1093,34 +1095,34 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             fn: "WidgetMenu",
                             cfg: {
                                 children: [
-{
-                                    type: BUTTON,
-                                    label: '<span class="wegas-icon-numberdescriptor"></span> Number',
-                                    plugins: [{
-                                            fn: "AddEntityChildAction",
-                                            cfg: {
-                                                targetClass: "NumberDescriptor"
-                                            }
-                                        }]
-                                }, {
-                                    type: BUTTON,
-                                    label: '<span class="fa fa-paragraph"></span> Text',
-                                    plugins: [{
-                                            fn: "AddEntityChildAction",
-                                            cfg: {
-                                                targetClass: "TextDescriptor"
-                                            }
-                                        }]
-                                }, {
-                                    type: BUTTON,
-                                    label: '<span class="fa fa-font"></span> String',
-                                    plugins: [{
-                                            fn: "AddEntityChildAction",
-                                            cfg: {
-                                                targetClass: "StringDescriptor"
-                                            }
-                                        }]
-                                }
+                                    {
+                                        type: BUTTON,
+                                        label: '<span class="wegas-icon-numberdescriptor"></span> Number',
+                                        plugins: [{
+                                                fn: "AddEntityChildAction",
+                                                cfg: {
+                                                    targetClass: "NumberDescriptor"
+                                                }
+                                            }]
+                                    }, {
+                                        type: BUTTON,
+                                        label: '<span class="fa fa-paragraph"></span> Text',
+                                        plugins: [{
+                                                fn: "AddEntityChildAction",
+                                                cfg: {
+                                                    targetClass: "TextDescriptor"
+                                                }
+                                            }]
+                                    }, {
+                                        type: BUTTON,
+                                        label: '<span class="fa fa-font"></span> String',
+                                        plugins: [{
+                                                fn: "AddEntityChildAction",
+                                                cfg: {
+                                                    targetClass: "StringDescriptor"
+                                                }
+                                            }]
+                                    }
                                 ]
                             }
                         }

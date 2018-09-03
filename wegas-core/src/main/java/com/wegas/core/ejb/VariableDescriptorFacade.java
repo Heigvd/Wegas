@@ -614,18 +614,18 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         Visibility targetVisibility = targetListDescriptor instanceof ModelScoped ? ((ModelScoped) targetListDescriptor).getVisibility() : Visibility.INHERITED;
 
         if (!vd.belongsToProtectedGameModel() || (vd.getVisibility() == ModelScoped.Visibility.PRIVATE)) {
-            if (!vd.belongsToProtectedGameModel() || targetVisibility == Visibility.INHERITED || targetVisibility == Visibility.PRIVATE) {
+            if (!vd.belongsToProtectedGameModel() || targetVisibility != Visibility.INTERNAL) {
                 from.localRemove(vd);
                 targetListDescriptor.addItem(index, vd);
             } else {
                 if (targetListDescriptor instanceof VariableDescriptor) {
-                    throw WegasErrorMessage.error("Updating " + ((VariableDescriptor<VariableInstance>) targetListDescriptor).getLabel() + " is not authorized");
+                    throw WegasErrorMessage.error("Updating " + ((VariableDescriptor<VariableInstance>) targetListDescriptor).getLabel().translateOrEmpty(vd.getGameModel()) + " is not authorized");
                 } else {
                     throw WegasErrorMessage.error("Updating " + targetListDescriptor + " is not authorized");
                 }
             }
         } else {
-            throw WegasErrorMessage.error("Moving " + vd.getLabel() + " is not authorized");
+            throw WegasErrorMessage.error("Moving \"" + vd.getLabel().translateOrEmpty(vd.getGameModel()) + "\" is not authorized");
         }
     }
 
@@ -721,11 +721,13 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      */
     public void updateScope(VariableDescriptor vd, AbstractScope newScope) {
         if (vd.getScope() != null) {
+            AbstractScope scope = vd.getScope();
             Collection<VariableInstance> values = variableInstanceFacade.getAllInstances(vd).values();
 
             for (VariableInstance vi : values) {
                 variableInstanceFacade.remove(vi);
             }
+            this.getEntityManager().remove(scope);
         }
         vd.setScope(newScope);
         this.getEntityManager().persist(vd);

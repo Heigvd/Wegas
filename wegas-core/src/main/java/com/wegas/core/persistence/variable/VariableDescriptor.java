@@ -242,7 +242,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
      * Player visible
      */
     @JsonDeserialize(using = TranslationDeserializer.class)
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL /*, orphanRemoval = true*/)
     @WegasEntityProperty
     private TranslatableContent label;
 
@@ -261,11 +261,13 @@ abstract public class VariableDescriptor<T extends VariableInstance>
 
     //@BatchFetch(BatchFetchType.JOIN)
     //@JsonManagedReference
-    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
+    @OneToOne(cascade = {CascadeType.ALL}/*, orphanRemoval = true*/, optional = false)
     @JoinFetch
     //@JsonView(value = Views.WithScopeI.class)
     //@WegasEntityProperty(callback = VdMergeCallback.class)
     private AbstractScope scope;
+
+
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(sameEntityOnly = true)
@@ -355,11 +357,21 @@ abstract public class VariableDescriptor<T extends VariableInstance>
         this.gameModel = gameModel;
     }
 
+    /**
+     * Get the gameModel this descriptor stands in.
+     * RootLevel descriptor only.
+     *
+     * @return
+     */
     @JsonIgnore
     public GameModel getRoot() {
         return root;
     }
 
+    /**
+     * Set the root gameModel. Means this descriptor stands at gameModel root level
+     * @param rootGameModel
+     */
     public void setRoot(GameModel rootGameModel) {
         this.root = rootGameModel;
         logger.trace("set {} root to {}", this, this.root);
@@ -811,11 +823,11 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @Override
     public WithPermission getMergeableParent() {
         DescriptorListI<? extends VariableDescriptor> parent = this.getParentOrNull();
-        if (parent instanceof VariableDescriptor){
-            return (VariableDescriptor)parent;
-        } else if (parent instanceof GameModel){
+        if (parent instanceof VariableDescriptor) {
+            return (VariableDescriptor) parent;
+        } else if (parent instanceof GameModel) {
             return (GameModel) parent;
-        } else{
+        } else {
             return null;
         }
     }

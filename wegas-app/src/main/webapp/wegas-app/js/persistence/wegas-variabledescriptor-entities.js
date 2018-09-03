@@ -1339,6 +1339,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             EDITMENU: {
                 addBtn: {
                     index: 1,
+                    maxVisibility: "PROTECTED",
                     cfg: {
 
                         type: BUTTON,

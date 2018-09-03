@@ -924,8 +924,7 @@ public class ModelFacade {
                     if (scenario.getType().equals(GmType.SCENARIO)) {
                         scenario.setOnGoingPropagation(Boolean.TRUE);
 
-                        // Integrate which have creating in the model and in the scenario
-                        // detect languages which share the same code having different refId
+                        // detect languages which share the same code but different refId and rule them all
                         for (GameModelLanguage langScen : scenario.getRawLanguages()) {
                             GameModelLanguage langModel = gameModel.getLanguageByCode(langScen.getCode());
                             if (langModel != null && !langModel.getRefId().equals(langScen.getRefId())) {

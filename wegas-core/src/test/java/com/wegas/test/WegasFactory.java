@@ -33,6 +33,8 @@ import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
 import com.wegas.mcq.persistence.Result;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.messaging.persistence.InboxInstance;
+import com.wegas.resourceManagement.persistence.TaskDescriptor;
+import com.wegas.resourceManagement.persistence.TaskInstance;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -293,6 +295,21 @@ public class WegasFactory {
         fromState.addTransition(t);
 
         return find;
+    }
+
+public TaskDescriptor createTask(GameModel gameModel, DescriptorListI parent, String name, String label, String index, String description) {
+        TaskDescriptor desc = new TaskDescriptor();
+        desc.setDefaultInstance(new TaskInstance());
+        desc.setName(name);
+
+        String code = gameModel.getLanguages().get(0).getCode();
+        desc.setLabel(TranslatableContent.build(code, label));
+        desc.setDescription(TranslatableContent.build(code, description));
+
+
+        this.createDescriptor(gameModel, desc, parent);
+
+        return desc;
     }
 
     public StringDescriptor createString(GameModel gameModel, DescriptorListI parent, String name, String label, String value, String... allowedValues) {

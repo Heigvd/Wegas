@@ -8,6 +8,7 @@
 package com.wegas.core.merge.patch;
 
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
@@ -428,6 +429,7 @@ public final class WegasEntityPatch extends WegasPatch {
 
         if (processCollectedData) {
             // Finalize patch
+            GameModelFacade gmf = GameModelFacade.lookup();
             logger.info("Collect: {}", collector);
             VariableDescriptorFacade vdf = null;
 
@@ -472,6 +474,7 @@ public final class WegasEntityPatch extends WegasPatch {
                 LifecycleCollector.CollectedEntity collectedEntity = entry.getValue();
                 Mergeable entity = collectedEntity.getEntity();
 
+                logger.info("DESTROY {}", entity);
                 List<WegasCallback> callbacks = collectedEntity.getCallbacks();
                 if (callbacks != null) {
                     for (WegasCallback cb : callbacks) {
@@ -488,9 +491,9 @@ public final class WegasEntityPatch extends WegasPatch {
             }
 
             if (vdf != null) {
+            // what purpose ???
                 vdf.flush();
             }
-
             for (Entry<Mergeable, Map<Object, OrphanContainer>> entry : orphans.entrySet()) {
                 Mergeable orphanParent = entry.getKey();
                 for (Entry<Object, OrphanContainer> entry2 : entry.getValue().entrySet()) {
@@ -552,17 +555,22 @@ public final class WegasEntityPatch extends WegasPatch {
                                         vdf.create(grandparent.getId(), substituteParent);
                                     } else {
                                         // depper level substitute
-                                        vdf.createChild(grandparent.getId(), substituteParent);
+                                        if (vdf.find(grandparent.getId()) != null) {
+                                            vdf.create(grandparent.getId(), substituteParent);
+                                        } else {
+                                            vdf.create(grandparent.getGameModel().getId(), substituteParent);
+                                        }
+
                                     }
                                     Object theOrphans = value.getOrphans();
 
                                     if (theOrphans instanceof List) {
                                         for (VariableDescriptor orphan : (List<VariableDescriptor>) theOrphans) {
-                                            vdf.move(orphan.getId(), 0);
+                                            vdf.move(orphan.getId(), substituteParent.getId(), 0);
                                         }
                                     } else if (theOrphans instanceof Map) {
                                         for (VariableDescriptor orphan : ((Map<Object, VariableDescriptor>) theOrphans).values()) {
-                                            vdf.move(orphan.getId(), 0);
+                                            vdf.move(orphan.getId(), substituteParent.getId(), 0);
                                         }
                                     }
 

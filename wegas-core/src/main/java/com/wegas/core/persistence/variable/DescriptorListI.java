@@ -9,8 +9,6 @@ package com.wegas.core.persistence.variable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;

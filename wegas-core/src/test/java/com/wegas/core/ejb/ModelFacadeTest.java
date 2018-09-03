@@ -39,6 +39,7 @@ import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.security.persistence.User;
+import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -1865,7 +1866,48 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         model = modelFacade.propagateModel(model.getId());
 
         logger.debug(Helper.printGameModel(gameModelFacade.find(model.getId())));
+        logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel2.getId())));
 
     }
+
+
+    @Test
+    public void testModelise_orphans() throws NamingException, WegasNoResultException, RepositoryException, RepositoryException {
+        GameModel gameModel1 = new GameModel();
+        gameModel1.setName("gamemodel #1");
+        gameModelFacade.createWithDebugGame(gameModel1);
+
+        ListDescriptor folder1 = wegasFactory.createList(gameModel1, null, "folder1", "folder1");
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+
+        List<GameModel> scenarios = new ArrayList<>();
+
+        scenarios.add(gameModel1);
+
+        logger.info("Create Model");
+        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
+
+        model = modelFacade.propagateModel(model.getId());
+
+
+        ListDescriptor folder2 = wegasFactory.createList(gameModel, folder1, "folder2", "folder2");
+        StringDescriptor str = wegasFactory.createString(gameModel1, folder2, "str", "str", "a", "a", "b", "c");
+        TaskDescriptor task = wegasFactory.createTask(gameModel1, folder2, "task", "task", "a", "Description");
+
+        model = modelFacade.propagateModel(model.getId());
+
+        ListDescriptor folder1Model =  (ListDescriptor) variableDescriptorFacade.find(model, "folder1");
+        folder1Model.setVisibility(PRIVATE);
+
+        variableDescriptorFacade.merge(folder1Model);
+
+        model = modelFacade.propagateModel(model.getId());
+
+        logger.debug(Helper.printGameModel(gameModelFacade.find(model.getId())));
+        logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
+
+    }
+
 }
