@@ -24,6 +24,7 @@ export const themeVar = {
   errorColor: 'var(--error-color)',
   successColor: 'var(--success-color)',
   disabledColor: 'var(--disabled-color)',
+  backgroundColor: 'var(--background-color)',
 };
 export const primary = css({
   backgroundColor: themeVar.primaryColor,
@@ -38,7 +39,13 @@ export const primaryLight = css({
   color: themeVar.primaryLighterTextColor,
 });
 
-export class Theme extends React.PureComponent<ThemeProps> {
+const { Consumer, Provider } = React.createContext<HTMLElement | null>(
+  document.body,
+);
+export class Theme extends React.PureComponent<
+  ThemeProps,
+  { root: HTMLElement | null }
+> {
   static defaultProps = {
     backgroundColor: 'white',
     primaryColor: '#1565C0',
@@ -48,6 +55,10 @@ export class Theme extends React.PureComponent<ThemeProps> {
     errorColor: 'red',
     successColor: '#25f325',
     disabledColor: 'lightgrey',
+  };
+
+  readonly state: Readonly<{ root: HTMLElement | null }> = {
+    root: null,
   };
   render() {
     const {
@@ -69,9 +80,13 @@ export class Theme extends React.PureComponent<ThemeProps> {
     const primDarkText = primDark.isLight() ? darkTextColor : lightTextColor;
     const primLight = primary.lighten(0.33);
     const primLightText = primLight.isLight() ? darkTextColor : lightTextColor;
-
     return (
       <div
+        ref={n =>
+          this.setState({
+            root: n,
+          })
+        }
         className={css({
           width: '100%',
           height: '100%',
@@ -87,10 +102,12 @@ export class Theme extends React.PureComponent<ThemeProps> {
           '--error-color': errorColor,
           '--success-color': successColor,
           '--disabled-color': disabledColor,
+          '--background-color': backgroundColor,
         })}
       >
-        {children}
+        <Provider value={this.state.root}>{children}</Provider>
       </div>
     );
   }
 }
+export { Consumer as ThemeRoot };
