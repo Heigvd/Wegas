@@ -91,6 +91,8 @@ export default function() {
   log(JSON.stringify(schema, undefined, 2));
   return {
     code: `module.exports = {schema:${JSON.stringify(schema)}}`,
+    contextDependencies: files,
+    cacheable: true,
   };
   // console.log(JSON.stringify(oneOf(types), undefined, 2));
 
