@@ -42,6 +42,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
@@ -366,6 +368,18 @@ public class ScriptFacade extends WegasAbstractFacade {
         } catch (WegasRuntimeException ex) { // throw our exception as-is
             logger.error("ScriptException: {}", ex);
             throw ex;
+        } catch (UndeclaredThrowableException ex) { // Java exception (Java -> JS -> Java -> throw)
+            Throwable cause = ex.getCause();
+            if (cause instanceof InvocationTargetException) {
+                Throwable subCause = cause.getCause();
+                if (subCause instanceof WegasRuntimeException) {
+                    throw (WegasRuntimeException) subCause;
+                } else {
+                    throw new WegasScriptException(script.getContent(), cause.getMessage(), ex);
+                }
+            } else {
+                throw new WegasScriptException(script.getContent(), ex.getMessage(), ex);
+            }
         } catch (RuntimeException ex) { // Java exception (Java -> JS -> Java -> throw)
             logger.error("ScriptException: {}", ex);
             throw new WegasScriptException(script.getContent(), ex.getMessage(), ex);
