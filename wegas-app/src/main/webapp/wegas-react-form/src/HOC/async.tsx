@@ -51,13 +51,13 @@ function promised<P, O>(Comp: React.ComponentType<O>) {
                 this.mounted = false;
             }
             render() {
-                if (this.state.status === STATUS.END) {
-                    if (typeof this.state.result === 'object') {
-                        return <Comp {...this.props} {...this.state.result} />;
-                    }
-                    return <Comp {...this.props} />;
+                if (this.state.status === STATUS.STOP) {
+                    return null;
                 }
-                return null;
+                if (typeof this.state.result === 'object') {
+                    return <Comp {...this.props} {...this.state.result} />;
+                }
+                return <Comp {...this.props} />;
             }
         }
         return Async;

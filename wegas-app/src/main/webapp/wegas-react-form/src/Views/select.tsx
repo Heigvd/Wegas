@@ -88,14 +88,18 @@ function SelectView(props: ISelectProps) {
     );
 }
 
-function Sel({ view }: IAsyncSelectProps) {
-    const { choices } = view;
+function Sel(props: IAsyncSelectProps): Promise<ISelectProps> {
+    const {
+        view: { choices },
+        view,
+    } = props;
     if (typeof choices === 'function') {
         return Promise.resolve(choices()).then(ch => ({
+            ...props,
             view: { ...view, choices: ch },
         }));
     }
-    return arguments[0];
+    return Promise.resolve(props as ISelectProps);
 }
 export default commonView(
     asyncComp<IAsyncSelectProps, ISelectProps>(labeled(SelectView))(Sel)
