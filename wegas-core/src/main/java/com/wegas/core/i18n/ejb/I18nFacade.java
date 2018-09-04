@@ -13,6 +13,7 @@ import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.WegasAbstractFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
+import com.wegas.core.i18n.deepl.Deepl;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.i18n.rest.ScriptUpdate;
@@ -788,6 +789,15 @@ public class I18nFacade extends WegasAbstractFacade {
         TranslationsPrinter prettyPrinter = new TranslationsPrinter(languages, this);
         MergeHelper.visitMergeable(target, null, Boolean.TRUE, prettyPrinter);
         logger.error("Translation for {}{}{}", target, System.lineSeparator(), prettyPrinter);
+    }
+
+    public GameModel initLanguage(Long gameModelId, String sourceLangCode, String targetLangCode){
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+
+
+
+
+        return gameModel;
     }
 
 }

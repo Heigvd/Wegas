@@ -7,6 +7,9 @@
  */
 package com.wegas.core.i18n.rest;
 
+import com.wegas.core.i18n.deepl.Deepl;
+import com.wegas.core.i18n.deepl.DeeplTranslations;
+import com.wegas.core.i18n.deepl.DeeplUsage;
 import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
@@ -19,6 +22,7 @@ import javax.inject.Inject;
 import javax.script.ScriptException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -70,7 +74,7 @@ public class I18nController {
         List<GameModelLanguage> updated = new ArrayList<>();
 
         for (GameModelLanguage language : languages) {
-             updated.add(i18nfacade.updateLanguage(language));
+            updated.add(i18nfacade.updateLanguage(language));
         }
 
         return updated;
@@ -121,4 +125,70 @@ public class I18nController {
         logger.trace("DELETE new language {} for gameModel #{}", lang, gameModelId);
         return null;
     }
+
+
+    /*
+     * DeppL mock
+     */
+    @POST
+    @Path("deepl/translate")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public DeeplTranslations deepLMockTranslate(@FormParam("text") List<String> texts,
+            @FormParam("source_lang") Deepl.Language sourceLang,
+            @FormParam("target_lang") Deepl.Language targetLang,
+            @FormParam("tag_handling") String tagHandling,
+            @FormParam("non_splitting_tags") String nonSplittingTags,
+            @FormParam("ignore_tags") String ignoreTags,
+            @FormParam("split_sentences") String splitSentences,
+            @FormParam("preserve_formatting") String preserveFormatting,
+            @FormParam("auth_key") String auth_key) {
+
+        DeeplTranslations deeplTranslations = new DeeplTranslations();
+        List<DeeplTranslations.DeeplTranslation> translations = new ArrayList<>();
+
+        String source;
+        if (sourceLang != null) {
+            source = sourceLang.name();
+        } else {
+            source = "autodetected";
+        }
+
+        for (String text : texts) {
+            DeeplTranslations.DeeplTranslation deeplTranslation = new DeeplTranslations.DeeplTranslation();
+
+            deeplTranslation.setLang(source);
+            deeplTranslation.setText("translate \"" + text + "\" from " + source + " to " + targetLang);
+
+            translations.add(deeplTranslation);
+        }
+
+        deeplTranslations.setTranslations(translations);
+
+        return deeplTranslations;
+    }
+
+
+    /*
+     * DeppL mock
+     */
+    @POST
+    @Path("deepl/usage")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public DeeplUsage deepLMockUsage(@FormParam("auth_key") String auth_key) {
+        DeeplUsage usage = new DeeplUsage();
+
+        usage.setCharacterCount(123443l);
+        usage.setCharacterLimit(1000000l);
+
+        return usage;
+    }
+
+    @PUT
+    @Path("InitLanguage")
+    public GameModel initLanguageTranslations(@PathParam("gameModelId") Long gameModelId,
+            @PathParam("target") String targetLangCode,
+            @PathParam("source") String sourceLangCode) {
+        return i18nfacade.initLanguage(gameModelId, sourceLangCode, targetLangCode);
+    }
+
 }
