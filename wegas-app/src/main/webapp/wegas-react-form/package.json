@@ -49,7 +49,6 @@
     "babel-eslint": "^8.2.3",
     "babel-loader": "^8.0.2",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.15",
-    "browser-sync": "^2.24.7",
     "copy-webpack-plugin": "^4.5.2",
     "cross-env": "^5.2.0",
     "eslint": "^4.19.1",
