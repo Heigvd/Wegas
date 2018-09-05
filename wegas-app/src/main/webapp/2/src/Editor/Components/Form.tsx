@@ -6,7 +6,11 @@ import './FormView';
 interface EditorProps<T> {
   entity?: T;
   update?: (variable: T) => void;
-  del?: (variable: T, path?: string[]) => void;
+  actions: {
+    id: string;
+    action: (entity: T, path?: string[]) => void;
+    label: React.ReactNode;
+  }[];
   path?: string[];
   config?: Schema;
 }
@@ -31,6 +35,9 @@ export class Form<T> extends React.Component<
     }
     return { val: nextProps.entity, oldProps: nextProps };
   }
+  static defaultProps = {
+    actions: [],
+  };
   constructor(props: FormProps<T>) {
     super(props);
     this.state = { oldProps: props, val: props.entity };
@@ -66,15 +73,17 @@ export class Form<T> extends React.Component<
           >
             reset
           </button>
-          {this.props.del && (
-            <button
-              onClick={() => {
-                this.props.del!(this.state.val, this.props.path);
-              }}
-            >
-              delete
-            </button>
-          )}
+          {this.props.actions.map(a => {
+            return (
+              <button
+                key={a.id}
+                tabIndex={1}
+                onClick={() => a.action(this.state.val, this.props.path)}
+              >
+                {a.label}
+              </button>
+            );
+          })}
         </Toolbar.Header>
         <Toolbar.Content>
           <JSONForm

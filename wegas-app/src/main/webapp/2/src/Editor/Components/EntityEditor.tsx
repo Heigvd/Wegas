@@ -13,7 +13,11 @@ import { StoreConsumer } from '../../data/store';
 interface EditorProps<T> {
   entity?: T;
   update?: (variable: T) => void;
-  del?: (variable: T, path?: string[]) => void;
+  actions: {
+    id: string;
+    label: React.ReactNode;
+    action: (entity: T, path?: string[]) => void;
+  }[];
   path?: string[];
   getConfig(entity: T): Promise<ConfigurationSchema<IWegasEntity>>;
 }
@@ -21,7 +25,7 @@ interface EditorProps<T> {
 export async function Editor<T>({
   entity,
   update,
-  del,
+  actions,
   getConfig,
   path,
 }: EditorProps<T>) {
@@ -36,9 +40,6 @@ export async function Editor<T>({
   function updatePath(variable: {}) {
     return update != null && update(deepUpdate(entity, path, variable));
   }
-  function deletePath() {
-    if (entity) return del != null && del(entity, path);
-  }
 
   const [Form, schema] = await Promise.all<
     IForm,
@@ -48,7 +49,7 @@ export async function Editor<T>({
     <Form
       entity={pathEntity}
       update={update != null ? updatePath : update}
-      del={del != null ? deletePath : del}
+      actions={actions}
       path={path}
       schema={{ type: 'object', properties: schema }}
     />
@@ -90,7 +91,7 @@ export default function VariableForm(props: {
       }}
     >
       {({ state, dispatch }) => {
-        if (state == null) {
+        if (state == null || state.entity == null) {
           return null;
         }
         const update =
@@ -110,18 +111,25 @@ export default function VariableForm(props: {
                   ),
                 );
               };
+        const actions = [];
+        if (state.entity.id !== undefined) {
+          if (del != null) {
+            actions.push({ id: 'delete', label: 'delete', action: del });
+          }
+        }
         const getConfig = (entity: IVariableDescriptor) => {
           return state.config != null
             ? Promise.resolve(state.config)
             : getEditionConfig(entity);
         };
+
         return (
           <AsyncVariableForm
             {...props}
             {...state}
             getConfig={getConfig}
             update={update}
-            del={del}
+            actions={actions}
             entity={state.entity}
           />
         );

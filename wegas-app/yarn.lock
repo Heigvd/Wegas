@@ -3496,9 +3496,9 @@ domutils@^1.5.1:
     dom-serializer "0"
     domelementtype "1"
 
-downshift@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/downshift/-/downshift-2.2.0.tgz#08887b6196eaccf1d7a3d26c5ac65630f4f43b7b"
+downshift@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/downshift/-/downshift-2.2.1.tgz#e3bd403243b0e83b487fa842c12f57148a88c635"
   dependencies:
     compute-scroll-into-view "^1.0.2"
     prop-types "^15.6.0"
@@ -10440,9 +10440,9 @@ slate-prop-types@^0.4.61:
   version "0.4.61"
   resolved "https://registry.yarnpkg.com/slate-prop-types/-/slate-prop-types-0.4.61.tgz#141c109bed81b130dd03ab86dd7541b28d6d962a"
 
-slate-react@^0.18.4:
-  version "0.18.4"
-  resolved "https://registry.yarnpkg.com/slate-react/-/slate-react-0.18.4.tgz#1387cdbe93d2be94dd217a9d61996a6821ccfb64"
+slate-react@^0.18.5:
+  version "0.18.5"
+  resolved "https://registry.yarnpkg.com/slate-react/-/slate-react-0.18.5.tgz#089ae30cd19b7600a9b528b5ab0525038b500142"
   dependencies:
     debug "^3.1.0"
     get-window "^1.1.1"

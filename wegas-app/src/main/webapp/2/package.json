@@ -47,7 +47,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.3.1",
     "@fortawesome/react-fontawesome": "0.1.2",
     "color": "^3.0.0",
-    "downshift": "^2.2.0",
+    "downshift": "^2.2.1",
     "emotion": "^9.2.8",
     "fast-json-patch": "^2.0.7",
     "immer": "^1.6.0",
@@ -69,7 +69,7 @@
     "resize-observer-polyfill": "^1.5.0",
     "slate": "^0.40.2",
     "slate-html-serializer": "^0.7.2",
-    "slate-react": "^0.18.4"
+    "slate-react": "^0.18.5"
   },
   "devDependencies": {
     "@types/babel-generator": "^6.25.2",
