@@ -17,9 +17,9 @@ angular.module('private.admin', [
                     }
                 }
             })
-        ;
+            ;
     })
-    .controller('AdminCtrl', function AdminCtrl($rootScope, $state, Auth, $translate, WegasTranslations) {
+    .controller('AdminCtrl', function AdminCtrl($rootScope, $state, Auth, $translate, $http, WegasTranslations) {
         "use strict";
         var ctrl = this;
         ctrl.serviceUrl = window.ServiceURL;
@@ -34,6 +34,10 @@ angular.module('private.admin', [
                 $rootScope.translationWorkspace = {
                     workspace: WegasTranslations.workspaces.ADMIN[$translate.use()]
                 };
+                $http.get(ctrl.serviceUrl + "rest/Utils/build_details").then(function(response) {
+                    ctrl.build_details = response.data;
+                    ctrl.loading = false;
+                });
             }
         });
     })
@@ -54,4 +58,4 @@ angular.module('private.admin', [
             }
         };
     })
-;
+    ;
