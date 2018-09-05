@@ -18,9 +18,14 @@ import com.wegas.core.ejb.ApplicationLifecycle;
 import com.wegas.core.ejb.ConcurrentHelper;
 import com.wegas.core.ejb.HelperBean;
 import fish.payara.micro.cdi.Outbound;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -31,6 +36,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +52,8 @@ import org.slf4j.LoggerFactory;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class UtilsController {
+
+    private static final String TRAVIS_URL = "https://api.travis-ci.org";
 
     @Inject
     @Outbound(eventName = HelperBean.CLEAR_CACHE_EVENT_NAME, loopBack = true)
@@ -95,7 +107,7 @@ public class UtilsController {
     @GET
     @Path("build_details")
     @Produces(MediaType.TEXT_PLAIN)
-    public String getBuildDetails() {
+    public String getBuildDetails() throws URISyntaxException {
         StringBuilder sb = new StringBuilder(this.getFullVersion());
 
         String branch = Helper.getWegasProperty("wegas.build.branch", null);
@@ -113,8 +125,44 @@ public class UtilsController {
         } else {
             sb.append(", NinjaBuild");
         }
+        sb.append(", travis last master build is #").append(findCurrentTravisVersion());
 
         return sb.toString();
+    }
+
+    private static String findCurrentTravisVersion() {
+        try {
+            HttpClient client = HttpClientBuilder.create().build();
+
+            URIBuilder builder = new URIBuilder(TRAVIS_URL + "/repo/Heigvd%2FWegas/builds");
+            builder.addParameter("branch.name", "master");
+            builder.addParameter("state", "passed");
+            builder.addParameter("event_type", "push"); // avoid pull_requests
+            builder.addParameter("sort_by", "id:desc"); // bid id first
+            builder.addParameter("limit", "1");// only the first result
+
+            HttpGet get = new HttpGet(builder.build());
+            get.setHeader("Travis-API-Version", "3");
+            get.setHeader("User-Agent", "Wegas");
+
+            HttpResponse response = client.execute(get);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            response.getEntity().writeTo(baos);
+            String strResponse = baos.toString("UTF-8");
+
+            Pattern p = Pattern.compile(".*\"number\": \"(\\d+)\".*", Pattern.DOTALL);
+            Matcher matcher = p.matcher(strResponse);
+            if (matcher.matches() && matcher.groupCount() == 1) {
+                return matcher.group(1);
+            } else {
+                return "-1";
+            }
+        } catch (URISyntaxException ex) {
+            return "-1";
+        } catch (IOException ex) {
+            return "-1";
+        }
     }
 
     /**
@@ -381,7 +429,7 @@ public class UtilsController {
             if (!Helper.isNullOrEmpty(lock.getAudience())) {
                 sb.append(lock.getAudience());
                 effAudicence = lock.getAudience();
-            } else{
+            } else {
                 effAudicence = "internal";
             }
             sb.append("' data-token='");
@@ -407,7 +455,6 @@ public class UtilsController {
 
         return sb.toString();
     }
-
 
     @GET
     @Path("ReleaseLock/{token: .*}/{audience: .*}")
