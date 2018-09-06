@@ -12,7 +12,7 @@
 .wegas-inbox {
     width: 100%;
 }
-.wegas-inbox-content { 
+.wegas-inbox-content {
     height: 100%;
 }
 .wegas-inbox .yui3-tab-panel{
@@ -22,9 +22,9 @@
 .wegas-inbox .horizontal-tabview .yui3-tabview-content{
     height:100%;
 }
-.wegas-inbox .horizontal-tabview ul.yui3-tabview-list,
-.wegas-inbox .horizontal-tabview div.yui3-tabview-panel{
-    /*height:100%;*/
+.wegas-inbox .horizontal-tabview .yui3-tabview-content:not(.smallscreen) ul.yui3-tabview-list,
+.wegas-inbox .horizontal-tabview .yui3-tabview-content:not(.smallscreen) div.yui3-tabview-panel{
+    height:100%;
     overflow-x: hidden;
     overflow-y: auto;
     min-height: 100px;
@@ -97,7 +97,7 @@
     padding-top: 0;
 }
 
-/* 
+/*
  * Message widget
  */
 
