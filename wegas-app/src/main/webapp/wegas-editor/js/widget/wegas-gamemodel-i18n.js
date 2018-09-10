@@ -948,7 +948,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
 
                         var initFunctions = [];
 
-                        for (let name in extraButtons) {
+                        for (var name in extraButtons) {
                             var btnCfg = extraButtons[name];
                             tinyConfig.formats[name] = {
                                 attributes: {
@@ -1009,9 +1009,8 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                         toolbar.push("addToolbarButton");
                         tinyConfig.toolbar1 = toolbar.join(" ");
 
-                        tinyMCE.init(tinyConfig);
                     } else {
-                        setup: Y.bind(function(editor) {
+                        tinyConfig.setup = Y.bind(function(editor) {
                             this.editor = editor;
                             editor.on('change', Y.bind(this._onHtmlChange, this));
                             editor.on('keyUp', Y.bind(this._onHtmlChange, this));
@@ -1025,6 +1024,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                             //this.editor.targetElm.click();
                         }, this);
                     }
+                    tinyMCE.init(tinyConfig);
                 }
             } else {
                 this.removeEditor();
