@@ -9,6 +9,7 @@ package com.wegas.core.i18n.rest;
 
 import com.wegas.core.i18n.deepl.Deepl;
 import com.wegas.core.i18n.deepl.DeeplTranslations;
+import com.wegas.core.i18n.deepl.DeeplTranslations.DeeplTranslation;
 import com.wegas.core.i18n.deepl.DeeplUsage;
 import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
@@ -184,11 +185,49 @@ public class I18nController {
     }
 
     @PUT
-    @Path("InitLanguage")
+    @Path("InitLanguage/{source: [a-zA-Z]+}/{target: [a-zA-Z]+}")
     public GameModel initLanguageTranslations(@PathParam("gameModelId") Long gameModelId,
             @PathParam("target") String targetLangCode,
             @PathParam("source") String sourceLangCode) {
+
         return i18nfacade.initLanguage(gameModelId, sourceLangCode, targetLangCode);
     }
 
+    @PUT
+    @Path("Translate/{source: [a-zA-Z]+}/{target: [a-zA-Z]+}")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public DeeplTranslation translate(@PathParam("target") String targetLangCode,
+            @PathParam("source") String sourceLangCode, String text) {
+
+        return i18nfacade.translate(text, sourceLangCode, targetLangCode);
+    }
+
+    /**
+     *
+     * @param targetLangCode
+     * @param sourceLangCode
+     * @param text
+     *
+     * @return
+     */
+    @GET
+    @Path("Usage")
+    public DeeplUsage usage(@PathParam("target") String targetLangCode,
+            @PathParam("source") String sourceLangCode, String text) {
+        return i18nfacade.usage();
+    }
+
+    @GET
+    @Path("AvailableLanguages")
+    public List<String> getAvailableLanguages() {
+        List<String> list = new ArrayList<>();
+
+        if (i18nfacade.isTranslationServiceAvailable()) {
+            for (Deepl.Language lang : Deepl.Language.values()) {
+                list.add(lang.name());
+            }
+        }
+
+        return list;
+    }
 }

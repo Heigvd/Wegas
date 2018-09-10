@@ -14,6 +14,8 @@ import com.wegas.core.ejb.WegasAbstractFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.i18n.deepl.Deepl;
+import com.wegas.core.i18n.deepl.DeeplTranslations;
+import com.wegas.core.i18n.deepl.DeeplUsage;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.i18n.rest.ScriptUpdate;
@@ -28,6 +30,7 @@ import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.Transition;
@@ -56,6 +59,7 @@ import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 import jdk.nashorn.api.scripting.JSObject;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.eclipse.persistence.tools.PackageRenamer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -332,7 +336,7 @@ public class I18nFacade extends WegasAbstractFacade {
         Map<String, Object> args = new HashMap<>();
         args.put("impact", impact);
         args.put("index", index);
-        args.put("code", code);
+        args.put("code", code.toUpperCase());
         args.put("newValue", newValue);
 
         ScriptContext ctx = new SimpleScriptContext();
@@ -345,7 +349,7 @@ public class I18nFacade extends WegasAbstractFacade {
         // JAVA 9 will expose Nashorn parser in java !!!
         Map<String, Object> args = new HashMap<>();
         args.put("impact", impact);
-        args.put("code", code);
+        args.put("code", code.toUpperCase());
 
         ScriptContext ctx = new SimpleScriptContext();
 
@@ -791,13 +795,170 @@ public class I18nFacade extends WegasAbstractFacade {
         logger.error("Translation for {}{}{}", target, System.lineSeparator(), prettyPrinter);
     }
 
-    public GameModel initLanguage(Long gameModelId, String sourceLangCode, String targetLangCode){
+
+    /*
+     * Translation Service
+     */
+    public boolean isTranslationServiceAvailable() {
+        return Helper.getWegasProperty("deepl.enabled", "false").equals("true");
+    }
+
+    private Deepl getDeeplClient() {
+        if (isTranslationServiceAvailable()) {
+            return new Deepl(Helper.getWegasProperty("deepl.service_url", "https://api.deepl.com/v1"),
+                    Helper.getWegasProperty("deepl.auth_key"));
+        } else {
+            throw WegasErrorMessage.error("No translation service");
+        }
+    }
+
+    /**
+     * Initialise or Override all TranslatedContent "targetLangCode" translations within the model using an translation service.
+     *
+     *
+     * @param gameModelId    id of the gameModel to translate
+     * @param sourceLangCode reference language
+     * @param targetLangCode language to update
+     *
+     * @return update gameModel
+     */
+    public GameModel initLanguage(Long gameModelId, String sourceLangCode, String targetLangCode) {
         GameModel gameModel = gameModelFacade.find(gameModelId);
 
+        Deepl.Language sourceLang = Deepl.Language.valueOf(sourceLangCode.toUpperCase());
+        Deepl.Language targetLang = Deepl.Language.valueOf(targetLangCode.toUpperCase());
 
+        if (sourceLang != null) {
+            if (gameModel.getLanguageByCode(sourceLangCode) != null) {
+                if (targetLang != null) {
+                    if (gameModel.getLanguageByCode(targetLangCode) != null) {
 
+                        translateGameModel(gameModel, sourceLang.name(), targetLang.name());
+                    } else {
+                        throw WegasErrorMessage.error("Unsupported target language " + targetLangCode);
+                    }
+
+                } else {
+                    throw WegasErrorMessage.error("Source language in not defined in the gameModel");
+                }
+            } else {
+                throw WegasErrorMessage.error("Unsupported source language +");
+            }
+        } else {
+            throw WegasErrorMessage.error("Source language in not defined in the gameModel");
+        }
 
         return gameModel;
+    }
+
+    public DeeplUsage usage() {
+        if (isTranslationServiceAvailable()) {
+            return getDeeplClient().usage();
+        } else {
+            DeeplUsage usage = new DeeplUsage();
+            usage.setCharacterCount(0l);
+            usage.setCharacterLimit(0l);
+            return usage;
+        }
+    }
+
+    public DeeplTranslations.DeeplTranslation translate(String text, String sourceLangCode, String targetLangCode) {
+        Deepl.Language sourceLang = Deepl.Language.valueOf(sourceLangCode.toUpperCase());
+        Deepl.Language targetLang = Deepl.Language.valueOf(targetLangCode.toUpperCase());
+
+        if (sourceLang != null) {
+            if (targetLang != null) {
+
+                Deepl deepl = getDeeplClient();
+
+                DeeplTranslations translate = deepl.translate(sourceLang, targetLang, text);
+                DeeplTranslations.DeeplTranslation translation = translate.getTranslations().get(0);
+
+                return translation;
+
+            } else {
+                throw WegasErrorMessage.error("Unsupported target language " + targetLangCode);
+            }
+        } else {
+            throw WegasErrorMessage.error("Unsupported source language +");
+        }
+    }
+
+    public void translateScript(Script target, String sourceLangCode, String targetLangCode) {
+        try {
+            JSObject inscript = (JSObject) fishTranslationsByCode(target.getContent(), sourceLangCode);
+
+            if (inscript != null) {
+                int index = 0;
+                String script = target.getContent();
+                for (String key : inscript.keySet()) {
+                    JSObject tr = (JSObject) inscript.getMember(key);
+
+                    if (tr.getMember("status").equals("found")) {
+                        String source = (String) tr.getMember("value");
+
+                        DeeplTranslations.DeeplTranslation translation = this.translate(source, sourceLangCode, targetLangCode);
+                        script = this.updateScriptWithNewTranslation(script, index,
+                                targetLangCode, translation.getText());
+                    }
+                    index++;
+                }
+                target.setContent(script);
+            }
+
+        } catch (ScriptException ex) {
+            logger.error("Ouille ouille ouille: {}", ex);
+        }
+
+    }
+
+    private void translateTranslatableContent(TranslatableContent trTarget, String sourceLangCode, String targetLangCode, ProtectionLevel protectionLevel) {
+        Translation source = trTarget.getTranslation(sourceLangCode);
+
+        if (source != null && !Helper.isNullOrEmpty(source.getTranslation())) {
+            Visibility visibility = trTarget.getInheritedVisibility();
+            if (Helper.isProtected(protectionLevel, visibility)) {
+                // target is protected:don't touch !
+                return;
+            }
+
+            DeeplTranslations.DeeplTranslation translate = this.translate(source.getTranslation(), sourceLangCode, targetLangCode);
+            trTarget.updateTranslation(targetLangCode, translate.getText());
+
+        }
+
+    }
+
+    /**
+     * Copy translation from one set of mergeables to another one
+     */
+    private static class Translator implements MergeableVisitor {
+
+        private final I18nFacade facade;
+
+        private final String sourceLangCode;
+        private final String targetLangCode;
+
+        public Translator(String sourceLangCode, String targetLangCode, I18nFacade facade) {
+            this.sourceLangCode = sourceLangCode;
+            this.targetLangCode = targetLangCode;
+            this.facade = facade;
+        }
+
+        @Override
+        public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors) {
+            if (target instanceof TranslatableContent) {
+                facade.translateTranslatableContent((TranslatableContent) target, sourceLangCode, targetLangCode, protectionLevel);
+            }
+
+            if (target instanceof Script) {
+                facade.translateScript((Script) target, sourceLangCode, targetLangCode);
+            }
+        }
+    }
+
+    private void translateGameModel(Mergeable target, String sourceLangCode, String targetLangCode) {
+        MergeHelper.visitMergeable(target, null, Boolean.TRUE, new Translator(sourceLangCode, targetLangCode, this));
     }
 
 }

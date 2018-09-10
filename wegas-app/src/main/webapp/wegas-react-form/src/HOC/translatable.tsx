@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { LangConsumer } from '../LangContext';
-import { Schema } from 'jsoninput';
-import { infoStyle } from './commonView';
+import {LangConsumer} from '../LangContext';
+import {Schema} from 'jsoninput';
+import {infoStyle} from './commonView';
 
 interface TranslatableProps {
-    value: { [code: string]: string };
-    onChange: (value: { [code: string]: string }) => void;
-    view: Schema['view'] & { label?: string };
+    value: {[code: string]: string};
+    onChange: (value: {[code: string]: string}) => void;
+    view: Schema['view'] & {label?: string};
 }
 
 interface EndProps {
@@ -29,10 +29,10 @@ export default function translatable<P extends EndProps>(
 
         return (
             <LangConsumer>
-                {({ lang, availableLang }) => {
+                {({lang, availableLang}) => {
                     // Updade label
                     const curCode = (
-                        availableLang.find(l => l.code === lang) || {
+                        availableLang.find(l => l.code.toUpperCase() === lang.toUpperCase()) || {
                             code: '',
                         }
                     ).code;
@@ -42,15 +42,24 @@ export default function translatable<P extends EndProps>(
                             <span>
                                 {(props.view || {}).label}{' '}
                                 <span className={String(infoStyle)}>
-                                    [{curCode}]
+                                    [{curCode.toLowerCase()}]
                                 </span>
                             </span>
                         ),
                     };
+
+                    let translation;
+
+                    if (props.value.hasOwnProperty(lang.toUpperCase())){
+                        translation = props.value[lang.toUpperCase()];
+                    }else {
+                        translation = props.value[lang.toLowerCase()];
+                    }
+
                     return (
                         <Comp
                             {...props}
-                            value={props.value[lang]}
+                            value={translation}
                             view={view}
                             onChange={value => {
                                 const v = {

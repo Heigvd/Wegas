@@ -120,7 +120,7 @@ public class Deepl {
         StringBuilder sb = new StringBuilder();
         sb.append("auth_key=").append(this.key);
 
-        return this.post(sb.toString(), "usage", DeeplUsage.class);
+        return this.post(sb.toString(), "/usage", DeeplUsage.class);
     }
 
     /**
@@ -136,7 +136,7 @@ public class Deepl {
      */
     private <T> T post(String body, String url, Class<T> valueType) {
 
-        HttpPost request = new HttpPost(url);
+        HttpPost request = new HttpPost(baseUrl + url);
 
         StringEntity entity = new StringEntity(body, StandardCharsets.UTF_8);
         entity.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -189,6 +189,6 @@ public class Deepl {
         } else {
             //TODO else : throw error
         }
-        return this.post(sb.toString(), "translate", DeeplTranslations.class);
+        return this.post(sb.toString(), "/translate", DeeplTranslations.class);
     }
 }

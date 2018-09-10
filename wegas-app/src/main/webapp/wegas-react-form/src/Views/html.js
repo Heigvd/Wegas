@@ -216,7 +216,7 @@ class HTMLView extends React.Component {
         if (this.props.view.readOnly) {
             return <div  className={FormStyles.disabled.toString()}
                   dangerouslySetInnerHTML={{
-                        __html: this.state.content
+                                __html: this.state.content
                   }} />;
             } else {
                 return (

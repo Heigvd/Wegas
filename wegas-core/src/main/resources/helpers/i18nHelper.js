@@ -23,7 +23,7 @@ var I18nHelper = (function() {
                     var found = false;
                     for (i in properties["translations"].properties) {
                         p = properties["translations"].properties[i];
-                        if (p.key.value === code) {
+                        if (p.key.value.toUpperCase() === code) {
                             // needle found
                             return [{
                                     status: 'found',

@@ -174,7 +174,7 @@ public class TestHelper {
      */
     @SafeVarargs
     public static <E> List<E> toList(E... element) {
-        return Arrays.stream(element).collect(Collectors.toList());
+        return Arrays.asList(element);
     }
 
     /**

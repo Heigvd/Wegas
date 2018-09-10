@@ -84,7 +84,7 @@ public class Translation implements Serializable {
 
         @Override
         public String getKey(Translation item) {
-            return item.getLang();
+            return item.getLang().toUpperCase();
         }
 
         @Override

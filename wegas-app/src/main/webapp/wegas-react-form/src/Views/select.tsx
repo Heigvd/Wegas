@@ -2,7 +2,7 @@ import React from 'react';
 import labeled from '../HOC/labeled';
 import asyncComp from '../HOC/async';
 import commonView from '../HOC/commonView';
-import { css } from 'glamor';
+import {css} from 'glamor';
 
 interface Choice {
     value: {};
@@ -21,7 +21,7 @@ interface ISelectProps {
     onChange: (value: string) => void;
     view: {
         choices: (string | Choice)[];
-        readOnly: boolean;
+        readOnly?: boolean;
     };
 }
 interface IAsyncSelectProps {
@@ -30,7 +30,8 @@ interface IAsyncSelectProps {
     onChange: (value: string) => void;
     view: {
         choices: (() => Promise<Choices>) | Choices;
-        [propName: string]: {};
+        readOnly?: boolean;
+        [propName: string]: {} | undefined;
     };
 }
 const selectStyle = css({
@@ -47,7 +48,7 @@ function genItems(o: string | Choice, i: number) {
             </option>
         );
     }
-    const { label = o.value, value, disabled } = o;
+    const {label = o.value, value, disabled} = o;
     return (
         <option
             key={`k-${value}`}
@@ -68,7 +69,7 @@ const title: Choice = {
 
 function SelectView(props: ISelectProps) {
     const onChange = function onChange(
-        event: React.ChangeEvent<{ value: string }>
+        event: React.ChangeEvent<{value: string}>
     ) {
         props.onChange(JSON.parse(event.target.value));
     };
@@ -92,13 +93,13 @@ function SelectView(props: ISelectProps) {
 
 function Sel(props: IAsyncSelectProps): Promise<ISelectProps> {
     const {
-        view: { choices },
+        view: {choices},
         view,
     } = props;
     if (typeof choices === 'function') {
         return Promise.resolve(choices()).then(ch => ({
             ...props,
-            view: { ...view, choices: ch },
+            view: {...view, choices: ch},
         }));
     }
     return Promise.resolve(props as ISelectProps);

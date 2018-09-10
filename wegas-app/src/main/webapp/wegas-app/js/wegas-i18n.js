@@ -154,7 +154,7 @@ YUI.add("wegas-i18n", function(Y) {
             if (!Y.Wegas.I18n._currentCode) {
                 if (Y.Wegas.Facade.GameModel) {
                     var locale = currentLocale().split(/[-_]/),
-                        lang = locale[0],
+                        lang = locale[0].toUpperCase(),
                         variant = locale[1],
                         gmLanguages = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"),
                         i, gmLang;
@@ -164,15 +164,15 @@ YUI.add("wegas-i18n", function(Y) {
                             gmLang = gmLanguages[i];
                             if (gmLang.get("code") === locale) {
                                 //most specific 
-                                Y.Wegas.I18n._currentCode = gmLang.get("code");
+                                Y.Wegas.I18n._currentCode = gmLang.get("code").toUpperCase();
                             }
-                            if (gmLang.get("code") === lang && !Y.Wegas.I18n._currentCode) {
-                                Y.Wegas.I18n._currentCode = gmLang.get("code");
+                            if (gmLang.get("code").toUppserCase() === lang && !Y.Wegas.I18n._currentCode) {
+                                Y.Wegas.I18n._currentCode = gmLang.get("code").toUppserCase();
                             }
                         }
 
                         if (!Y.Wegas.I18n._currentCode) {
-                            Y.Wegas.I18n._currentCode = gmLanguages[0].get("code");
+                            Y.Wegas.I18n._currentCode = gmLanguages[0].get("code").toUpperCase();
                         }
                     }
                 } else {
@@ -218,7 +218,7 @@ YUI.add("wegas-i18n", function(Y) {
                 translations,
                 forcedLang = params && params.lang,
                 inlineEditor = params && params.inlineEditor,
-                theOne;
+                theOne, tr;
 
             if (trContent) {
                 if (trContent.get) {
@@ -236,11 +236,11 @@ YUI.add("wegas-i18n", function(Y) {
                     langs = Y.Array.map(gameModel.get("languages"), function(item) {
                         return {
                             lang: item.get("lang"),
-                            code: item.get("code")
+                            code: item.get("code").toUpperCase()
                         };
                     });
                     if (forcedLang) {
-                        favoriteCode = forcedLang;
+                        favoriteCode = forcedLang.toUpperCase();
                     }
                     // move favorite language at first position
                     lang = Y.Array.find(langs, function(item) {
@@ -257,8 +257,9 @@ YUI.add("wegas-i18n", function(Y) {
                     }
                     for (i in langs) {
                         lang = langs[i];
-                        if (translations[lang.code] !== undefined) {
-                            if (translations[lang.code]) {
+                        tr = translations[lang.code] || translations[lang.code.toLowerCase()];
+                        if (tr !== undefined) {
+                            if (tr) {
                                 theOne = lang;
                                 break;
                             }
@@ -295,7 +296,7 @@ YUI.add("wegas-i18n", function(Y) {
                     }
 
                     if (theOne) {
-                        return genTranslationMarkup(translations[theOne.code], inlineEditor, theOne, trId, theOne.code === favoriteCode);
+                        return genTranslationMarkup(tr, inlineEditor, theOne, trId, theOne.code === favoriteCode);
                     } else {
                         return genTranslationMarkup(params && params.fallback || "", inlineEditor, langs[0], trId, true);
                     }
@@ -439,7 +440,7 @@ YUI.add("wegas-i18n", function(Y) {
 
         function findLanguageByCode(code) {
             return Y.Array.find(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"), function(item) {
-                return item.get("code") === code;
+                return item.get("code").toUpperCase() === code.toUpperCase();
             });
         }
 
@@ -447,7 +448,7 @@ YUI.add("wegas-i18n", function(Y) {
             var gmLang = findLanguageByCode(code),
                 code;
             if (gmLang) {
-                Y.Wegas.I18n._currentCode = gmLang.get("code");
+                Y.Wegas.I18n._currentCode = gmLang.get("code").toUpperCase();
                 code = gmLang.get("code");
 
                 if (code === "def") {

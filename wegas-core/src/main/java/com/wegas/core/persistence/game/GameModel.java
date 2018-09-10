@@ -65,6 +65,7 @@ import org.slf4j.LoggerFactory;
         }
 )
 public class GameModel extends AbstractEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner, Broadcastable, NamedEntity, JCRClient {
+
     private static final Logger logger = LoggerFactory.getLogger(GameModel.class);
 
     private static final long serialVersionUID = 1L;
@@ -228,7 +229,6 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * the same time.
      */
     @Transient
-
     @WegasEntityProperty(includeByDefault = false, protectionLevel = ModelScoped.ProtectionLevel.ALL)
     @JsonView({Views.ExportI.class})
     private Map<String, JsonNode> pages;
@@ -1019,8 +1019,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     public GameModelLanguage getLanguageByCode(String code) {
         if (code != null) {
+            String CODE = code.toUpperCase();
             for (GameModelLanguage lang : this.getLanguages()) {
-                if (code.equals(lang.getCode())){
+                if (CODE.equals(lang.getCode().toUpperCase())) {
                     return lang;
                 }
             }
@@ -1116,7 +1117,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         return this.isProtected();
     }
 
-    public boolean isProtected(){
+    public boolean isProtected() {
         // only scenarios which are based on a model are protected
         // but do no protect a gameModel when the propagation process is ongoing
         return (this.getType().equals(GmType.SCENARIO) && this.getBasedOn() != null && !this.onGoingPropagation);

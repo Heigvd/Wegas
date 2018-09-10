@@ -62,7 +62,7 @@ YUI.add("wegas-loginbutton", function(Y) {
                                     children:
                                         languages.map(function(item) {
                                             return {
-                                                label: (I18n.getCode() === item.get("code") ? "<b>" + item.get("lang") + "</b>" : item.get("lang")),
+                                                label: (I18n.getCode() === item.get("code").toUpperCase() ? "<b>" + item.get("lang") + "</b>" : item.get("lang")),
                                                 on: {
                                                     click: function() {
                                                         I18n.setCurrentPlayerCode(item.get("code"));

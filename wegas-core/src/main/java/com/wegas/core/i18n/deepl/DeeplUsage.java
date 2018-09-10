@@ -7,6 +7,7 @@
  */
 package com.wegas.core.i18n.deepl;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -42,7 +43,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
         this.characterLimit = characterLimit;
     }
 
-    public Double ratio() {
+    @JsonIgnore
+    public Double getRatio() {
         return characterCount.doubleValue() / characterLimit.doubleValue();
     }
 }
