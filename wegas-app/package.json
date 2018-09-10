@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "bower": "^1.8.4",
-    "browser-sync": "^2.24.4",
+    "browser-sync": "2.23",
     "chalk": "~0.5.1",
     "cross-env": "^5.2.0",
     "del": "^1.2.1",
