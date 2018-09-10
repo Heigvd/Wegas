@@ -20,7 +20,7 @@ const plugins = [
   }),
 ];
 if (!isCI && PROD) {
-  plugins.push(new BundleAnalyzerPlugin());
+ // plugins.push(new BundleAnalyzerPlugin());
 }
 module.exports = {
   devtool: PROD ? 'source-map' : 'inline-source-map',
