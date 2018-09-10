@@ -244,7 +244,7 @@
                                             ]
                                         }, {
                                             "type": "OpenTabButton",
-                                            "label": "Styles",
+                                            "label": "CSS Styles",
                                             "wchildren": [
                                                 {
                                                     "type": "ScriptLibrary",
@@ -446,7 +446,7 @@
                                             ]
                                         }, {
                                             "type": "OpenTabButton",
-                                            "label": "Styles",
+                                            "label": "CSS Styles",
                                             "tabSelector": "#rightTabView",
                                             "wchildren": [
                                                 {
