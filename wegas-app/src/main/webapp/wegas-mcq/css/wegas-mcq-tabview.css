@@ -43,15 +43,15 @@
 .yui3-skin-sam .wegas-mcqtabview .horizontal-tabview .yui3-tabview-content{
     height:100%;
 }
-.yui3-skin-sam .wegas-mcqtabview .horizontal-tabview ul.yui3-tabview-list,
-.yui3-skin-sam .wegas-mcqtabview .horizontal-tabview div.yui3-tabview-panel{
+.yui3-skin-sam .wegas-mcqtabview .horizontal-tabview .yui3-tabview-content:not(.smallscreen) ul.yui3-tabview-list,
+.yui3-skin-sam .wegas-mcqtabview .horizontal-tabview .yui3-tabview-content:not(.smallscreen) div.yui3-tabview-panel{
     height:100%;
     overflow-x: hidden;
     overflow-y: auto;
     min-height: 100px;
     /*padding-bottom: 2px !important;*/
-
 }
+
 .wegas-mcqtabview .yui3-tabview-list .yui3-tab {
     width: calc(100% - 4px);
     display: block;
@@ -75,7 +75,7 @@
 }
 
 
-.yui3-skin-sam .horizontal-tabview .yui3-tabview-content.smallscreen .wegas-whview .wegas-whview__title, 
+.yui3-skin-sam .horizontal-tabview .yui3-tabview-content.smallscreen .wegas-whview .wegas-whview__title,
 .yui3-skin-sam .horizontal-tabview .yui3-tabview-content.smallscreen .wegas-mcqview .mcq-view__question-title {
     display: none;
 }
