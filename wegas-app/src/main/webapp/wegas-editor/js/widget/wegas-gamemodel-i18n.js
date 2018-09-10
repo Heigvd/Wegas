@@ -884,9 +884,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                 this.editor = editor;
                                 this.editor.fire("focus");
                                 this.editor.focus();
-                                }, this));
+                            }, this));
                             //this.editor.focus();
-                        //this.editor.targetElm.click();
+                            //this.editor.targetElm.click();
                         }, this),
                         image_advtab: true,
                         content_css: [
@@ -920,11 +920,111 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                 block: 'code',
                             },
                         ],
+                        formats: {}
                     };
                     if (cfg.node.hasClass("wegas-translation-string")) {
                         tinyConfig.theme = 'inlite';
                     }
-                    tinyMCE.init(tinyConfig);
+
+                    var extraButtons = Y.Wegas.Config.TinyExtraButtons;
+
+                    if (extraButtons) {
+                        /* config example :
+                         Y.namespace("Wegas.Config").TinyExtraButtons = {
+                         className : "off-game",
+                         cssIcon: "fa fa-asterisk",
+                         tooltip : "off-game information style"
+                         },
+                         danger: {
+                         block: "div",
+                         className : "danger-message",
+                         cssIcon: "fa fa-warning",
+                         tooltip : "danger message style"
+                         }};
+                         */
+                        var toolbar = tinyConfig.toolbar1.split(" ");
+                        toolbar.pop(); // remove addToolbarButton
+                        toolbar.push("|");
+
+                        var initFunctions = [];
+
+                        for (let name in extraButtons) {
+                            var btnCfg = extraButtons[name];
+                            tinyConfig.formats[name] = {
+                                attributes: {
+                                    'class': btnCfg.className
+                                }
+                            };
+
+                            if (btnCfg.block) {
+                                tinyConfig.formats[name].block = btnCfg.block;
+                            } else if (btnCfg.inline) {
+                                tinyConfig.formats[name].inline = btnCfg.inline;
+                            } else {
+                                tinyConfig.formats[name].inline = "span";
+                            }
+
+                            toolbar.push(name);
+
+                            initFunctions.push({
+                                name: name,
+                                config: btnCfg,
+                                'function':
+                                    function(editor, name, btnCfg) {
+                                        editor.addButton(name, {
+                                            icon: "x " + btnCfg.cssIcon,
+                                            stateSelector: "." + btnCfg.className,
+                                            tooltip: btnCfg.tooltip,
+                                            onclick: function(e) {
+                                                tinymce.activeEditor.formatter.toggle(name);
+                                            }
+                                        });
+                                    }
+                            });
+
+                            tinyConfig.setup = Y.bind(function(editor) {
+                                this.editor = editor;
+                                editor.on('change', Y.bind(this._onHtmlChange, this));
+                                editor.on('keyUp', Y.bind(this._onHtmlChange, this));
+                                editor.on('blur', Y.bind(this._onHtmlBlur, this)); // text input & ctrl-related operations
+                                editor.on('init', Y.bind(function() {
+                                    this.editor = editor;
+                                    this.editor.fire("focus");
+                                    this.editor.focus();
+                                }, this));
+                                //this.editor.focus();
+                                //this.editor.targetElm.click();
+
+
+                                // call each initFunction
+                                for (var i in initFunctions) {
+                                    initFunctions[i].function.call(editor, editor,
+                                        initFunctions[i].name, initFunctions[i].config);
+                                }
+                            }, this);
+                        }
+
+                        // rebuilf toolbar1
+                        toolbar.push("|");
+                        toolbar.push("addToolbarButton");
+                        tinyConfig.toolbar1 = toolbar.join(" ");
+
+                        tinyMCE.init(tinyConfig);
+                    } else {
+                        setup: Y.bind(function(editor) {
+                            this.editor = editor;
+                            editor.on('change', Y.bind(this._onHtmlChange, this));
+                            editor.on('keyUp', Y.bind(this._onHtmlChange, this));
+                            editor.on('blur', Y.bind(this._onHtmlBlur, this)); // text input & ctrl-related operations
+                            editor.on('init', Y.bind(function() {
+                                this.editor = editor;
+                                this.editor.fire("focus");
+                                this.editor.focus();
+                            }, this));
+                            //this.editor.focus();
+                            //this.editor.targetElm.click();
+                        }, this);
+                    }
                 }
             } else {
                 this.removeEditor();
