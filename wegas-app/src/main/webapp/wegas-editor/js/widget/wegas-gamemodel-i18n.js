@@ -884,7 +884,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
 
                     var initFunctions = [];
 
-                    for (let name in extraButtons) {
+                    for (var name in extraButtons) {
                         var btnCfg = extraButtons[name];
                         tinyConfig.formats[name] = {
                             attributes: {
