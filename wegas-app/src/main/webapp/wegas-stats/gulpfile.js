@@ -14,13 +14,11 @@ const config = require('./webpack.config');
 gulp.task('default', ['webpack']);
 gulp.task('webpack', (callback) => {
     webpack({ ...config, mode: 'production' }, (err, stats) => {
-        if (err) throw err;
+        if (err) return callback(err);
         if (stats.hasErrors()) {
-            throw Error(
-                stats.toString({
-                    color: true,
-                })
-            );
+            return callback(new Error(stats.toString({
+                color: true,
+            })));
         }
         // eslint-disable-next-line
         console.log(
@@ -29,6 +27,6 @@ gulp.task('webpack', (callback) => {
                 color: true,
             })
         );
-        callback();
+        return callback();
     });
 });
