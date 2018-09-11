@@ -56,7 +56,7 @@ export const config: ConfigurationSchema<IResult> = {
     },
   },
   answer: {
-    type: 'object',
+    type: ['object', 'null'],
     view: {
       type: 'i18nhtml',
       label: 'Feedback',

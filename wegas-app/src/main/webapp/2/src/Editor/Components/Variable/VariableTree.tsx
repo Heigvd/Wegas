@@ -153,6 +153,7 @@ function CTree(props: {
       selector={(state: State) => {
         const variable = VariableDescriptor.select(props.variableId);
         return {
+          props,
           variable,
           match: isMatch(props.variableId, props.search),
           editing:
