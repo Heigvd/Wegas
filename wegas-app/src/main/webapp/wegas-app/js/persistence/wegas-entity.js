@@ -508,6 +508,7 @@ YUI.add('wegas-entity', function(Y) {
                 type: 'object',
                 value: {},
                 properties: {
+                    refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                     guestAllowed: {
                         type: "boolean",
                         view: {label: "Guest allowed?"}

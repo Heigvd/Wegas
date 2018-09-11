@@ -100,9 +100,9 @@ YUI.add('wegas-app', function(Y) {
                             I18n.setCode(playerCode);
 
                             Y.later(10, this, function() { // Let the loading div update
-                                this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
-                                    .render(); // and render it
-                                this.fire("render"); // Fire a render event for some eventual post processing
+                                    this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
+                                        .render(); // and render it
+                                    this.fire("render"); // Fire a render event for some eventual post processing
                                 Y.one(".wegas-loading-app").remove();
                             });
                         } else {

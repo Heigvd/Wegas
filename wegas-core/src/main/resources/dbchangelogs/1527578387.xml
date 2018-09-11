@@ -174,4 +174,25 @@
 
         <sql>drop function random_string ( integer);</sql>
     </changeSet>
+
+
+
+    <changeSet author="maxence" id="1527578387-4b">
+        <sql>
+            UPDATE wrequirement
+            SET refid = ireqs.dreq_refid
+            FROM (
+                SELECT dreq.refid AS dreq_refid , ireq.id AS ireq_id
+                FROM variabledescriptor td  -- select all varaible descriptor
+                JOIN wrequirement dreq ON dreq.taskinstance_id = td.defaultinstance_id -- join their default wrequirements through their default instance
+                JOIN variableinstance vi ON vi.playerscope_id = scope_id  -- join all effective instances through scopes
+                                            OR vi.teamscope_id = scope_id
+                                            OR vi.gamemodelscope_id = scope_id
+                JOIN wrequirement ireq ON ireq.taskinstance_id = vi.id  -- join effective requirements from effetive instances
+                WHERE ireq.wrequirement_name = dreq.wrequirement_name -- but make sure dreq names match effective ones
+                    AND ireq.refid != dreq.refid
+            ) AS ireqs
+            WHERE id = ireqs.ireq_id;
+        </sql>
+    </changeSet>
 </databaseChangeLog>

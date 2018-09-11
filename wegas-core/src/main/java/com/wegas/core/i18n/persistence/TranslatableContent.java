@@ -404,4 +404,8 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
             return null;
         }
     }
+
+    public String toString(){
+        return this.translateOrEmpty((GameModel)null);
+    }
 }

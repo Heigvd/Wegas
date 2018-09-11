@@ -801,6 +801,10 @@
     display: inline-block;
 }
 
+.wegas-i18n-manager .wegas-i18n-manager--languages .language-code {
+    text-transform: uppercase;
+}
+
 .wegas-i18n-manager .wegas-i18n-manager--languages .form {
     margin-bottom: 20px;
 }
@@ -983,8 +987,4 @@
 .wegas-i18n-manager .wegas-i18n-manager--editor .highlight {
     animation: highlight 3s;
     background: #f5f5f5;
-}
-
-.wegas-i18n-manager .wegas-i18n-manager--editor .language-code {
-    text-transform: uppercase;
 }
