@@ -88,7 +88,7 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
     @Override
     public Long getId() {
         return id;
- 
+
     }
 
     @Override
@@ -125,16 +125,28 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
         this.indexOrder = indexOrder;
     }
 
+    /**
+     * get the language identification code.
+     * Code is always uppsercase.
+     *
+     * @return Uppercase languade identification code
+     */
     public String getCode() {
-        return code;
+        return code != null ? code.toUpperCase() : null;
     }
 
+    /**
+     * Set the language identification code.
+     * The code will be uppercased.
+     *
+     * @param code the mew identification code
+     */
     public void setCode(String code) {
         if (this.refName != null) {
-            this.code = refName;
+            this.code = refName.toUpperCase();
             this.refName = null;
         } else {
-            this.code = code;
+            this.code = code != null ? code.toUpperCase() : null;
         }
     }
 

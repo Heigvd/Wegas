@@ -1021,7 +1021,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         if (code != null) {
             String CODE = code.toUpperCase();
             for (GameModelLanguage lang : this.getLanguages()) {
-                if (CODE.equals(lang.getCode().toUpperCase())) {
+                if (CODE.equals(lang.getCode())) {
                     return lang;
                 }
             }

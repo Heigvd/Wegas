@@ -984,3 +984,7 @@
     animation: highlight 3s;
     background: #f5f5f5;
 }
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .language-code {
+    text-transform: uppercase;
+}

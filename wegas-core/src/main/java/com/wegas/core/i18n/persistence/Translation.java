@@ -27,7 +27,6 @@ public class Translation implements Serializable {
 
     private static final long serialVersionUID = 1647739633795326491L;
 
-
     private String lang;
 
     @Lob
@@ -54,17 +53,21 @@ public class Translation implements Serializable {
     public boolean equals(Object obj) {
         if (obj != null && obj instanceof Translation) {
             Translation other = (Translation) obj;
-            return this.lang.equals(other.getLang());
+            return this.getLang().equals(other.getLang());
         }
         return false;
     }
 
     public String getLang() {
-        return lang;
+        return lang != null ? lang.toUpperCase() : null;
     }
 
     public void setLang(String lang) {
-        this.lang = lang;
+        if (lang != null) {
+            this.lang = lang.toUpperCase();
+        } else {
+            this.lang = null;
+        }
     }
 
     public String getTranslation() {
@@ -84,7 +87,7 @@ public class Translation implements Serializable {
 
         @Override
         public String getKey(Translation item) {
-            return item.getLang().toUpperCase();
+            return item.getLang();
         }
 
         @Override
@@ -92,7 +95,6 @@ public class Translation implements Serializable {
             return item.getTranslation();
         }
     }
-
 
     public static class Mapper implements ListUtils.EntryExtractor<String, Translation, Translation> {
 

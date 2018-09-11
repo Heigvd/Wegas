@@ -205,11 +205,11 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     }
 
     public String getLang() {
-        return lang;
+        return lang != null ? lang.toUpperCase() : null;
     }
 
     public void setLang(String langCode) {
-        this.lang = langCode;
+        this.lang = langCode != null ? langCode.toUpperCase() : null;
     }
 
     /**
