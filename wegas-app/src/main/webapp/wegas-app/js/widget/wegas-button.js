@@ -65,7 +65,7 @@ YUI.add('wegas-button', function(Y) {
             }
         },
         getEditorLabel: function() {
-            return Wegas.Helper.stripHtml(this.get('label'));
+            return Wegas.Helper.stripHtml(I18n.t(this.get('label')));
         },
         /**
          * @function
@@ -100,10 +100,10 @@ YUI.add('wegas-button', function(Y) {
          * </ul>
          */
         ATTRS: {
-            label: {
-                type: 'string',
-                view: {label: 'Label'}
-            },
+            label: Y.Wegas.Helper.getTranslationAttr({
+                label: "Label",
+                type: "string"
+            }),
             labelHTML: {
                 transient: true
             },
@@ -135,7 +135,8 @@ YUI.add('wegas-button', function(Y) {
     Y.Button.prototype._setLabel = function(label, name, opts) {
         if (!opts || opts.src !== 'internal') {
             var text;
-            if (label instanceof Y.Wegas.persistence.TranslatableContent) {
+            if (label instanceof
+                Y.Wegas.persistence.TranslatableContent || (typeof label === "object" && label["@class"] === "TranslatableContent")) {
                 text = I18n.t(label);
             } else {
                 text = label;
