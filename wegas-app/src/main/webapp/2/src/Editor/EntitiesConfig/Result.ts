@@ -135,3 +135,5 @@ export const config: ConfigurationSchema<IResult> = {
 };
 export const label = 'Result';
 export const icon = 'cog';
+
+export { actions } from './VariableDescriptor';

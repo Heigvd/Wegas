@@ -1,5 +1,6 @@
-import { ConfigurationSchema } from '../editionConfig';
+import { ConfigurationSchema, EActions } from '../editionConfig';
 import { config as variableInstanceConfig } from './VariableInstance';
+import { Actions } from '../../data';
 
 const wegasEntityConfig: ConfigurationSchema<IWegasEntity> = {
   '@class': {
@@ -151,4 +152,8 @@ export const config: ConfigurationSchema<IVariableDescriptor> = {
       borderTop: true,
     },
   },
+};
+
+export const actions: EActions<IVariableDescriptor> = {
+  edit: Actions.EditorActions.editVariable,
 };

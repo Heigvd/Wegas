@@ -1,6 +1,5 @@
 import { Schema } from 'jsoninput';
 import { AvailableViews } from './Components/FormView';
-import { Actions } from '../data';
 import { StateActions } from '../data/actions';
 import { Props } from '@fortawesome/react-fontawesome';
 
@@ -47,16 +46,12 @@ export async function getAvailableChildren<T extends IWegasEntity>(
 export interface EActions<T extends IWegasEntity> {
   edit: (variable: T, path?: string[]) => StateActions;
 }
-// default Actions
-const entityActions: EActions<IVariableDescriptor> = {
-  edit: Actions.EditorActions.editVariable,
-};
 
 export async function getEntityActions<T extends IWegasEntity>(
   entity: T,
 ): Promise<EActions<T>> {
   return await import(/* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
-    entity['@class']).then(res => ({ ...entityActions, ...res.actions }));
+    entity['@class']).then(res => res.actions);
 }
 
 export async function getMethodConfig<T extends IWegasEntity>(

@@ -7,7 +7,6 @@ interface EditorProps<T> {
   entity?: T;
   update?: (variable: T) => void;
   actions: {
-    id: string;
     action: (entity: T, path?: string[]) => void;
     label: React.ReactNode;
   }[];
@@ -73,10 +72,10 @@ export class Form<T> extends React.Component<
           >
             reset
           </button>
-          {this.props.actions.map(a => {
+          {this.props.actions.map((a, i) => {
             return (
               <button
-                key={a.id}
+                key={i}
                 tabIndex={1}
                 onClick={() => a.action(this.state.val, this.props.path)}
               >

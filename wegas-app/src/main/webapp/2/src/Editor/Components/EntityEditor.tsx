@@ -7,14 +7,12 @@ import getEditionConfig, { ConfigurationSchema } from '../editionConfig';
 import { Actions } from '../../data';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepUpdate } from '../../data/updateUtils';
-import { IForm } from './Form';
 import { StoreConsumer } from '../../data/store';
 
 interface EditorProps<T> {
   entity?: T;
   update?: (variable: T) => void;
-  actions: {
-    id: string;
+  actions?: {
     label: React.ReactNode;
     action: (entity: T, path?: string[]) => void;
   }[];
@@ -22,10 +20,10 @@ interface EditorProps<T> {
   getConfig(entity: T): Promise<ConfigurationSchema<IWegasEntity>>;
 }
 
-export async function Editor<T>({
+export async function WindowedEditor<T>({
   entity,
   update,
-  actions,
+  actions = [],
   getConfig,
   path,
 }: EditorProps<T>) {
@@ -42,21 +40,28 @@ export async function Editor<T>({
   }
 
   const [Form, schema] = await Promise.all<
-    IForm,
+    typeof import('./Form')['Form'],
     Schema | ConfigurationSchema<IWegasEntity>
   >([import('./Form').then(m => m.Form), getConfig(pathEntity)]);
   return (
     <Form
       entity={pathEntity}
       update={update != null ? updatePath : update}
-      actions={actions}
+      actions={actions.map(({ label, action }) => {
+        return {
+          label,
+          action: function(e: T) {
+            action(deepUpdate(entity, path, e), path);
+          },
+        };
+      })}
       path={path}
       schema={{ type: 'object', properties: schema }}
     />
   );
 }
 const AsyncVariableForm = asyncSFC<EditorProps<IVariableDescriptor>>(
-  Editor,
+  WindowedEditor,
   () => <div>load...</div>,
   ({ err }) => <span>{err.message}</span>,
 );
@@ -100,23 +105,6 @@ export default function VariableForm(props: {
             : (entity: IWegasEntity) => {
                 dispatch(Actions.EditorActions.saveEditor(entity));
               };
-        const del =
-          'delete' in state.actions
-            ? state.actions.delete
-            : (entity: IVariableDescriptor, path?: string[]) => {
-                dispatch(
-                  Actions.VariableDescriptorActions.deleteDescriptor(
-                    entity,
-                    path,
-                  ),
-                );
-              };
-        const actions = [];
-        if (state.entity.id !== undefined) {
-          if (del != null) {
-            actions.push({ id: 'delete', label: 'delete', action: del });
-          }
-        }
         const getConfig = (entity: IVariableDescriptor) => {
           return state.config != null
             ? Promise.resolve(state.config)
@@ -129,7 +117,7 @@ export default function VariableForm(props: {
             {...state}
             getConfig={getConfig}
             update={update}
-            actions={actions}
+            actions={Object.values(state.actions.more || {})}
             entity={state.entity}
           />
         );

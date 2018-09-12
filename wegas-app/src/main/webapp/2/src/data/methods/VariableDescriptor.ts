@@ -6,7 +6,10 @@ import {
   Player,
 } from '../selectors';
 
-export function editorLabel(vd: IVariableDescriptor) {
+export function editorLabel(vd: {
+  label: ITranslatableContent;
+  editorTag?: string | null;
+}) {
   const label = TranslatableContent.toString(vd.label);
   if (vd.editorTag && label) {
     return `${vd.editorTag} - ${label}`;

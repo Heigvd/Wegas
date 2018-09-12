@@ -90,8 +90,21 @@ export function createDescriptor(
       dispatch(managedMode(res));
       // Assume entity[0] is what we just created.
       return dispatch(
-        Act.EditorActions.editVariable(res
-          .updatedEntities[0] as IVariableDescriptor),
+        Act.EditorActions.editVariable(
+          res.updatedEntities[0] as IVariableDescriptor,
+          undefined,
+          undefined,
+          {
+            more: {
+              delete: {
+                label: 'delete',
+                action: (entity: IVariableDescriptor, path?: string[]) => {
+                  dispatch(deleteDescriptor(entity, path));
+                },
+              },
+            },
+          },
+        ),
       );
     });
   };

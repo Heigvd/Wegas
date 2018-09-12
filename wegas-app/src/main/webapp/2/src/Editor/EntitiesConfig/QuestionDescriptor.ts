@@ -107,3 +107,4 @@ export const config: ConfigurationSchema<IQuestionDescriptor> = {
 };
 export const label = 'Question';
 export const icon = 'question-circle';
+export { actions } from './VariableDescriptor';

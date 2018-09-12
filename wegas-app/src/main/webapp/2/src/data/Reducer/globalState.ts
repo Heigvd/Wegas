@@ -1,14 +1,20 @@
 // import { Reducer } from 'redux';
 import u from 'immer';
-import { Actions as ACTIONS } from '..';
+import { Actions as ACTIONS, Actions } from '..';
 import { ActionCreator, ActionType, StateActions } from '../actions';
 import { VariableDescriptor } from '../selectors';
-import { ThunkResult } from '../store';
+import { ThunkResult, store } from '../store';
 import { ConfigurationSchema } from '../../Editor/editionConfig';
 
-type EditorAction = {
-  save?: <T extends IWegasEntity>(entity: T) => void;
-  delete?: <T extends IWegasEntity>(entity: T, path?: string[]) => void;
+type actionFn<T extends IWegasEntity> = (entity: T, path?: string[]) => void;
+export type EditorAction<T extends IWegasEntity> = {
+  save?: (entity: T) => void;
+  more?: {
+    [id: string]: {
+      label: React.ReactNode;
+      action: actionFn<T>;
+    };
+  };
 };
 type Edition =
   | {
@@ -16,21 +22,21 @@ type Edition =
       id: number;
       config?: ConfigurationSchema<IWegasEntity>;
       path?: string[];
-      actions: EditorAction;
+      actions: EditorAction<IWegasEntity>;
     }
   | {
       type: 'VariableCreate';
       '@class': string;
       parentId?: number;
       config?: ConfigurationSchema<IWegasEntity>;
-      actions: EditorAction;
+      actions: EditorAction<IWegasEntity>;
     }
   | {
       type: 'Component';
       page: string;
       path: string[];
       config?: ConfigurationSchema<IWegasEntity>;
-      actions: EditorAction;
+      actions: EditorAction<IWegasEntity>;
     };
 export interface GlobalState {
   currentGameModelId: number;
@@ -78,6 +84,9 @@ const global = u<GlobalState>(
           path: action.payload.path,
           actions: {},
         };
+        return;
+      case ActionType.CLOSE_EDITOR:
+        state.editing = undefined;
         return;
       case ActionType.VARIABLE_CREATE:
         state.editing = {
@@ -146,7 +155,18 @@ export function editVariable(
   entity: IVariableDescriptor,
   path: string[] = [],
   config?: ConfigurationSchema<IVariableDescriptor>,
-  actions: EditorAction = {},
+  actions: EditorAction<IVariableDescriptor> = {
+    more: {
+      delete: {
+        label: 'delete',
+        action: (entity: IVariableDescriptor, path?: string[]) => {
+          store.dispatch(
+            Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
+          );
+        },
+      },
+    },
+  },
 ) {
   return ActionCreator.VARIABLE_EDIT({
     id: entity.id!,
@@ -183,7 +203,7 @@ export function editStateMachine(
 export function createVariable(
   cls: string,
   parent?: IParentDescriptor,
-  actions: EditorAction = { delete: undefined },
+  actions: EditorAction<IWegasEntity> = {},
 ) {
   return ActionCreator.VARIABLE_CREATE({
     '@class': cls,
@@ -257,4 +277,8 @@ export function pageSrcMode(payload: boolean) {
 
 export function updatePusherStatus(status: string, socket_id: string) {
   return ActionCreator.PUSHER_SOCKET({ socket_id, status });
+}
+
+export function closeEditor() {
+  return ActionCreator.CLOSE_EDITOR();
 }

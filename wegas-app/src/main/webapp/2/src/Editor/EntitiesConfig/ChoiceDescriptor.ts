@@ -57,3 +57,4 @@ export const config: ConfigurationSchema<IChoiceDescriptor> = {
 export const children = ['Result'];
 export const label = 'Conditional result';
 export const icon = 'check-square';
+export { actions } from './VariableDescriptor';

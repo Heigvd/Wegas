@@ -69,3 +69,4 @@ export const config: ConfigurationSchema<IListDescriptor> = {
 };
 export const label = 'Folder';
 export const icon = 'folder';
+export { actions } from './VariableDescriptor';

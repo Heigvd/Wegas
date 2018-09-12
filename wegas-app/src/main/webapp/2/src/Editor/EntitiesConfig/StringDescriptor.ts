@@ -72,3 +72,4 @@ export const methods: MethodConfig = {
 };
 export const label = 'String';
 export const icon = 'font';
+export { actions } from './VariableDescriptor';

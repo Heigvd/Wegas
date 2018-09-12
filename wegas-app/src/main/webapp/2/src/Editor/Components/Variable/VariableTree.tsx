@@ -44,12 +44,6 @@ interface TreeProps {
 }
 class TreeView extends React.Component<TreeProps, { search: string }> {
   state = { search: '' };
-  onSelectCreator = (variable: IVariableDescriptor, path?: string[]) => {
-    return () =>
-      getEntityActions(variable).then(({ edit }) =>
-        this.props.dispatch(edit(variable, path)),
-      );
-  };
   render() {
     const { variables, dispatch } = this.props;
     return (
@@ -97,7 +91,6 @@ class TreeView extends React.Component<TreeProps, { search: string }> {
                       key={v}
                       search={this.state.search}
                       variableId={v}
-                      onSelectCreator={this.onSelectCreator}
                     />
                   ))
                 ) : (
@@ -140,13 +133,9 @@ const headerStyle = css({
 });
 function CTree(props: {
   variableId: number;
-  subPath?: (string | number)[];
+  subPath?: (string)[];
   search: string;
   nodeProps: () => {};
-  onSelectCreator: (
-    entity: IWegasEntity,
-    path?: (string | number)[],
-  ) => () => void;
 }): JSX.Element {
   return (
     <StoreConsumer
@@ -183,7 +172,16 @@ function CTree(props: {
               header={
                 <span
                   className={cx(headerStyle, { [editingStyle]: state.editing })}
-                  onClick={props.onSelectCreator(variable)}
+                  onClick={() =>
+                    getEntityActions(variable!).then(({ edit }) =>
+                      dispatch(
+                        edit(
+                          VariableDescriptor.select(props.variableId)!,
+                          props.subPath,
+                        ),
+                      ),
+                    )
+                  }
                 >
                   <Title />
                   {editorLabel(variable)}
@@ -211,7 +209,6 @@ function CTree(props: {
                         key={i}
                         variableId={i}
                         search={props.search}
-                        onSelectCreator={props.onSelectCreator}
                       />
                     ))
                   : entityIs<IChoiceDescriptor>(variable, 'ChoiceDescriptor')
@@ -221,13 +218,7 @@ function CTree(props: {
                           key={r.id}
                           search={props.search}
                           variableId={r.choiceDescriptorId}
-                          subPath={['results', index]}
-                          onSelectCreator={function(v: IResult) {
-                            return props.onSelectCreator(
-                              VariableDescriptor.select(v.choiceDescriptorId)!,
-                              ['results', index],
-                            );
-                          }}
+                          subPath={['results', String(index)]}
                         />
                       ))
                     : null

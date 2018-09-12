@@ -103,3 +103,4 @@ export const methods: MethodConfig = {
 };
 export const label = 'Number';
 export const icon = 'chart-line';
+export { actions } from './VariableDescriptor';

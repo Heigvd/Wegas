@@ -11,6 +11,9 @@ function createAction<T extends string, P>(type: T, payload: P) {
     payload,
   };
 }
+/**
+ * Simple action creators.
+ */
 export const ActionCreator = {
   ENTITY_UPDATE: (data: NormalizedData) =>
     createAction(ActionType.ENTITY_UPDATE, data),
@@ -36,6 +39,7 @@ export const ActionCreator = {
       delete?: (entity: T) => void;
     };
   }) => createAction(ActionType.VARIABLE_CREATE, data),
+  CLOSE_EDITOR: () => createAction(ActionType.CLOSE_EDITOR, {}),
   MANAGED_MODE: (data: {
     deletedEntities: NormalizedData;
     updatedEntities: NormalizedData;

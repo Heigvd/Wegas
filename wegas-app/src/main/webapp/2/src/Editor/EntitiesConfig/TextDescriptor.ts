@@ -35,3 +35,5 @@ export const methods: MethodConfig = {
 };
 export const label = 'Text';
 export const icon = 'paragraph';
+
+export { actions } from './VariableDescriptor';

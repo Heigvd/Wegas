@@ -11,6 +11,7 @@ import { Toolbar } from '../../Components/Toolbar';
 import { FontAwesome } from './Views/FontAwesome';
 import { getInstance } from '../../data/methods/VariableDescriptor';
 import { themeVar } from '../../Components/Theme';
+import { EditorAction } from '../../data/Reducer/globalState';
 
 const editorStyle = css({
   position: 'relative',
@@ -81,6 +82,10 @@ interface StateMachineEditorProps {
   stateMachine: IFSMDescriptor;
   stateMachineInstance: IFSMInstance;
   dispatch: StoreDispatch;
+  /**
+   * Currently editing a child in the editor
+   */
+  editChild: boolean;
 }
 class StateMachineEditor extends React.Component<
   StateMachineEditorProps,
@@ -99,6 +104,9 @@ class StateMachineEditor extends React.Component<
     }
     return { oldProps: nextProps, stateMachine: nextProps.stateMachine };
   }
+  static defaultProps = {
+    editChild: false,
+  };
   constructor(props: StateMachineEditorProps) {
     super(props);
     this.state = { oldProps: props, stateMachine: props.stateMachine };
@@ -211,19 +219,22 @@ class StateMachineEditor extends React.Component<
     );
   };
   editState = (id: string) => {
+    const actions: EditorAction<IFSMDescriptor>['more'] = {};
+    if (Number(id) !== this.props.stateMachine.defaultInstance.currentStateId) {
+      actions.delete = {
+        label: 'delete',
+        action: (_entity: IFSMDescriptor, path?: string[]) => {
+          this.deleteState(path![1]);
+        },
+      };
+    }
     this.props.dispatch(
       Actions.EditorActions.editVariable(
         this.props.stateMachine,
         ['states', id],
         undefined,
         {
-          delete:
-            Number(id) !==
-            this.props.stateMachine.defaultInstance.currentStateId
-              ? (_entity, path) => {
-                  this.deleteState(path![1]);
-                }
-              : undefined,
+          more: actions,
         },
       ),
     );
@@ -237,13 +248,18 @@ class StateMachineEditor extends React.Component<
         ['states', stateId, 'transitions', String(transitionIndex)],
         undefined,
         {
-          delete: (_entity, path) => {
-            if (path != null) {
-              this.removeTransition({
-                from: stateId,
-                transitonIndex: transitionIndex,
-              });
-            }
+          more: {
+            delete: {
+              label: 'delete',
+              action: (_entity, path) => {
+                if (path != null) {
+                  this.removeTransition({
+                    from: stateId,
+                    transitonIndex: transitionIndex,
+                  });
+                }
+              },
+            },
           },
         },
       ),
@@ -314,6 +330,9 @@ class StateMachineEditor extends React.Component<
     if (this.state.plumb != null) {
       this.state.plumb.unbind();
     }
+    if (this.props.editChild) {
+      this.props.dispatch(Actions.EditorActions.closeEditor());
+    }
   }
   componentDidUpdate(
     _prevProps: StateMachineEditorProps,
@@ -378,6 +397,7 @@ export default function ConnectedStateMachineEditor() {
     <StoreConsumer<{
       descriptor: IFSMDescriptor | undefined;
       instance: IFSMInstance | undefined;
+      editChild?: boolean;
     }>
       selector={s => {
         const descriptor = s.global.stateMachineEditor
@@ -387,9 +407,17 @@ export default function ConnectedStateMachineEditor() {
           : undefined;
         const instance =
           descriptor != null ? getInstance(descriptor)() : undefined;
+        const editChild =
+          s.global.editing &&
+          s.global.editing.type === 'Variable' &&
+          s.global.stateMachineEditor &&
+          s.global.editing.id === s.global.stateMachineEditor.id &&
+          s.global.editing.path &&
+          s.global.editing.path.length > 0;
         return {
           descriptor,
           instance,
+          editChild,
         };
       }}
     >
@@ -403,6 +431,7 @@ export default function ConnectedStateMachineEditor() {
               stateMachine={state.descriptor}
               stateMachineInstance={state.instance}
               dispatch={dispatch}
+              editChild={state.editChild}
             />
           );
         }

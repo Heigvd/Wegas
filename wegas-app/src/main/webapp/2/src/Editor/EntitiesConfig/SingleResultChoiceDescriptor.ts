@@ -18,3 +18,5 @@ export const config: ConfigurationSchema<ISingleResultChoiceDescriptor> = {
 };
 export const label = 'Single result';
 export const icon = 'check-square';
+
+export { actions } from './VariableDescriptor';
