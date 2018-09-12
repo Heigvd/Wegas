@@ -1139,7 +1139,7 @@ YUI().use(function(Y) {
                 path: "ace/src-min/ace.js"
             },
             pusher: {
-                fullpath: "//js.pusher.com/3.2/pusher.min.js"
+                fullpath: "//js.pusher.com/4.3.1/pusher.min.js"
             },
             googletranslate: {
                 async: false,
