@@ -92,6 +92,12 @@ YUI.add('wegas-app', function(Y) {
                             event.detach();
                         }
                         this.plug(Y.Plugin.LockManager);
+                        this.plug(Y.Plugin.IdleMonitor);
+                        this.idlemonitor.on("idle", Y.bind(this.goIdle, this));
+                        this.idlemonitor.on("resume", Y.bind(this.resume, this));
+
+                        //this.idlemonitor.start();
+
                         this.fire("preRender");
 
                         playerRefName = Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("refName");
@@ -157,6 +163,51 @@ YUI.add('wegas-app', function(Y) {
                     Y.config.win.Y = Y; // Allow access to Y instance
                 }, "167", this);
             });
+        },
+        resume: function() {
+            if (this.dataSources.Pusher) {
+                var counter = 0, totalRequests = 0,
+                    events = [],
+                    onResponse = function() {
+                        counter++;
+                        Y.one(".wegas-loading-app-current").setAttribute("style", "width:" + ((counter / totalRequests) * 100) + "%");
+                        var event;
+                        if (counter >= totalRequests) {
+                            while ((event = events.shift()) !== undefined) {
+                                event.detach();
+                            }
+                            Y.Wegas.Facade.Page.cache.forceIndexUpdate();
+                            Y.one(".wegas-loading-app").remove();
+                        }
+                    };
+
+                // not idle anylonger
+                Y.one("body").toggleClass("idle", false);
+                // but show loader
+                Y.one("body").prepend("<div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>");
+                // listen to pusher
+                this.dataSources.Pusher.resume();
+                // and resend initial requests
+                for (var dsId in this.dataSources) {
+                    var ds = this.dataSources[dsId];
+                    if (ds.hasInitialRequest()) {
+                        totalRequests += ds.getInitialRequestsCount();
+                        ds.sendInitialRequest({
+                            cfg: {
+                                // do not act as initial request (ie. send update events)
+                                initialRequest: false
+                            }
+                        });
+                        events.push(ds.on("response", onResponse, this));
+                    }
+                }
+            }
+        },
+        goIdle: function() {
+            if (this.dataSources.Pusher) {
+                Y.one("body").toggleClass("idle", true);
+                this.dataSources.Pusher.disconnect();
+            }
         },
         /**
          * Destructor methods.

@@ -119,6 +119,7 @@ font {
     margin-top: -50px;
     margin-left: -40px;
     background: transparent url(../../wegas-app/images/wegas-logowhite-80.png) no-repeat;
+    z-index: 10000;
 }
 
 .wegas-loading-app > div {
@@ -829,4 +830,8 @@ font {
 .wegas-light-picture img[height],
 .wegas-light-picture img[width] {
     cursor: zoom-in;
+}
+
+.idle * {
+    background-color: palevioletred;
 }

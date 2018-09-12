@@ -1263,6 +1263,13 @@ YUI.add('wegas-datasource', function(Y) {
             if (entity.get && entity.get(ITEMS)) {
                 return entity.get(ITEMS);
             }
+
+            switch (entity["@class"]) {
+                case "Game":
+                    return entity.teams;
+                case "Team":
+                    return entity.players;
+            }
             return null;
         },
         addToCache: function(entity) {
@@ -1383,8 +1390,12 @@ YUI.add('wegas-datasource', function(Y) {
      */
     UserCache = Y.Base.create("wegas-cache", WegasCache, [], {
         _getChildren: function(entity) {
-            if (entity.get("accounts")) {
-                return entity.get("accounts");
+            if (entity instanceof Y.Wegas.persistence.User) {
+                if (entity.get("accounts")) {
+                    return entity.get("accounts");
+                }
+            } else if (entity["@class"] === "User") {
+                return entity.accounts;
             }
             return null;
         },
