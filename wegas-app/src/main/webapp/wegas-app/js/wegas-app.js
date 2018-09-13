@@ -96,6 +96,9 @@ YUI.add('wegas-app', function(Y) {
                         this.idlemonitor.on("idle", Y.bind(this.goIdle, this));
                         this.idlemonitor.on("resume", Y.bind(this.resume, this));
 
+                        this.idlemonitor.set("timeout", 3600000);  // 1hour
+                        this.idlemonitor.set("resolution", 60000); // check each minute
+
                         //this.idlemonitor.start();
 
                         this.fire("preRender");
@@ -157,6 +160,45 @@ YUI.add('wegas-app', function(Y) {
 
             // Post render events
             this.on("render", function() { // When the first page is rendered,
+
+                var gm = Y.Wegas.Facade.Game.cache.getCurrentGame();
+                var extraTabs;
+
+                Y.Array.find(["#centerTabView", "#rightTabView"], function(item) {
+                    var parent = Y.Widget.getByNode(item);
+                    if (parent && parent.extratabs) {
+                        extraTabs = parent.extratabs;
+                        return true;
+                    }
+                    return false;
+                }, this);
+
+                if (extraTabs) {
+                    if (gm.get("properties").logID) {
+                        extraTabs._addTab({
+                            label: I18n.t("global.statistics"),
+                            children: [{
+                                    type: "Statistics"
+                                }]
+                        });
+                    }
+
+                    Y.Array.each(Y.Wegas.Facade.Variable.cache.findAll("@class", "PeerReviewDescriptor"),
+                        function(prd) {
+                            extraTabs._addTab({
+                                label: I18n.t("global.peerReview"),
+                                children: [{
+                                        "type": "ReviewOrchestrator",
+                                        "variable": {
+                                            "@class": "Script",
+                                            "content": "Variable.find(gameModel, \"" + prd.get("name") + "\");\n"
+                                        }
+                                    }]
+                            });
+
+                        }, this);
+                }
+
                 Y.one("body").on("key", function(e) { // Add shortcut to activate developper mode on key '§' pressed
                     e.currentTarget.toggleClass("wegas-stdmode") // Toggle stdmode class on body (hides any wegas-advancedfeature)
                         .toggleClass("wegas-advancedmode");
@@ -167,38 +209,70 @@ YUI.add('wegas-app', function(Y) {
         resume: function() {
             if (this.dataSources.Pusher) {
                 var counter = 0, totalRequests = 0,
+                    showLoader = false,
                     events = [],
-                    onResponse = function() {
-                        counter++;
-                        Y.one(".wegas-loading-app-current").setAttribute("style", "width:" + ((counter / totalRequests) * 100) + "%");
-                        var event;
-                        if (counter >= totalRequests) {
-                            while ((event = events.shift()) !== undefined) {
-                                event.detach();
+                    tIds = {},
+                    variableTreeViewNode = Y.one(".wegas-editor-variabletreeview"),
+                    variableTreeView,
+                    onResponse = function(response) {
+                        if (tIds[response.tId]) {
+                            delete tIds[response.tId];
+                            counter++;
+                            if (showLoader) {
+                                Y.one(".wegas-loading-app-current").setAttribute("style", "width:" + ((counter / totalRequests) * 100) + "%");
                             }
-                            Y.Wegas.Facade.Page.cache.forceIndexUpdate();
-                            Y.one(".wegas-loading-app").remove();
+                            var event;
+                            if (Object.keys(tIds).length === 0) {
+                                while ((event = events.shift()) !== undefined) {
+                                    event.detach();
+                                }
+                                Y.Wegas.Facade.Page.cache.forceIndexUpdate();
+                                if (showLoader) {
+                                    Y.one(".wegas-loading-app").remove();
+                                }
+
+                                if (variableTreeView) {
+                                    variableTreeView.set("bypassSyncEvents", false);
+                                    Y.log("Enable TVsync");
+                                    variableTreeView.syncUI();
+                                }
+                            }
                         }
                     };
 
+                if (variableTreeViewNode) {
+                    variableTreeView = Y.Widget.getByNode(variableTreeViewNode);
+                    variableTreeView.set("bypassSyncEvents", true);
+                    Y.log("Disable TVsync");
+                }
+
                 // not idle anylonger
                 Y.one("body").toggleClass("idle", false);
-                // but show loader
-                Y.one("body").prepend("<div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>");
+                if (showLoader) {
+                    // but show loader
+                    Y.one("body").prepend("<div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>");
+                }
                 // listen to pusher
                 this.dataSources.Pusher.resume();
                 // and resend initial requests
+                var processedDs = {};
                 for (var dsId in this.dataSources) {
                     var ds = this.dataSources[dsId];
-                    if (ds.hasInitialRequest()) {
-                        totalRequests += ds.getInitialRequestsCount();
-                        ds.sendInitialRequest({
-                            cfg: {
-                                // do not act as initial request (ie. send update events)
-                                initialRequest: false
-                            }
-                        });
-                        events.push(ds.on("response", onResponse, this));
+                    // since Variable === VariableDescriptor, make sure to process db once only
+                    if (!processedDs[ds._yuid]) {
+                        processedDs[ds._yuid] = true;
+                        if (ds.hasInitialRequest()) {
+                            totalRequests += ds.getInitialRequestsCount();
+                            var tId = ds.sendInitialRequest({
+                                cfg: {
+                                    // do not act as initial request (ie. send update events)
+                                    initialRequest: false
+                                }
+                            });
+                            // store initial request transationId
+                            tIds[tId] = "pending";
+                            events.push(ds.after("response", onResponse, this));
+                        }
                     }
                 }
             }

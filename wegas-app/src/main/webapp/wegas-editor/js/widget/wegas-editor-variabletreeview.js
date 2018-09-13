@@ -248,17 +248,22 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             });
         },
         updateDescriptor: function(e) {
-            var oldElement, entity, parent, index, newElement;
-            entity = e.entity;
-            oldElement = this.findNode(entity);
-            if (oldElement) {
-                parent = oldElement.get("parent");
-                index = parent.indexOf(oldElement);
-                newElement = this.genTreeViewElement(entity);
-                oldElement.remove();
-                parent.add(newElement, index);
+            if (!this.get("bypassSyncEvents")) {
+                Y.log("not bypassed");
+                var oldElement, entity, parent, index, newElement;
+                entity = e.entity;
+                oldElement = this.findNode(entity);
+                if (oldElement) {
+                    parent = oldElement.get("parent");
+                    index = parent.indexOf(oldElement);
+                    newElement = this.genTreeViewElement(entity);
+                    oldElement.remove();
+                    parent.add(newElement, index);
+                } else {
+                    Y.log("bypassed");
+                }
+                //oldElement.set("label", e.entity.getEditorLabel());
             }
-            //oldElement.set("label", e.entity.getEditorLabel());
         },
         updateInstance: function(e) {
             var descriptor = Y.Wegas.Facade.Variable.cache.find("id", e.entity.get("descriptorId"));
@@ -613,6 +618,10 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         }
     }, {
         ATTRS: {
+            bypassSyncEvents: {
+                type: "boolean",
+                value: false
+            }
         }
     });
     Wegas.VariableTreeView = VariableTreeView;

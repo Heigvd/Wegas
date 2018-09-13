@@ -178,7 +178,10 @@ YUI.add('wegas-responsive-tabview', function(Y) {
                 if (tvCb.hasClass("open")) {
                     // add title
                     var selectedTab = tvCb.one(".yui3-tab-selected a");
-                    tvCb.prepend("<div class='menutitle'>" + (selectedTab ? selectedTab.getContent() : "") + "</div>");
+                    //tvCb.prepend("<div class='menutitle'>Select un truc :</div>");
+                    var invite = "<div class='menubutton'></div><div class='tablabel'><div class='unread'><div class='index-label'>Select an item</div><div class='index-status'></div></div></div>";
+                    invite = "";
+                    tvCb.prepend("<div class='menutitle'>" + (selectedTab ? invite : "") + "</div>");
                     //tvCb.prepend("<div class='menutitle'><div>" +  tvCb.one(".yui3-tab-selected .index-label").getContent() + "</div></div>");
                 } else {
                     // remove title
