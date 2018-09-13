@@ -160,23 +160,22 @@ angular.module('private.trainer.settings.directives', [
                 } else {
                     ctrl.qrCode = new QRCode(node, url);
                 }
-                var img = document.querySelector(".advanced .qrcode_link .qrcode_thumbnail img");
-                if (img.src) {
-                    console.log("OnClick");
-                    link.addEventListener("click", function() {
-                        console.log("clicked");
-                        var w = window.open('about:blank');
-                        setTimeout(function() { //FireFox seems to require a setTimeout for this to work.
-                            var newImg = w.document.createElement('img')
-                            w.document.body.appendChild(newImg);
-                            newImg.src = img.src;
-                            newImg.title = img.title;
-                        }, 0);
-                    });
-                }
+                link.removeEventListener("click", ctrl._onClick);
+                link.addEventListener("click", ctrl._onClick);
             }
-
         };
+
+        ctrl._onClick = function() {
+            var w = window.open('about:blank');
+            setTimeout(function() { //FireFox seems to require a setTimeout for this to work.
+                var img = document.querySelector(".advanced .qrcode_link .qrcode_thumbnail img");
+                var newImg = w.document.createElement('img')
+                w.document.body.appendChild(newImg);
+                newImg.src = img.src;
+                newImg.title = img.title;
+            }, 0);
+        };
+
 
         ctrl.cancel = function() {
             $scope.close();
