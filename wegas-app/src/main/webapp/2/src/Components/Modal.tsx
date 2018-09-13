@@ -12,7 +12,7 @@ const modalStyle = css({
   height: '100%',
   padding: '1em 0',
   backgroundColor: 'rgba(0,0,0,0.8)',
-  zIndex: 1,
+  zIndex: 1000,
   '&>div': {
     width: 'fit-content',
     backgroundColor: themeVar.backgroundColor,
