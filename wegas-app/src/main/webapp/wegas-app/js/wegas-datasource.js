@@ -54,36 +54,19 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             });
         },
-        _sendInitialRequest: function(queue, cfg) {
-            var uri = queue.shift();
-            if (!Y.Lang.isUndefined(uri)) {
-                this.sendRequest(Y.mix(cfg || {}, {
-                    request: uri,
-                    cfg: {
-                        initialRequest: true
-                    },
-                    on: {
-                        success: Y.bind(this._sendInitialRequest, this, queue, cfg)
-                    }
-                }));
-            }
-        },
         /**
          * @function
          * @private
          */
         sendInitialRequest: function(cfg) {
             //            this.cache && this.cache.clear();
-            var queue, uri;
             if (!Y.Lang.isUndefined(this.get("initialRequest"))) { // Use this condition to allow empty strings (e.g. ")
-                if (!Y.Lang.isArray(this.get("initialRequest"))) {
-                    queue = [this.get("initialRequest")];
-                } else {
-                    queue = this.get("initialRequest");
-                }
-                this._sendInitialRequest(queue, cfg);
-
-                return;
+                return this.sendRequest(Y.mix(cfg || {}, {
+                    request: this.get("initialRequest"),
+                    cfg: {
+                        initialRequest: true
+                    }
+                }));
             } else if (!Y.Lang.isUndefined(this.get("initialFullRequest"))) {
                 return this.sendRequest(Y.mix(cfg || {}, {
                     cfg: {
@@ -365,7 +348,8 @@ YUI.add('wegas-datasource', function(Y) {
                 };
                 response.data = host.data; // Provides with a pointer to the datasource current content
                 payload.response = response;
-                Y.log("Response received: " + host.get('source') /* + e.cfg.request*/, "log", "Wegas.DataSource");
+                //Y.log("Response received: " + host.get('source') /* + e.cfg.request*/, "log", "Wegas.DataSource");
+                Y.log("Response received: " + host.get('source') + e.request, "log", "Wegas.DataSource");
 
                 Wegas.Editable.use(payload.response.results, // Lookup dependencies
                     Y.bind(function(payload) {

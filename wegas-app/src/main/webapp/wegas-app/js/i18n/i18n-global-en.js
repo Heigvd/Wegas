@@ -27,7 +27,9 @@ YUI.add("wegas-i18n-global-en", function(Y) {
             delete: "delete",
             dunno: "I don't know",
             variableNotFound: "Unable to found \"{{name}}\" variable",
-            logout: "logout"
+            logout: "logout",
+            statistics: "Statistics",
+            peerReview: "Peer Review"
         },
         i18n:{
             manager: {

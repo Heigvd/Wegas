@@ -640,7 +640,12 @@ font {
 
 /* Need to revert yui 3 base styles so lists are display correctly */
 
-#tinymce ul, .wegas-inbox .yui3-tab-panel ul, .wegas-mcqtabview .yui3-tab-panel ul, .wegas-text-content ul, .wegas-template-content ul {
+#tinymce ul,
+.mce-content-body ul, /* in tinymce inline editor*/
+.wegas-inbox .yui3-tab-panel ul,
+.wegas-mcqtabview .yui3-tab-panel ul,
+.wegas-text-content ul,
+.wegas-template-content ul {
     list-style-type: disc;
     padding: 0 2em;
     margin: 0.1em 0em;
@@ -830,8 +835,4 @@ font {
 .wegas-light-picture img[height],
 .wegas-light-picture img[width] {
     cursor: zoom-in;
-}
-
-.idle * {
-    /*background-color: palevioletred;*/
 }
