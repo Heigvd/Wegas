@@ -10,9 +10,11 @@ const modalStyle = css({
   overflow: 'auto',
   width: '100%',
   height: '100%',
-  backgroundColor:"rgba(0,0,0,0.8)",
+  padding: '1em 0',
+  backgroundColor: 'rgba(0,0,0,0.8)',
   zIndex: 1,
   '&>div': {
+    width: 'fit-content',
     backgroundColor: themeVar.backgroundColor,
     margin: '0 auto',
     padding: '10px',
@@ -21,34 +23,41 @@ const modalStyle = css({
   },
 });
 
-export function Modal({
-  show = false,
-  children,
-  onBgClick,
-}: {
-  show?: boolean;
+export class Modal extends React.Component<{
   children: React.ReactNode;
-  onBgClick?: () => void;
-}) {
-  return (
-    <ThemeRoot>
-      {root => {
-        return show && root !== null
-          ? createPortal(
-              <div
-                className={modalStyle}
-                onClick={e =>
-                  typeof onBgClick === 'function' &&
-                  e.target === e.currentTarget &&
-                  onBgClick()
-                }
-              >
-                {children}
-              </div>,
-              root,
-            )
-          : null;
-      }}
-    </ThemeRoot>
-  );
+  onExit?: () => void;
+}> {
+  onEscape = (e: KeyboardEvent) => {
+    const { onExit } = this.props;
+    typeof onExit === 'function' && e.key === 'Escape' && onExit();
+  };
+  bgClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { onExit } = this.props;
+    typeof onExit === 'function' && e.target === e.currentTarget && onExit();
+  };
+  componentDidMount() {
+    document.addEventListener('keydown', this.onEscape, { passive: true });
+  }
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.onEscape);
+  }
+  render() {
+    const { children } = this.props;
+    return (
+      <ThemeRoot>
+        {root => {
+          return root !== null
+            ? createPortal(
+                <div className={modalStyle} onClick={this.bgClick}>
+                  <div aria-modal="true" role="dialog" tabIndex={-1}>
+                    {children}
+                  </div>
+                </div>,
+                root,
+              )
+            : null;
+        }}
+      </ThemeRoot>
+    );
+  }
 }
