@@ -30,7 +30,7 @@ YUI.add('wegas-responsive-tabview', function(Y) {
             this.tabView.get("boundingBox").addClass("horizontal-tabview");
         },
         bindUI: function() {
-            this.get("contentBox").delegate("click", this.toggleSmallMenu, ".smallscreen li, .smallscreen .menutitle", this);
+            this.get("contentBox").delegate("click", this.toggleSmallMenu, ".smallscreen > ul > li, .smallscreen > .menutitle", this);
             this._windowResizeCb = Y.bind(this.checkSize, this);
             window.addEventListener("resize", this._windowResizeCb);
             this.handlers.layoutResize = Y.Wegas.app.on("layout:resize", Y.bind(this.checkSize, this));
