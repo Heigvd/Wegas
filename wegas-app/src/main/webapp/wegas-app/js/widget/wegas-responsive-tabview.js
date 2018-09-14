@@ -97,7 +97,7 @@ YUI.add('wegas-responsive-tabview', function(Y) {
 
             if (this.tabView.size()) {
                 lastSelection = (selectedTab) ? selectedTab.get('index') : -1;
-                if (lastSelection < 0 && this.get("contentBox").one(".smallscreen")) {
+                if (lastSelection < 0 && this.get("contentBox").one(".smallscreen") && this.tabView.size() > 1) {
                     this.toggleSmallMenu();
                 } else {
 
