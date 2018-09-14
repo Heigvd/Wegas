@@ -27,6 +27,7 @@ export class Modal extends React.Component<{
   children: React.ReactNode;
   onExit?: () => void;
 }> {
+  modal = React.createRef<HTMLDivElement>();
   onEscape = (e: KeyboardEvent) => {
     const { onExit } = this.props;
     typeof onExit === 'function' && e.key === 'Escape' && onExit();
@@ -37,6 +38,9 @@ export class Modal extends React.Component<{
   };
   componentDidMount() {
     document.addEventListener('keydown', this.onEscape, { passive: true });
+    if (this.modal.current !== null) {
+      this.modal.current.focus();
+    }
   }
   componentWillUnmount() {
     document.removeEventListener('keydown', this.onEscape);
@@ -49,7 +53,12 @@ export class Modal extends React.Component<{
           return root !== null
             ? createPortal(
                 <div className={modalStyle} onClick={this.bgClick}>
-                  <div aria-modal="true" role="dialog" tabIndex={-1}>
+                  <div
+                    ref={this.modal}
+                    aria-modal="true"
+                    role="dialog"
+                    tabIndex={-1}
+                  >
                     {children}
                   </div>
                 </div>,

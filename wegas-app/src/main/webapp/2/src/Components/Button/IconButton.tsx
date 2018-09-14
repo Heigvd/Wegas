@@ -14,6 +14,7 @@ interface IconButtonProps extends Props {
   tooltip?: string;
   tabIndex?: number;
   prefixedLabel?: boolean;
+  type?: 'submit' | 'reset';
 }
 const activeStyle = css({ color: themeVar.primaryDarkerColor });
 
@@ -55,12 +56,14 @@ export function IconButton(props: IconButtonProps) {
     label,
     prefixedLabel,
     id,
+    type,
     className,
     ...other
   } = props;
   return (
     <button
       id={id}
+      type={type}
       title={tooltip}
       tabIndex={tabIndex}
       aria-label={tooltip}

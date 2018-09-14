@@ -28,6 +28,7 @@ export default function Header() {
           <span>{user.name}</span>
           <IconButton
             icon="undo"
+            tooltip="Restart"
             onClick={() => dispatch(Actions.VariableDescriptorActions.reset())}
           />
         </div>

@@ -119,7 +119,7 @@ export function deleteDescriptor(
       return dispatch(updateDescriptor(vs));
     }
     const gameModelId = getState().global.currentGameModelId;
-    return VariableDescriptorAPI.del(gameModelId, variableDescriptor).then(
+    return VariableDescriptorAPI.delete(gameModelId, variableDescriptor).then(
       res => dispatch(managedMode(res)),
     );
   };

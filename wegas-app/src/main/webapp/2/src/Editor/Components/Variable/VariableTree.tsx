@@ -17,6 +17,7 @@ import { FontAwesome } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { AddMenuParent, AddMenuChoice } from './AddMenu';
 import { editorLabel } from '../../../data/methods/VariableDescriptor';
+import { SearchTool } from '../SearchTool';
 
 const items = children.map(i => {
   const Label = asyncSFC(async () => {
@@ -52,7 +53,8 @@ class TreeView extends React.Component<TreeProps, { search: string }> {
           <input
             type="string"
             value={this.state.search}
-            placeholder="Search"
+            placeholder="Filter"
+            aria-label="Filter"
             onChange={ev => {
               this.setState({ search: ev.target.value });
             }}
@@ -64,6 +66,7 @@ class TreeView extends React.Component<TreeProps, { search: string }> {
               dispatch(Actions.EditorActions.createVariable(i.value))
             }
           />
+          <SearchTool />
         </Toolbar.Header>
         <Toolbar.Content>
           <Container

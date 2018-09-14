@@ -1,4 +1,4 @@
-import { managedModeRequest } from './rest';
+import { managedModeRequest, rest } from './rest';
 
 const VD_BASE = (gameModelId: number) =>
   `/GameModel/${gameModelId}/VariableDescriptor/`;
@@ -27,7 +27,7 @@ export const VariableDescriptorAPI = {
       'Editor',
     );
   },
-  del(gameModelId: number, variableDescriptor: IVariableDescriptor) {
+  delete(gameModelId: number, variableDescriptor: IVariableDescriptor) {
     return managedModeRequest(
       `${VD_BASE(gameModelId)}${variableDescriptor.id}`,
       {
@@ -67,6 +67,24 @@ export const VariableDescriptorAPI = {
         body: JSON.stringify(script),
       },
     );
+  },
+  contains(gameModelId: number, criteria: string) {
+    return rest(`${VD_BASE(gameModelId)}/contains`, {
+      method: 'POST',
+      body: criteria,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    }).then(res => res.json() as Promise<number[]>);
+  },
+  containsAll(gameModelId: number, criteria: string) {
+    return rest(`${VD_BASE(gameModelId)}/containsAll`, {
+      method: 'POST',
+      body: criteria,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    }).then(res => res.json() as Promise<number[]>);
   },
   reset(gameModelId: number) {
     return managedModeRequest(`${VD_BASE(gameModelId)}/Reset`);

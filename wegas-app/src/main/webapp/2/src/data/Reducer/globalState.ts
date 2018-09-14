@@ -5,6 +5,8 @@ import { ActionCreator, ActionType, StateActions } from '../actions';
 import { VariableDescriptor } from '../selectors';
 import { ThunkResult, store } from '../store';
 import { ConfigurationSchema } from '../../Editor/editionConfig';
+import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
+import { entityIsPersisted } from '../entities';
 
 type actionFn<T extends IWegasEntity> = (entity: T, path?: string[]) => void;
 export type EditorAction<T extends IWegasEntity> = {
@@ -51,6 +53,19 @@ export interface GlobalState {
   };
   pageEdit: Readonly<boolean>;
   pageSrc: Readonly<boolean>;
+  search:
+    | {
+        type: 'GLOBAL';
+        value: string;
+        result: number[];
+      }
+    | {
+        type: 'USAGE';
+        value: number;
+        result: number[];
+      }
+    | { type: 'ONGOING' }
+    | { type: 'NONE' };
   pusherStatus: {
     status: string;
     socket_id?: string;
@@ -82,7 +97,7 @@ const global = u<GlobalState>(
           id: action.payload.id,
           config: action.payload.config,
           path: action.payload.path,
-          actions: {},
+          actions: action.payload.actions,
         };
         return;
       case ActionType.CLOSE_EDITOR:
@@ -121,11 +136,31 @@ const global = u<GlobalState>(
       case ActionType.PAGE_SRC_MODE:
         state.pageSrc = action.payload;
         return;
-      case ActionType.PUSHER_SOCKET:
-        state.pusherStatus = action.payload;
-        return;
       case ActionType.PAGE_EDIT_MODE:
         state.pageEdit = action.payload;
+        return;
+      case ActionType.SEARCH_CLEAR:
+        state.search = { type: 'NONE' };
+        return;
+      case ActionType.SEARCH_ONGOING:
+        state.search = { type: 'ONGOING' };
+        return;
+      case ActionType.SEARCH_GLOBAL:
+        state.search = {
+          type: 'GLOBAL',
+          value: action.payload.search,
+          result: action.payload.result,
+        };
+        return;
+      case ActionType.SEARCH_USAGE:
+        state.search = {
+          type: 'USAGE',
+          value: action.payload.variableId,
+          result: action.payload.result,
+        };
+        return;
+      case ActionType.PUSHER_SOCKET:
+        state.pusherStatus = action.payload;
         return;
     }
     return state;
@@ -137,6 +172,7 @@ const global = u<GlobalState>(
     currentTeamId: CurrentTeamId,
     currentUser: CurrentUser,
     pusherStatus: { status: 'disconnected' },
+    search: { type: 'NONE' },
     pageEdit: false,
     pageSrc: false,
   },
@@ -165,6 +201,14 @@ export function editVariable(
           );
         },
       },
+      findUsage: {
+        label: 'findUsage',
+        action: (entity: IVariableDescriptor) => {
+          if (entityIsPersisted(entity)) {
+            store.dispatch(Actions.EditorActions.searchUsage(entity));
+          }
+        },
+      },
     },
   },
 ) {
@@ -184,12 +228,32 @@ export function editVariable(
 export function editStateMachine(
   entity: IFSMDescriptor,
   path: string[] = [],
-  config?: ConfigurationSchema<IVariableDescriptor>,
+  config?: ConfigurationSchema<IFSMDescriptor>,
 ) {
   return ActionCreator.FSM_EDIT({
     id: entity.id!,
     config,
     path,
+    actions: {
+      more: {
+        delete: {
+          label: 'delete',
+          action: (entity: IFSMDescriptor, path?: string[]) => {
+            store.dispatch(
+              Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
+            );
+          },
+        },
+        findUsage: {
+          label: 'findUsage',
+          action: (entity: IFSMDescriptor) => {
+            if (entityIsPersisted(entity)) {
+              store.dispatch(Actions.EditorActions.searchUsage(entity));
+            }
+          },
+        },
+      },
+    },
   });
 }
 
@@ -281,4 +345,42 @@ export function updatePusherStatus(status: string, socket_id: string) {
 
 export function closeEditor() {
   return ActionCreator.CLOSE_EDITOR();
+}
+
+/**
+ * Clear search values
+ */
+export function searchClear() {
+  return ActionCreator.SEARCH_CLEAR();
+}
+/**
+ * globally search for a value
+ * @param value the text to search for
+ */
+export function searchGlobal(value: string): ThunkResult {
+  return function(dispatch, getState) {
+    dispatch(ActionCreator.SEARCH_ONGOING());
+    const gameModelId = getState().global.currentGameModelId;
+    return VariableDescriptorAPI.contains(gameModelId, value).then(result => {
+      return dispatch(ActionCreator.SEARCH_GLOBAL({ search: value, result }));
+    });
+  };
+}
+/**
+ * Find usage of a given descriptor
+ * @param variable persisted descriptor to search for
+ */
+export function searchUsage(
+  variable: IVariableDescriptor & { id: number },
+): ThunkResult {
+  const search = `Variable\.find(gameModel, "${variable.name}")`;
+  return function(dispatch, getState) {
+    dispatch(ActionCreator.SEARCH_ONGOING());
+    const gameModelId = getState().global.currentGameModelId;
+    return VariableDescriptorAPI.contains(gameModelId, search).then(result => {
+      return dispatch(
+        ActionCreator.SEARCH_USAGE({ variableId: variable.id, result }),
+      );
+    });
+  };
 }
