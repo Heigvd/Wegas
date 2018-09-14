@@ -1055,7 +1055,7 @@ YUI.add('wegas-tabview', function(Y) {
     var ExtraTabs = Y.Base.create("wegas-extratabs", Plugin.Base, [], {
         initializer: function() {
             if (this.get("host") instanceof TabView) {
-                this.afterHostEvent(['render'], this.addExtraTabs);
+                Y.Wegas.app.once('ready', Y.bind(this.addExtraTabs, this));
             } else {
                 this.destroy();
             }
@@ -1088,7 +1088,7 @@ YUI.add('wegas-tabview', function(Y) {
             Y.Wegas.Widget.use(cfg, Y.bind(addTab, this, cfg));
         },
         addExtraTabs: function() {
-            var tabs = this.get("extraTabs");
+            var tabs = Y.namespace("Wegas.Config.ExtraTabs") || [];
             for (var i = 0; i < tabs.length; i += 1) {
                 this._addTab(tabs[i]);
             }
@@ -1096,12 +1096,6 @@ YUI.add('wegas-tabview', function(Y) {
     }, {
         NS: "extratabs",
         ATTRS: {
-            extraTabs: {
-                value: Y.namespace("Wegas.Config.ExtraTabs"),
-                getter: function(v) {
-                    return Y.Lang.isArray(v) ? v : [];
-                }
-            },
             dock: {
                 value: false,
                 validator: Y.Lang.isBoolean
