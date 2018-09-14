@@ -944,23 +944,23 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     toolbar.push("|");
                     toolbar.push("addToolbarButton");
                     tinyConfig.toolbar1 = toolbar.join(" ");
-                }
-            } else {
-                tinyConfig.setup = Y.bind(function(editor) {
-                    this.editor = editor;
-                    editor.on('change', Y.bind(this._onHtmlChange, this));
-                    editor.on('keyUp', Y.bind(this._onHtmlChange, this));
-                    editor.on('blur', Y.bind(this._onHtmlBlur, this)); // text input & ctrl-related operations
-                    editor.on('init', Y.bind(function() {
+                } else {
+                    tinyConfig.setup = Y.bind(function(editor) {
                         this.editor = editor;
-                        this.editor.fire("focus");
-                        this.editor.focus();
-                    }, this));
-                    //this.editor.focus();
-                    //this.editor.targetElm.click();
-                }, this)
+                        editor.on('change', Y.bind(this._onHtmlChange, this));
+                        editor.on('keyUp', Y.bind(this._onHtmlChange, this));
+                        editor.on('blur', Y.bind(this._onHtmlBlur, this)); // text input & ctrl-related operations
+                        editor.on('init', Y.bind(function() {
+                            this.editor = editor;
+                            this.editor.fire("focus");
+                            this.editor.focus();
+                        }, this));
+                        //this.editor.focus();
+                        //this.editor.targetElm.click();
+                    }, this);
+                }
+                tinyMCE.init(tinyConfig);
             }
-            tinyMCE.init(tinyConfig);
         },
         onFileBrowserClick: function(field_name, url, type, win) {
             this.filePanel = new Y.Wegas.FileSelect();
