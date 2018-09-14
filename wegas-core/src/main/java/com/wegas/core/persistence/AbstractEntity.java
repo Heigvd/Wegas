@@ -199,8 +199,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable, WithPer
      * @throws IOException
      */
     public String toJsonWithView(String view) throws IOException {
-        ObjectMapper mapper = JacksonMapperProvider.getMapper();
-        return mapper.writerWithView(Views.stringToView(view)).writeValueAsString(this);
+        return this.toJson(Views.stringToView(view));
     }
 
     /**
