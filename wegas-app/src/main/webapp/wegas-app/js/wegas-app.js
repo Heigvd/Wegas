@@ -41,14 +41,16 @@ YUI.add('wegas-app', function(Y) {
          */
         initializer: function() {
             /**
-             * @name render
+             * @name render after app rendering
              * @event
              */
             this.publish("render");
+
             /**
-             * @name render
-             * private
+             * @name render after render event
+             * @event
              */
+            this.publish("ready");
             this.dataSources = {};
 
             this._pendingRequests = 0;
@@ -111,7 +113,9 @@ YUI.add('wegas-app', function(Y) {
                             Y.later(10, this, function() { // Let the loading div update
                                 this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
                                     .render(); // and render it
-                                this.fire("render"); // Fire a render event for some eventual post processing
+                                this.fire("render"); // Fire a render event for some post processing
+                                this.fire("ready"); // Fire a ready event for some eventual post processing
+                                Y.log("Ready");
                                 Y.one(".wegas-loading-app").remove();
                             });
                         } else {
@@ -120,7 +124,9 @@ YUI.add('wegas-app', function(Y) {
                                 Y.later(10, this, function() { // Let the loading div update
                                     this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
                                         .render(); // and render it
-                                    this.fire("render"); // Fire a render event for some eventual post processing
+                                    this.fire("render"); // Fire a render event for some post processing
+                                    this.fire("ready"); // Fire a ready event for some eventual post processing
+                                    Y.log("Ready");
                                     Y.one(".wegas-loading-app").remove();
                                 });
                             }, this));
