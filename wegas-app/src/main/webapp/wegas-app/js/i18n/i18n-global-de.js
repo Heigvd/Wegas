@@ -29,7 +29,9 @@ YUI.add("wegas-i18n-global-de", function(Y) {
             variableNotFound: "Kann Variable \"{{name}}\" nicht finden",
             logout: "abmelden",
             statistics: "Statistiken",
-            peerReview: "Peer-Review"
+            peerReview: "Peer-Review",
+            backToMenu: "zurück zum Menü",
+            mcqBackToMenu: "zur Liste der Fragen"
         },
         i18n: {
             manager: {

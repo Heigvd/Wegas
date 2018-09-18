@@ -108,3 +108,31 @@
 .yui3-skin-sam .yui3-wegas-responsive-tabview .empty .horizontal-tabview .yui3-tab {
     display: none;
 }
+
+
+.yui3-skin-sam .yui3-wegas-responsive-tabview .back-to-menu i:before {
+    padding-left: 8px;
+    /*padding-right: 4px;*/
+}
+
+.yui3-skin-sam .yui3-wegas-responsive-tabview .back-to-menu:hover {
+    background: #c7c7c7;
+}
+
+.yui3-skin-sam .yui3-wegas-responsive-tabview .smallscreen .menutitle {
+    position: relative;
+    text-align: center;
+}
+
+.yui3-skin-sam .yui3-wegas-responsive-tabview .back-to-menu {
+    background: #d8d9dd;
+    text-transform: uppercase;
+    line-height: 32px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 8px 8px;
+    /*border-radius: 6px;*/
+    color: #333333;
+    transition: .3s;
+    cursor: pointer;
+}

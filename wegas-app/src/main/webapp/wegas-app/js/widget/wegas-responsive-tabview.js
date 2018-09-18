@@ -98,7 +98,7 @@ YUI.add('wegas-responsive-tabview', function(Y) {
             if (this.tabView.size()) {
                 lastSelection = (selectedTab) ? selectedTab.get('index') : -1;
                 if (lastSelection < 0 && this.get("contentBox").one(".smallscreen") && this.tabView.size() > 1) {
-                    this.toggleSmallMenu();
+                    //this.toggleSmallMenu();
                 } else {
 
                     if (lastSelection < 0 && this.get("autoOpenFirst") || lastSelection >= this.tabView.size()) {
@@ -168,13 +168,39 @@ YUI.add('wegas-responsive-tabview', function(Y) {
         checkSize: function() {
             var cb = this.tabView.get("contentBox");
             if (cb._node) {
-                cb.toggleClass("smallscreen", cb._node.getBoundingClientRect().width < 700);
+                var isSmall = cb._node.getBoundingClientRect().width < 700;
+                if (cb.hasClass("smallscreen") && !isSmall) {
+                    cb.toggleClass("smallscreen", isSmall);
+                    cb.toggleClass("open", false);
+                    // remove titles
+                    cb.all(".menutitle").remove();
+                } else if (isSmall && !cb.hasClass("smallscreen")) {
+                    cb.toggleClass("smallscreen", isSmall);
+                    var hasSelection = this.tabView.get('selection'),
+                        isOpen = cb.hasClass("open");
+
+                    cb.append("<div class='menutitle'><span class=\"back-to-menu\"><i class='fa fa-level-up fa-flip-horizontal'></i>" + this.getBackToMenuLabel() + "</span></div>");
+
+                    if (hasSelection && isOpen || !hasSelection && !isOpen) {
+                        // wrong state: close or close
+                        this.toggleSmallMenu();
+                    }
+
+                }
             }
+        },
+        getBackToMenuLabel: function() {
+            return I18n.t('global.backToMenu');
         },
         toggleSmallMenu: function() {
             var tvCb = this.tabView.get("contentBox");
+
+            // remove titles
+            tvCb.all(".menutitle").remove();
             if (tvCb.hasClass("smallscreen")) {
                 tvCb.toggleClass("open");
+
+
                 if (tvCb.hasClass("open")) {
                     // add title
                     var selectedTab = tvCb.one(".yui3-tab-selected a");
@@ -184,10 +210,9 @@ YUI.add('wegas-responsive-tabview', function(Y) {
                     tvCb.prepend("<div class='menutitle'>" + (selectedTab ? invite : "") + "</div>");
                     //tvCb.prepend("<div class='menutitle'><div>" +  tvCb.one(".yui3-tab-selected .index-label").getContent() + "</div></div>");
                 } else {
-                    // remove title
-                    tvCb.all(".menutitle").each(function(item) {
-                        item.remove();
-                    });
+
+                    tvCb.append("<div class='menutitle'><span class=\"back-to-menu\"><i class='fa fa-level-up fa-flip-horizontal'></i>" + this.getBackToMenuLabel() + "</span></div>");
+
                 }
             }
         },
