@@ -221,8 +221,8 @@ YUI.add('wegas-template', function(Y) {
                 "  <% } %>" +
                 "  <div class='wegas-template-valuebox-units'>" +
                 "    <% for(var i=+this.minValue; i < +this.maxValue + 1; i+=1){%>" +
-                "      <div class='wegas-template-valuebox-unit <%= +i < +this.value ? ' wegas-template-valuebox-previous' : '' %><%= +i === 0 ? ' wegas-template-valuebox-zero' : '' %><%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'>" +
-                "        <%= I18n.formatNumber(i) %>" +
+                "      <div data-value=\"<%= i %>\" class='wegas-template-valuebox-unit <%= +i < +this.value ? ' wegas-template-valuebox-previous' : '' %><%= +i === 0 ? ' wegas-template-valuebox-zero' : '' %><%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'>" +
+                "        <span><%= I18n.formatNumber(i) %></span>" +
                 "      </div>" +
                 "    <% } %>" +
                 "  </div>" +
