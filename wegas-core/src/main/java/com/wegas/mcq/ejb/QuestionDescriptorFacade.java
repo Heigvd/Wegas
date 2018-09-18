@@ -313,6 +313,10 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         QuestionDescriptor questionDescriptor = choice.getQuestion();
         QuestionInstance questionInstance = questionDescriptor.getInstance(player);
 
+        if (questionInstance.getValidated()){
+            throw WegasErrorMessage.error("This question has already been validated/discarded");
+        }
+
         requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getEffectiveOwner());
 
         Integer maxQ = questionDescriptor.getMaxReplies();
@@ -563,6 +567,12 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         if (!questionDescriptor.getCbx()) {
             logger.error("validateQuestion() invoked on a Question which is not of checkbox type");
             return;
+        }
+
+        QuestionInstance questionInstance = (QuestionInstance) variableDescriptorFacade.getInstance(questionDescriptor, player);
+
+        if (questionInstance.getValidated()){
+            throw WegasErrorMessage.error("This question has already been validated/discarded");
         }
 
         int min = questionDescriptor.getMinReplies() != null ? questionDescriptor.getMinReplies() : 1;
