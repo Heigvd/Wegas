@@ -333,7 +333,9 @@ YUI.add('wegas-tabview', function(Y) {
                 return;
             }
             plusMenu.show();
-            Y.one(TabView.getOppositeTabView(tabViewId) + " .wegas-plus-tab").hide();
+            if (!Y.Wegas.Config.EditorAdvancedTabs){
+                Y.one(TabView.getOppositeTabView(tabViewId) + " .wegas-plus-tab").hide();
+            }
 
             var previewTabView = this.getCurrentPreviewTabViewId(),
                 isPreviewTabView = previewTabView.indexOf(tabViewId) > -1,
@@ -792,7 +794,13 @@ YUI.add('wegas-tabview', function(Y) {
             tab.hide();
             tab.get("panelNode").hide();
             // Unhide the Preview entry of the current plus-menu each time the tab is closed:
-            Wegas.TabView.getPreviewEntry(tab.get("tabSelector")).show();
+            if (tab.get("tabSelector")) {
+                Wegas.TabView.getPreviewEntry(tab.get("tabSelector")).show();
+            }
+            //var parentId = tab._parentNode.ancestor(".wegas-tabview-fullheight")._node.id
+            //var previous = Wegas.TabView.getPreviewEntry(parentId);
+            //previous.show();
+            //previous.set("selected", 1);
         },
         expand: function() {
             var tab = this.get("host");

@@ -670,7 +670,7 @@ YUI().use(function(Y) {
             "wegas-editor-action": {
                 path: "js/plugin/wegas-editor-action-min.js",
                 requires: ["wegas-button", "wegas-plugin", "event-key", "inputex-string"],
-                ws_provides: ["OpenTabAction", "OpenTabButton", "Linkwidget", "OnDeleteListener"]
+                ws_provides: ["OpenTabAction", "OpenTabButton", "Linkwidget", "OnDeleteListener", "ToggleAdvancedTabsMode"]
             },
             "wegas-editor-entityaction": {
                 path: "js/plugin/wegas-editor-entityaction-min.js",
