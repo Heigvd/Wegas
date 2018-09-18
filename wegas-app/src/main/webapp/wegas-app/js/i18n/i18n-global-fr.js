@@ -28,7 +28,9 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
             variableNotFound: "Impossible de trouver la variable \"{{name}}\"",
             logout: "déconnexion",
             statistics: "Statistiques",
-            peerReview: "Eval. croisées"
+            peerReview: "Eval. croisées",
+            backToMenu: "retour au menu",
+            mcqBackToMenu: "liste de questions"
         },
         i18n:{
             manager: {

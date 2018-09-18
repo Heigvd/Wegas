@@ -134,6 +134,9 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 });
             }
         },
+        getBackToMenuLabel: function() {
+            return I18n.t('global.mcqBackToMenu');
+        },
         getNoContentMessage: function() {
             return Y.Wegas.I18n.t('mcq.empty');
         },
