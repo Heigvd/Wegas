@@ -49,7 +49,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 cssClass: "wegas-whview__main-list",
                 direction: "vertical",
                 editable: false,
-                "transient" : true
+                "transient": true
             });
             this.hList = new Y.Wegas.List({
                 cssClass: "wegas-whview__main",
@@ -671,7 +671,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             answerable =
                 //!this.get("disabled") && // not disable by a lock
                     ((questionDescriptor.get("cbx") && !questionInstance.get("validated")) // not validated
-                        || (!questionDescriptor.get("cbx") && !maximumReached)); // maximum not reached yet
+                        || (!questionDescriptor.get("cbx") && !maximumReached && !questionInstance.get("validated"))); // maximum not reached yet
 
                 this.title.set("content", I18n.t(questionDescriptor.get("label"), {inlineEditor: 'string', fallback: ""}));
                 this.title.syncUI();

@@ -187,7 +187,7 @@ YUI.add('wegas-button', function(Y) {
                         resolve(instance.get('active') && !instance.get('validated') ? 1 : 0); // only count if it is active
                     } else {
                         if (instance.get('replies')) {
-                            resolve(instance.get('replies').length === 0 && instance.get('active') ? 1 : 0); // only count if it is active
+                            resolve(instance.get('replies').length === 0 && !instance.get('validated') && instance.get('active') ? 1 : 0); // only count if it is active
                         } else {
                             resolve(0);
                         }
