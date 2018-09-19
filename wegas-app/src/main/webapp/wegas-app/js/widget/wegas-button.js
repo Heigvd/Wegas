@@ -218,7 +218,7 @@ YUI.add('wegas-button', function(Y) {
             };
             for (k in this.get('userCounters')) {
                 var theFunction = this.get('userCounters')[k];
-                if (!theFunction instanceof Function) {
+                if (theFunction instanceof Function === false) {
                     theFunction = eval('(' + theFunction + ')');
                 }
                 this._counters[k] = theFunction;
