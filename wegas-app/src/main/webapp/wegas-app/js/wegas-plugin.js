@@ -816,4 +816,90 @@ YUI.add('wegas-plugin', function(Y) {
     );
     Plugin.IdleMonitor = IdleMonitor;
 
+    var ScrollOnClick = Y.Base.create('wegas-scroll-onclick',
+        Plugin.Base,
+        [Wegas.Plugin, Wegas.Editable], {
+        initializer: function() {
+            this.handlers = {};
+            this.get("host").get("contentBox").delegate("click", this.onClick, this.get("handle"), this);
+        },
+        onClick: function(e) {
+            var host = this.get("host"),
+                hostCb = host.get("contentBox"),
+                handles = hostCb.all(this.get("handle")),
+                targets = hostCb.all(this.get("target"));
+
+            e.currentTarget;
+            var i;
+            var theTarget;
+            for (i = 0; i < handles._nodes.length; i++) {
+                if (handles._nodes[i] === e.currentTarget.getDOMNode()) {
+                    if (this.get("direction") === "forward") {
+                        theTarget = targets._nodes[i + 1];
+                    } else {
+                        theTarget = targets._nodes[i];
+                    }
+                    if (theTarget) {
+                        if (this.get("scrollDirection") === "horizontal") {
+                            var delta = theTarget.getBoundingClientRect().left
+                                - hostCb.getDOMNode().getBoundingClientRect().left;
+                            hostCb.getDOMNode().scrollLeft += delta;
+                        } else {
+                            var delta = theTarget.getBoundingClientRect().top
+                                - hostCb.getDOMNode().getBoundingClientRect().top;
+                            hostCb.getDOMNode().scrollTop += delta;
+                        }
+                        break;
+                    }
+                }
+            }
+
+        },
+        destructor: function() {
+            for (var k in this.handlers) {
+                this.handlers[k].detach();
+            }
+        }
+    },
+        {
+            NS: "scrollonclick",
+            ATTRS: {
+                target: {
+                    type: "string",
+                    view: {
+                        label: "Target Selector"
+                    }
+                },
+                handle: {
+                    type: "string",
+                    view: {
+                        label: "Handle Selector"
+                    }
+                },
+                scrollDirection: {
+                    value: 'vertical',
+                    type: "string",
+                    view: {
+                        type: 'select',
+                        choices: ['vertical', 'horizontal']
+                    }
+                },
+                direction: {
+                    value: 'forward',
+                    type: "string",
+                    view: {
+                        type: 'select',
+                        choices: ['forward', 'backward']
+                    }
+                }
+            }
+        }
+    );
+    Plugin.ScrollOnClick = ScrollOnClick;
+
+    Plugin.ScrollOnClick2 = Y.Base.create('wegas-scroll-onclick2', ScrollOnClick, [], {}, {NS: 'ScrollOnClick2'});
+    Plugin.ScrollOnClick3 = Y.Base.create('wegas-scroll-onclick3', ScrollOnClick, [], {}, {NS: 'ScrollOnClick3'});
+    Plugin.ScrollOnClick4 = Y.Base.create('wegas-scroll-onclick3', ScrollOnClick, [], {}, {NS: 'ScrollOnClick4'});
+
+
 });
