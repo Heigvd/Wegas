@@ -98,10 +98,16 @@ YUI.add('wegas-app', function(Y) {
                         this.idlemonitor.on("idle", Y.bind(this.goIdle, this));
                         this.idlemonitor.on("resume", Y.bind(this.resume, this));
 
-                        this.idlemonitor.set("timeout", 3600000);  // 1hour
+                        // various idle settings
+                        //this.idlemonitor.set("timeout", 900000);  // 15 minutes
+                        this.idlemonitor.set("timeout", 1800000);  // 30 minutes
+                        //this.idlemonitor.set("timeout", 2700000);  // 45 minutes
+                        //this.idlemonitor.set("timeout", 3600000);  // 1 hour
+                        
                         this.idlemonitor.set("resolution", 60000); // check each minute
+                        //this.idlemonitor.set("resolution", 300000); // check each five minutes
 
-                        //this.idlemonitor.start();
+                        this.idlemonitor.start();
 
                         this.fire("preRender");
 
