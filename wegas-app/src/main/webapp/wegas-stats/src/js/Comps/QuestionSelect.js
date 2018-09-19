@@ -15,8 +15,8 @@ class QuestionSelect extends React.Component {
                         snapshot,
                         `//*[name="${item.name}"]/ancestor::*[@class="ListDescriptor"]`
                     ).reduce((pre, cur) => {
-                        return `${pre}${cur.label.translations.def} \u2192 `;
-                    }, '') + item.label.translations.def
+                        return `${pre}${cur.label.translations[Object.keys(cur.label.translations)[0]]} \u2192 `;
+                    }, '') + item.label.translations[Object.keys(item.label.translations)[0]]
             };
         });
         const style = {
