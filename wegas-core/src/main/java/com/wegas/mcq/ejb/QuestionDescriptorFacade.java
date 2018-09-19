@@ -55,6 +55,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
     @Inject
     private Event<ReplyValidate> replyValidate;
 
+    @Inject
+    private Event<WhValidate> whValidate;
+
     /**
      *
      */
@@ -313,7 +316,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         QuestionDescriptor questionDescriptor = choice.getQuestion();
         QuestionInstance questionInstance = questionDescriptor.getInstance(player);
 
-        if (questionInstance.getValidated()){
+        if (questionInstance.getValidated()) {
             throw WegasErrorMessage.error("This question has already been validated/discarded");
         }
 
@@ -547,7 +550,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
     @Override
     public void validateQuestion(final WhQuestionInstance validateQuestion, final Player player) throws WegasRuntimeException {
         validateQuestion.setValidated(true);
-        scriptEvent.fire(player, "whValidate", new WhValidate(validateQuestion));
+        WhValidate whVal = new WhValidate(validateQuestion, player);
+        scriptEvent.fire(player, "whValidate", whVal);
+        this.whValidate.fire(whVal);
     }
 
     /**
@@ -571,7 +576,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
 
         QuestionInstance questionInstance = (QuestionInstance) variableDescriptorFacade.getInstance(questionDescriptor, player);
 
-        if (questionInstance.getValidated()){
+        if (questionInstance.getValidated()) {
             throw WegasErrorMessage.error("This question has already been validated/discarded");
         }
 
@@ -733,9 +738,12 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         final public WhQuestionDescriptor whDescriptor;
         final public WhQuestionInstance whInstance;
 
-        private WhValidate(WhQuestionInstance validateQuestion) {
+        final public Player player;
+
+        private WhValidate(WhQuestionInstance validateQuestion, Player player) {
             this.whInstance = validateQuestion;
             this.whDescriptor = (WhQuestionDescriptor) validateQuestion.findDescriptor();
+            this.player = player;
         }
     }
 
