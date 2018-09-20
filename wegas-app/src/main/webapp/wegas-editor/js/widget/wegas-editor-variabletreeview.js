@@ -249,7 +249,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         },
         updateDescriptor: function(e) {
             if (!this.get("bypassSyncEvents")) {
-                Y.log("not bypassed");
                 var oldElement, entity, parent, index, newElement;
                 entity = e.entity;
                 oldElement = this.findNode(entity);
@@ -259,8 +258,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     newElement = this.genTreeViewElement(entity);
                     oldElement.remove();
                     parent.add(newElement, index);
-                } else {
-                    Y.log("bypassed");
                 }
                 //oldElement.set("label", e.entity.getEditorLabel());
             }
