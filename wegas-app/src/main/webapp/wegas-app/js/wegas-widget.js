@@ -484,6 +484,10 @@ YUI.add('wegas-widget', function(Y) {
                                     value: {fn: 'ExecuteScriptAction'}
                                 },
                                 {
+                                    label: 'Local ScriptEval',
+                                    value: {fn: 'ExecuteLocalScriptAction'}
+                                },
+                                {
                                     label: 'Open Popup page',
                                     value: {fn: 'OpenPanelPageloader'}
                                 },

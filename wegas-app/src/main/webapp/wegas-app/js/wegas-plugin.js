@@ -546,6 +546,42 @@ YUI.add('wegas-plugin', function(Y) {
     );
     Plugin.ExecuteScriptAction = ExecuteScriptAction;
 
+
+
+    /**
+     *  @class
+     *  @name Y.Plugin.ExecuteLocalScriptAction
+     *  @extends Y.Plugin.Action
+     *  @constructor
+     */
+    var ExecuteLocalScriptAction = Y.Base.create('ExecuteLocalScriptAction', Action, [], {
+        execute: function() {
+            if (!this.get(HOST).get('disabled')) {
+                Wegas.Panel.confirmPlayerAction(
+                    Y.bind(function() {
+                        Wegas.Facade.Variable.script.localEval(this.get('onClick'));
+                    }, this));
+            }
+        }
+    },
+        {
+            NS: 'ExecuteLocalScriptAction',
+            ATTRS: {
+                onClick: {
+                    type: 'string',
+                    value: "",
+                    view: {
+                        type: 'textarea',
+                        label: 'On click'
+                    }
+                }
+            }
+        }
+    );
+    Plugin.ExecuteLocalScriptAction = ExecuteLocalScriptAction;
+
+
+
     /**
      *  @class
      *  @name Y.Plugin.PlaySoundAction
