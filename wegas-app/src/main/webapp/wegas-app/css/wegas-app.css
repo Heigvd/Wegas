@@ -734,6 +734,34 @@ font {
     /*background-color: hotpink !important;*/
 }
 
+.wegas-banner-area {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+}
+
+.wegas-banner-area .wegas-banner {
+    text-align:center;
+    padding: 10px;
+    font-weight: bold;
+}
+
+.wegas-banner-area .wegas-banner-icon {
+    padding-right: 10px;
+}
+
+.wegas-banner-area .wegas-banner.alert {
+    background-color:red;
+    color:white;
+}
+
+.wegas-banner-area .wegas-banner.warning{
+    background-color:orange;
+    color:white;
+}
+
 .wegas-notification-area {
     position: fixed;
     top: 5px;
@@ -755,21 +783,50 @@ font {
 }
 
 .wegas-notification-area .wegas-notification {
+    display: flex;
     border: 1px solid;
-    border-radius: 3px;
+    border-radius: 0px;
     padding: 16px;
     background-color: #616161;
     color: white;
-    animation: fadein 1s 1;
+    animation: fadein 0.5s 1;
     z-index: 999;
     width: 250px;
-    text-align: center;
+    box-sizing: border-box;
+    /*text-align: center;*/
 }
 
+.wegas-notification-area .wegas-notification.fadeout,
+.wegas-notification-area .wegas-notification.fadeout > div{
+    animation: fadeout 1s 1;
+    opacity: 0;
+    height:0;
+    overflow: hidden;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+@keyframes fadeout {
+    from {
+        opacity: 1;
+        padding-top:16px;
+        padding-bottom:16px;
+    }
+    to {
+        opacity: 0;
+        height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+}
+
+.wegas-notification-area .wegas-notification .wegas-notification-icon {
+    padding-right: 10px;
+}
 
 .wegas-notification-area .wegas-notification .wegas-notification-message {
-    width: calc(100% - 40px);
-    display: inline-block;
+    flex-grow: 1;
+    flex-shrink: 1;
 }
 
 /* I18N */

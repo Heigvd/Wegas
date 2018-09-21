@@ -18,17 +18,63 @@ const IMPACT = {
                 },
                 {
                     type: 'object',
+                    value: {},
                     properties: {
                         content: {
                             type: 'string',
                             view: {
+                                label: "message",
                                 type: 'html'
+                            }
+                        },
+                        timeout: {
+                            type: "number",
+                            value: 0,
+                            view: {
+                                label: "timeout",
+                                className: 'wegas-advanced-feature'
                             }
                         }
                     },
                     additionalProperties: false
                 }
             ]
+        },
+        'RequestManager.sendNotification': {
+            label: 'Send notification',
+            arguments: [
+                {
+                    type: 'object',
+                    value: {},
+                    properties: {
+                        content: {
+                            type: 'string',
+                            view: {
+                                label: "message",
+                                type: 'html'
+                            }
+                        },
+                        timeout: {
+                            type: "number",
+                            value: 2500,
+                            view: {
+                                label: "timeout [ms]",
+                                className: 'wegas-advanced-feature'
+                            }
+                        },
+                        iconCss: {
+                            type: "string",
+                            value: "",
+                            view: {
+                                label: "CSS icon classname(s)",
+                                className: 'wegas-advanced-feature'
+                            }
+                        }
+                    },
+                    additionalProperties: false
+                }
+            ]
+
         },
         'Event.fire': {
             label: 'Fire event',
