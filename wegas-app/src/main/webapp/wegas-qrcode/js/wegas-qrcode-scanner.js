@@ -40,10 +40,10 @@ YUI.add('wegas-qrcode-scanner', function(Y) {
                 // Instascan bugfix from https://github.com/schmich/instascan/pull/112 :
                 videoAttrs = iOS ? "muted autoplay playsinline" : "muted playsinline";
             this.get(CONTENTBOX).setContent("<button class='fa fa-qrcode initiator'><span class='fa-button-label'>" +
-                I18n.t("qrcode.startScan")+ "</span></button>");
+                I18n.t("qrcode.startScan") + "</span></button>");
             this.get(CONTENTBOX).append("<div class='the_scanner'>"
                 + "  <button class='mirror fa fa-arrows-h'><span class='fa-button-label'>" +
-                    I18n.t("qrcode.mirror") + "</span></button>"
+                I18n.t("qrcode.mirror") + "</span></button>"
                 + "  <div class='cameras'></div>"
                 + "  <div class='preview-container'>"
                 + "    <video class='scanner' " + videoAttrs + "></video>"
@@ -102,6 +102,7 @@ YUI.add('wegas-qrcode-scanner', function(Y) {
         toggleScanner: function() {
             Y.log("ToggleScanner");
             var cb = this.get(CONTENTBOX),
+                bb = this.get("boundingBox"),
                 // Enable game-specific help box for solving access rights issues:
                 pt = cb.get("parentNode");
             if (!this.scanner) {
@@ -126,15 +127,18 @@ YUI.add('wegas-qrcode-scanner', function(Y) {
 
                         pt.removeClass("error");
                         cb.addClass("scanning");
+                        bb.addClass("bb-scanning");
                         this.scanner = scanner;
                         this.startScanner(cameras[0].id);
                     } else {
                         this.showMessage("error", I18n.t("qrcode.noCamera"));
                         cb.removeClass("scanning");
+                        bb.removeClass("bb-scanning");
                         pt.addClass("error");
                     }
                 }, this)).catch(Y.bind(function(e) {
                     this.showMessage("error", I18n.t("qrcode.accessRights") + "<div class='error-details'>(" + e + ")</div>");
+                    bb.removeClass("bb-scanning");
                     cb.removeClass("scanning");
                     pt.addClass("error");
                 }, this));
@@ -145,6 +149,7 @@ YUI.add('wegas-qrcode-scanner', function(Y) {
                 this.stopScanner();
                 this.scanner = null;
                 cb.removeClass("error");
+                bb.removeClass("bb-scanning");
                 cb.removeClass("scanning");
             }
         },
