@@ -1600,6 +1600,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "JSON",
                             'fr': "JSON"
                         },
+                        'SCENARIST-MODALE-VERSIONS-WGZ-BTN': {
+                            'en': "WGZ",
+                            'fr': "WGZ"
+                        },
                         'SCENARIST-MODALE-VERSIONS-NO-VERSION': {
                             'en': "No version available for this " + keywords.scenario.singular.en + ".",
                             'fr': "Ce " + keywords.scenario.singular.fr + " n'a pas encore de version."
