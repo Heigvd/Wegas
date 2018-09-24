@@ -350,18 +350,22 @@ YUI.add('wegas-mcq-view', function(Y) {
         },
         renderUI: function() {
             this.title = new Y.Wegas.Text({
-                cssClass: "mcqchoice__title"
+                cssClass: "mcqchoice__title",
+                editable: false
             });
             this.description = new Y.Wegas.Text({
-                cssClass: "mcqchoice__description wegas-light-picture"
+                cssClass: "mcqchoice__description wegas-light-picture",
+                editable: false
             });
             this.submit = new Y.Wegas.Text({
                 cssClass: "mcqchoice__submit",
-                content: "<span tabindex='0' role='button'>" + I18n.t("mcq.submit") + "</span>"
+                content: "<span tabindex='0' role='button'>" + I18n.t("mcq.submit") + "</span>",
+                editable: false
 
             });
             this.summary = new Y.Wegas.Text({
-                cssClass: "mcqchoice__summary"
+                cssClass: "mcqchoice__summary",
+                editable: false
             });
 
             this.add(this.title);
