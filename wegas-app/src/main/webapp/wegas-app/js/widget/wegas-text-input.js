@@ -108,6 +108,7 @@ YUI.add('wegas-text-input', function(Y) {
                             contextmenu: this.get('contextmenu'),
                             // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselect spellchecker template
                             menubar: false,
+                            toolbar: this.get("showToolbar"),
                             statusbar: false,
                             relative_urls: false,
                             toolbar_items_size: 'small',
@@ -460,6 +461,11 @@ YUI.add('wegas-text-input', function(Y) {
                     type: 'scriptcondition',
                     label: 'Readonly'
                 }
+            },
+            showToolbar: {
+                type: 'boolean',
+                value: true,
+                view: {label: 'Show toolbar'}
             },
             showSaveButton: {
                 type: 'boolean',
