@@ -1167,6 +1167,9 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 Y.Array.every(this.get(ITEMS), filterFn);
                 return needle;
             },
+            getChildByTag: function(tag) {
+                return this.getChildByKey('editorTag', tag, true);
+            },
             getChildByName: function(name) {
                 return this.getChildByKey('name', name, true);
             },
