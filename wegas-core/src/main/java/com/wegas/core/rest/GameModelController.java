@@ -7,6 +7,7 @@
  */
 package com.wegas.core.rest;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.client.WegasIncompatibleType;
@@ -159,7 +160,7 @@ public class GameModelController {
             gameModel.setName(gameModelFacade.findUniqueName(gameModel.getName()));
             gameModelFacade.createWithDebugGame(gameModel);
             return gameModel;
-        } else if (details.getContentDisposition().getFileName().endsWith(".wgz")){
+        } else if (details.getContentDisposition().getFileName().endsWith(".wgz")) {
             try (ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
                 return gameModelFacade.unzip(zip);
             }
@@ -182,11 +183,11 @@ public class GameModelController {
         requestManager.assertUpdateRight(gameModel);
 
         StreamingOutput output = gameModelFacade.zip(gameModelId);
-
+        String filename = gameModelFacade.find(gameModelId).getName().replaceAll("\\" + "s+", "_") + ".wgz";
         return Response.ok(output, "application/zip").
                 header("content-disposition",
                         "attachment; filename="
-                        + gameModelFacade.find(gameModelId).getName() + ".wgz").build();
+                        + filename).build();
     }
 
     /**

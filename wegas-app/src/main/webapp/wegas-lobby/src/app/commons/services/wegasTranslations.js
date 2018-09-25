@@ -1601,8 +1601,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "JSON"
                         },
                         'SCENARIST-MODALE-VERSIONS-WGZ-BTN': {
-                            'en': "WGZ",
-                            'fr': "WGZ"
+                            'en': "Export",
+                            'fr': "Export"
                         },
                         'SCENARIST-MODALE-VERSIONS-NO-VERSION': {
                             'en': "No version available for this " + keywords.scenario.singular.en + ".",
