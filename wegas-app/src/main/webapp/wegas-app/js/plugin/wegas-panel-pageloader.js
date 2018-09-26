@@ -36,7 +36,7 @@ YUI.add('wegas-panel-pageloader', function(Y) {
                     modal: this.get('modal')
                 };
                 switch (this.get("style")) {
-                    case "lecacy":
+                    case "legacy":
                         cfg.buttons.footer = [{
                                 name: 'proceed',
                                 label: 'OK',
@@ -165,7 +165,7 @@ YUI.add('wegas-panel-pageloader', function(Y) {
                     modal: this.get('modal')
                 };
                 switch (this.get("style")) {
-                    case "lecacy":
+                    case "legacy":
                         cfg.buttons.footer = [{
                                 name: 'proceed',
                                 label: 'OK',
