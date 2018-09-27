@@ -52,6 +52,7 @@
     flex-grow: 1;
     padding: 10px 5px;
     white-space: normal;
+    max-width: 100%;
 }
 
 /*  */
