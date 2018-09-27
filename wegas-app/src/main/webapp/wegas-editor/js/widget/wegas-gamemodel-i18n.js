@@ -104,7 +104,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     "<div><label>Name:</label> <input class='language-name' value='" + lang + "'></div>" +
                     "<div><label>Active:</label> <input type='checkbox' class='language-active' " + (active ? "checked" : "") + "></div>" +
                     "<div class='tools'>" +
-                    "  <span class='validate fa fa-check'></span>" +
+                    "  <span class='validate fa fa-save'></span>" +
                     "  <span class='cancel fa fa-times'></span>" +
                     "</div>" +
                     "</div>" +
@@ -382,7 +382,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                     "' data-refName='", languages[l].get("refName"),
                                     "'>",
                                     "<span class='tools'>",
-                                    "<span class='inline-editor-validate fa fa-check'></span>" +
+                                    "<span class='inline-editor-validate fa fa-save'></span>" +
                                     "<span class='inline-editor-cancel fa fa-times'></span>" +
                                     "</span>",
                                     "<", domNode, " class='wegas-translation--toolbar'></", domNode, ">" +
