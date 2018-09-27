@@ -273,4 +273,23 @@ YUI.add('wegas-panel-pageloader', function(Y) {
             }
         }
     );
+
+
+    /**
+     * Open a panel with a cfg in it.
+     * @type {OpenPanelPageloader}
+     */
+    Y.Plugin.ClosePanel = Y.Base.create('wegas-panel-closepanel', Y.Plugin.Action, [],
+        {
+            execute: function() {
+                var panel = Y.Widget.getByNode("body > .wegas-panel");
+                panel && panel.destroy();
+            }
+        },
+        {
+            NS: 'closepanel',
+            ATTRS: {
+            }
+        }
+    );
 });

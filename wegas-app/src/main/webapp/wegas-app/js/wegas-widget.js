@@ -488,6 +488,11 @@ YUI.add('wegas-widget', function(Y) {
                                     value: {fn: 'ExecuteLocalScriptAction'}
                                 },
                                 {
+                                    label: 'Close Popup Panel',
+                                    value: {fn: 'ClosePanel'},
+                                    className: 'wegas-advanced-feature'
+                                },
+                                {
                                     label: 'Open Popup page',
                                     value: {fn: 'OpenPanelPageloader'}
                                 },
