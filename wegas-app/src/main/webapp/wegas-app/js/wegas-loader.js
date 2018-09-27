@@ -415,7 +415,7 @@ YUI().use(function(Y) {
             "wegas-panel-pageloader": {
                 path: "js/plugin/wegas-panel-pageloader-min.js",
                 requires: ["wegas-plugin", "wegas-pageloader", "wegas-panel"],
-                ws_provides: "OpenPanelPageloader"
+                ws_provides: ["OpenPanelPageloader", "OpenPanelWithCfg", "ClosePanel"]
             },
             "wegas-visibilitytimer": {
                 path: "js/plugin/wegas-visibilitytimer-min.js",
