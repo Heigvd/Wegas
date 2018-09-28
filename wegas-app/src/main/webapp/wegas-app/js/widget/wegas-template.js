@@ -54,16 +54,17 @@ YUI.add('wegas-template', function(Y) {
                         );
                 } else {
                     var instance = this.get("variable.evaluated").getInstance();
-                    this.vdUpdateHandler = Wegas.Facade.Instance.after(
-                        //'*:updatedInstance',
-                        instance.get("id") + ':updatedInstance',
-                        this.syncUI,
-                        this
-                        );
+                    if (insstance) {
+                        this.vdUpdateHandler = Wegas.Facade.Instance.after(
+                            //'*:updatedInstance',
+                            instance.get("id") + ':updatedInstance',
+                            this.syncUI,
+                            this
+                            );
+                    }
                 }
             },
             syncTemplate: function(payload) {
-                Y.log("SyncTemplate");
                 var template = this.get('variable.evaluated');
                 /*
                  ** Call syncUI() anyway if this is a custom template, i.e. a script with potentially undetectable
@@ -141,7 +142,7 @@ YUI.add('wegas-template', function(Y) {
             },
             destructor: function() {
                 Y.log("DestroyTemplate");
-                this.vdUpdateHandler.detach();
+                this.vdUpdateHandler && this.vdUpdateHandler.detach();
             },
             undefinedToEmpty: function(value) {
                 return Y.Lang.isUndefined(value) ? '' : '' + value;
