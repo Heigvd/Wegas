@@ -54,7 +54,7 @@ YUI.add('wegas-template', function(Y) {
                         );
                 } else {
                     var instance = this.get("variable.evaluated").getInstance();
-                    if (insstance) {
+                    if (instance) {
                         this.vdUpdateHandler = Wegas.Facade.Instance.after(
                             //'*:updatedInstance',
                             instance.get("id") + ':updatedInstance',
