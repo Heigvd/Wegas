@@ -195,15 +195,18 @@ YUI.add('wegas-text-input', function(Y) {
                 value: value
             };
         },
+        bindUpdatedInstance: function() {
+            if (this.onInstanceUpdate) {
+                this.onInstanceUpdate.detach();
+            }
+            var question = this.get('variable.evaluated');
+            if (question) {
+                this.onInstanceUpdate = Y.Wegas.Facade.Instance.after(question.getInstance().get("id") + ':updatedInstance', this.syncUI, this);
+            }
+        },
         bindUI: function() {
-            this.handlers.push(
-                Y.Wegas.Facade.Instance.after('updatedInstance', function(e) {
-                    var text = this.get('variable.evaluated');
-                    if (text &&
-                        text.getInstance().get('id') === e.entity.get('id')) {
-                        this.syncUI();
-                    }
-                }, this));
+            this.bindUpdatedInstance();
+            this.after("variableChange", this.bindUpdatedInstance, this);
             this.on('save', this._save);
         },
         syncUI: function() {
@@ -425,6 +428,9 @@ YUI.add('wegas-text-input', function(Y) {
             Y.Array.each(this.handlers, function(h) {
                 h.detach();
             });
+            if (this.onInstanceUpdate) {
+                this.onInstanceUpdate.detach();
+            }
             if (this.addButton) {
                 this.addButton.destroy();
             }

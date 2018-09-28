@@ -192,9 +192,13 @@ YUI.add('wegas-datasource', function(Y) {
                     updatedDs[dsid] = ds;
                     events = collector[dsid].events;
                     for (eventName in events) {
+                        var eName = eventName;
                         if (events.hasOwnProperty(eventName) && events[eventName].length > 0) {
                             for (i in events[eventName]) {
-                                ds.fire(eventName, events[eventName][i]);
+                                if (eventName === "updatedInstance"){
+                                    eName = events[eventName][i].entity.get("id") + ":" + eventName;
+                                }
+                                ds.fire(eName, events[eventName][i]);
                             }
                         }
                     }

@@ -76,7 +76,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             bindUI: function() {
                 var key, cb = this.get(CONTENT_BOX),
                     availableStates = this.get("availableStates");
-                this.events.push(Wegas.Facade.Instance.after("updatedInstance", this.refreshAfterInstanceUpdate, this));
+                this.events.push(Wegas.Facade.Instance.after("*:updatedInstance", this.refreshAfterInstanceUpdate, this));
                 this.events.push(Wegas.Facade.Variable.after("updatedDescriptor", this.rebuildAfterUpdate, this));
 
                 cb.on("mousedown", function() {
