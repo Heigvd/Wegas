@@ -109,7 +109,7 @@ YUI.add('wegas-mcq-dialogview', function(Y) {
                     this.syncUI();
                 }
             }, this));
-            this.handlers.push(Y.Wegas.Facade.Instance.after("updatedInstance", function(e) {
+            this.handlers.push(Y.Wegas.Facade.Instance.after("*:updatedInstance", function(e) {
                 var question = this.get("variable.evaluated"), updatedInstance;
 
                 if (e.entity instanceof Y.Wegas.persistence.ChoiceInstance) {

@@ -176,7 +176,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
 
                 this.handlers.push(ds.after("rootUpdate", this.syncUI, this));
                 this.handlers.push(ds.after("updatedDescriptor", this.updateDescriptor, this));
-                this.handlers.push(instanceDs.after("updatedInstance", this.updateInstance, this));
+                this.handlers.push(instanceDs.after("*:updatedInstance", this.updateInstance, this));
                 //this.handlers.push(instanceDs.after("addedInstance", this.updateInstance, this));
                 //this.handlers.push(ds.after("added", this.addEntity, this));
                 this.handlers.push(ds.after("delete", this.deleteEntity, this));
