@@ -62,7 +62,7 @@ const indentStyle = css({
 interface ICommonViewProps {
     errorMessage?: string[];
     schema?: {
-        type?: string;
+        type?: string | string[];
     };
     view: {
         description?: string;
@@ -76,7 +76,7 @@ interface ICommonViewProps {
 }
 const nullRx = /null,|,null/;
 export default function commonView<E>(
-    Comp: React.SFC<E> | React.ComponentClass<E>
+    Comp: React.ComponentType<E & ICommonViewProps>
 ): React.SFC<E & ICommonViewProps> {
     function CommonView(props: E & ICommonViewProps) {
         const { errorMessage = [], view = {} } = props;
