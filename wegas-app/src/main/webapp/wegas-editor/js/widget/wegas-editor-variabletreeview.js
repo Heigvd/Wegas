@@ -176,7 +176,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
 
                 this.handlers.push(ds.after("rootUpdate", this.syncUI, this));
                 this.handlers.push(ds.after("updatedDescriptor", this.updateDescriptor, this));
-                this.handlers.push(instanceDs.after("updatedInstance", this.updateInstance, this));
+                this.handlers.push(instanceDs.after("*:updatedInstance", this.updateInstance, this));
                 //this.handlers.push(instanceDs.after("addedInstance", this.updateInstance, this));
                 //this.handlers.push(ds.after("added", this.addEntity, this));
                 this.handlers.push(ds.after("delete", this.deleteEntity, this));
@@ -248,17 +248,19 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             });
         },
         updateDescriptor: function(e) {
-            var oldElement, entity, parent, index, newElement;
-            entity = e.entity;
-            oldElement = this.findNode(entity);
-            if (oldElement) {
-                parent = oldElement.get("parent");
-                index = parent.indexOf(oldElement);
-                newElement = this.genTreeViewElement(entity);
-                oldElement.remove();
-                parent.add(newElement, index);
+            if (!this.get("bypassSyncEvents")) {
+                var oldElement, entity, parent, index, newElement;
+                entity = e.entity;
+                oldElement = this.findNode(entity);
+                if (oldElement) {
+                    parent = oldElement.get("parent");
+                    index = parent.indexOf(oldElement);
+                    newElement = this.genTreeViewElement(entity);
+                    oldElement.remove();
+                    parent.add(newElement, index);
+                }
+                //oldElement.set("label", e.entity.getEditorLabel());
             }
-            //oldElement.set("label", e.entity.getEditorLabel());
         },
         updateInstance: function(e) {
             var descriptor = Y.Wegas.Facade.Variable.cache.find("id", e.entity.get("descriptorId"));
@@ -613,6 +615,10 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         }
     }, {
         ATTRS: {
+            bypassSyncEvents: {
+                type: "boolean",
+                value: false
+            }
         }
     });
     Wegas.VariableTreeView = VariableTreeView;

@@ -104,7 +104,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     "<div><label>Name:</label> <input class='language-name' value='" + lang + "'></div>" +
                     "<div><label>Active:</label> <input type='checkbox' class='language-active' " + (active ? "checked" : "") + "></div>" +
                     "<div class='tools'>" +
-                    "  <span class='validate fa fa-check'></span>" +
+                    "  <span class='validate fa fa-save'></span>" +
                     "  <span class='cancel fa fa-times'></span>" +
                     "</div>" +
                     "</div>" +
@@ -382,10 +382,10 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                     "' data-refName='", languages[l].get("refName"),
                                     "'>",
                                     "<span class='tools'>",
-                                    "<span class='inline-editor-validate fa fa-check'></span>" +
+                                    "<span class='inline-editor-validate fa fa-save'></span>" +
                                     "<span class='inline-editor-cancel fa fa-times'></span>" +
                                     "</span>",
-                                    "<", domNode ," class='wegas-translation--toolbar'></", domNode,">" +
+                                    "<", domNode, " class='wegas-translation--toolbar'></", domNode, ">" +
                                     "<", domNode, " tabindex='0'");
 
                                 if (type === "wegasurl") {
@@ -395,9 +395,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                 if (type === "wegasurl") {
                                     markup.push(" fa fa-folder-o");
                                 }
-                                markup.push("'>",
+                                markup.push("'><", domNode, " class='wegas-translation--toedit'>",
                                     tr.value.translations[languages[l].get("refName")],
-                                    "</", domNode, ">", "</", domNode, ">");
+                                    "</", domNode, ">", "</", domNode, ">", "</", domNode, ">");
                                 markup.push("</div>");
                             }
                             markup.push("</div>");
@@ -634,8 +634,10 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         },
         save: function(e) {
             var cfg = this._getCfgFromEvent(e),
+                // TODO rawValue = cfg.node.one(".wegas-translation--toedit").getContent(),
                 rawValue = cfg.node.one(".wegas-translation--value").getContent(),
                 newValue = this.toInjectorStyle(rawValue);
+
             if (cfg.type === "inscript") {
                 this.saveInScriptTranslation(cfg, newValue);
             } else {
@@ -647,6 +649,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             var cfg = this._getCfgFromEvent(e);
             this.contents[cfg.key];
             // reset wegas-translation--value to initial one and remove tools
+            //TODO idem
             cfg.node.one(".wegas-translation--value").setContent(this.contents[cfg.key]);
             cfg.node.removeClass("unsaved");
         },
@@ -706,9 +709,22 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             // remove yui ids
             var root = document.createElement('div');
             root.innerHTML = content;
+
+            var toEdit = root.querySelector(".wegas-translation--toedit");
+            if (toEdit) {
+                root = toEdit;
+            }
+
             var yuiId = root.querySelectorAll('[id^="yui_"]');
             for (var n = 0; n < yuiId.length; n += 1) {
                 yuiId[n].removeAttribute('id');
+            }
+
+
+            // hack to clean TinyMCE dirty empta content
+            var mceBogus = root.querySelectorAll('[data-mce-bogus=\"1\"]');
+            for (var n = 0; n < mceBogus.length; n += 1) {
+                mceBogus[n].remove();
             }
 
             return root.innerHTML
@@ -749,7 +765,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 Y.log("Select File for " + cfg.key);
                 if (this.contents[cfg.key] === undefined) {
                     // save initial values
-                    this.contents[cfg.key] = this.toInjectorStyle(cfg.node.one(".wegas-translation--value").getHTML());
+                    this.contents[cfg.key] = this.toInjectorStyle(cfg.node.one(".wegas-translation--toedit").getHTML());
                 }
 
                 var filepanel = new Y.Wegas.FileSelect();
@@ -758,6 +774,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     filepanel.destroy();
                     var updated = path !== this.contents[cfg.key];
                     cfg.node.toggleClass("unsaved", updated);
+                    // TODO
                     cfg.node.one(".wegas-translation--value").setHTML(path)
                 }, this));
             }
@@ -774,14 +791,22 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             if (!cfg.node.hasClass("wegas-translation-wegasurl")) {
                 Y.log("SetupEditor for " + cfg.key);
                 this.currentEditorKey = cfg.key;
+
+                var toEditNode = cfg.node.one(".wegas-translation--toedit");
+                if (!toEditNode) {
+                    var dNode = cfg.node.hasClass("wegas-translation-string") ? "span" : "div";
+                    cfg.node.one(".wegas-translation--value").append("<" + dNode + " class='wegas-translation--toedit'></" + dNode + ">");
+                    toEditNode = cfg.node.one(".wegas-translation--toedit");
+                }
+
                 if (this.contents[cfg.key] === undefined) {
                     // save initial values
-                    this.contents[cfg.key] = this.toInjectorStyle(cfg.node.one(".wegas-translation--value").getHTML());
+                    this.contents[cfg.key] = this.toInjectorStyle(toEditNode.getHTML());
                 }
 
                 var tinyConfig = {
                     inline: true,
-                    selector: "#" + cfg.node.get("id") + " .wegas-translation--value",
+                    selector: "#" + cfg.node.get("id") + " .wegas-translation--toedit",
                     browser_spellcheck: true,
                     plugins: [
                         'autolink link image lists code media table',
@@ -824,19 +849,6 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     toolbar_items_size: 'small',
                     hidden_tootlbar: [2, 3],
                     file_browser_callback: Y.bind(this.onFileBrowserClick, this),
-                    setup: Y.bind(function(editor) {
-                        this.editor = editor;
-                        editor.on('change', Y.bind(this._onHtmlChange, this));
-                        editor.on('keyUp', Y.bind(this._onHtmlChange, this));
-                        editor.on('blur', Y.bind(this._onHtmlBlur, this)); // text input & ctrl-related operations
-                        editor.on('init', Y.bind(function() {
-                            this.editor = editor;
-                            this.editor.fire("focus");
-                            this.editor.focus();
-                        }, this));
-                        //this.editor.focus();
-                        //this.editor.targetElm.click();
-                    }, this),
                     image_advtab: true,
                     content_css: [
                         '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css',
@@ -869,9 +881,108 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                             block: 'code',
                         },
                     ],
+                    formats: {}
                 };
                 if (cfg.node.hasClass("wegas-translation-string")) {
                     tinyConfig.theme = 'inlite';
+                }
+
+                var extraButtons = Y.Wegas.Config.TinyExtraButtons;
+
+                if (extraButtons) {
+                    /* config example :
+                     Y.namespace("Wegas.Config").TinyExtraButtons = {
+                     className : "off-game",
+                     cssIcon: "fa fa-asterisk",
+                     tooltip : "off-game information style"
+                     },
+                     danger: {
+                     block: "div",
+                     className : "danger-message",
+                     cssIcon: "fa fa-warning",
+                     tooltip : "danger message style"
+                     }};
+                     */
+                    var toolbar = tinyConfig.toolbar1.split(" ");
+                    toolbar.pop(); // remove addToolbarButton
+                    toolbar.push("|");
+
+                    var initFunctions = [];
+
+                    for (var name in extraButtons) {
+                        var btnCfg = extraButtons[name];
+                        tinyConfig.formats[name] = {
+                            attributes: {
+                                'class': btnCfg.className
+                            }
+                        };
+
+                        if (btnCfg.block) {
+                            tinyConfig.formats[name].block = btnCfg.block;
+                        } else if (btnCfg.inline) {
+                            tinyConfig.formats[name].inline = btnCfg.inline;
+                        } else {
+                            tinyConfig.formats[name].inline = "span";
+                        }
+
+                        toolbar.push(name);
+
+                        initFunctions.push({
+                            name: name,
+                            config: btnCfg,
+                            'function':
+                                function(editor, name, btnCfg) {
+                                    editor.addButton(name, {
+                                        icon: "x " + btnCfg.cssIcon,
+                                        stateSelector: "." + btnCfg.className,
+                                        tooltip: btnCfg.tooltip,
+                                        onclick: function(e) {
+                                            tinymce.activeEditor.formatter.toggle(name);
+                                        }
+                                    });
+                                }
+                        });
+
+                        tinyConfig.setup = Y.bind(function(editor) {
+                            this.editor = editor;
+                            editor.on('change', Y.bind(this._onHtmlChange, this));
+                            editor.on('keyUp', Y.bind(this._onHtmlChange, this));
+                            editor.on('blur', Y.bind(this._onHtmlBlur, this)); // text input & ctrl-related operations
+                            editor.on('init', Y.bind(function() {
+                                this.editor = editor;
+                                this.editor.fire("focus");
+                                this.editor.focus();
+                            }, this));
+                            //this.editor.focus();
+                            //this.editor.targetElm.click();
+
+
+                            // call each initFunction
+                            for (var i in initFunctions) {
+                                initFunctions[i].function.call(editor, editor,
+                                    initFunctions[i].name, initFunctions[i].config);
+                            }
+                        }, this);
+                    }
+
+                    // rebuilf toolbar1
+                    toolbar.push("|");
+                    toolbar.push("addToolbarButton");
+                    tinyConfig.toolbar1 = toolbar.join(" ");
+                } else {
+                    tinyConfig.setup = Y.bind(function(editor) {
+                        this.editor = editor;
+                        editor.on('change', Y.bind(this._onHtmlChange, this));
+                        editor.on('keyUp', Y.bind(this._onHtmlChange, this));
+                        editor.on('blur', Y.bind(this._onHtmlBlur, this)); // text input & ctrl-related operations
+                        editor.on('init', Y.bind(function() {
+                            this.editor = editor;
+                            this.editor.fire("focus");
+                            this.editor.focus();
+                        }, this));
+                        //this.editor.focus();
+                        //this.editor.targetElm.click();
+                    }, this);
                 }
                 tinyMCE.init(tinyConfig);
             }

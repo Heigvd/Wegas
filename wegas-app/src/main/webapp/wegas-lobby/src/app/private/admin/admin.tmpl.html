@@ -9,7 +9,7 @@
     <div ng-if="!adminCtrl.loading"
          style="float:left; padding:10px">
         <h3 style="margin-top:-5px; margin-bottom:5px">{{'ADMIN-INDEX-UPLOAD-TITLE'| translate}}</h3>
-        <input id="import-json-scenario" type="file" value="upload a scenario" scenario-create-upload />
+        <input id="import-json-scenario" type="file" value="upload a scenario" accept=".json, .wgz" scenario-create-upload />
     </div>
     <div ng-if="adminCtrl.loading"
          class="view__list view__list--loading"

@@ -36,13 +36,23 @@
     background: #d8d9dd;
     align-items: center;
     display: flex;
+    flex-direction: row-reverse;
 }
+
+
+
+.yui3-skin-sam .yui3-wegas-responsive-tabview .horizontal-tabview .smallscreen .yui3-tab-selected{
+    background: none;
+}
+
 
 /* and let the effective label fill all the space */
 .yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen.open .menutitle .tablabel,
 .yui3-wegas-responsive-tabview .yui3-tab-label .tablabel {
     flex-grow: 1;
     padding: 10px 5px;
+    white-space: normal;
+    max-width: 100%;
 }
 
 /*  */
@@ -50,8 +60,7 @@
     font-size: 13px;
 }
 
-.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen > .yui3-tabview-list li,
-.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen.open ul .menubutton {
+.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen > .yui3-tabview-list li {
     display: none;
 }
 
@@ -60,18 +69,31 @@
     display: block;
 }
 
+/*
 .yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen.open > .yui3-tabview-list li.yui3-tab-selected {
     background-color: grey;
-}
+}*/
 
 .yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen.open .menutitle .menubutton:before,
-.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen:not(.open) > .yui3-tabview-list li.yui3-tab-selected .menubutton:before{
+.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen[data-count="many"]:not(.open) > .yui3-tabview-list li.yui3-tab-selected .menubutton:before{
     font-family: "FontAwesome";
-    content: "\f0c9";
+    content: "\f00d";
+    font-size: 20px;
+    font-weight: normal;
+    color: #4e525e;
+    line-height: 37px;
+    padding-right : 10px;
+}
+
+.yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen.open ul .menubutton:before {
+    font-family: "FontAwesome";
+    content: "\f142";
     font-size: 28px;
     font-weight: normal;
     color: #4e525e;
     line-height: 37px;
+    padding-right : 15px;
+    padding-left : 5px;
 }
 
 .yui3-wegas-responsive-tabview .horizontal-tabview > .yui3-tabview-content.smallscreen > .yui3-tabview-panel {
@@ -86,4 +108,50 @@
 
 .yui3-skin-sam .yui3-wegas-responsive-tabview .empty .horizontal-tabview .yui3-tab {
     display: none;
+}
+
+
+.yui3-skin-sam .yui3-wegas-responsive-tabview .back-to-menu i:before {
+    padding-left: 8px;
+    /*padding-right: 4px;*/
+}
+
+.yui3-skin-sam .yui3-wegas-responsive-tabview .back-to-menu:hover {
+    background: #c7c7c7;
+}
+
+.yui3-skin-sam .yui3-wegas-responsive-tabview .smallscreen .menutitle {
+    position: relative;
+    text-align: center;
+}
+
+
+.yui3-skin-sam .yui3-wegas-responsive-tabview .smallscreen .yui3-tabview-list .yui3-tab-label {
+    cursor:default;
+}
+
+.yui3-skin-sam .yui3-wegas-responsive-tabview .smallscreen[data-count="many"] .yui3-tabview-list .yui3-tab-label {
+    cursor:pointer;
+}
+
+.yui3-skin-sam .yui3-wegas-responsive-tabview .smallscreen .menutitle {
+    display: none;
+    width: 100%;
+}
+
+.yui3-skin-sam .yui3-wegas-responsive-tabview .smallscreen[data-count="many"] .menutitle {
+    display: inline-block;
+}
+
+.yui3-skin-sam .yui3-wegas-responsive-tabview .back-to-menu {
+    background: #d8d9dd;
+    text-transform: uppercase;
+    line-height: 32px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 8px 8px;
+    /*border-radius: 6px;*/
+    color: #333333;
+    transition: .3s;
+    cursor: pointer;
 }

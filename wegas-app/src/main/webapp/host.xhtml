@@ -90,7 +90,7 @@
             Y.Wegas.app.after("render", function() {
                 var g = Y.Wegas.Facade.Game.cache.getCurrentGame();
 
-                Y.one(".wegas-title").setContent("<div>" 
+                Y.one(".wegas-title").setContent("<div>"
                     + (g.get("@class") === "DebugGame" ? "This is a scenario, you little hacker !" : g.get("name"))
                     + "</div>"
                     + "<div class='subtitle'>" + g.get("gameModelName") + "</div>");// Update the title

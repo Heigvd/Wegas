@@ -7,21 +7,26 @@
  */
 package com.wegas.core.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.zip.ZipInputStream;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.jcr.RepositoryException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -98,7 +103,6 @@ public class GameModelController {
      * @throws IOException
      */
     @POST
-
     @Path("{templateGameModelId : [1-9][0-9]*}/UpdateFromPlayer/{playerId: [1-9][0-9]*}")
     public GameModel updateFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
             @PathParam("playerId") Long playerId) throws IOException {
@@ -126,7 +130,6 @@ public class GameModelController {
      * @throws IOException
      */
     @POST
-
     @Path("{templateGameModelId : [1-9][0-9]*}/CreateFromPlayer/{playerId: [1-9][0-9]*}")
     public GameModel createFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
             @PathParam("playerId") Long playerId) throws IOException {
@@ -148,15 +151,43 @@ public class GameModelController {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public GameModel upload(@FormDataParam("file") InputStream file,
-            @FormDataParam("file") FormDataBodyPart details) throws IOException {
+            @FormDataParam("file") FormDataBodyPart details) throws IOException, RepositoryException {
 
-        ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
-        GameModel gm = mapper.readValue(file, GameModel.class);                 // and deserialize file
+        GameModel gameModel;
 
-        gm.setName(gameModelFacade.findUniqueName(gm.getName()));               // Find a unique name for this new game
+        if (details.getMediaType().equals(MediaType.APPLICATION_JSON_TYPE)) {
+            gameModel = JacksonMapperProvider.getMapper().readValue(file, GameModel.class);
+            gameModel.setName(gameModelFacade.findUniqueName(gameModel.getName()));
+            gameModelFacade.createWithDebugGame(gameModel);
+            return gameModel;
+        } else if (details.getContentDisposition().getFileName().endsWith(".wgz")) {
+            try (ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
+                return gameModelFacade.unzip(zip);
+            }
+        } else {
+            throw new WegasIncompatibleType("Unknown file type");
+        }
+    }
 
-        gameModelFacade.createWithDebugGame(gm);
-        return gm;
+    /**
+     * @param gameModelId
+     *
+     * @return ZIP export which contains the game model and its files
+     *
+     */
+    @GET
+    @Path("{gameModelId : [1-9][0-9]*}.wgz")
+    public Response exportZIP(@PathParam("gameModelId") Long gameModelId) throws RepositoryException {
+
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gameModel);
+
+        StreamingOutput output = gameModelFacade.zip(gameModelId);
+        String filename = gameModelFacade.find(gameModelId).getName().replaceAll("\\" + "s+", "_") + ".wgz";
+        return Response.ok(output, "application/zip").
+                header("content-disposition",
+                        "attachment; filename="
+                        + filename).build();
     }
 
     /**

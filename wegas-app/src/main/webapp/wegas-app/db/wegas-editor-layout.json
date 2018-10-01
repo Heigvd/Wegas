@@ -90,6 +90,14 @@
                                             }
                                         }
                                     ]
+                                }, {
+                                    "type": "Button",
+                                    "label": "Advanced Tabs",
+                                    "plugins": [
+                                        {
+                                            "fn": "ToggleAdvancedTabsMode"
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -149,8 +157,8 @@
                         "label": "Layout",
                         "cssClass": "editor-pages",
                         "plugins": [{
-                            "fn": "UneditablePageDisabler"
-                        }],
+                                "fn": "UneditablePageDisabler"
+                            }],
                         "children": [
                             {
                                 "type": "PageTreeview"
@@ -204,10 +212,11 @@
                                                     "pageLoaderId": "previewPageLoader",
                                                     "defaultPageId": "default",
                                                     "cssClass": "editor-preview wegas-playerview",
-                                                    "plugins": [
-                                                        {
+                                                    "plugins": [{
                                                             "fn": "PreviewFullScreen",
-                                                            "cfg":{"selector":".wegas-layout-bd"}
+                                                            "cfg": {
+                                                                "selector": ".wegas-layout-bd"
+                                                            }
                                                         }, {
                                                             "fn": "WidgetToolbar",
                                                             "cfg": {
@@ -363,11 +372,14 @@
                                 "plugins": [
                                     {
                                         "fn": "PreviewFullScreen",
-                                        "cfg":{"selector":".wegas-layout-bd"}
+                                        "cfg": {
+                                            "selector": ".wegas-layout-bd"
+                                        }
                                     }, {
                                         "fn": "WidgetToolbar",
                                         "cfg": {
-                                            "children": []
+                                            "children": [
+                                            ]
                                         }
                                     }, {
                                         "fn": "PageEditor"
@@ -405,14 +417,16 @@
                                                     "pageLoaderId": "previewPageLoader",
                                                     "defaultPageId": "default",
                                                     "cssClass": "editor-preview wegas-playerview",
-                                                    "plugins": [
-                                                        {
+                                                    "plugins": [ {
                                                             "fn": "PreviewFullScreen",
-                                                            "cfg":{"selector":".wegas-layout-bd"}
+                                                            "cfg": {
+                                                                "selector": ".wegas-layout-bd"
+                                                            }
                                                         }, {
                                                             "fn": "WidgetToolbar",
                                                             "cfg": {
-                                                                "children": []
+                                                                "children": [
+                                                                ]
                                                             }
                                                         }, {
                                                             "fn": "PageEditor"
@@ -526,9 +540,9 @@
                                                     "content": "<div class=\"empty-edit-panel\"></div>"
                                                 }
                                             ]
-                                    }
+                                        }
 
-                                            ]
+                                    ]
                                 }
                             }
                         ]

@@ -186,20 +186,20 @@ YUI.add("wegas-i18n", function(Y) {
                 return "<div class='wegas-translation wegas-translation-std wegas-translation-html " + (favorite ? 'favorite-lang' : 'not-favorite-lang') +
                     "' data-trid='" + id +
                     "' data-refName='" + lang.refName + "'lang='" + lang.code + "'data-lang='" + lang.lang + "'><span class='tools'>" +
-                    "<span class='inline-editor-validate fa fa-check'></span>" +
+                    "<span class='inline-editor-validate fa fa-save'></span>" +
                     "<span class='inline-editor-cancel fa fa-times'></span>" +
                     "</span>" +
                     "<div class='wegas-translation--toolbar'></div>" +
-                    "<div tabindex='0' class='wegas-translation--value'>" + text + "</div></div>";
+                    "<div tabindex='0' class='wegas-translation--value'><div class='wegas-translation--toedit'>" + text + "</div></div></div>";
             } else if (inlineEditor === "string") {
                 return "<span class='wegas-translation wegas-translation-std wegas-translation-string " + (favorite ? 'favorite-lang' : 'not-favorite-lang') +
                     "' data-trid='" + id +
                     "' data-refName='" + lang.refName + "'lang='" + lang.code + "'data-lang='" + lang.lang + "'><span class='tools'>" +
-                    "<span class='inline-editor-validate fa fa-check'></span>" +
+                    "<span class='inline-editor-validate fa fa-save'></span>" +
                     "<span class='inline-editor-cancel fa fa-times'></span>" +
                     "</span>" +
                     "<span class='wegas-translation--toolbar'></span>" +
-                    "<span tabindex='0' class='wegas-translation--value'>" + text + "</span></span>";
+                    "<span tabindex='0' class='wegas-translation--value'><span class='wegas-translation--toedit'>" + text + "</span></span></span>";
             } else {
                 return text;
             }

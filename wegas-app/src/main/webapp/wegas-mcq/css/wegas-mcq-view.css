@@ -96,7 +96,7 @@
 }
 
 
-.wegas-mcqview .answerable .wegas-mcqchoice:not(.selectable).noDescription:not(.noTitle) > div,
+/*.wegas-mcqview .answerable .wegas-mcqchoice:not(.selectable).noDescription:not(.noTitle) > div,*/
 .wegas-mcqview-content:not(.answerable) .wegas-mcqchoice:not(.hasReplies).noDescription:not(.noTitle) > div,
 .wegas-mcqview .answerable .wegas-mcqchoice:not(.selectable):not(.hasReplies) .wegas-mcqchoice-content .mcqchoice__title,
 .wegas-mcqview-content:not(.answerable) .wegas-mcqchoice:not(.hasReplies) .wegas-mcqchoice-content .mcqchoice__title

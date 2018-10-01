@@ -91,9 +91,9 @@ YUI.add('wegas-plugin', function(Y) {
         {
             /** @lends Y.Plugin.Action */
             /**
-         * @function
-         * @private
-         */
+             * @function
+             * @private
+             */
             initializer: function() {
                 this.handlers = [];
                 this.get(HOST)
@@ -102,19 +102,19 @@ YUI.add('wegas-plugin', function(Y) {
                 this.onHostEvent(this.get('targetEvent'), this.execute);
             },
             /**
-         * @function
-         * @protected
-         */
+             * @function
+             * @protected
+             */
             execute: function() {
                 Y.error(
                     'Y.Plugin.Action.execute() is abstract, should be overridden'
-                );
+                    );
             },
             /**
-         * @function
-         * @private
-         * @description Detach all functions created by this widget.
-         */
+             * @function
+             * @private
+             * @description Detach all functions created by this widget.
+             */
             destructor: function() {
                 for (var i = 0; i < this.handlers.length; i += 1) {
                     if (this.handlers[i].detach) {
@@ -156,7 +156,7 @@ YUI.add('wegas-plugin', function(Y) {
                 Y.io(Y.Wegas.app.get('base') + this.get('url'), {
                     method: this.get('method'),
                     data: this.get('data'),
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: {'Content-Type': 'application/json'}
                 });
             }
         },
@@ -218,7 +218,7 @@ YUI.add('wegas-plugin', function(Y) {
                     url.indexOf('http://') !== 0 &&
                     url.indexOf('https://') !== 0 &&
                     url.indexOf('//') !== 0
-                ) {
+                    ) {
                     url = Wegas.app.get('base') + url;
                 }
                 if (this.get('target') === 'blank') {
@@ -238,8 +238,8 @@ YUI.add('wegas-plugin', function(Y) {
                     }
                 },
                 /**
-             * Can be "self" or "blank"
-             */
+                 * Can be "self" or "blank"
+                 */
                 target: {
                     type: 'string',
                     value: 'blank',
@@ -292,7 +292,7 @@ YUI.add('wegas-plugin', function(Y) {
                             root += d.get('name') + ',';
                         },
                         this
-                    );
+                        );
                     root = root.slice(0, -1);
                 }
 
@@ -316,9 +316,9 @@ YUI.add('wegas-plugin', function(Y) {
                 root: {
                     type: 'object',
                     /**
-                 * The target variable, returned either based on the name attribute,
-                 * and if absent by evaluating the expr attribute.
-                 */
+                     * The target variable, returned either based on the name attribute,
+                     * and if absent by evaluating the expr attribute.
+                     */
                     getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     view: {
                         type: 'variableselect',
@@ -334,8 +334,8 @@ YUI.add('wegas-plugin', function(Y) {
                     }
                 },
                 /**
-             * Can be "html" or "pdf"
-             */
+                 * Can be "html" or "pdf"
+                 */
                 outputType: {
                     type: 'string',
                     value: 'html',
@@ -380,10 +380,10 @@ YUI.add('wegas-plugin', function(Y) {
                             this.get(HOST).set(
                                 'selected',
                                 '' + targetPageLoader.get('pageId') ===
-                                    '' + this._subpage()
-                                    ? 2
-                                    : 0
-                            );
+                                '' + this._subpage()
+                                ? 2
+                                : 0
+                                );
                             this.handlers.push(
                                 targetPageLoader.after(
                                     'pageIdChange',
@@ -392,24 +392,24 @@ YUI.add('wegas-plugin', function(Y) {
                                             this.get(HOST).set(
                                                 'selected',
                                                 '' +
-                                                    targetPageLoader.get(
-                                                        'pageId'
+                                                targetPageLoader.get(
+                                                    'pageId'
                                                     ) ===
-                                                    '' + this._subpage()
-                                                    ? 2
-                                                    : 0
-                                            );
+                                                '' + this._subpage()
+                                                ? 2
+                                                : 0
+                                                );
                                         } catch (e) {
                                             //no more node...
                                         }
                                     },
                                     this
-                                )
-                            );
+                                    )
+                                );
                         }
                     },
                     this
-                );
+                    );
             },
             execute: function() {
                 var targetPageLoader = this._getTargetPageLoader();
@@ -417,9 +417,9 @@ YUI.add('wegas-plugin', function(Y) {
                     return;
                 }
                 /*
-             * Changing a page may call a page destructor and thus destroying other Action assossiated with this 'targetEvent'
-             * in case this' host belongs to destructed page. That's the reason to delay a page change
-             */
+                 * Changing a page may call a page destructor and thus destroying other Action assossiated with this 'targetEvent'
+                 * in case this' host belongs to destructed page. That's the reason to delay a page change
+                 */
                 this.handlers.push(
                     Y.soon(
                         Y.bind(
@@ -428,9 +428,9 @@ YUI.add('wegas-plugin', function(Y) {
                             },
                             this,
                             targetPageLoader
+                            )
                         )
-                    )
-                );
+                    );
             },
             _getTargetPageLoader: function() {
                 var targetPageLoader, plID = this.get('targetPageLoaderId');
@@ -438,15 +438,15 @@ YUI.add('wegas-plugin', function(Y) {
                     case PAGELOADER_CONFIG.FULL_PAGE.value:
                         targetPageLoader = Wegas.PageLoader.find(
                             PREVIEW_PAGELOADER_ID
-                        );
+                            );
                         break;
                     case PAGELOADER_CONFIG.CURRENT_PAGE_LOADER.value:
                         targetPageLoader = Y.Widget.getByNode(
                             this.get(HOST)
-                                .get('root')
-                                .get('boundingBox')
-                                .ancestor()
-                        );
+                            .get('root')
+                            .get('boundingBox')
+                            .ancestor()
+                            );
                         break;
                     default:
                         targetPageLoader = Wegas.PageLoader.find(plID);
@@ -526,7 +526,7 @@ YUI.add('wegas-plugin', function(Y) {
                                 }
                             );
                         }, this)
-                    );
+                        );
                 }
             }
         },
@@ -545,6 +545,42 @@ YUI.add('wegas-plugin', function(Y) {
         }
     );
     Plugin.ExecuteScriptAction = ExecuteScriptAction;
+
+
+
+    /**
+     *  @class
+     *  @name Y.Plugin.ExecuteLocalScriptAction
+     *  @extends Y.Plugin.Action
+     *  @constructor
+     */
+    var ExecuteLocalScriptAction = Y.Base.create('ExecuteLocalScriptAction', Action, [], {
+        execute: function() {
+            if (!this.get(HOST).get('disabled')) {
+                Wegas.Panel.confirmPlayerAction(
+                    Y.bind(function() {
+                        Wegas.Facade.Variable.script.localEval(this.get('onClick'));
+                    }, this));
+            }
+        }
+    },
+        {
+            NS: 'ExecuteLocalScriptAction',
+            ATTRS: {
+                onClick: {
+                    type: 'string',
+                    value: "",
+                    view: {
+                        type: 'textarea',
+                        label: 'On click'
+                    }
+                }
+            }
+        }
+    );
+    Plugin.ExecuteLocalScriptAction = ExecuteLocalScriptAction;
+
+
 
     /**
      *  @class
@@ -607,8 +643,8 @@ YUI.add('wegas-plugin', function(Y) {
                         Y.bind(
                             ConfirmExecuteScriptAction.superclass.execute,
                             this
-                        )
-                    );
+                            )
+                        );
                 }
             }
         },
@@ -647,14 +683,14 @@ YUI.add('wegas-plugin', function(Y) {
                     //data = "var objProp = Variable.find(gameModel, \"" + variable.get("name") + "\").getInstance(self)" + ".properties;",
                     //script = data + (this.get("clearStorage") ? "objProp.clear();" : "");
                     data =
-                        'var instance = Variable.find(gameModel, "' +
-                        variable.get('name') +
-                        '").getInstance(self);',
+                    'var instance = Variable.find(gameModel, "' +
+                    variable.get('name') +
+                    '").getInstance(self);',
                     script =
-                        data +
-                        (this.get('clearStorage')
-                            ? 'instance.clearProperties();'
-                            : '');
+                    data +
+                    (this.get('clearStorage')
+                        ? 'instance.clearProperties();'
+                        : '');
 
                 if (guest.showOverlay && guest.hideOverlay) {
                     overlayGuest = guest;
@@ -689,9 +725,9 @@ YUI.add('wegas-plugin', function(Y) {
             ATTRS: {
                 variable: {
                     /**
-                 * The target variable, returned either based on the name attribute,
-                 * and if absent by evaluating the expr attribute.
-                 */
+                     * The target variable, returned either based on the name attribute,
+                     * and if absent by evaluating the expr attribute.
+                     */
                     type: 'object',
                     getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     view: {
@@ -719,4 +755,187 @@ YUI.add('wegas-plugin', function(Y) {
         }
     );
     Plugin.SaveObjectAction = SaveObjectAction;
+
+
+    var IdleMonitor = Y.Base.create(
+        'wegas-idleMonitor',
+        Plugin.Base,
+        [Wegas.Plugin], {
+        initializer: function() {
+            this.handlers = {};
+            this.running = false;
+            this.idle = false;
+        },
+        destructor: function() {
+            this.stop();
+        },
+        isRunning: function() {
+            return this.running;
+        },
+        isIdle: function() {
+            return this.idle;
+        },
+        start: function() {
+            if (!this.running) {
+                this.running = true;
+
+                this.handlers.mouseMove = Y.on("mousemove", Y.bind(this._onEvent, this));
+                this.handlers.mousedown = Y.on("mousedown", Y.bind(this._onEvent, this));
+
+                this.handlers.click = Y.on("click", Y.bind(this._onEvent, this));
+                this.handlers.touchestart = Y.on("touchestart", Y.bind(this._onEvent, this));
+
+                this.handlers.keypress = Y.on("keypress", Y.bind(this._onEvent, this));
+                this.onScroll = Y.bind(this._onEvent, this);
+                window.addEventListener('scroll', this.onScroll, true);
+
+                this._reset();
+                this.timerId = setInterval(Y.bind(this._incrementTimer, this), this.get("resolution"));
+            }
+        },
+        _incrementTimer: function() {
+            if (!this.idle) {
+                this.counter += this.get("resolution");
+                this._log("Check idle: " + this.counter + "/" + this.get("timeout"));
+                if (this.counter >= this.get("timeout")) {
+                    this._log("IDLE");
+                    this.fire("idle");
+                    this.idle = true;
+                }
+            }
+        },
+        _onEvent: function(e) {
+            this._reset();
+        },
+        _reset: function() {
+            this.counter = 0;
+            if (this.idle) {
+                this._log("RESUME");
+                this.idle = false;
+                this.fire("resume");
+            }
+        },
+        _log: function(msg) {
+            Y.log(msg);
+        },
+        stop: function() {
+            this._reset();
+
+            clearTimeout(this.timerId);
+
+            this.running = false;
+            this.idle = false;
+
+
+            for (var key in this.handlers) {
+                this.handlers[key].detach();
+            }
+            window.removeEventListener("scroll", this.onScroll);
+        }
+
+    },
+        {
+            NS: "idlemonitor",
+            ATTRS: {
+                timeout: {
+                    // idle after milliseconds
+                    type: "number",
+                    value: 20000
+                },
+                resolution: {
+                    // check idle status each milliseconds
+                    type: "number",
+                    value: 5000
+                }
+            }
+        }
+    );
+    Plugin.IdleMonitor = IdleMonitor;
+
+    var ScrollOnClick = Y.Base.create('wegas-scroll-onclick',
+        Plugin.Base,
+        [Wegas.Plugin, Wegas.Editable], {
+        initializer: function() {
+            this.handlers = {};
+            this.get("host").get("contentBox").delegate("click", this.onClick, this.get("handle"), this);
+        },
+        onClick: function(e) {
+            var host = this.get("host"),
+                hostCb = host.get("contentBox"),
+                handles = hostCb.all(this.get("handle")),
+                targets = hostCb.all(this.get("target"));
+
+            e.currentTarget;
+            var i;
+            var theTarget;
+            for (i = 0; i < handles._nodes.length; i++) {
+                if (handles._nodes[i] === e.currentTarget.getDOMNode()) {
+                    if (this.get("direction") === "forward") {
+                        theTarget = targets._nodes[i + 1];
+                    } else {
+                        theTarget = targets._nodes[i];
+                    }
+                    if (theTarget) {
+                        if (this.get("scrollDirection") === "horizontal") {
+                            var delta = theTarget.getBoundingClientRect().left
+                                - hostCb.getDOMNode().getBoundingClientRect().left;
+                            hostCb.getDOMNode().scrollLeft += delta;
+                        } else {
+                            var delta = theTarget.getBoundingClientRect().top
+                                - hostCb.getDOMNode().getBoundingClientRect().top;
+                            hostCb.getDOMNode().scrollTop += delta;
+                        }
+                        break;
+                    }
+                }
+            }
+
+        },
+        destructor: function() {
+            for (var k in this.handlers) {
+                this.handlers[k].detach();
+            }
+        }
+    },
+        {
+            NS: "scrollonclick",
+            ATTRS: {
+                target: {
+                    type: "string",
+                    view: {
+                        label: "Target Selector"
+                    }
+                },
+                handle: {
+                    type: "string",
+                    view: {
+                        label: "Handle Selector"
+                    }
+                },
+                scrollDirection: {
+                    value: 'vertical',
+                    type: "string",
+                    view: {
+                        type: 'select',
+                        choices: ['vertical', 'horizontal']
+                    }
+                },
+                direction: {
+                    value: 'forward',
+                    type: "string",
+                    view: {
+                        type: 'select',
+                        choices: ['forward', 'backward']
+                    }
+                }
+            }
+        }
+    );
+    Plugin.ScrollOnClick = ScrollOnClick;
+
+    Plugin.ScrollOnClick2 = Y.Base.create('wegas-scroll-onclick2', ScrollOnClick, [], {}, {NS: 'ScrollOnClick2'});
+    Plugin.ScrollOnClick3 = Y.Base.create('wegas-scroll-onclick3', ScrollOnClick, [], {}, {NS: 'ScrollOnClick3'});
+    Plugin.ScrollOnClick4 = Y.Base.create('wegas-scroll-onclick3', ScrollOnClick, [], {}, {NS: 'ScrollOnClick4'});
+
+
 });

@@ -415,7 +415,7 @@ YUI().use(function(Y) {
             "wegas-panel-pageloader": {
                 path: "js/plugin/wegas-panel-pageloader-min.js",
                 requires: ["wegas-plugin", "wegas-pageloader", "wegas-panel"],
-                ws_provides: "OpenPanelPageloader"
+                ws_provides: ["OpenPanelPageloader", "OpenPanelWithCfg", "ClosePanel"]
             },
             "wegas-visibilitytimer": {
                 path: "js/plugin/wegas-visibilitytimer-min.js",
@@ -670,7 +670,7 @@ YUI().use(function(Y) {
             "wegas-editor-action": {
                 path: "js/plugin/wegas-editor-action-min.js",
                 requires: ["wegas-button", "wegas-plugin", "event-key", "inputex-string"],
-                ws_provides: ["OpenTabAction", "OpenTabButton", "Linkwidget", "OnDeleteListener"]
+                ws_provides: ["OpenTabAction", "OpenTabButton", "Linkwidget", "OnDeleteListener", "ToggleAdvancedTabsMode"]
             },
             "wegas-editor-entityaction": {
                 path: "js/plugin/wegas-editor-entityaction-min.js",
@@ -1139,7 +1139,7 @@ YUI().use(function(Y) {
                 path: "ace/src-min/ace.js"
             },
             pusher: {
-                fullpath: "//js.pusher.com/3.2/pusher.min.js"
+                fullpath: "//js.pusher.com/4.3.1/pusher.min.js"
             },
             googletranslate: {
                 async: false,

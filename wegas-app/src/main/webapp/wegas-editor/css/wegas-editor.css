@@ -200,7 +200,7 @@
 }
 
 .wegas-console .qrcode_thumbnail {
-    
+
 }
 
 .wegas-console .results {
@@ -867,13 +867,23 @@
 }
 
 
-.wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation--value {
+.wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation--value{
     min-height: 1.2em;
     min-width: 5em;
     display:inline-block;
     cursor: text;
     border:1px solid #BFBFBF;
     margin-right: 10px;
+}
+
+
+.wegas-translation--toedit.mce-content-body{
+    display: inline-block;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation--toedit {
+    display: inline-block;
+    width: 100%;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation--value:focus,
@@ -892,4 +902,11 @@
 .wegas-i18n-manager .wegas-i18n-manager--editor .highlight {
     animation: highlight 3s;
     background: #f5f5f5;
+}
+
+.wegas-i18n-manager .wegas-translation-html .wegas-translation--toolbar,
+.tinymce-toolbar {
+    min-height: 28px;
+    background-image: url("../images/tiny-toolbar.png");
+    background-repeat: no-repeat;
 }

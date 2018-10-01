@@ -53,11 +53,15 @@ YUI.add('wegas-template', function(Y) {
                         this
                         );
                 } else {
-                    this.vdUpdateHandler = Wegas.Facade.Instance.after(
-                        'updatedInstance',
-                        this.syncTemplate,
-                        this
-                        );
+                    var instance = this.get("variable.evaluated").getInstance();
+                    if (instance) {
+                        this.vdUpdateHandler = Wegas.Facade.Instance.after(
+                            //'*:updatedInstance',
+                            instance.get("id") + ':updatedInstance',
+                            this.syncUI,
+                            this
+                            );
+                    }
                 }
             },
             syncTemplate: function(payload) {
@@ -137,7 +141,8 @@ YUI.add('wegas-template', function(Y) {
                 return null;
             },
             destructor: function() {
-                this.vdUpdateHandler.detach();
+                Y.log("DestroyTemplate");
+                this.vdUpdateHandler && this.vdUpdateHandler.detach();
             },
             undefinedToEmpty: function(value) {
                 return Y.Lang.isUndefined(value) ? '' : '' + value;
@@ -221,8 +226,8 @@ YUI.add('wegas-template', function(Y) {
                 "  <% } %>" +
                 "  <div class='wegas-template-valuebox-units'>" +
                 "    <% for(var i=+this.minValue; i < +this.maxValue + 1; i+=1){%>" +
-                "      <div class='wegas-template-valuebox-unit <%= +i < +this.value ? ' wegas-template-valuebox-previous' : '' %><%= +i === 0 ? ' wegas-template-valuebox-zero' : '' %><%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'>" +
-                "        <%= I18n.formatNumber(i) %>" +
+                "      <div data-value=\"<%= i %>\" class='wegas-template-valuebox-unit <%= +i < +this.value ? ' wegas-template-valuebox-previous' : '' %><%= +i === 0 ? ' wegas-template-valuebox-zero' : '' %><%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'>" +
+                "        <span><%= I18n.formatNumber(i) %></span>" +
                 "      </div>" +
                 "    <% } %>" +
                 "  </div>" +

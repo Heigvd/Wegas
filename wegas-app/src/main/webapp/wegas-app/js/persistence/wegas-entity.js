@@ -456,6 +456,10 @@ YUI.add('wegas-entity', function(Y) {
                         type: STRING,
                         view: {label: 'Stylesheets'}
                     },
+                    logID: {
+                        type: STRING,
+                        view: {label: 'Log ID'}
+                    },
                     pagesUri: {
                         type: STRING,
                         view: {label: 'Pages'}

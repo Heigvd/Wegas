@@ -54,36 +54,19 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             });
         },
-        _sendInitialRequest: function(queue, cfg) {
-            var uri = queue.shift();
-            if (!Y.Lang.isUndefined(uri)) {
-                this.sendRequest(Y.mix(cfg || {}, {
-                    request: uri,
-                    cfg: {
-                        initialRequest: true
-                    },
-                    on: {
-                        success: Y.bind(this._sendInitialRequest, this, queue, cfg)
-                    }
-                }));
-            }
-        },
         /**
          * @function
          * @private
          */
         sendInitialRequest: function(cfg) {
             //            this.cache && this.cache.clear();
-            var queue, uri;
             if (!Y.Lang.isUndefined(this.get("initialRequest"))) { // Use this condition to allow empty strings (e.g. ")
-                if (!Y.Lang.isArray(this.get("initialRequest"))) {
-                    queue = [this.get("initialRequest")];
-                } else {
-                    queue = this.get("initialRequest");
-                }
-                this._sendInitialRequest(queue, cfg);
-
-                return;
+                return this.sendRequest(Y.mix(cfg || {}, {
+                    request: this.get("initialRequest"),
+                    cfg: {
+                        initialRequest: true
+                    }
+                }));
             } else if (!Y.Lang.isUndefined(this.get("initialFullRequest"))) {
                 return this.sendRequest(Y.mix(cfg || {}, {
                     cfg: {
@@ -209,9 +192,13 @@ YUI.add('wegas-datasource', function(Y) {
                     updatedDs[dsid] = ds;
                     events = collector[dsid].events;
                     for (eventName in events) {
+                        var eName = eventName;
                         if (events.hasOwnProperty(eventName) && events[eventName].length > 0) {
                             for (i in events[eventName]) {
-                                ds.fire(eventName, events[eventName][i]);
+                                if (eventName === "updatedInstance"){
+                                    eName = events[eventName][i].entity.get("id") + ":" + eventName;
+                                }
+                                ds.fire(eName, events[eventName][i]);
                             }
                         }
                     }
@@ -365,7 +352,8 @@ YUI.add('wegas-datasource', function(Y) {
                 };
                 response.data = host.data; // Provides with a pointer to the datasource current content
                 payload.response = response;
-                Y.log("Response received: " + host.get('source') /* + e.cfg.request*/, "log", "Wegas.DataSource");
+                //Y.log("Response received: " + host.get('source') /* + e.cfg.request*/, "log", "Wegas.DataSource");
+                Y.log("Response received: " + host.get('source') + e.request, "log", "Wegas.DataSource");
 
                 Wegas.Editable.use(payload.response.results, // Lookup dependencies
                     Y.bind(function(payload) {
@@ -1263,6 +1251,13 @@ YUI.add('wegas-datasource', function(Y) {
             if (entity.get && entity.get(ITEMS)) {
                 return entity.get(ITEMS);
             }
+
+            switch (entity["@class"]) {
+                case "Game":
+                    return entity.teams;
+                case "Team":
+                    return entity.players;
+            }
             return null;
         },
         addToCache: function(entity) {
@@ -1383,8 +1378,12 @@ YUI.add('wegas-datasource', function(Y) {
      */
     UserCache = Y.Base.create("wegas-cache", WegasCache, [], {
         _getChildren: function(entity) {
-            if (entity.get("accounts")) {
-                return entity.get("accounts");
+            if (entity instanceof Y.Wegas.persistence.User) {
+                if (entity.get("accounts")) {
+                    return entity.get("accounts");
+                }
+            } else if (entity["@class"] === "User") {
+                return entity.accounts;
             }
             return null;
         },
