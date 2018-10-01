@@ -85,7 +85,10 @@ var i18nOrdinate = (function(module) {
                 }
             } else {
                 // ie mode === gamemodel
-                for (lang in self.getGameModel().getLanguages) {
+                var langs = self.getGameModel().getLanguages();
+                for (var i in langs) {
+                    var lang = langs[i];
+
                     callback(lang.getRefName(), lang.getCode());
                     count++;
                 }
