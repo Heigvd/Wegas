@@ -27,7 +27,7 @@ YUI.add('wegas-dashboard', function(Y) {
                         impacts: {
                             "icon": "fa fa-pencil",
                             "itemType": "action",
-                            "label": "Variables",
+                            "label": "Impact variables",
                             "hasGlobal": true,
                             "do": function(team, payload) {
                                 new Y.Wegas.ImpactsTeamModal({
