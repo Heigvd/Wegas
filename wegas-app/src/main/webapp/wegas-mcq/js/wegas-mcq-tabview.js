@@ -134,11 +134,14 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 });
             }
         },
+        getBackToMenuLabel: function() {
+            return I18n.t('global.mcqBackToMenu');
+        },
         getNoContentMessage: function() {
             return Y.Wegas.I18n.t('mcq.empty');
         },
         getNothingSelectedInvite: function() {
-            return Y.Wegas.I18n.t('mcq.empty');
+            return Y.Wegas.I18n.t('mcq.noQuestionSelected');
         },
         getEditorLabel: function() {
             var variable = this.get("variable.evaluated");

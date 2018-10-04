@@ -18,7 +18,7 @@ YUI.add('wegas-eventlogger', function(Y) {
         initializer: function() {
             var i, k;
             var events = [
-                "updatedInstance",
+                "*:updatedInstance",
                 "updatedDescriptor",
                 "added",
                 "delete",

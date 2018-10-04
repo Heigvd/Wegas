@@ -99,6 +99,14 @@
                                                             }
                                                         }
                                                     ]
+                                                }, {
+                                                    "type": "Button",
+                                                    "label": "Advanced Tabs",
+                                                    "plugins": [
+                                                        {
+                                                            "fn": "ToggleAdvancedTabsMode"
+                                                        }
+                                                    ]
                                                 }
                                             ]
                                         }
@@ -246,14 +254,12 @@
                                                     "pageLoaderId": "previewPageLoader",
                                                     "defaultPageId": "default",
                                                     "cssClass": "editor-preview wegas-playerview",
-                                                    "plugins": [
-                                                        {
+                                                    "plugins": [{
                                                             "fn": "PreviewFullScreen",
                                                             "cfg": {
                                                                 "selector": ".wegas-layout-bd"
                                                             }
-                                                        },
-                                                        {
+                                                        }, {
                                                             "fn": "WidgetToolbar",
                                                             "cfg": {
                                                                 "children": [
@@ -472,14 +478,12 @@
                                                     "pageLoaderId": "previewPageLoader",
                                                     "defaultPageId": "default",
                                                     "cssClass": "editor-preview wegas-playerview",
-                                                    "plugins": [
-                                                        {
+                                                    "plugins": [{
                                                             "fn": "PreviewFullScreen",
                                                             "cfg": {
                                                                 "selector": ".wegas-layout-bd"
                                                             }
-                                                        },
-                                                        {
+                                                        }, {
                                                             "fn": "WidgetToolbar",
                                                             "cfg": {
                                                                 "children": [

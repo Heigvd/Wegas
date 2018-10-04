@@ -107,6 +107,13 @@ public interface RequestManagerI {
     void sendCustomEvent(String type, Object payload);
 
     /**
+     * Shortcut to sendCustomEvent("notificationEvent", payload);
+     * <p>
+     * @param payload {content: "the message", timeout : 0}
+     */
+    void sendNotification(Object payload);
+
+    /**
      * Try to Lock the token. Non-blocking. Return true if token has been
      * locked, false otherwise
      *

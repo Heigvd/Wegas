@@ -30,7 +30,7 @@ YUI.add('wegas-responsive-tabview', function(Y) {
             this.tabView.get("boundingBox").addClass("horizontal-tabview");
         },
         bindUI: function() {
-            this.get("contentBox").delegate("click", this.toggleSmallMenu, ".smallscreen li, .smallscreen .menutitle", this);
+            this.get("contentBox").delegate("click", this.toggleSmallMenu, ".smallscreen[data-count=\"many\"] > ul > li, .smallscreen[data-count=\"many\"] > .menutitle", this);
             this._windowResizeCb = Y.bind(this.checkSize, this);
             window.addEventListener("resize", this._windowResizeCb);
             this.handlers.layoutResize = Y.Wegas.app.on("layout:resize", Y.bind(this.checkSize, this));
@@ -95,10 +95,14 @@ YUI.add('wegas-responsive-tabview', function(Y) {
                 entity.remove();
             }
 
+
+            var tvcb = this.tabView.get("contentBox");
             if (this.tabView.size()) {
+                tvcb.setAttribute("data-count", this.tabView.size() === 1 ? "one" : "many");
                 lastSelection = (selectedTab) ? selectedTab.get('index') : -1;
-                if (lastSelection < 0 && this.get("contentBox").one(".smallscreen")) {
-                    this.toggleSmallMenu();
+                if (lastSelection < 0 && this.get("contentBox").one(".smallscreen") && this.tabView.size() === 1) {
+                    this.tabView.selectChild(0);
+                    this.closeMenu();
                 } else {
 
                     if (lastSelection < 0 && this.get("autoOpenFirst") || lastSelection >= this.tabView.size()) {
@@ -109,6 +113,8 @@ YUI.add('wegas-responsive-tabview', function(Y) {
                         this.tabView.selectChild(lastSelection);
                     }
                 }
+            } else {
+                tvcb.setAttribute("data-count", "empty");
             }
         },
         getNoContentMessage: function() {
@@ -155,8 +161,6 @@ YUI.add('wegas-responsive-tabview', function(Y) {
                             this.getNothingSelectedInvite() +
                             '</div>');
                 }
-
-
             }
         },
         clearInvite: function() {
@@ -168,24 +172,58 @@ YUI.add('wegas-responsive-tabview', function(Y) {
         checkSize: function() {
             var cb = this.tabView.get("contentBox");
             if (cb._node) {
-                cb.toggleClass("smallscreen", cb._node.getBoundingClientRect().width < 700);
+                var mode = this.get("mode");
+
+                var isSmall =
+                    mode !== "expanded" && // means never small
+                    (mode === "collapsed" // either always small 
+                        || cb._node.getBoundingClientRect().width < this.get("responsiveThreshold")); // or effectively small
+
+                if (cb.hasClass("smallscreen") && !isSmall) {
+                    // expande
+                    cb.toggleClass("smallscreen", false);
+                    this.closeMenu();
+                } else if (isSmall && !cb.hasClass("smallscreen")) {
+                    // collapse
+                    cb.toggleClass("smallscreen", true);
+                    if (this.tabView.get('selection')) {
+                        this.closeMenu();
+                    } else {
+                        this.openMenu();
+                    }
+                }
+            }
+        },
+        getBackToMenuLabel: function() {
+            return I18n.t('global.backToMenu');
+        },
+        addBackToMenuButton: function() {
+            var tvCb = this.tabView.get("contentBox");
+            tvCb.append("<div class='menutitle'><span class=\"back-to-menu\"><i class='fa fa-level-up fa-flip-horizontal'></i>" + this.getBackToMenuLabel() + "</span></div>");
+        },
+        closeMenu: function() {
+            var tvCb = this.tabView.get("contentBox");
+            tvCb.removeClass("open");
+            tvCb.all(".menutitle").remove();
+            if (tvCb.hasClass("smallscreen")) {
+                this.addBackToMenuButton();
+                //tvCb.append("<div class='menutitle'><span class=\"back-to-menu\"><i class='fa fa-level-up fa-flip-horizontal'></i>" + this.getBackToMenuLabel() + "</span></div>");
+            }
+        },
+        openMenu: function() {
+            var tvCb = this.tabView.get("contentBox");
+            tvCb.all(".menutitle").remove();
+            if (tvCb.hasClass("smallscreen")) {
+                tvCb.addClass("open");
             }
         },
         toggleSmallMenu: function() {
             var tvCb = this.tabView.get("contentBox");
-            if (tvCb.hasClass("smallscreen")) {
-                tvCb.toggleClass("open");
-                if (tvCb.hasClass("open")) {
-                    // add title
-                    var selectedTab = tvCb.one(".yui3-tab-selected a");
-                    tvCb.prepend("<div class='menutitle'>" + (selectedTab ? selectedTab.getContent() : "") + "</div>");
-                    //tvCb.prepend("<div class='menutitle'><div>" +  tvCb.one(".yui3-tab-selected .index-label").getContent() + "</div></div>");
-                } else {
-                    // remove title
-                    tvCb.all(".menutitle").each(function(item) {
-                        item.remove();
-                    });
-                }
+
+            if (tvCb.hasClass("open")) {
+                this.closeMenu();
+            } else {
+                this.openMenu();
             }
         },
         getWidget: function(entity) {
@@ -262,7 +300,36 @@ YUI.add('wegas-responsive-tabview', function(Y) {
                 view: {
                     label: 'Automatically open first item'
                 }
+            },
+            responsiveThreshold: {
+                type: 'number',
+                value: 700,
+                view: {
+                    label: "Responsive Threshold [px]",
+                    placeholder: 700
+                }
+            },
+            mode: {
+                type: 'string',
+                value: "auto",
+                view: {
+                    label: "display mode",
+                    type: "select",
+                    choices: [{
+                            value: "auto",
+                            label: "Responsive"
+                        }, {
+                            value: "collapsed",
+                            label: "Always small"
+                        }, {
+                            value: "expanded",
+                            label: "Never small"
+                        }
+                    ]
+
+                }
             }
+
         }
     });
     Y.Wegas.ResponsibeTabView = ResponsiveTabview;

@@ -207,12 +207,14 @@
                             }
                         });
                         try {
+                            Y.log("SoftClientScript");
                 #{editorGameController.getClientScripts()}          // Run game model specific js footer
                         } catch (e) {
                             Y.log("Error running client scripts.", "error");
                         }
                     });
                     try {
+                        Y.log("HardClientScript");
                 #{editorGameController.staticClientScripts};
                     } catch (e) {
                         Y.log("Error running client scripts.", "error");

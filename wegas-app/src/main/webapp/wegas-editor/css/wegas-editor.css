@@ -971,6 +971,15 @@
     color: #888bad;
 }
 
+.wegas-translation--toedit.mce-content-body{
+    display: inline-block;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation--toedit {
+    display: inline-block;
+    width: 100%;
+}
+
 .wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation--value:focus,
 .wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation--value.mce-edit-focus {
     border:1px solid #6AACF1;
@@ -987,4 +996,10 @@
 .wegas-i18n-manager .wegas-i18n-manager--editor .highlight {
     animation: highlight 3s;
     background: #f5f5f5;
+}
+.wegas-i18n-manager .wegas-translation-html .wegas-translation--toolbar,
+.tinymce-toolbar {
+    min-height: 28px;
+    background-image: url("../images/tiny-toolbar.png");
+    background-repeat: no-repeat;
 }

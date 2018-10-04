@@ -656,6 +656,11 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
+    @Override
+    public void sendNotification(Object payload) {
+        this.sendCustomEvent("notificationEvent", payload);
+    }
+
     /**
      * how many exception have been registered ?
      * it number of event within {@link #events} which are instanceof

@@ -42,13 +42,26 @@ import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
+import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 import javax.ejb.*;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -56,6 +69,9 @@ import javax.jcr.RepositoryException;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.StreamingOutput;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -422,6 +438,72 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
             ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel, wt);
         }
+    }
+
+
+    public GameModel unzip(ZipInputStream zip) throws IOException, RepositoryException {
+        ZipEntry entry;
+        GameModel gameModel = null;
+        InputStream filesStream = null;
+        InputStream gameModelStream = null;
+
+        while ((entry = zip.getNextEntry()) != null) {
+            if (entry.getName().equals("gamemodel.json")) {
+                gameModelStream = IOUtils.toBufferedInputStream(zip);
+            } else if (entry.getName().equals("files.xml")) {
+                filesStream = IOUtils.toBufferedInputStream(zip);
+            } else {
+                throw new WegasIncompatibleType("Invalid zip entry " + entry.getName());
+            }
+        }
+
+        if (gameModelStream != null && filesStream != null) {
+            gameModel = JacksonMapperProvider.getMapper().readValue(gameModelStream, GameModel.class);
+
+            gameModel.setName(this.findUniqueName(gameModel.getName()));
+            this.createWithDebugGame(gameModel);
+
+            try (ContentConnector connector = ContentConnector.getFilesConnector(gameModel.getId())) {
+                connector.importXML(filesStream);
+            }
+        }
+
+        return gameModel;
+    }
+
+    public StreamingOutput zip(Long gameModelId) throws RepositoryException {
+
+        GameModel gameModel = this.find(gameModelId);
+
+        ContentConnector connector = ContentConnector.getFilesConnector(gameModelId);
+
+        StreamingOutput out;
+        out = new StreamingOutput() {
+            @Override
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                try (ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
+
+                    // serialise the json
+                    ZipEntry gameModelEntry = new ZipEntry("gamemodel.json");
+                    zipOutputStream.putNextEntry(gameModelEntry);
+                    byte[] json = JacksonMapperProvider.getMapper().writerWithView(Views.Export.class).writeValueAsBytes(gameModel);
+                    zipOutputStream.write(json);
+
+                    zipOutputStream.closeEntry();
+
+                    ZipEntry filesEntry = new ZipEntry("files.xml");
+                    zipOutputStream.putNextEntry(filesEntry);
+
+                    connector.exportXML(zipOutputStream);
+                    zipOutputStream.closeEntry();
+
+                } catch (RepositoryException ex) {
+                    logger.error(null, ex);
+                }
+            }
+        };
+
+        return out;
     }
 
     public void duplicateRepository(GameModel newGameModel, GameModel srcGameModel) {
@@ -933,12 +1015,10 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * This method just do nothing but is very useful for some (obscure) purpose
-     * like adding breakpoints in a javascript
-     *
-     * @param msg
+     * {@inheritDoc}
      */
-    public final void nop(String msg) {
+    @Override
+    public final void nop(Object payload) {
         // for JS breakpoints...
     }
 

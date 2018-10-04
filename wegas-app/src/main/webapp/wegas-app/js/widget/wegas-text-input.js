@@ -108,6 +108,7 @@ YUI.add('wegas-text-input', function(Y) {
                             contextmenu: this.get('contextmenu'),
                             // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselect spellchecker template
                             menubar: false,
+                            toolbar: this.get("showToolbar"),
                             statusbar: false,
                             relative_urls: false,
                             toolbar_items_size: 'small',
@@ -194,15 +195,18 @@ YUI.add('wegas-text-input', function(Y) {
                 value: value
             };
         },
+        bindUpdatedInstance: function() {
+            if (this.onInstanceUpdate) {
+                this.onInstanceUpdate.detach();
+            }
+            var question = this.get('variable.evaluated');
+            if (question) {
+                this.onInstanceUpdate = Y.Wegas.Facade.Instance.after(question.getInstance().get("id") + ':updatedInstance', this.syncUI, this);
+            }
+        },
         bindUI: function() {
-            this.handlers.push(
-                Y.Wegas.Facade.Instance.after('updatedInstance', function(e) {
-                    var text = this.get('variable.evaluated');
-                    if (text &&
-                        text.getInstance().get('id') === e.entity.get('id')) {
-                        this.syncUI();
-                    }
-                }, this));
+            this.bindUpdatedInstance();
+            this.after("variableChange", this.bindUpdatedInstance, this);
             this.on('save', this._save);
         },
         syncUI: function() {
@@ -251,7 +255,11 @@ YUI.add('wegas-text-input', function(Y) {
         _onChange: function() {
             var content = this.editor.getContent(),
                 desc = this.get('variable.evaluated');
-            this.setStatus('Not saved');
+            if (this.get('showSaveButton') || !this.get('selfSaving')) {
+                this.setStatus('Not saved');
+            } else {
+                this.setStatus('editing...');
+            }
             this.updateCounters();
             this.fire('editing', this.getPayload(content));
             this.valueChanged(content);
@@ -331,7 +339,7 @@ YUI.add('wegas-text-input', function(Y) {
             valid = true || this.updateCounters(); // Fixme do something... (prevent saving or not...)
             if (valid) {
                 msg = this.save(value)
-                    ? 'Saving...'
+                    ? 'saving...'
                     : 'Something went wrong';
             } else {
                 msg = 'Size limit exceeded';
@@ -352,7 +360,7 @@ YUI.add('wegas-text-input', function(Y) {
             } else {
                 this._initialContent = value;
                 theVar.set('value', value);
-                this.setStatus('Saved');
+                this.setStatus('saved');
                 this._saved(value);
             }
         },
@@ -372,7 +380,7 @@ YUI.add('wegas-text-input', function(Y) {
                     on: {
                         success: Y.bind(function() {
                             cb.removeClass('loading');
-                            this.setStatus('Saved');
+                            this.setStatus('saved');
                             this._saved(value);
                         }, this),
                         failure: Y.bind(function() {
@@ -420,6 +428,9 @@ YUI.add('wegas-text-input', function(Y) {
             Y.Array.each(this.handlers, function(h) {
                 h.detach();
             });
+            if (this.onInstanceUpdate) {
+                this.onInstanceUpdate.detach();
+            }
             if (this.addButton) {
                 this.addButton.destroy();
             }
@@ -460,6 +471,11 @@ YUI.add('wegas-text-input', function(Y) {
                     type: 'scriptcondition',
                     label: 'Readonly'
                 }
+            },
+            showToolbar: {
+                type: 'boolean',
+                value: true,
+                view: {label: 'Show toolbar'}
             },
             showSaveButton: {
                 type: 'boolean',

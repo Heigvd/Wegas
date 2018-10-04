@@ -140,6 +140,28 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     }
 
     /**
+     * Validate the question.
+     * One can no longer answer such a validated question.
+     *
+     * @param p
+     * @param value
+     */
+    public void setValidated(Player p, boolean value) {
+        this.getInstance(p).setValidated(value);
+    }
+
+    /**
+     * Is the question validated.
+     * One can no longer answer such a validated question.
+     *
+     * @param p
+     * @return
+     */
+    public boolean getValidated(Player p) {
+        return this.getInstance(p).getValidated();
+    }
+
+    /**
      * @return the description
      */
     public TranslatableContent getDescription() {
@@ -300,7 +322,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         if (this.getCbx()) {
             return instance.getActive() && !instance.getValidated() ? 1 : 0;
         } else {
-            return instance.getActive() && instance.getReplies(player).isEmpty() ? 1 : 0;
+            return instance.getActive() && !instance.getValidated() && instance.getReplies(player).isEmpty() ? 1 : 0;
         }
     }
 }

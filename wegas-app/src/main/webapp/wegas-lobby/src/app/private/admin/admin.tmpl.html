@@ -19,7 +19,7 @@
         <div class="gameModel-uploader">
             <div ng-if="!adminCtrl.uploading">
                 <h4>{{'ADMIN-INDEX-UPLOAD-TITLE'| translate}}</h4>
-                <input id="import-json-scenario" type="file" value="upload a scenario" scenario-create-upload />
+                <input id="import-json-scenario" type="file" value="upload a scenario" accept=".json, .wgz" scenario-create-upload />
             </div>
             <div ng-if="adminCtrl.uploading"
                  class="view__list view__list--loading"

@@ -117,8 +117,9 @@ YUI.add('wegas-scripteval', function(Y) {
         _buildContext: function(player) {
             this.context = {
                 window: undefined,
-                Y: undefined,
+                //Y: undefined,
                 YUI: undefined,
+                PageLoader: Y.Wegas.PageLoader,
                 VariableDescriptorFacade: Variable,
                 Variable: Variable,
                 self: player,

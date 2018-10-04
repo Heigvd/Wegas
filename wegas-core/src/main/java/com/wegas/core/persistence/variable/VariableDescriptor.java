@@ -555,13 +555,17 @@ abstract public class VariableDescriptor<T extends VariableInstance>
 
     @JsonIgnore
     public String getEditorLabel() {
-        if (this.getEditorTag() == null && this.getLabel() == null) {
+        String theLabel = this.getLabel().translateOrEmpty(this.getGameModel());
+
+        if (!Helper.isNullOrEmpty(this.getEditorTag()) && !Helper.isNullOrEmpty(theLabel)) {
+            return this.getEditorTag() + " - " + theLabel;
+        } else if (!Helper.isNullOrEmpty(this.getEditorTag())) {
+            return getEditorTag();
+        } else if (!Helper.isNullOrEmpty(theLabel)) {
+            return theLabel;
+        } else {
             return this.getName();
         }
-        if (this.getEditorTag() == null) {
-            return this.getLabel().translateOrEmpty(this.getGameModel());
-        }
-        return this.getEditorTag() + " - " + this.getLabel();
     }
 
     /**

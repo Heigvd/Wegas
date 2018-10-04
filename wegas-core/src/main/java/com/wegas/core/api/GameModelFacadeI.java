@@ -59,4 +59,12 @@ public interface GameModelFacadeI {
      * @param player the player to reset
      */
     void reset(final Player player);
+
+    /**
+     * No Operations. This method just do nothing but is very useful for some (obscure) purpose
+     * like adding breakpoints in a server script
+     *
+     * @param payload
+     */
+    void nop(Object payload);
 }

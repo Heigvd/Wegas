@@ -334,7 +334,9 @@ YUI.add('wegas-tabview', function(Y) {
                 return;
             }
             plusMenu.show();
+            if (!Y.Wegas.Config.EditorAdvancedTabs){
             Y.one(TabView.getOppositeTabView(tabViewId) + " .wegas-plus-tab").hide();
+            }
 
             var previewTabView = this.getCurrentPreviewTabViewId(),
                 isPreviewTabView = previewTabView.indexOf(tabViewId) > -1,
@@ -793,7 +795,13 @@ YUI.add('wegas-tabview', function(Y) {
             tab.hide();
             tab.get("panelNode").hide();
             // Unhide the Preview entry of the current plus-menu each time the tab is closed:
+            if (tab.get("tabSelector")) {
             Wegas.TabView.getPreviewEntry(tab.get("tabSelector")).show();
+            }
+            //var parentId = tab._parentNode.ancestor(".wegas-tabview-fullheight")._node.id
+            //var previous = Wegas.TabView.getPreviewEntry(parentId);
+            //previous.show();
+            //previous.set("selected", 1);
         },
         expand: function() {
             var tab = this.get("host");
@@ -1056,14 +1064,13 @@ YUI.add('wegas-tabview', function(Y) {
     var ExtraTabs = Y.Base.create("wegas-extratabs", Plugin.Base, [], {
         initializer: function() {
             if (this.get("host") instanceof TabView) {
-                this.afterHostEvent(['render'], this.addExtraTabs);
+                Y.Wegas.app.once('ready', Y.bind(this.addExtraTabs, this));
             } else {
                 this.destroy();
             }
         },
-        addExtraTabs: function() {
-            var tabs = this.get("extraTabs"),
-                addTab = function(cfg) {
+        _addTab: function(cfg) {
+            var addTab = function(cfg) {
                     var target = Wegas.TabView.getPreviewTabView();
                     if (target) {
                         var t = target.add(cfg, target.size() - 1).item(0),
@@ -1086,19 +1093,18 @@ YUI.add('wegas-tabview', function(Y) {
                         Y.Widget.getByNode("#centerTabView").add(cfg);
                     }
                 };
+
+            Y.Wegas.Widget.use(cfg, Y.bind(addTab, this, cfg));
+        },
+        addExtraTabs: function() {
+            var tabs = Y.namespace("Wegas.Config.ExtraTabs") || [];
             for (var i = 0; i < tabs.length; i += 1) {
-                Y.Wegas.Widget.use(tabs[i], Y.bind(addTab, this, tabs[i]));
+                this._addTab(tabs[i]);
             }
         }
     }, {
         NS: "extratabs",
         ATTRS: {
-            extraTabs: {
-                value: Y.namespace("Wegas.Config.ExtraTabs"),
-                getter: function(v) {
-                    return Y.Lang.isArray(v) ? v : [];
-                }
-            },
             dock: {
                 value: false,
                 validator: Y.Lang.isBoolean

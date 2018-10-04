@@ -65,7 +65,7 @@ YUI.add('wegas-button', function(Y) {
             }
         },
         getEditorLabel: function() {
-            return Wegas.Helper.stripHtml(this.get('label'));
+            return Wegas.Helper.stripHtml(I18n.t(this.get('label')));
         },
         /**
          * @function
@@ -100,10 +100,10 @@ YUI.add('wegas-button', function(Y) {
          * </ul>
          */
         ATTRS: {
-            label: {
-                type: 'string',
-                view: {label: 'Label'}
-            },
+            label: Y.Wegas.Helper.getTranslationAttr({
+                label: "Label",
+                type: "string"
+            }),
             labelHTML: {
                 transient: true
             },
@@ -135,7 +135,8 @@ YUI.add('wegas-button', function(Y) {
     Y.Button.prototype._setLabel = function(label, name, opts) {
         if (!opts || opts.src !== 'internal') {
             var text;
-            if (label instanceof Y.Wegas.persistence.TranslatableContent) {
+            if (label instanceof
+                Y.Wegas.persistence.TranslatableContent || (typeof label === "object" && label["@class"] === "TranslatableContent")) {
                 text = I18n.t(label);
             } else {
                 text = label;
@@ -186,7 +187,7 @@ YUI.add('wegas-button', function(Y) {
                         resolve(instance.get('active') && !instance.get('validated') ? 1 : 0); // only count if it is active
                     } else {
                         if (instance.get('replies')) {
-                            resolve(instance.get('replies').length === 0 && instance.get('active') ? 1 : 0); // only count if it is active
+                            resolve(instance.get('replies').length === 0 && !instance.get('validated') && instance.get('active') ? 1 : 0); // only count if it is active
                         } else {
                             resolve(0);
                         }
@@ -217,7 +218,7 @@ YUI.add('wegas-button', function(Y) {
             };
             for (k in this.get('userCounters')) {
                 var theFunction = this.get('userCounters')[k];
-                if (!theFunction instanceof Function) {
+                if (theFunction instanceof Function === false) {
                     theFunction = eval('(' + theFunction + ')');
                 }
                 this._counters[k] = theFunction;
@@ -249,22 +250,21 @@ YUI.add('wegas-button', function(Y) {
             this.updateCounter();
         },
         setCounterValue: function(unreadCount) {
-            var bb = this.get('host').get(BOUNDINGBOX),
-                target = bb.one('.wegas-unreadcount');
+            var bb = this.get('host').get(BOUNDINGBOX);
+                //target = bb.one('> .wegas-unreadcount');
 
-            if (!target) {
+            if (!this.target) {
                 // If the counter span has not been rendered, do it
-                bb.append('<span class="wegas-unreadcount"></span>');
-                target = bb.one('.wegas-unreadcount');
+                this.target = bb.appendChild('<span class="wegas-unreadcount"></span>');
             }
 
             if (unreadCount > 0) {
                 // Update the content, but only if necessary, to enable targeted CSS animations
-                var span = target.one("span"),
+                var span = this.target.one("span"),
                     oldval = span && span.getData("value");
                 oldval = oldval ? +oldval : -1;
                 if (oldval !== unreadCount) {
-                    target.setContent(
+                    this.target.setContent(
                         "<span class='value' data-value='" + unreadCount + "'>" +
                         (this.get('displayValue') ? unreadCount : '') +
                         '</span>'
@@ -272,7 +272,7 @@ YUI.add('wegas-button', function(Y) {
                     bb.addClass('wegas-unreadcount');
                 }
             } else {
-                target.setContent('');
+                this.target.setContent('');
                 bb.removeClass('wegas-unreadcount');
             }
         },

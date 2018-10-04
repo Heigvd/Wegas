@@ -33,19 +33,25 @@ YUI.add('wegas-inbox-list', function(Y) {
             renderUI: function() {
                 this.destroyAll();
             },
-            bindUI: function() {
-                this.handlers.onUpdatedInstance = Y.Wegas.Facade.Instance.after('updatedInstance', this.onUpdatedInstance, this); // Sync view on cache update
-                this.get(CONTENTBOX).delegate('click', this.toggleExpand, '.wegas-message__collapsed', this);
+
+            bindUpdatedInstance: function() {
+                if (this.handlers.onInstanceUpdate) {
+                    this.handlers.onInstanceUpdate.detach();
+                }
+                var question = this.get('variable.evaluated');
+                if (question) {
+                    this.handlers.onInstanceUpdate = Y.Wegas.Facade.Instance.after(question.getInstance().get("id") + ':updatedInstance', this.syncUI, this);
+                }
             },
+            bindUI: function() {
+                this.bindUpdatedInstance();
+                this.after("variableChange", this.bindUpdatedInstance, this);
+                    this.get(CONTENTBOX).delegate('click', this.toggleExpand, '.wegas-message__collapsed', this);
+                },
             toggleExpand: function(e) {
                 // Whenever a collapsed message is clicked,
                 e.currentTarget.toggleClass('wegas-message__collapsed'); // open it
                 e.currentTarget.toggleClass('wegas-message__expanded'); // open it
-            },
-            onUpdatedInstance: function(e) {
-                if (e.entity.get('id') === this.get('variable.evaluated').getInstance().get('id')) {
-                    this.syncUI();
-                }
             },
             removeErrorMessage: function() {
                 this.errorMessage && this.errorMessage.destroy();
@@ -135,65 +141,65 @@ YUI.add('wegas-inbox-list', function(Y) {
                 return null;
             }
         },
-        {
-            /**
-             * @lends Y.Wegas.InboxList
-             */
-            EDITORNAME: 'Inbox list',
-            /**
-             * @field
-             * @static
-             * @description
-             * <p><strong>Attributes</strong></p>
-             * <ul>
-             *    <li>variable: The target variable, returned either based on the name
-             *     attribute, and if absent by evaluating the expr attribute.</li>
-             * </ul>
-             */
-            ATTRS: {
+            {
                 /**
-                 * The target variable, returned either based on the name
-                 * attribute, and if absent by evaluating the expr attribute.
+                 * @lends Y.Wegas.InboxList
                  */
-                variable: {
-                    type: 'object',
-                    getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                    view: {
-                        type: 'variableselect',
-                        label: 'variable',
-                        classFilter: 'InboxDescriptor'
-                    }
-                },
+                EDITORNAME: 'Inbox list',
                 /**
-                 *
+                 * @field
+                 * @static
+                 * @description
+                 * <p><strong>Attributes</strong></p>
+                 * <ul>
+                 *    <li>variable: The target variable, returned either based on the name
+                 *     attribute, and if absent by evaluating the expr attribute.</li>
+                 * </ul>
                  */
-                template: {
-                    value: 'default',
-                    type: 'string',
+                ATTRS: {
+                    /**
+                     * The target variable, returned either based on the name
+                     * attribute, and if absent by evaluating the expr attribute.
+                     */
+                    variable: {
+                        type: 'object',
+                        getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                        view: {
+                            type: 'variableselect',
+                            label: 'variable',
+                            classFilter: 'InboxDescriptor'
+                        }
+                    },
+                    /**
+                     *
+                     */
+                    template: {
+                        value: 'default',
+                        type: 'string',
 
-                    view: {
-                        type: 'select',
-                        choices: [
-                            {
-                                value: 'default'
-                            }, {
-                                value: 'clean'
-                            }
-                        ],
-                        label: 'Template',
-                        className: 'wegas-advanced-feature'
-                    }
+                        view: {
+                            type: 'select',
+                            choices: [
+                                {
+                                    value: 'default'
+                                }, {
+                                    value: 'clean'
+                                }
+                            ],
+                            label: 'Template',
+                            className: 'wegas-advanced-feature'
+                        }
 
-                },
-                chronological: {
-                    value: true,
-                    type: "boolean",
-                    view: {
-                        label: "chronological"
+                    },
+                    chronological: {
+                        value: true,
+                        type: "boolean",
+                        view: {
+                            label: "chronological"
+                        }
                     }
                 }
             }
-        }
-    );
-    Y.Wegas.InboxList = InboxList;
-});
+        );
+        Y.Wegas.InboxList = InboxList;
+    });

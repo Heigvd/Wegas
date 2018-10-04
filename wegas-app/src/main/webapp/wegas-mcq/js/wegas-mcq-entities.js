@@ -10,11 +10,19 @@
  */
 YUI.add('wegas-mcq-entities', function(Y) {
     "use strict";
-    var STRING = "string", HIDDEN = "hidden", ARRAY = "array",
-        SELF = "self", BOOLEAN = "boolean", BUTTON = "Button", OBJECT = "object",
-        HTML = "html", SCRIPT = "script", NUMBER = "number",
+    var STRING = "string",
+        HIDDEN = "hidden",
+        ARRAY = "array",
+        SELF = "self",
+        BOOLEAN = "boolean",
+        BUTTON = "Button",
+        OBJECT = "object",
+        HTML = "html",
+        SCRIPT = "script",
+        NUMBER = "number",
         NULLSTRING = ["null", STRING],
-        Wegas = Y.Wegas, persistence = Wegas.persistence,
+        Wegas = Y.Wegas,
+        persistence = Wegas.persistence,
         VERSION_ATTR_DEF,
         SELFARG,
         IDATTRDEF;
@@ -237,6 +245,17 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 label: "deactivate",
                 arguments: [SELFARG]
             },
+            setValidated: {
+                label: 'validate',
+                arguments: [
+                    SELFARG,
+                    {
+                        type: BOOLEAN,
+                        value: true,
+                        required: true
+                    }
+                ]
+            },
             isReplied: {
                 label: "has been replied",
                 returns: BOOLEAN,
@@ -259,7 +278,9 @@ YUI.add('wegas-mcq-entities', function(Y) {
      */
     Wegas.persistence.QuestionInstance = Y.Base.create("QuestionInstance", Wegas.persistence.VariableInstance, [], {
         getRepliesByStartTime: function(startTime) {
-            var i, ret = [], replies = this.get("replies");
+            var i,
+                ret = [],
+                replies = this.get("replies");
             for (i = 0; i < replies.length; i = i + 1) {
                 if (replies[i].get("startTime") === startTime) {
                     ret.push(replies[i]);
@@ -288,7 +309,10 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 value: [],
                 "transient": true,
                 getter: function() {
-                    var replies = [], choices, i, qDesc;
+                    var replies = [],
+                        choices,
+                        i,
+                        qDesc;
                     qDesc = this.getDescriptor();
                     choices = qDesc.get("items");
                     for (i in choices) {

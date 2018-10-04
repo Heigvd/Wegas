@@ -270,7 +270,7 @@ YUI.add("wegas-statistics", function(Y) {
             Y.Array.each(question.get("items"), function(i) {
                 choices[(i.get("name"))] = {};
                 Y.Array.each(i.get("results"), function(r) {
-                    choices[(i.get("name"))][I18n.t(r.get("label"))] = 0;
+                    choices[(i.get("name"))][r.get("name")] = 0;
                 });
 
             });

@@ -37,7 +37,7 @@ YUI.add('wegas-bscopeinspector', function(Y) {
             this.get(CONTENTBOX).one("h3").setHTML(theScope.get("@class") + " / " + theScope.get("broadcastScope") + ")");
         },
         bindUI: function() {
-            this.handlers.push(Y.Wegas.Facade.Instance.after("updatedInstance", this.instanceUpdateTrigger, this));
+            this.handlers.push(Y.Wegas.Facade.Instance.after("*:updatedInstance", this.instanceUpdateTrigger, this));
             this.handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
         },
         formatInstance: function(instance, mine) {

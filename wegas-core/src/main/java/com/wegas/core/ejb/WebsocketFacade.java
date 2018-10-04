@@ -694,7 +694,7 @@ public class WebsocketFacade {
                 updateOnlineUserMetric();
 
             } catch (IOException ex) {
-                java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
+                logger.error("InitOnlineUser", ex);
             }
         }
     }
@@ -741,7 +741,7 @@ public class WebsocketFacade {
                 }
 
             } catch (IOException ex) {
-                java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
+                logger.error("SyncOnlineUser", ex);
             }
         }
     }
@@ -754,9 +754,9 @@ public class WebsocketFacade {
         try {
             ObjectMapper mapper = JacksonMapperProvider.getMapper();
             String users = mapper.writeValueAsString(getLocalOnlineUsers());
-            pusher.trigger(WebsocketFacade.ADMIN_CHANNEL, "online-users", users);
+            Result trigger = pusher.trigger(WebsocketFacade.ADMIN_CHANNEL, "online-users", users);
         } catch (JsonProcessingException ex) {
-            java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error("PropagateOnleinUser through Pusher", ex);
         }
     }
 

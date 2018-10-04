@@ -28,10 +28,10 @@
     overflow-x: hidden;
     overflow-y: auto;
     min-height: 100px;
-    padding-bottom: 1px;
+    /*padding-bottom: 1px;*/
 }
 
-.wegas-inbox .unread {
+.wegas-inbox .yui3-tabview-list .unread {
     font-weight: bolder;
 }
 

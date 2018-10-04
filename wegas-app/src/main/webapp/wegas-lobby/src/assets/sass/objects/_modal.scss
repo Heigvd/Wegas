@@ -165,7 +165,6 @@
         transition:.5s;
     }
 
-
     .modal__nav{
         display: flex;
         border-bottom:solid 1px $border;
@@ -243,6 +242,14 @@
         height:65px;
         border-top:solid 1px $border;
         box-sizing: border-box;
+
+        &.flex {
+            display: flex;
+        }
+
+        &> .growable {
+            flex-grow: 1;
+        }
 
         .modal__tools__info{
             margin:0px;
@@ -557,4 +564,5 @@
         opacity:1;
         transition:.5s;
     }
+
 }

@@ -12,6 +12,8 @@ function friendlyName(label: string) {
             return 'Open URL';
         case 'ExecuteScriptAction':
             return 'Impact variables';
+        case 'ExecuteLocalScriptAction':
+            return 'Local scriptEval';
         case 'OpenPanelPageloader':
             return 'Open Popup page';
         case 'PlaySoundAction':

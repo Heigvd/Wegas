@@ -49,7 +49,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 cssClass: "wegas-whview__main-list",
                 direction: "vertical",
                 editable: false,
-                "transient" : true
+                "transient": true
             });
             this.hList = new Y.Wegas.List({
                 cssClass: "wegas-whview__main",
@@ -156,15 +156,19 @@ YUI.add('wegas-mcq-view', function(Y) {
                 this.mainList.add(this._buttonContainer);
             }
         },
+        bindUpdatedInstance: function() {
+            if (this.handlers.onInstanceUpdate) {
+                this.handlers.onInstanceUpdate.detach();
+            }
+            var question = this.get('variable.evaluated');
+            if (question) {
+                this.handlers.onInstanceUpdate = Y.Wegas.Facade.Instance.after(question.getInstance().get("id") + ':updatedInstance', this.renderUI, this);
+            }
+        },
         bindUI: function() {
-            this.handlers.onInstanceUpdate = Y.Wegas.Facade.Instance.after('updatedInstance',
-                function(e) {
-                    var question = this.get('variable.evaluated');
-                    if (question &&
-                        question.getInstance().get('id') === e.entity.get('id')) {
-                        this.renderUI();
-                    }
-                }, this);
+            this.bindUpdatedInstance();
+            this.after("variableChange", this.bindUpdatedInstance, this);
+            
             this.handlers.onDescriptorUpdate = Y.Wegas.Facade.Variable.after("updatedDescriptor", function(e) {
                 var question = this.get("variable.evaluated");
                 if (question && question.get("id") === e.entity.get("id")) {
@@ -350,18 +354,22 @@ YUI.add('wegas-mcq-view', function(Y) {
         },
         renderUI: function() {
             this.title = new Y.Wegas.Text({
-                cssClass: "mcqchoice__title"
+                cssClass: "mcqchoice__title",
+                editable: false
             });
             this.description = new Y.Wegas.Text({
-                cssClass: "mcqchoice__description wegas-light-picture"
+                cssClass: "mcqchoice__description wegas-light-picture",
+                editable: false
             });
             this.submit = new Y.Wegas.Text({
                 cssClass: "mcqchoice__submit",
-                content: "<span tabindex='0' role='button'>" + I18n.t("mcq.submit") + "</span>"
+                content: "<span tabindex='0' role='button'>" + I18n.t("mcq.submit") + "</span>",
+                editable: false
 
             });
             this.summary = new Y.Wegas.Text({
-                cssClass: "mcqchoice__summary"
+                cssClass: "mcqchoice__summary",
+                editable: false
             });
 
             this.add(this.title);
@@ -369,17 +377,21 @@ YUI.add('wegas-mcq-view', function(Y) {
             this.add(this.submit);
             this.add(this.summary);
         },
+        bindUpdatedInstance: function() {
+            if (this.handlers.onInstanceUpdate) {
+                this.handlers.onInstanceUpdate.detach();
+            }
+            var desc = this.get('choice.evaluated');
+            if (desc) {
+                this.handlers.onInstanceUpdate = Y.Wegas.Facade.Instance.after(desc.getInstance().get("id") + ':updatedInstance', this.syncUI, this);
+            }
+        },
         bindUI: function() {
+            this.bindUpdatedInstance();
+            this.after("choiceChange", this.bindUpdatedInstance, this);
             this.handlers.descriptorListener = Y.Wegas.Facade.Variable.after("updatedDescriptor", function(e) {
                 var choice = this.get("choice.evaluated");
                 if (choice && choice.get("id") === e.entity.get("id")) {
-                    this.syncUI();
-                }
-            }, this);
-            this.handlers.instanceListener = Y.Wegas.Facade.Instance.after("updatedInstance", function(e) {
-                var choice = this.get("choice.evaluated"), updatedInstance = e.entity;
-
-                if (updatedInstance instanceof Y.Wegas.persistence.ChoiceInstance && choice && choice.getInstance().get("id") === updatedInstance.get("id")) {
                     this.syncUI();
                 }
             }, this);
@@ -526,7 +538,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 }
             }, this);
 
-            this.handlers.instanceListener = Y.Wegas.Facade.Instance.after("updatedInstance", function(e) {
+            this.handlers.instanceListener = Y.Wegas.Facade.Instance.after("*:updatedInstance", function(e) {
                 var question = this.get("variable.evaluated"), updatedInstance;
 
                 if (e.entity instanceof Y.Wegas.persistence.ChoiceInstance) {
@@ -671,7 +683,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             answerable =
                 //!this.get("disabled") && // not disable by a lock
                     ((questionDescriptor.get("cbx") && !questionInstance.get("validated")) // not validated
-                        || (!questionDescriptor.get("cbx") && !maximumReached)); // maximum not reached yet
+                        || (!questionDescriptor.get("cbx") && !maximumReached && !questionInstance.get("validated"))); // maximum not reached yet
 
                 this.title.set("content", I18n.t(questionDescriptor.get("label"), {inlineEditor: 'string', fallback: ""}));
                 this.title.syncUI();
