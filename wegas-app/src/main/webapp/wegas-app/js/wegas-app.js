@@ -50,7 +50,9 @@ YUI.add('wegas-app', function(Y) {
              * @name render after render event
              * @event
              */
-            this.publish("ready");
+            this.publish("ready", {
+                fireOnce: true
+            });
             this.dataSources = {};
 
             this._pendingRequests = 0;
