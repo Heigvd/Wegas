@@ -14,16 +14,17 @@ import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.test.arquillian.AbstractArquillianTest;
-import javax.ejb.EJB;
-import javax.naming.NamingException;
-import javax.script.ScriptException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.EJB;
+import javax.ejb.EJBException;
+import javax.naming.NamingException;
+import javax.script.ScriptException;
+
 /**
- *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class ScriptFacadeTest extends AbstractArquillianTest {
@@ -113,7 +114,7 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
 
         int tick = 10_000;
 
-        while(true){
+        while (true) {
             i++;
             requestManager.setCurrentScriptContext(null);
             scriptFacade.eval(player, new Script("JavaScript", script0), null);
@@ -124,5 +125,37 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
             }
         }
         //logger.error("TOTAL DURATION: {}", System.currentTimeMillis() - start);
+    }
+
+    @Test(expected = WegasScriptException.class)
+    public void testTimeoutEvalInterrupts() throws Throwable {
+        try {
+            scriptFacade.timeoutEval(player.getId(), new Script("JavaScript", "while(1){}"));
+        } catch (EJBException e) {
+            throw e.getCause();
+        }
+    }
+
+    @Test(expected = WegasScriptException.class)
+    public void testTimeoutEvalInterrupts2() throws Throwable {
+        try {
+            scriptFacade.timeoutEval(player.getId(), new Script("JavaScript", "(function(){for(;;){}})()"));
+        } catch (EJBException e) {
+            throw e.getCause();
+        }
+    }
+
+    @Test
+    public void testTimeoutEval() {
+        final double VALUE = 99;
+        final NumberDescriptor numberDescriptor = new NumberDescriptor("testnum");
+        numberDescriptor.setDefaultInstance(new NumberInstance(1));
+        variableDescriptorFacade.create(scenario.getId(), numberDescriptor);
+
+        scriptFacade.timeoutEval(player.getId(),
+                new Script("JavaScript", "Variable.find(gameModel, 'testnum').setValue(self, " + VALUE + ");"));
+        Assert.assertEquals(VALUE,
+                ((NumberInstance) variableInstanceFacade.find(numberDescriptor.getId(), player.getId())).getValue(),
+                0.0001);
     }
 }
