@@ -27,7 +27,7 @@ YUI.add('wegas-dashboard', function(Y) {
                         impacts: {
                             "icon": "fa fa-pencil",
                             "itemType": "action",
-                            "label": "Variables",
+                            "label": "Impact variables",
                             "hasGlobal": true,
                             "do": function(team, payload) {
                                 new Y.Wegas.ImpactsTeamModal({
@@ -148,7 +148,7 @@ YUI.add('wegas-dashboard', function(Y) {
                 teams = game.get("teams");
 
             if (teams.length === 0 || teams.length === 1 && teams[0].get("@class") === "DebugTeam") {
-                label = "No players have joined yet: click to check for new players";
+                label = "No players have joined yet";
             }
 
             this.add(new Y.Wegas.Button({
@@ -172,6 +172,8 @@ YUI.add('wegas-dashboard', function(Y) {
 
             this.get("contentBox").delegate("click", this.onBooleanClick, ".bloc__boolean", this);
             this.get("contentBox").delegate("click", this.onTextClick, ".bloc__text", this);
+
+            Y.Wegas.app.once('ready', Y.bind(this.syncUI, this));
 
             this.handlers.onBodyClick = Y.one("body").on("click", Y.bind(function(event) {
                 this.detailsOverlay.hide();
@@ -338,6 +340,11 @@ YUI.add('wegas-dashboard', function(Y) {
 
                         }, this),
                         failure: Y.bind(function(e) {
+                            if (e.response && e.response.results && e.response.results.message) {
+                                Y.Wegas.Alerts.showMessage("error", e.response.results.message);
+                            } else {
+                                Y.Wegas.Alerts.showMessage("error", "Something went wrong");
+                            }
                             this._monitoredData = {};
                             this.syncTable();
                         }, this)
@@ -411,6 +418,7 @@ YUI.add('wegas-dashboard', function(Y) {
                                 o.cell.addClass(o.column.cssClass);
                             }
 
+                            var fallback = false;
                             if (def.kind) {
                                 if (def.kind === "boolean") {
                                     o.cell.setHTML("<span class=\"bloc__value bloc__boolean\">" + (o.value ? "✔" : "✕") + "</span>");
@@ -423,8 +431,14 @@ YUI.add('wegas-dashboard', function(Y) {
                                     o.cell.setHTML('<i class=\"bloc__text ' + (o.value.empty ? 'icon fa fa-comment-o"' : 'icon fa fa-commenting-o"') + ' title="Click to view"></i>');
                                 } else if (def.kind === "text") {
                                     o.cell.setHTML('<i class=\"bloc__text ' + (o.value.empty ? 'icon fa fa-file-o"' : 'icon fa fa-file-text-o"') + ' title="Click to view"></i>');
+                                } else {
+                                    fallback = true;
                                 }
                             } else {
+                                fallback = true;
+                            }
+
+                            if (fallback) {
                                 if (o.value !== undefined && o.value !== null) {
                                     o.cell.setHTML("<span class=\"bloc__value\">" + o.value + "</span>");
                                 } else {

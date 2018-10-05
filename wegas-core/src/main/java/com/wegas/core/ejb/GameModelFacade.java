@@ -758,12 +758,10 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * This method just do nothing but is very useful for some (obscure) purpose
-     * like adding breakpoints in a javascript
-     *
-     * @param msg
+     * {@inheritDoc}
      */
-    public final void nop(String msg) {
+    @Override
+    public final void nop(Object payload) {
         // for JS breakpoints...
     }
 
