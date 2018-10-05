@@ -457,13 +457,10 @@ public class ScriptFacade extends WegasAbstractFacade {
         final ScriptContext scriptContext = this.instantiateScriptContext(player, script.getLanguage());
 
         final Script scriptCopy = new Script();
-        final long l = System.currentTimeMillis();
-        scriptCopy.setContent(JSTool.sanitize(script.getContent(), "delay.poll();"));
-        final long l1 = System.currentTimeMillis();
-        System.out.println("TIME " + Long.toString(l1 - l));
+        scriptCopy.setContent(JSTool.sanitize(script.getContent(), "$$internal$delay.poll();"));
         scriptCopy.setLanguage(script.getLanguage());
         try (final Delay delay = new Delay(SCRIPT_DELAY, managedExecutorService)) {
-            scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).put("delay", delay);
+            scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).put("$$internal$delay", delay);
             return this.eval(scriptCopy, new HashMap<>());
         } catch (WegasScriptException e) {
             // try to restore original code
