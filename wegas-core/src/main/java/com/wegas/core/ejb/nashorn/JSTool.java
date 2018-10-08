@@ -11,10 +11,8 @@ package com.wegas.core.ejb.nashorn;
     Used to have access to some internals (jdk.internal.org.objectweb.asm*)
  */
 
-import jdk.nashorn.internal.ir.Block;
-import jdk.nashorn.internal.ir.ForNode;
-import jdk.nashorn.internal.ir.FunctionNode;
-import jdk.nashorn.internal.ir.WhileNode;
+import com.wegas.core.exception.client.WegasRuntimeException;
+import jdk.nashorn.internal.ir.*;
 import jdk.nashorn.internal.ir.visitor.SimpleNodeVisitor;
 import jdk.nashorn.internal.parser.Parser;
 import jdk.nashorn.internal.runtime.Context;
@@ -47,14 +45,15 @@ public class JSTool {
      * Inject a specific sanitizer code into some chosen place of given code.
      *
      * @param code      code to sanitize
-     * @param injection code to inject
+     * @param injection code to inject inline. It should end with a semicolon.
      * @return Sanitized code
      */
     public static String sanitize(String code, String injection) {
         final FunctionNode node = parse(code);
         final Visitor visitor = new Visitor(code, injection);
         node.getBody().accept(visitor);
-        return visitor.getResult();
+        // inject at start to avoid rewrite from the code.
+        return injection + visitor.getResult();
     }
 
     private static class Visitor extends SimpleNodeVisitor {
@@ -105,6 +104,26 @@ public class JSTool {
         }
 
         /**
+         * Check for some "forbidden" function calls
+         *
+         * @param callNode function call
+         * @return continue
+         */
+        @Override
+        public boolean enterCallNode(CallNode callNode) {
+            final Expression function = callNode.getFunction();
+            if (function instanceof IdentNode) {
+                if ("Function".equals(((IdentNode) function).getName())) {
+                    throw new JSParseError("Function is Evil");
+                }
+                if ("eval".equals(((IdentNode) function).getName())) {
+                    throw new JSParseError("Eval is Evil");
+                }
+            }
+            return super.enterCallNode(callNode);
+        }
+
+        /**
          * Wraps everything (BlockStatement included -- blockchain) into a BlockStatement
          * starting with the injection text
          *
@@ -118,6 +137,12 @@ public class JSTool {
             block.accept(this);
             res.insert(block.getFinish() + off, "}");
             off += 1;
+        }
+    }
+
+    public static class JSParseError extends WegasRuntimeException {
+        public JSParseError(String message) {
+            super(message);
         }
     }
 }
