@@ -20,6 +20,9 @@ import jdk.nashorn.internal.runtime.ErrorManager;
 import jdk.nashorn.internal.runtime.Source;
 import jdk.nashorn.internal.runtime.options.Options;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class JSTool {
     /**
      * Convert code in String form to it's AST from.
@@ -60,9 +63,17 @@ public class JSTool {
         private int off = 0;
         private final StringBuilder res;
         private final String toInject;
-        private final int injectionLength;
+        private final ArrayList<Operation> operations = new ArrayList<>();
 
         public String getResult() {
+            // Sort operations by index. Due to parser already hoisting some statements.
+            // then apply them. operations could be applied directly with jdk9 (AST order isn't changed)
+            Collections.sort(this.operations);
+            for (Operation op : operations) {
+                res.insert(op.getIdx() + off, op.getInsertion());
+                off += op.getInsertion().length();
+            }
+            this.operations.clear();
             return res.toString();
         }
 
@@ -70,14 +81,12 @@ public class JSTool {
             super();
             this.res = new StringBuilder(code);
             this.toInject = injection;
-            this.injectionLength = injection.length();
         }
 
         @Override
         public boolean enterFunctionNode(FunctionNode functionNode) {
-            int idx = functionNode.getBody().getStart() + off + 1;
-            res.insert(idx, toInject);
-            off += this.injectionLength;
+            int idx = functionNode.getBody().getStart() + 1;
+            this.operations.add(new Operation(idx, toInject));
             return true;
         }
 
@@ -131,12 +140,46 @@ public class JSTool {
          *              The parser gives us a BlockStatement even for a single Statement in the source
          */
         private void blockWrap(Block block) {
-            int idx = block.getStart() + off;
-            res.insert(idx, "{").insert(idx + 1, toInject);
-            off += this.injectionLength + 1;
+
+            int idx = block.getStart();
+            this.operations.add(new Operation(idx, "{"));
+            this.operations.add(new Operation(idx, toInject));
             block.accept(this);
-            res.insert(block.getFinish() + off, "}");
-            off += 1;
+            this.operations.add(new Operation(block.getFinish(), "}"));
+        }
+
+        /**
+         * Sortable operation which can take place on a string.
+         * @deprecated since JDK9. Operations on StringBuilder can take place immediately.
+         */
+        @Deprecated
+        private static class Operation implements Comparable<Operation> {
+            /**
+             * Source index to which the insertion should take place.
+             */
+            private final int idx;
+            /**
+             * Insertion code
+             */
+            private final String insertion;
+
+            private Operation(int idx, String insertion) {
+                this.idx = idx;
+                this.insertion = insertion;
+            }
+
+            @Override
+            public int compareTo(Operation operation) {
+                return this.getIdx() - operation.getIdx();
+            }
+
+            public int getIdx() {
+                return idx;
+            }
+
+            public String getInsertion() {
+                return insertion;
+            }
         }
     }
 
