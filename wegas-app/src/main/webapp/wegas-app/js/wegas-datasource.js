@@ -1444,9 +1444,6 @@ YUI.add('wegas-datasource', function(Y) {
          * @private
          */
         initializer: function() {
-            var endsWith = function(str, suffix) {
-                return str.indexOf(suffix, str.length - suffix.length) !== -1;
-            };
             this.get(HOST).data = {};
             this.index = null;
             this.editable = undefined;//endsWith(this.get(HOST).get("source"), "/");
@@ -1458,13 +1455,17 @@ YUI.add('wegas-datasource', function(Y) {
             this.publish("forceIndexUpdate");
         },
         arePagesHardcoded: function() {
-            return !!Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.pagesUri");
+            var endsWith = function(str, suffix) {
+                return str.indexOf(suffix, str.length - suffix.length) !== -1;
+            };
+
+            return !endsWith(this.get(HOST).get("source"), "/");
         },
         isEditable: function() {
             if (this.editable === undefined) {
                 var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
                 // neither static pages nor the ones which come from a model are editable
-                this.editable = !gm.get("properties.pagesUri") && !gm.dependsOnModel();
+                this.editable = !this.arePagesHardcoded() && !gm.dependsOnModel();
             }
             return this.editable;
         },
