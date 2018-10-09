@@ -157,5 +157,7 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
         Assert.assertEquals(VALUE,
                 ((NumberInstance) variableInstanceFacade.find(numberDescriptor.getId(), player.getId())).getValue(),
                 0.0001);
+        // Parser doing hoisting this, test for a correct injection.
+        scriptFacade.timeoutEval(player.getId(), new Script("JavaScript", "(function a(c){c(); while(0){}\nfunction b(){c();}})(function(){})"));
     }
 }
