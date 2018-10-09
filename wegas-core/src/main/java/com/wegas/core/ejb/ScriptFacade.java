@@ -161,8 +161,8 @@ public class ScriptFacade extends WegasAbstractFacade {
     @Inject
     private RequestManager requestManager;
 
-    @Resource
-    private ManagedExecutorService managedExecutorService;
+    @Resource(lookup = "timeoutExecutorService")
+    private ManagedExecutorService timeoutExecutorService;
 
     public ScriptContext instantiateScriptContext(Player player, String language) {
         final ScriptContext currentContext = requestManager.getCurrentScriptContext();
@@ -459,7 +459,7 @@ public class ScriptFacade extends WegasAbstractFacade {
         final Script scriptCopy = new Script();
         scriptCopy.setContent(JSTool.sanitize(script.getContent(), "$$internal$delay.poll();"));
         scriptCopy.setLanguage(script.getLanguage());
-        try (final Delay delay = new Delay(SCRIPT_DELAY, managedExecutorService)) {
+        try (final Delay delay = new Delay(SCRIPT_DELAY, timeoutExecutorService)) {
             scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).put("$$internal$delay", delay);
             return this.eval(scriptCopy, new HashMap<>());
         } catch (WegasScriptException e) {
