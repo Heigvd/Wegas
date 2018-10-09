@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
@@ -25,6 +26,7 @@ import javax.persistence.Column;
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
+@JsonTypeName(value = "TriggerDescriptor")
 public class TriggerDescriptor extends StateMachineDescriptor {
 
     private static final long serialVersionUID = 1L;
