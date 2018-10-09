@@ -25,6 +25,7 @@ import javax.persistence.Column;
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
+@JsonTypeName(value = "TriggerDescriptor")
 public class TriggerDescriptor extends StateMachineDescriptor {
 
     private static final long serialVersionUID = 1L;
