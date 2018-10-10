@@ -255,7 +255,7 @@ public class ModelFacade {
                  *
                  *  Map each language with scenarios it appears in (->translationSources)
                  *
-                 *  Then, for each variable descriptors to embed in the model, fetch translation in the correct
+                 *  Then, for each variable descriptors to embed in the model, fetch translation in the correct order
                  */
                 Map<String, List<GameModel>> translationSources = new HashMap<>();
 
@@ -436,11 +436,14 @@ public class ModelFacade {
                         try {
                             VariableDescriptor find = variableDescriptorFacade.find(other, vd.getName());
                             this.resetVariableDescriptorRefIds(find, vd);
+
+                            // prevent modification until first model propagation
+                            find.setVisibility(ModelScoped.Visibility.INTERNAL);
                         } catch (WegasNoResultException ex) {
                         }
                     }
 
-                    // import other languge
+                    // import other languages
                     for (Entry<String, List<GameModel>> entry : translationSources.entrySet()) {
                         String languageCode = entry.getKey();
                         List<GameModel> gms = entry.getValue();

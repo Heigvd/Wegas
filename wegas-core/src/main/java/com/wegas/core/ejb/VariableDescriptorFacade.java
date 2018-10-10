@@ -128,7 +128,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         //entity.setGameModel(vd.getGameModel());
         vd.merge(entity);
 
-         /*
+        /*
          * This flush is required by several EntityRevivedEvent listener,
          * which opperate some SQL queries (which didn't return anything before
          * entites have been flushed to database
@@ -138,8 +138,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
          */
         this.getEntityManager().flush();
 
-       // flush
-
+        // flush
         this.revive(vd.getGameModel(), vd, false);
         return vd;
     }
@@ -242,7 +241,6 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     public void reviveDescriptor(GameModel gm, VariableDescriptor vd) {
         vd.revive(gm, getBeans());
     }
-
 
     public void flushAndreviveItems(GameModel gameModel, DescriptorListI entity, boolean propagate) {
         this.reviveItems(gameModel, entity, propagate);
@@ -606,7 +604,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * @param index                index in new parent
      *
      */
-    private void move(final Long descriptorId, final DescriptorListI<VariableDescriptor> targetListDescriptor, final int index) {
+    private void move(final Long descriptorId, final DescriptorListI<VariableDescriptor> targetListDescriptor, final Integer index) {
 
         final VariableDescriptor vd = this.find(descriptorId);
         DescriptorListI from = vd.getParent();
@@ -636,16 +634,18 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * @param descriptorId
      * @param index
      */
-    public void move(final Long descriptorId, final int index) {
+    public void move(final Long descriptorId, final Integer index) {
         this.move(descriptorId, this.find(descriptorId).getGameModel(), index);
     }
 
     /**
-     * @param descriptorId
-     * @param targetListDescriptorId
-     * @param index
+     * Move given descriptor in targetListDescriptor at specified position.
+     *
+     * @param descriptorId           id of the descrptor to move
+     * @param targetListDescriptorId id of the new list
+     * @param index                  new position in the targetlist
      */
-    public void move(final Long descriptorId, final Long targetListDescriptorId, final int index) {
+    public void move(final Long descriptorId, final Long targetListDescriptorId, final Integer index) {
         this.move(descriptorId, (DescriptorListI) this.find(targetListDescriptorId), index);
     }
 

@@ -24,7 +24,6 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.resourceManagement.persistence.WRequirement;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
