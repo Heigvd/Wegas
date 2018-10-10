@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
@@ -31,6 +32,7 @@ import javax.persistence.Transient;
         callback = TriggerDescriptor.MergeTriggerHack.class // but ensure they exist one all transient fields have been set
 )
 @JsonIgnoreProperties(value = {"states"})
+@JsonTypeName(value = "TriggerDescriptor")
 public class TriggerDescriptor extends StateMachineDescriptor {
 
     private static final long serialVersionUID = 1L;

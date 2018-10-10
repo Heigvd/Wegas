@@ -12,7 +12,7 @@ interface TranslatableProps {
 interface EndProps {
     value?: string | number;
     onChange: (value: string) => void;
-    view: Schema['view'];
+    view: {};
 }
 /**
  * HOC: Transform a hashmap (lang:value) into value based on current language

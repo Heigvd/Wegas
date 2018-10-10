@@ -54,7 +54,7 @@ const upgradeSchema = (varSchema, impactView, methodType = 'getter') => {
 };
 function getState(node, method, type) {
     const { global, method: m, member, variable, args } = extractMethod(node);
-    let state = {
+    const state = {
         global,
         variable,
         method: m,
@@ -309,8 +309,19 @@ export class ErrorCatcher extends React.Component {
         this.state = { error: undefined };
         this.handleErrorBlur = this.handleErrorBlur.bind(this);
     }
-    componentWillReceiveProps() {
-        this.setState(() => ({ error: undefined }));
+    componentDidUpdate(prevProps) {
+        if (prevProps !== this.props && this.state.error !== undefined) {
+            this.setState(() => ({
+                error: undefined,
+            }));
+        }
+    }
+    componentDidCatch(error, info) {
+        this.setState(() => ({
+            hasErrored: true,
+            error,
+            info,
+        }));
     }
     handleErrorBlur(target, editor) {
         const val = editor.getValue();
@@ -321,13 +332,6 @@ export class ErrorCatcher extends React.Component {
         } catch (e) {
             // do nothing
         }
-    }
-    componentDidCatch(error, info) {
-        this.setState(() => ({
-            hasErrored: true,
-            error,
-            info,
-        }));
     }
     render() {
         const { node, children } = this.props;
