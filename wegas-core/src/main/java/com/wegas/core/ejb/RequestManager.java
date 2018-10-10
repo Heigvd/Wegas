@@ -18,11 +18,7 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.InstanceOwner;
-import com.wegas.core.persistence.game.DebugGame;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.game.*;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.aai.AaiRealm;
 import com.wegas.core.security.ejb.AccountFacade;
@@ -36,28 +32,6 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.ResourceBundle;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.naming.NamingException;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.script.ScriptContext;
-import javax.ws.rs.core.Response;
 import jdk.nashorn.api.scripting.ScriptUtils;
 import jdk.nashorn.internal.runtime.ScriptObject;
 import org.apache.shiro.SecurityUtils;
@@ -69,6 +43,22 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ThreadContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.naming.NamingException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.script.ScriptContext;
+import javax.ws.rs.core.Response;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -179,7 +169,7 @@ public class RequestManager implements RequestManagerI {
     private RequestEnvironment env = RequestEnvironment.STD;
 
     /**
-     * Default view is {@link Views#Public}
+     * Default view is {@link Views.Public}
      */
     private Class view = Views.Public.class;
 
@@ -441,7 +431,6 @@ public class RequestManager implements RequestManagerI {
      * updated container if this entity has already been registered
      * in the destroyed one</li>
      * </ul>
-     *
      *
      * @param audience  entity audience
      * @param entity    the entity to register
@@ -788,7 +777,6 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     *
      * @param token token to lock
      */
     @Override
@@ -809,7 +797,6 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     *
      * @param token  token to lock
      * @param target scope to inform about the lock
      */
@@ -835,7 +822,6 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     *
      * @param token  token to release
      * @param target scope to inform about the lock
      */
@@ -1180,7 +1166,7 @@ public class RequestManager implements RequestManagerI {
     /**
      * Has Current user Shiro Edit permission on gameModel ?
      *
-     * @param gameModel the gameModel to check permission against
+     * @param gameModel the gameModel to poll permission against
      *
      * @return true if the user has edit permission on the gameModel
      */
@@ -1191,7 +1177,7 @@ public class RequestManager implements RequestManagerI {
     /**
      * Has Current user Shiro Edit permission on game ?
      *
-     * @param game the game to check permission against
+     * @param game the game to poll permission against
      *
      * @return true if the user has edit permission on the game
      */
@@ -1242,12 +1228,12 @@ public class RequestManager implements RequestManagerI {
      * A superPermission (write) is permitted if <ul>
      * <li>The game model is not yet persisted</li>
      * <li>OR shiro EDIT permission on the gameModel is permitted</li>
-     * <li>OR the gameModel is a {@link PLAY} one and currentUser has superPermission on the underlying game</li>
+     * <li>OR the gameModel is a {@link GameModel.Status#PLAY} one and currentUser has superPermission on the underlying game</li>
      * </ul>
      * <p/>
      * A "normal" (readonly) permission is permitted if <ul>
      * <li>any of the superPermission condition</li>
-     * <li>OR the gameModel is a {@link PLAY} one and currentUser has read on the underlying game</li>
+     * <li>OR the gameModel is a {@link GameModel.Status#PLAY} one and currentUser has read on the underlying game</li>
      * <li>OR the currentUser is a trainer/scenarist and has shiro Instantiate or Duplicate permission</li>
      * <li>OR the currentUser has shiro View permission</li>
      * </ul>
@@ -1758,8 +1744,7 @@ public class RequestManager implements RequestManagerI {
      *
      * @return
      */
-    public static RequestManager
-            lookup() {
+    public static RequestManager lookup() {
         try {
             return Helper.lookupBy(RequestManager.class
             );
