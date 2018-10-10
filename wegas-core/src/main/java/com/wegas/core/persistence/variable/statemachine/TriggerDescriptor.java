@@ -7,7 +7,7 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
@@ -17,7 +17,6 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.PrePersist;
@@ -31,6 +30,7 @@ import javax.persistence.Transient;
         ignoreProperties = {"states"}, // no not merge states inherited from StateMachineDescriptor
         callback = TriggerDescriptor.MergeTriggerHack.class // but ensure they exist one all transient fields have been set
 )
+@JsonIgnoreProperties(value = {"states"})
 public class TriggerDescriptor extends StateMachineDescriptor {
 
     private static final long serialVersionUID = 1L;
@@ -157,19 +157,6 @@ public class TriggerDescriptor extends StateMachineDescriptor {
         }
         this.touchTriggerEvent();
         return triggerEvent;
-    }
-
-    /**
-     * Override to make this function transient
-     *
-     * @return underlying statemachine states
-     *
-     * @see StateMachineDescriptor#getStates
-     */
-    @Override
-    @JsonIgnore
-    public Map<Long, State> getStatesAsMap() {
-        return super.getStatesAsMap();
     }
 
     /**

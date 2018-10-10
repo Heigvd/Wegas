@@ -18,7 +18,6 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
-import java.util.List;
 import javax.persistence.*;
 
 /**
@@ -126,17 +125,21 @@ public class Transition extends AbstractEntity {
         this.state = state;
     }
 
+    @JsonView(Views.IndexI.class)
     public Long getStateId() {
         return this.getState().getId();
     }
 
+    @JsonView(Views.IndexI.class)
     public void setStateId(Long id) {
     }
 
+    @JsonView(Views.IndexI.class)
     public Long getStateMachineId() {
         return this.getState().getStateMachineId();
     }
 
+    @JsonView(Views.IndexI.class)
     public void setStateMachineId(Long id) {
     }
 

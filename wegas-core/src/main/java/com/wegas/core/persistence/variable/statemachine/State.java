@@ -8,7 +8,6 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -130,10 +129,12 @@ public class State extends AbstractEntity implements Broadcastable {
         this.stateMachine = stateMachine;
     }
 
+    @JsonView(Views.IndexI.class)
     public Long getStateMachineId() {
         return getStateMachine().getId();
     }
 
+    @JsonView(Views.IndexI.class)
     public void setStateMachineId(Long stateMachineId) {
         //this.stateMachine = stateMachine;
     }
