@@ -8,7 +8,7 @@ angular.module('private.modeler.directives', [
         ctrl.loading = true;
         ctrl.duplicating = false;
         ctrl.search = '';
-        ctrl.scenarios = [];
+        ctrl.models = [];
         ctrl.nbArchives = 0;
         ctrl.user = {};
         ctrl.username = '';
@@ -23,7 +23,7 @@ angular.module('private.modeler.directives', [
 
         var winheight = null,
             maxItemsDisplayed = null,
-            rawScenarios = [],
+            rawModels = [],
             isFiltering = false,
             prevFilter = "",
             filtered = [],
@@ -52,11 +52,11 @@ angular.module('private.modeler.directives', [
             },
             // Returns the session list to be displayed now.
             currentList = function() {
-                return isFiltering ? filtered : rawScenarios;
+                return isFiltering ? filtered : rawModels;
             },
             updateDisplay = function(source) {
-                if (prevSource !== source || maxItemsDisplayed !== ctrl.scenarios.length) {
-                    ctrl.scenarios = source.slice(0, maxItemsDisplayed);
+                if (prevSource !== source || maxItemsDisplayed !== ctrl.models.length) {
+                    ctrl.models = source.slice(0, maxItemsDisplayed);
                     prevSource = source;
                 }
             },
@@ -69,25 +69,25 @@ angular.module('private.modeler.directives', [
                 }
                 updateDisplay(list);
             },
-            // Returns an array containing the occurrences of 'needle' in rawScenarios:
+            // Returns an array containing the occurrences of 'needle' in rawModels:
             doSearch = function(needle) {
-                var len = rawScenarios.length,
+                var len = rawModels.length,
                     res = [];
                 for (var i = 0; i < len; i++) {
-                    var scenario = rawScenarios[i];
-                    if ((scenario.name && scenario.name.toLowerCase().indexOf(needle) >= 0) ||
-                        (scenario.createdByName && scenario.createdByName.toLowerCase().indexOf(needle) >= 0) ||
-                        (scenario.comments && scenario.comments.toLowerCase().indexOf(needle) >= 0) ||
+                    var model = rawModels[i];
+                    if ((model.name && model.name.toLowerCase().indexOf(needle) >= 0) ||
+                        (model.createdByName && model.createdByName.toLowerCase().indexOf(needle) >= 0) ||
+                        (model.comments && model.comments.toLowerCase().indexOf(needle) >= 0) ||
                         // If searching for a number, the id has to start with the given pattern:
-                        scenario.id.toString().indexOf(needle) === 0) {
-                        res.push(scenario);
+                        model.id.toString().indexOf(needle) === 0) {
+                        res.push(model);
                     }
                 }
                 return res;
             };
 
         /*
-         ** Updates the listing when the user has clicked on the "My scenarios first" checkbox,
+         ** Updates the listing when the user has clicked on the "My models first" checkbox,
          ** and also during initial page rendering.
          */
         ctrl.setMeFirst = function(mefirst, updateDisplay) {
@@ -104,14 +104,14 @@ angular.module('private.modeler.directives', [
                 }
             }
             isFiltering = false;
-            ctrl.updateScenarios(updateDisplay);
+            ctrl.updateModels(updateDisplay);
         }
 
-        // Updates the listing when the user has clicked on the "My scenarios first" checkbox.
+        // Updates the listing when the user has clicked on the "My models first" checkbox.
         ctrl.toggleMeFirst = function() {
             ctrl.setMeFirst(!ctrl.mefirst);
             var config = localStorage.getObject("wegas-config");
-            config.commons.myScenariosFirst = ctrl.mefirst;
+            config.commons.myModelsFirst = ctrl.mefirst;
             localStorage.setObject("wegas-config", config);
         }
 
@@ -119,9 +119,9 @@ angular.module('private.modeler.directives', [
             if (ctrl.user) {
                 if (ctrl.user.isAdmin) {
                     if (ctrl.username.length > 0) {
-                        // Load the "My scenarios first" preference, defaulting to true:
+                        // Load the "My models first" preference, defaulting to true:
                         var config = localStorage.getObject("wegas-config"),
-                            mefirst = config.commons && config.commons.myScenariosFirst !== false;
+                            mefirst = config.commons && config.commons.myModelsFirst !== false;
                         ctrl.setMeFirst(mefirst, true);
                     } // else: ignore as long as required information is missing
                 } else {
@@ -129,22 +129,22 @@ angular.module('private.modeler.directives', [
                     ctrl.setMeFirst(false, true);
                 }
             }
-        }
+        };
 
         /*
-         ** Filters rawScenarios according to the given search string and puts the result in ctrl.scenarios.
-         ** Hypotheses on input array rawScenarios :
-         ** 1. It contains only scenarios with attribute 'canEdit' = true.
+         ** Filters rawModels according to the given search string and puts the result in ctrl.models.
+         ** Hypotheses on input array rawModels :
+         ** 1. It contains only models with attribute 'canEdit' = true.
          ** 2. It's already ordered according to the 'createdTime' attribute,
          **    so that the output automatically follows the same ordering.
          */
-        ctrl.filterScenarios = function(search) {
+        ctrl.filterModels = function(search) {
             if (!search || search.length === 0) {
                 if (isFiltering) {
                     isFiltering = false;
                     initMaxItemsDisplayed(); // Reset since we are changing between searching and not searching
                 }
-                updateDisplay(rawScenarios);
+                updateDisplay(rawModels);
                 return;
             } else { // There is a search going on:
                 var needle = search.toLowerCase();
@@ -163,38 +163,38 @@ angular.module('private.modeler.directives', [
             }
         };
 
-        // Called when a scenario is modified, reordered, added or removed:
-        ctrl.updateScenarios = function(updateDisplay) {
-            var hideScrollbarDuringInitialRender = (ctrl.scenarios.length === 0);
+        // Called when a model is modified, reordered, added or removed:
+        ctrl.updateModels = function(updateDisplay) {
+            var hideScrollbarDuringInitialRender = (ctrl.models.length === 0);
             if (hideScrollbarDuringInitialRender) {
-                $('#modeler-scenarios-list').css('overflow-y', 'hidden');
+                $('#modeler-models-list').css('overflow-y', 'hidden');
             }
-            ctrl.scenarios = rawScenarios = [];
+            ctrl.models = rawModels = [];
             ctrl.loading = true;
             ScenariosModel.getModels('LIVE').then(function(response) {
-                rawScenarios = $filter('filter')(response.data, {canEdit: true}) || [];
+                rawModels = $filter('filter')(response.data, {canEdit: true}) || [];
                 if (ctrl.mefirst && ctrl.username.length > 0) {
-                    // Prepare a list where "my" scenarios appear first (ordered by creation date, like the rest):
-                    var myScenarios = $filter('filter')(rawScenarios, {createdByName: ctrl.username}) || [],
-                        otherScenarios = $filter('filter')(rawScenarios, {createdByName: '!' + ctrl.username}) || [];
-                    myScenarios = $filter('orderBy')(myScenarios, 'createdTime', true) || [];
-                    otherScenarios = $filter('orderBy')(otherScenarios, 'createdTime', true) || [];
-                    rawScenarios = myScenarios.concat(otherScenarios);
+                    // Prepare a list where "my" models appear first (ordered by creation date, like the rest):
+                    var myModels = $filter('filter')(rawModels, {createdByName: ctrl.username}) || [],
+                        otherModels = $filter('filter')(rawModels, {createdByName: '!' + ctrl.username}) || [];
+                    myModels = $filter('orderBy')(myModels, 'createdTime', true) || [];
+                    otherModels = $filter('orderBy')(otherModels, 'createdTime', true) || [];
+                    rawModels = myModels.concat(otherModels);
                 } else {
-                    rawScenarios = $filter('orderBy')(rawScenarios, 'createdTime', true) || [];
+                    rawModels = $filter('orderBy')(rawModels, 'createdTime', true) || [];
                 }
                 // At this point, the search variable is not necessarily updated by Angular to reflect the input field:
                 var searchField = document.getElementById('searchField');
                 if (searchField) {
                     ctrl.search = searchField.getElementsByClassName('tool__input')[0].value;
                 }
-                ctrl.filterScenarios(ctrl.search);
+                ctrl.filterModels(ctrl.search);
                 if (updateDisplay) {
                     extendDisplayedItems();
                 }
                 if (hideScrollbarDuringInitialRender) {
                     $timeout(function() {
-                        $('#modeler-scenarios-list').css('overflow-y', 'auto');
+                        $('#modeler-models-list').css('overflow-y', 'auto');
                     }, 5000);
                 }
                 // Keep the "loading" indicator on screen as long as possible:
@@ -202,9 +202,9 @@ angular.module('private.modeler.directives', [
             });
         };
 
-        ctrl.archiveScenario = function(scenario) {
-            $('#archive-' + scenario.id).removeClass('button--archive').addClass('busy-button');
-            ScenariosModel.archiveScenario(scenario).then(function(response) {
+        ctrl.archiveModel = function(model) {
+            $('#archive-' + model.id).removeClass('button--archive').addClass('busy-button');
+            ScenariosModel.archiveScenario(model).then(function(response) {
                 if (response.isErroneous()) {
                     response.flash();
                 } else {
@@ -212,23 +212,23 @@ angular.module('private.modeler.directives', [
                     $rootScope.$emit('changeModels', true);
                 }
                 $timeout(function() {
-                    $('#archive-' + scenario.id).removeClass('busy-button').addClass('button--archive');
+                    $('#archive-' + model.id).removeClass('busy-button').addClass('button--archive');
                 }, 500);
             });
         };
 
-        ctrl.duplicate = function(scenario) {
+        ctrl.duplicate = function(model) {
             if (ctrl.duplicating)
                 return;
             ctrl.duplicating = true;
-            $('#dupe-' + scenario.id).addClass('busy-button');
-            ScenariosModel.copyScenario(scenario.id).then(function(response) {
+            $('#dupe-' + model.id).addClass('busy-button');
+            ScenariosModel.copyScenario(model.id).then(function(response) {
                 if (response.isErroneous()) {
                     response.flash();
                 } else {
                     $rootScope.$emit('changeModels', true);
                 }
-                $('#dupe-' + scenario.id).removeClass('busy-button');
+                $('#dupe-' + model.id).removeClass('busy-button');
                 ctrl.duplicating = false;
             });
         };
@@ -240,7 +240,7 @@ angular.module('private.modeler.directives', [
                 if (!response.isErroneous()) {
                     $scope.$emit('collapse');
                     ctrl.search = "";
-                    ctrl.updateScenarios(true);
+                    ctrl.updateModels(true);
                     deferred.resolve(true);
                 } else {
                     response.flash();
@@ -257,7 +257,7 @@ angular.module('private.modeler.directives', [
                 if (!response.isErroneous()) {
                     $scope.$emit('collapse');
                     ctrl.search = "";
-                    ctrl.updateScenarios(true);
+                    ctrl.updateModels(true);
                     deferred.resolve(true);
                 } else {
                     response.flash();
@@ -271,11 +271,11 @@ angular.module('private.modeler.directives', [
             ctrl.nbArchives -= count;
         });
 
-        // Listen for updates to individual scenarios or to the list of scenarios:
+        // Listen for updates to individual models or to the list of models:
         $rootScope.$on('changeModels', function(e, hasNewData) {
             if (hasNewData) {
-                // To be on the safe side, also request an extension of displayed scenarios (parameter 'true'):
-                ctrl.updateScenarios(true);
+                // To be on the safe side, also request an extension of displayed models (parameter 'true'):
+                ctrl.updateModels(true);
             }
         });
 
@@ -322,13 +322,13 @@ angular.module('private.modeler.directives', [
             }
         });
 
-        // Finally, load info about archived scenarios:
+        // Finally, load info about archived models:
         ScenariosModel.countArchivedModels().then(function(response) {
             ctrl.nbArchives = response.data;
         });
 
     })
-    .directive('modelerScenariosIndex', function() {
+    .directive('modelerModelsIndex', function() {
         "use strict";
         return {
             templateUrl: 'app/private/modeler/directives.tmpl/index.html',
@@ -342,7 +342,11 @@ angular.module('private.modeler.directives', [
             templateUrl: 'app/private/modeler/directives.tmpl/extract.html',
             scope: false,
             link: function(scope, element, attrs, parentCtrl) {
+
+                var filtering = false;
+
                 scope.scenariomenu = [];
+                scope.rawscenariomenu = [];
                 scope.loadingScenarios = false;
                 var loadScenarios = function() {
                     // Reload list from cache each time the window is opened:
@@ -352,17 +356,41 @@ angular.module('private.modeler.directives', [
                             scope.loadingScenarios = false;
                             var expression = {canDuplicate: true},
                                 filtered = $filter('filter')(response.data, expression) || [];
-                            scope.scenariomenu = $filter('orderBy')(filtered, 'name');
+                            scope.rawscenariomenu = $filter('orderBy')(filtered, 'name');
+                            updateDisplay(scope.rawscenariomenu);
                         }
                     });
                 };
 
+                var updateDisplay = function(scenarioList) {
+                    scope.scenariomenu = scenarioList;
+                };
+
                 var resetNewModel = function() {
-                    scope.newScenario = {
+                    scope.newModel = {
                         name: '',
                         templateId: 0
                     };
                     scope.selectedIds = [];
+                };
+
+                scope.extractsearch = '';
+
+
+                scope.filterScenarios = function(search) {
+                    if (search && search.length > 0) {
+                        var needle =search.toLowerCase();
+                        var filtered = [];
+                        for (var i in scope.rawscenariomenu) {
+                            var scen = scope.rawscenariomenu[i];
+                            if (scen.name.toLowerCase().indexOf(needle) >= 0) {
+                                filtered.push(scen);
+                            }
+                        }
+                        updateDisplay(filtered);
+                    } else {
+                        updateDisplay(scope.rawscenariomenu);
+                    }
                 };
 
                 scope.cancelModel = function() {
@@ -372,7 +400,7 @@ angular.module('private.modeler.directives', [
 
                 scope.extractModel = function() {
                     var button = $(element).find(".form__submit");
-                    if (scope.newScenario.name !== '') {
+                    if (scope.newModel.name !== '') {
                         var ids = _.transform(scope.selectedIds, function(result, value, key) {
                             if (value) {
                                 result.push(key);
@@ -383,7 +411,7 @@ angular.module('private.modeler.directives', [
                             if (!button.hasClass("button--disable")) {
                                 button.addClass("button--disable button--spinner button--rotate");
 
-                                scope.modelerIndexCtrl.extractModel(scope.newScenario.name, ids).then(function() {
+                                scope.modelerIndexCtrl.extractModel(scope.newModel.name, ids).then(function() {
                                     button.removeClass("button--disable button--spinner button--rotate");
                                     resetNewModel();
                                 });
@@ -408,29 +436,29 @@ angular.module('private.modeler.directives', [
         };
     })
 
-    .directive('modelerScenarioCreate', function(ScenariosModel, Flash, $translate, $filter) {
+    .directive('modelerModelCreate', function(ScenariosModel, Flash, $translate, $filter) {
         "use strict";
         return {
             templateUrl: 'app/private/modeler/directives.tmpl/create.html',
             scope: false,
             link: function(scope, element, attrs, parentCtrl) {
-                scope.scenariomenu = [];
-                scope.loadingScenarios = false;
-                var loadScenarios = function() {
+                scope.modelsmenu = [];
+                scope.loadingModels = false;
+                var loadModels = function() {
                     // Reload list from cache each time the window is opened:
-                    scope.loadingScenarios = true;
+                    scope.loadingModels = true;
                     ScenariosModel.getModels("LIVE").then(function(response) {
                         if (!response.isErroneous()) {
-                            scope.loadingScenarios = false;
+                            scope.loadingModels = false;
                             var expression = {canDuplicate: true},
                                 filtered = $filter('filter')(response.data, expression) || [];
-                            scope.scenariomenu = $filter('orderBy')(filtered, 'name');
+                            scope.modelsmenu = $filter('orderBy')(filtered, 'name');
                         }
                     });
                 };
 
                 var resetNewModel = function() {
-                    scope.newScenario = {
+                    scope.newModel = {
                         name: '',
                         templateId: 0
                     };
@@ -443,11 +471,11 @@ angular.module('private.modeler.directives', [
 
                 scope.createModel = function() {
                     var button = $(element).find(".form__submit");
-                    if (scope.newScenario.name !== '') {
-                        if (scope.newScenario.templateId !== 0) {
+                    if (scope.newModel.name !== '') {
+                        if (scope.newModel.templateId !== 0) {
                             if (!button.hasClass("button--disable")) {
                                 button.addClass("button--disable button--spinner button--rotate");
-                                scope.modelerIndexCtrl.createModel(scope.newScenario.name, scope.newScenario.templateId).then(function() {
+                                scope.modelerIndexCtrl.createModel(scope.newModel.name, scope.newModel.templateId).then(function() {
                                     button.removeClass("button--disable button--spinner button--rotate");
                                     resetNewModel();
                                 });
@@ -466,17 +494,17 @@ angular.module('private.modeler.directives', [
 
                 scope.$on('expand', function() {
                     resetNewModel();
-                    loadScenarios();
+                    loadModels();
                 });
             }
         };
     })
-    .directive('modelerScenariosList', function() {
+    .directive('modelerModelsList', function() {
         "use strict";
         return {
             templateUrl: 'app/private/modeler/directives.tmpl/list.html',
             scope: {
-                scenarios: '=',
+                models: '=',
                 archive: '=',
                 search: '=',
                 duplicate: '=',
@@ -492,7 +520,7 @@ angular.module('private.modeler.directives', [
         return {
             templateUrl: 'app/private/modeler/directives.tmpl/card.html',
             scope: {
-                scenario: '=',
+                model: '=',
                 archive: '=',
                 duplicate: '=',
                 duplicating: '=',

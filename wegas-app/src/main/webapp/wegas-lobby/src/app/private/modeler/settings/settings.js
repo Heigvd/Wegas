@@ -5,7 +5,7 @@ angular.module('private.modeler.settings', [
         "use strict";
         $stateProvider
             .state('wegas.private.modeler.settings', {
-                url: '/:scenarioId/settings',
+                url: '/:modelId/settings',
                 views: {
                     'modal@wegas.private': {
                         controller: 'ModelerSettingsController'

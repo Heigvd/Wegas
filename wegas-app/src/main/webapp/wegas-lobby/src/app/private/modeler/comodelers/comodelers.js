@@ -6,7 +6,7 @@ angular
     "use strict";
     $stateProvider
         .state('wegas.private.modeler.comodelers', {
-            url: '/:scenarioId/comodelers',
+            url: '/:modelId/comodelers',
             views: {
                 'modal@wegas.private': {
                     controller: 'ComodelersCtrl'

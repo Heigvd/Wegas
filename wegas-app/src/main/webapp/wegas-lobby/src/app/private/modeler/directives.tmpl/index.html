@@ -1,18 +1,18 @@
 <div class="view view--new-session view--bottom"
-     scenarios="modelerIndexCtrl.scenarios"
-     create="modelerIndexCtrl.createScenario"
-     scenariomenu="modelerIndexCtrl.scenariomenu"
+     models="modelerIndexCtrl.models"
+     create="modelerIndexCtrl.createModel"
+     modelmenu="modelerIndexCtrl.modelmenu"
      expandable="create">
-    <modeler-scenario-create></modeler-scenario-create>
+    <modeler-model-create></modeler-model-create>
 </div>
 <div class="view view--new-session view--bottom"
-     scenarios="modelerIndexCtrl.scenarios"
+     models="modelerIndexCtrl.models"
      extract="modelerIndexCtrl.extractModel"
      scenariomenu="modelerIndexCtrl.scenariomenu"
      expandable="extract">
     <modeler-model-extract></modeler-model-extract>
 </div>
-<div id="modeler-scenarios-list" class="view view--scenarios-list view--middle">
+<div id="modeler-models-list" class="view view--scenarios-list view--middle">
     <h3>{{'MODELER-INDEX-LIST-TITLE'| translate}}</h3>
 
     <a class="button button--small button--success-reverse non-collapsible-expander-button" expander="create">
@@ -30,8 +30,8 @@
                 class="tool__input"
                 ng-model="search"
                 type="text"
-                ng-change="modelerIndexCtrl.filterScenarios(search);"
-                ng-init="modelerIndexCtrl.filterScenarios(search);"
+                ng-change="modelerIndexCtrl.filterModels(search);"
+                ng-init="modelerIndexCtrl.filterModels(search);"
                 />
         </div>
     </div>
@@ -45,22 +45,22 @@
         {{'MODELER-INDEX-ME-FIRST-TITLE'| translate}}
     </div>
     <div
-        ng-if="(!modelerIndexCtrl.loading && modelerIndexCtrl.scenarios.length)"
+        ng-if="(!modelerIndexCtrl.loading && modelerIndexCtrl.models.length)"
         ng-class="(modelerIndexCtrl.nbArchives > 0 ? 'view__list--with-archive' : 'view__list')"
-        id = "modeler-scenarios-list-container"
+        id = "modeler-models-list-container"
         class="view__list"
         style="padding-bottom: 10px;"
         search="modelerIndexCtrl.search"
-        scenarios="modelerIndexCtrl.scenarios"
-        archive="modelerIndexCtrl.archiveScenario"
+        models="modelerIndexCtrl.models"
+        archive="modelerIndexCtrl.archiveModel"
         duplicate="modelerIndexCtrl.duplicate"
         duplicating="modelerIndexCtrl.duplicating"
         user="modelerIndexCtrl.user"
         username="modelerIndexCtrl.username"
-        modeler-scenarios-list
+        modeler-models-list
         repeat-auto-load >
     </div>
-    <div ng-if="(modelerIndexCtrl.search.length != 0) && (modelerIndexCtrl.scenarios.length == 0)"
+    <div ng-if="(modelerIndexCtrl.search.length != 0) && (modelerIndexCtrl.models.length == 0)"
          class="view__list view__list--with-archive">
         {{'MODELER-INDEX-LIST-NO-MODEL'| translate}} "{{modelerIndexCtrl.search}}"
     </div>

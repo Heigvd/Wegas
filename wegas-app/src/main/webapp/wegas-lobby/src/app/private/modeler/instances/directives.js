@@ -12,20 +12,20 @@ angular
             controller: function($scope, $stateParams, $sce, $rootScope) {
                 var ctrl = this;
 
-                ctrl.scenario = undefined;
-                ctrl.scenarioId = $stateParams.scenarioId;
+                ctrl.model = undefined;
+                ctrl.modelId = $stateParams.modelId;
 
 
                 ctrl.updateInstances = function() {
                     ScenariosModel.getScenarios("LIVE").then(function(repsonse) {
                         ctrl.instances = repsonse.data.filter(function(s) {
-                            return s.basedOnId === +ctrl.scenarioId;
+                            return s.basedOnId === +ctrl.modelId;
                         });
                     });
                 };
 
-                ScenariosModel.getModel("LIVE", ctrl.scenarioId).then(function(response) {
-                    ctrl.scenario = response.data;
+                ScenariosModel.getModel("LIVE", ctrl.modelId).then(function(response) {
+                    ctrl.model = response.data;
                     ctrl.updateInstances();
                 });
 
@@ -42,9 +42,9 @@ angular
             link: function(scope, element, attrs, parentCtrl) {
 
                 scope.$watch(function() {
-                    return parentCtrl.scenario;
+                    return parentCtrl.model;
                 }, function(n, o) {
-                    scope.scenario = n;
+                    scope.model = n;
                 });
                 scope.$watch(function() {
                     return parentCtrl.instances;
@@ -63,7 +63,7 @@ angular
             require: "^modelerInstancesIndex",
             link: function($scope, element, attrs, parentCtrl) {
 
-                $scope.open = function(scenarioId) {
+                $scope.open = function(modelId) {
                 };
             }
         };

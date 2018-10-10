@@ -12,11 +12,11 @@ angular
             controller: function($scope, $stateParams, $sce, $rootScope) {
                 var ctrl = this;
 
-                ctrl.scenario = undefined;
-                ctrl.scenarioId = $stateParams.scenarioId;
+                ctrl.model = undefined;
+                ctrl.modelId = $stateParams.modelId;
 
                 ctrl.updateVersions = function() {
-                    ScenariosModel.getVersionsHistory(ctrl.scenario.id).then(function(response) {
+                    ScenariosModel.getVersionsHistory(ctrl.model.id).then(function(response) {
                         if (response.isErroneous()) {
                             response.flash();
                         } else {
@@ -29,15 +29,15 @@ angular
                     });
                 };
                 ctrl.createFork = function(name) {
-                    ScenariosModel.restoreVersionHistory(ctrl.scenarioId, name).then(function(response) {
+                    ScenariosModel.restoreVersionHistory(ctrl.modelId, name).then(function(response) {
                         response.flash();
                         if (!response.isErroneous()) {
                             $rootScope.$emit('changeModels', true);
                         }
                     });
                 };
-                ctrl.copyScenario = function() {
-                    ScenariosModel.copyScenario(ctrl.scenarioId).then(function(response) {
+                ctrl.copyModel = function() {
+                    ScenariosModel.copyScenario(ctrl.modelId).then(function(response) {
                         if (!response.isErroneous()) {
                             response.flash();
                             $rootScope.$emit('changeModels', true);
@@ -45,7 +45,7 @@ angular
                     });
                 };
                 ctrl.addVersion = function() {
-                    ScenariosModel.addVersionHistory(ctrl.scenarioId).then(function(response) {
+                    ScenariosModel.addVersionHistory(ctrl.modelId).then(function(response) {
                         if (response.isErroneous()) {
                             response.flash();
                         } else {
@@ -53,8 +53,8 @@ angular
                         }
                     });
                 };
-                ScenariosModel.getModel("LIVE", ctrl.scenarioId).then(function(response) {
-                    ctrl.scenario = response.data;
+                ScenariosModel.getModel("LIVE", ctrl.modelId).then(function(response) {
+                    ctrl.model = response.data;
                     ctrl.updateVersions();
                 });
 
@@ -67,7 +67,7 @@ angular
         return {
             templateUrl: 'app/private/modeler/history/directives.tmpl/actions.html',
             scope: {
-                scenario: "="
+               model: "="
             },
             require: "^modelerHistoryIndex",
             link: function($scope, element, attrs, parentCtrl) {
@@ -75,8 +75,8 @@ angular
                     parentCtrl.addVersion();
                 };
 
-                $scope.copyScenario = function() {
-                    parentCtrl.copyScenario();
+                $scope.copyModel = function() {
+                    parentCtrl.copyModel();
                 };
             }
         };
@@ -85,19 +85,19 @@ angular
         "use strict";
         return {
             scope: {
-                scenario: "="
+                model: "="
             },
             link: function(scope, element, attrs, parentCtrl) {
                 var $jsonElement = element;
 
-                scope.$watch("scenario", function(n, o) {
+                scope.$watch("model", function(n, o) {
                     if (_.contains([false, undefined], n)) {
                         $jsonElement.addClass('disabled').attr('href', '#');
                     } else {
                         var url = window.ServiceURL + "rest/Export/GameModel/" + n.id + "/" + n.name + ".json";
                         $jsonElement.removeClass('disabled').attr('href', url);
                     }
-                    scope.scenario = n;
+                    scope.model = n;
                 });
 
 
@@ -108,12 +108,12 @@ angular
         "use strict";
         return {
             scope: {
-                scenario: "="
+                model: "="
             },
             link: function(scope, element, attrs, parentCtrl) {
                 var $pdfElement = element;
 
-                scope.$watch("scenario", function(n, o) {
+                scope.$watch("model", function(n, o) {
                     if (_.contains([false, undefined], n)) {
                         $pdfElement.addClass('disabled').attr('href', '#');
                     } else {
@@ -121,7 +121,7 @@ angular
                             "&outputType=pdf&mode=editor&defaultValues=true";
                         $pdfElement.removeClass('disabled').attr('href', url);
                     }
-                    scope.scenario = n;
+                    scope.model = n;
                 });
 
 
@@ -137,9 +137,9 @@ angular
             link: function(scope, element, attrs, parentCtrl) {
 
                 scope.$watch(function() {
-                    return parentCtrl.scenario;
+                    return parentCtrl.model;
                 }, function(n, o) {
-                    scope.scenario = n;
+                    scope.model = n;
                 });
                 scope.$watch(function() {
                     return parentCtrl.versions;
@@ -159,7 +159,7 @@ angular
             link: function($scope, element, attrs, parentCtrl) {
 
                 $scope.deleteFork = function(name) {
-                    ScenariosModel.deleteVersionHistory($scope.scenario.id, name).then(function(response) {
+                    ScenariosModel.deleteVersionHistory($scope.model.id, name).then(function(response) {
                         if (response.isErroneous()) {
                             response.flash();
                         } else {

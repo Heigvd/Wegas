@@ -4,7 +4,7 @@ angular
     "use strict";
     $stateProvider
     .state('wegas.private.modeler.instances', {
-        url: '/:scenarioId/instances',
+        url: '/:modelId/instances',
         views: {
             'modal@wegas.private': {
                 controller: 'ModelerInstancesController',

@@ -20,7 +20,7 @@ angular.module('private.modeler.settings.directives', [
                     display: false
                 };
             };
-        ctrl.scenario = {};
+        ctrl.model = {};
         ctrl.hasChanges = {
             all: false,
             color: false,
@@ -53,13 +53,13 @@ angular.module('private.modeler.settings.directives', [
         };
         ctrl.tabs = initTabs();
 
-        ctrl.updateScenario = function() {
-            ScenariosModel.getScenario("LIVE", $stateParams.scenarioId, "MODEL").then(function(response) {
-                ctrl.scenario = response.data || {};
+        ctrl.updateModel = function() {
+            ScenariosModel.getScenario("LIVE", $stateParams.modelId, "MODEL").then(function(response) {
+                ctrl.model = response.data || {};
                 if (response.isErroneous()) {
                     response.flash();
                 } else {
-                    var icon = ctrl.scenario.properties.iconUri.split("_");
+                    var icon = ctrl.model.properties.iconUri.split("_");
                     if (icon.length >= 3 && icon[0] === "ICON") {
                         ctrl.infos.color = icon[1];
                         ctrl.infos.icon.key = icon[2];
@@ -67,25 +67,25 @@ angular.module('private.modeler.settings.directives', [
                             ctrl.infos.icon.library = icon[3];
                         }
                     }
-                    ctrl.infos.name = ctrl.scenario.name;
-                    ctrl.infos.comments = ctrl.scenario.comments;
-                    ctrl.infos.individual = ctrl.scenario.properties.freeForAll;
-                    ctrl.infos.scriptUri = ctrl.scenario.properties.scriptUri;
-                    ctrl.infos.clientScriptUri = ctrl.scenario.properties.clientScriptUri;
-                    ctrl.infos.cssUri = ctrl.scenario.properties.cssUri;
-                    ctrl.infos.pagesUri = ctrl.scenario.properties.pagesUri;
-                    ctrl.infos.logID = ctrl.scenario.properties.logID;
-                    ctrl.infos.guestAllowed = ctrl.scenario.properties.guestAllowed;
+                    ctrl.infos.name = ctrl.model.name;
+                    ctrl.infos.comments = ctrl.model.comments;
+                    ctrl.infos.individual = ctrl.model.properties.freeForAll;
+                    ctrl.infos.scriptUri = ctrl.model.properties.scriptUri;
+                    ctrl.infos.clientScriptUri = ctrl.model.properties.clientScriptUri;
+                    ctrl.infos.cssUri = ctrl.model.properties.cssUri;
+                    ctrl.infos.pagesUri = ctrl.model.properties.pagesUri;
+                    ctrl.infos.logID = ctrl.model.properties.logID;
+                    ctrl.infos.guestAllowed = ctrl.model.properties.guestAllowed;
                 }
             });
         };
 
         ctrl.checkChanges = function(type, changes) {
-            if (ctrl.scenario['@class'] === "GameModel") {
+            if (ctrl.model['@class'] === "GameModel") {
                 var oldColor = "orange",
                     oldIcon = "gamepad",
                     oldLibrary = "fa",
-                    icon = ctrl.scenario.properties.iconUri.split("_");
+                    icon = ctrl.model.properties.iconUri.split("_");
                 if (icon.length >= 3 && icon[0] === "ICON") {
                     oldColor = icon[1];
                     oldIcon = icon[2];
@@ -99,31 +99,31 @@ angular.module('private.modeler.settings.directives', [
                         ctrl.hasChanges.icon = (oldIcon !== changes.key) || (oldLibrary !== changes.library);
                         break;
                     case "name":
-                        ctrl.hasChanges.name = (ctrl.scenario.name !== changes);
+                        ctrl.hasChanges.name = (ctrl.model.name !== changes);
                         break;
                     case "comments":
-                        ctrl.hasChanges.comments = (ctrl.scenario.comments !== changes);
+                        ctrl.hasChanges.comments = (ctrl.model.comments !== changes);
                         break;
                     case "individual":
-                        ctrl.hasChanges.individual = (ctrl.scenario.properties.freeForAll !== changes);
+                        ctrl.hasChanges.individual = (ctrl.model.properties.freeForAll !== changes);
                         break;
                     case "scriptUri":
-                        ctrl.hasChanges.scriptUri = (ctrl.scenario.properties.scriptUri !== changes);
+                        ctrl.hasChanges.scriptUri = (ctrl.model.properties.scriptUri !== changes);
                         break;
                     case "clientScriptUri":
-                        ctrl.hasChanges.clientScriptUri = (ctrl.scenario.properties.clientScriptUri !== changes);
+                        ctrl.hasChanges.clientScriptUri = (ctrl.model.properties.clientScriptUri !== changes);
                         break;
                     case "cssUri":
-                        ctrl.hasChanges.cssUri = (ctrl.scenario.properties.cssUri !== changes);
+                        ctrl.hasChanges.cssUri = (ctrl.model.properties.cssUri !== changes);
                         break;
                     case "pages":
-                        ctrl.hasChanges.pagesUri = (ctrl.scenario.properties.pagesUri !== changes);
+                        ctrl.hasChanges.pagesUri = (ctrl.model.properties.pagesUri !== changes);
                         break;
                     case "logID":
-                        ctrl.hasChanges.logID = (ctrl.scenario.properties.logID !== changes);
+                        ctrl.hasChanges.logID = (ctrl.model.properties.logID !== changes);
                         break;
                     case "guestAllowed":
-                        ctrl.hasChanges.guestAllowed = (ctrl.scenario.properties.guestAllowed !== changes);
+                        ctrl.hasChanges.guestAllowed = (ctrl.model.properties.guestAllowed !== changes);
                         break;
 
                 }
@@ -153,7 +153,7 @@ angular.module('private.modeler.settings.directives', [
         };
 
         ctrl.save = function() {
-            ScenariosModel.updateScenario(ctrl.scenario.id, ctrl.infos, "MODEL").then(function(response) {
+            ScenariosModel.updateScenario(ctrl.model.id, ctrl.infos, "MODEL").then(function(response) {
                 if (!response.isErroneous()) {
                     $rootScope.$emit("changeModels", true);
                     $scope.close();
@@ -177,7 +177,7 @@ angular.module('private.modeler.settings.directives', [
             });
         });
 
-        ctrl.updateScenario();
+        ctrl.updateModel();
         ctrl.activeTab("infos");
     })
     .directive('modelerCustomizeInfos', function() {

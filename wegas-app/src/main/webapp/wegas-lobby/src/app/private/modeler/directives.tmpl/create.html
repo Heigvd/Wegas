@@ -3,14 +3,14 @@
         <span class="button__label">X</span>
     </a>
     <h3>{{'MODELER-INDEX-ADD-TITLE' | translate}}</h3>
-    <form class="form form__create-scenario">
+    <form class="form form__create-model">
         <div class="form__row">
-            <input class="form__row__entry input input--small" type="text" id="session-token" ng-model="newScenario.name" placeholder="{{'MODELER-INDEX-ADD-NAME-INPUT' | translate}}" autocomplete="off" style="background:#fff">
+            <input class="form__row__entry input input--small" type="text" id="session-token" ng-model="newModel.name" placeholder="{{'MODELER-INDEX-ADD-NAME-INPUT' | translate}}" autocomplete="off" style="background:#fff">
         </div>
         <div class="form__row">
-            <select class="form__row__entry input input--small" ng-model="newScenario.templateId">
+            <select class="form__row__entry input input--small" ng-model="newModel.templateId">
                 <option value="0" disabled>{{'MODELER-INDEX-ADD-SCENARIO-INPUT' | translate}}</option>
-                <option ng-repeat="scenario in scenariomenu" value="{{scenario.id}}">{{scenario.name}}</option>
+                <option ng-repeat="model in modelsmenu" value="{{model.id}}">{{model.name}}</option>
             </select>
         </div>
         <div class="form__row form__row--right">

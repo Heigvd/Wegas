@@ -1,6 +1,6 @@
 <div class="modal__header">
-  <div class="modal__illustration illustration illustration--medium illustration--icon" illustration="{{modelerHistoryIndexCtrl.scenario.properties.iconUri}}"></div>
-  <h5 class="modal__title">{{modelerHistoryIndexCtrl.scenario.name}}</h5>
+  <div class="modal__illustration illustration illustration--medium illustration--icon" illustration="{{modelerHistoryIndexCtrl.model.properties.iconUri}}"></div>
+  <h5 class="modal__title">{{modelerHistoryIndexCtrl.model.name}}</h5>
   <a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="close()">
     <span class="button__label">{{'MODALE-CLOSE' | translate}}</span>
   </a>
@@ -8,4 +8,4 @@
 
 <div class="modal__content modal__content--nav-off" modeler-history-list></div>
 
-<div class="modal__tools" modeler-history-actions scenario="modelerHistoryIndexCtrl.scenario"></div>
+<div class="modal__tools" modeler-history-actions model="modelerHistoryIndexCtrl.model"></div>

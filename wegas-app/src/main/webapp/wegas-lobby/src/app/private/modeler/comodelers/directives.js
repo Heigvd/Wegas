@@ -11,7 +11,7 @@ angular
             },
             controller: function($scope, $stateParams, $sce) {
                 var ctrl = this;
-                ctrl.scenario = {};
+                ctrl.model = {};
                 ctrl.permissions = [];
 
                 ctrl.comodelers = function() {
@@ -22,15 +22,15 @@ angular
                     return result;
                 };
 
-                ctrl.updateScenario = function() {
-                    // Searching for current scenario
-                    ScenariosModel.getModels("LIVE", $stateParams.scenarioId).then(function(response) {
+                ctrl.updateModel = function() {
+                    // Searching for current model
+                    ScenariosModel.getModels("LIVE", $stateParams.modelId).then(function(response) {
                         if (response.isErroneous()) {
                             response.flash();
                         } else {
-                            ctrl.scenario = response.data;
+                            ctrl.model = response.data;
                             // Loading permissions
-                            PermissionsModel.getScenarioPermissions($stateParams.scenarioId).then(function(response) {
+                            PermissionsModel.getScenarioPermissions($stateParams.modelId).then(function(response) {
                                 if (response.isErroneous()) {
                                     response.flash();
                                 } else {
@@ -41,7 +41,7 @@ angular
 
                     });
                 };
-                ctrl.updateScenario();
+                ctrl.updateModel();
                 $scope.modelerComodelersIndexCtrl = this;
             }
         };
@@ -51,7 +51,7 @@ angular
         return {
             templateUrl: 'app/private/modeler/comodelers/directives.tmpl/add.html',
             scope: {
-                scenario: '='
+                model: '='
             },
             require: "^modelerComodelersIndex",
             link: function(scope, element, attrs, parentCtrl) {
@@ -67,12 +67,12 @@ angular
 
                 scope.addNewComodeler = function() {
                     if (scope.selected_user.id) {
-                        PermissionsModel.updateScenarioPermissions(scope.scenario.id,
+                        PermissionsModel.updateScenarioPermissions(scope.model.id,
                             scope.selected_user.id, true, false, false).then(function(response) {
                             if (response.isErroneous()) {
                                 response.flash();
                             } else {
-                                parentCtrl.updateScenario();
+                                parentCtrl.updateModel();
                             }
                         });
                     }
@@ -86,11 +86,11 @@ angular
             templateUrl: 'app/private/modeler/comodelers/directives.tmpl/list.html',
             scope: {
                 permissions: "=",
-                scenario: "="
+                model: "="
             },
             link: function(scope, element, attrs) {
-                scope.removeUser = function(scenarioId, userId) {
-                    PermissionsModel.deleteScenarioPermissions(scenarioId, userId).then(function(response) {
+                scope.removeUser = function(modelId, userId) {
+                    PermissionsModel.deleteScenarioPermissions(modelId, userId).then(function(response) {
                         if (response.isErroneous()) {
                             response.flash();
                         } else {
@@ -112,7 +112,7 @@ angular
             templateUrl: 'app/private/modeler/comodelers/directives.tmpl/user-permissions.html',
             scope: {
                 userPermissions: "=",
-                scenario: "="
+                model: "="
             },
             require: "^modelerComodelersIndex",
             link: function(scope, element, attrs, parentCtrl) {
@@ -137,7 +137,7 @@ angular
                         scope.canCreate = true;
                     }
 
-                    PermissionsModel.updateScenarioPermissions(this.scenario.id, this.userPermissions.user.id, this.canCreate, this.canDuplicate, this.canEdit).then(function(response) {
+                    PermissionsModel.updateScenarioPermissions(this.model.id, this.userPermissions.user.id, this.canCreate, this.canDuplicate, this.canEdit).then(function(response) {
                         if (response.isErroneous()) {
                             response.flash();
                             calculatePermissions();

@@ -7,9 +7,9 @@
   <p class="line line--secondary">{{ permission.user.email }}</p>
 
 </div>
-<div class="card__detailled-actions" user-permissions="permission" scenario="scenario" modeler-comodelers-user-permissions></div>
+<div class="card__detailled-actions" user-permissions="permission" model="model" modeler-comodelers-user-permissions></div>
 <div class="card__actions">
-  <a class="button button--small button--round button--default-reverse button--label-off button--trash" title="{{'SCENARIST-MODALE-USERS-REMOVE-BTN' |translate}}" ng-click="removeUser(scenario.id, permission.user.id)">
+  <a class="button button--small button--round button--default-reverse button--label-off button--trash" title="{{'SCENARIST-MODALE-USERS-REMOVE-BTN' |translate}}" ng-click="removeUser(model.id, permission.user.id)">
     <span class="button__label">{{'SCENARIST-MODALE-USERS-REMOVE-BTN' | translate}}</span>
   </a>
 </div>

@@ -1,5 +1,5 @@
 angular.module('private.modeler.archives.directives', [])
-    .directive('modelerScenariosArchivesIndex', function() {
+    .directive('modelerModelsArchivesIndex', function() {
         "use strict";
         return {
             scope: {
@@ -36,16 +36,16 @@ angular.module('private.modeler.archives.directives', [])
                 len = ctrl.rawArchives.length,
                 i;
             for (i = 0; i < len; i++) {
-                var scenario = ctrl.rawArchives[i];
-                if (scenario.canView === false || scenario.canEdit === false)
+                var model = ctrl.rawArchives[i];
+                if (model.canView === false || model.canEdit === false)
                     continue;
                 var needle = search.toLowerCase();
-                if ((scenario.name && scenario.name.toLowerCase().indexOf(needle) >= 0) ||
-                    (scenario.createdByName && scenario.createdByName.toLowerCase().indexOf(needle) >= 0) ||
-                    (scenario.comments && scenario.comments.toLowerCase().indexOf(needle) >= 0) ||
+                if ((model.name && model.name.toLowerCase().indexOf(needle) >= 0) ||
+                    (model.createdByName && model.createdByName.toLowerCase().indexOf(needle) >= 0) ||
+                    (model.comments && model.comments.toLowerCase().indexOf(needle) >= 0) ||
                     // If searching for a number, the id has to start with the given pattern:
-                    scenario.id.toString().indexOf(needle) === 0) {
-                    res.push(scenario);
+                    model.id.toString().indexOf(needle) === 0) {
+                    res.push(model);
                 }
             }
             ctrl.archives = res;
@@ -55,14 +55,14 @@ angular.module('private.modeler.archives.directives', [])
         };
 
         // Use jQuery input events, more reliable than Angular's:
-        $(document).off("input", '#searchFieldScenarioArchives'); // Detach any previous input handler
-        $(document).on("input", '#searchFieldScenarioArchives', function() {
+        $(document).off("input", '#searchFieldModelArchives'); // Detach any previous input handler
+        $(document).on("input", '#searchFieldSModelArchives', function() {
             // At this point, the search variable is not necessarily updated by Angular to reflect the real input field:
             ctrl.search = this.value;
             ctrl.filterArchives(ctrl.search);
         });
 
-        ctrl.updateScenarios = function() {
+        ctrl.updateModels = function() {
             ctrl.loading = true;
             ScenariosModel.getModels("BIN").then(function(response) {
                 ctrl.loading = false;
@@ -83,12 +83,12 @@ angular.module('private.modeler.archives.directives', [])
             });
         };
 
-        ctrl.unarchiveScenario = function(scenarioToUnarchive) {
-            if (scenarioToUnarchive) {
-                ScenariosModel.unarchiveScenario(scenarioToUnarchive).then(function(response) {
+        ctrl.unarchiveModel = function(modelToUnarchive) {
+            if (modelToUnarchive) {
+                ScenariosModel.unarchiveScenario(modelToUnarchive).then(function(response) {
                     if (!response.isErroneous()) {
                         $rootScope.$emit('entrenchNbArchives', 1);
-                        ctrl.updateScenarios();
+                        ctrl.updateModels();
                         // The model is reinserted into the LIVE list, which has to be updated:
                         $rootScope.$emit('changeModels', true);
                     } else {
@@ -102,12 +102,12 @@ angular.module('private.modeler.archives.directives', [])
             }
         };
 
-        ctrl.deleteArchivedScenario = function(scenarioToDelete) {
-            if (scenarioToDelete) {
-                ScenariosModel.deleteArchivedScenario(scenarioToDelete).then(function(response) {
+        ctrl.deleteArchivedModel = function(modelToDelete) {
+            if (modelToDelete) {
+                ScenariosModel.deleteArchivedScenario(modelToDelete).then(function(response) {
                     if (!response.isErroneous()) {
                         $rootScope.$emit('entrenchNbArchives', 1);
-                        ctrl.updateScenarios();
+                        ctrl.updateModels();
                         //$rootScope.$emit('changeModels', true);
                     } else {
                         response.flash();
@@ -120,10 +120,10 @@ angular.module('private.modeler.archives.directives', [])
             }
         };
 
-        /* Listen for new scenarios */
+        /* Listen for new models */
         $rootScope.$on('changeModels', function(e, hasNewData) {
             if (hasNewData) {
-                ctrl.updateScenarios();
+                ctrl.updateModels();
             }
         });
 
@@ -140,14 +140,14 @@ angular.module('private.modeler.archives.directives', [])
             }
         });
 
-        ctrl.updateScenarios();
+        ctrl.updateModels();
     })
-    .directive('modelerScenariosArchivesList', function() {
+    .directive('modelerModelsArchivesList', function() {
         "use strict";
         return {
             templateUrl: 'app/private/modeler/archives/directives.tmpl/list.html',
             scope: {
-                scenarios: "=",
+                models: "=",
                 unarchive: "=",
                 delete: "=",
                 search: "=",

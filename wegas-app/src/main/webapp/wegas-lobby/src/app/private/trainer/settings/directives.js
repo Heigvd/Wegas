@@ -149,7 +149,6 @@ angular.module('private.trainer.settings.directives', [
             });
         };
         ctrl.generateQrCode = function() {
-            ctrl.infos.baseUrl + "#/play/" + ctrl.infos.token
             var node = document.querySelector(".advanced .qrcode_link .qrcode_thumbnail");
             var link = document.querySelector(".advanced .qrcode_link a");
             var url = ctrl.infos.baseUrl + "#/play/" + ctrl.infos.token;
@@ -169,7 +168,7 @@ angular.module('private.trainer.settings.directives', [
             var w = window.open('about:blank');
             setTimeout(function() { //FireFox seems to require a setTimeout for this to work.
                 var img = document.querySelector(".advanced .qrcode_link .qrcode_thumbnail img");
-                var newImg = w.document.createElement('img')
+                var newImg = w.document.createElement('img');
                 w.document.body.appendChild(newImg);
                 newImg.src = img.src;
                 newImg.title = img.title;
