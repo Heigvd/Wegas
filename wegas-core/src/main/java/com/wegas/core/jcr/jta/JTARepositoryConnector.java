@@ -10,7 +10,6 @@ package com.wegas.core.jcr.jta;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
-import org.apache.derby.iapi.store.raw.ContainerLock;
 
 /**
  * Add JTA related method to JCR connectors

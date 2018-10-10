@@ -13,6 +13,9 @@ import com.wegas.core.persistence.game.GameModel;
 import java.io.Serializable;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.ejb.TransactionRequiredLocalException;
 import javax.enterprise.context.ContextNotActiveException;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
@@ -40,9 +43,12 @@ public class JCRConnectorProvider implements Serializable {
     private JCRConnectorProviderTx txBean;
 
     /**
-     * Get a connector to the gamemodel pages repository
+     * Get a connector to the gamemodel pages repository.
      * <p>
      * If a transaction is running in the caller context, the returned connector will be managed by JTA.
+     * If there is no transaction, returned connecter MUST be closed by the caller. In this case Pages#getManaged returns false.,
+     * <p>
+     * Setting TransactionAttribute to SUPPORTS explicitly says this methods support both transactional and non-transactional contexts
      *
      * @param gameModel the gameModel
      *
@@ -50,6 +56,7 @@ public class JCRConnectorProvider implements Serializable {
      *
      * @throws RepositoryException something went wrong
      */
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public Pages getPages(GameModel gameModel) throws RepositoryException {
         return (Pages) this.getConnector(gameModel, RepositoryType.PAGES);
     }
@@ -58,6 +65,9 @@ public class JCRConnectorProvider implements Serializable {
      * Get a connector to the gamemodel content repository
      * <p>
      * If a transaction is running in the caller context, the returned connector will be managed by JTA.
+     * If there is no transaction, returned connecter MUST be closed by the caller. In this case Pages#getManaged returns false.,
+     * <p>
+     * Setting TransactionAttribute to SUPPORTS explicitly says this methods support both transactional and non-transactional contexts
      *
      * @param gameModel the gameModel
      * @param wsType    FILES or HISTORY
@@ -66,6 +76,7 @@ public class JCRConnectorProvider implements Serializable {
      *
      * @throws RepositoryException
      */
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public ContentConnector getContentConnector(GameModel gameModel, ContentConnector.WorkspaceType wsType) throws RepositoryException {
         return (ContentConnector) this.getConnector(gameModel, RepositoryType.valueOf(wsType.toString()));
     }
@@ -82,8 +93,11 @@ public class JCRConnectorProvider implements Serializable {
      */
     private JTARepositoryConnector getConnector(GameModel gameModel, RepositoryType type) throws RepositoryException {
         try {
-            return txBean.getConnector(gameModel, type);
-        } catch (ContextNotActiveException ex) {
+            JTARepositoryConnector connector = txBean.getConnector(gameModel, type);
+            logger.info("JCRConnector: open JTA connector");
+            return connector;
+        } catch (ContextNotActiveException | TransactionRequiredLocalException ex) {
+            logger.info("JCRConnector: Open Detached connector (NO JTA SUPPORT)");
             return JCRConnectorProviderTx.getDetachedConnector(gameModel, type);
         }
     }

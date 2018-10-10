@@ -21,6 +21,9 @@ import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.ejb.TransactionRequiredLocalException;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jcr.RepositoryException;
@@ -43,7 +46,7 @@ public class JCRConnectorProviderTx implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(JCRConnectorProviderTx.class);
 
     /**
-     * Resource to bound a JCRSynch to the current transaction
+     * Resource to bound a JCRSync to the current transaction
      */
     @Resource
     private transient TransactionSynchronizationRegistry jtaSyncRegistry;
@@ -133,16 +136,20 @@ public class JCRConnectorProviderTx implements Serializable {
     }
 
     /**
-     * Get a managed connector
+     * Get a managed connector. Setting TransactionAttributeType to MANDATORY compels to have an existing transaction to get a connector.
+     * If there is not transaction, an exception is thrown.
      *
      * @param gameModel the gameModel
-     * @param type        repository type
+     * @param type      repository type
      *
      * @return a managed connector
      *
      * @throws RepositoryException seems the data store is not available...
+     * @throws TransactionRequiredLocalException when there is no transaction context
      */
-    protected JTARepositoryConnector getConnector(GameModel gameModel, RepositoryType type) throws RepositoryException {
+    @TransactionAttribute(TransactionAttributeType.MANDATORY)
+    protected JTARepositoryConnector getConnector(GameModel gameModel, RepositoryType type)
+            throws RepositoryException, TransactionRequiredLocalException {
         String key = type + "::" + gameModel.getId();
 
         if (!this.connectors.containsKey(key)) {

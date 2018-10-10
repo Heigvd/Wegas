@@ -283,12 +283,18 @@ public class FileController {
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
 
-        final ContentConnector connector = this.getContentConnector(gameModelId);
         StreamingOutput out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
                 try {
-                    connector.exportXML(output);
+                    final ContentConnector connector = getContentConnector(gameModelId);
+                    try {
+                        connector.exportXML(output);
+                    } finally {
+                        if (!connector.getManaged()) {
+                            connector.rollback();
+                        }
+                    }
                 } catch (RepositoryException ex) {
                     logger.error(null, ex);
                 }
@@ -313,15 +319,21 @@ public class FileController {
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
 
-        final ContentConnector connector = this.getContentConnector(gameModelId);
         StreamingOutput out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
                 try {
                     try (ByteArrayOutputStream xmlStream = new ByteArrayOutputStream()) {
-                        connector.exportXML(xmlStream);
-                        try (GZIPOutputStream o = new GZIPOutputStream(output)) {
-                            o.write(xmlStream.toByteArray());
+                        final ContentConnector connector = getContentConnector(gameModelId);
+                        try {
+                            connector.exportXML(xmlStream);
+                            try (GZIPOutputStream o = new GZIPOutputStream(output)) {
+                                o.write(xmlStream.toByteArray());
+                            }
+                        } finally {
+                            if (!connector.getManaged()) {
+                                connector.rollback();
+                            }
                         }
                     }
 
@@ -348,12 +360,18 @@ public class FileController {
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
 
-        final ContentConnector connector = this.getContentConnector(gameModelId);
         StreamingOutput out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
                 try (ZipOutputStream zipOutputStream = new ZipOutputStream(output)) {
-                    connector.zipDirectory(zipOutputStream, "/");
+                    final ContentConnector connector = getContentConnector(gameModelId);
+                    try {
+                        connector.zipDirectory(zipOutputStream, "/");
+                    } finally {
+                        if (!connector.getManaged()) {
+                            connector.rollback();
+                        }
+                    }
                 } catch (RepositoryException ex) {
                     logger.error(null, ex);
                 }

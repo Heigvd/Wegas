@@ -20,8 +20,8 @@ import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.i18n.ejb.I18nFacade;
-import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.jcr.content.ContentConnector;
+import com.wegas.core.jcr.content.ContentConnector.WorkspaceType;
 import com.wegas.core.jcr.content.DescriptorFactory;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.merge.patch.WegasEntityPatch;
@@ -48,9 +48,6 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -59,7 +56,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import javax.ejb.*;
@@ -440,7 +436,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         }
     }
 
-
     public GameModel unzip(ZipInputStream zip) throws IOException, RepositoryException {
         ZipEntry entry;
         GameModel gameModel = null;
@@ -460,12 +455,11 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         if (gameModelStream != null && filesStream != null) {
             gameModel = JacksonMapperProvider.getMapper().readValue(gameModelStream, GameModel.class);
 
-            gameModel.setName(this.findUniqueName(gameModel.getName()));
+            gameModel.setName(this.findUniqueName(gameModel.getName(), GmType.SCENARIO));
             this.createWithDebugGame(gameModel);
 
-            try (ContentConnector connector = ContentConnector.getFilesConnector(gameModel.getId())) {
-                connector.importXML(filesStream);
-            }
+            ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel, WorkspaceType.FILES);
+            connector.importXML(filesStream);
         }
 
         return gameModel;
@@ -474,8 +468,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     public StreamingOutput zip(Long gameModelId) throws RepositoryException {
 
         GameModel gameModel = this.find(gameModelId);
-
-        ContentConnector connector = ContentConnector.getFilesConnector(gameModelId);
 
         StreamingOutput out;
         out = new StreamingOutput() {
@@ -494,8 +486,15 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                     ZipEntry filesEntry = new ZipEntry("files.xml");
                     zipOutputStream.putNextEntry(filesEntry);
 
-                    connector.exportXML(zipOutputStream);
-                    zipOutputStream.closeEntry();
+                    ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel, WorkspaceType.FILES);
+                    try {
+                        connector.exportXML(zipOutputStream);
+                        zipOutputStream.closeEntry();
+                    } finally {
+                        if (!connector.getManaged()) {
+                            connector.rollback();
+                        }
+                    }
 
                 } catch (RepositoryException ex) {
                     logger.error(null, ex);
