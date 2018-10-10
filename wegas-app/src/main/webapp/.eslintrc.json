@@ -1,0 +1,15 @@
+{
+    "root": true,
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": 5,
+        "sourceType": "script"
+    },
+    "env": {
+        "browser": true
+    },
+    "globals": {
+        "YUI": true,
+        "Y": true
+    }
+}
