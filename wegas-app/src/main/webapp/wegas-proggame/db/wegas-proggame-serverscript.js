@@ -1,3 +1,31 @@
+// Types used accross this file
+/* global gameModel, self, Variable*/
+/**
+ * @typedef ObjectsItem wqss
+ * @property {string} id
+ * @property {number} x
+ * @property {number} y
+ * @property {number} direction
+ * @property {boolean} collides
+ * @property {string} components
+ * 
+ * @typedef Level ProgGame level
+ * @property {string} `@pageId` Level id
+ * @property {"ProgGameLevel"} type
+ * @property {string} label
+ * @property {string} intro
+ * @property {{x:0, y:0|1}[][]} map Matrix of {x, y} where
+ * - y = 1 means a path
+ * - x is unused (history...)
+ * @property {ObjectsItem[]} objects
+ * @property {string[]} api
+ * @property {string} winningCondition
+ * @property {string} onStart
+ * @property {string} onAction
+ * @property {string} onWin
+ * @property {string} defaultCode
+ * @property {number} maxTurns
+ */
 var ret = [], objects, level, Wegas,
     said = "";
 
@@ -51,6 +79,11 @@ function ProgGameSimulation(cfg) {
     this.doRecordCommands = (cfg.doRecordCommands === undefined) ? true : cfg.recordCommands;
 }
 Wegas.mix(ProgGameSimulation.prototype, {
+    /** 
+     * 
+     * @param {(name: string) => void} playerFn fn containing player's code
+     * @param {Level} level 
+     */
     run: function(playerFn, level) {
         wdebug("Simulation run");
         this.args = {};
@@ -61,7 +94,6 @@ Wegas.mix(ProgGameSimulation.prototype, {
         this.api = level.api;
         this.objects = level.objects; // Shortcut to level objects
         this.gameOverSent = false;
-
         //"sendCommand({type:'resetLevel', objects: " + JSON.stringify(this.get("objects")) + "});"
         var o, i, j;
         for (i = 0; i < this.objects.length; i += 1) {
@@ -394,9 +426,10 @@ Wegas.mix(ProgGameSimulation.prototype, {
         return false;
     },
     doEval: function(code) {
-        var ctx=this,commands = ["comparePos", "find", "doOpen", "lastCommand"], cb = commands.map(function(e){
-            return ctx[e].bind(ctx); 
-        });
+        var ctx = this,
+            commands = ["comparePos", "find", "doOpen", "lastCommand"], cb = commands.map(function (e) {
+                return ctx[e].bind(ctx);
+            });
         try {
             return (new Function(commands, code))
                 .apply(this, cb);
@@ -534,18 +567,42 @@ Wegas.mix(ProgGameSimulation.prototype, {
         };
     }
 });
-
+/**
+ * Get level from database
+ * Works if pages are stored in JCR
+ * @param {string|number} level
+ * @returns {Level}
+ */
+function getLevelPage(level) {
+    return JSON.parse(gameModel.getPages()[String(level)])
+}
+/**
+ * 
+ * @param {(name: string) => void} playerFn fn containing player's code
+ * @param {Level|string} level 
+ * @param {{}} cfg 
+ */
 function run(playerFn, level, cfg) {
+    /** @type {Level} */
+    var realLevel;
     cfg = cfg || {};
+    if(typeof level !== "object") {
+            realLevel = getLevelPage(level);
+    }else{
+        realLevel = level;
+    }
     var simulation = new ProgGameSimulation(cfg);
-    simulation.run(playerFn, level);
+    simulation.run(playerFn, realLevel);
     return JSON.stringify(simulation.getCommands());
 }
 //node debug
+/* eslint-disable  */
 // var exports;
-// if (exports) {
-//     exports.run = run;
-//     function print() {
+
+// if (module && module.exports) {
+//     module.exports.run = run;
+//     print = function() {
 //         console.log(arguments);
 //     }
 // }
+/* eslint-enable */
