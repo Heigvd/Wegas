@@ -80,7 +80,6 @@ YUI.add('wegas-proggame-level', function(Y) {
                 label = this.get(LABEL).split("-");
             cb.one(".proggame-title h1").setHTML(label[0]); // Display level name
             cb.one(".proggame-title h2").setHTML(label[1]); // Display level name
-
             this.display = new Wegas.ProgGameDisplay(Y.mix(this.toObject(), { // Render canvas display widget
                 plugins: [] // @fixme here proggamedipslay parameters should be in a separate attr
             }, true)).render(cb.one(".terrain"));
@@ -270,22 +269,24 @@ YUI.add('wegas-proggame-level', function(Y) {
         instrument: function(code) {
             return Wegas.JSInstrument.instrument(code); // return instrumented value of the code
         },
-        sendRunRequest: function(code, interpreterCfg) {
+        sendRunRequest: function a(code, interpreterCfg) {
             interpreterCfg = interpreterCfg || {};
+            var level = Y.Wegas.Facade.Page.cache.editable ? this.get('root').get('@pageId') : Y.JSON.stringify(this.toObject());
+
             Wegas.Facade.Variable.sendRequest({
                 request: "/ProgGame/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
                     data: "run(" +
                         "function (name) {" + code + "\n}, " + // Player's code
-                        Y.JSON.stringify(this.toObject()) +
+                        level +
                         ", " + // the current level
                         Y.JSON.stringify(interpreterCfg) +
                         ");"
                 },
                 on: {
                     success: Y.bind(this.onServerReply, this),
-                    failure: Y.bind(function() {
+                    failure: Y.bind(function () {
                         this.set(STATE, IDLE);
                         alert("Your script contains an error.");
                     }, this)
@@ -407,6 +408,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             }
             if (line) {
                 this.cLine = line;
+                /*global require */
                 var Range = require('ace/range').Range;
                 this.marker = session.addMarker(new Range(line, 0, line, 200), "proggame-currentline", TEXT);
                 session.addGutterDecoration(line, "proggame-currentgutterline");
@@ -754,8 +756,6 @@ YUI.add('wegas-proggame-level', function(Y) {
             Y.Wegas.Tutorial(ProgGameLevel.TUTORIAL, {
                 next: "Continuer",
                 skip: "Ignorer le tutoriel"
-            }).then(function(index) {
-                console.log('Im done', index);
             });
         },
         syncFrontUI: function() {
@@ -1318,8 +1318,11 @@ YUI.add('wegas-proggame-level', function(Y) {
                 }
             },
             maxTurns: {
-                type: STRING,
+                type: NUMBER,
                 value: 1,
+                getter: function (v) {
+                    return Number(v);
+                },
                 view: {
                     label: "Max turns",
                     className: 'wegas-advanced-feature'
