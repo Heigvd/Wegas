@@ -415,15 +415,15 @@ YUI.add('wegas-proggame-level', function(Y) {
             }
         },
         doNextLevel: function(fn, retry) {
-            var content;
+            var content = "var money = Variable.find(gameModel, 'money'), currentLevel = Variable.find(gameModel, 'currentLevel'), maxLevel= Variable.find(gameModel, 'maxLevel');\n";
             if (Wegas.Facade.Variable.script.localEval("Variable.find(gameModel,\"currentLevel\").getValue(self)") < Wegas.Facade.Variable.script.localEval("Variable.find(gameModel,\"maxLevel\").getValue(self)")) {
-                content = this.get("onWin") + ";Variable.find(gameModel, \"money\").add(self, 0);"; //player don't win points if he already did the lvl
+                content += this.get("onWin") + ";"; //player don't win points if they already did the lvl
             } else {
-                content = this.get("onWin") + ";Variable.find(gameModel, \"money\").add(self, 100);";
+                content += this.get("onWin") + ";money.add(self, 100);";
             }
-            content += "maxLevel.value = Math.max(maxLevel.value, currentLevel.value);";
+            content += "maxLevel.setValue(self, Math.max(maxLevel.getValue(self), currentLevel.getValue(self)));";
             if (retry) {
-                content += 'Variable.find(gameModel, "currentLevel").setValue(self, ' + this.get("root").get("@pageId") + ')';
+                content += 'currentLevel.setValue(self, ' + this.get("root").get("@pageId") + ')';
             }
             Wegas.Facade.Variable.script.run(content, {
                 on: {
