@@ -17,21 +17,6 @@
          }
      }
 
-     &.form__extract-model {
-
-         .combobox {
-             max-height:450px;
-             background-color: #fefefe;
-             border: 1px solid #c1c1c1;
-
-             .combobox__entry {
-                 overflow-y: auto;
-                 max-height:400px;
-                 padding: 10px;
-             }
-         }
-     }
-
      .form__row{
          display:block;
          position:relative;

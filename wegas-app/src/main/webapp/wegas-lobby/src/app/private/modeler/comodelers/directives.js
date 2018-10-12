@@ -24,7 +24,7 @@ angular
 
                 ctrl.updateModel = function() {
                     // Searching for current model
-                    ScenariosModel.getModels("LIVE", $stateParams.modelId).then(function(response) {
+                    ScenariosModel.getModel("LIVE", $stateParams.modelId).then(function(response) {
                         if (response.isErroneous()) {
                             response.flash();
                         } else {

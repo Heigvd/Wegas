@@ -441,6 +441,7 @@ angular.module('private.modeler.directives', [
             scope: false,
             link: function(scope, element, attrs, parentCtrl) {
                 scope.modelsmenu = [];
+                scope.rawmodelsmenu = [];
                 scope.loadingModels = false;
                 var loadModels = function() {
                     // Reload list from cache each time the window is opened:
@@ -450,7 +451,8 @@ angular.module('private.modeler.directives', [
                             scope.loadingModels = false;
                             var expression = {canDuplicate: true},
                                 filtered = $filter('filter')(response.data, expression) || [];
-                            scope.modelsmenu = $filter('orderBy')(filtered, 'name');
+                            scope.rawmodelsmenu = $filter('orderBy')(filtered, 'name');
+                            updateDisplay(scope.rawmodelsmenu);
                         }
                     });
                 };
@@ -458,14 +460,37 @@ angular.module('private.modeler.directives', [
                 var resetNewModel = function() {
                     scope.newModel = {
                         name: '',
-                        templateId: 0
+                        templateId: 0,
+                        search: ''
                     };
+                };
+
+                var updateDisplay = function(list) {
+                    scope.modelsmenu = list;
                 };
 
                 scope.cancelModel = function() {
                     resetNewModel();
                     scope.$emit('collapse');
                 };
+
+
+                scope.filterModels = function(search) {
+                    if (search && search.length > 0) {
+                        var needle = search.toLowerCase();
+                        var filtered = [];
+                        for (var i in scope.rawmodelsmenu) {
+                            var mo = scope.rawmodelsmenu[i];
+                            if (mo.name.toLowerCase().indexOf(needle) >= 0) {
+                                filtered.push(mo);
+                            }
+                        }
+                        updateDisplay(filtered);
+                    } else {
+                        updateDisplay(scope.rawmodelsmenu);
+                    }
+                };
+
 
                 scope.createModel = function() {
                     var button = $(element).find(".form__submit");

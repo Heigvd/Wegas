@@ -10,7 +10,7 @@
         </div>
 
 
-        <div class='combobox'>
+        <div class='combobox combobox-multiselect'>
             <div id="extractSearchField" class="view__tools">
                 <div class="tool tool--search tool--open">
                     <a class="tool__link"></a>
@@ -24,8 +24,8 @@
                 </div>
             </div>
 
-            <div class='combobox__entry'>
-                <div class="form__row" ng-repeat="scenario in scenariomenu" >
+            <div class='combobox__choices'>
+                <div class="combobox__choice" ng-repeat="scenario in scenariomenu" ng-class="selectedIds[scenario.id] ? 'selected' : ''">
                     <input type='checkbox' ng-model="selectedIds[scenario.id]" value="{{scenario.id}}" id="{{scenario.id}}"><label for="{{scenario.id}}">{{scenario.name}}</label>
                     <!--<select class="form__row__entry input input--small" ng-model="newModel.templateId">
                         <option value="0" disabled>{{'MODELER-INDEX-ADD-SCENARIO-INPUT' | translate}}</option>
