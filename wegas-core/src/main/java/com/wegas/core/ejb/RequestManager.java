@@ -1166,7 +1166,7 @@ public class RequestManager implements RequestManagerI {
     /**
      * Has Current user Shiro Edit permission on gameModel ?
      *
-     * @param gameModel the gameModel to poll permission against
+     * @param gameModel the gameModel to check permission against
      *
      * @return true if the user has edit permission on the gameModel
      */
@@ -1177,7 +1177,7 @@ public class RequestManager implements RequestManagerI {
     /**
      * Has Current user Shiro Edit permission on game ?
      *
-     * @param game the game to poll permission against
+     * @param game the game to check permission against
      *
      * @return true if the user has edit permission on the game
      */

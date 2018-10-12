@@ -158,6 +158,43 @@
         .form {
             margin: 0px;
             padding: 0px;
+            
+            .combobox {
+                background-color: white;
+                border:1px solid #dfdfdf;
+                
+                .tool.tool--search{
+                    border-radius:0;
+                }
+                
+                .combobox__choices {
+                    margin-top: 5px;
+                    padding: 0 5px;
+                    max-height: 300px;
+                    overflow-y : auto;
+                    
+                    input {
+                        display: none;
+                    }
+                    
+                    .combobox__choice{
+                        &:hover {
+                            background-color: #f0f0f0;
+                        }
+                        
+                        &.selected {
+                            background-color: #c1c1c1;
+                        }
+                    }
+                }
+                
+                label {
+                    cursor: pointer;
+                    display: inline-block;
+                    width: 100%;
+                }
+                
+            }
         }
         .view__login-form {
             padding: 10px;
@@ -276,7 +313,7 @@
                 content:"\f046";
             }
 
-            @media screen and (max-width: 1015px) {
+            @media screen and (max-width: 880px) {
                 clear: both;
                 width: 100%;
                 float: left;
@@ -483,18 +520,21 @@
                         float: right;
                     }
                 }
-            }    }
         }
-
-        &.view--scenarios-list,
-        &.view--managed-sessions-list {
-            @media screen and (max-width: 519px) {
-                .view__list {
-                    height: calc(100% - 132px);
-                    &.view__list--with-archive {
-                        height: calc(100% - 212px);
                     }
                 }
+    
+    &.view--managed-sessions-list,
+    &.view--scenarios-list {
+        display: flex;
+        height: 100%;
+        flex-direction: column;
+
+        .view__list {
+            flex-grow: 1;
+            flex-shrink:1;
+            overflow-y: auto;
+            overflow-x: hidden;
             }
         }
 
