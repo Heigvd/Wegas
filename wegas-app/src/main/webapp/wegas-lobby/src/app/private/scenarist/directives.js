@@ -324,7 +324,10 @@ angular.module('private.scenarist.directives', [
             scope: false,
             link: function(scope, element, attrs, parentCtrl) {
                 scope.scenariomenu = [];
+                scope.rawscenariomenu = [];
+
                 scope.loadingScenarios = false;
+
                 var loadScenarios = function() {
                     // Reload list from cache each time the window is opened:
                     scope.loadingScenarios = true;
@@ -333,7 +336,8 @@ angular.module('private.scenarist.directives', [
                             scope.loadingScenarios = false;
                             var expression = { canDuplicate: true },
                                 filtered = $filter('filter')(response.data, expression) || [];
-                            scope.scenariomenu = $filter('orderBy')(filtered, 'name');
+                            scope.rawscenariomenu = $filter('orderBy')(filtered, 'name');
+                            updateDisplay(scope.rawscenariomenu);
                         }
                     });
                 };
@@ -341,13 +345,35 @@ angular.module('private.scenarist.directives', [
                 var resetNewScenario = function() {
                     scope.newScenario = {
                         name: '',
-                        templateId: 0
+                        templateId: 0,
+                        search: ''
                     };
                 };
 
                 scope.cancelScenario = function() {
                     resetNewScenario();
                     scope.$emit('collapse');
+                };
+
+                var updateDisplay = function(scenarioList) {
+                    scope.scenariomenu = scenarioList;
+                };
+
+
+                scope.filterScenarios = function(search) {
+                    if (search && search.length > 0) {
+                        var needle = search.toLowerCase();
+                        var filtered = [];
+                        for (var i in scope.rawscenariomenu) {
+                            var scen = scope.rawscenariomenu[i];
+                            if (scen.name.toLowerCase().indexOf(needle) >= 0) {
+                                filtered.push(scen);
+                            }
+                        }
+                        updateDisplay(filtered);
+                    } else {
+                        updateDisplay(scope.rawscenariomenu);
+                    }
                 };
 
                 scope.createScenario = function() {

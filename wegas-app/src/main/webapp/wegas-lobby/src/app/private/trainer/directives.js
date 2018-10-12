@@ -34,7 +34,6 @@ angular.module('private.trainer.directives', [
             prevFilter = "",
             filtered = [],
             prevSource = null,
-
             // Adjusts layout constants to the current window size.
             checkWindowSize = function() {
                 if (winheight !== $window.innerHeight) {
@@ -79,7 +78,7 @@ angular.module('private.trainer.directives', [
                 updateDisplay(list);
             },
             // Returns an array containing the occurrences of 'needle' in rawSessions:
-            doSearch = function(needle){
+            doSearch = function(needle) {
                 var len = rawSessions.length,
                     res = [];
                 for (var i = 0; i < len; i++) {
@@ -98,11 +97,12 @@ angular.module('private.trainer.directives', [
             };
 
         /*
-        ** Updates the listing when the user has clicked on the "My sessions first" checkbox,
-        ** and also during initial page rendering.
-        */
+         ** Updates the listing when the user has clicked on the "My sessions first" checkbox,
+         ** and also during initial page rendering.
+         */
         ctrl.setMeFirst = function(mefirst, updateDisplay) {
-            if (mefirst === undefined) return;
+            if (mefirst === undefined)
+                return;
             ctrl.mefirst = mefirst;
             // Update the checkbox in the UI:
             var cbx = $('#mefirst');
@@ -142,15 +142,15 @@ angular.module('private.trainer.directives', [
         }
 
         /*
-        ** Filters rawSessions according to the given search string and puts the result in ctrl.sessions.
-        ** Hypotheses on input array rawSessions:
-        ** 1. It contains only scenarios with attribute canView = true (and implicitly where 'gameModel' is non-null).
-        ** 2. It's already ordered according to the 'createdTime' attribute,
-        **    so that the output automatically follows the same ordering.
+         ** Filters rawSessions according to the given search string and puts the result in ctrl.sessions.
+         ** Hypotheses on input array rawSessions:
+         ** 1. It contains only scenarios with attribute canView = true (and implicitly where 'gameModel' is non-null).
+         ** 2. It's already ordered according to the 'createdTime' attribute,
+         **    so that the output automatically follows the same ordering.
          */
-        ctrl.filterSessions = function(search){
-            if (!search || search.length === 0){
-                if (isFiltering){
+        ctrl.filterSessions = function(search) {
+            if (!search || search.length === 0) {
+                if (isFiltering) {
                     isFiltering = false;
                     initMaxItemsDisplayed(); // Reset since we are changing between searching and not searching
                 }
@@ -183,7 +183,7 @@ angular.module('private.trainer.directives', [
             ctrl.loading = true;
             SessionsModel.getSessions("LIVE").then(function(response) {
 
-                rawSessions = $filter('filter')(response.data, { gameModel: { canView: true }} ) || [];
+                rawSessions = $filter('filter')(response.data, {gameModel: {canView: true}}) || [];
                 if (ctrl.mefirst && ctrl.username.length > 0) {
                     // Prepare a list where "my" sessions appear first (ordered by creation date, like the rest):
                     var mySessions = $filter('filter')(rawSessions, {createdByName: ctrl.username}) || [],
@@ -263,22 +263,22 @@ angular.module('private.trainer.directives', [
         $rootScope.$on('changeLimit', function(e, hasNewData) {
             if (e.currentScope.currentRole === "TRAINER") {
                 extendDisplayedItems();
-                if ( ! $rootScope.$$phase) {
+                if (!$rootScope.$$phase) {
                     $scope.$apply();
                 }
             }
         });
 
         // This is jQuery code for detecting window resizing:
-        $(window).on("resize.doResize", _.debounce(function (){
-            $scope.$apply(function(){
+        $(window).on("resize.doResize", _.debounce(function() {
+            $scope.$apply(function() {
                 initMaxItemsDisplayed();
                 updateDisplay(currentList());
             });
-        },100));
+        }, 100));
 
         // When leaving, remove the window resizing handler:
-        $scope.$on("$destroy",function (){
+        $scope.$on("$destroy", function() {
             //$(window).off("resize.doResize");
         });
 
@@ -287,7 +287,7 @@ angular.module('private.trainer.directives', [
             if (user !== false) {
                 ctrl.user = user;
                 if (user.isAdmin) {
-                    UsersModel.getFullUser(user.id).then(function (response) {
+                    UsersModel.getFullUser(user.id).then(function(response) {
                         if (response.isErroneous()) {
                             response.flash();
                         } else {
@@ -314,16 +314,20 @@ angular.module('private.trainer.directives', [
             require: "^trainerSessionsIndex",
             link: function(scope, element, attrs, parentCtrl) {
                 scope.scenariomenu = [];
+                scope.rawscenariomenu = [];
+
                 scope.loadingScenarios = false;
+
                 var loadScenarios = function() {
-                    if (scope.scenariomenu.length == 0) {
+                    if (scope.rawscenariomenu.length === 0) {
                         scope.loadingScenarios = true;
                         ScenariosModel.getScenarios("LIVE").then(function(response) {
                             if (!response.isErroneous()) {
                                 scope.loadingScenarios = false;
-                                var expression = { canInstantiate: true },
+                                var expression = {canInstantiate: true},
                                     filtered = $filter('filter')(response.data, expression) || [];
-                                scope.scenariomenu = $filter('orderBy')(filtered, 'name');
+                                scope.rawscenariomenu = $filter('orderBy')(filtered, 'name');
+                                updateDisplay(scope.rawscenariomenu);
                             }
                         });
                     }
@@ -331,7 +335,8 @@ angular.module('private.trainer.directives', [
                 var resetNewSession = function() {
                     scope.newSession = {
                         name: "",
-                        scenarioId: 0
+                        scenarioId: 0,
+                        search:''
                     };
                 };
 
@@ -339,6 +344,30 @@ angular.module('private.trainer.directives', [
                     resetNewSession();
                     scope.$emit('collapse');
                 };
+
+
+                var updateDisplay = function(scenarioList) {
+                    scope.scenariomenu = scenarioList;
+                };
+
+
+                scope.filterScenarios = function(search) {
+                    if (search && search.length > 0) {
+                        var needle = search.toLowerCase();
+                        var filtered = [];
+                        for (var i in scope.rawscenariomenu) {
+                            var scen = scope.rawscenariomenu[i];
+                            if (scen.name.toLowerCase().indexOf(needle) >= 0) {
+                                filtered.push(scen);
+                            }
+                        }
+                        updateDisplay(filtered);
+                    } else {
+                        updateDisplay(scope.rawscenariomenu);
+                    }
+                };
+
+
 
                 scope.addSession = function() {
                     var button = $(element).find(".form__submit");
@@ -391,7 +420,7 @@ angular.module('private.trainer.directives', [
                 username: '=',
                 mefirst: '='
             }
-    };
+        };
     })
     .directive('trainerSession', function(Flash) {
         "use strict";
