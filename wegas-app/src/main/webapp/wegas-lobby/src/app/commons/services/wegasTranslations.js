@@ -1797,6 +1797,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Clear JPA cache",
                             'fr': "Vider le cache JPA"
                         },
+                        'ADMIN-INDEX-CREATE-EMPTY-MODEL': {
+                            'en': "Create an empty model",
+                            'fr': "Créer un nouveau modèle vide"
+                        },
                         'ADMIN-INDEX-CLEAR-GAMEMODELS': {
                             'en': "Delete gameModels which are candidates for final deletion",
                             'fr': "Supprimer définitivement les gameModels qui sont candidats pour une suppression définitive"

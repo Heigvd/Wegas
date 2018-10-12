@@ -137,6 +137,28 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         super(GameModel.class);
     }
 
+    /**
+     * Duplicate game model.
+     * Handle MODEL and SCENARIO.
+     *
+     * @param entityId id of the gamemodel to duplicate
+     *
+     * @return a new model or a new scenario
+     *
+     * @throws CloneNotSupportedException
+     */
+    public GameModel duplicateGameModel(Long entityId) throws CloneNotSupportedException {
+        GameModel gm = this.find(entityId);
+        switch (gm.getType()) {
+            case MODEL:
+                return this.createModelWithDebugGame(entityId);
+            case SCENARIO:
+                return this.createScenarioWithDebugGame(entityId);
+            default:
+                throw new WegasIncompatibleType("Invalid gameModel type");
+        }
+    }
+
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public boolean isPersisted(final Long gameModelId) {
         try {
@@ -773,6 +795,15 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @param entity GameModel
      */
     public void delete(GameModel entity) {
+
+        if (entity.getType().equals(MODEL)) {
+            for (GameModel gm : getImplementations(entity)) {
+                if (gm.getType().equals(SCENARIO) && !gm.getStatus().equals(Status.DELETE)) {
+                    throw WegasErrorMessage.error("Unable to delete the model because at least one scenario still depends on it");
+                }
+            }
+        }
+
         entity.setStatus(Status.DELETE);
     }
 

@@ -325,7 +325,7 @@ public class GameModelController {
     @POST
     @Path("{entityId: [1-9][0-9]*}/Duplicate")
     public GameModel duplicate(@PathParam("entityId") Long entityId) throws CloneNotSupportedException {
-        return gameModelFacade.createScenarioWithDebugGame(entityId);
+        return gameModelFacade.duplicateGameModel(entityId);
     }
 
     /**

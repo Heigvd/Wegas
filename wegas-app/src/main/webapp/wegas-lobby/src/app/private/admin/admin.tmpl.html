@@ -32,9 +32,11 @@
                 {{'ADMIN-INDEX-ACTIONS-TITLE'| translate}}
             </h4>
             <ul>
+
                 <li><span style="cursor: pointer;" ng-click="adminCtrl.fireAndForget('DELETE', 'rest/Utils/EmCache')">{{'ADMIN-INDEX-CLEAR-EMCACHE'| translate}}</span></li>
                 <li><span style="cursor: pointer;" ng-click="adminCtrl.fireAndForget('DELETE', 'rest/GameModel/CleanDatabase')">{{'ADMIN-INDEX-CLEAR-GAMEMODELS'| translate}}</span></li>
                 <li><span style="cursor: pointer;" ng-click="adminCtrl.fireAndForget('GET', 'rest/Utils/StartPopulating')">{{'ADMIN-INDEX-TRIGGER-POPULATING'| translate}}</span></li>
+                <li><span style="cursor: pointer;" ng-click="adminCtrl.fireAndForget('POST', 'rest/Update/CreateEmptyModel')">{{'ADMIN-INDEX-CREATE-EMPTY-MODEL'| translate}}</span></li>
             </ul>
         </div>
     </div>

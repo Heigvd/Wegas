@@ -104,7 +104,7 @@ angular.module('wegas.models.scenarios', [])
                     }
                     deferred.resolve(data);
                 }).error(function(data) {
-                    deferred.resolve(false);
+                    deferred.reject(data);
                 });
                 return deferred.promise;
             },
@@ -640,7 +640,16 @@ angular.module('wegas.models.scenarios', [])
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
+                }).catch(function(data) {
+                    if (data && data.message) {
+                        deferred.resolve(Responses.danger(data.message, false));
+                    } else {
+                        $translate('COMMONS-SCENARIOS-SUPPRESSION-FLASH-ERROR').then(function(message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
+                    }
                 });
+
             } else {
                 $translate('COMMONS-SCENARIOS-WRONG-OBJECT-FLASH-ERROR').then(function(message) {
                     deferred.resolve(Responses.danger(message, false));
@@ -663,6 +672,14 @@ angular.module('wegas.models.scenarios', [])
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
+                }).catch(function(data) {
+                    if (data && data.message) {
+                        deferred.resolve(Responses.danger(data.message, false));
+                    } else {
+                        $translate('COMMONS-SCENARIOS-SUPPRESSION-FLASH-ERROR').then(function(message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
+                    }
                 });
             } else {
                 $translate('COMMONS-SCENARIOS-WRONG-OBJECT-FLASH-ERROR').then(function(message) {
@@ -682,7 +699,15 @@ angular.module('wegas.models.scenarios', [])
                             deferred.resolve(Responses.success(message, data));
                         });
                     } else {
-                        $translate('COMMONS-SCENARIOS-SUPRESSION-FLASH-ERROR').then(function(message) {
+                        $translate('COMMONS-SCENARIOS-SUPPRESSION-FLASH-ERROR').then(function(message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
+                    }
+                }).catch(function(data) {
+                    if (data && data.message) {
+                        deferred.resolve(Responses.danger(data.message, false));
+                    } else {
+                        $translate('COMMONS-SCENARIOS-SUPPRESSION-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }

@@ -34,6 +34,9 @@ angular.module('private.admin', [
                 case "DELETE":
                     $http.delete(ctrl.serviceUrl + url);
                     break;
+                case "POST":
+                    $http.post(ctrl.serviceUrl + url);
+                    break;
             }
         };
 

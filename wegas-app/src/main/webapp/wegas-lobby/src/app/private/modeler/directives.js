@@ -343,8 +343,6 @@ angular.module('private.modeler.directives', [
             scope: false,
             link: function(scope, element, attrs, parentCtrl) {
 
-                var filtering = false;
-
                 scope.scenariomenu = [];
                 scope.rawscenariomenu = [];
                 scope.loadingScenarios = false;

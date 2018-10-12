@@ -56,6 +56,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -803,5 +804,17 @@ public class UpdateController {
         String sql = "SELECT variableinstance FROM VariableInstance variableinstance WHERE  (variableinstance.playerScopeKey IS NOT NULL AND  variableinstance.playerScopeKey NOT IN (SELECT player.id FROM Player player)) OR (variableinstance.teamScopeKey IS NOT NULL AND variableinstance.teamScopeKey NOT IN (SELECT team.id FROM Team team)) OR (variableinstance.gameScopeKey IS NOT NULL AND variableinstance.gameScopeKey NOT IN (SELECT game.id from Game game))";
         TypedQuery<VariableInstance> query = this.getEntityManager().createQuery(sql, VariableInstance.class).setMaxResults(3000);
         return query.getResultList();
+    }
+
+    @POST
+    @Path("CreateEmptyModel")
+    public String createEmptyModel() {
+        GameModel emptyModel = new GameModel();
+        emptyModel.setName("_EmptyModel (en)");
+        emptyModel.setType(GameModel.GmType.MODEL);
+
+        gameModelFacade.createWithDebugGame(emptyModel);
+
+        return "OK";
     }
 }
