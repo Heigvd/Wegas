@@ -53,6 +53,48 @@ var Wegas = {
             }
             return r;
         },
+        /**
+         * Copy direct properties from objects to target
+         * src: https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Object/assign
+         * @template T
+         * @template O
+         * @param {T} target
+         * @param {...O} objects
+         * @returns {T & O}
+         */
+        // eslint-disable-next-line no-unused-vars
+        assign: function assign(target, objects) {
+            // .length of function is 2
+            'use strict';
+            if (target == null) {
+                // TypeError if undefined or null
+                throw new TypeError(
+                    'Cannot convert undefined or null to object'
+                );
+            }
+
+            var to = Object(target);
+
+            for (var index = 1; index < arguments.length; index++) {
+                var nextSource = arguments[index];
+
+                if (nextSource != null) {
+                    // Skip over if undefined or null
+                    for (var nextKey in nextSource) {
+                        // Avoid bugs when hasOwnProperty is shadowed
+                        if (
+                            Object.prototype.hasOwnProperty.call(
+                                nextSource,
+                                nextKey
+                            )
+                        ) {
+                            to[nextKey] = nextSource[nextKey];
+                        }
+                    }
+                }
+            }
+            return to;
+        },
         clone: function(o) {
             var i,
                 newObj = o instanceof Array ? [] : {};
@@ -232,7 +274,7 @@ ProgGameSimulation.prototype = {
     doSay: function(cfg) {
         this.log(this.cObject.id + ' says "' + cfg.text + '"');
         this.sendCommand(
-            Wegas.mix(cfg, {
+            Wegas.Object.assign(cfg, {
                 type: 'say',
                 id: this.cObject.id,
                 delay: 1500,
@@ -494,7 +536,10 @@ ProgGameSimulation.prototype = {
         argsName.push('watches');
         argsValue.push(this.watches);
 
-        var f = new Function(argsName, '(' + playerFn.toString() + ').call({})');
+        var f = new Function(
+            argsName,
+            '(' + playerFn.toString() + ').call({})'
+        );
         f.apply(null, argsValue);
     },
     find: function(id) {
