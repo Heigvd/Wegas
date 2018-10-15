@@ -83,6 +83,7 @@ var WegasDashboard = (function() {
         section.items[id] = {
             itemType: 'action',
             doFn: doFn,
+            label: cfg.label,
             icon: cfg.icon || "fa fa-pencil",
             hasGlobal: cfg.hasGlobal
         };
