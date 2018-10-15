@@ -432,7 +432,7 @@ public class ModelFacade {
                     vd.setVisibility(ModelScoped.Visibility.INHERITED);
 
                     // make sure corresponding descriptors share the same refId
-                    for (GameModel other : scenarios) {
+                    for (GameModel other : allScenarios) {
                         try {
                             VariableDescriptor find = variableDescriptorFacade.find(other, vd.getName());
                             this.resetVariableDescriptorRefIds(find, vd);
@@ -440,6 +440,7 @@ public class ModelFacade {
                             // prevent modification until first model propagation
                             find.setVisibility(ModelScoped.Visibility.INTERNAL);
                         } catch (WegasNoResultException ex) {
+                            logger.error("Missing descriptor");
                         }
                     }
 
