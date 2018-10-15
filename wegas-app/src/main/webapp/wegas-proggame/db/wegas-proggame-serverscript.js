@@ -1,14 +1,14 @@
 // Types used accross this file
 /* global gameModel, self, Variable*/
 /**
- * @typedef ObjectsItem wqss
+ * @typedef ObjectsItem
  * @property {string} id
  * @property {number} x
  * @property {number} y
  * @property {number} direction
  * @property {boolean} collides
  * @property {string} components
- * 
+ *
  * @typedef Level ProgGame level
  * @property {string} `@pageId` Level id
  * @property {"ProgGameLevel"} type
@@ -25,68 +25,81 @@
  * @property {string} onWin
  * @property {string} defaultCode
  * @property {number} maxTurns
+ *
+ * @typedef {Object} Config
+ * @property {boolean} debug
+ * @property {unknown[]} breakpoint
+ * @property {unknown[]} watches
+ * @property {number} startStep
+ * @property {number} targetStep
+ * @property {boolean} recordCommands
  */
-var ret = [], objects, level, Wegas,
-    said = "";
+/**
+ * GLOBAL VALUE TO BE REMOVED
+ */
+var said = '';
+/**
+ * @namespace Wegas utilities
+ */
 
-Wegas = { //                                                                     // Utilities
-    bind: function(fn, scope) {
-        return function() {
-            fn.call(scope, arguments);
-        };
-    },
-    mix: function(receiver, supplier) {
-        var i;
-        for (i in supplier) {
-            if (supplier.hasOwnProperty(i) && !receiver[i]) {
-                receiver[i] = supplier[i];
-            }
-        }
-        return receiver;
-    },
+var Wegas = {
+    //                                                                     // Utilities
     Object: {
         values: function(object) {
-            var ret = [], i;
+            var r = [],
+                i;
             for (i in object) {
-                ret.push(object[i]);
+                r.push(object[i]);
             }
-            return ret;
+            return r;
         },
         clone: function(o) {
             var i,
-                newObj = (o instanceof Array) ? [] : {};
+                newObj = o instanceof Array ? [] : {};
             for (i in o) {
-                if (i === 'clone')
-                    continue;
-                if (o[i] && typeof o[i] === "object") {
+                if (i === 'clone') continue;
+                if (o[i] && typeof o[i] === 'object') {
                     newObj[i] = Wegas.Object.clone([i]);
-                } else
-                    newObj[i] = o[i];
+                } else newObj[i] = o[i];
             }
             return newObj;
-        }
-    }
+        },
+    },
+    /**
+     * Get level from database
+     * Works if pages are stored in JCR
+     * @param {string|number} level
+     * @returns {Level}
+     */
+    getLevelPage: function getLevelPage(level) {
+        return JSON.parse(gameModel.getPages()[String(level)]);
+    },
 };
 function wdebug(msg) {
-   // print(msg);
+    // print(msg);
 }
+/**
+ * @constructor
+ * @param {Config} cfg
+ */
 function ProgGameSimulation(cfg) {
     this.debug = cfg.debug || false;
     this.breakpoints = cfg.breakpoints || [];
     this.watches = cfg.watches || [];
-    this.startStep = (cfg.startStep === undefined) ? -1 : cfg.startStep;
-    this.targetStep = (cfg.targetStep === undefined) ? 10000000 : cfg.targetStep;
-    this.doRecordCommands = (cfg.doRecordCommands === undefined) ? true : cfg.recordCommands;
+    this.startStep = cfg.startStep === undefined ? -1 : cfg.startStep;
+    this.targetStep = cfg.targetStep === undefined ? 1e7 : cfg.targetStep;
+    this.doRecordCommands =
+        cfg.doRecordCommands === undefined ? true : cfg.recordCommands;
 }
-Wegas.mix(ProgGameSimulation.prototype, {
-    /** 
-     * 
+
+ProgGameSimulation.prototype = {
+    /**
+     *
      * @param {(name: string) => void} playerFn fn containing player's code
-     * @param {Level} level 
+     * @param {Level} level
      */
     run: function(playerFn, level) {
-        wdebug("Simulation run");
-        this.args = {};
+        wdebug('Simulation run');
         this.ret = [];
         this.cObject = null;
         this.currentStep = -1;
@@ -99,7 +112,6 @@ Wegas.mix(ProgGameSimulation.prototype, {
         for (i = 0; i < this.objects.length; i += 1) {
             this.objects[i].defaultActions = this.objects[i].actions;
         }
-        objects = this.objects;
         if (level.onStart) {
             this.doEval(level.onStart);
         }
@@ -108,23 +120,27 @@ Wegas.mix(ProgGameSimulation.prototype, {
             //this.log('Turn ' + (i + 1));
 
             for (j = 0; j < this.objects.length; j += 1) {
-                if (this.checkGameOver()) // If the game is already stopped,
+                if (this.checkGameOver())
+                    // If the game is already stopped,
                     continue; // no need to continue
                 this.cObject = o = this.objects[j]; // Set up a global reference
 
-                if (o.id === "Player") { // If current object is the player,
+                if (o.id === 'Player') {
+                    // If current object is the player,
                     //this.log('Your turn');
                     this.doPlayerEval(playerFn); // run his code
                 }
-                if (o.ai) { // If object has an AI,
+                if (o.ai) {
+                    // If object has an AI,
                     //this.log(o.id + ' turn');
                     this.doEval(o.ai); // run its code
                 }
             }
 
-        //this.resetActions();                                              // Reset available action at the beginning of each turn
+            //this.resetActions();                                              // Reset available action at the beginning of each turn
         }
-        if (!this.checkGameOver()) { // If the game is still not won,
+        if (!this.checkGameOver()) {
+            // If the game is still not won,
             this.log('You lost.'); // then it's definitely lost
         }
     },
@@ -132,22 +148,33 @@ Wegas.mix(ProgGameSimulation.prototype, {
         for (var i = 0; i < this.objects.length; i++) {
             this.objects[i].actions = this.objects[i].defaultActions;
             this.sendCommand({
-                type: "updated",
-                object: Wegas.Object.clone(this.objects[i])
+                type: 'updated',
+                object: Wegas.Object.clone(this.objects[i]),
             });
         }
     },
     commands: {
-        move: function() {}
+        move: function() {},
     },
     sendCommand: function(cfg) {
-        wdebug("Sendcommand " + cfg.type + " current line: " + this.currentStep + ", start line:" + this.startStep + "*" + this.doRecordCommands);
-        if (this.currentStep < this.startStep) { // Debug
-            wdebug("early command dropped");
+        wdebug(
+            'Sendcommand ' +
+                cfg.type +
+                ' current line: ' +
+                this.currentStep +
+                ', start line:' +
+                this.startStep +
+                '*' +
+                this.doRecordCommands
+        );
+        if (this.currentStep < this.startStep) {
+            // Debug
+            wdebug('early command dropped');
             return;
         }
-        if (this.currentStep > this.targetStep) { // Debug
-            wdebug("late command dropped");
+        if (this.currentStep > this.targetStep) {
+            // Debug
+            wdebug('late command dropped');
             return;
         }
         if (!this.doRecordCommands) {
@@ -162,13 +189,12 @@ Wegas.mix(ProgGameSimulation.prototype, {
         return this.ret;
     },
     beforeAction: function(object) {
-        if (this.checkGameOver())
-            return false;
+        if (this.checkGameOver()) return false;
 
         //if (!this.consumeActions(object, 1)) {
-            //    this.log("Not enough actions.");
-            //    return false;
-            //}
+        //    this.log("Not enough actions.");
+        //    return false;
+        //}
 
         return true;
     },
@@ -181,14 +207,8 @@ Wegas.mix(ProgGameSimulation.prototype, {
         }
         this.sendCommand({
             type: 'log',
-            text: text
+            text: text,
         });
-    },
-    pushArg: function(name, val) {
-        this.args[name] = val;
-    },
-    getArgs: function() {
-        return this.args;
     },
     consumeActions: function(object, actions) {
         //if (object.actions - actions < 0) {
@@ -200,48 +220,48 @@ Wegas.mix(ProgGameSimulation.prototype, {
         return true;
     },
     say: function(msg) {
-        if (!this.beforeAction())
-            return;
+        if (!this.beforeAction()) return;
 
         this.doSay({
-            text: "" + msg
+            text: '' + msg,
         });
         said = msg;
 
         this.afterAction();
     },
     doSay: function(cfg) {
-        this.log(this.cObject.id + " says \"" + cfg.text + "\"");
-        this.sendCommand(Wegas.mix(cfg, {
-            type: "say",
-            id: this.cObject.id,
-            delay: 1500
-        }));
+        this.log(this.cObject.id + ' says "' + cfg.text + '"');
+        this.sendCommand(
+            Wegas.mix(cfg, {
+                type: 'say',
+                id: this.cObject.id,
+                delay: 1500,
+            })
+        );
     },
     doOpen: function(object) {
         object.open = true;
         this.sendCommand({
             id: object.id,
-            type: "doorState",
-            state: true
+            type: 'doorState',
+            state: true,
         });
     },
     read: function() {
-        if (this.checkGameOver())
-            return;
+        if (this.checkGameOver()) return;
         var panel = this.findAt(this.cObject.x, this.cObject.y),
             value;
 
         if (panel && panel.value) {
-            value = this.doEval("return " + panel.value);
+            value = this.doEval('return ' + panel.value);
             this.doSay({
-                text: "It's written \"" + value + "\"",
-                think: true
+                text: 'It\'s written "' + value + '"',
+                think: true,
             });
         } else {
             this.doSay({
                 text: "There's nothing to read here.",
-                think: true
+                think: true,
             });
         }
         this.afterAction();
@@ -249,35 +269,37 @@ Wegas.mix(ProgGameSimulation.prototype, {
     },
     include: function(fileName) {
         var msg,
-            files = Variable.find(gameModel, "files");
+            files = Variable.find(gameModel, 'files');
         if (files) {
             msg = files.getInstance(self).getMessageBySubject(fileName);
             if (msg) {
-                this.log("Including: " + fileName);
-                this.doEval("" + msg.body);
+                this.log('Including: ' + fileName);
+                this.doEval('' + msg.body);
                 return;
             }
         }
-        this.log("Unable to include file: " + fileName);
+        this.log('Unable to include file: ' + fileName);
     },
     move: function() {
-        var i, o,
+        var i,
+            o,
             object = this.cObject,
             moveV = this.dirToVector(object.direction);
-        if (!this.beforeAction(object))
-            return;
+        if (!this.beforeAction(object)) return;
 
         if (!this.consumeActions(object, 1)) {
-            this.log("Not enough actions to move");
+            this.log('Not enough actions to move');
             return;
         }
 
-        if (this.checkCollision(object, object.x + moveV.x, object.y + moveV.y)) {
+        if (
+            this.checkCollision(object, object.x + moveV.x, object.y + moveV.y)
+        ) {
             this.doSay({
-                text: "Something is blocking the way",
-                duration: 800
+                text: 'Something is blocking the way',
+                duration: 800,
             });
-        //this.log("Something is blocking the way");
+            //this.log("Something is blocking the way");
         } else {
             object.x += moveV.x;
             object.y += moveV.y;
@@ -286,11 +308,11 @@ Wegas.mix(ProgGameSimulation.prototype, {
             for (i = 0; i < this.currentCollides.length; i += 1) {
                 o = this.currentCollides[i];
                 switch (o.components) {
-                    case "Trap":
+                    case 'Trap':
                         if (o.enabled) {
                             this.sendCommand({
-                                type: "trap",
-                                id: o.id
+                                type: 'trap',
+                                id: o.id,
                             });
                             this.log('You lost.'); // then it's definitely lost
                             this.doRecordCommands = false;
@@ -306,24 +328,21 @@ Wegas.mix(ProgGameSimulation.prototype, {
             dir: object.direction,
             id: object.id,
             x: object.x,
-            y: object.y
+            y: object.y,
         });
     },
     rotate: function(dir) {
         var object = this.cObject;
 
-        if (!this.beforeAction(object))
-            return;
+        if (!this.beforeAction(object)) return;
 
         if (!this.consumeActions(object, 1)) {
-            this.log("Not enough actions to rotate.");
+            this.log('Not enough actions to rotate.');
             return;
         }
         object.direction += dir;
-        if (object.direction > 4)
-            object.direction = 1;
-        if (object.direction < 1)
-            object.direction = 4;
+        if (object.direction > 4) object.direction = 1;
+        if (object.direction < 1) object.direction = 4;
 
         this.doMove(object); // Send move command
 
@@ -338,31 +357,34 @@ Wegas.mix(ProgGameSimulation.prototype, {
     fire: function() {
         var i,
             source = this.cObject;
-        wdebug("fire" + source.actions);
+        wdebug('fire' + source.actions);
 
-        if (this.checkGameOver())
-            return;
+        if (this.checkGameOver()) return;
 
         if (!this.consumeActions(source, 1)) {
-            this.log("Not enough actions to fire.");
+            this.log('Not enough actions to fire.');
             return;
         }
 
         this.sendCommand({
             type: 'fire',
-            object: Wegas.Object.clone(source)
+            object: Wegas.Object.clone(source),
         });
 
         var colidee,
             dirV = this.dirToVector(source.direction);
 
         for (i = 0; i <= source.range; i++) {
-            colidee = this.checkCollision(this.cObject, source.x + (i * dirV.x), source.y + (i * dirV.y));
+            colidee = this.checkCollision(
+                this.cObject,
+                source.x + i * dirV.x,
+                source.y + i * dirV.y
+            );
             if (colidee) {
                 colidee.life = 0;
                 this.sendCommand({
                     type: 'die',
-                    object: Wegas.Object.clone(colidee)
+                    object: Wegas.Object.clone(colidee),
                 });
             }
         }
@@ -378,7 +400,8 @@ Wegas.mix(ProgGameSimulation.prototype, {
         return objects;
     },
     checkCollision: function(source, x, y) {
-        var o, k,
+        var o,
+            k,
             collided = false,
             objects = this.getObjectsAt(x, y);
 
@@ -390,14 +413,15 @@ Wegas.mix(ProgGameSimulation.prototype, {
                 this.currentCollides.push(o);
                 collided = true;
                 switch (o.components) {
-                    case "Door": // Doors
+                    case 'Door': // Doors
                         if (!o.open) {
                             return o;
                         }
                         break;
-                    case "Trap": // Traps do not collide
+                    case 'Trap': // Traps do not collide
                         break;
-                    default: // By default check collision
+                    default:
+                        // By default check collision
                         if (o.collides === undefined || o.collides) {
                             return o;
                         }
@@ -407,7 +431,8 @@ Wegas.mix(ProgGameSimulation.prototype, {
         }
 
         //if (this.level.map[this.level.map.length - 1 - y][x].y === 0 ? !collided : false) {// It's a XOR
-        if (this.level.map[y][x].y === 0 ? !collided : false) { // It's a XOR
+        if (this.level.map[y][x].y === 0 ? !collided : false) {
+            // It's a XOR
             return true;
         }
         return false;
@@ -415,11 +440,11 @@ Wegas.mix(ProgGameSimulation.prototype, {
     checkGameOver: function() {
         if (this.gameOverSent) {
             return true;
-        } else if (this.doEval("return " + this.level.winningCondition)) {
+        } else if (this.doEval('return ' + this.level.winningCondition)) {
             this.gameOverSent = true;
-            this.log("You won!");
+            this.log('You won!');
             this.sendCommand({
-                type: "gameWon"
+                type: 'gameWon',
             });
             return true;
         }
@@ -427,41 +452,50 @@ Wegas.mix(ProgGameSimulation.prototype, {
     },
     doEval: function(code) {
         var ctx = this,
-            commands = ["comparePos", "find", "doOpen", "lastCommand"], cb = commands.map(function (e) {
+            commands = ['comparePos', 'find', 'doOpen', 'lastCommand'],
+            cb = commands.map(function(e) {
                 return ctx[e].bind(ctx);
             });
         try {
-            return (new Function(commands, code))
-                .apply(this, cb);
+            return new Function(commands, code).apply(this, cb);
         } catch (e) {
-            print("[PROGGAME] ERRORED", e);
+            print('[PROGGAME] ERRORED', e);
             return null;
         }
     },
     doPlayerEval: function(playerFn) {
         var scope = {},
-            keys = [],
-            values = [];
-        for (var i in this.api) {
+            i,
+            // Hide global scope variables
+            argsName = [
+                'self',
+                'gameModel',
+                'Variable',
+                'VariableDescriptorFacade',
+                'Instance',
+                'RequestManager',
+                'print',
+                'Wegas',
+                'ProgGameSimulation',
+                'run',
+            ],
+            argsValue = argsName.map(function() {
+                return undefined;
+            });
+        for (i in this.api) {
             if (this[this.api[i]]) {
                 scope[i] = this[this.api[i]].bind(this);
-                keys.push(this.api[i]);
-                values.push(scope[i]);
+                argsName.push(this.api[i]);
+                argsValue.push(scope[i]);
             }
         }
-        keys.push("_____debug");
-        values.push(this._____debug.bind(this));
-        keys.push("watches");
-        values.push(this.watches);
+        argsName.push('_____debug');
+        argsValue.push(this._____debug.bind(this));
+        argsName.push('watches');
+        argsValue.push(this.watches);
 
-        var f = new Function(keys, "(" + playerFn.toString() + ").call({})");
-        f.apply(this, values);
-    // with (this) {
-    //  playerFn.apply(this);                                                           // run fn
-    //(function(that) {
-    //playerFn.apply(this/*, this.getArgs()));                                      // run fn
-    //})(this);
-    //  }
+        var f = new Function(argsName, '(' + playerFn.toString() + ').call({})');
+        f.apply(null, argsValue);
     },
     find: function(id) {
         for (var i = 0; i < this.objects.length; i = i + 1) {
@@ -473,8 +507,11 @@ Wegas.mix(ProgGameSimulation.prototype, {
     },
     findAt: function(x, y) {
         for (var i = 0; i < this.objects.length; i = i + 1) {
-            if (this.objects[i].x === x && this.objects[i].y === y
-                && this.objects[i].id !== "Player") {
+            if (
+                this.objects[i].x === x &&
+                this.objects[i].y === y &&
+                this.objects[i].id !== 'Player'
+            ) {
                 return this.objects[i];
             }
         }
@@ -488,7 +525,14 @@ Wegas.mix(ProgGameSimulation.prototype, {
     },
     _____debug: function(line, scope, vars) {
         this.currentStep += 1;
-        wdebug("____debug line:" + line + ", current step " + this.currentStep + ", startStep: " + this.startStep);
+        wdebug(
+            '____debug line:' +
+                line +
+                ', current step ' +
+                this.currentStep +
+                ', startStep: ' +
+                this.startStep
+        );
         if (this.currentStep > this.startStep) {
             // vars = (function(o) {
             //     var i,
@@ -503,24 +547,24 @@ Wegas.mix(ProgGameSimulation.prototype, {
             //     return ret;
             // })(this);
             //&& line > this.currentStep && // first time considering this line
-            wdebug("halted" + this.breakpoints.indexOf(line) + "*" + line);
-            if (this.breakpoints.indexOf("" + line) > -1) {
+            wdebug('halted' + this.breakpoints.indexOf(line) + '*' + line);
+            if (this.breakpoints.indexOf('' + line) > -1) {
                 this.sendCommand({
-                    type: "breakpoint",
+                    type: 'breakpoint',
                     line: line,
                     step: this.currentStep,
-                    scope: vars
-                //scope: this.genScope(scope)
+                    scope: vars,
+                    //scope: this.genScope(scope)
                 });
                 this.doRecordCommands = false;
             } else {
                 this.sendCommand({
-                    type: "line",
-                    line: line
+                    type: 'line',
+                    line: line,
                 });
             }
         }
-    //this.currentStep = line;
+        //this.currentStep = line;
     },
     _____watch: function() {
         for (var i = 0; i < arguments.length; i += 1) {
@@ -534,12 +578,11 @@ Wegas.mix(ProgGameSimulation.prototype, {
             ret = {};
         for (i = 0; i < this.watches.length; i += 1) {
             try {
-
-                ret[this.watches[i]] = this.doEval("return " + this.watches[i]);
+                ret[this.watches[i]] = this.doEval('return ' + this.watches[i]);
             } catch (e) {
                 // GOTCHA
             }
-        //            ret[this.watches[i]] = true;
+            //            ret[this.watches[i]] = true;
         }
         return ret;
     },
@@ -563,32 +606,24 @@ Wegas.mix(ProgGameSimulation.prototype, {
         }
         return {
             x: dirX,
-            y: dirY
+            y: dirY,
         };
-    }
-});
+    },
+};
 /**
- * Get level from database
- * Works if pages are stored in JCR
- * @param {string|number} level
- * @returns {Level}
- */
-function getLevelPage(level) {
-    return JSON.parse(gameModel.getPages()[String(level)])
-}
-/**
- * 
+ *
  * @param {(name: string) => void} playerFn fn containing player's code
- * @param {Level|string} level 
- * @param {{}} cfg 
+ * @param {Level|string} level
+ * @param {Config} cfg
  */
+/* exported run */
 function run(playerFn, level, cfg) {
     /** @type {Level} */
     var realLevel;
     cfg = cfg || {};
-    if(typeof level !== "object") {
-            realLevel = getLevelPage(level);
-    }else{
+    if (typeof level !== 'object') {
+        realLevel = Wegas.getLevelPage(level);
+    } else {
         realLevel = level;
     }
     var simulation = new ProgGameSimulation(cfg);
