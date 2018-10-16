@@ -43,7 +43,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
@@ -751,13 +750,7 @@ public class WebsocketFacade {
      * disconnect
      */
     private void propagateOnlineUsers() {
-        try {
-            ObjectMapper mapper = JacksonMapperProvider.getMapper();
-            String users = mapper.writeValueAsString(getLocalOnlineUsers());
-            Result trigger = pusher.trigger(WebsocketFacade.ADMIN_CHANNEL, "online-users", users);
-        } catch (JsonProcessingException ex) {
-            logger.error("PropagateOnleinUser through Pusher", ex);
-        }
+        Result trigger = pusher.trigger(WebsocketFacade.ADMIN_CHANNEL, "online-users", "");
     }
 
     public void clearOnlineUsers() {
