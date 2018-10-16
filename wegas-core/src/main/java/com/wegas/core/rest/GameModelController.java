@@ -121,6 +121,12 @@ public class GameModelController {
         return model;
     }
 
+    @GET
+    @Path("Release/{scenarioId: [1-9][0-9]*}")
+    public GameModel release(@PathParam("scenarioId") Long scenarioId) throws IOException, RepositoryException {
+        return modelFacade.releaeScenario(scenarioId);
+    }
+
     /**
      * Create a model
      *

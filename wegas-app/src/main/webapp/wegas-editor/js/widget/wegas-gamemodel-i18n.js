@@ -83,7 +83,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             this.languages.destroyAll();
             for (i in languages) {
                 lang = languages[i];
-                this.renderLanguage(lang.get("id"), lang.get("code"), lang.get("lang"), lang.get("active"));
+                this.renderLanguage(lang.get("id"), lang.get("code"), lang.get("lang"), lang.get("active"), lang.get("visibility"));
             }
 
             var globals = [Y.Wegas.RForm.Script.getGlobals('getter'), Y.Wegas.RForm.Script.getGlobals('condition')];
@@ -92,17 +92,21 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 this.rebuildEditor();
             }, this));
         },
-        renderLanguage: function(id, code, lang, active) {
+        renderLanguage: function(id, code, lang, active, visibility) {
             if (this.languages.size() && id) {
                 this.languages.add(new Y.Wegas.Text({
                     content: "<span class='move-up fa fa-arrows-h' data-language-id='" + id + "'></>"
                 }));
             }
+
+            var readonly = visibility !== "PRIVATE" &&
+                Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO";
+
             this.languages.add(new Y.Wegas.Text({
                 content: "<div class='language" + (!id ? " unsaved" : "") + "' data-language-id='" + id + "'>" +
                     "<div class='form'>" +
-                    "<div><label>Code:</label> <input size='5' class='language-code' value='" + code + "'></div>" +
-                    "<div><label>Name:</label> <input class='language-name' value='" + lang + "'></div>" +
+                    "<div><label>Code:</label> <input size='5'" + (readonly ? " readonly" : "") + " class='language-code' value='" + code + "'></div>" +
+                    "<div><label>Name:</label> <input " + (readonly ? "readonly" : "") + " class='language-name' value='" + lang + "'></div>" +
                     "<div><label>Active:</label> <input type='checkbox' class='language-active' " + (active ? "checked" : "") + "></div>" +
                     "<div class='tools'>" +
                     "  <span class='validate fa fa-save'></span>" +
@@ -402,7 +406,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                         "' lang='", languages[l].get("code"),
                                         "'>",
                                         "<span class='tools'>",
-                                    "<span class='inline-editor-validate fa fa-save'></span>" +
+                                        "<span class='inline-editor-validate fa fa-save'></span>" +
                                         "<span class='inline-editor-cancel fa fa-times'></span>" +
                                         "</span>",
                                         "<", domNode, " class='wegas-translation--toolbar'></", domNode, ">" +
@@ -415,9 +419,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                     if (type === "wegasurl") {
                                         markup.push(" fa fa-folder-o");
                                     }
-                                markup.push("'><", domNode, " class='wegas-translation--toedit'>",
-                                    tr.value.translations[languages[l].get("code")],
-                                    "</", domNode, ">", "</", domNode, ">", "</", domNode, ">");
+                                    markup.push("'><", domNode, " class='wegas-translation--toedit'>",
+                                        tr.value.translations[languages[l].get("code")],
+                                        "</", domNode, ">", "</", domNode, ">", "</", domNode, ">");
                                 }
                                 markup.push("</div>");
                             }
@@ -843,21 +847,21 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     Y.log("SetupEditor for " + cfg.key);
                     this.currentEditorKey = cfg.key;
 
-                var toEditNode = cfg.node.one(".wegas-translation--toedit");
-                if (!toEditNode) {
-                    var dNode = cfg.node.hasClass("wegas-translation-string") ? "span" : "div";
-                    cfg.node.one(".wegas-translation--value").append("<" + dNode + " class='wegas-translation--toedit'></" + dNode + ">");
-                    toEditNode = cfg.node.one(".wegas-translation--toedit");
-                }
+                    var toEditNode = cfg.node.one(".wegas-translation--toedit");
+                    if (!toEditNode) {
+                        var dNode = cfg.node.hasClass("wegas-translation-string") ? "span" : "div";
+                        cfg.node.one(".wegas-translation--value").append("<" + dNode + " class='wegas-translation--toedit'></" + dNode + ">");
+                        toEditNode = cfg.node.one(".wegas-translation--toedit");
+                    }
 
                     if (this.contents[cfg.key] === undefined) {
                         // save initial values
-                    this.contents[cfg.key] = this.toInjectorStyle(toEditNode.getHTML());
+                        this.contents[cfg.key] = this.toInjectorStyle(toEditNode.getHTML());
                     }
 
                     var tinyConfig = {
                         inline: true,
-                    selector: "#" + cfg.node.get("id") + " .wegas-translation--toedit",
+                        selector: "#" + cfg.node.get("id") + " .wegas-translation--toedit",
                         browser_spellcheck: true,
                         plugins: [
                             'autolink link image lists code media table',

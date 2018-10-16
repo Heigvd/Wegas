@@ -139,7 +139,7 @@ YUI.add('wegas-entity', function(Y) {
                         };
                         o.translations[I18n.getCode()] = value;
                         value = o;
-                    } else if (!value){
+                    } else if (!value) {
                         value = {
                             "@class": "TranslatableContent",
                             "translations": {}
@@ -164,106 +164,106 @@ YUI.add('wegas-entity', function(Y) {
      * @augments Y.Wegas.Editable
      * @constructor
      */
-    Entity = Base.create( 'Entity', Base, [Wegas.Editable], {}, {
-            ATTRS: {
-                initialized: {
-                    transient: true
+    Entity = Base.create('Entity', Base, [Wegas.Editable], {}, {
+        ATTRS: {
+            initialized: {
+                transient: true
+            },
+            destroyed: {
+                transient: true
+            },
+            id: {
+                type: NUMBER,
+                optional: true, // The id is optional for entites that have not been persisted
+                writeOnce: 'initOnly',
+                setter: function(val) {
+                    return val * 1;
                 },
-                destroyed: {
-                    transient: true
-                },
-                id: {
-                    type: NUMBER,
-                    optional: true, // The id is optional for entites that have not been persisted
-                    writeOnce: 'initOnly',
-                    setter: function(val) {
-                        return val * 1;
-                    },
-                    index: -20,
-                    view: {
-                        type: 'uneditable',
-                        className: 'wegas-advanced-feature',
-                        label: 'Id',
-                        layout: 'shortInline'
-                    }
-                },
-                '@class': {
-                    value: 'null',
-                    required: true,
-                    writeOnce: 'initOnly',
-                    type: STRING,
-                    view: {
-                        type: HIDDEN
-                    }
-                },
-                refId: {
-                    type: STRING,
-                    optional: true, // The refId is optional for entites that have not been persisted
-                    writeOnce: "initOnly",
-                    index: -19,
-                    view: {
-                        type: "uneditable",
-                        className: "wegas-internal-feature",
-                        label: "RefId"
-                    }
+                index: -20,
+                view: {
+                    type: 'uneditable',
+                    className: 'wegas-advanced-feature',
+                    label: 'Id',
+                    layout: 'shortInline'
                 }
             },
-            /**
-             *  Defines edition menu to be used in editor
-             *  ex:
-             editBtn: {
-             index: -1,
-             maxVisibility: "INTERNAL", // button will be visible up to this visibility, unspecified means INHERITED
-             cfg: {
-             buttonConfigHere : {}
-             }
-             },
-             */
-            EDITMENU: {},
-            /**
-             * Defines methods available in wysiwyge script editor
-             */
-            METHODS: {},
-            ATTRS_DEF: {
-                REF_ID: {
-                    type: STRING,
-                    optional: true, // The refId is optional for entites that have not been persisted
-                    writeOnce: "initOnly",
-                    index: -1,
-                    view: {
-                        type: "uneditable",
-                        className: "wegas-internal-feature",
-                        label: "RefId"
-                    }
-                },
-                VISIBILITY: {
-                    type: STRING,
-                    valueFn: function() {
-                        // default visibility is inherited if the object belongs to a model, private otherwise
-                        return Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "MODEL" ? "INHERITED" : "PRIVATE";
-                    },
-                    view: {
-                        type: SELECT,
-                        choices: [{
-                                value: "INTERNAL",
-                                label: "Model"
-                            }, {
-                                value: "PROTECTED",
-                                label: "Protected"
-                            }, {
-                                value: "INHERITED",
-                                label: "Inherited"
-                            }, {
-                                value: "PRIVATE",
-                                label: "Private"
-                            }],
-                        label: "Visibility",
-                        className: "wegas-entity--visibility-attribute"
-                    },
-                    maxWritableVisibility: "NONE"
+            '@class': {
+                value: 'null',
+                required: true,
+                writeOnce: 'initOnly',
+                type: STRING,
+                view: {
+                    type: HIDDEN
+                }
+            },
+            refId: {
+                type: STRING,
+                optional: true, // The refId is optional for entites that have not been persisted
+                writeOnce: "initOnly",
+                index: -19,
+                view: {
+                    type: "uneditable",
+                    className: "wegas-internal-feature",
+                    label: "RefId"
                 }
             }
-        });
+        },
+        /**
+         *  Defines edition menu to be used in editor
+         *  ex:
+         editBtn: {
+         index: -1,
+         maxVisibility: "INTERNAL", // button will be visible up to this visibility, unspecified means INHERITED
+         cfg: {
+         buttonConfigHere : {}
+         }
+         },
+         */
+        EDITMENU: {},
+        /**
+         * Defines methods available in wysiwyge script editor
+         */
+        METHODS: {},
+        ATTRS_DEF: {
+            REF_ID: {
+                type: STRING,
+                optional: true, // The refId is optional for entites that have not been persisted
+                writeOnce: "initOnly",
+                index: -1,
+                view: {
+                    type: "uneditable",
+                    className: "wegas-internal-feature",
+                    label: "RefId"
+                }
+            },
+            VISIBILITY: {
+                type: STRING,
+                valueFn: function() {
+                    // default visibility is inherited if the object belongs to a model, private otherwise
+                    return Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "MODEL" ? "INHERITED" : "PRIVATE";
+                },
+                view: {
+                    type: SELECT,
+                    choices: [{
+                            value: "INTERNAL",
+                            label: "Model"
+                        }, {
+                            value: "PROTECTED",
+                            label: "Protected"
+                        }, {
+                            value: "INHERITED",
+                            label: "Inherited"
+                        }, {
+                            value: "PRIVATE",
+                            label: "Private"
+                        }],
+                    label: "Visibility",
+                    className: "wegas-entity--visibility-attribute"
+                },
+                maxWritableVisibility: "NONE"
+            }
+        }
+    });
     persistence.Entity = Entity;
     /**
      *
@@ -391,6 +391,7 @@ YUI.add('wegas-entity', function(Y) {
                 }
             },
             refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
+            visibility: Wegas.persistence.Entity.ATTRS_DEF.VISIBILITY,
             code: {
                 type: "string",
                 view: {

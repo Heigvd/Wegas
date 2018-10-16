@@ -294,7 +294,7 @@ public class MergeHelper {
      *
      * @param target
      * @param reference
-     * @param clear     if true, clear resetId when there is no reference
+     * @param clear     if true, clear refIds when there is no reference
      */
     public static void resetRefIds(AbstractEntity target, AbstractEntity reference, Boolean clear) {
         MergeHelper.visitMergeable(target, reference, ProtectionLevel.PROTECTED, Boolean.TRUE, new RefidResetter(clear), 0, null, null);

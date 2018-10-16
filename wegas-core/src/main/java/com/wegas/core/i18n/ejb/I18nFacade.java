@@ -26,6 +26,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModel.GmType;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.ModelScoped;
@@ -59,7 +60,6 @@ import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 import jdk.nashorn.api.scripting.JSObject;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
-import org.eclipse.persistence.tools.PackageRenamer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -183,6 +183,12 @@ public class I18nFacade extends WegasAbstractFacade {
             newLang.setGameModel(gameModel);
             newLang.setIndexOrder(rawLanguages.size()); // last position
             newLang.setLang(name);
+
+            if (gameModel.getType().equals(GmType.MODEL)) {
+                newLang.setVisibility(Visibility.INTERNAL);
+            } else {
+                newLang.setVisibility(Visibility.PRIVATE);
+            }
 
             int suffix = 0;
             String realCode = code;

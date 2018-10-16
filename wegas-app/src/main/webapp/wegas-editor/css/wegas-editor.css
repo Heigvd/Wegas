@@ -965,6 +965,7 @@
     margin-right: 10px;
 }
 
+.wegas-i18n-manager input[readonly],
 .wegas-i18n-manager .wegas-readonly-translation{
     cursor: not-allowed;
     width: calc(100% - 11px);

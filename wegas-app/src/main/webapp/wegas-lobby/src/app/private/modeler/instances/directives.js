@@ -55,15 +55,27 @@ angular
             }
         };
     })
-    .directive('modelerInstancesCard', function(ScenariosModel) {
+    .directive('modelerInstancesCard', function(ScenariosModel, $translate) {
         "use strict";
         return {
             templateUrl: 'app/private/modeler/instances/directives.tmpl/card.html',
             scope: false,
             require: "^modelerInstancesIndex",
-            link: function($scope, element, attrs, parentCtrl) {
+            link: function(scope, element, attrs, parentCtrl) {
 
-                $scope.open = function(modelId) {
+                scope.open = function(modelId) {
+
+                };
+
+                scope.releaseScenario = function(instance) {
+                    var button = $(element).find(".form__submit");
+                    if (!button.hasClass("button--disable")) {
+                        button.addClass("button--disable button--spinner button--rotate");
+
+                        ScenariosModel.releaseScenario(instance.id).then(function() {
+                            button.removeClass("button--disable button--spinner button--rotate");
+                        });
+                    }
                 };
             }
         };
@@ -101,7 +113,7 @@ angular
                     if (!button.hasClass("button--disable")) {
                         button.addClass("button--disable button--spinner button--rotate");
 
-                        ScenariosModel.integrateScenario(scope.scenario.id, scope.scenarioToIntegrateId).then(function() {
+                        ScenariosModel.integrateScenario(scope.model.id, scope.scenarioToIntegrateId).then(function() {
                             button.removeClass("button--disable button--spinner button--rotate");
                             scope.scenarioToIntegrateId = 0;
                         });

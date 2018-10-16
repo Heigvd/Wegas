@@ -307,6 +307,21 @@ angular.module('wegas.models.scenarios', [])
                 };
             }
 
+            model.releaseScenario = function(scenarioId) {
+                var deferred = $q.defer(),
+                    url = "rest/Lobby/GameModel/Release/" + scenarioId;
+                if (scenarioId) {
+                    $http.get(ServiceURL + url, {
+                        "headers": {
+                            "managed-mode": "true"
+                        }
+                    }).success(createSuccess(deferred)).error(createError(deferred));
+
+                    return deferred.promise;
+                }
+                return deferred.promise;
+            };
+
             model.integrateScenario = function(modelId, scenarioId) {
                 var deferred = $q.defer(),
                     url = "rest/Lobby/GameModel/" + modelId + "/Integrate/" + scenarioId;

@@ -118,6 +118,13 @@
         <sql>UPDATE variabledescriptor SET visibility = 'PRIVATE';</sql>
     </changeSet>
 
+    <changeSet author="maxence" id="1527578387-3bis">
+        <addColumn tableName="gamemodellanguage">
+            <column defaultValue="PRIVATE" name="visibility" type="varchar(24)"/>
+        </addColumn>
+        <sql>UPDATE gamemodellanguage SET visibility = 'PRIVATE';</sql>
+    </changeSet>
+
     <changeSet author="maxence" id="1527578387-4">
         <sql splitStatements="false">
             <![CDATA[

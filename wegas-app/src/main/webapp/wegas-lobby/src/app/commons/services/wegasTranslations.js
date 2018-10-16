@@ -1590,6 +1590,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Create a new " + keywords.model.singular.en + " from this version",
                             'fr': "Créer un nouveau " + keywords.model.singular.fr + " depuis cette version"
                         },
+                        'MODELER-INSTANCES-RELEASE-BTN': {
+                            'en': "Release " + keywords.scenario.singular.en,
+                            'fr': "Libérer le " + keywords.scenario.singular.fr
+                        },
                         // Private Scenarist
                         'SCENARIST-INDEX-ADD-TITLE': {
                             'en': "New " + keywords.scenario.singular.en,

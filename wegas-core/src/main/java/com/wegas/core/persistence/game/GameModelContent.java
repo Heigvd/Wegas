@@ -26,7 +26,6 @@ import javax.persistence.*;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @Table(indexes = {
     @Index(columnList = "clientscriptlibrary_gamemodel_id"),
@@ -73,7 +72,6 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     private String content = "";
 
     @Enumerated(value = EnumType.STRING)
-
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
     @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL)
     private Visibility visibility = Visibility.PRIVATE;

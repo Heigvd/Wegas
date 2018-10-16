@@ -132,10 +132,17 @@ public class ModelFacade {
     }
 
     private void resetVariableDescriptorRefIds(VariableDescriptor vd, VariableDescriptor ref) {
-        MergeHelper.resetRefIds(vd, ref, false);
-        VariableInstance defaultInstance = ref.getDefaultInstance();
+        this.resetVariableDescriptorRefIds(vd, ref, false);
+    }
+
+    private void resetVariableDescriptorRefIds(VariableDescriptor vd, VariableDescriptor ref, boolean clear) {
+        MergeHelper.resetRefIds(vd, ref, clear);
+        VariableInstance defaultInstance = null;
+        if (ref != null) {
+            defaultInstance = ref.getDefaultInstance();
+        }
         for (VariableInstance instance : variableDescriptorFacade.getInstances(vd).values()) {
-            MergeHelper.resetRefIds(instance, defaultInstance, false);
+            MergeHelper.resetRefIds(instance, defaultInstance, clear);
         }
     }
 
@@ -187,6 +194,20 @@ public class ModelFacade {
 
         @Override
         public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors) {
+            // be sure descriptor visibility is set to PRIVATE. The correct one will be set when applying the patch.
+            if (target instanceof VariableDescriptor) {
+                ((VariableDescriptor) target).setVisibility(ModelScoped.Visibility.PRIVATE);
+            }
+
+            // same got gamemodelcontent visibilites
+            if (target instanceof GameModelContent) {
+                ((GameModelContent) target).setVisibility(ModelScoped.Visibility.PRIVATE);
+            }
+
+            if (target instanceof GameModelLanguage) {
+                ((GameModelLanguage) target).setVisibility(ModelScoped.Visibility.PRIVATE);
+            }
+
             if (target instanceof StateMachineDescriptor && reference instanceof StateMachineDescriptor
                     && target instanceof TriggerDescriptor == false) {
                 StateMachineDescriptor inScenario = (StateMachineDescriptor) target;
@@ -261,9 +282,10 @@ public class ModelFacade {
 
                 // go through all languages from all scenarios
                 for (GameModel gameModel : allGameModels) {
-                    for (GameModelLanguage gml : gameModel.getLanguages()) {
+                    for (GameModelLanguage gml : gameModel.getRawLanguages()) {
                         translationSources.putIfAbsent(gml.getCode(), new ArrayList<>());
                         List<GameModel> gmRef = translationSources.get(gml.getCode());
+                        gml.setVisibility(ModelScoped.Visibility.INTERNAL);
                         gmRef.add(gameModel);
                     }
                 }
@@ -297,7 +319,7 @@ public class ModelFacade {
                 Map<String, Map<String, GameModelContent>> libraries = model.getLibraries();
                 List<Map<String, Map<String, GameModelContent>>> otherLibraries = new ArrayList<>();
 
-                for (GameModel other : scenarios) {
+                for (GameModel other : allScenarios) {
                     otherLibraries.add(other.getLibraries());
                 }
 
@@ -328,6 +350,7 @@ public class ModelFacade {
                                 Map<String, GameModelContent> otherLib = otherLibs.get(libraryName);
                                 GameModelContent other = otherLib.get(key);
                                 other.forceRefId(content.getRefId());
+                                other.setVisibility(ModelScoped.Visibility.INTERNAL);
                             }
 
                         } else {
@@ -559,6 +582,38 @@ public class ModelFacade {
         return null;
     }
 
+    public GameModel releaeScenario(Long scenarioId) {
+        return this.releaseScenario(gameModelFacade.find(scenarioId));
+    }
+
+    public GameModel releaseScenario(GameModel scenario) {
+        for (VariableDescriptor vd : scenario.getVariableDescriptors()) {
+            vd.setVisibility(ModelScoped.Visibility.PRIVATE);
+            // regenerate new unique refId
+            this.resetVariableDescriptorRefIds(vd, null, true);
+        }
+
+        Map<String, Map<String, GameModelContent>> libraries = scenario.getLibraries();
+        for (Map<String, GameModelContent> contents : libraries.values()) {
+            for (GameModelContent content : contents.values()) {
+                content.setVisibility(ModelScoped.Visibility.PRIVATE);
+                // regenerate new unique refId
+                content.forceRefId(null);
+                content.assertRefId();
+            }
+        }
+
+        for (GameModelLanguage lang : scenario.getRawLanguages()) {
+            lang.setVisibility(ModelScoped.Visibility.PRIVATE);
+            lang.forceRefId(null);
+            lang.assertRefId();
+        }
+
+        scenario.setBasedOn(null);
+
+        return scenario;
+    }
+
     /**
      * Attach all scenarios to the given model
      *
@@ -593,6 +648,7 @@ public class ModelFacade {
                             GameModelLanguage languageByCode = scenario.getLanguageByCode(mLang.getCode());
                             if (languageByCode != null) {
                                 languageByCode.forceRefId(mLang.getRefId());
+                                languageByCode.setVisibility(ModelScoped.Visibility.INTERNAL);
                             }
                         }
                     }

@@ -275,6 +275,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         this.basedOn = srcGameModel;
         if (this.basedOn != null) {
             this.basedOnId = this.basedOn.getId();
+        } else {
+            this.basedOnId = null;
         }
     }
 

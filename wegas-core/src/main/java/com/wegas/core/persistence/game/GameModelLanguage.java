@@ -15,11 +15,16 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.Orderable;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
@@ -44,7 +49,7 @@ import javax.persistence.UniqueConstraint;
             @Index(columnList = "gamemodel_id")
         }
 )
-public class GameModelLanguage extends AbstractEntity implements Orderable, NamedEntity {
+public class GameModelLanguage extends AbstractEntity implements Orderable, NamedEntity, ModelScoped {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -71,6 +76,11 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
      */
     @WegasEntityProperty
     private String lang;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL)
+    private Visibility visibility = Visibility.PRIVATE;
 
     /**
      * Order, first language is the default one
@@ -127,7 +137,7 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
 
     /**
      * get the language identification code.
-     * Code is always uppsercase.
+     * Code is always uppercase.
      *
      * @return Uppercase languade identification code
      */
@@ -167,6 +177,16 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
 
     public void setLang(String language) {
         this.lang = language;
+    }
+
+    @Override
+    public Visibility getVisibility() {
+        return this.visibility;
+    }
+
+    @Override
+    public void setVisibility(Visibility visibility) {
+        this.visibility = visibility;
     }
 
     public GameModel getGameModel() {
