@@ -86,7 +86,7 @@ public class PageController {
      * @throws RepositoryException
      */
     @GET
-    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
+    @Path("/{pageId : [A-Za-z0-9]+}")
     public Response getPage(@PathParam("gameModelId") final Long gameModelId,
             @PathParam("pageId") String pageId)
             throws RepositoryException {
@@ -144,7 +144,7 @@ public class PageController {
      * @throws IOException
      */
     @PUT
-    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
+    @Path("/{pageId : [A-Za-z0-9]+}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response setPage(@PathParam("gameModelId") Long gameModelId,
             @PathParam("pageId") String pageId,
@@ -171,7 +171,7 @@ public class PageController {
      * @throws RepositoryException
      */
     @PUT
-    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}/meta")
+    @Path("/{pageId : [A-Za-z0-9]+}/meta")
     public Response setMeta(@PathParam("gameModelId") Long gameModelId,
             @PathParam("pageId") String pageId,
             Page page) throws RepositoryException {
@@ -187,7 +187,7 @@ public class PageController {
     }
 
     @PUT
-    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}/move/{pos: ([0-9]+)}")
+    @Path("/{pageId : [A-Za-z0-9]+}/move/{pos: ([0-9]+)}")
     public Response move(@PathParam("gameModelId") Long gameModelId,
             @PathParam("pageId") String pageId,
             @PathParam("pos") int pos) throws RepositoryException {
@@ -258,7 +258,7 @@ public class PageController {
      * @throws IOException
      */
     @GET
-    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}/duplicate")
+    @Path("/{pageId : [A-Za-z0-9]+}/duplicate")
     public Response duplicate(@PathParam("gameModelId") Long gameModelId,
             @PathParam("pageId") String pageId) throws RepositoryException, IOException {
 
@@ -336,7 +336,7 @@ public class PageController {
      * @throws RepositoryException
      */
     @DELETE
-    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
+    @Path("/{pageId : [A-Za-z0-9]+}")
     public Response deletePage(@PathParam("gameModelId") Long gameModelId,
             @PathParam("pageId") String pageId)
             throws RepositoryException {
@@ -364,7 +364,7 @@ public class PageController {
      * @throws IOException
      */
     @PUT
-    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
+    @Path("/{pageId : [A-Za-z0-9]+}")
     @Consumes(MediaType.TEXT_PLAIN)
     public Response patch(@PathParam("gameModelId") Long gameModelId,
             @PathParam("pageId") String pageId,

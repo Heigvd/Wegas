@@ -80,7 +80,6 @@ YUI.add('wegas-proggame-level', function(Y) {
                 label = this.get(LABEL).split("-");
             cb.one(".proggame-title h1").setHTML(label[0]); // Display level name
             cb.one(".proggame-title h2").setHTML(label[1]); // Display level name
-
             this.display = new Wegas.ProgGameDisplay(Y.mix(this.toObject(), { // Render canvas display widget
                 plugins: [] // @fixme here proggamedipslay parameters should be in a separate attr
             }, true)).render(cb.one(".terrain"));
@@ -270,22 +269,24 @@ YUI.add('wegas-proggame-level', function(Y) {
         instrument: function(code) {
             return Wegas.JSInstrument.instrument(code); // return instrumented value of the code
         },
-        sendRunRequest: function(code, interpreterCfg) {
+        sendRunRequest: function a(code, interpreterCfg) {
             interpreterCfg = interpreterCfg || {};
+            var level = Y.Wegas.Facade.Page.cache.editable ? this.get('root').get('@pageId') : Y.JSON.stringify(this.toObject());
+
             Wegas.Facade.Variable.sendRequest({
                 request: "/ProgGame/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
                     data: "run(" +
                         "function (name) {" + code + "\n}, " + // Player's code
-                        Y.JSON.stringify(this.toObject()) +
+                        level +
                         ", " + // the current level
                         Y.JSON.stringify(interpreterCfg) +
                         ");"
                 },
                 on: {
                     success: Y.bind(this.onServerReply, this),
-                    failure: Y.bind(function() {
+                    failure: Y.bind(function () {
                         this.set(STATE, IDLE);
                         alert("Your script contains an error.");
                     }, this)
@@ -407,21 +408,22 @@ YUI.add('wegas-proggame-level', function(Y) {
             }
             if (line) {
                 this.cLine = line;
+                /*global require */
                 var Range = require('ace/range').Range;
                 this.marker = session.addMarker(new Range(line, 0, line, 200), "proggame-currentline", TEXT);
                 session.addGutterDecoration(line, "proggame-currentgutterline");
             }
         },
         doNextLevel: function(fn, retry) {
-            var content;
+            var content = "var money = Variable.find(gameModel, 'money'), currentLevel = Variable.find(gameModel, 'currentLevel'), maxLevel= Variable.find(gameModel, 'maxLevel');\n";
             if (Wegas.Facade.Variable.script.localEval("Variable.find(gameModel,\"currentLevel\").getValue(self)") < Wegas.Facade.Variable.script.localEval("Variable.find(gameModel,\"maxLevel\").getValue(self)")) {
-                content = this.get("onWin") + ";Variable.find(gameModel, \"money\").add(self, 0);"; //player don't win points if he already did the lvl
+                content += this.get("onWin") + ";"; //player don't win points if they already did the lvl
             } else {
-                content = this.get("onWin") + ";Variable.find(gameModel, \"money\").add(self, 100);";
+                content += this.get("onWin") + ";money.add(self, 100);";
             }
-            content += "maxLevel.value = Math.max(maxLevel.value, currentLevel.value);";
+            content += "maxLevel.setValue(self, Math.max(maxLevel.getValue(self), currentLevel.getValue(self)));";
             if (retry) {
-                content += 'Variable.find(gameModel, "currentLevel").setValue(self, ' + this.get("root").get("@pageId") + ')';
+                content += 'currentLevel.setValue(self, ' + this.get("root").get("@pageId") + ')';
             }
             Wegas.Facade.Variable.script.run(content, {
                 on: {
@@ -754,8 +756,6 @@ YUI.add('wegas-proggame-level', function(Y) {
             Y.Wegas.Tutorial(ProgGameLevel.TUTORIAL, {
                 next: "Continuer",
                 skip: "Ignorer le tutoriel"
-            }).then(function(index) {
-                console.log('Im done', index);
             });
         },
         syncFrontUI: function() {
@@ -1318,8 +1318,11 @@ YUI.add('wegas-proggame-level', function(Y) {
                 }
             },
             maxTurns: {
-                type: STRING,
+                type: NUMBER,
                 value: 1,
+                getter: function (v) {
+                    return Number(v);
+                },
                 view: {
                     label: "Max turns",
                     className: 'wegas-advanced-feature'
