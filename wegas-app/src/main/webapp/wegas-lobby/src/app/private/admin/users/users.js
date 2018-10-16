@@ -35,6 +35,8 @@ angular.module('private.admin.users', [
             ITEMS_IN_FIRST_BATCH,
             ITEMS_IN_NEXT_BATCHES;
 
+        ctrl.handlers = {};
+
         ctrl.groups = [];           // Display buffer
         ctrl.groupTransient = [];   // Filtering-related group information. Indexed by group id.
         ctrl.search = "";
@@ -385,14 +387,14 @@ angular.module('private.admin.users', [
         }
 
         // Listen for updates to individual users or to the list of users:
-        $rootScope.$on('changeUsers', function(e) {
+        ctrl.handlers.changeUsers = $rootScope.$on('changeUsers', function(e) {
             if (e.currentScope.currentRole === "ADMIN") {
                 ctrl.updateGroups(true);
             }
         });
 
         // Listen for scroll down events and extend the set of visible items without rebuilding the whole list:
-        $rootScope.$on('changeLimit', function(e, hasNewData) {
+        ctrl.handlers.changeLimit = $rootScope.$on('changeLimit', function(e, hasNewData) {
             if (e.currentScope.currentRole === "ADMIN") {
                 var list = ctrl.groups;
                 if (list && list.length > 0 && // It seems that ctrl.groups is not always accessible from here.
@@ -402,6 +404,12 @@ angular.module('private.admin.users', [
                         $scope.$apply();
                     }
                 }
+            }
+        });
+
+        $scope.$on("$destroy", function() {
+            for (var key in ctrl.handlers) {
+                ctrl.handlers[key]();
             }
         });
 
