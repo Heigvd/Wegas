@@ -8,7 +8,7 @@
             <input class="form__row__entry input input--small" type="text" id="session-token" ng-model="newScenario.name" placeholder="{{'SCENARIST-INDEX-ADD-NAME-INPUT'| translate}}" autocomplete="off" style="background:#fff">
         </div>
 
-        <div ng-if="rawscenariomenu.length > 10" class="combobox">
+        <div ng-if="rawscenariomenu.length > 20" class="combobox">
             <div id="createScenarioSearchField" class="view__tools">
                 <div class="tool tool--search tool--open">
                     <a class="tool__link"></a>
@@ -31,7 +31,7 @@
         </div>
 
 
-        <div ng-if="rawscenariomenu.length <= 10">
+        <div ng-if="rawscenariomenu.length <= 20">
             <select class="form__row__entry input input--small" ng-model="newScenario.templateId">
                 <option value="0" disabled>{{'SCENARIST-INDEX-ADD-SCENARIO-INPUT'| translate}}</option>
                 <option ng-repeat="scenario in scenariomenu" value="{{scenario.id}}">{{scenario.name}}</option>
