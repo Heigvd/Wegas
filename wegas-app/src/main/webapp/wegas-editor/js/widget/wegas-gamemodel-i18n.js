@@ -410,7 +410,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                         "<span class='inline-editor-cancel fa fa-times'></span>" +
                                         "</span>",
                                         "<", domNode, " class='wegas-translation--toolbar'></", domNode, ">" +
-                                        "<", domNode, " tabindex='0'");
+                                        "<", domNode);
 
                                     if (type === "wegasurl") {
                                         markup.push(" role='button'");
@@ -419,7 +419,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                     if (type === "wegasurl") {
                                         markup.push(" fa fa-folder-o");
                                     }
-                                    markup.push("'><", domNode, " class='wegas-translation--toedit'>",
+                                    markup.push("'><", domNode, " tabindex='0' class='wegas-translation--toedit'>",
                                         tr.value.translations[languages[l].get("code")],
                                         "</", domNode, ">", "</", domNode, ">", "</", domNode, ">");
                                 }
