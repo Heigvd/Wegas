@@ -118,12 +118,29 @@ var Wegas = {
     getLevelPage: function getLevelPage(level) {
         return JSON.parse(gameModel.getPages()[String(level)]);
     },
+    /**
+     * Create a double array with variables and corresponding values from given hashmap
+     * @param {{[variables:string]: any}} varValues hashmap variable -> value
+     */
+    scopeValue: function(varValues) {
+        var vars, vals;
+        if (typeof values === 'object') {
+            vars = Object.keys(varValues);
+            vals = vars.map(function(k) {
+                return varValues[k];
+            });
+        }
+        return {
+            variables: vars,
+            values: vals,
+        };
+    },
 };
 /**
  * print arguments
  */
 function wdebug() {
-    print.apply(null, arguments);
+    // print.apply(null, arguments);
 }
 /**
  * @constructor
@@ -158,6 +175,18 @@ ProgGameSimulation.prototype = {
      */
     run: function(playerFn, level) {
         wdebug('Simulation run');
+        // convert old version
+        // @TODO remove ...
+        var onWin,
+            r = level.onWin;
+        if (
+            typeof onWin === 'string' &&
+            (r = onWin.match(
+                /Variable.find\(gameModel, "currentLevel"\).setValue\(self, (\d+)\)/
+            ))
+        ) {
+            level.onWin = Number(r[1]);
+        }
         this.ret = [];
         this.cObject = null;
         this.currentStep = -1;
@@ -175,7 +204,7 @@ ProgGameSimulation.prototype = {
         }
         this.log('Running...');
         for (i = 0; i < level.maxTurns; i += 1) {
-            //this.log('Turn ' + (i + 1));
+            // this.log('Turn ' + (i + 1));
 
             for (j = 0; j < this.objects.length; j += 1) {
                 if (this.checkGameOver())
@@ -185,13 +214,19 @@ ProgGameSimulation.prototype = {
 
                 if (o.id === 'Player') {
                     // If current object is the player,
-                    //this.log('Your turn');
+                    // this.log('Your turn');
                     this.doPlayerEval(playerFn); // run his code
                 }
                 if (o.ai) {
                     // If object has an AI,
-                    //this.log(o.id + ' turn');
-                    this.doEval(o.ai); // run its code
+                    // this.log(o.id + ' turn');
+                    var res = {};
+                    for (i in this.api) {
+                        if (this[this.api[i]]) {
+                            res[this.api[i]] = this[this.api[i]].bind(this);
+                        }
+                    }
+                    this.doEval(o.ai, res); // run its code
                 }
             }
 
@@ -228,7 +263,9 @@ ProgGameSimulation.prototype = {
                 ', start line:' +
                 this.startStep +
                 '*' +
-                this.doRecordCommands
+                this.doRecordCommands +
+                ', id:' +
+                cfg.id
         );
         if (this.currentStep < this.startStep) {
             // Debug
@@ -435,7 +472,7 @@ ProgGameSimulation.prototype = {
 
         this.sendCommand({
             type: 'fire',
-            object: Wegas.Object.clone(source),
+            id: source.id,
         });
 
         var colidee,
@@ -505,7 +542,7 @@ ProgGameSimulation.prototype = {
         return false;
     },
     /**
-     * Check if game has ended
+     * Check if game has ended and execute success if player
      */
     checkGameOver: function() {
         if (this.gameOverSent) {
@@ -516,6 +553,17 @@ ProgGameSimulation.prototype = {
             this.sendCommand({
                 type: 'gameWon',
             });
+            var maxLevel = Variable.find(gameModel, 'maxLevel');
+            if (
+                maxLevel.getValue(self) <=
+                Variable.find(gameModel, 'currentLevel').getValue(self)
+            ) {
+                Variable.find(gameModel, 'money').add(self, 100);
+            }
+            maxLevel.setValue(
+                self,
+                Math.max(maxLevel.getValue(self), this.level.onWin)
+            );
             return true;
         }
         return false;
@@ -523,7 +571,7 @@ ProgGameSimulation.prototype = {
     /**
      *
      * @param {string} code code to execute
-     * @param {{[variable:string]: unkown}=} values
+     * @param {{[variable:string]: unkown}=} values scope values hashmap
      */
     doEval: function(code, values) {
         var ctx = this,
@@ -563,6 +611,7 @@ ProgGameSimulation.prototype = {
                 'Wegas',
                 'ProgGameSimulation',
                 'run',
+                'load',
             ],
             argsValue = argsName.map(function() {
                 return undefined;
