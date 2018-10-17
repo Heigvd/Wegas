@@ -9,7 +9,7 @@
         </div>
 
 
-        <div ng-if="rawmodelsmenu.length > 10" class="combobox">
+        <div ng-if="rawmodelsmenu.length > 20" class="combobox">
             <div id="createModelSearchField" class="view__tools">
                 <div class="tool tool--search tool--open">
                     <a class="tool__link"></a>
@@ -30,7 +30,7 @@
                 </div>
             </div>
         </div>
-        <div ng-if="rawmodelsmenu.length <= 10">
+        <div ng-if="rawmodelsmenu.length <= 20">
             <div class="form__row">
                 <select class="form__row__entry input input--small" ng-model="newModel.templateId">
                     <option value="0" disabled>{{'MODELER-INDEX-ADD-SCENARIO-INPUT'| translate}}</option>
