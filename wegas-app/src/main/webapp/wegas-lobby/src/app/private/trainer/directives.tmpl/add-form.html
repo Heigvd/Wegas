@@ -11,7 +11,7 @@
             <span content-loading="{{'TRAINER-INDEX-ADD-SCENARIO-LOADING'| translate}} ..."></span>
         </div>
         <div ng-if="!loadingScenarios" class="form__row">
-            <div ng-if="rawscenariomenu.length > 10" class="combobox">
+            <div ng-if="rawscenariomenu.length > 20" class="combobox">
                 <div id="createScenarioSearchField" class="view__tools">
                     <div class="tool tool--search tool--open">
                         <a class="tool__link"></a>
@@ -35,7 +35,7 @@
 
 
 
-            <div ng-if="rawscenariomenu.length <= 10">
+            <div ng-if="rawscenariomenu.length <= 20">
                 <select class="input input--small" id="scenario-template" ng-model="newSession.scenarioId">
                     <option value="0" disabled>{{'TRAINER-INDEX-ADD-SCENARIO-INPUT'| translate}}</option>
                     <option ng-repeat="scenario in scenariomenu" value="{{scenario.id}}">{{scenario.name}}</option>
