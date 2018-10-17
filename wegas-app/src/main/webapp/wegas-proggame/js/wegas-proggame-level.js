@@ -178,16 +178,14 @@ YUI.add('wegas-proggame-level', function(Y) {
 
             this.idleHandler = Y.later(10000, this, this.doIdleAnimation, [], true); // While in idle mode, launch idle animation every 10 secs
             cb.delegate(CLICK, function() { // End level screen: restart button
-                this.doNextLevel(function() {
-                    this.resetUI();
-                    this.set(STATE, IDLE);
-                }, true);
+                this.resetUI();
+                this.set(STATE, IDLE);
             }, ".proggame-levelend-restart", this);
             cb.delegate(CLICK, function() { // End level screen: next level button:
                 this.doNextLevel(function() {
                     this.mainEditorTab.aceField.setValue("");
                     this.fire("gameWon"); // trigger open page plugin
-                }, false);
+                }.bind(this));
             }, ".proggame-levelend-nextlevel", this);
         //            this.handlers.response = Wegas.Facade.Variable.after("update", this.syncUI, this); // If data changes, refresh
         },
@@ -271,7 +269,7 @@ YUI.add('wegas-proggame-level', function(Y) {
         },
         sendRunRequest: function a(code, interpreterCfg) {
             interpreterCfg = interpreterCfg || {};
-            var level = Y.Wegas.Facade.Page.cache.editable ? this.get('root').get('@pageId') : Y.JSON.stringify(this.toObject());
+            var level = Y.Wegas.Facade.Page.cache.editable ? JSON.stringify(this.get('root').get('@pageId')) : Y.JSON.stringify(this.toObject());
 
             Wegas.Facade.Variable.sendRequest({
                 request: "/ProgGame/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
@@ -414,20 +412,11 @@ YUI.add('wegas-proggame-level', function(Y) {
                 session.addGutterDecoration(line, "proggame-currentgutterline");
             }
         },
-        doNextLevel: function(fn, retry) {
-            var content = "var money = Variable.find(gameModel, 'money'), currentLevel = Variable.find(gameModel, 'currentLevel'), maxLevel= Variable.find(gameModel, 'maxLevel');\n";
-            if (Wegas.Facade.Variable.script.localEval("Variable.find(gameModel,\"currentLevel\").getValue(self)") < Wegas.Facade.Variable.script.localEval("Variable.find(gameModel,\"maxLevel\").getValue(self)")) {
-                content += this.get("onWin") + ";"; //player don't win points if they already did the lvl
-            } else {
-                content += this.get("onWin") + ";money.add(self, 100);";
-            }
-            content += "maxLevel.setValue(self, Math.max(maxLevel.getValue(self), currentLevel.getValue(self)));";
-            if (retry) {
-                content += 'currentLevel.setValue(self, ' + this.get("root").get("@pageId") + ')';
-            }
+        doNextLevel: function(fn) {
+            var content = 'Variable.find(gameModel, "currentLevel").setValue(self, ' + this.get("onWin") + ')';
             Wegas.Facade.Variable.script.run(content, {
                 on: {
-                    success: Y.bind(fn, this)
+                    success: fn
                 }
             });
         },
@@ -1279,6 +1268,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 type: STRING,
                 value: "comparePos(find('Player'), find('Enemy'))",
                 view: {
+                    type: "jseditor",
                     label: "Winning Condition"
                 }
             },
@@ -1286,25 +1276,42 @@ YUI.add('wegas-proggame-level', function(Y) {
                 type: STRING,
                 optional: true,
                 view: {
+                    type: "jseditor",
                     label: "On Start"
                 }
             },
             onAction: {
                 type: STRING,
                 view: {
+                    type: "jseditor",
                     label: "On Action"
                 }
             },
             onWin: {
                 type: STRING,
                 view: {
-                    label: "On Win"
+                    type: "pageselect",
+                    label: "Next Level"
+                },
+                getter: function(v) {
+                    var r;
+                    if (
+                        typeof v === 'string' &&
+                        (r = v.match(
+                            /Variable.find\(gameModel, "currentLevel"\).setValue\(self, (\d+)\)/
+                        ))
+                    ) {
+                        // old version
+                        return r[1];
+                    }
+                    return v;
                 }
             },
             defaultCode: {
                 type: STRING,
                 value: "//Put your code here...\n",
                 view: {
+                    type: "jseditor",
                     label: "Code input placeholder"
                 }
             },
