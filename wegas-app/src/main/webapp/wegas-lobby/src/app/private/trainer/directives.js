@@ -19,6 +19,7 @@ angular.module('private.trainer.directives', [
         ctrl.user = {};
         ctrl.username = '';
         ctrl.mefirst = false;
+        ctrl.handlers = {};
 
         var MENU_HEIGHT = 50,
             SEARCH_FIELD_HEIGHT = 72,
@@ -247,12 +248,12 @@ angular.module('private.trainer.directives', [
             }
         };
 
-        $rootScope.$on('changeSessionsArchives', function(e, count) {
+        ctrl.handlers.changeSessionsArchives = $rootScope.$on('changeSessionsArchives', function(e, count) {
             ctrl.nbArchives += count;
         });
 
         // Listen for updates to individual scenarios or to the list of sessions:
-        $rootScope.$on('changeSessions', function(e, hasNewData) {
+        ctrl.handlers.changeSessions = $rootScope.$on('changeSessions', function(e, hasNewData) {
             if (hasNewData) {
                 // To be on the safe side, also request an extension of displayed sessions (parameter 'true'):
                 ctrl.updateSessions(true);
@@ -260,7 +261,7 @@ angular.module('private.trainer.directives', [
         });
 
         // Listen for scroll down events and extend the set of visible items without rebuilding the whole list:
-        $rootScope.$on('changeLimit', function(e, hasNewData) {
+        ctrl.handlers.changeLimit = $rootScope.$on('changeLimit', function(e, hasNewData) {
             if (e.currentScope.currentRole === "TRAINER") {
                 extendDisplayedItems();
                 if (!$rootScope.$$phase) {
@@ -280,6 +281,9 @@ angular.module('private.trainer.directives', [
         // When leaving, remove the window resizing handler:
         $scope.$on("$destroy", function() {
             //$(window).off("resize.doResize");
+            for (var key in ctrl.handlers) {
+                ctrl.handlers[key]();
+            }
         });
 
         // Find out if the current user has admin rights and what his "friendly" username is.
@@ -336,7 +340,7 @@ angular.module('private.trainer.directives', [
                     scope.newSession = {
                         name: "",
                         scenarioId: 0,
-                        search:''
+                        search: ''
                     };
                 };
 
@@ -399,9 +403,13 @@ angular.module('private.trainer.directives', [
                     }
                 };
 
-                scope.$on('expand', function() {
+                var onExpand = scope.$on('expand', function() {
                     resetNewSession();
                     loadScenarios();
+                });
+
+                scope.$on("$destroy", function() {
+                    onExpand && onExpand();
                 });
             }
         };

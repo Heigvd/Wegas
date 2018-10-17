@@ -14,6 +14,8 @@ angular.module('private.scenarist.directives', [
         ctrl.username = '';
         ctrl.mefirst = false;
 
+        ctrl.handlers = {};
+
         var MENU_HEIGHT = 50,
             SEARCH_FIELD_HEIGHT = 72,
             CARD_HEIGHT = 92,
@@ -266,12 +268,12 @@ angular.module('private.scenarist.directives', [
             return deferred.promise;
         };
 
-        $rootScope.$on('entrenchNbArchives', function(e, count) {
+        ctrl.handlers.entrenchNbArchives = $rootScope.$on('entrenchNbArchives', function(e, count) {
             ctrl.nbArchives -= count;
         });
 
         // Listen for updates to individual scenarios or to the list of scenarios:
-        $rootScope.$on('changeScenarios', function(e, hasNewData) {
+        ctrl.handlers.changeScenarios = $rootScope.$on('changeScenarios', function(e, hasNewData) {
             if (hasNewData) {
                 // To be on the safe side, also request an extension of displayed scenarios (parameter 'true'):
                 ctrl.updateScenarios(true);
@@ -279,7 +281,7 @@ angular.module('private.scenarist.directives', [
         });
 
         // Listen for scroll down events and extend the set of visible items without rebuilding the whole list:
-        $rootScope.$on('changeLimit', function(e, hasNewData) {
+        ctrl.handlers.changeLimit = $rootScope.$on('changeLimit', function(e, hasNewData) {
             if (e.currentScope.currentRole === "SCENARIST") {
                 extendDisplayedItems();
                 if (!$rootScope.$$phase) {
@@ -299,6 +301,9 @@ angular.module('private.scenarist.directives', [
         // When leaving, remove the window resizing handler:
         $scope.$on("$destroy", function() {
             //$(window).off("resize.doResize");
+            for (var key in ctrl.handlers) {
+                ctrl.handlers[key]();
+            }
         });
 
         // Find out if the current user has admin rights and what his "friendly" username is.
@@ -422,9 +427,14 @@ angular.module('private.scenarist.directives', [
                     }
                 };
 
-                scope.$on('expand', function() {
+                var onExpand = scope.$on('expand', function() {
                     resetNewScenario();
                     loadScenarios();
+                });
+
+
+                scope.$on("$destroy", function() {
+                    onExpand && onExpand();
                 });
             }
         };

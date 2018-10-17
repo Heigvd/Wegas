@@ -39,6 +39,7 @@ angular.module('private.player.directives', [])
         /* Container for datas. */
         ctrl.teams = [];
         ctrl.loading = true;
+        ctrl.handlers = {};
         /* Method used to check token for adding a session. */
         ctrl.checkToken = function(token) {
             var deferred = $q.defer();
@@ -118,13 +119,13 @@ angular.module('private.player.directives', [])
         };
 
         /* Listen for new session */
-        $rootScope.$on('newTeam', function(e, hasNewData) {
+        ctrl.handlers.newTeam = $rootScope.$on('newTeam', function(e, hasNewData) {
             if (hasNewData) {
                 updateTeams();
             }
         });
 
-        $rootScope.$on('wegaspusher:populateQueue-dec', function(e, size) {
+        ctrl.handlers.queueDec = $rootScope.$on('wegaspusher:populateQueue-dec', function(e, size) {
             var i, t, j, p,
                 updated = false;
 
@@ -160,7 +161,7 @@ angular.module('private.player.directives', [])
 
         });
 
-        ctrl.detachTeamListener = $rootScope.$on('wegaspusher:team-update', function(e, team) {
+        ctrl.handlers.teamUpdate = $rootScope.$on('wegaspusher:team-update', function(e, team) {
             TeamsModel.cacheTeam(team);
 
             if (!$rootScope.$$phase) {
@@ -170,7 +171,9 @@ angular.module('private.player.directives', [])
 
         // When leaving, remove the team-update listener
         $scope.$on("$destroy", function() {
-            ctrl.detachTeamListener();
+            for (var key in ctrl.handlers) {
+                ctrl.handlers[key]();
+            }
         });
 
         /* Initialize datas */
