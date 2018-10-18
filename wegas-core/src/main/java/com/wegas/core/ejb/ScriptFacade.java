@@ -459,6 +459,8 @@ public class ScriptFacade extends WegasAbstractFacade {
         final Script scriptCopy = new Script();
         scriptCopy.setContent(JSTool.sanitize(script.getContent(), "$$internal$delay.poll();"));
         scriptCopy.setLanguage(script.getLanguage());
+        scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).put(JSTool.JS_TOOL_INSTANCE_NAME,
+                new JSTool.JSToolInstance());
         try (final Delay delay = new Delay(SCRIPT_DELAY, timeoutExecutorService)) {
             scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).put("$$internal$delay", delay);
             return this.eval(scriptCopy, new HashMap<>());

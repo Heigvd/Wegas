@@ -124,7 +124,7 @@ var Wegas = {
      */
     scopeValue: function(varValues) {
         var vars, vals;
-        if (typeof values === 'object') {
+        if (typeof varValues === 'object') {
             vars = Object.keys(varValues);
             vals = vars.map(function(k) {
                 return varValues[k];
@@ -134,6 +134,17 @@ var Wegas = {
             variables: vars,
             values: vals,
         };
+    },
+    /**
+     * Make a function throw when called
+     * @param {(...args:any[])=>any} fn function to mark as evil
+     */
+    evil: function(fn) {
+        var newFn = function() {
+            throw Error(fn.name + ' is Evil');
+        };
+        newFn.prototype = fn.prototype;
+        return Wegas.Object.assign(newFn, fn);
     },
 };
 /**
@@ -574,6 +585,7 @@ ProgGameSimulation.prototype = {
      * @param {{[variable:string]: unkown}=} values scope values hashmap
      */
     doEval: function(code, values) {
+        wdebug("Eval");
         var ctx = this,
             argName,
             commands = ['comparePos', 'find', 'doOpen', 'lastCommand'],
@@ -597,42 +609,39 @@ ProgGameSimulation.prototype = {
         }
     },
     doPlayerEval: function(playerFn) {
-        var scope = {},
-            i,
-            // Hide global scope variables
-            argsName = [
-                'self',
-                'gameModel',
-                'Variable',
-                'VariableDescriptorFacade',
-                'Instance',
-                'RequestManager',
-                'print',
-                'Wegas',
-                'ProgGameSimulation',
-                'run',
-                'load',
-            ],
-            argsValue = argsName.map(function() {
-                return undefined;
-            });
+        wdebug("Player eval");
+        var scope = {
+                // hide global variables to player
+                self: undefined,
+                gameModel: undefined,
+                Variable: undefined,
+                VariableDescriptorFacade: undefined,
+                Instance: undefined,
+                RequestManager: undefined,
+                print: undefined,
+                Wegas: undefined,
+                ProgGameSimulation: undefined,
+                run: undefined,
+                load: undefined,
+                // debugger tool
+                _____debug: this._____debug.bind(this),
+                watches: this.watches,
+                // Prevent bad things. Infinite loop, ...
+                // Function: Wegas.evil(Function),
+                // eval: Wegas.evil(eval),
+            },
+            i;
         for (i in this.api) {
             if (this[this.api[i]]) {
-                scope[i] = this[this.api[i]].bind(this);
-                argsName.push(this.api[i]);
-                argsValue.push(scope[i]);
+                scope[this.api[i]] = this[this.api[i]].bind(this);
             }
         }
-        argsName.push('_____debug');
-        argsValue.push(this._____debug.bind(this));
-        argsName.push('watches');
-        argsValue.push(this.watches);
-
+        var params = Wegas.scopeValue(scope);
         var f = new Function(
-            argsName,
+            params.variables,
             '(' + playerFn.toString() + ').call({})'
         );
-        f.apply(null, argsValue);
+        f.apply(null, params.values);
     },
     /**
      * Find object with correspondig id
