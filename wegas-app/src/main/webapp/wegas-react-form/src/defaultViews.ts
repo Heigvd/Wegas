@@ -26,6 +26,7 @@ import PageLoaderSelect from './Views/Interacting/pageloaderselect';
 import html from './Views/html';
 import Tuple from './Views/tuple';
 import translatable from './HOC/translatable';
+import jseditor from './Views/jseditor';
 
 setDefaultWidgets({
     array: ArrayView,
@@ -38,6 +39,7 @@ setDefaultWidgets({
     hidden: HiddenView,
     html,
     I18nhtml: translatable(html),
+    jseditor,
     keychoice: KeyChoice,
     number: StringView,
     object: ObjectView,

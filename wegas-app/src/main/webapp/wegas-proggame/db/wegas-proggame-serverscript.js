@@ -5,8 +5,8 @@
  * @property {string} id
  * @property {number} x
  * @property {number} y
- * @property {number} direction
- * @property {boolean} collides
+ * @property {number=} direction
+ * @property {boolean=} collides
  * @property {string} components
  *
  * @typedef Level ProgGame level
@@ -34,14 +34,10 @@
  * @property {number} targetStep
  * @property {boolean} recordCommands
  */
-/**
- * GLOBAL VALUE TO BE REMOVED
- */
-var said = '';
+
 /**
  * @namespace Wegas utilities
  */
-
 var Wegas = {
     //                                                                     // Utilities
     Object: {
@@ -95,13 +91,19 @@ var Wegas = {
             }
             return to;
         },
-        clone: function(o) {
+        /**
+         * Deep clone
+         * @template {{[key: string]: any} | any[]} T
+         * @param {T} o object to clone
+         * @returns {T} clone
+         */
+        clone: function clone(o) {
             var i,
                 newObj = o instanceof Array ? [] : {};
             for (i in o) {
                 if (i === 'clone') continue;
                 if (o[i] && typeof o[i] === 'object') {
-                    newObj[i] = Wegas.Object.clone([i]);
+                    newObj[i] = clone(o[i]);
                 } else newObj[i] = o[i];
             }
             return newObj;
@@ -116,9 +118,29 @@ var Wegas = {
     getLevelPage: function getLevelPage(level) {
         return JSON.parse(gameModel.getPages()[String(level)]);
     },
+    /**
+     * Create a double array with variables and corresponding values from given hashmap
+     * @param {{[variables:string]: any}} varValues hashmap variable -> value
+     */
+    scopeValue: function(varValues) {
+        var vars, vals;
+        if (typeof values === 'object') {
+            vars = Object.keys(varValues);
+            vals = vars.map(function(k) {
+                return varValues[k];
+            });
+        }
+        return {
+            variables: vars,
+            values: vals,
+        };
+    },
 };
-function wdebug(msg) {
-    // print(msg);
+/**
+ * print arguments
+ */
+function wdebug() {
+    // print.apply(null, arguments);
 }
 /**
  * @constructor
@@ -132,6 +154,17 @@ function ProgGameSimulation(cfg) {
     this.targetStep = cfg.targetStep === undefined ? 1e7 : cfg.targetStep;
     this.doRecordCommands =
         cfg.doRecordCommands === undefined ? true : cfg.recordCommands;
+    this.ret = [];
+    /** @type {ObjectsItem} */
+    this.cObject = null;
+    this.currentStep = -1;
+    /** @type {Level} */
+    this.level;
+    /** @type {Level["api"]} */
+    this.api; //= level.api;
+    /** @type {Level["objects"]} */
+    this.objects; // Shortcut to level objects
+    this.gameOverSent = false;
 }
 
 ProgGameSimulation.prototype = {
@@ -142,12 +175,24 @@ ProgGameSimulation.prototype = {
      */
     run: function(playerFn, level) {
         wdebug('Simulation run');
+        // convert old version
+        // @TODO remove ...
+        var onWin,
+            r = level.onWin;
+        if (
+            typeof onWin === 'string' &&
+            (r = onWin.match(
+                /Variable.find\(gameModel, "currentLevel"\).setValue\(self, (\d+)\)/
+            ))
+        ) {
+            level.onWin = Number(r[1]);
+        }
         this.ret = [];
         this.cObject = null;
         this.currentStep = -1;
         this.level = level;
         this.api = level.api;
-        this.objects = level.objects; // Shortcut to level objects
+        this.objects = level.objects;
         this.gameOverSent = false;
         //"sendCommand({type:'resetLevel', objects: " + JSON.stringify(this.get("objects")) + "});"
         var o, i, j;
@@ -159,7 +204,7 @@ ProgGameSimulation.prototype = {
         }
         this.log('Running...');
         for (i = 0; i < level.maxTurns; i += 1) {
-            //this.log('Turn ' + (i + 1));
+            // this.log('Turn ' + (i + 1));
 
             for (j = 0; j < this.objects.length; j += 1) {
                 if (this.checkGameOver())
@@ -169,13 +214,19 @@ ProgGameSimulation.prototype = {
 
                 if (o.id === 'Player') {
                     // If current object is the player,
-                    //this.log('Your turn');
+                    // this.log('Your turn');
                     this.doPlayerEval(playerFn); // run his code
                 }
                 if (o.ai) {
                     // If object has an AI,
-                    //this.log(o.id + ' turn');
-                    this.doEval(o.ai); // run its code
+                    // this.log(o.id + ' turn');
+                    var res = {};
+                    for (i in this.api) {
+                        if (this[this.api[i]]) {
+                            res[this.api[i]] = this[this.api[i]].bind(this);
+                        }
+                    }
+                    this.doEval(o.ai, res); // run its code
                 }
             }
 
@@ -198,6 +249,11 @@ ProgGameSimulation.prototype = {
     commands: {
         move: function() {},
     },
+    /**
+     * Queue command
+     * @param {{type: string}} cfg
+     * @returns {boolean} command has been successfully queued
+     */
     sendCommand: function(cfg) {
         wdebug(
             'Sendcommand ' +
@@ -207,22 +263,25 @@ ProgGameSimulation.prototype = {
                 ', start line:' +
                 this.startStep +
                 '*' +
-                this.doRecordCommands
+                this.doRecordCommands +
+                ', id:' +
+                cfg.id
         );
         if (this.currentStep < this.startStep) {
             // Debug
             wdebug('early command dropped');
-            return;
+            return false;
         }
         if (this.currentStep > this.targetStep) {
             // Debug
             wdebug('late command dropped');
-            return;
+            return false;
         }
         if (!this.doRecordCommands) {
             return false;
         }
         this.ret.push(cfg);
+        return true;
     },
     lastCommand: function() {
         return this.ret[this.ret.length - 1];
@@ -240,8 +299,12 @@ ProgGameSimulation.prototype = {
 
         return true;
     },
-    afterAction: function(object) {
-        this.doEval(this.level.onAction);
+    /**
+     *
+     * @param {{[variable:string]: unkown}=} values to pass to the script
+     */
+    afterAction: function(values) {
+        this.doEval(this.level.onAction, values);
     },
     log: function(text) {
         if (text instanceof Object) {
@@ -267,9 +330,8 @@ ProgGameSimulation.prototype = {
         this.doSay({
             text: '' + msg,
         });
-        said = msg;
 
-        this.afterAction();
+        this.afterAction({ said: msg });
     },
     doSay: function(cfg) {
         this.log(this.cObject.id + ' says "' + cfg.text + '"');
@@ -410,7 +472,7 @@ ProgGameSimulation.prototype = {
 
         this.sendCommand({
             type: 'fire',
-            object: Wegas.Object.clone(source),
+            id: source.id,
         });
 
         var colidee,
@@ -479,6 +541,9 @@ ProgGameSimulation.prototype = {
         }
         return false;
     },
+    /**
+     * Check if game has ended and execute success if player
+     */
     checkGameOver: function() {
         if (this.gameOverSent) {
             return true;
@@ -488,16 +553,42 @@ ProgGameSimulation.prototype = {
             this.sendCommand({
                 type: 'gameWon',
             });
+            var maxLevel = Variable.find(gameModel, 'maxLevel');
+            if (
+                maxLevel.getValue(self) <=
+                Variable.find(gameModel, 'currentLevel').getValue(self)
+            ) {
+                Variable.find(gameModel, 'money').add(self, 100);
+            }
+            maxLevel.setValue(
+                self,
+                Math.max(maxLevel.getValue(self), this.level.onWin)
+            );
             return true;
         }
         return false;
     },
-    doEval: function(code) {
+    /**
+     *
+     * @param {string} code code to execute
+     * @param {{[variable:string]: unkown}=} values scope values hashmap
+     */
+    doEval: function(code, values) {
         var ctx = this,
+            argName,
             commands = ['comparePos', 'find', 'doOpen', 'lastCommand'],
             cb = commands.map(function(e) {
                 return ctx[e].bind(ctx);
             });
+        if (typeof values === 'object') {
+            argName = Object.keys(values);
+            commands = commands.concat(argName);
+            cb = cb.concat(
+                argName.map(function(k) {
+                    return values[k];
+                })
+            );
+        }
         try {
             return new Function(commands, code).apply(this, cb);
         } catch (e) {
@@ -520,6 +611,7 @@ ProgGameSimulation.prototype = {
                 'Wegas',
                 'ProgGameSimulation',
                 'run',
+                'load',
             ],
             argsValue = argsName.map(function() {
                 return undefined;
@@ -542,6 +634,11 @@ ProgGameSimulation.prototype = {
         );
         f.apply(null, argsValue);
     },
+    /**
+     * Find object with correspondig id
+     *
+     * @param {string} id
+     */
     find: function(id) {
         for (var i = 0; i < this.objects.length; i = i + 1) {
             if (this.objects[i].id === id) {
@@ -550,21 +647,30 @@ ProgGameSimulation.prototype = {
         }
         return null;
     },
+    /**
+     * Find object at given position which is not the Player
+     *
+     * @param {number} x
+     * @param {number} y
+     */
     findAt: function(x, y) {
         for (var i = 0; i < this.objects.length; i = i + 1) {
             if (
                 this.objects[i].x === x &&
                 this.objects[i].y === y &&
-                this.objects[i].id !== 'Player'
+                this.objects[i].components !== 'PC'
             ) {
                 return this.objects[i];
             }
         }
         return null;
     },
-    findObject: function(id) {
-        return find(id);
-    },
+    /**
+     * Check if 2 objects are at the same position
+     *
+     * @param {ObjectsItem} a object
+     * @param {ObjectsItem} b object
+     */
     comparePos: function(a, b) {
         return a.x === b.x && a.y === b.y;
     },
@@ -632,20 +738,24 @@ ProgGameSimulation.prototype = {
         return ret;
     },
     // *** Utilities *** //
+    /**
+     * Get a normalized vector for a given direction
+     * @param {0|1|2|3} dir direction
+     */
     dirToVector: function(dir) {
         var dirX = 0,
             dirY = 0;
         switch (dir) {
-            case 1:
+            case 1: // down
                 dirY = 1;
                 break;
-            case 2:
+            case 2: // right
                 dirX = 1;
                 break;
-            case 3:
+            case 3: // top
                 dirY = -1;
                 break;
-            case 4:
+            case 4: // left
                 dirX = -1;
                 break;
         }
