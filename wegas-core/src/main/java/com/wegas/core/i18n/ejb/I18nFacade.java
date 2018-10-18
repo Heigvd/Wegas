@@ -1009,7 +1009,7 @@ public class I18nFacade extends WegasAbstractFacade {
                             JSObject trRef = null;
 
                             if (inRef != null) {
-                                trRef = (JSObject) inSource.getMember(key);
+                                trRef = (JSObject) inRef.getMember(key);
                             }
 
                             String newTranslation = null;
