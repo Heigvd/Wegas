@@ -722,7 +722,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             if (response.response.entity) {
                 this.contents[cfg.key] = translation;
             } else {
-                var trNode = cfg.node.one(".wegas-translation--value");
+                var trNode = cfg.node.one(".wegas-translation--toedit");
                 if (trNode) {
                     trNode.setHTML(this.contents[cfg.key]);
                 }
