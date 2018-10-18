@@ -100,7 +100,6 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         // Jackson happy
     }
 
-
     public VariableInstance getParentInstance() {
         return parentInstance;
     }
@@ -190,6 +189,18 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
             }
         }
         return null;
+    }
+
+    /**
+     * remove a translation
+     *
+     * @param languageCode
+     */
+    public void removeTranslation(String languageCode) {
+        Translation translation = this.getTranslation(languageCode);
+        if (translation != null) {
+            this.translations.remove(translation);
+        }
     }
 
     /**
@@ -409,7 +420,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         }
     }
 
-    public String toString(){
-        return this.translateOrEmpty((GameModel)null);
+    public String toString() {
+        return this.translateOrEmpty((GameModel) null);
     }
 }

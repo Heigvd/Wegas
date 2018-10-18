@@ -1005,13 +1005,13 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         Set<Long> matches = new HashSet<>();
 
-        MergeHelper.visitMergeable(gameModel, null, Boolean.TRUE, new MergeHelper.MergeableVisitor() {
+        MergeHelper.visitMergeable(gameModel, Boolean.TRUE, new MergeHelper.MergeableVisitor() {
             @Override
-            public void visit(Mergeable target, Mergeable reference, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors) {
+            public void visit(Mergeable target, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
             }
 
             @Override
-            public void visitProperty(Object target, Object reference, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors) {
+            public void visitProperty(Object target, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object[] references) {
                 if (field != null) {
                     if (field.getAnnotation() != null) {
                         if (field.getAnnotation().searchable()) {

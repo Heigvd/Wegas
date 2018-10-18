@@ -153,7 +153,7 @@ public class ModelFacade {
     private static class ClearModel implements MergeableVisitor {
 
         @Override
-        public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors) {
+        public void visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
             if (target instanceof ResourceInstance) {
                 ResourceInstance ri = (ResourceInstance) target;
                 ri.setActivities(new ArrayList<>());
@@ -193,7 +193,7 @@ public class ModelFacade {
     private static class PreIntegrateScenarioClear implements MergeableVisitor {
 
         @Override
-        public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors) {
+        public void visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable references[]) {
             // be sure descriptor visibility is set to PRIVATE. The correct one will be set when applying the patch.
             if (target instanceof VariableDescriptor) {
                 ((VariableDescriptor) target).setVisibility(ModelScoped.Visibility.PRIVATE);
@@ -208,7 +208,7 @@ public class ModelFacade {
                 ((GameModelLanguage) target).setVisibility(ModelScoped.Visibility.PRIVATE);
             }
 
-            if (target instanceof StateMachineDescriptor && reference instanceof StateMachineDescriptor
+            if (target instanceof StateMachineDescriptor && references.length > 0 && references[0] instanceof StateMachineDescriptor
                     && target instanceof TriggerDescriptor == false) {
                 StateMachineDescriptor inScenario = (StateMachineDescriptor) target;
                 StateMachineDescriptor inModel = (StateMachineDescriptor) target;
@@ -260,14 +260,16 @@ public class ModelFacade {
                 scenarios = loadGameModels(scenarios);
                 // extract the first scenario to act as reference
 
+                // equiv to the original scenarios list but the first is now the model itself
+                List<GameModel> allGameModels = new ArrayList<>(scenarios);
+
                 logger.info("Create model, based on first scenario");
                 GameModel srcModel = scenarios.remove(0);
                 model = (GameModel) srcModel.duplicate();
                 model.setName(modelName);
 
-                // equiv to the original scenarios list but the first is now the model itself
-                List<GameModel> allGameModels = new ArrayList<>(scenarios);
-                allGameModels.add(0, model); // add model in first position
+                // add model in first position
+                allGameModels.add(0, model);
 
                 /*
                  * Detect languages to embed in the model
@@ -434,7 +436,7 @@ public class ModelFacade {
                 /**
                  * Clean sub-levels: make sure no non-extractable content exist in the model
                  */
-                MergeHelper.visitMergeable(model, null, true, new ClearModel());
+                MergeHelper.visitMergeable(model, true, new ClearModel());
 
                 /*
                  * Persist GameModel
@@ -477,7 +479,7 @@ public class ModelFacade {
                             GameModel other = gms.get(0);
                             try {
                                 VariableDescriptor find = variableDescriptorFacade.find(other, vd.getName());
-                                MergeHelper.importTranslations(vd, find, languageCode, i18nFacade);
+                                i18nFacade.importTranslations(vd, find, null, languageCode);
                             } catch (WegasNoResultException ex) {
                             }
                         }
@@ -746,11 +748,11 @@ public class ModelFacade {
                     }
 
                     /**
-                     * Clean sub-levels: make sure to clear statemachine scenarions
+                     * Clean sub-levels: make sure to clear statemachine scenarios
                      */
                     for (GameModel scenario : scenarios) {
                         if (scenario.getType().equals(GmType.SCENARIO)) {
-                            MergeHelper.visitMergeable(scenario, model, true, new PreIntegrateScenarioClear());
+                            MergeHelper.visitMergeable(scenario, true, new PreIntegrateScenarioClear(), model);
                         }
                     }
 
@@ -807,7 +809,7 @@ public class ModelFacade {
                         if (gms.contains(model)) {
                             for (GameModel scen : gms) {
                                 if (scen.getType().equals(GmType.SCENARIO)) {
-                                    MergeHelper.importTranslations(scen, model, languageCode, i18nFacade);
+                                    i18nFacade.importTranslations(scen, model, reference, languageCode);
                                 }
                             }
                         }
@@ -939,7 +941,7 @@ public class ModelFacade {
     }
 
     /**
-     * Propagate mode to all implementations
+     * Propagate model to all implementations
      *
      * @param gameModel
      *
@@ -1011,7 +1013,7 @@ public class ModelFacade {
                         variableDescriptorFacade.reviveItems(scenario, scenario, false);
 
                         for (GameModelLanguage lang : gameModel.getRawLanguages()) {
-                            MergeHelper.importTranslations(scenario, gameModel, lang.getCode(), i18nFacade);
+                            i18nFacade.importTranslations(scenario, gameModel, reference, lang.getCode());
                         }
 
                         gameModelFacade.reset(scenario);

@@ -118,7 +118,7 @@ public class I18nFacade extends WegasAbstractFacade {
         String newCode = lang.getCode();
 
         if (!oldCode.equals(newCode)) {
-            MergeHelper.updateTranslationCode(lang.getGameModel(), oldCode, newCode, this);
+            this.updateTranslationCode(lang.getGameModel(), oldCode, newCode);
         }
 
         return lang;
@@ -248,14 +248,14 @@ public class I18nFacade extends WegasAbstractFacade {
     }
 
     /**
-     * Get a translation
+     * Get a newTranslation
      *
      * @param trId content id
      * @param code language code
      *
-     * @return the translation
+     * @return the newTranslation
      *
-     * @throws WegasNotFoundException if such a translation does not exists
+     * @throws WegasNotFoundException if such a newTranslation does not exists
      */
     private Translation getTranslation(Long trId, String code) {
         if (code != null) {
@@ -270,13 +270,13 @@ public class I18nFacade extends WegasAbstractFacade {
     }
 
     /**
-     * Get a translation
+     * Get a newTranslation
      *
      * @param code language code
      *
-     * @return the translation
+     * @return the newTranslation
      *
-     * @throws WegasNotFoundException if such a translation does not exists
+     * @throws WegasNotFoundException if such a newTranslation does not exists
      */
     private Translation getTranslation(TranslatableContent trContent, String code) {
         Translation translation = trContent.getTranslation(code);
@@ -288,14 +288,14 @@ public class I18nFacade extends WegasAbstractFacade {
     }
 
     /**
-     * Get a translation
+     * Get a newTranslation
      *
      * @param trId content id
      * @param code language ref name
      *
-     * @return the translation
+     * @return the newTranslation
      *
-     * @throws WegasNotFoundException if such a translation does not exists
+     * @throws WegasNotFoundException if such a newTranslation does not exists
      */
     public String getTranslatedString(Long trId, String code) {
         return this.getTranslation(trId, code).getTranslation();
@@ -309,12 +309,12 @@ public class I18nFacade extends WegasAbstractFacade {
                 ModelScoped.Visibility visibility = content.getParentDescriptor().getVisibility();
                 if (visibility == ModelScoped.Visibility.INTERNAL
                         || visibility == ModelScoped.Visibility.PROTECTED) {
-                    // translation belongs to a variable readonly variable descriptor
+                    // newTranslation belongs to a variable readonly variable descriptor
                     return content;
                 }
             } else if (content.getParentInstance() != null) {
                 if (content.getInheritedVisibility() == ModelScoped.Visibility.INTERNAL) {
-                    // translation belongs to a variable readonly variableInstance
+                    // newTranslation belongs to a variable readonly variableInstance
                     return content;
                 }
             }
@@ -483,44 +483,6 @@ public class I18nFacade extends WegasAbstractFacade {
         return true;
     }
 
-    public void importTranslations(Script target, Script reference, String languageCode) {
-        try {
-            JSObject inTarget = (JSObject) fishTranslationsByCode(target.getContent(), languageCode);
-            JSObject inRef = (JSObject) fishTranslationsByCode(reference.getContent(), languageCode);
-            if (inTarget != null && inRef != null) {
-                if (doesPathLocationsMatches(inTarget, inRef)) {
-                    int index = 0;
-                    String script = target.getContent();
-                    for (String key : inTarget.keySet()) {
-                        JSObject trTarget = (JSObject) inTarget.getMember(key);
-                        JSObject trRef = (JSObject) inRef.getMember(key);
-
-                        if (trRef.getMember("status").equals("found")) {
-
-                            if (trTarget.getMember("status").equals("found")) {
-                                logger.debug("Target already contains a translation");
-                            } else {
-                                String translation = (String) trRef.getMember("value");
-                                logger.debug("Import {}::{} from {} in {}", languageCode, translation, reference, target);
-                                script = this.updateScriptWithNewTranslation(script, index, languageCode, translation);
-                            }
-                        } else {
-                            logger.debug("Missing translation in ref");
-                        }
-                        index++;
-                    }
-                    target.setContent(script);
-                } else {
-                    logger.error("Structure does not match; {} VS {}", target, reference);
-                }
-            }
-
-        } catch (ScriptException ex) {
-            logger.error("Ouille ouille ouille: {}", ex);
-        }
-
-    }
-
     public List<TranslatableContent> getInScriptTranslations(String script) throws ScriptException {
         List<TranslatableContent> list = new ArrayList<>();
 
@@ -551,13 +513,13 @@ public class I18nFacade extends WegasAbstractFacade {
 
             switch (status) {
                 case "found":
-                    // the translation already exists
+                    // the newTranslation already exists
                     indexes = getIndexes(impact, result, "valueLoc");
 
                     if (indexes != null) {
                         Integer startIndex = indexes[0];
                         Integer endIndex = indexes[1];
-                        // update existing translation
+                        // update existing newTranslation
                         if (startIndex != null && endIndex != null) {
                             StringBuilder sb = new StringBuilder(impact);
                             sb.replace(startIndex - 1, endIndex + 1, newNewValue);
@@ -765,7 +727,11 @@ public class I18nFacade extends WegasAbstractFacade {
         }
 
         @Override
-        public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors) {
+        public void visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
+            if (target instanceof VariableDescriptor) {
+                print(((VariableDescriptor) target).getName(), level);
+            }
+
             if (field != null) {
                 print(field.getField().getName(), level);
             }
@@ -797,7 +763,7 @@ public class I18nFacade extends WegasAbstractFacade {
 
     public void printTranslations(GameModel target, String... languages) {
         TranslationsPrinter prettyPrinter = new TranslationsPrinter(languages, this);
-        MergeHelper.visitMergeable(target, null, Boolean.TRUE, prettyPrinter);
+        MergeHelper.visitMergeable(target, Boolean.TRUE, prettyPrinter);
         logger.error("Translation for {}{}{}", target, System.lineSeparator(), prettyPrinter);
     }
 
@@ -819,7 +785,7 @@ public class I18nFacade extends WegasAbstractFacade {
     }
 
     /**
-     * Initialise or Override all TranslatedContent "targetLangCode" translations within the model using an translation service.
+     * Initialise or Override all TranslatedContent "targetLangCode" translations within the model using an newTranslation service.
      *
      *
      * @param gameModelId    id of the gameModel to translate
@@ -936,7 +902,7 @@ public class I18nFacade extends WegasAbstractFacade {
     }
 
     /**
-     * Copy translation from one set of mergeables to another one
+     * Copy newTranslation from one set of mergeables to another one
      */
     private static class Translator implements MergeableVisitor {
 
@@ -952,7 +918,7 @@ public class I18nFacade extends WegasAbstractFacade {
         }
 
         @Override
-        public void visit(Mergeable target, Mergeable reference, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors) {
+        public void visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
             if (target instanceof TranslatableContent) {
                 facade.translateTranslatableContent((TranslatableContent) target, sourceLangCode, targetLangCode, protectionLevel);
             }
@@ -964,7 +930,221 @@ public class I18nFacade extends WegasAbstractFacade {
     }
 
     private void translateGameModel(Mergeable target, String sourceLangCode, String targetLangCode) {
-        MergeHelper.visitMergeable(target, null, Boolean.TRUE, new Translator(sourceLangCode, targetLangCode, this));
+        MergeHelper.visitMergeable(target, Boolean.TRUE, new Translator(sourceLangCode, targetLangCode, this));
     }
 
+    private static class LanguageUpgrader implements MergeableVisitor {
+
+        private final String oldCode;
+        private final String newCode;
+        private final I18nFacade i18nFacade;
+
+        public LanguageUpgrader(String oldCode, String newCode, I18nFacade i18nFacade) {
+            this.oldCode = oldCode;
+            this.newCode = newCode;
+            this.i18nFacade = i18nFacade;
+        }
+
+        @Override
+        public void visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
+            if (target instanceof TranslatableContent) {
+                TranslatableContent tr = (TranslatableContent) target;
+                Translation translation = tr.getTranslation(oldCode);
+                if (translation != null) {
+                    translation.setLang(newCode);
+                }
+            }
+
+            if (target instanceof Script) {
+                try {
+                    Script script = (Script) target;
+                    String newScript = i18nFacade.updateScriptRefName(script.getContent(), oldCode, newCode);
+                    script.setContent(newScript);
+                } catch (ScriptException ex) {
+                    logger.error("SCRIPTERROR");
+                }
+            }
+        }
+    }
+
+    /**
+     * Update each occurence of the language code in the given gameModel.
+     * each TranslatableContent property and each TranslatableContnent in any script will be updated.
+     *
+     * @param gameModel
+     * @param oldCode
+     * @param newCode
+     */
+    public void updateTranslationCode(GameModel gameModel, String oldCode, String newCode) {
+        MergeHelper.visitMergeable(gameModel, Boolean.TRUE, new LanguageUpgrader(oldCode, newCode, this));
+    }
+
+    /**
+     * Update newTranslation in target for given language.
+     *
+     *
+     * @param target       the script to update
+     * @param source       the script which contains up to date newTranslation
+     * @param reference    previous version of source
+     * @param languageCode language to update
+     */
+    private void importTranslationsInScript(Script target, Script source, Script reference, String languageCode, boolean shouldKeepUserTranslation) {
+        try {
+            JSObject inTarget = (JSObject) fishTranslationsByCode(target.getContent(), languageCode);
+            JSObject inSource = (JSObject) fishTranslationsByCode(source.getContent(), languageCode);
+
+            JSObject inRef = null;
+            if (reference != null) {
+                inRef = (JSObject) fishTranslationsByCode(reference.getContent(), languageCode);
+            }
+
+            if (inTarget != null && inSource != null) {
+                if (doesPathLocationsMatches(inTarget, inSource)) {
+                    if (inRef == null || doesPathLocationsMatches(inTarget, inRef)) {
+                        int index = 0;
+                        String script = target.getContent();
+                        for (String key : inTarget.keySet()) {
+                            JSObject trTarget = (JSObject) inTarget.getMember(key);
+                            JSObject trSource = (JSObject) inSource.getMember(key);
+                            JSObject trRef = null;
+
+                            if (inRef != null) {
+                                trRef = (JSObject) inSource.getMember(key);
+                            }
+
+                            String newTranslation = null;
+                            String currentTranslation = null;
+                            String previousTranslation = null;
+
+                            // any new newTranslation in the source ?
+                            if (trSource.getMember("status").equals("found")) {
+                                newTranslation = (String) trSource.getMember("value");
+                            }
+                            // has current newTranslation ?
+                            if (trTarget.getMember("status").equals("found")) {
+                                currentTranslation = (String) trTarget.getMember("value");
+                            }
+
+                            if (trRef != null && trRef.getMember("status").equals("found")) {
+                                previousTranslation = (String) trRef.getMember("value");
+                            }
+
+                            if (newTranslation == null) {
+                                if (previousTranslation != null && currentTranslation != null) {
+                                    // TODO: implement "remove Language"
+                                    script = this.updateScriptWithNewTranslation(script, index, languageCode, "");
+                                }
+                            } else {
+                                if (!shouldKeepUserTranslation || previousTranslation == null || currentTranslation == null || previousTranslation.equals(currentTranslation)) {
+                                    logger.debug("Import {}::{} from {}->{} in {}, ", languageCode, newTranslation, reference, source, target);
+                                    script = this.updateScriptWithNewTranslation(script, index, languageCode, newTranslation);
+                                }
+                            }
+
+                            index++;
+                        }
+                        target.setContent(script);
+                    } else {
+                        logger.error("Reference Structure does not match; {} VS {}", target, reference);
+                    }
+                } else {
+                    logger.error("Structure does not match; {} VS {}", target, source);
+                }
+            }
+
+        } catch (ScriptException ex) {
+            logger.error("Ouille ouille ouille: {}", ex);
+        }
+
+    }
+
+    /**
+     * Copy newTranslation from one set of mergeables to another one
+     */
+    private static class TranslationsImporter implements MergeableVisitor {
+
+        private final String languageCode;
+        private final I18nFacade i18nFacade;
+
+        public TranslationsImporter(String languageCode, I18nFacade i18nFacade) {
+            this.languageCode = languageCode;
+            this.i18nFacade = i18nFacade;
+        }
+
+        @Override
+        public void visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable references[]) {
+
+            if (target instanceof TranslatableContent) {
+                boolean shouldKeepUserTranslation = false;
+                TranslatableContent trContentTarget = (TranslatableContent) target;
+                Translation trTarget = trContentTarget.getTranslation(languageCode);
+                String currentTranslation = null;
+                boolean hasNewTrContent = false;
+                String newTranslation = null;
+                String previousTranslation = null;
+
+                if (trTarget != null) {
+                    currentTranslation = trTarget.getTranslation();
+                    Visibility visibility = target.getInheritedVisibility();
+                    if (!Helper.isProtected(protectionLevel, visibility)) {
+                        // target is not protected, keep target newTranslation
+                        shouldKeepUserTranslation = true;
+                    }
+                }
+
+                if (references.length > 0 && references[0] instanceof TranslatableContent) {
+                    hasNewTrContent = true;
+                    TranslatableContent trContentSource = (TranslatableContent) references[0];
+                    Translation trSource = trContentSource.getTranslation(languageCode);
+
+                    if (trSource != null) {
+                        newTranslation = trSource.getTranslation();
+                    }
+                }
+
+                if (references.length > 1 && references[1] instanceof TranslatableContent) {
+                    TranslatableContent trContentRef;
+                    Translation trRef;
+
+                    trContentRef = (TranslatableContent) references[1];
+                    trRef = trContentRef.getTranslation(languageCode);
+                    if (trRef != null) {
+                        previousTranslation = trRef.getTranslation();
+                    }
+                }
+
+                if (newTranslation == null) {
+                    if (previousTranslation != null && hasNewTrContent) {
+                        //only remove the translation if the newTrContent stil exists
+                        trContentTarget.removeTranslation(languageCode);
+                    }
+                } else {
+                    if (!shouldKeepUserTranslation || previousTranslation == null || currentTranslation == null || previousTranslation.equals(currentTranslation)) {
+                        trContentTarget.updateTranslation(languageCode, newTranslation);
+                    }
+                }
+            } else {
+                logger.debug("No TranslationContent in source");
+            }
+
+            if (target instanceof Script && references.length > 0 && references[0] instanceof Script) {
+                Script ref = null;
+                if (references.length > 1) {
+                    ref = (Script) references[1];
+                }
+
+                boolean shouldKeepUserTranslation = false;
+                Visibility visibility = target.getInheritedVisibility();
+                if (!Helper.isProtected(protectionLevel, visibility)) {
+                    // target is not protected, keep target newTranslation
+                    shouldKeepUserTranslation = true;
+                }
+                i18nFacade.importTranslationsInScript((Script) target, (Script) references[0], ref, languageCode, shouldKeepUserTranslation);
+            }
+        }
+    }
+
+    public void importTranslations(Mergeable target, Mergeable source, Mergeable sourceRef, String languageCode) {
+        MergeHelper.visitMergeable(target, Boolean.TRUE, new TranslationsImporter(languageCode, this), source, sourceRef);
+    }
 }
