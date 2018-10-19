@@ -28,7 +28,9 @@ YUI.add('wegas-model-propagator', function(Y) {
                 },
                 on: {
                     success: Y.bind(function(e) {
-                        Y.Wegas.Alerts.showMessage("info", "Successfull", 1000);
+                        Y.Wegas.Alerts.showNotification("Successfull propagation", {
+                            timeout: 2500
+                        });
                         this.fire("model:propagated");
                     }, this),
                     failure: Y.bind(function(e) {
