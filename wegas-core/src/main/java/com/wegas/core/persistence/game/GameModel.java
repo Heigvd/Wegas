@@ -1014,16 +1014,37 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
+     * Find a language of the gameModel which match the given name
      *
-     * @param code
+     * @param code language code to find
      *
-     * @return
+     * @return the language with matching code or null
+     *
      */
     public GameModelLanguage getLanguageByCode(String code) {
         if (code != null) {
             String CODE = code.toUpperCase();
             for (GameModelLanguage lang : this.getLanguages()) {
                 if (CODE.equals(lang.getCode())) {
+                    return lang;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Find a language of the gameModel which match the given name
+     *
+     * @param name language display name to find
+     *
+     * @return the language with matching lang or null
+     */
+    public GameModelLanguage getLanguageByName(String name) {
+        if (name != null) {
+            String theName = name.toLowerCase();
+            for (GameModelLanguage lang : this.getLanguages()) {
+                if (theName.equals(lang.getName().toLowerCase())) {
                     return lang;
                 }
             }

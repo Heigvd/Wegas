@@ -125,45 +125,6 @@ public class I18nFacade extends WegasAbstractFacade {
     }
 
     /**
-     * Find a language of the gameModel which match the given name
-     *
-     * @param gameModel the gameModel to search language in
-     * @param code      language code to find
-     *
-     * @return the language with matching code or null
-     */
-    public GameModelLanguage findLanguageByCode(GameModel gameModel, String code) {
-        if (code != null) {
-            for (GameModelLanguage gmLang : gameModel.getLanguages()) {
-                if (code.equals(gmLang.getCode())) {
-                    return gmLang;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Find a language of the gameModel which match the given name
-     *
-     * @param gameModel the gameModel to search language in
-     * @param lang      language display name to find
-     *
-     * @return the language with matching lang or null
-     */
-    public GameModelLanguage findLanguageByName(GameModel gameModel, String lang) {
-        if (lang != null) {
-            String lowerLang = lang.toLowerCase();
-            for (GameModelLanguage gmLang : gameModel.getLanguages()) {
-                if (lowerLang.equals(gmLang.getLang().toLowerCase())) {
-                    return gmLang;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
      * Create language for the given gamemodel.
      *
      * @param gameModel the gameModel
@@ -174,15 +135,17 @@ public class I18nFacade extends WegasAbstractFacade {
      */
     public GameModel createLanguage(GameModel gameModel, String code, String name) {
         logger.trace("CREATE new language {}/{} for {}", code, name, gameModel);
-        GameModelLanguage found = this.findLanguageByName(gameModel, code);
+        GameModelLanguage found = gameModel.getLanguageByName(name);
+        GameModelLanguage foundByCode = gameModel.getLanguageByCode(code);
 
-        if (found == null) {
+        if (found == null && foundByCode == null) {
             List<GameModelLanguage> rawLanguages = gameModel.getRawLanguages();
 
             GameModelLanguage newLang = new GameModelLanguage();
             newLang.setGameModel(gameModel);
             newLang.setIndexOrder(rawLanguages.size()); // last position
             newLang.setLang(name);
+            newLang.setCode(code);
 
             if (gameModel.getType().equals(GmType.MODEL)) {
                 newLang.setVisibility(Visibility.INTERNAL);
@@ -190,13 +153,6 @@ public class I18nFacade extends WegasAbstractFacade {
                 newLang.setVisibility(Visibility.PRIVATE);
             }
 
-            int suffix = 0;
-            String realCode = code;
-            // make code unique
-            while (findLanguageByCode(gameModel, code) != null) {
-                realCode = code + (++suffix);
-            }
-            newLang.setCode(realCode);
 
             rawLanguages.add(newLang);
 
@@ -214,7 +170,7 @@ public class I18nFacade extends WegasAbstractFacade {
     public GameModel deleteLanguage(GameModel gameModel, String code) {
         logger.trace("Delete language {} for gameModel #{}", code, gameModel);
         List<GameModelLanguage> rawLanguages = gameModel.getRawLanguages();
-        GameModelLanguage lang = this.findLanguageByCode(gameModel, code);
+        GameModelLanguage lang = gameModel.getLanguageByCode(code);
         if (lang != null) {
             if (rawLanguages.size() > 1) {
                 rawLanguages.remove(lang);

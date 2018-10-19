@@ -981,10 +981,38 @@ public class ModelFacade {
                 logger.info("PropagatePatch: {}", patch);
 
                 Collection<GameModel> implementations = gameModelFacade.getImplementations(gameModel);
+
+                // detect language code changes
+                Map<String, String> languageCodes = new HashMap<>(); //oldCode ->new code
+                for (GameModelLanguage langModel : gameModel.getRawLanguages()) {
+                    for (GameModelLanguage langRef : reference.getRawLanguages()) {
+                        if (langRef.getRefId().equals(langModel.getRefId())) { //same refId
+                            if (!langRef.getCode().equals(langModel.getCode())) {// but different code
+                                languageCodes.put(langRef.getCode(), langModel.getCode());
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                if (!languageCodes.isEmpty()) {
+                    logger.info("Need to update some language code {} in the reference before patching implementations", languageCodes);
+                    for (Entry<String, String> renameLang : languageCodes.entrySet()) {
+                        i18nFacade.updateTranslationCode(reference, renameLang.getKey(), renameLang.getValue());
+                    }
+                }
+
                 for (GameModel scenario : implementations) {
                     // avoid propagating to game's scenarios or to the model
                     if (scenario.getType().equals(GmType.SCENARIO)) {
                         scenario.setOnGoingPropagation(Boolean.TRUE);
+
+                        if (!languageCodes.isEmpty()) {
+                            logger.info("Need to update some language code ({}) before patching implementation", languageCodes);
+                            for (Entry<String, String> renameLang : languageCodes.entrySet()) {
+                                i18nFacade.updateTranslationCode(scenario, renameLang.getKey(), renameLang.getValue());
+                            }
+                        }
 
                         // detect languages which share the same code but different refId and rule them all
                         for (GameModelLanguage langScen : scenario.getRawLanguages()) {
