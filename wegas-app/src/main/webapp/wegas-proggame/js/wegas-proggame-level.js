@@ -284,9 +284,24 @@ YUI.add('wegas-proggame-level', function(Y) {
                 },
                 on: {
                     success: Y.bind(this.onServerReply, this),
-                    failure: Y.bind(function () {
+                    failure: Y.bind(function (e) {
                         this.set(STATE, IDLE);
-                        alert("Your script contains an error.");
+                        var events = e.response.results.events;
+                        var exceptionEvent = Y.Array.find(events, function(e) {
+                            return e.get('@class') === 'ExceptionEvent';
+                        });
+                        if (
+                            exceptionEvent &&
+                            exceptionEvent.get('val.exceptions')[0].get('val')['@class'] ===
+                                'WegasScriptException'
+                        ) {
+                            this.set("error", exceptionEvent.get('val.exceptions')[0].get('val').message);
+                            Y.Wegas.Alerts.showNotification(
+                                "Your script contains an error.",
+                                { timeout: 1e3 }
+                            );
+                        }
+                        // alert("Your script contains an error.");
                     }, this)
                 }
             });
@@ -424,7 +439,8 @@ YUI.add('wegas-proggame-level', function(Y) {
             var _file = file,
                 saveTimer = new Wegas.Timer(),
                 tab = this.editorTabView.add({ //                                // Render tab
-                    label: label
+                    label: label,
+                    children: [{ type: "Text" }]
                 }).item(0),
                 aceField = new Y.inputEx.AceField({ //                           // Render ace editor
                     parentEl: tab.get("panelNode"),
@@ -789,6 +805,9 @@ YUI.add('wegas-proggame-level', function(Y) {
             state: {
                 "transient": true
             },
+            error:{
+                "transient": true,
+            },
             label: {
                 type: STRING,
                 index: -1,
@@ -1042,208 +1061,6 @@ YUI.add('wegas-proggame-level', function(Y) {
                         view: {
                             label: true
                         }
-                    }
-                },
-                _inputex: {
-                    sortable: true,
-                    elementType: {
-                        type: "contextgroup",
-                        contextKey: "components",
-                        fields: [{
-                            name: "Trap",
-                            type: GROUP,
-                            fields: [{
-                                name: ID,
-                                label: "ID",
-                                value: "Trap"
-                            }, {
-                                name: _X,
-                                type: NUMBER,
-                                label: _X
-                            }, {
-                                name: _Y,
-                                type: NUMBER,
-                                label: _Y
-                            }, {
-                                name: "enabled",
-                                label: "Active by default",
-                                type: BOOLEAN,
-                                value: true
-                            }, {
-                                name: "components",
-                                type: HIDDEN,
-                                value: "Trap"
-                            }]
-                        }, {
-                            name: "PC",
-                            type: GROUP,
-                            fields: [{
-                                name: ID,
-                                label: "ID",
-                                value: "Player"
-                            }, {
-                                name: _X,
-                                type: NUMBER,
-                                label: _X
-                            }, {
-                                name: _Y,
-                                type: NUMBER,
-                                label: _Y
-                            }, {
-                                name: "direction",
-                                label: "direction",
-                                type: "select",
-                                choices: [
-                                    {
-                                        value: 2,
-                                        label: "right"
-                                    },
-                                    {
-                                        value: 1,
-                                        label: "down"
-                                    },
-                                    {
-                                        value: 3,
-                                        label: "up"
-                                    },
-                                    {
-                                        value: 4,
-                                        label: "left"
-                                    }]
-                            }, {
-                                name: "collides",
-                                label: "collides",
-                                type: HIDDEN
-                            }, {
-                                name: "components",
-                                type: HIDDEN,
-                                value: "PC"
-                            }]
-                        }, {
-                            name: "NPC",
-                            type: GROUP,
-                            fields: [{
-                                name: ID,
-                                label: "ID",
-                                value: "Enemy"
-                            }, {
-                                name: _X,
-                                type: NUMBER,
-                                label: _X
-                            }, {
-                                name: _Y,
-                                type: NUMBER,
-                                label: _Y
-                            }, {
-                                name: "direction",
-                                label: "direction",
-                                type: "select",
-                                choices: [{
-                                    value: 1,
-                                    label: "down"
-                                },
-                                    {
-                                        value: 2,
-                                        label: "right"
-                                    },
-                                    {
-                                        value: 3,
-                                        label: "up"
-                                    },
-                                    {
-                                        value: 4,
-                                        label: "left"
-                                    }]
-                            }, {
-                                name: "collides",
-                                label: "collides",
-                                type: BOOLEAN
-                            }, {
-                                name: "components",
-                                type: HIDDEN,
-                                value: "NPC"
-                            }]
-                        }, {
-                            name: "Panel",
-                            type: GROUP,
-                            fields: [{
-                                name: ID,
-                                label: "ID",
-                                value: "Panel"
-                            }, {
-                                name: "value",
-                                label: "Value",
-                                type: TEXT,
-                                value: "'Hello World !'"
-                            }, {
-                                name: _X,
-                                type: NUMBER,
-                                label: _X
-                            }, {
-                                name: _Y,
-                                type: NUMBER,
-                                label: _Y
-                            }, {
-                                name: "collides",
-                                label: "collides",
-                                value: false,
-                                type: HIDDEN
-                            }, {
-                                name: "components",
-                                type: HIDDEN,
-                                value: "Panel"
-                            }]
-                        }, {
-                            name: "Door",
-                            type: GROUP,
-                            fields: [{
-                                name: ID,
-                                label: "ID",
-                                value: "Door"
-                            }, {
-                                name: _X,
-                                type: NUMBER,
-                                label: _X
-                            }, {
-                                name: _Y,
-                                type: NUMBER,
-                                label: _Y
-                            }, {
-                                name: "open",
-                                label: "Open by default",
-                                type: BOOLEAN,
-                                value: false
-                            }, {
-                                name: "components",
-                                type: HIDDEN,
-                                value: "Door"
-                            }]
-                        }, {
-                            name: "Controller",
-                            type: GROUP,
-                            fields: [{
-                                name: ID,
-                                label: "ID",
-                                value: "Controller"
-                            }, {
-                                name: _X,
-                                type: NUMBER,
-                                label: _X
-                            }, {
-                                name: _Y,
-                                type: NUMBER,
-                                label: _Y
-                            }, {
-                                name: "enabled",
-                                label: "Enabled by default",
-                                type: BOOLEAN,
-                                value: false
-                            }, {
-                                name: "components",
-                                type: HIDDEN,
-                                value: "Controller"
-                            }]
-                        }]
                     }
                 }
             },
