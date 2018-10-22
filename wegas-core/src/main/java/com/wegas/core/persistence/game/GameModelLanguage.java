@@ -101,12 +101,22 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
 
     }
 
+    /**
+     * Get the language unique name (ie its code...)
+     * TODO.rename/refactor
+     *
+     * @return
+     */
     @Override
     @JsonIgnore
     public String getName() {
         return this.getCode();
     }
 
+    /**
+     * Set the language name  (ie its code)
+     * @param name
+     */
     @Override
     @JsonIgnore
     public void setName(String name) {
@@ -139,7 +149,7 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
      * get the language identification code.
      * Code is always uppercase.
      *
-     * @return Uppercase languade identification code
+     * @return Uppercase language identification code
      */
     public String getCode() {
         return code != null ? code.toUpperCase() : null;
@@ -167,16 +177,35 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
 
     @JsonProperty
     public void setRefName(String refName) {
-        this.refName = refName;
-        this.code = refName;
+        if (refName != null) {
+            this.refName = refName;
+            this.code = refName.toUpperCase();
+        } else {
+            this.code = null;
+            this.refName = null;
+        }
     }
 
+    /**
+     * Language full name
+     *
+     * @return the language name to display
+     */
     public String getLang() {
         return lang;
     }
 
+    /**
+     * Set the language displayed name
+     *
+     * @param language name to display
+     */
     public void setLang(String language) {
-        this.lang = language;
+        if (language != null) {
+            this.lang = language.toLowerCase();
+        } else {
+            this.lang = null;
+        }
     }
 
     @Override

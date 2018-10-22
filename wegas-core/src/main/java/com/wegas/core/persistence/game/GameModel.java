@@ -1024,7 +1024,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     public GameModelLanguage getLanguageByCode(String code) {
         if (code != null) {
             String CODE = code.toUpperCase();
-            for (GameModelLanguage lang : this.getLanguages()) {
+            for (GameModelLanguage lang : this.getRawLanguages()) {
                 if (CODE.equals(lang.getCode())) {
                     return lang;
                 }
@@ -1043,8 +1043,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     public GameModelLanguage getLanguageByName(String name) {
         if (name != null) {
             String theName = name.toLowerCase();
-            for (GameModelLanguage lang : this.getLanguages()) {
-                if (theName.equals(lang.getName().toLowerCase())) {
+            for (GameModelLanguage lang : this.getRawLanguages()) {
+                if (theName.equals(lang.getLang().toLowerCase())) {
                     return lang;
                 }
             }
