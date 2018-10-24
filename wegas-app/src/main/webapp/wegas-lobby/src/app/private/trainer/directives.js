@@ -15,6 +15,7 @@ angular.module('private.trainer.directives', [
         ctrl.loading = true;
         ctrl.search = "";
         ctrl.sessions = [];
+        ctrl.rawSessions = [];
         ctrl.nbArchives = 0;
         ctrl.user = {};
         ctrl.username = '';
@@ -30,7 +31,6 @@ angular.module('private.trainer.directives', [
 
         var winheight = null,
             maxItemsDisplayed = null,
-            rawSessions = [],
             isFiltering = false,
             prevFilter = "",
             filtered = [],
@@ -59,7 +59,7 @@ angular.module('private.trainer.directives', [
             },
             // Returns the session list to be displayed now.
             currentList = function() {
-                return isFiltering ? filtered : rawSessions;
+                return isFiltering ? filtered : ctrl.rawSessions;
             },
             // Updates the display buffer (ctrl.sessions) if needed.
             updateDisplay = function(source) {
@@ -78,12 +78,12 @@ angular.module('private.trainer.directives', [
                 }
                 updateDisplay(list);
             },
-            // Returns an array containing the occurrences of 'needle' in rawSessions:
+            // Returns an array containing the occurrences of 'needle' in ctrl.rawSessions:
             doSearch = function(needle) {
-                var len = rawSessions.length,
+                var len = ctrl.rawSessions.length,
                     res = [];
                 for (var i = 0; i < len; i++) {
-                    var session = rawSessions[i];
+                    var session = ctrl.rawSessions[i];
                     if ((session.name && session.name.toLowerCase().indexOf(needle) >= 0) ||
                         (session.createdByName && session.createdByName.toLowerCase().indexOf(needle) >= 0) ||
                         (session.gameModelName && session.gameModelName.toLowerCase().indexOf(needle) >= 0) ||
@@ -143,8 +143,8 @@ angular.module('private.trainer.directives', [
         }
 
         /*
-         ** Filters rawSessions according to the given search string and puts the result in ctrl.sessions.
-         ** Hypotheses on input array rawSessions:
+         ** Filters ctrl.rawSessions according to the given search string and puts the result in ctrl.sessions.
+         ** Hypotheses on input array ctrl.rawSessions:
          ** 1. It contains only scenarios with attribute canView = true (and implicitly where 'gameModel' is non-null).
          ** 2. It's already ordered according to the 'createdTime' attribute,
          **    so that the output automatically follows the same ordering.
@@ -155,7 +155,7 @@ angular.module('private.trainer.directives', [
                     isFiltering = false;
                     initMaxItemsDisplayed(); // Reset since we are changing between searching and not searching
                 }
-                updateDisplay(rawSessions);
+                updateDisplay(ctrl.rawSessions);
                 return;
             } else { // There is a search going on:
                 var needle = search.toLowerCase();
@@ -176,24 +176,25 @@ angular.module('private.trainer.directives', [
 
         // Called when a session is modified, reordered, added or removed:
         ctrl.updateSessions = function(extendDisplay) {
-            var hideScrollbarDuringInitialRender = (rawSessions.length === 0);
+            var hideScrollbarDuringInitialRender = (ctrl.rawSessions.length === 0);
             if (hideScrollbarDuringInitialRender) {
                 $('#trainer-sessions-list').css('overflow-y', 'hidden');
             }
-            ctrl.sessions = rawSessions = [];
+            ctrl.sessions = [];
+            ctrl.rawSessions = [];
             ctrl.loading = true;
             SessionsModel.getSessions("LIVE").then(function(response) {
 
-                rawSessions = $filter('filter')(response.data, {gameModel: {canView: true}}) || [];
+                ctrl.rawSessions = $filter('filter')(response.data, {gameModel: {canView: true}}) || [];
                 if (ctrl.mefirst && ctrl.username.length > 0) {
                     // Prepare a list where "my" sessions appear first (ordered by creation date, like the rest):
-                    var mySessions = $filter('filter')(rawSessions, {createdByName: ctrl.username}) || [],
-                        otherSessions = $filter('filter')(rawSessions, {createdByName: '!' + ctrl.username}) || [];
+                    var mySessions = $filter('filter')(ctrl.rawSessions, {createdByName: ctrl.username}) || [],
+                        otherSessions = $filter('filter')(ctrl.rawSessions, {createdByName: '!' + ctrl.username}) || [];
                     mySessions = $filter('orderBy')(mySessions, 'createdTime', true) || [];
                     otherSessions = $filter('orderBy')(otherSessions, 'createdTime', true) || [];
-                    rawSessions = mySessions.concat(otherSessions);
+                    ctrl.rawSessions = mySessions.concat(otherSessions);
                 } else {
-                    rawSessions = $filter('orderBy')(rawSessions, 'createdTime', true) || [];
+                    ctrl.rawSessions = $filter('orderBy')(ctrl.rawSessions, 'createdTime', true) || [];
                 }
                 // At this point, the search variable is not necessarily updated by Angular to reflect the input field:
                 var searchField = document.getElementById('searchField');
