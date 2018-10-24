@@ -9,6 +9,7 @@ angular.module('private.scenarist.directives', [
         ctrl.duplicating = false;
         ctrl.search = '';
         ctrl.scenarios = [];
+        ctrl.rawScenarios = [];
         ctrl.nbArchives = 0;
         ctrl.user = {};
         ctrl.username = '';
@@ -25,7 +26,6 @@ angular.module('private.scenarist.directives', [
 
         var winheight = null,
             maxItemsDisplayed = null,
-            rawScenarios = [],
             isFiltering = false,
             prevFilter = "",
             filtered = [],
@@ -54,7 +54,7 @@ angular.module('private.scenarist.directives', [
             },
             // Returns the session list to be displayed now.
             currentList = function() {
-                return isFiltering ? filtered : rawScenarios;
+                return isFiltering ? filtered : ctrl.rawScenarios;
             },
             updateDisplay = function(source) {
                 if (prevSource !== source || maxItemsDisplayed !== ctrl.scenarios.length) {
@@ -71,12 +71,12 @@ angular.module('private.scenarist.directives', [
                 }
                 updateDisplay(list);
             },
-            // Returns an array containing the occurrences of 'needle' in rawScenarios:
+            // Returns an array containing the occurrences of 'needle' in ctrl.rawScenarios:
             doSearch = function(needle) {
-                var len = rawScenarios.length,
+                var len = ctrl.rawScenarios.length,
                     res = [];
                 for (var i = 0; i < len; i++) {
-                    var scenario = rawScenarios[i];
+                    var scenario = ctrl.rawScenarios[i];
                     if ((scenario.name && scenario.name.toLowerCase().indexOf(needle) >= 0) ||
                         (scenario.createdByName && scenario.createdByName.toLowerCase().indexOf(needle) >= 0) ||
                         (scenario.comments && scenario.comments.toLowerCase().indexOf(needle) >= 0) ||
@@ -134,8 +134,8 @@ angular.module('private.scenarist.directives', [
         }
 
         /*
-         ** Filters rawScenarios according to the given search string and puts the result in ctrl.scenarios.
-         ** Hypotheses on input array rawScenarios :
+         ** Filters ctrl.rawScenarios according to the given search string and puts the result in ctrl.scenarios.
+         ** Hypotheses on input array ctrl.rawScenarios :
          ** 1. It contains only scenarios with attribute 'canEdit' = true.
          ** 2. It's already ordered according to the 'createdTime' attribute,
          **    so that the output automatically follows the same ordering.
@@ -146,7 +146,7 @@ angular.module('private.scenarist.directives', [
                     isFiltering = false;
                     initMaxItemsDisplayed(); // Reset since we are changing between searching and not searching
                 }
-                updateDisplay(rawScenarios);
+                updateDisplay(ctrl.rawScenarios);
                 return;
             } else { // There is a search going on:
                 var needle = search.toLowerCase();
@@ -171,19 +171,20 @@ angular.module('private.scenarist.directives', [
             if (hideScrollbarDuringInitialRender) {
                 $('#scenarist-scenarios-list').css('overflow-y', 'hidden');
             }
-            ctrl.scenarios = rawScenarios = [];
+            ctrl.scenarios = [];
+            ctrl.rawScenarios = [];
             ctrl.loading = true;
             ScenariosModel.getScenarios('LIVE').then(function(response) {
-                rawScenarios = $filter('filter')(response.data, {canEdit: true}) || [];
+                ctrl.rawScenarios = $filter('filter')(response.data, {canEdit: true}) || [];
                 if (ctrl.mefirst && ctrl.username.length > 0) {
                     // Prepare a list where "my" scenarios appear first (ordered by creation date, like the rest):
-                    var myScenarios = $filter('filter')(rawScenarios, {createdByName: ctrl.username}) || [],
-                        otherScenarios = $filter('filter')(rawScenarios, {createdByName: '!' + ctrl.username}) || [];
+                    var myScenarios = $filter('filter')(ctrl.rawScenarios, {createdByName: ctrl.username}) || [],
+                        otherScenarios = $filter('filter')(ctrl.rawScenarios, {createdByName: '!' + ctrl.username}) || [];
                     myScenarios = $filter('orderBy')(myScenarios, 'createdTime', true) || [];
                     otherScenarios = $filter('orderBy')(otherScenarios, 'createdTime', true) || [];
-                    rawScenarios = myScenarios.concat(otherScenarios);
+                    ctrl.rawScenarios = myScenarios.concat(otherScenarios);
                 } else {
-                    rawScenarios = $filter('orderBy')(rawScenarios, 'createdTime', true) || [];
+                    ctrl.rawScenarios = $filter('orderBy')(ctrl.rawScenarios, 'createdTime', true) || [];
                 }
                 // At this point, the search variable is not necessarily updated by Angular to reflect the input field:
                 var searchField = document.getElementById('searchField');
