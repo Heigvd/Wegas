@@ -33,7 +33,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             this.allowNextCommand = false;
         },
         renderUI: function() {
-            var i, j, pos, entity,
+            var i, j, pos, posy, entity,
                 objects = this.get("objects"),
                 map = this.get("map"),
                 gridH = map.length,
@@ -41,17 +41,19 @@ YUI.add('wegas-proggame-display', function(Y) {
 
 
             pos = this.getRealXYPos({
-                x: gridW + MARGIN_X + 1,
+                x: gridW + MARGIN_X + 1 ,
                 y: -MARGIN_Y
             });
-
+            posy = this.getRealXYPos({
+                x: gridW + MARGIN_X + 1,
+                y: gridH + MARGIN_Y
+            })
             this.get("boundingBox").setStyles({
                 marginTop: "12px",
                 marginLeft: (Math.floor(900 - pos.x) / 2) + "px"
             });
 
-
-            Crafty.init(pos.x, pos.y); // Init crafty
+            Crafty.init(pos.x, posy.y + TILE_DELTA); // Init crafty
 
             for (i = -MARGIN_Y; i < gridH + MARGIN_Y; i += 1) { // Render tiles
                 for (j = -MARGIN_X; j < gridW + MARGIN_X; j += 1) {
@@ -625,16 +627,17 @@ YUI.add('wegas-proggame-display', function(Y) {
             }
             this.__newColor = true;
             this._color = "rgba(" + col._red + "," + col._green + "," + col._blue + "," + opacity + ")";
-            this.trigger("Change");
+            this.draw();
             return this;
         },
         draw: function() {
+            if (!this.__newColor) {
+                return;
+            }
             var img = document.createElement("img"),
                 ctx = tmp_canvas.getContext("2d");
             if (!this.__oldImg) {
                 this.__oldImg = this.img;
-            } else if (!this.__newColor) {
-                return;
             }
             this.__newColor = false;
             tmp_canvas.width = this.__oldImg.width;
@@ -650,6 +653,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             ctx.restore();
             img.src = tmp_canvas.toDataURL();
             this.img = img;
+            this.trigger("Invalidate");
         }
     });
 //Crafty.c("shoot", {

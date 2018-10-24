@@ -570,6 +570,7 @@ code {
 .movable {
     position: absolute;
     top: 360px;
+    z-index: 30;
     background-color: #2A2A2A;
     /*    min-height: 360px;*/
     /*    background: url(../../wegas-proggame/images/blackboard_Game.png);*/
