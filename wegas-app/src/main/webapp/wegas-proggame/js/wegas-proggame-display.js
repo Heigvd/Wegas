@@ -37,8 +37,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 objects = this.get("objects"),
                 map = this.get("map"),
                 gridH = map.length,
-                gridW = map[0].length,
-                pos;
+                gridW = map[0].length;
 
 
             pos = this.getRealXYPos({
@@ -53,10 +52,6 @@ YUI.add('wegas-proggame-display', function(Y) {
 
 
             Crafty.init(pos.x, pos.y); // Init crafty
-
-            if (Crafty.support.canvas) {
-                Crafty.canvasLayer.init(); // Init crafty's canvas support
-            }
 
             for (i = -MARGIN_Y; i < gridH + MARGIN_Y; i += 1) { // Render tiles
                 for (j = -MARGIN_X; j < gridW + MARGIN_X; j += 1) {
@@ -88,8 +83,8 @@ YUI.add('wegas-proggame-display', function(Y) {
             }, this));
         },
         destructor: function() {
-            Crafty("*").destroy();
-            Crafty.stop(true);
+            Crafty("2D").destroy();
+            Crafty.stop();
             Crafty.unbind(COMMANDEXECUTED);
         },
         getEntity: function(id) {
@@ -251,35 +246,46 @@ YUI.add('wegas-proggame-display', function(Y) {
     Crafty.c("Character", {
         init: function() {
             var moveSpeed = 500;
-            this.requires("2D," + RENDERMETHOD + ", CharacterSprite, SpriteAnimation, move4Direction, Speaker, Collision")
-                .reel("moveUp", moveSpeed, 0, 2, 7)
-                .reel("moveRight", moveSpeed, 0, 0, 7)
-                .reel("moveDown", moveSpeed, 0, 2, 7)
-                .reel("moveLeft", moveSpeed, 0, 1, 7)
-                .reel("handsUp", moveSpeed, 0, 6, 7)
-                .reel("gzRight", 2000, 0, 20, 7)
-                .reel("gzLeft", 2000, 0, 21, 7)
-                .onHit("Collide", function() {
+            this.requires('2D,' + RENDERMETHOD + ', CharacterSprite, SpriteAnimation, move4Direction, Speaker, Collision')
+                .reel('moveUp', moveSpeed, 0, 2, 7)
+                .reel('moveRight', moveSpeed, 0, 0, 7)
+                .reel('moveDown', moveSpeed, 0, 2, 7)
+                .reel('moveLeft', moveSpeed, 0, 1, 7)
+                .reel('handsUp', moveSpeed, 0, 6, 7)
+                .reel('gzRight', 2000, 0, 20, 7)
+                .reel('gzLeft', 2000, 0, 21, 7)
+                .collision(new Crafty.polygon([
+                    0 + 17,
+                    0 + TILE_DELTA + 5,
+                    0,
+                    28 + TILE_DELTA,
+                    25,
+                    28 + TILE_DELTA,
+                    25 + 17,
+                    0 + TILE_DELTA + 5,
+                ]))
+                .onHit('Collide', function() {
                     this.h -= 1;
                     this.y += 1;
                 })
-                .bind("TweenEnd", function() {
-                    var col = this.hit("Character");
+                .bind('TweenEnd', function() {
+                    var col = this.hit('Character');
                     if (col) {
-                        if (this.reel() === "moveRight") {
+                        if (this.reel() === 'moveRight') {
                             this.attr({
-                                x: this._x - 6
-                            }).animate("gzRight");
-                            col[0].obj.attr({
-                                x: col[0].obj._x + 6
-                            }).animate("gzLeft");
-                        } else { // All other moves. up/down/left
+                                x: this._x - 6,
+                            }).animate('gzRight');
+                            col[0].obj
+                                .attr({ x: col[0].obj._x + 6 })
+                                .animate('gzLeft');
+                        } else {
+                            // All other moves. up/down/left
                             this.attr({
-                                x: this._x + 6
-                            }).animate("gzLeft");
-                            col[0].obj.attr({
-                                x: col[0].obj._x - 6
-                            }).animate("gzRight");
+                                x: this._x + 6,
+                            }).animate('gzLeft');
+                            col[0].obj
+                                .attr({ x: col[0].obj._x - 6 })
+                                .animate('gzRight');
                         }
                     }
                 });
@@ -317,9 +323,9 @@ YUI.add('wegas-proggame-display', function(Y) {
                     "-webkit-border-image": "url(" + Wegas.app.get("base") + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
                     "-o-border-image": "url(" + Wegas.app.get("base") + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
                     "border-image": "url(" + Wegas.app.get("base") + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                    "font-family": "KG Ways to Say Goodbye",
+                    // "font-family": "KG Ways to Say Goodbye",
                     "line-height": "1.1em",
-                    "font-size": "1.6em",
+                    // "font-size": "1.6em",
                     "max-width": "400px",
                     color: "white",
                     padding: "4px 4px 2px"
