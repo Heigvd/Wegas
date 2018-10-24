@@ -947,6 +947,8 @@ YUI.add('wegas-proggame-level', function(Y) {
                 type: ARRAY,
                 view:{
                     label:"Objects",
+                    description: "Order defines evaluation order",
+                    sortable: true,
                     highlight: true,
                     choices:[{
                         label: "Trap",
@@ -961,7 +963,8 @@ YUI.add('wegas-proggame-level', function(Y) {
                             components:"NPC",
                             id: "NPC",
                             direction: 4,
-                            collides: false
+                            collides: false,
+                            ai: ""
                         }},{
                         label: "Player",
                         value: {
@@ -1055,6 +1058,13 @@ YUI.add('wegas-proggame-level', function(Y) {
                         },
                         "^collides$":{
                             view:{type:"hidden"}
+                        },
+                        "^ai$":{
+                            view:{
+                                type: "jseditor",
+                                label: "AI",
+                                description: "Has access to the API (and 'this', see serverscript, to cheat a bit)"
+                            }
                         }
                     },
                     additionalProperties:{

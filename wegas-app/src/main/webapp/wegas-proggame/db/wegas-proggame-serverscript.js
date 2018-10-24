@@ -342,7 +342,7 @@ ProgGameSimulation.prototype = {
             text: '' + msg,
         });
 
-        this.afterAction({ said: msg });
+        this.afterAction({ type: 'say', said: msg });
     },
     doSay: function(cfg) {
         this.log(this.cObject.id + ' says "' + cfg.text + '"');
@@ -366,9 +366,9 @@ ProgGameSimulation.prototype = {
         if (this.checkGameOver()) return;
         var panel = this.findAt(this.cObject.x, this.cObject.y),
             value;
-
-        if (panel && panel.value) {
+        if (panel && panel.components === 'Panel') {
             value = this.doEval('return ' + panel.value);
+            // value = panel.value;
             this.doSay({
                 text: 'It\'s written "' + value + '"',
                 think: true,
@@ -379,7 +379,7 @@ ProgGameSimulation.prototype = {
                 think: true,
             });
         }
-        this.afterAction();
+        this.afterAction({ type: 'read', panel: panel });
         return value;
     },
     include: function(fileName) {
@@ -461,7 +461,7 @@ ProgGameSimulation.prototype = {
 
         this.doMove(object); // Send move command
 
-        this.afterAction();
+        this.afterAction({ type: 'rotate', direction: dir });
     },
     right: function() {
         this.rotate(-1);
@@ -585,7 +585,7 @@ ProgGameSimulation.prototype = {
      * @param {{[variable:string]: unkown}=} values scope values hashmap
      */
     doEval: function(code, values) {
-        wdebug("Eval");
+        wdebug('Eval');
         var ctx = this,
             argName,
             commands = ['comparePos', 'find', 'doOpen', 'lastCommand'],
@@ -609,7 +609,7 @@ ProgGameSimulation.prototype = {
         }
     },
     doPlayerEval: function(playerFn) {
-        wdebug("Player eval");
+        wdebug('Player eval');
         var scope = {
                 // hide global variables to player
                 self: undefined,
