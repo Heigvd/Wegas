@@ -129,7 +129,6 @@ YUI.add('wegas-proggame-display', function(Y) {
                         Y.log("No action defined for '" + command.type + "'", "warn", "Wegas.ProggameDisplay");
                         return;
                     }
-                    break;
             }
             this.fire(COMMANDEXECUTED);
         },
