@@ -9,6 +9,7 @@ package com.wegas.core.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 
 /**
@@ -27,7 +28,7 @@ public interface Mergeable {
     void setRefId(String refId);
 
     @JsonIgnore
-        default boolean belongsToProtectedGameModel() {
+    default boolean belongsToProtectedGameModel() {
         Mergeable p = this.getMergeableParent();
         if (p != null) {
             return p.belongsToProtectedGameModel();
@@ -40,7 +41,11 @@ public interface Mergeable {
     default Visibility getInheritedVisibility() {
         Mergeable p = this.getMergeableParent();
         if (p != null) {
-            return p.getInheritedVisibility();
+            if (p instanceof ModelScoped) {
+                return ((ModelScoped) p).getVisibility();
+            } else {
+                return p.getInheritedVisibility();
+            }
         } else {
             throw WegasErrorMessage.error("Not yet implemented (" + this.toString() + ")");
         }
