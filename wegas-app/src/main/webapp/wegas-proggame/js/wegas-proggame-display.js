@@ -633,26 +633,29 @@ YUI.add('wegas-proggame-display', function(Y) {
             if (!this.__newColor) {
                 return;
             }
-            var img = document.createElement("img"),
-                ctx = tmp_canvas.getContext("2d");
-            if (!this.__oldImg) {
-                this.__oldImg = this.img;
-            }
-            this.__newColor = false;
-            tmp_canvas.width = this.__oldImg.width;
-            tmp_canvas.height = this.__oldImg.height;
-            ctx.clearRect(0, 0, tmp_canvas.width, tmp_canvas.height);
-            ctx.drawImage(this.__oldImg, 0, 0);
-            ctx.save();
-            ctx.globalCompositeOperation = "source-in";
-            ctx.fillStyle = this._color;
-            ctx.beginPath();
-            ctx.fillRect(0, 0, this.__oldImg.width, this.__oldImg.height);
-            ctx.closePath();
-            ctx.restore();
-            img.src = tmp_canvas.toDataURL();
-            this.img = img;
-            this.trigger("Invalidate");
+            // be sure to update after the sprite
+            Y.later(10, this, function() {
+                var img = document.createElement('img'),
+                    ctx = tmp_canvas.getContext('2d');
+                if (!this.__oldImg) {
+                    this.__oldImg = this.img;
+                }
+                this.__newColor = false;
+                tmp_canvas.width = this.__oldImg.width;
+                tmp_canvas.height = this.__oldImg.height;
+                ctx.clearRect(0, 0, tmp_canvas.width, tmp_canvas.height);
+                ctx.drawImage(this.__oldImg, 0, 0);
+                ctx.save();
+                ctx.globalCompositeOperation = 'source-in';
+                ctx.fillStyle = this._color;
+                ctx.beginPath();
+                ctx.fillRect(0, 0, this.__oldImg.width, this.__oldImg.height);
+                ctx.closePath();
+                ctx.restore();
+                img.src = tmp_canvas.toDataURL();
+                this.img = img;
+                this.trigger('Invalidate');
+            });
         }
     });
 //Crafty.c("shoot", {
