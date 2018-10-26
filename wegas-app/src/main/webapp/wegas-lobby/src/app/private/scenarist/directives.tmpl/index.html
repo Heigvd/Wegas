@@ -12,19 +12,19 @@
             <span class="button__label"><i class="fa fa-plus-circle same-color-larger">&nbsp;</i>{{'SCENARIST-INDEX-ADD-TITLE'| translate}}</span>
     </a>
 
-        <div ng-if="(!scenaristIndexCtrl.loading && scenaristIndexCtrl.scenarios.length)">
-    <div id="searchField" class="view__tools">
-        <div class="tool tool--search tool--open">
-            <a class="tool__link"></a>
-            <input
-                class="tool__input"
-                ng-model="search"
-                type="text"
-                ng-change="scenaristIndexCtrl.filterScenarios(search);"
-                ng-init="scenaristIndexCtrl.filterScenarios(search);"
-            />
-        </div>
-    </div>
+        <div ng-if="(!scenaristIndexCtrl.loading && scenaristIndexCtrl.rawScenarios.length)">
+            <div id="searchField" class="view__tools">
+                <div class="tool tool--search tool--open">
+                    <a class="tool__link"></a>
+                    <input
+                        class="tool__input"
+                        ng-model="search"
+                        type="text"
+                        ng-change="scenaristIndexCtrl.filterScenarios(search);"
+                        ng-init="scenaristIndexCtrl.filterScenarios(search);"
+                        />
+                </div>
+            </div>
         </div>
 
     <div ng-if="user.isAdmin" class="view__options"

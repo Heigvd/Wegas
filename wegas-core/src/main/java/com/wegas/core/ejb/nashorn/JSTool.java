@@ -25,8 +25,7 @@ import java.util.Collections;
 
 public class JSTool {
     /**
-     * Convert code in String form to it's AST from.
-     * Nashorn's AST
+     * Convert code in String form to it's AST from. Nashorn's AST
      *
      * @param code source
      * @return AST
@@ -35,13 +34,20 @@ public class JSTool {
         Options options = new Options("nashorn");
         options.set("anon.functions", true);
         options.set("parse.only", true);
-        options.set("scripting", true);
+        options.set("scripting", false);
 
         ErrorManager errors = new ErrorManager();
         Context context = new Context(options, errors, Thread.currentThread().getContextClassLoader());
         Source source = Source.sourceFor("internal", code);
         final Parser parser = new Parser(context.getEnv(), source, errors);
         return parser.parse();
+    }
+
+    public static String inject(String code, String injection) {
+        final FunctionNode node = parse(code);
+        final Visitor visitor = new Visitor(code, injection);
+        node.getBody().accept(visitor);
+        return visitor.getResult();
     }
 
     /**
@@ -52,12 +58,31 @@ public class JSTool {
      * @return Sanitized code
      */
     public static String sanitize(String code, String injection) {
-        final FunctionNode node = parse(code);
-        final Visitor visitor = new Visitor(code, injection);
-        node.getBody().accept(visitor);
-        // inject at start to avoid rewrite from the code.
-        return injection + visitor.getResult();
+        // // Script injected replace $$...$$... with correct values.
+        // (function(scope) {
+        // var oldFn = scope.Function;
+        // scope.Function = function() {
+        // var args = Array.prototype.slice.call(arguments);
+        // var code = $$internal$$JSTool
+        // .inject('(function(){' + args.pop() + '})()', '$$INSERT HERE$$')
+        // .slice(12, -4); // Parser is not able to parse a FunctionBody (return)
+        // args.push(code);
+        // return oldFn.apply(this, args);
+        // };
+        // scope.Function.prototype = oldFn.prototype;
+        // scope.eval = function(c) {
+        // throw Error('Eval is Evil');
+        // };
+        // })(this);
+
+        final String fnOverride = "(function(scope) { var oldFn = scope.Function; scope.Function = function() { var args = Array.prototype.slice.call(arguments); var code = "
+                + JS_TOOL_INSTANCE_NAME + ".inject('(function(){' + args.pop() + '})()', '" + injection
+                + "') .slice(12, -4); args.push(code); return oldFn.apply(this, args); };scope.Function.prototype = oldFn.prototype;"
+                + "scope.eval = function(c) { throw Error('Eval is Evil'); }; })(this);";
+        return fnOverride + inject(code, injection);
     }
+
+    public final static String JS_TOOL_INSTANCE_NAME = "$$internal$$JSTool";
 
     private static class Visitor extends SimpleNodeVisitor {
         private int off = 0;
@@ -67,7 +92,8 @@ public class JSTool {
 
         public String getResult() {
             // Sort operations by index. Due to parser already hoisting some statements.
-            // then apply them. operations could be applied directly with jdk9 (AST order isn't changed)
+            // then apply them. operations could be applied directly with jdk9 (AST order
+            // isn't changed)
             Collections.sort(this.operations);
             for (Operation op : operations) {
                 res.insert(op.getIdx() + off, op.getInsertion());
@@ -112,32 +138,32 @@ public class JSTool {
             return false;
         }
 
-        /**
-         * Check for some "forbidden" function calls
-         *
-         * @param callNode function call
-         * @return continue
-         */
-        @Override
-        public boolean enterCallNode(CallNode callNode) {
-            final Expression function = callNode.getFunction();
-            if (function instanceof IdentNode) {
-                if ("Function".equals(((IdentNode) function).getName())) {
-                    throw new JSValidationError("Function is Evil");
-                }
-                if ("eval".equals(((IdentNode) function).getName())) {
-                    throw new JSValidationError("Eval is Evil");
-                }
-            }
-            return super.enterCallNode(callNode);
-        }
+        // /**
+        // * Check for some "forbidden" function calls
+        // *
+        // * @param callNode function call
+        // * @return continue
+        // */
+        // @Override
+        // public boolean enterCallNode(CallNode callNode) {
+        // final Expression function = callNode.getFunction();
+        // if (function instanceof IdentNode) {
+        // if ("Function".equals(((IdentNode) function).getName())) {
+        // throw new JSValidationError("Function is Evil");
+        // }
+        // if ("eval".equals(((IdentNode) function).getName())) {
+        // throw new JSValidationError("Eval is Evil");
+        // }
+        // }
+        // return super.enterCallNode(callNode);
+        // }
 
         /**
-         * Wraps everything (BlockStatement included -- blockchain) into a BlockStatement
-         * starting with the injection text
+         * Wraps everything (BlockStatement included -- blockchain) into a
+         * BlockStatement starting with the injection text
          *
-         * @param block the BlockStatement to wrap.
-         *              The parser gives us a BlockStatement even for a single Statement in the source
+         * @param block the BlockStatement to wrap. The parser gives us a BlockStatement
+         *              even for a single Statement in the source
          */
         private void blockWrap(Block block) {
 
@@ -151,7 +177,8 @@ public class JSTool {
         /**
          * Sortable operation which can take place on a string.
          *
-         * @deprecated since JDK9. Operations on StringBuilder can take place immediately.
+         * @deprecated since JDK9. Operations on StringBuilder can take place
+         *             immediately.
          */
         @Deprecated
         private static class Operation implements Comparable<Operation> {
@@ -181,6 +208,15 @@ public class JSTool {
             public String getInsertion() {
                 return insertion;
             }
+        }
+    }
+
+    /**
+     * To be injected as {@value #JS_TOOL_INSTANCE_NAME} in the scriptEngine
+     */
+    public static class JSToolInstance {
+        public String inject(String code, String injection) {
+            return JSTool.inject(code, injection);
         }
     }
 
