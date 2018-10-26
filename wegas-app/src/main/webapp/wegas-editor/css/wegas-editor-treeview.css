@@ -245,3 +245,8 @@
     background: #f6f6f6;
 }
 
+
+.wegas-editor-treeview .private-in-model {
+    color: grey;
+    font-style: italic;
+}

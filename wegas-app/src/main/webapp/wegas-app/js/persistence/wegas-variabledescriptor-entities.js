@@ -207,15 +207,22 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             },
             getEditorLabel: function() {
                 var trLabel = this.getLabel();
+                var toDisplay;
                 if (!this.get("editorTag") && !trLabel) {
-                    return this.get("name");
+                    toDisplay = this.get("name");
                 } else if (!this.get("editorTag")) {
-                    return trLabel;
+                    toDisplay = trLabel;
                 } else if (!trLabel) {
-                    return this.get("editorTag");
+                    toDisplay = this.get("editorTag");
                 } else {
-                    return this.get("editorTag") + " - " + trLabel;
+                    toDisplay = this.get("editorTag") + " - " + trLabel;
                 }
+
+                if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "MODEL" && this.get("visibility") === "PRIVATE") {
+                    toDisplay = "<i class='private-in-model'>" + toDisplay + "</i>";
+                }
+
+                return toDisplay;
             },
             getIconCss: function() {
                 return (
@@ -1317,7 +1324,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     type: ARRAY,
                     view: {
                         label: 'Allowed Types',
-                            // className: 'wegas-advanced-feature'
+                        // className: 'wegas-advanced-feature'
                         highlight: true
                     },
                     items: {
