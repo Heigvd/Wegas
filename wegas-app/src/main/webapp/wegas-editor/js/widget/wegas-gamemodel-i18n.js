@@ -358,6 +358,17 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 }
             }
         },
+        getTranslation: function(tr, code){
+            if (tr && tr.value && tr.value.translations){
+                if (tr.value.translations.hasOwnProperty(code.toUpperCase())){
+                    return tr.value.translations[code.toUpperCase()];
+                } else if (tr.value.translations.hasOwnProperty(code.toLowerCase())){
+                    return tr.value.translations[code.toLowerCase()];
+                }
+            } else {
+                return "";
+            }
+        },
         genEditorMarkup: function(node, languages, level) {
             level = level || 0;
             var child, tr, markup = [], field, i;
@@ -396,7 +407,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                 markup.push("<span class='translation-language'> [", languages[l].get("code"), "]</span>");
                                 markup.push("</div>"); // /translation title
                                 if (node.mode === "READONLY" && Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO") {
-                                    markup.push("<span class='wegas-readonly-translation'>", tr.value.translations[languages[l].get("code")] || "", "</span>");
+                                    markup.push("<span class='wegas-readonly-translation'>", this.getTranslation(tr, languages[l].get("code")), "</span>");
                                 } else {
                                     markup.push("<", domNode, " class='wegas-translation favorite-lang wegas-translation-inscript wegas-translation-", type, "' lang='", languages[l].get("code"),
                                         "' data-index='", tr.index,
@@ -420,7 +431,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                         markup.push(" fa fa-folder-o");
                                     }
                                     markup.push("'><", domNode, " tabindex='0' class='wegas-translation--toedit'>",
-                                        tr.value.translations[languages[l].get("code")],
+                                        this.getTranslation(tr, languages[l].get("code")),
                                         "</", domNode, ">", "</", domNode, ">", "</", domNode, ">");
                                 }
                                 markup.push("</div>");

@@ -489,14 +489,20 @@ YUI.add("wegas-i18n", function(Y) {
                 lang = locale.split(/[-_]/)[0],
                 deps = [];
 
+            lang = lang && lang.toLowerCase();
             if (isLangAvailable(lang)) {
                 for (module in Y.Wegas.I18n._modules) {
                     deps.push(module + "-" + lang);
                 }
                 Y.use(deps, function(Y) {
-                    Y.Wegas.I18n._currentLocale = locale;
+                    Y.Wegas.I18n._currentLocale = locale.toLowerCase();
                     String.prototype.capitalize = config[lang].capitalize; // don't
                     String.prototype.colonize = config[lang].colonize; // don't
+
+                    var preview = Y.Widget.getByNode(Y.one(".wegas-playerview"));
+                    if (preview) {
+                        preview.reload();
+                    }
                 });
             }
         }
@@ -538,7 +544,7 @@ YUI.add("wegas-i18n", function(Y) {
                             cb.call(null, response.response.entity.get("lang"));
                         } else {
                             I18n.setCode(response.response.entity.get("lang"));
-                            Y.Widget.getByNode(Y.one(".wegas-playerview")).reload();
+                            //Y.Widget.getByNode(Y.one(".wegas-playerview")).reload();
                         }
                     }
                 }
