@@ -35,7 +35,7 @@ YUI.addGroup('wegas-proggame', {
             ws_provides: 'ProgGameLevel',
         },
         'wegas-proggame-display': {
-            requires: ['wegas-widget', 'crafty'],
+            requires: ['wegas-widget', 'crafty', 'yui-later'],
             ws_provides: 'ProgGameDisplay',
         },
         'wegas-proggame-inputex': {
