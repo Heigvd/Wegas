@@ -381,7 +381,8 @@ angular.module('private.modeler.directives', [
                         var filtered = [];
                         for (var i in scope.rawscenariomenu) {
                             var scen = scope.rawscenariomenu[i];
-                            if (scen.name.toLowerCase().indexOf(needle) >= 0) {
+                            if (scen.name.toLowerCase().indexOf(needle) >= 0 ||
+                                scope.selectedIds[scen.id]) {
                                 filtered.push(scen);
                             }
                         }
