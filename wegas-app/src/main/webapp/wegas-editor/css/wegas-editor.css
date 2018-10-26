@@ -884,6 +884,7 @@
 .wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation--toedit {
     display: inline-block;
     width: 100%;
+    min-height: 1em;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation--value:focus,
