@@ -1316,8 +1316,9 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 allowedTypes: {
                     type: ARRAY,
                     view: {
-                        label: 'Allowed Types'
+                        label: 'Allowed Types',
                             // className: 'wegas-advanced-feature'
+                        highlight: true
                     },
                     items: {
                         type: STRING,
