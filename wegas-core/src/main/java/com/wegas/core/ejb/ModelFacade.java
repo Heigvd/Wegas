@@ -42,6 +42,7 @@ import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.resourceManagement.persistence.BurndownInstance;
 import com.wegas.resourceManagement.persistence.Iteration;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
+import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
 import com.wegas.reviewing.persistence.Review;
@@ -60,6 +61,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
+import org.glassfish.jersey.server.model.internal.ModelHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,15 +133,11 @@ public class ModelFacade {
         return scenarios;
     }
 
-    private void resetVariableDescriptorRefIds(VariableDescriptor vd, VariableDescriptor ref) {
-        this.resetVariableDescriptorRefIds(vd, ref, false);
-    }
 
-    private void resetVariableDescriptorRefIds(VariableDescriptor vd, VariableDescriptor ref, boolean clear) {
-        MergeHelper.resetRefIds(vd, ref, clear);
+    private void resetVariableDescriptorInstanceRefIds(VariableDescriptor vd, VariableDescriptor ref, boolean clear) {
         VariableInstance defaultInstance = null;
-        if (ref != null) {
-            defaultInstance = ref.getDefaultInstance();
+        if (vd != null) {
+            defaultInstance = vd.getDefaultInstance();
         }
         for (VariableInstance instance : variableDescriptorFacade.getInstances(vd).values()) {
             MergeHelper.resetRefIds(instance, defaultInstance, clear);
@@ -460,7 +458,9 @@ public class ModelFacade {
                     for (GameModel other : allScenarios) {
                         try {
                             VariableDescriptor find = variableDescriptorFacade.find(other, vd.getName());
-                            this.resetVariableDescriptorRefIds(find, vd);
+                            MergeHelper.resetRefIds(find, vd, false);
+                            this.resetVariableDescriptorInstanceRefIds(find, vd, false);
+                            this.resetVariableDescriptorInstanceRefIds(find, vd, false);
 
                             // prevent modification until first model propagation
                             find.setVisibility(ModelScoped.Visibility.INTERNAL);
@@ -591,24 +591,25 @@ public class ModelFacade {
     public GameModel releaseScenario(GameModel scenario) {
         for (VariableDescriptor vd : scenario.getVariableDescriptors()) {
             vd.setVisibility(ModelScoped.Visibility.PRIVATE);
-            // regenerate new unique refId
-            this.resetVariableDescriptorRefIds(vd, null, true);
         }
 
         Map<String, Map<String, GameModelContent>> libraries = scenario.getLibraries();
         for (Map<String, GameModelContent> contents : libraries.values()) {
             for (GameModelContent content : contents.values()) {
                 content.setVisibility(ModelScoped.Visibility.PRIVATE);
-                // regenerate new unique refId
-                content.forceRefId(null);
-                content.assertRefId();
             }
         }
 
         for (GameModelLanguage lang : scenario.getRawLanguages()) {
             lang.setVisibility(ModelScoped.Visibility.PRIVATE);
-            lang.forceRefId(null);
-            lang.assertRefId();
+        }
+
+        MergeHelper.resetRefIds(scenario, null, Boolean.TRUE);
+
+        // Since default instance and their children now have brand new refid,
+        // make sure to propagate them to test player instances
+        for (VariableDescriptor vd : scenario.getVariableDescriptors()) {
+            this.resetVariableDescriptorInstanceRefIds(vd, vd, true);
         }
 
         scenario.setBasedOn(null);
@@ -677,7 +678,8 @@ public class ModelFacade {
                                 // get corresponding descriptor in the scenrio
                                 VariableDescriptor vd = variableDescriptorFacade.find(scenario, name);
                                 // make sure corresponding descriptors share the same refId
-                                this.resetVariableDescriptorRefIds(vd, modelVd);
+                                MergeHelper.resetRefIds(vd, modelVd, false);
+                                this.resetVariableDescriptorInstanceRefIds(vd, modelVd, false);
 
                                 String parentRef = this.getParentRef(vd);
                                 if (!parentRef.equals(modelParentRef)) {

@@ -269,7 +269,7 @@ public class UpdateController {
         }
     }
 
-    private String listDescriptorScope(GameModel gameModel) {
+    private String updateListDescriptorScope(GameModel gameModel) {
         Collection<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
         StringBuilder sb = new StringBuilder();
         sb.append("[");
@@ -288,7 +288,7 @@ public class UpdateController {
     @Path("ListDescriptorScope/{gameModelId : ([1-9][0-9]*)}")
     public String listDUpdate(@PathParam("gameModelId") Long gameModelId) {
         GameModel find = gameModelFacade.find(gameModelId);
-        return listDescriptorScope(find);
+        return updateListDescriptorScope(find);
     }
 
     /*private String rtsUpdateScope(GameModel gameModel) {
@@ -317,16 +317,6 @@ public class UpdateController {
 
         return sb.toString();
     }*/
-    private void updateListDescriptorScope(GameModel gameModel) {
-        Collection<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
-
-        for (VariableDescriptor vd : variableDescriptors) {
-            if (vd instanceof ListDescriptor) {
-                this.updateScope(vd);
-            }
-        }
-
-    }
 
     private String lawUpdateScope(GameModel gameModel) {
         this.updateListDescriptorScope(gameModel);
