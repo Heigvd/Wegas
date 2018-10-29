@@ -1805,6 +1805,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Create an empty model",
                             'fr': "Créer un nouveau modèle vide"
                         },
+                        'ADMIN-INDEX-CLEAR-GAMES': {
+                            'en': "Delete games which are candidates for final deletion",
+                            'fr': "Supprimer définitivement les parties qui sont candidates pour une suppression définitive"
+                        },
                         'ADMIN-INDEX-CLEAR-GAMEMODELS': {
                             'en': "Delete gameModels which are candidates for final deletion",
                             'fr': "Supprimer définitivement les gameModels qui sont candidats pour une suppression définitive"
