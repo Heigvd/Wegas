@@ -939,7 +939,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 ],
                 validator: Y.Lang.isArray,
                 view: {
-                    type: "map",
+                    type: "matrix",
                     label:"Map matrix",
                     valueToBool: function(v) {
                         return Boolean(v.y);
