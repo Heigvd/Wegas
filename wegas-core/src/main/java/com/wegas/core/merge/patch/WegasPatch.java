@@ -290,7 +290,8 @@ public abstract class WegasPatch {
                                 mode = PatchMode.DELETE;
                             } else if (fromScope.equals(Visibility.PRIVATE)) {
                                 // change from PRIVATE TO not private -> CREATE
-                                mode = PatchMode.CREATE;
+                                //mode = PatchMode.CREATE; // target exists -> DO not create !!!
+                                mode = updateOrOverride(inheritedVisibility, visibility);
                             } else if (toScope.equals(fromScope)) {
                                 // no change -> UPDATE
                                 mode = updateOrOverride(inheritedVisibility, visibility);
