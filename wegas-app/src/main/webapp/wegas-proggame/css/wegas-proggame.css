@@ -660,6 +660,13 @@ code {
     outline-color: transparent;
 }
 
+.wegas-proggame-level .script-error{
+    background: red;
+    border-radius: 2px;
+    border: 1px solid white;
+    font-family: monospace;
+    padding: 5px;
+}
 
 /* Ace styles */
 

@@ -270,7 +270,6 @@ YUI.add('wegas-proggame-level', function(Y) {
         sendRunRequest: function a(code, interpreterCfg) {
             interpreterCfg = interpreterCfg || {};
             var level = Y.Wegas.Facade.Page.cache.editable ? JSON.stringify(this.get('root').get('@pageId')) : Y.JSON.stringify(this.toObject());
-
             Wegas.Facade.Variable.sendRequest({
                 request: "/ProgGame/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
@@ -807,6 +806,9 @@ YUI.add('wegas-proggame-level', function(Y) {
             },
             error:{
                 "transient": true,
+                setter: function(v) {
+                    this.debugTabView.item(0).get("panelNode").append("<div class='script-error'>" + Y.Wegas.Helper.htmlEntities(v) + "</div>");
+                }
             },
             label: {
                 type: STRING,
