@@ -289,6 +289,7 @@ public class Message extends AbstractEntity implements DatedEntity {
             this.getDate().setParentInstance(this.inboxInstance);
             if (this.getAttachments() != null) {
                 for (Attachment a : this.getAttachments()) {
+                    a.setMessage(this);
                     a.getFile().setParentInstance(this.inboxInstance);
                 }
             }
