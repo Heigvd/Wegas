@@ -27,6 +27,7 @@ import html from './Views/html';
 import Tuple from './Views/tuple';
 import translatable from './HOC/translatable';
 import jseditor from './Views/jseditor';
+import map from './Views/map';
 
 setDefaultWidgets({
     array: ArrayView,
@@ -41,6 +42,7 @@ setDefaultWidgets({
     I18nhtml: translatable(html),
     jseditor,
     keychoice: KeyChoice,
+    map,
     number: StringView,
     object: ObjectView,
     pageloaderselect: PageLoaderSelect,
