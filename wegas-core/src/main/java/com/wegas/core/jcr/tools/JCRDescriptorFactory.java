@@ -34,7 +34,7 @@ public class JCRDescriptorFactory implements WegasFactory {
 
                 return (T) newInstance;
             } catch (RepositoryException ex) {
-                throw new InstantiationException("JCR Repository Exception");
+                throw new InstantiationException("JCR Repository Exception -> " + ex.toString());
             }
         } else {
             throw new InstantiationException("This factory cannot handle " + originalObject.getClass() + " object");

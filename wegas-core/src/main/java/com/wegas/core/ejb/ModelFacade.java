@@ -42,7 +42,6 @@ import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.resourceManagement.persistence.BurndownInstance;
 import com.wegas.resourceManagement.persistence.Iteration;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
-import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
 import com.wegas.reviewing.persistence.Review;
@@ -61,7 +60,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
-import org.glassfish.jersey.server.model.internal.ModelHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -868,6 +866,7 @@ public class ModelFacade {
                 ContentConnector refRepo = jCRConnectorProvider.getContentConnector(reference, ContentConnector.WorkspaceType.FILES);
 
                 AbstractContentDescriptor modelRoot = DescriptorFactory.getDescriptor("/", modelRepo);
+                modelRoot.setVisibility(ModelScoped.Visibility.INHERITED);
                 AbstractContentDescriptor refRoot = DescriptorFactory.getDescriptor("/", refRepo);
 
                 //diff from ref to model files
