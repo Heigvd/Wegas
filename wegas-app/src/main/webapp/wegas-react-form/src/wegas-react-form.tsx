@@ -100,13 +100,13 @@ YUI.add('wegas-react-form', Y => {
                         <LangHandler
                             lang={Y.Wegas.I18n._currentCode}
                             availableLang={Y.Wegas.Facade.GameModel.cache
-                        .getCurrentGameModel()
-                        .get('languages')
-                        .map((l: any) => {
-                            return {
-                                code: l.get('code'),
-                                label: l.get('lang'),
-                            };
+                                .getCurrentGameModel()
+                                .get('languages')
+                                .map((l: any) => {
+                                    return {
+                                        code: l.get('code'),
+                                        label: l.get('lang'),
+                                    };
                                 })}
                         >
                             {createPortal(
@@ -171,7 +171,11 @@ YUI.add('wegas-react-form', Y => {
                 const form = this.get(FORM);
                 const val = form.getValue();
 
-                if (form.validate().length) {
+                const validate = form.validate();
+                if (validate.length) {
+                    for (let err of validate){
+                        console.error(err.toString());
+                    }
                     this.showMessage('error', 'Some fields are not valid.');
                     return;
                 }
@@ -378,7 +382,7 @@ YUI.add('wegas-react-form', Y => {
             );
         },
         getGlobals: function r(value: string) {
-             return import(/* webpackChunkName: "reactForm" */ './Script/index').then(
+            return import(/* webpackChunkName: "reactForm" */ './Script/index').then(
                 ({getGlobals}) => {
                     return getGlobals(value);
                 }
