@@ -154,13 +154,13 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     }
 
     @Override
-    @JsonIgnore
+    //@JsonIgnore
     public String getRefId() {
         return this.getFullPath() + "::" + this.getClass().getSimpleName();
     }
 
     @Override
-    @JsonIgnore
+    //@JsonIgnore
     public void setRefId(String refId) {
     }
 
