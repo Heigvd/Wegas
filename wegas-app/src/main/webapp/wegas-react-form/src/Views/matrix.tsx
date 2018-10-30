@@ -1,17 +1,17 @@
-// Array of Array toggle
+// Array of Array toggle (matrix)
 import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
 import commonView from '../HOC/commonView';
 import labeled from '../HOC/labeled';
 import { css } from 'glamor';
 
-interface IMapView {
+interface IMatrixView {
     valueToBool: (value: unknown) => boolean;
     boolToValue: (bool: boolean) => unknown;
     trueColor?: string;
     falseColor?: string;
 }
-interface IMapProps extends WidgetProps.ArrayProps<IMapView> {
+interface IMatrixProps extends WidgetProps.ArrayProps<IMatrixView> {
     value: (unknown[])[];
     id: string;
 }
@@ -25,9 +25,9 @@ const rowStyle = css({
     display: 'flex',
     flexDirection: 'row',
 });
-function size(map: (unknown[])[]) {
-    const x = map[0] ? map[0].length : 0;
-    return [x, map.length];
+function size(matrix: (unknown[])[]) {
+    const x = matrix[0] ? matrix[0].length : 0;
+    return [x, matrix.length];
 }
 const colStyle = css({
     flex: '0 0 auto',
@@ -39,7 +39,7 @@ const colStyle = css({
 const sizeStyle = css({
     width: '3em',
 });
-class Map extends React.Component<IMapProps> {
+class Matrix extends React.Component<IMatrixProps> {
     XSize: HTMLInputElement | null = null;
     YSize: HTMLInputElement | null = null;
     toggle(x: number, y: number) {
@@ -143,4 +143,4 @@ class Map extends React.Component<IMapProps> {
         );
     }
 }
-export default commonView(labeled(Map));
+export default commonView(labeled(Matrix));
