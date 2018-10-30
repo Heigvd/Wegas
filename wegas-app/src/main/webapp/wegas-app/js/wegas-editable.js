@@ -93,16 +93,11 @@ YUI.add('wegas-editable', function(Y) {
             form = form || this.constructor.EDITFORM; // And if no form is defined we check if there is a default one defined in the entity
 
             if (!form) {                                                        // If no edit form could be found, we generate one based on the ATTRS parameter.
-                attrCfgs = Y.clone(this.getAttrCfgs());
-                for (i in attrCfgs) {
-                    // if ("value" in attrCfgs[i]) {
-                    //     attrCfgs[i]["defaultValue"] = attrCfgs[i].value; // Use the value as default (useful form json object serialization)
-                    // }
-
-                    if (attrCfgs[i]["transient"] || Y.Array.indexOf(fieldsToIgnore, i) > -1) {
-                        delete attrCfgs[i];
+                attrCfgs = Y.clone(this.getAttrCfgs(), true, function(item, key){
+                    if ((item && item["transient"]) || Y.Array.indexOf(fieldsToIgnore, key) > -1){
+                        return false;
                     }
-                }
+                });
 
                 schemaMap = {
                     type: 'object',
