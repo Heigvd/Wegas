@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 @Entity
 @NamedQuery(name = "ListDescriptor.findDistinctChildrenLabels",
         query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentList.id = :containerId")
-@WegasEntity(callback = ListDescriptor.ValidateShortcutCallback.class)
+@WegasEntity(callback = ListDescriptor.ValidateAllowedItemsCallback.class)
 public class ListDescriptor extends VariableDescriptor<VariableInstance> implements DescriptorListI<VariableDescriptor> {
 
     private static final long serialVersionUID = 1L;
@@ -182,7 +182,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
             this.setDefaultInstance(new ListInstance());
         }
     }*/
-    public static class ValidateShortcutCallback implements WegasCallback {
+    public static class ValidateAllowedItemsCallback implements WegasCallback {
 
         @Override
         public void postUpdate(Mergeable entity, Object ref, Object identifier) {
@@ -191,6 +191,12 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
                 String shortcut = listDescriptor.getAddShortcut();
                 if (!Helper.isNullOrEmpty(shortcut) && !listDescriptor.isAuthorized(shortcut)) {
                     throw WegasErrorMessage.error(shortcut + " not allowed in this folder");
+                }
+
+                for (VariableDescriptor child : listDescriptor.getItems()) {
+                    if (!listDescriptor.isAuthorized(child)) {
+                        throw WegasErrorMessage.error(child + " not allowed in this folder");
+                    }
                 }
             }
         }
