@@ -174,6 +174,7 @@ public class PageConnector extends JTARepositoryConnector {
         }
         this.runCommitCallbacks();
         SessionManager.closeSession(session);
+        this.runAfterCommitCallbacks();
     }
 
     @Override

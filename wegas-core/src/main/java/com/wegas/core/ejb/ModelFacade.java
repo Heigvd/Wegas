@@ -836,7 +836,7 @@ public class ModelFacade {
     }
 
     private void registerPagesPropagates(GameModel scenario) throws RepositoryException {
-        jCRConnectorProvider.getPages(scenario).onCommit((t) -> {
+        jCRConnectorProvider.getPages(scenario).afterCommit((t) -> {
             if (t instanceof Pages) {
                 try {
                     Pages p = (Pages) t;

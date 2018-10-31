@@ -18,6 +18,7 @@ import java.util.function.Consumer;
  */
 public abstract class JTARepositoryConnector {
 
+    private List<Consumer<JTARepositoryConnector>> afterCommitCallbacks = new LinkedList<>();
     private List<Consumer<JTARepositoryConnector>> onCommitCallbacks = new LinkedList<>();
     private List<Consumer<JTARepositoryConnector>> onRollbackCallbacks = new LinkedList<>();
 
@@ -56,6 +57,10 @@ public abstract class JTARepositoryConnector {
         this.onCommitCallbacks.add(consumer);
     }
 
+    public void afterCommit(Consumer<JTARepositoryConnector> consumer) {
+        this.afterCommitCallbacks.add(consumer);
+    }
+
     public void onRollback(Consumer<JTARepositoryConnector> consumer) {
         this.onRollbackCallbacks.add(consumer);
     }
@@ -64,6 +69,10 @@ public abstract class JTARepositoryConnector {
         for (Consumer<JTARepositoryConnector> cb : cbs) {
             cb.accept(this);
         }
+    }
+
+    protected void runAfterCommitCallbacks() {
+        this.run(afterCommitCallbacks);
     }
 
     protected void runCommitCallbacks() {

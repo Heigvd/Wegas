@@ -38,6 +38,12 @@ public class PageFacade {
     @Inject
     private JCRConnectorProvider jcrConnectorProvider;
 
+    @Inject
+    private WebsocketFacade websocketFacade;
+
+    @Inject
+    private RequestManager requestManager;
+
     static final private Logger logger = LoggerFactory.getLogger(PageFacade.class);
 
     public List<HashMap<String, String>> getPageIndex(GameModel gm) throws RepositoryException {
@@ -68,7 +74,9 @@ public class PageFacade {
         page.setIndex((int) pagesDAO.size()); // May loose some values if we had that many pages...
         pagesDAO.store(page);
 
-        return this.getPage(gm, pId);
+        Page p = this.getPage(gm, pId);
+        this.registerPageIndexPropagates(pagesDAO, gm);
+        return p;
     }
 
     public Page duplicatePage(GameModel gm, String pageId) throws RepositoryException {
@@ -88,37 +96,48 @@ public class PageFacade {
         for (Entry<String, JsonNode> p : pageMap.entrySet()) {
             pagesDAO.store(new Page(p.getKey(), p.getValue()));
         }
+
+        this.registerPageIndexPropagates(pagesDAO, gm);
     }
 
-    public void setPages(GameModel gameModel, Map<String, JsonNode> pages){
+    public void setPages(GameModel gameModel, Map<String, JsonNode> pages) {
         gameModel.setPages(pages);
-}
+    }
 
     public void setPage(GameModel gm, String pageId, JsonNode content) throws RepositoryException {
         Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
         Page page = new Page(pageId, content);
         pagesDAO.store(page);
+
+        this.registerPagePropagate(pagesDAO, gm, pageId);
     }
 
     public void setPageMeta(GameModel gm, String pageId, Page page) throws RepositoryException {
         Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
         page.setId(pageId);
         pagesDAO.setMeta(page);
+
+        this.registerPagePropagate(pagesDAO, gm, pageId);
+        this.registerPageIndexPropagates(pagesDAO, gm);
     }
 
     public void movePage(GameModel gm, String pageId, int pos) throws RepositoryException {
         Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
         pagesDAO.move(pageId, pos);
+        this.registerPageIndexPropagates(pagesDAO, gm);
     }
 
     public void deletePages(GameModel gm) throws RepositoryException {
         Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
         pagesDAO.delete();
+
+        this.registerPageIndexPropagates(pagesDAO, gm);
     }
 
     public void deletePage(GameModel gm, String pageId) throws RepositoryException {
         Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
         pagesDAO.deletePage(pageId);
+        this.registerPageIndexPropagates(pagesDAO, gm);
     }
 
     public Page patchPage(GameModel gm, String pageId, JsonNode patch) throws RepositoryException, IOException, JsonPatchException {
@@ -129,11 +148,40 @@ public class PageFacade {
 
         page.patch(patch);
         pagesDAO.store(page);
+        this.registerPagePropagate(pagesDAO, gm, pageId);
         return page;
     }
 
     public Page patchPage(GameModel gm, String pageId, String patch) throws RepositoryException, IOException, JsonPatchException {
-        return this.patchPage(gm, pageId, (new ObjectMapper()).readTree(patch));
+        Page p = this.patchPage(gm, pageId, (new ObjectMapper()).readTree(patch));
+        return p;
+    }
+
+    /**
+     * Propagate page change through websocket after JTA commit
+     *
+     * @param gameModel page owner
+     * @param pageId    pade id
+     *
+     * @throws RepositoryException
+     */
+    private void registerPagePropagate(Pages pages, GameModel gameModel, String pageId) throws RepositoryException {
+        pages.afterCommit((t) -> {
+            websocketFacade.pageUpdate(gameModel.getId(), pageId, requestManager.getSocketId());
+        });
+    }
+
+    /**
+     * Propagate new page through websocket after JTA commit
+     *
+     * @param gameModel pages owner
+     *
+     * @throws RepositoryException
+     */
+    private void registerPageIndexPropagates(Pages pages, GameModel gameModel) throws RepositoryException {
+        pages.afterCommit((t) -> {
+            websocketFacade.pageIndexUpdate(gameModel.getId(), requestManager.getSocketId());
+        });
     }
 
 }

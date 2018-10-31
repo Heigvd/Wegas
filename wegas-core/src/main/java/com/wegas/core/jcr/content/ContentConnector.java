@@ -496,6 +496,7 @@ public class ContentConnector extends JTARepositoryConnector {
         }
         this.runCommitCallbacks();
         SessionManager.closeSession(session);
+        this.runAfterCommitCallbacks();
     }
 
     @Override

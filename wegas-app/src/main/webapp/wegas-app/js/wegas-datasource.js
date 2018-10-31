@@ -65,7 +65,7 @@ YUI.add('wegas-datasource', function(Y) {
                     request: this.get("initialRequest"),
                     cfg: {
                         initialRequest: true
-                }
+                    }
                 }));
             } else if (!Y.Lang.isUndefined(this.get("initialFullRequest"))) {
                 return this.sendRequest(Y.mix(cfg || {}, {
@@ -195,7 +195,7 @@ YUI.add('wegas-datasource', function(Y) {
                         var eName = eventName;
                         if (events.hasOwnProperty(eventName) && events[eventName].length > 0) {
                             for (i in events[eventName]) {
-                                if (eventName === "updatedInstance"){
+                                if (eventName === "updatedInstance") {
                                     eName = events[eventName][i].entity.get("id") + ":" + eventName;
                                 }
                                 ds.fire(eName, events[eventName][i]);
@@ -1382,9 +1382,9 @@ YUI.add('wegas-datasource', function(Y) {
     UserCache = Y.Base.create("wegas-cache", WegasCache, [], {
         _getChildren: function(entity) {
             if (entity instanceof Y.Wegas.persistence.User) {
-            if (entity.get("accounts")) {
-                return entity.get("accounts");
-            }
+                if (entity.get("accounts")) {
+                    return entity.get("accounts");
+                }
             } else if (entity["@class"] === "User") {
                 return entity.accounts;
             }
@@ -1704,12 +1704,14 @@ YUI.add('wegas-datasource', function(Y) {
             }, this));
         },
         forceUpdate: function(pageId) {
-            this.get(HOST).data["" + pageId] = undefined;
-            this.getPage(pageId, Y.bind(function() {
-                this.fire("forcePageUpdate", {
-                    pageId: pageId
-                });
-            }, this));
+            Y.later(1000, this, function() {
+                this.get(HOST).data["" + pageId] = undefined;
+                this.getPage(pageId, Y.bind(function() {
+                    this.fire("forcePageUpdate", {
+                        pageId: pageId
+                    });
+                }, this));
+            });
         },
         /**
          *

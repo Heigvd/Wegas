@@ -14,7 +14,6 @@ import com.hazelcast.core.ILock;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PageFacade;
 import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.persistence.game.GameModel;
 import java.io.IOException;
@@ -52,9 +51,6 @@ public class PageController {
     private GameModelFacade gameModelFacade;
 
     @Inject PageFacade pageFacade;
-
-    @Inject
-    private WebsocketFacade websocketFacade;
 
     /**
      * Retrieves all GameModel's page.
@@ -155,8 +151,6 @@ public class PageController {
 
         pageFacade.setPage(gm, pageId, content);
 
-        websocketFacade.pageUpdate(gameModelId, pageId, requestManager.getSocketId());
-
         return Response.ok(pageFacade.getPage(gm, pageId).getContentWithMeta(), MediaType.APPLICATION_JSON)
                 .header("Page", pageId).build();
     }
@@ -181,7 +175,6 @@ public class PageController {
 
         pageFacade.setPageMeta(gm, pageId, page);
 
-        websocketFacade.pageUpdate(gameModelId, pageId, requestManager.getSocketId());
         return Response.ok(pageFacade.getPageIndex(gm), MediaType.APPLICATION_JSON)
                 .header("Page", "index").build();
     }
@@ -196,7 +189,6 @@ public class PageController {
         requestManager.assertUpdateRight(gm);
 
         pageFacade.movePage(gm, pageId, pos);
-        websocketFacade.pageIndexUpdate(gameModelId, requestManager.getSocketId());
         return Response.ok(pageFacade.getPageIndex(gm), MediaType.APPLICATION_JSON)
                 .header("Page", "index").build();
     }
@@ -243,7 +235,6 @@ public class PageController {
             return Response.ok(page.getContentWithMeta(), MediaType.APPLICATION_JSON)
                     .header("Page", page.getId()).build();
         } finally {
-            websocketFacade.pageIndexUpdate(gameModelId, requestManager.getSocketId());
             gameModelLock.unlock();
         }
     }
@@ -272,7 +263,6 @@ public class PageController {
             return Response.ok(page.getContentWithMeta(), MediaType.APPLICATION_JSON)
                     .header("Page", page.getId()).build();
         } finally {
-            websocketFacade.pageIndexUpdate(gameModelId, requestManager.getSocketId());
             gameModelLock.unlock();
         }
 
@@ -299,7 +289,6 @@ public class PageController {
         requestManager.assertUpdateRight(gm);
 
         pageFacade.addPages(gm, pageMap);
-        websocketFacade.pageIndexUpdate(gameModelId, requestManager.getSocketId());
 
         return getPages(gameModelId);
     }
@@ -321,7 +310,6 @@ public class PageController {
 
         pageFacade.deletePages(gm);
 
-        websocketFacade.pageIndexUpdate(gameModelId, requestManager.getSocketId());
         return Response.ok().header("Page", "*").build();
     }
 
@@ -346,7 +334,6 @@ public class PageController {
 
         pageFacade.deletePage(gm, pageId);
 
-        websocketFacade.pageIndexUpdate(gameModelId, requestManager.getSocketId());
         return this.getIndex(gameModelId);
     }
 
@@ -375,7 +362,6 @@ public class PageController {
 
         try {
             Page page = pageFacade.patchPage(gm, pageId, patch);
-            websocketFacade.pageUpdate(gameModelId, pageId, requestManager.getSocketId());
 
             return Response.ok(page.getContentWithMeta(), MediaType.APPLICATION_JSON)
                     .header("Page", pageId).build();
