@@ -32,7 +32,6 @@ public abstract class AbstractAssignement extends AbstractEntity {
         super();
     }
 
-    @JsonIgnore
     @Transient
     @WegasEntityProperty
     private String taskDescriptorName;
