@@ -16,15 +16,11 @@ YUI.add('wegas-proggame-level', function(Y) {
         ARRAY = "array",
         NUMBER = "number",
         STRING = "string",
-        BOOLEAN = "boolean",
         TEXT = "text",
         ACE = "ace",
         CLICK = "click",
         ID = "id",
         LABEL = "label",
-        GROUP = "group",
-        _X = "x",
-        _Y = "y",
         INFO = "info",
         STATE = "state",
         IDLE = "idle",
@@ -267,7 +263,7 @@ YUI.add('wegas-proggame-level', function(Y) {
         instrument: function(code) {
             return Wegas.JSInstrument.instrument(code); // return instrumented value of the code
         },
-        sendRunRequest: function a(code, interpreterCfg) {
+        sendRunRequest: function(code, interpreterCfg) {
             interpreterCfg = interpreterCfg || {};
             var level = Y.Wegas.Facade.Page.cache.editable ? JSON.stringify(this.get('root').get('@pageId')) : Y.JSON.stringify(this.toObject());
             Wegas.Facade.Variable.sendRequest({
