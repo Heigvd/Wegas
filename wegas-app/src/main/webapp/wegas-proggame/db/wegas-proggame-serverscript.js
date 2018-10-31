@@ -540,14 +540,17 @@ ProgGameSimulation.prototype = {
                         if (o.collides === undefined || o.collides) {
                             return o;
                         }
-                        break;
                 }
             }
         }
 
-        //if (this.level.map[this.level.map.length - 1 - y][x].y === 0 ? !collided : false) {// It's a XOR
-        if (this.level.map[y][x].y === 0 ? !collided : false) {
-            // It's a XOR
+        if (
+            this.level.map[y] === undefined || // outside map
+            this.level.map[y][x] === undefined || // outside map
+            this.level.map[y][x].y === 0 // no path
+                ? !collided
+                : false
+        ) {
             return true;
         }
         return false;
