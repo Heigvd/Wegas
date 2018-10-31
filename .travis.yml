@@ -20,7 +20,7 @@ branches:
   - master
 env:
   global:
-  - NODE_VERSION=9.5 CC=clang CXX=clang++ YARN_VERSION=1.6.0
+  - NODE_VERSION=10 CC=clang CXX=clang++ YARN_VERSION=1.10.1
 install:
   - mvn -B -P release-profile generate-resources
 before_install:
