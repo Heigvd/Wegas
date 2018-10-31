@@ -131,7 +131,6 @@ public class ModelFacade {
         return scenarios;
     }
 
-
     private void resetVariableDescriptorInstanceRefIds(VariableDescriptor vd, VariableDescriptor ref, boolean clear) {
         VariableInstance defaultInstance = null;
         if (vd != null) {
@@ -836,17 +835,15 @@ public class ModelFacade {
     }
 
     private void registerPagesPropagates(GameModel scenario) throws RepositoryException {
-        jCRConnectorProvider.getPages(scenario).afterCommit((t) -> {
-            if (t instanceof Pages) {
-                try {
-                    Pages p = (Pages) t;
-                    websocketFacade.pageIndexUpdate(scenario.getId(), requestManager.getSocketId());
-                    for (String pageId : p.getPagesContent().keySet()) {
-                        websocketFacade.pageUpdate(scenario.getId(), pageId, requestManager.getSocketId());
-                    }
-                } catch (RepositoryException ex) {
-                    logger.error("PROPAGATE PAGES ERROR: {}", ex);
-                }
+
+        Pages pages = jCRConnectorProvider.getPages(scenario);
+        // extract IDS now as the session woulad have been closed in the callback (afterCommit !)
+        Set<String> pagesIDs = pages.getPagesContent().keySet();
+
+        pages.afterCommit((t) -> {
+            websocketFacade.pageIndexUpdate(scenario.getId(), requestManager.getSocketId());
+            for (String pageId : pagesIDs) {
+                websocketFacade.pageUpdate(scenario.getId(), pageId, requestManager.getSocketId());
             }
         });
     }
