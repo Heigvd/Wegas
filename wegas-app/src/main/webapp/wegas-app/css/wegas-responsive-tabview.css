@@ -77,7 +77,7 @@
 .yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen.open .menutitle .menubutton:before,
 .yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen[data-count="many"]:not(.open) > .yui3-tabview-list li.yui3-tab-selected .menubutton:before{
     font-family: "FontAwesome";
-    content: "\f00d";
+    content: "\f148";
     font-size: 20px;
     font-weight: normal;
     color: #4e525e;
@@ -112,8 +112,9 @@
 
 
 .yui3-skin-sam .yui3-wegas-responsive-tabview .back-to-menu i:before {
-    padding-left: 8px;
-    /*padding-right: 4px;*/
+    padding-left: 5px;
+    font-size: 14px;
+    vertical-align: -1px;
 }
 
 .yui3-skin-sam .yui3-wegas-responsive-tabview .back-to-menu:hover {
