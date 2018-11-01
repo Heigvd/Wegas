@@ -10,6 +10,7 @@ package com.wegas.core.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.GameModelCheck;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
@@ -89,6 +90,9 @@ public class UpdateController {
 
     @Inject
     private StateMachineFacade stateMachineFacade;
+
+    @Inject
+    private GameModelCheck gameModelCheck;
 
     /**
      * @return Some String encoded HTML
@@ -657,5 +661,31 @@ public class UpdateController {
         String sql = "SELECT variableinstance FROM VariableInstance variableinstance WHERE  (variableinstance.playerScopeKey IS NOT NULL AND  variableinstance.playerScopeKey NOT IN (SELECT player.id FROM Player player)) OR (variableinstance.teamScopeKey IS NOT NULL AND variableinstance.teamScopeKey NOT IN (SELECT team.id FROM Team team)) OR (variableinstance.gameScopeKey IS NOT NULL AND variableinstance.gameScopeKey NOT IN (SELECT game.id from Game game))";
         TypedQuery<VariableInstance> query = this.getEntityManager().createQuery(sql, VariableInstance.class).setMaxResults(3000);
         return query.getResultList();
+    }
+
+    @GET
+    @Path("CheckAllLiveGameModel")
+    public String checkAllGameModels() {
+        StringBuilder sb = new StringBuilder();
+
+        //List<GameModel> findByTypeAndStatus = gameModelFacade.findByTypeAndStatus(GameModel.GmType.SCENARIO, GameModel.Status.LIVE);
+        List<GameModel> findByTypeAndStatus = gameModelFacade.findByStatus(GameModel.Status.LIVE);
+        sb.append("<ul>");
+        for (GameModel gm : findByTypeAndStatus) {
+            logger.error("CHECK {}", gm);
+            Exception validate = gameModelCheck.validate(gm);
+            sb.append("<li>");
+            sb.append(gm.getName()).append(" (").append(gm.getId()).append(") =>");
+            if (validate != null) {
+                logger.error(" FAILURE");
+                sb.append(validate);
+            } else {
+                sb.append("OK");
+            }
+            sb.append("</li>");
+        }
+        sb.append("</ul>");
+
+        return sb.toString();
     }
 }
