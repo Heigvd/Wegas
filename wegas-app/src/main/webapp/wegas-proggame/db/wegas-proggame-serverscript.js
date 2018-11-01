@@ -206,7 +206,7 @@ ProgGameSimulation.prototype = {
         this.objects = level.objects;
         this.gameOverSent = false;
         //"sendCommand({type:'resetLevel', objects: " + JSON.stringify(this.get("objects")) + "});"
-        var o, i, j;
+        var o, i, j, a;
         for (i = 0; i < this.objects.length; i += 1) {
             this.objects[i].defaultActions = this.objects[i].actions;
         }
@@ -215,8 +215,9 @@ ProgGameSimulation.prototype = {
         }
         this.log('Running...');
         for (i = 0; i < level.maxTurns; i += 1) {
-            // this.log('Turn ' + (i + 1));
-
+            if (level.maxTurns > 1) {
+                this.log('Turn ' + (i + 1));
+            }
             for (j = 0; j < this.objects.length; j += 1) {
                 if (this.checkGameOver())
                     // If the game is already stopped,
@@ -232,9 +233,9 @@ ProgGameSimulation.prototype = {
                     // If object has an AI,
                     // this.log(o.id + ' turn');
                     var res = {};
-                    for (i in this.api) {
-                        if (this[this.api[i]]) {
-                            res[this.api[i]] = this[this.api[i]].bind(this);
+                    for (a in this.api) {
+                        if (this[this.api[a]]) {
+                            res[this.api[a]] = this[this.api[a]].bind(this);
                         }
                     }
                     this.doEval(o.ai, res); // run its code
@@ -364,7 +365,7 @@ ProgGameSimulation.prototype = {
     },
     read: function() {
         if (this.checkGameOver()) return;
-        var panel = this.findAt(this.cObject.x, this.cObject.y),
+        var panel = this.findAt(this.cObject.x, this.cObject.y, 'Panel'),
             value;
         if (panel && panel.components === 'Panel') {
             value = this.doEval('return ' + panel.value);
@@ -588,7 +589,7 @@ ProgGameSimulation.prototype = {
      * @param {{[variable:string]: unkown}=} values scope values hashmap
      */
     doEval: function(code, values) {
-        wdebug('Eval');
+        wdebug('Eval', code);
         var ctx = this,
             argName,
             commands = ['comparePos', 'find', 'doOpen', 'lastCommand'],
@@ -607,8 +608,8 @@ ProgGameSimulation.prototype = {
         try {
             return new Function(commands, code).apply(this, cb);
         } catch (e) {
-            print('[PROGGAME] ERRORED', e);
-            return null;
+            wdebug('[PROGGAME] ERRORED', e);
+            throw e;
         }
     },
     doPlayerEval: function(playerFn) {
@@ -664,13 +665,15 @@ ProgGameSimulation.prototype = {
      *
      * @param {number} x
      * @param {number} y
+     * @param {string=} type
      */
-    findAt: function(x, y) {
+    findAt: function(x, y, type) {
         for (var i = 0; i < this.objects.length; i = i + 1) {
             if (
                 this.objects[i].x === x &&
                 this.objects[i].y === y &&
-                this.objects[i].components !== 'PC'
+                this.objects[i].components !== 'PC' &&
+                (!type || this.objects[i].components === type)
             ) {
                 return this.objects[i];
             }
