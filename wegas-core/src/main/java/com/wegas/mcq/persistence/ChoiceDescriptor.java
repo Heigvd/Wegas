@@ -20,7 +20,7 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
+import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Player;
@@ -73,7 +73,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      */
     @OneToOne(cascade = CascadeType.ALL)
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @WegasEntityProperty
     private TranslatableContent description;
 

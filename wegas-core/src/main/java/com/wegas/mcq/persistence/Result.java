@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
+import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.WithPermission;
@@ -82,7 +82,7 @@ public class Result extends AbstractEntity implements LabelledEntity {
     /**
      * Displayed name
      */
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty
     private TranslatableContent label;
@@ -90,7 +90,7 @@ public class Result extends AbstractEntity implements LabelledEntity {
     /**
      * Displayed answer when result selected and validated
      */
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty
     private TranslatableContent answer;
@@ -98,7 +98,7 @@ public class Result extends AbstractEntity implements LabelledEntity {
     /**
      * Displayed answer when MCQ result not selected and validated
      */
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty
     private TranslatableContent ignorationAnswer;

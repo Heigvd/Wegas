@@ -13,7 +13,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
+import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -52,7 +52,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      *
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @WegasEntityProperty
     private TranslatableContent description;
 

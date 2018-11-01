@@ -13,6 +13,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.jcr.jta.JCRConnectorProviderTx;
@@ -134,13 +135,28 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     }
 
     private void assertTranslatableEquals(TranslatableContent a, TranslatableContent b) {
-        Map<String, String> aT = a.getTranslations();
-        Map<String, String> bT = b.getTranslations();
+        Map<String, Translation> aT = a.getTranslations();
+        Map<String, Translation> bT = b.getTranslations();
 
         Assert.assertEquals(aT.keySet().size(), bT.keySet().size());
 
         for (String key : aT.keySet()) {
-            Assert.assertEquals(aT.get(key), bT.get(key));
+            Translation at = aT.get(key);
+            Translation bt = bT.get(key);
+
+            String strA = null;
+            String strB = null;
+
+            if (at != null){
+                strA = at.getTranslation();
+            }
+
+            if (bt != null) {
+                strB = bt.getTranslation();
+            }
+
+            Assert.assertEquals(strA, strB);
+
         }
     }
 
@@ -160,8 +176,8 @@ public class ModelFacadeTest extends AbstractArquillianTest {
             Assert.assertEquals(expected[i], get.getName());
 
             for (int j = 0; j < list.size(); j++) {
-                for (String v : list.get(i).getLabel().getTranslations().values()) {
-                    Assert.assertEquals(v, expected[i]);
+                for (Translation v : list.get(i).getLabel().getTranslations().values()) {
+                    Assert.assertEquals(v.getTranslation(), expected[i]);
                 }
             }
         }
@@ -1871,7 +1887,6 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
     }
 
-
     @Test
     public void testModelise_orphans() throws NamingException, WegasNoResultException, RepositoryException, RepositoryException {
         GameModel gameModel1 = new GameModel();
@@ -1891,14 +1906,13 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         model = modelFacade.propagateModel(model.getId());
 
-
         ListDescriptor folder2 = wegasFactory.createList(gameModel, folder1, "folder2", "folder2");
         StringDescriptor str = wegasFactory.createString(gameModel1, folder2, "str", "str", "a", "a", "b", "c");
         TaskDescriptor task = wegasFactory.createTask(gameModel1, folder2, "task", "task", "a", "Description");
 
         model = modelFacade.propagateModel(model.getId());
 
-        ListDescriptor folder1Model =  (ListDescriptor) variableDescriptorFacade.find(model, "folder1");
+        ListDescriptor folder1Model = (ListDescriptor) variableDescriptorFacade.find(model, "folder1");
         folder1Model.setVisibility(PRIVATE);
 
         variableDescriptorFacade.merge(folder1Model);

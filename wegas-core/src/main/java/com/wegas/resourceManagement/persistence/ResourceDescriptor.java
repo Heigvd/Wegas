@@ -15,7 +15,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
+import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
@@ -42,7 +42,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
     /**
      *
      */
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty
     private TranslatableContent description;

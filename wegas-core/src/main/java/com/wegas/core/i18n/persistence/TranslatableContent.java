@@ -10,6 +10,7 @@ package com.wegas.core.i18n.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
@@ -74,6 +75,10 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     @Override
     public Long getId() {
         return this.id;
+    }
+
+    void setId(Long id) {
+        this.id = id;
     }
 
     public VariableDescriptor getParentDescriptor() {
@@ -146,8 +151,8 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     }
 
     @JsonIgnore
-    public Map<String, String> getModifiableTranslations() {
-        return ListUtils.mapEntries(translations, new Translation.Extractor());
+    public Map<String, Translation> getModifiableTranslations() {
+        return ListUtils.mapEntries(translations, new Translation.Mapper());
     }
 
     /**
@@ -155,7 +160,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
      * @return the translations
      */
     @JsonProperty
-    public Map<String, String> getTranslations() {
+    public Map<String, Translation> getTranslations() {
         return Collections.unmodifiableMap(this.getModifiableTranslations());
     }
 
@@ -164,10 +169,11 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
      * @param translations
      */
     @JsonProperty
-    public void setTranslations(Map<String, String> translations) {
+    public void setTranslations(Map<String, Translation> translations) {
         this.translations.clear();
-        for (Entry<String, String> entry : translations.entrySet()) {
-            this.translations.add(new Translation(entry.getKey(), entry.getValue()));
+        for (Entry<String, Translation> entry : translations.entrySet()) {
+            Translation value = entry.getValue();
+            this.translations.add(new Translation(entry.getKey(), value.getTranslation(), value.getStatus()));
         }
     }
 
@@ -215,6 +221,16 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
             tr.setTranslation(translation);
         } else {
             this.getRawTranslations().add(new Translation(code, translation));
+        }
+    }
+
+    public void updateTranslation(String code, String translation, String status) {
+        Translation tr = this.getTranslation(code);
+        if (tr != null) {
+            tr.setTranslation(translation);
+            tr.setStatus(status);
+        } else {
+            this.getRawTranslations().add(new Translation(code, translation, status));
         }
     }
 

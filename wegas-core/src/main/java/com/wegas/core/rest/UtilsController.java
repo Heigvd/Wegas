@@ -10,6 +10,10 @@ package com.wegas.core.rest;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.Member;
 import com.wegas.core.Helper;
@@ -111,6 +115,7 @@ public class UtilsController {
         StringBuilder sb = new StringBuilder(this.getFullVersion());
 
         String branch = Helper.getWegasProperty("wegas.build.branch", null);
+        String travisVersion = null;
 
         if (!Helper.isNullOrEmpty(branch)) {
             String prBranch = Helper.getWegasProperty("wegas.build.pr_branch", null);
@@ -118,24 +123,74 @@ public class UtilsController {
             sb.append(", ");
             if (!Helper.isNullOrEmpty(prNumber) && !"false".equals(prNumber)) {
                 sb.append("pull request ").append(prNumber).append("/").append(prBranch).append(" into ").append(branch);
+
+                travisVersion = findCurrentTravisVersionPr(prBranch, prNumber);
             } else {
                 sb.append(branch).append(" branch");
+                travisVersion = findCurrentTravisVersion(branch);
             }
             sb.append(", build #").append(this.getBuildNumber());
         } else {
             sb.append(", NinjaBuild");
         }
-        sb.append(", travis last master build is #").append(findCurrentTravisVersion());
+
+        if (travisVersion != null) {
+            sb.append(", travis last build is #").append(travisVersion);
+        }
 
         return sb.toString();
     }
 
-    private static String findCurrentTravisVersion() {
+    @GET
+    @Path("build_details_pr/{number: [1-9][0-9]*}/{branch: [a-zA-Z0-9]}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getBuildDetailsForPr(@PathParam("number") String number, @PathParam("branch") String branch) throws URISyntaxException {
+        return findCurrentTravisVersionPr(branch, number);
+    }
+
+    private static String findCurrentTravisVersionPr(String branch, String prNumber) {
+
         try {
             HttpClient client = HttpClientBuilder.create().build();
 
             URIBuilder builder = new URIBuilder(TRAVIS_URL + "/repo/Heigvd%2FWegas/builds");
-            builder.addParameter("branch.name", "master");
+            builder.addParameter("branch.name", branch);
+            builder.addParameter("state", "passed");
+            builder.addParameter("event_type", "pull_request"); // only pull_requests
+            builder.addParameter("sort_by", "id:desc"); // id first
+            //builder.addParameter("limit", "1");// only the first result
+
+            HttpGet get = new HttpGet(builder.build());
+            get.setHeader("Travis-API-Version", "3");
+            get.setHeader("User-Agent", "Wegas");
+
+            HttpResponse response = client.execute(get);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            response.getEntity().writeTo(baos);
+            String strResponse = baos.toString("UTF-8");
+
+            JsonParser jsonParser = new JsonParser();
+            JsonObject parse = jsonParser.parse(strResponse).getAsJsonObject();
+            JsonArray builds = parse.getAsJsonArray("builds");
+            for (JsonElement b : builds) {
+                JsonObject build = b.getAsJsonObject();
+                int asInt = build.get("pull_request_number").getAsInt();
+                if (prNumber.equals(asInt)) {
+                    return build.get("number").getAsString();
+                }
+            }
+        } catch (URISyntaxException | IOException ex) {
+        }
+        return "-1";
+    }
+
+    private static String findCurrentTravisVersion(String branch) {
+        try {
+            HttpClient client = HttpClientBuilder.create().build();
+
+            URIBuilder builder = new URIBuilder(TRAVIS_URL + "/repo/Heigvd%2FWegas/builds");
+            builder.addParameter("branch.name", branch);
             builder.addParameter("state", "passed");
             builder.addParameter("event_type", "push"); // avoid pull_requests
             builder.addParameter("sort_by", "id:desc"); // bid id first

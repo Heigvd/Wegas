@@ -259,7 +259,11 @@ YUI.add("wegas-i18n", function(Y) {
                         lang = langs[i];
                         tr = translations[lang.code] || translations[lang.code.toLowerCase()];
                         if (tr !== undefined) {
-                            if (tr) {
+                            if (tr.translation) {
+                                theOne = lang;
+                                tr =tr.translation;
+                                break;
+                            } else if (typeof tr === "string"){
                                 theOne = lang;
                                 break;
                             }

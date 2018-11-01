@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
+import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -56,7 +56,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      */
     @OneToOne(cascade = CascadeType.ALL)
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @WegasEntityProperty
     private TranslatableContent description;
 

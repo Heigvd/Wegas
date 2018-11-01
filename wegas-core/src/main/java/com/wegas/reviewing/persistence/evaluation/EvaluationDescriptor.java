@@ -15,7 +15,7 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
+import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.WithPermission;
@@ -85,7 +85,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
      * Evaluation label as displayed to players
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @WegasEntityProperty
     private TranslatableContent label;
 
@@ -93,7 +93,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
      * Textual descriptor to be displayed to players
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @WegasEntityProperty
     private TranslatableContent description;
 

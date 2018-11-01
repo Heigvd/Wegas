@@ -34,12 +34,19 @@ public class Translation implements Serializable {
     @Column(name = "tr")
     private String translation;
 
+    private String status;
+
     public Translation() {
     }
 
     public Translation(String lang, String translation) {
+        this(lang, translation, null);
+    }
+
+    public Translation(String lang, String translation, String status) {
         this.lang = lang;
         this.translation = translation;
+        this.status = status;
     }
 
     @Override
@@ -78,22 +85,17 @@ public class Translation implements Serializable {
         this.translation = translation;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "Translation [" + lang + "] " + translation;
-    }
-
-    public static class Extractor implements ListUtils.EntryExtractor<String, String, Translation> {
-
-        @Override
-        public String getKey(Translation item) {
-            return item.getLang();
-        }
-
-        @Override
-        public String getValue(Translation item) {
-            return item.getTranslation();
-        }
     }
 
     public static class Mapper implements ListUtils.EntryExtractor<String, Translation, Translation> {

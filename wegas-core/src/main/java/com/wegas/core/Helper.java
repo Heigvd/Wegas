@@ -319,19 +319,19 @@ public class Helper {
         Map<String, List<String>> mapUsedlabels = new HashMap<>();
 
         for (TranslatableContent label : usedLabels) {
-            for (Entry<String, String> translation : label.getTranslations().entrySet()) {
+            for (Entry<String, Translation> translation : label.getTranslations().entrySet()) {
                 if (!mapUsedlabels.containsKey(translation.getKey())) {
                     mapUsedlabels.put(translation.getKey(), new ArrayList<>());
                 }
-                mapUsedlabels.get(translation.getKey()).add(translation.getValue());
+                mapUsedlabels.get(translation.getKey()).add(translation.getValue().getTranslation());
             }
         }
 
-        Map<String, String> translations = theLabel.getTranslations();
+        Map<String, Translation> translations = theLabel.getTranslations();
         for (String code : translations.keySet()) {
-            String currentLabel = translations.get(code);
-            if (!Helper.isNullOrEmpty(currentLabel)) {
-                theLabel.updateTranslation(code, findUniqueLabel(currentLabel, mapUsedlabels.get(code)));
+            Translation currentLabel = translations.get(code);
+            if (!Helper.isNullOrEmpty(currentLabel.getTranslation())) {
+                theLabel.updateTranslation(code, findUniqueLabel(currentLabel.getTranslation(), mapUsedlabels.get(code)));
             }
         }
 

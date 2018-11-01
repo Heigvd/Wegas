@@ -138,6 +138,12 @@ public class ListUtils {
         return map;
     }
 
+    /**
+     *
+     * @param <K> Key type
+     * @param <V> value type
+     * @param <E> Entity type
+     */
     public interface EntryExtractor<K, V, E> {
 
         K getKey(E item);

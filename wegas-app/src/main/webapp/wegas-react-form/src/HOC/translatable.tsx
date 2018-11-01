@@ -3,9 +3,17 @@ import {LangConsumer} from '../LangContext';
 import {Schema} from 'jsoninput';
 import {infoStyle} from './commonView';
 
+
+interface Translation {
+    translation: string;
+    status: string;
+}
+
 interface TranslatableProps {
-    value: {[code: string]: string};
-    onChange: (value: {[code: string]: string}) => void;
+    value: {
+        [code: string]: Translation;
+    };
+    onChange: (value: {[code: string]: Translation}) => void;
     view: Schema['view'] & {label?: string};
 }
 
@@ -50,10 +58,10 @@ export default function translatable<P extends EndProps>(
 
                     let translation;
 
-                    if (props.value.hasOwnProperty(lang.toUpperCase())){
-                        translation = props.value[lang.toUpperCase()];
-                    }else {
-                        translation = props.value[lang.toLowerCase()];
+                    if (props.value.hasOwnProperty(lang.toUpperCase())) {
+                        translation = props.value[lang.toUpperCase()].translation;
+                    } else {
+                        translation = props.value[lang.toLowerCase()].translation;
                     }
 
                     return (
@@ -64,7 +72,10 @@ export default function translatable<P extends EndProps>(
                             onChange={value => {
                                 const v = {
                                     ...props.value,
-                                    [lang]: value,
+                                    [lang]: {
+                                        translation: value,
+                                        status: props.value[lang].status
+                                    }
                                 };
                                 props.onChange(v);
                             }}

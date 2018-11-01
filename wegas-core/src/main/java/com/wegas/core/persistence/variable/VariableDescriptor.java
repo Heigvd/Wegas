@@ -20,7 +20,7 @@ import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
+import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
@@ -241,7 +241,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
      * Variable descriptor human readable name
      * Player visible
      */
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL /*, orphanRemoval = true*/)
     @WegasEntityProperty
     private TranslatableContent label;

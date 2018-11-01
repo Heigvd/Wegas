@@ -91,7 +91,7 @@ YUI.add('wegas-entity', function(Y) {
                 type: "object",
                 value: {},
                 additionalProperties: {
-                    type: ["null", STRING],
+                    type: ["null", "object"],
                     required: true,
                     view: {
                         label: "translation",
@@ -119,13 +119,18 @@ YUI.add('wegas-entity', function(Y) {
                                 "@class": "TranslatableContent",
                                 "translations": {}
                             };
-                            o.translations[I18n.getCode()] = value.value;
+                            o.translations[I18n.getCode()] = {
+                                translation: value.value,
+                                status: ''
+                            };
                             return tools.valueToAST(o, argDesc);
                         } else if (value.value === undefined && value.type === "Identifier") {
                             return tools.valueToAST({
                                 "@class": "TranslatableContent",
                                 "translations": {}
                             }, argDesc);
+                        } else if (false) {
+                            // I18nv1 !!!
                         }
                     }
                     return value;
@@ -137,7 +142,10 @@ YUI.add('wegas-entity', function(Y) {
                             "@class": "TranslatableContent",
                             "translations": {}
                         };
-                        o.translations[I18n.getCode()] = value;
+                        o.translations[I18n.getCode()] = {
+                            translation: value,
+                            status: ''
+                        };
                         value = o;
                     } else if (!value) {
                         value = {

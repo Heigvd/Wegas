@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
+import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -48,7 +48,7 @@ public class StringInstance extends VariableInstance {
      *
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @WegasEntityProperty
     private TranslatableContent trValue;
 

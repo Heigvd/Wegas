@@ -16,7 +16,7 @@ import com.wegas.core.persistence.Mergeable;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
+import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
@@ -144,7 +144,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     private Integer maxNumberOfReview;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @WegasEntityProperty
     private TranslatableContent description;
 
