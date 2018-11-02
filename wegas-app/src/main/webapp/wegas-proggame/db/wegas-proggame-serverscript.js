@@ -609,7 +609,8 @@ ProgGameSimulation.prototype = {
             return new Function(commands, code).apply(this, cb);
         } catch (e) {
             wdebug('[PROGGAME] ERRORED', e);
-            throw e;
+            this.log(e.message);
+            return null;
         }
     },
     doPlayerEval: function(playerFn) {

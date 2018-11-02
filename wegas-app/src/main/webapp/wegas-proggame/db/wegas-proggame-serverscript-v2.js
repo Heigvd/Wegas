@@ -316,7 +316,11 @@ ProgGameSimulation.prototype = {
      * @param {{[variable:string]: unkown}=} values to pass to the script
      */
     afterAction: function(values) {
-        var injected = Wegas.Object.assign({}, { Source: this.cObject }, values);
+        var injected = Wegas.Object.assign(
+            {},
+            { Source: this.cObject },
+            values
+        );
         this.doEval(this.level.onAction, injected);
     },
     log: function(text) {
@@ -609,7 +613,8 @@ ProgGameSimulation.prototype = {
             return new Function(commands, code).apply(this, cb);
         } catch (e) {
             wdebug('[PROGGAME] ERRORED', e);
-            throw e;
+            this.log(e.message)
+            return null;
         }
     },
     doPlayerEval: function(playerFn) {
