@@ -1098,7 +1098,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             },
             winningCondition: {
                 type: STRING,
-                value: "comparePos(find('Player'), find('Enemy'))",
+                value: "comparePos(find('Player'), find('NPC'))",
                 view: {
                     type: "jseditor",
                     label: "Winning Condition"

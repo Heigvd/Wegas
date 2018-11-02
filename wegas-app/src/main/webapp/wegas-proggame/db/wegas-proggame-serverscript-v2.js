@@ -316,7 +316,8 @@ ProgGameSimulation.prototype = {
      * @param {{[variable:string]: unkown}=} values to pass to the script
      */
     afterAction: function(values) {
-        this.doEval(this.level.onAction, values);
+        var injected = Wegas.Object.assign({}, { Source: this.cObject }, values);
+        this.doEval(this.level.onAction, injected);
     },
     log: function(text) {
         if (text instanceof Object) {
@@ -368,8 +369,7 @@ ProgGameSimulation.prototype = {
         var panel = this.findAt(this.cObject.x, this.cObject.y, 'Panel'),
             value;
         if (panel && panel.components === 'Panel') {
-            value = this.doEval('return ' + panel.value);
-            // value = panel.value;
+            value = panel.value;
             this.doSay({
                 text: 'It\'s written "' + value + '"',
                 think: true,
@@ -788,6 +788,7 @@ ProgGameSimulation.prototype = {
  */
 /* exported run */
 function run(playerFn, level, cfg) {
+    Object.freeze(this); // Freeze global object
     /** @type {Level} */
     var realLevel;
     cfg = cfg || {};

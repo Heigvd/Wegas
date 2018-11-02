@@ -176,7 +176,7 @@ YUI.add('wegas-responsive-tabview', function(Y) {
 
                 var isSmall =
                     mode !== "expanded" && // means never small
-                    (mode === "collapsed" // either always small 
+                    (mode === "collapsed" // either always small
                         || cb._node.getBoundingClientRect().width < this.get("responsiveThreshold")); // or effectively small
 
                 if (cb.hasClass("smallscreen") && !isSmall) {
@@ -199,7 +199,7 @@ YUI.add('wegas-responsive-tabview', function(Y) {
         },
         addBackToMenuButton: function() {
             var tvCb = this.tabView.get("contentBox");
-            tvCb.append("<div class='menutitle'><span class=\"back-to-menu\"><i class='fa fa-level-up fa-flip-horizontal'></i>" + this.getBackToMenuLabel() + "</span></div>");
+            tvCb.append("<div class='menutitle'><span class=\"back-to-menu\">" + this.getBackToMenuLabel() + "<i class='fa fa-level-up'></i></span></div>");
         },
         closeMenu: function() {
             var tvCb = this.tabView.get("contentBox");
