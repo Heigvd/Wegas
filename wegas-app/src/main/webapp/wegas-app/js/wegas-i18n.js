@@ -166,8 +166,8 @@ YUI.add("wegas-i18n", function(Y) {
                                 //most specific 
                                 Y.Wegas.I18n._currentCode = gmLang.get("code").toUpperCase();
                             }
-                            if (gmLang.get("code").toUppserCase() === lang && !Y.Wegas.I18n._currentCode) {
-                                Y.Wegas.I18n._currentCode = gmLang.get("code").toUppserCase();
+                            if (gmLang.get("code").toUpperCase() === lang && !Y.Wegas.I18n._currentCode) {
+                                Y.Wegas.I18n._currentCode = gmLang.get("code").toUpperCase();
                             }
                         }
 
