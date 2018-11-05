@@ -142,7 +142,7 @@ public class UtilsController {
     }
 
     @GET
-    @Path("build_details_pr/{number: [1-9][0-9]*}/{branch: [a-zA-Z0-9]}")
+    @Path("build_details_pr/{number: [1-9][0-9]*}/{branch: [a-zA-Z0-9]*}")
     @Produces(MediaType.TEXT_PLAIN)
     public String getBuildDetailsForPr(@PathParam("number") String number, @PathParam("branch") String branch) throws URISyntaxException {
         return findCurrentTravisVersionPr(branch, number);
@@ -175,8 +175,8 @@ public class UtilsController {
             JsonArray builds = parse.getAsJsonArray("builds");
             for (JsonElement b : builds) {
                 JsonObject build = b.getAsJsonObject();
-                int asInt = build.get("pull_request_number").getAsInt();
-                if (prNumber.equals(asInt)) {
+                String val = build.get("pull_request_number").getAsString();
+                if (prNumber.equals(val)) {
                     return build.get("number").getAsString();
                 }
             }
