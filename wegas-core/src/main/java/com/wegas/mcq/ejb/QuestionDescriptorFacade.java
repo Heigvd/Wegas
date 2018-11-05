@@ -192,7 +192,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                 //result.addReply(r);
                 r.setResult(result);
             } catch (WegasNoResultException ex) {
-                logger.error("NO SUCH RESULT ! ");
+                logger.error("NO SUCH RESULT (choiceinstance:{}, reply:{}, resulttName:{}) ", choiceInstance, r, r.getResultName());
             }
         }
     }

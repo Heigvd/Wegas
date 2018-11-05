@@ -792,10 +792,11 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 }
             }),
             name: {
-                value: "",
-                type: STRING,
+                //value: "",
+                type: ["null", STRING],
                 optional: true,
                 index: -1,
+                minLength: 1,
                 view: {
                     className: "wegas-advanced-feature",
                     label: "Script alias",
