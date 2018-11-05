@@ -30,7 +30,7 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
             statistics: "Statistiques",
             peerReview: "Eval. croisées",
             backToMenu: "retour au menu",
-            mcqBackToMenu: "liste de questions"
+            mcqBackToMenu: "retour à la liste de questions"
         },
         i18n:{
             manager: {

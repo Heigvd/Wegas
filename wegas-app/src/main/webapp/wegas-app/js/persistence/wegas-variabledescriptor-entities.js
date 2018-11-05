@@ -304,9 +304,10 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     type: STRING
                 }),
                 name: {
-                    type: STRING,
+                    type: ["null", STRING],
                     index: -7,
                     maxWritableVisibility: PRIVATE,
+                    minLength: 1,
                     view: {
                         className: 'wegas-advanced-feature',
                         label: 'Script alias',

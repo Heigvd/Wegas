@@ -7,8 +7,11 @@
  */
 package com.wegas.core.jcr.content;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import org.slf4j.LoggerFactory;
 
@@ -34,13 +37,36 @@ public class DescriptorFactory {
             if (contentConnector.isRoot(node)) {
                 abstractContentDescriptor = new DirectoryDescriptor("/", contentConnector);     //Root Node
             } else {
-                mimeType = node.getProperty(WFSConfig.WFS_MIME_TYPE).getString();
+                try {
+                    Property mimeTypeProperty = node.getProperty(WFSConfig.WFS_MIME_TYPE);
+                    if (mimeTypeProperty != null) {
+                        mimeType = mimeTypeProperty.getString();
+                    }
+                } catch (RepositoryException ex) {
+                    mimeType = "application/octet-stream";
+                }
                 switch (mimeType) {
                     case DirectoryDescriptor.MIME_TYPE:
                         abstractContentDescriptor = new DirectoryDescriptor(nodePath, contentConnector);
                         break;
                     default:
-                        abstractContentDescriptor = new FileDescriptor(nodePath, mimeType, node.getProperty(WFSConfig.WFS_LAST_MODIFIED).getDate(), node.getProperty(WFSConfig.WFS_DATA).getBinary().getSize(), contentConnector);
+                        Calendar date;
+                        try {
+                            Property dateProperty = node.getProperty(WFSConfig.WFS_LAST_MODIFIED);
+                            date = dateProperty.getDate();
+                        } catch (RepositoryException ex) {
+                            date = new GregorianCalendar(1970, 1, 1, 0, 0);
+                        }
+                        long size = 0l;
+                        try {
+                            Property lengthProperty = node.getProperty(WFSConfig.WFS_DATA);
+                            if (lengthProperty != null) {
+                                size = lengthProperty.getBinary().getSize();
+                            }
+                        } catch (RepositoryException ex) {
+                        }
+
+                        abstractContentDescriptor = new FileDescriptor(nodePath, mimeType, date, size, contentConnector);
                 }
             }
             if (abstractContentDescriptor.exist()) {

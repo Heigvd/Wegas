@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -257,7 +259,7 @@ public class ContentConnector extends JTARepositoryConnector {
      * @throws RepositoryException
      */
     protected String getMimeType(String absolutePath) throws RepositoryException {
-        return this.getPropertyAsString(absolutePath, WFSConfig.WFS_MIME_TYPE, DirectoryDescriptor.MIME_TYPE);
+        return this.getPropertyAsString(absolutePath, WFSConfig.WFS_MIME_TYPE, "application/octet-stream");
     }
 
     /**
@@ -344,7 +346,12 @@ public class ContentConnector extends JTARepositoryConnector {
      * @throws RepositoryException
      */
     protected Calendar getLastModified(String absolutePath) throws RepositoryException {
-        return this.getProperty(absolutePath, WFSConfig.WFS_LAST_MODIFIED).getDate();
+        Property property = this.getProperty(absolutePath, WFSConfig.WFS_LAST_MODIFIED);
+        if (property != null) {
+            return property.getDate();
+        } else {
+            return new GregorianCalendar(1970, 1, 1);
+        }
     }
 
     /**
@@ -357,7 +364,12 @@ public class ContentConnector extends JTARepositoryConnector {
      * @throws RepositoryException
      */
     protected Long getBytesSize(String absolutePath) throws RepositoryException {
-        return this.getProperty(absolutePath, WFSConfig.WFS_DATA).getBinary().getSize();
+        Property p = this.getProperty(absolutePath, WFSConfig.WFS_DATA);
+        if (p != null){
+            return p.getBinary().getSize();
+        } else {
+            return 0l;
+        }
     }
 
     /**

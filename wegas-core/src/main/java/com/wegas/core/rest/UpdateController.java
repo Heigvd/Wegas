@@ -10,6 +10,7 @@ package com.wegas.core.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.GameModelCheck;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
@@ -96,6 +97,9 @@ public class UpdateController {
 
     @Inject
     private ScriptController scriptController;
+
+    @Inject
+    private GameModelCheck gameModelCheck;
 
     /**
      * @return Some String encoded HTML
@@ -317,7 +321,6 @@ public class UpdateController {
 
         return sb.toString();
     }*/
-
     private String lawUpdateScope(GameModel gameModel) {
         this.updateListDescriptorScope(gameModel);
         StringBuilder sb = new StringBuilder();
@@ -807,4 +810,68 @@ public class UpdateController {
 
         return "OK";
     }
+
+    @GET
+    @Path("CheckAllLiveGameModel")
+    public String checkAllGameModels() {
+        StringBuilder sb = new StringBuilder();
+
+        List<GameModel> findByTypeAndStatus = gameModelFacade.findByTypeAndStatus(GameModel.GmType.SCENARIO, GameModel.Status.LIVE);
+        sb.append("<ul>");
+        for (GameModel gm : findByTypeAndStatus) {
+            logger.error("CHECK {}", gm);
+            Exception validate = gameModelCheck.validate(gm);
+            sb.append("<li>");
+            sb.append(gm.getName()).append(";").append(gm.getId()).append(";");
+            if (validate != null) {
+                logger.error(" FAILURE");
+                sb.append(validate);
+            } else {
+                sb.append("OK");
+            }
+            sb.append("</li>");
+        }
+        sb.append("</ul>");
+
+        return sb.toString();
+    }
+
+    private List<Long> getIdsFromString(String ids) {
+        List<Long> scenarioIds = new ArrayList<>();
+
+        for (String id : ids.split(",")) {
+            scenarioIds.add(Long.parseLong(id));
+        }
+
+        return scenarioIds;
+    }
+
+    @GET
+    @Path("CheckSomeGameModel/{ids}")
+    public String checkSomeGameModels(@PathParam("ids") String ids) {
+        StringBuilder sb = new StringBuilder();
+
+        List<Long> idsFromString = getIdsFromString(ids);
+
+        sb.append("<ul>");
+        for (Long gmId : idsFromString) {
+            GameModel gm = gameModelFacade.find(gmId);
+
+            logger.error("CHECK {}", gm);
+            Exception validate = gameModelCheck.validate(gm);
+            sb.append("<li>");
+            sb.append(gm.getName()).append(";").append(gm.getId()).append(";");
+            if (validate != null) {
+                logger.error(" FAILURE");
+                sb.append(validate);
+            } else {
+                sb.append("OK");
+            }
+            sb.append("</li>");
+        }
+        sb.append("</ul>");
+
+        return sb.toString();
+    }
+
 }
