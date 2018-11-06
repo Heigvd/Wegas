@@ -9,14 +9,12 @@ package com.wegas.core.persistence.game;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
 
 import javax.persistence.Embeddable;
 import javax.persistence.Lob;
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Transient;
 

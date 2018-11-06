@@ -20,6 +20,7 @@ import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.i18n.ejb.I18nFacade;
+import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnector.WorkspaceType;
 import com.wegas.core.jcr.content.DescriptorFactory;
@@ -1025,7 +1026,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                             if (vd != null && !matches.contains(vd.getId())) {
                                 String text = null;
 
-                                if (target != null) {
+                                if (target instanceof Translation) {
+                                    text = ((Translation) target).getTranslation();
+                                } else if (target != null) {
                                     text = target.toString();
                                 }
 

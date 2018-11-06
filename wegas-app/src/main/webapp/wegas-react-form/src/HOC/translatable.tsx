@@ -60,7 +60,7 @@ export default function translatable<P extends EndProps>(
 
                     if (props.value.hasOwnProperty(lang.toUpperCase())) {
                         translation = props.value[lang.toUpperCase()].translation;
-                    } else {
+                    } else if (props.value.hasOwnProperty(lang.toLowerCase())) {
                         translation = props.value[lang.toLowerCase()].translation;
                     }
 
@@ -70,11 +70,12 @@ export default function translatable<P extends EndProps>(
                             value={translation}
                             view={view}
                             onChange={value => {
+                                const status = props.value[lang] ? props.value[lang].status : "";
                                 const v = {
                                     ...props.value,
                                     [lang]: {
                                         translation: value,
-                                        status: props.value[lang].status
+                                        status: status
                                     }
                                 };
                                 props.onChange(v);

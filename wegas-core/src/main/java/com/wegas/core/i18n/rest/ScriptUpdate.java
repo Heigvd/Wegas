@@ -22,6 +22,7 @@ public class ScriptUpdate {
     private Integer index; // optional
     private String code; //optional
     private String value;
+    private String status; // optional
 
     public String getParentClass() {
         return parentClass;
@@ -53,6 +54,14 @@ public class ScriptUpdate {
 
     public void setIndex(Integer index) {
         this.index = index;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status){
+        this.status = status;
     }
 
     public String getValue() {

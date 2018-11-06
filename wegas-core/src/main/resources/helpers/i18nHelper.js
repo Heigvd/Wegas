@@ -6,41 +6,61 @@ load("nashorn:parser.js");
 var I18nHelper = (function() {
     "use strict";
 
+    function mapProperties(node) {
+        var p, ps = {};
+        for (p in node.properties) {
+            ps[node.properties[p].key.value] = node.properties[p].value;
+        }
+        return ps;
+    }
+
     function fetchTranslations(node, code, path) {
         var key, child, keys, i, j, results = [], result;
 
         path = path || "";
 
         if (node.type === 'ObjectExpression') {
-            var i, p, properties = {};
+            var i, p, properties;
             if (node.properties) {
-                for (i in node.properties) {
-                    p = node.properties[i];
-                    properties[p.key.value] = p.value;
-                }
+                properties = mapProperties(node);
+
                 // current node is and TranslatableContent object
                 if (properties["@class"] && properties["@class"].value === "TranslatableContent") {
-                    var found = false;
-                    for (i in properties["translations"].properties) {
-                        p = properties["translations"].properties[i];
-                        if (p.key.value.toUpperCase() === code) {
-                            // needle found
-                            return [{
-                                    status: 'found',
-                                    keyLoc: p.key.loc,
-                                    key: p.key.value,
-                                    valueLoc: p.value.loc,
-                                    value: p.value.value,
-                                    path: path
-                                }];
-                        }
-                    }
 
-                    return [{
-                            status: 'missingCode',
-                            loc: properties["translations"].loc,
-                            path: path
-                        }];
+                    // current node is and TranslatableContent object
+                    if (properties.translations &&
+                        properties.translations.properties &&
+                        properties.translations.properties.length > 0 &&
+                        properties.translations.properties[0].value &&
+                        properties.translations.properties[0].value.type === "ObjectExpression") {
+                        // only extract i18nV2 translation
+
+                        for (i in properties.translations.properties) {
+                            p = properties.translations.properties[i];
+                            if (p.key.value.toUpperCase() === code) {
+                                var trProps = mapProperties(p.value);
+
+                                // needle found
+                                return [{
+                                        status: 'found',
+                                        keyLoc: p.key.loc,
+                                        key: p.key.value,
+                                        valueLoc: p.value.loc,
+                                        trValue: trProps.translation.value,
+                                        trStatus: trProps.status.value,
+                                        path: path
+                                    }];
+                            }
+                        }
+
+                        return [{
+                                status: 'missingCode',
+                                loc: properties.translations.loc,
+                                path: path
+                            }];
+                    } else {
+                        return null;
+                    }
                 }
             }
         }
@@ -78,13 +98,20 @@ var I18nHelper = (function() {
         if (node.type === 'ObjectExpression') {
             var i, p, properties = {};
             if (node.properties) {
-                for (i in node.properties) {
-                    p = node.properties[i];
-                    properties[p.key.value] = p.value;
-                }
+                properties = mapProperties(node);
+
                 // current node is and TranslatableContent object
                 if (properties["@class"] && properties["@class"].value === "TranslatableContent") {
-                    return [properties];
+                    if (properties.translations &&
+                        properties.translations.properties &&
+                        properties.translations.properties.length > 0 &&
+                        properties.translations.properties[0].value &&
+                        properties.translations.properties[0].value.type === "ObjectExpression") {
+                        // only extract i18nV2 translation
+                        return [properties];
+                    } else {
+                        return [];
+                    }
                 }
             }
         }
@@ -158,9 +185,10 @@ var I18nHelper = (function() {
         for (var i in trcs) {
             var properties = trcs[i], p;
             var tr = new com.wegas.core.i18n.persistence.TranslatableContent();
-            for (var j in properties["translations"].properties) {
-                p = properties["translations"].properties[j];
-                tr.updateTranslation(p.key.value, p.value.value);
+            for (var j in properties.translations.properties) {
+                p = properties.translations.properties[j];
+                var trProps = mapProperties(p.value);
+                tr.updateTranslation(p.key.value, trProps.translation.value, trProps.status.value);
             }
             result.push(tr);
         }
@@ -178,6 +206,10 @@ var I18nHelper = (function() {
         getTranslations: function() {
             return getTranslations(impact, code);
         },
+        /**
+         * Parse impact and return list of TranslatableContent.
+         * @returns {Array}
+         */
         getTranslatableContents: function() {
             return getTranslatableContents(impact);
         }

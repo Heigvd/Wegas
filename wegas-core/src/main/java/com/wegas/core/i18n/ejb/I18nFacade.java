@@ -51,6 +51,8 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -152,7 +154,6 @@ public class I18nFacade extends WegasAbstractFacade {
             } else {
                 newLang.setVisibility(Visibility.PRIVATE);
             }
-
 
             rawLanguages.add(newLang);
 
@@ -381,7 +382,7 @@ public class I18nFacade extends WegasAbstractFacade {
         }
     }
 
-    public String updateScriptRefName(String impact, String oldCode, String newCode) throws ScriptException {
+    public String updateCodeInScript(String impact, String oldCode, String newCode) throws ScriptException {
         JSObject result = (JSObject) fishTranslationsByCode(impact, oldCode);
 
         if (result != null) {
@@ -456,7 +457,7 @@ public class I18nFacade extends WegasAbstractFacade {
         return list;
     }
 
-    public String updateScriptWithNewTranslation(String impact, int index, String code, String newValue) throws ScriptException {
+    public String updateScriptWithNewTranslation(String impact, int index, String code, String newValue, String newTrStatus) throws ScriptException {
         JSObject result = (JSObject) fishTranslationLocation(impact, index, code, newValue);
 
         if (result != null) {
@@ -464,6 +465,10 @@ public class I18nFacade extends WegasAbstractFacade {
             String status = (String) result.getMember("status");
 
             String newNewValue = (String) result.getMember("newValue");
+            String translation = "{"
+                    + "\"translation\": " + newNewValue + ","
+                    + "\"status\": \"" + (newTrStatus != null ? newTrStatus : "") + "\""
+                    + "}";
 
             Integer[] indexes;
 
@@ -478,7 +483,7 @@ public class I18nFacade extends WegasAbstractFacade {
                         // update existing newTranslation
                         if (startIndex != null && endIndex != null) {
                             StringBuilder sb = new StringBuilder(impact);
-                            sb.replace(startIndex - 1, endIndex + 1, newNewValue);
+                            sb.replace(startIndex, endIndex, translation);
                             return sb.toString();
                         }
                     }
@@ -490,7 +495,7 @@ public class I18nFacade extends WegasAbstractFacade {
                         Integer endIndex = indexes[1];
                         StringBuilder sb = new StringBuilder(impact);
                         // insert new code property right after opening bracket
-                        sb.replace(startIndex + 1, startIndex + 1, "\"" + code + "\": " + newNewValue + ", ");
+                        sb.replace(startIndex + 1, startIndex + 1, "\"" + code + "\": " + translation + ", ");
                         return sb.toString();
                     }
                 default:
@@ -577,7 +582,7 @@ public class I18nFacade extends WegasAbstractFacade {
                     Script theScript = (Script) getter.invoke(theParent);
                     String source = theScript.getContent();
 
-                    String updatedSource = this.updateScriptWithNewTranslation(source, scriptUpdate.getIndex(), scriptUpdate.getCode(), scriptUpdate.getValue());
+                    String updatedSource = this.updateScriptWithNewTranslation(source, scriptUpdate.getIndex(), scriptUpdate.getCode(), scriptUpdate.getValue(), scriptUpdate.getStatus());
                     theScript.setContent(updatedSource);
 
                     Method setter = property.getWriteMethod();
@@ -593,6 +598,14 @@ public class I18nFacade extends WegasAbstractFacade {
         return null;
     }
 
+    /**
+     * Process each scriptUpdate.
+     * For each scriptUpdaate, Replace the whole script by the new one.
+     *
+     * @param updates
+     *
+     * @return
+     */
     public List<AbstractEntity> batchScriptUpdate(List<ScriptUpdate> updates) {
         List<AbstractEntity> ret = new ArrayList<>();
         for (ScriptUpdate scriptUpdate : updates) {
@@ -662,11 +675,20 @@ public class I18nFacade extends WegasAbstractFacade {
 
             StringBuilder line = new StringBuilder();
             for (String code : languages) {
-                line.append("[").append(code).append("] ");
                 String tr;
-                if (trc.getTranslation(code) != null) {
-                    tr = trc.getTranslation(code).getTranslation();
+                Translation translation = trc.getTranslation(code);
+                line.append("[").append(code);
+
+                if (translation != null) {
+                    if (Helper.isNullOrEmpty(translation.getStatus())) {
+                        line.append("] ");
+                    } else {
+                        line.append(", ").append(translation.getStatus()).append("] ");
+                    }
+
+                    tr = translation.getTranslation();
                 } else {
+                    line.append("] ");
                     tr = "<N/A>";
                 }
 
@@ -711,6 +733,15 @@ public class I18nFacade extends WegasAbstractFacade {
         public String toString() {
             return sb.toString();
         }
+    }
+
+    public void printAllTranslations(Long gmId) {
+        GameModel gameModel = gameModelFacade.find(gmId);
+        List<String> collect = gameModel.getRawLanguages().stream().map(GameModelLanguage::getCode).collect(Collectors.toList());
+
+        String[] langs = collect.toArray(new String[collect.size()]);
+
+        this.printTranslations(gameModel, (String[]) langs);
     }
 
     public void printTranslations(Long gmId, String... languages) {
@@ -823,11 +854,13 @@ public class I18nFacade extends WegasAbstractFacade {
                     JSObject tr = (JSObject) inscript.getMember(key);
 
                     if (tr.getMember("status").equals("found")) {
-                        String source = (String) tr.getMember("value");
+                        JSObject translation = (JSObject) tr.getMember("value");
+                        String source = (String) translation.getMember("translation");
 
-                        DeeplTranslations.DeeplTranslation translation = this.translate(source, sourceLangCode, targetLangCode);
+                        DeeplTranslations.DeeplTranslation deepled = this.translate(source, sourceLangCode, targetLangCode);
+
                         script = this.updateScriptWithNewTranslation(script, index,
-                                targetLangCode, translation.getText());
+                                targetLangCode, deepled.getText(), "auto::" + sourceLangCode);
                     }
                     index++;
                 }
@@ -914,7 +947,7 @@ public class I18nFacade extends WegasAbstractFacade {
             if (target instanceof Script) {
                 try {
                     Script script = (Script) target;
-                    String newScript = i18nFacade.updateScriptRefName(script.getContent(), oldCode, newCode);
+                    String newScript = i18nFacade.updateCodeInScript(script.getContent(), oldCode, newCode);
                     script.setContent(newScript);
                 } catch (ScriptException ex) {
                     logger.error("SCRIPTERROR");
@@ -971,29 +1004,31 @@ public class I18nFacade extends WegasAbstractFacade {
                             String newTranslation = null;
                             String currentTranslation = null;
                             String previousTranslation = null;
+                            String newStatus = null;
 
                             // any new newTranslation in the source ?
                             if (trSource.getMember("status").equals("found")) {
-                                newTranslation = (String) trSource.getMember("value");
+                                newTranslation = (String) ((JSObject) trSource.getMember("value")).getMember("translation");
+                                newStatus = (String) ((JSObject) trSource.getMember("value")).getMember("status");
                             }
                             // has current newTranslation ?
                             if (trTarget.getMember("status").equals("found")) {
-                                currentTranslation = (String) trTarget.getMember("value");
+                                currentTranslation = (String) ((JSObject) trTarget.getMember("value")).getMember("translation");
                             }
 
                             if (trRef != null && trRef.getMember("status").equals("found")) {
-                                previousTranslation = (String) trRef.getMember("value");
+                                previousTranslation = (String) ((JSObject) trRef.getMember("value")).getMember("translation");
                             }
 
                             if (newTranslation == null) {
                                 if (previousTranslation != null && currentTranslation != null) {
                                     // TODO: implement "remove Language"
-                                    script = this.updateScriptWithNewTranslation(script, index, languageCode, "");
+                                    script = this.updateScriptWithNewTranslation(script, index, languageCode, "", "deleted");
                                 }
                             } else {
                                 if (!shouldKeepUserTranslation || previousTranslation == null || currentTranslation == null || previousTranslation.equals(currentTranslation)) {
                                     logger.debug("Import {}::{} from {}->{} in {}, ", languageCode, newTranslation, reference, source, target);
-                                    script = this.updateScriptWithNewTranslation(script, index, languageCode, newTranslation);
+                                    script = this.updateScriptWithNewTranslation(script, index, languageCode, newTranslation, newStatus);
                                 }
                             }
 

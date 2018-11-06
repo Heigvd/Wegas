@@ -230,4 +230,10 @@ public class I18nController {
 
         return list;
     }
+
+    @GET
+    @Path("Print")
+    public void print(@PathParam("gameModelId") Long gameModelId) {
+        i18nfacade.printAllTranslations(gameModelId);
+    }
 }

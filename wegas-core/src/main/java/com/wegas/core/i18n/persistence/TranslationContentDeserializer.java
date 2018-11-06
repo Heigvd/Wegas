@@ -90,11 +90,10 @@ public class TranslationContentDeserializer extends StdDeserializer<Translatable
                                 String translation = "";
                                 String status = "";
                                 while ((trFieldName = p.nextFieldName()) != null) {
+                                    p.nextValue(); // consume value
                                     if (trFieldName.equals("translation")) {
-                                        p.nextValue();
                                         translation = p.getValueAsString();
                                     } else if (trFieldName.equals("status")) {
-                                        p.nextValue();
                                         status = p.getValueAsString();
                                     }
                                 }

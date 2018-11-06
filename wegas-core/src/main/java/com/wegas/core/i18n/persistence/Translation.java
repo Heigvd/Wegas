@@ -7,6 +7,7 @@
  */
 package com.wegas.core.i18n.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.ListUtils;
 import java.io.Serializable;
 import java.util.Objects;
@@ -27,6 +28,7 @@ public class Translation implements Serializable {
 
     private static final long serialVersionUID = 1647739633795326491L;
 
+    @JsonIgnore
     private String lang;
 
     @Lob
