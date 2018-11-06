@@ -14,6 +14,7 @@ class JSE extends React.Component<{
     constructor(props: typeof JSE.prototype.props) {
         super(props);
         this.onChangeDebounced = debounce(this.onChange.bind(this), 200);
+        this.flush = this.flush.bind(this);
     }
     onChange(value: string) {
         this.props.onChange(value);
