@@ -1203,6 +1203,11 @@ YUI.add('wegas-proggame-level', function(Y) {
                 tooltip: "right()\n" +
                     "Your avatar turns to the right without moving."
             },
+            "npc": {
+                label: "npc&lt;T&gt;(fn:()=>T):T",
+                tooltip: "Ask NPC to execute the given function, it returns the value the function returns.\n\n"+
+                    "Parameters\nfn - The function to execute"
+            },
             "Math.PI": {
                 pkg: "Math",
                 tooltip: "Math:PI:Number\n\nConstant containing the value of PI (approx. 3.14)",
