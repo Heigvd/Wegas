@@ -142,7 +142,7 @@ function getTinyConfig(fixedToolbar) {
     if (extraButtons) {
         /* config example :
          Y.namespace("Wegas.Config").TinyExtraButtons = {
-        
+
             className : "off-game",
             cssIcon: "fa fa-asterisk",
             tooltip : "off-game information style"
@@ -190,6 +190,7 @@ function getTinyConfig(fixedToolbar) {
                             tooltip: btnCfg.tooltip,
                             onclick: function(e) {
                                 tinymce.activeEditor.formatter.toggle(name);
+                                tinymce.activeEditor.fire("change");
                             }
                         });
                     }
