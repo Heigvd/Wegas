@@ -52,7 +52,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -79,6 +78,21 @@ public class I18nFacade extends WegasAbstractFacade {
 
     @Inject
     private ScriptFacade scriptFacade;
+
+    public static enum UpdateType {
+        /**
+         * Do not change any statuses
+         */
+        MINOR,
+        /**
+         * This is a major update -> outdate others languages
+         */
+        MAJOR,
+        /**
+         * Mark the translation up-to-date
+         */
+        CATCH_UP
+    }
 
     /**
      * Create language for the given gamemodel.
@@ -258,7 +272,7 @@ public class I18nFacade extends WegasAbstractFacade {
         return this.getTranslation(trId, code).getTranslation();
     }
 
-    public TranslatableContent updateTranslation(Long trId, String code, String newValue) {
+    public TranslatableContent updateTranslation(Long trId, String code, String newValue, UpdateType mode) {
         TranslatableContent content = this.findTranslatableContent(trId);
 
         if (content.belongsToProtectedGameModel()) {
@@ -277,7 +291,20 @@ public class I18nFacade extends WegasAbstractFacade {
             }
         }
 
-        content.updateTranslation(code, newValue);
+        if (mode == UpdateType.MAJOR) {
+            // make all tr as outdated
+            for (Translation t : content.getRawTranslations()) {
+                t.setStatus("outdated::" + code);
+            }
+            // but this one is not
+            content.updateTranslation(code, newValue, "");
+        } else if (mode == UpdateType.CATCH_UP) {
+            // clear the status as the new translation is up to date
+            content.updateTranslation(code, newValue, "");
+        } else {
+            // MINOR change, do not change the status
+            content.updateTranslation(code, newValue);
+        }
 
         return content;
     }
@@ -368,14 +395,14 @@ public class I18nFacade extends WegasAbstractFacade {
         return null;
     }
 
-    private static final class LangChange {
+    private static final class InScriptChange {
 
         private final int startIndex;
         private final int endIndex;
 
         private final String newValue;
 
-        public LangChange(int startIndex, int endIndex, String newValue) {
+        public InScriptChange(int startIndex, int endIndex, String newValue) {
             this.startIndex = startIndex;
             this.endIndex = endIndex;
             this.newValue = newValue;
@@ -386,7 +413,7 @@ public class I18nFacade extends WegasAbstractFacade {
         JSObject result = (JSObject) fishTranslationsByCode(impact, oldCode);
 
         if (result != null) {
-            List<LangChange> langCodes = new ArrayList<>();
+            List<InScriptChange> langCodes = new ArrayList<>();
             for (String key : result.keySet()) {
 
                 // TODO: store all indexes; sort them from end to start, replace all oldCode by new one, return new content
@@ -395,7 +422,7 @@ public class I18nFacade extends WegasAbstractFacade {
                 if ("found".equals(status)) {
                     Integer[] indexes = getIndexes(impact, translation, "keyLoc");
                     if (indexes != null) {
-                        langCodes.add(new LangChange(indexes[0], indexes[1], "\"" + newCode + "\""));
+                        langCodes.add(new InScriptChange(indexes[0], indexes[1], "\"" + newCode + "\""));
                     }
                 }
             }
@@ -403,14 +430,14 @@ public class I18nFacade extends WegasAbstractFacade {
             if (!langCodes.isEmpty()) {
                 StringBuilder sb = new StringBuilder(impact);
 
-                Collections.sort(langCodes, new Comparator<LangChange>() {
+                Collections.sort(langCodes, new Comparator<InScriptChange>() {
                     @Override
-                    public int compare(LangChange o1, LangChange o2) {
+                    public int compare(InScriptChange o1, InScriptChange o2) {
                         return o1.startIndex < o2.startIndex ? 1 : -1;
                     }
                 });
 
-                for (LangChange change : langCodes) {
+                for (InScriptChange change : langCodes) {
                     // update lang code
                     sb.replace(change.startIndex - 1, change.endIndex + 1, change.newValue);
                 }
@@ -465,9 +492,10 @@ public class I18nFacade extends WegasAbstractFacade {
             String status = (String) result.getMember("status");
 
             String newNewValue = (String) result.getMember("newValue");
+            String previousStatus = (String) result.getMember("trStatus");
             String translation = "{"
                     + "\"translation\": " + newNewValue + ","
-                    + "\"status\": \"" + (newTrStatus != null ? newTrStatus : "") + "\""
+                    + "\"status\": \"" + (newTrStatus != null ? newTrStatus : previousStatus) + "\""
                     + "}";
 
             Integer[] indexes;
@@ -552,7 +580,7 @@ public class I18nFacade extends WegasAbstractFacade {
     public List<AbstractEntity> batchUpdateInScriptTranslation(List<ScriptUpdate> scriptUpdates) throws ScriptException {
         List<AbstractEntity> ret = new ArrayList<>();
         for (ScriptUpdate update : scriptUpdates) {
-            AbstractEntity updated = this.updateInScriptTranslation(update);
+            AbstractEntity updated = this.updateInScriptTranslation(update, UpdateType.MINOR);
             if (updated != null) {
                 ret.add(updated);
             }
@@ -560,7 +588,65 @@ public class I18nFacade extends WegasAbstractFacade {
         return ret;
     }
 
-    public AbstractEntity updateInScriptTranslation(ScriptUpdate scriptUpdate) throws ScriptException {
+    private Object fishTranslationsByIndex(String impact, int index) throws ScriptException {
+        Map<String, Object> args = new HashMap<>();
+        args.put("impact", impact);
+        args.put("index", index);
+
+        ScriptContext ctx = new SimpleScriptContext();
+
+        scriptFacade.nakedEval(getI18nJsHelper(), null, ctx);
+        return scriptFacade.nakedEval("I18nHelper.getTranslationsByIndex()", args, ctx);
+    }
+
+    public String updateStatusInScript(String impact, int index, String newStatus) throws ScriptException {
+        JSObject result = (JSObject) fishTranslationsByIndex(impact, index);
+
+        if (result != null) {
+            List<InScriptChange> langCodes = new ArrayList<>();
+
+            for (String key : result.keySet()) {
+
+                // TODO: store all indexes; sort them from end to start, update all statuses to newStatus
+                JSObject translation = (JSObject) result.getMember(key);
+                JSObject value = (JSObject) translation.getMember("value");
+                JSObject member = (JSObject) value.getMember("properties");
+
+                for (String key2 : member.keySet()) {
+                    JSObject prop = (JSObject) member.getMember(key2);
+                    if (((JSObject) prop.getMember("key")).getMember("value").equals("status")) {
+                        JSObject statusProp = (JSObject) prop.getMember("value");
+
+                        Integer[] indexes = getIndexes(impact, statusProp, "loc");
+                        if (indexes != null) {
+                            langCodes.add(new InScriptChange(indexes[0], indexes[1], "\"" + newStatus + "\""));
+                        }
+                    }
+                }
+            }
+
+            if (!langCodes.isEmpty()) {
+                StringBuilder sb = new StringBuilder(impact);
+
+                Collections.sort(langCodes, new Comparator<InScriptChange>() {
+                    @Override
+                    public int compare(InScriptChange o1, InScriptChange o2) {
+                        return o1.startIndex < o2.startIndex ? 1 : -1;
+                    }
+                });
+
+                for (InScriptChange change : langCodes) {
+                    // update lang code
+                    sb.replace(change.startIndex - 1, change.endIndex + 1, change.newValue);
+                }
+                return sb.toString();
+            }
+        }
+
+        return impact;
+    }
+
+    public AbstractEntity updateInScriptTranslation(ScriptUpdate scriptUpdate, UpdateType mode) throws ScriptException {
         AbstractEntity theParent = this.getParent(scriptUpdate);
         if (theParent != null) {
             VariableDescriptor toReturn = this.getToReturn(scriptUpdate.getParentClass(), theParent);
@@ -582,7 +668,17 @@ public class I18nFacade extends WegasAbstractFacade {
                     Script theScript = (Script) getter.invoke(theParent);
                     String source = theScript.getContent();
 
-                    String updatedSource = this.updateScriptWithNewTranslation(source, scriptUpdate.getIndex(), scriptUpdate.getCode(), scriptUpdate.getValue(), scriptUpdate.getStatus());
+                    String status;
+                    if (mode == UpdateType.MAJOR) {
+                        status = "";
+                        //TODO mark all as outdated
+                        source = this.updateStatusInScript(source, scriptUpdate.getIndex(), "outdated::" + scriptUpdate.getCode());
+                    } else if (mode == UpdateType.CATCH_UP) {
+                        status = "";
+                    } else {
+                        status = null;
+                    }
+                    String updatedSource = this.updateScriptWithNewTranslation(source, scriptUpdate.getIndex(), scriptUpdate.getCode(), scriptUpdate.getValue(), status);
                     theScript.setContent(updatedSource);
 
                     Method setter = property.getWriteMethod();

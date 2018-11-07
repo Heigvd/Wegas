@@ -2,6 +2,7 @@ import * as React from 'react';
 import {LangConsumer} from '../LangContext';
 import {Schema} from 'jsoninput';
 import {infoStyle} from './commonView';
+import IconButton from '../Components/IconButton';
 
 
 interface Translation {
@@ -35,6 +36,32 @@ export default function translatable<P extends EndProps>(
             return null;
         }
 
+        function catchUp(code: string) {
+            const value = props.value[code] ? props.value[code].translation : "";
+            const newValue = {
+                ...props.value,
+                [code]: {
+                    translation: value,
+                    status: ""
+                }
+            };
+
+            props.onChange(newValue);
+        }
+
+        function markAsMajor(code: string) {
+            let newValue = {};
+            for (let lang in props.value) {
+                newValue[lang] = {
+                    translation: props.value[lang].translation,
+                    status: "outdated:" + code
+                }
+            };
+            newValue[code].status = "";
+
+            props.onChange(newValue);
+        }
+
         return (
             <LangConsumer>
                 {({lang, availableLang}) => {
@@ -44,27 +71,31 @@ export default function translatable<P extends EndProps>(
                             code: '',
                         }
                     ).code;
+
+                    let translation;
+                    let status;
+
+                    if (props.value.hasOwnProperty(lang.toUpperCase())) {
+                        translation = props.value[lang.toUpperCase()].translation;
+                        status = props.value[lang.toUpperCase()].status;
+                    } else if (props.value.hasOwnProperty(lang.toLowerCase())) {
+                        translation = props.value[lang.toLowerCase()].translation;
+                        status = props.value[lang.toLowerCase()].status;
+                    }
+
+
                     const view = {
                         ...props.view,
                         label: (
                             <span>
                                 {(props.view || {}).label}{' '}
                                 <span className={String(infoStyle)}>
-                                    [{curCode.toLowerCase()}]
+                                    [{curCode.toLowerCase()}] {status ? "(" + status + ")" : ""}
                                 </span>
                             </span>
                         ),
                     };
-
-                    let translation;
-
-                    if (props.value.hasOwnProperty(lang.toUpperCase())) {
-                        translation = props.value[lang.toUpperCase()].translation;
-                    } else if (props.value.hasOwnProperty(lang.toLowerCase())) {
-                        translation = props.value[lang.toLowerCase()].translation;
-                    }
-
-                    return (
+                    const editor =
                         <Comp
                             {...props}
                             value={translation}
@@ -81,7 +112,37 @@ export default function translatable<P extends EndProps>(
                                 props.onChange(v);
                             }}
                         />
-                    );
+                    const majorButton =
+                        <IconButton
+                            icon="fa fa-gavel"
+                            tooltip="Major update"
+                            onClick={() => {
+                                markAsMajor(curCode);
+                            }}
+                        />;
+
+                    if (!props.value[curCode] || !props.value[curCode].status) {
+                        return (
+                            <span>
+                                {editor}
+                                {majorButton}
+                            </span>
+                        );
+                    } else {
+                        return (
+                            <span>
+                                {editor}
+                                {majorButton}
+                                <IconButton
+                                    icon="fa fa-upload"
+                                    tooltip="Catch up"
+                                    onClick={() => {
+                                        catchUp(curCode);
+                                    }}
+                                />
+                            </span>
+                        );
+                    }
                 }}
             </LangConsumer>
         );

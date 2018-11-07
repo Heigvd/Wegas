@@ -187,6 +187,8 @@ YUI.add("wegas-i18n", function(Y) {
                 return "<div class='wegas-translation wegas-translation-std wegas-translation-html " + (favorite ? 'favorite-lang' : 'not-favorite-lang') +
                     "' data-trid='" + id +
                     "' lang='" + lang.code + "'data-lang='" + lang.lang + "'><span class='tools'>" +
+                    "<span class='inline-editor-major-validate fa fa-gavel'></span>" +
+                    "<span class='inline-editor-catch_up-validate fa fa-upload'></span>" +
                     "<span class='inline-editor-validate fa fa-save'></span>" +
                     "<span class='inline-editor-cancel fa fa-times'></span>" +
                     "</span>" +
@@ -196,6 +198,8 @@ YUI.add("wegas-i18n", function(Y) {
                 return "<span class='wegas-translation wegas-translation-std wegas-translation-string " + (favorite ? 'favorite-lang' : 'not-favorite-lang') +
                     "' data-trid='" + id +
                     "' lang='" + lang.code + "'data-lang='" + lang.lang + "'><span class='tools'>" +
+                    "<span class='inline-editor-major-validate fa fa-gavel'></span>" +
+                    "<span class='inline-editor-catch_up-validate fa fa-upload'></span>" +
                     "<span class='inline-editor-validate fa fa-save'></span>" +
                     "<span class='inline-editor-cancel fa fa-times'></span>" +
                     "</span>" +
@@ -206,6 +210,28 @@ YUI.add("wegas-i18n", function(Y) {
             } else {
                 return text;
             }
+        }
+
+        function getTrStatus(trContent, code) {
+            var klass,
+                translations;
+
+            if (trContent) {
+                if (trContent.get) {
+                    klass = trContent.get("@class");
+                    translations = trContent.get("translations");
+                } else {
+                    klass = trContent["@class"];
+                    translations = trContent.translations;
+                }
+
+                if (klass === "TranslatableContent" && translations) {
+                    if (translations[code]){
+                        return translations[code].status || "";
+                    }
+                }
+            }
+            return "";
         }
 
         function translateFromObject(trContent, params) {
@@ -261,9 +287,9 @@ YUI.add("wegas-i18n", function(Y) {
                         if (tr !== undefined) {
                             if (tr.translation) {
                                 theOne = lang;
-                                tr =tr.translation;
+                                tr = tr.translation;
                                 break;
-                            } else if (typeof tr === "string"){
+                            } else if (typeof tr === "string") {
                                 theOne = lang;
                                 break;
                             }
@@ -582,6 +608,9 @@ YUI.add("wegas-i18n", function(Y) {
             setNumericLang: setNumericLang,
             t: function(key, args) {
                 return translate(key, args);
+            },
+            getTrStatus: function(trc, code) {
+                return getTrStatus(trc, code);
             },
             formatNumber: function(v, f) {
                 return formatNumber(v, f);

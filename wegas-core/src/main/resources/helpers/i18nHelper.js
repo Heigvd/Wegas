@@ -195,6 +195,18 @@ var I18nHelper = (function() {
         return result;
     }
 
+    function getByIndex(script, index) {
+        var ast = parse(script, "impact", true),
+            trcs = fetchTranslatableContents(ast);
+
+        if (trcs.length > index) {
+            return trcs[index].translations.properties;
+        } else {
+            return  null;
+        }
+    }
+
+
 
     return {
         /**
@@ -205,6 +217,9 @@ var I18nHelper = (function() {
         },
         getTranslations: function() {
             return getTranslations(impact, code);
+        },
+        getTranslationsByIndex: function() {
+            return getByIndex(impact, index);
         },
         /**
          * Parse impact and return list of TranslatableContent.

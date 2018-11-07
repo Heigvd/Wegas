@@ -12,6 +12,7 @@ import com.wegas.core.i18n.deepl.DeeplTranslations;
 import com.wegas.core.i18n.deepl.DeeplTranslations.DeeplTranslation;
 import com.wegas.core.i18n.deepl.DeeplUsage;
 import com.wegas.core.i18n.ejb.I18nFacade;
+import com.wegas.core.i18n.ejb.I18nFacade.UpdateType;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
@@ -96,16 +97,18 @@ public class I18nController {
     }
 
     @PUT
-    @Path("Tr/{code : [^\\/]*}/{trId: [1-9][0-9]*}")
-    public TranslatableContent updateTranslation(@PathParam("code") String code, @PathParam("trId") Long trId, String newValue) {
+    @Path("Tr/{code : [^\\/]*}/{trId: [1-9][0-9]*}/{mode : [A-Z_]+}")
+    public TranslatableContent updateTranslation(@PathParam("code") String code, @PathParam("trId") Long trId,
+            @PathParam("mode") UpdateType mode, String newValue) {
         logger.trace("UPDATE #{} / {}", trId, code);
-        return i18nfacade.updateTranslation(trId, code, newValue);
+        return i18nfacade.updateTranslation(trId, code, newValue, mode);
     }
 
     @PUT
-    @Path("ScriptTr")
-    public AbstractEntity updateInScript(ScriptUpdate scriptUpdate) throws ScriptException {
-        return i18nfacade.updateInScriptTranslation(scriptUpdate);
+    @Path("ScriptTr/{mode : [A-Z_]+}")
+    public AbstractEntity updateInScript(@PathParam("mode") UpdateType mode, ScriptUpdate scriptUpdate)
+            throws ScriptException {
+        return i18nfacade.updateInScriptTranslation(scriptUpdate, mode);
     }
 
     @PUT

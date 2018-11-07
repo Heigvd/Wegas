@@ -936,7 +936,8 @@
     user-select: none;
 }
 
-.wegas-i18n-manager .wegas-i18n-manager--editor .translation .translation-language {
+.wegas-i18n-manager .wegas-i18n-manager--editor .translation .translation-language,
+.wegas-i18n-manager .wegas-i18n-manager--editor .translation .translation-status {
     user-select: none;
     cursor: default;
     color: #99a6b2;
