@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Value, Change } from 'slate';
+import { Value, Editor, Block } from 'slate';
 import { Props } from '@fortawesome/react-fontawesome';
 import {
   Generated,
@@ -24,10 +24,11 @@ export function genMark({
   return {
     name: `Mark_${mark}`,
     plugin: {
-      renderMark(props) {
+      renderMark(props, _editor, next) {
         if (props.mark.type === mark) {
-          return render(props);
+          return render({ ...props.attributes, children: props.children });
         }
+        return next();
       },
     },
     transform: {
@@ -47,10 +48,10 @@ export function genMark({
     },
     Button({
       value,
-      onChange,
+      editor,
     }: {
+      editor: React.RefObject<Editor>;
       value: Value;
-      onChange: (value: Change) => void;
     }) {
       const enabled = hasMark(value, mark);
       return (
@@ -59,12 +60,9 @@ export function genMark({
           pressed={enabled}
           onMouseDown={event => {
             event.preventDefault();
-            onChange(
-              value
-                .change()
-                .toggleMark(mark)
-                .focus(),
-            );
+            if (editor.current !== null) {
+              editor.current.toggleMark(mark).focus();
+            }
           }}
         />
       );
@@ -87,10 +85,11 @@ export function genBlock({
   return {
     name: `Block_${block}`,
     plugin: {
-      renderNode(props) {
-        if (props.node.type === block) {
+      renderNode(props, _editor, next) {
+        if (Block.isBlock(props.node) && props.node.type === block) {
           return render({ ...props.attributes, children: props.children });
         }
+        return next();
       },
     },
     transform: {
@@ -110,13 +109,14 @@ export function genBlock({
     },
     Button({
       value,
-      onChange,
-      change = c => {
-        if (!hasBlock(value, block)) {
-          blockStack(value).forEach(b => c.unwrapBlock(b));
-          c.setBlocks(block);
+      editor,
+      change = (editor) => {
+        if (editor !== null) {
+          if (!hasBlock(value, block)) {
+            blockStack(value).forEach(b => editor.unwrapBlock(b));
+            editor.setBlocks(block);
+          }
         }
-        return c;
       },
     }: ToolbarButtonProps) {
       const enabled = hasBlock(value, block);
@@ -126,12 +126,10 @@ export function genBlock({
           pressed={enabled}
           onMouseDown={event => {
             event.preventDefault();
-            onChange(
-              value
-                .change()
-                .call(change as any)
-                .focus(),
-            );
+            if (editor.current !== null) {
+              change(editor.current);
+              editor.current.focus();
+            }
           }}
         />
       );

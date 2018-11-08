@@ -1,4 +1,4 @@
-import { Value, Change, Block } from 'slate';
+import { Value, Editor, Block } from 'slate';
 import { Plugin } from 'slate-react';
 import { Rule } from 'slate-html-serializer';
 
@@ -27,12 +27,12 @@ export interface Generated {
   transform: Rule;
   Button: React.SFC<{
     value: Value;
-    onChange: (value: Change) => void;
+    editor: React.RefObject<Editor>;
   }>;
   name: string;
 }
 export interface ToolbarButtonProps {
   value: Value;
-  onChange: (value: Change) => void;
-  change?: (value: Change) => Change | void;
+  editor: React.RefObject<Editor>;
+  change?: (editor:Editor) => void;
 }

@@ -11,7 +11,7 @@ interface TranslatableProps {
 interface EndProps {
   value?: string | number;
   onChange: (value: string) => void;
-  view: Schema['view'];
+  view: { label?: JSX.Element; [prop: string]: unknown };
 }
 /**
  * HOC: Transform a hashmap (lang:value) into value based on current language

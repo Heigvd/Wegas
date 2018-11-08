@@ -1,6 +1,6 @@
 import { WidgetProps } from 'jsoninput/typings/types';
 import * as React from 'react';
-import { Change, Value } from 'slate';
+import { Value, Editor as Ed } from 'slate';
 import HtmlSerial from 'slate-html-serializer';
 import { Editor } from 'slate-react';
 import { inputStyle } from '../String';
@@ -57,6 +57,7 @@ interface HtmlState {
   oldProps: HtmlProps;
 }
 export default class Html extends React.Component<HtmlProps, HtmlState> {
+  editor = React.createRef<Ed>();
   static getDerivedStateFromProps(nextProps: HtmlProps, state: HtmlState) {
     if (state.oldProps === nextProps) {
       return null;
@@ -75,7 +76,7 @@ export default class Html extends React.Component<HtmlProps, HtmlState> {
     rawValue: this.props.value || '<p></p>',
     value: html.deserialize(this.props.value || '<p></p>'),
   };
-  onChange = ({ value }: Change) => {
+  onChange = ({ value }: { value: Value }) => {
     if (this.state.value.document !== value.document) {
       this.setState({ rawValue: html.serialize(value), value }, () =>
         this.props.onChange(this.state.rawValue),
@@ -99,11 +100,13 @@ export default class Html extends React.Component<HtmlProps, HtmlState> {
                   <g.Button
                     key={g.name}
                     value={this.state.value}
-                    onChange={this.onChange}
+                    editor={this.editor}
                   />
                 ))}
               </div>
               <Editor
+                //@ts-ignore
+                ref={this.editor}
                 className={inputStyle}
                 value={this.state.value}
                 onChange={this.onChange}
