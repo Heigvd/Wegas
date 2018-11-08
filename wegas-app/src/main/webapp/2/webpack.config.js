@@ -1,9 +1,8 @@
 const path = require('path');
-const webpack = require('webpack');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-  .BundleAnalyzerPlugin;
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+//   .BundleAnalyzerPlugin;
 
 const PROD = process.env.NODE_ENV === 'production';
 const isCI =
@@ -15,12 +14,14 @@ const plugins = [
   new MonacoWebpackPlugin({
     languages: ['json', 'css', 'javascript', 'typescript'],
   }),
-  new ForkTsCheckerWebpackPlugin({
-    formatter: 'codeframe',
-  }),
 ];
-if (!isCI && PROD) {
- // plugins.push(new BundleAnalyzerPlugin());
+if (!isCI) {
+  plugins.push(
+    new ForkTsCheckerWebpackPlugin({
+      formatter: 'codeframe',
+    }),
+  );
+  // plugins.push(new BundleAnalyzerPlugin());
 }
 module.exports = {
   devtool: PROD ? 'source-map' : 'inline-source-map',
@@ -54,7 +55,7 @@ module.exports = {
                     module: 'commonjs',
                     noEmit: false,
                   },
-                  transpileOnly: true,
+                  transpileOnly: !isCI,
                   instance: 'node',
                   onlyCompileBundledFiles: true,
                 },
@@ -67,7 +68,7 @@ module.exports = {
               compilerOptions: {
                 noEmit: false,
               },
-              transpileOnly: true,
+              transpileOnly: !isCI,
               instance: 'web',
               onlyCompileBundledFiles: true,
             },
