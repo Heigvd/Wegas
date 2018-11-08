@@ -49,6 +49,22 @@ export default function translatable<P extends EndProps>(
             props.onChange(newValue);
         }
 
+
+        function outdate(code: string) {
+            const value = props.value[code] ? props.value[code].translation : "";
+            const newValue = {
+                ...props.value,
+                [code]: {
+                    translation: value,
+                    status: "outdated:manual"
+                }
+            };
+
+            props.onChange(newValue);
+        }
+
+
+
         function markAsMajor(code: string) {
             let newValue = {};
             for (let lang in props.value) {
@@ -121,11 +137,21 @@ export default function translatable<P extends EndProps>(
                             }}
                         />;
 
+                    const outdateButton =
+                        <IconButton
+                            icon="fa fa-download"
+                            tooltip="Deprecate "
+                            onClick={() => {
+                                outdate(curCode);
+                            }}
+                        />;
+
                     if (!props.value[curCode] || !props.value[curCode].status) {
                         return (
                             <span>
                                 {editor}
                                 {majorButton}
+                                {outdateButton}
                             </span>
                         );
                     } else {

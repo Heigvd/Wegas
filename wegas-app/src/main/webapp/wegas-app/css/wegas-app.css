@@ -834,7 +834,8 @@ body:not(.wegas-modeler-mode) .wegas-model-feature {
 
 /* I18N */
 
-.wegas-translation .tools{
+.wegas-translation .tools,
+.wegas-translation .tools > span{
     display:none;
 }
 

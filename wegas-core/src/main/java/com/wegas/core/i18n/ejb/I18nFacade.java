@@ -91,7 +91,11 @@ public class I18nFacade extends WegasAbstractFacade {
         /**
          * Mark the translation up-to-date
          */
-        CATCH_UP
+        CATCH_UP,
+        /**
+         * Outdate the translation
+         */
+        OUTDATE
     }
 
     /**
@@ -291,19 +295,30 @@ public class I18nFacade extends WegasAbstractFacade {
             }
         }
 
-        if (mode == UpdateType.MAJOR) {
-            // make all tr as outdated
-            for (Translation t : content.getRawTranslations()) {
-                t.setStatus("outdated::" + code);
-            }
-            // but this one is not
-            content.updateTranslation(code, newValue, "");
-        } else if (mode == UpdateType.CATCH_UP) {
-            // clear the status as the new translation is up to date
-            content.updateTranslation(code, newValue, "");
-        } else {
+        if (null == mode) {
             // MINOR change, do not change the status
             content.updateTranslation(code, newValue);
+        } else {
+            switch (mode) {
+                case MAJOR:
+                    // make all tr as outdated
+                    for (Translation t : content.getRawTranslations()) {
+                        t.setStatus("outdated::" + code);
+                    }   // but this one is not
+                    content.updateTranslation(code, newValue, "");
+                    break;
+                case CATCH_UP:
+                    // clear the status as the new translation is up to date
+                    content.updateTranslation(code, newValue, "");
+                    break;
+                case OUTDATE:
+                    content.updateTranslation(code, newValue, "outdated::manual");
+                    break;
+                default:
+                    // MINOR change, do not change the status
+                    content.updateTranslation(code, newValue);
+                    break;
+            }
         }
 
         return content;
@@ -492,18 +507,21 @@ public class I18nFacade extends WegasAbstractFacade {
             String status = (String) result.getMember("status");
 
             String newNewValue = (String) result.getMember("newValue");
-            String previousStatus = (String) result.getMember("trStatus");
-            String translation = "{"
-                    + "\"translation\": " + newNewValue + ","
-                    + "\"status\": \"" + (newTrStatus != null ? newTrStatus : previousStatus) + "\""
-                    + "}";
 
+            String previousStatus;
+            String translation;
             Integer[] indexes;
 
             switch (status) {
                 case "found":
                     // the newTranslation already exists
                     indexes = getIndexes(impact, result, "valueLoc");
+
+                    previousStatus = (String) result.getMember("trStatus");
+                    translation = "{"
+                            + "\"translation\": " + newNewValue + ","
+                            + "\"status\": \"" + (newTrStatus != null ? newTrStatus : previousStatus) + "\""
+                            + "}";
 
                     if (indexes != null) {
                         Integer startIndex = indexes[0];
@@ -518,6 +536,12 @@ public class I18nFacade extends WegasAbstractFacade {
                     break;
                 case "missingCode":
                     indexes = getIndexes(impact, result, "loc");
+
+                    translation = "{"
+                            + "\"translation\": " + newNewValue + ","
+                            + "\"status\": \"\""
+                            + "}";
+
                     if (indexes != null) {
                         Integer startIndex = indexes[0];
                         Integer endIndex = indexes[1];
@@ -675,9 +699,12 @@ public class I18nFacade extends WegasAbstractFacade {
                         source = this.updateStatusInScript(source, scriptUpdate.getIndex(), "outdated::" + scriptUpdate.getCode());
                     } else if (mode == UpdateType.CATCH_UP) {
                         status = "";
+                    } else if (mode == UpdateType.OUTDATE) {
+                        status = "outdate:manual";
                     } else {
                         status = null;
                     }
+
                     String updatedSource = this.updateScriptWithNewTranslation(source, scriptUpdate.getIndex(), scriptUpdate.getCode(), scriptUpdate.getValue(), status);
                     theScript.setContent(updatedSource);
 

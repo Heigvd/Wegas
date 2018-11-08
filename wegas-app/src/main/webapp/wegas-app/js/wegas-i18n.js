@@ -182,24 +182,28 @@ YUI.add("wegas-i18n", function(Y) {
             return Y.Wegas.I18n._currentCode;
         }
 
-        function genTranslationMarkup(text, inlineEditor, lang, id, favorite, code) {
+        function genTranslationMarkup(text, inlineEditor, lang, id, favorite, isOutdated) {
+            var outdatedClass = isOutdated ? " outdated" : "";
+
             if (inlineEditor === "html") {
-                return "<div class='wegas-translation wegas-translation-std wegas-translation-html " + (favorite ? 'favorite-lang' : 'not-favorite-lang') +
+                return "<div class='wegas-translation wegas-translation-std wegas-translation-html " + (favorite ? 'favorite-lang' : 'not-favorite-lang') + outdatedClass +
                     "' data-trid='" + id +
                     "' lang='" + lang.code + "'data-lang='" + lang.lang + "'><span class='tools'>" +
                     "<span class='inline-editor-major-validate fa fa-gavel'></span>" +
                     "<span class='inline-editor-catch_up-validate fa fa-upload'></span>" +
+                    "<span class='inline-editor-outrdate-validate fa fa-download'></span>" +
                     "<span class='inline-editor-validate fa fa-save'></span>" +
                     "<span class='inline-editor-cancel fa fa-times'></span>" +
                     "</span>" +
                     "<div class='wegas-translation--toolbar'></div>" +
                     "<div class='wegas-translation--value'><div tabindex='0' class='wegas-translation--toedit'>" + text + "</div></div></div>";
             } else if (inlineEditor === "string") {
-                return "<span class='wegas-translation wegas-translation-std wegas-translation-string " + (favorite ? 'favorite-lang' : 'not-favorite-lang') +
+                return "<span class='wegas-translation wegas-translation-std wegas-translation-string " + (favorite ? 'favorite-lang' : 'not-favorite-lang') + outdatedClass +
                     "' data-trid='" + id +
                     "' lang='" + lang.code + "'data-lang='" + lang.lang + "'><span class='tools'>" +
                     "<span class='inline-editor-major-validate fa fa-gavel'></span>" +
                     "<span class='inline-editor-catch_up-validate fa fa-upload'></span>" +
+                    "<span class='inline-editor-outdate-validate fa fa-download'></span>" +
                     "<span class='inline-editor-validate fa fa-save'></span>" +
                     "<span class='inline-editor-cancel fa fa-times'></span>" +
                     "</span>" +
@@ -226,7 +230,7 @@ YUI.add("wegas-i18n", function(Y) {
                 }
 
                 if (klass === "TranslatableContent" && translations) {
-                    if (translations[code]){
+                    if (translations[code]) {
                         return translations[code].status || "";
                     }
                 }
@@ -244,7 +248,8 @@ YUI.add("wegas-i18n", function(Y) {
                 translations,
                 forcedLang = params && params.lang,
                 inlineEditor = params && params.inlineEditor,
-                theOne, tr;
+                theOne, tr,
+                isOutdated;
 
             if (trContent) {
                 if (trContent.get) {
@@ -287,10 +292,12 @@ YUI.add("wegas-i18n", function(Y) {
                         if (tr !== undefined) {
                             if (tr.translation) {
                                 theOne = lang;
+                                isOutdated = !!tr.status;
                                 tr = tr.translation;
                                 break;
                             } else if (typeof tr === "string") {
                                 theOne = lang;
+                                isOutdated = false;
                                 break;
                             }
                         }
@@ -326,7 +333,7 @@ YUI.add("wegas-i18n", function(Y) {
                     }
 
                     if (theOne) {
-                        return genTranslationMarkup(tr, inlineEditor, theOne, trId, theOne.code === favoriteCode);
+                        return genTranslationMarkup(tr, inlineEditor, theOne, trId, theOne.code === favoriteCode, isOutdated);
                     } else {
                         return genTranslationMarkup(params && params.fallback || "", inlineEditor, langs[0], trId, true);
                     }

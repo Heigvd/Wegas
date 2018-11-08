@@ -203,7 +203,7 @@
 }
 
 .wegas-console .qrcode_thumbnail {
-    
+
 }
 
 .wegas-console .results {
@@ -744,7 +744,7 @@
     flex-direction: column;
 }
 
-.wegas-translation.unsaved .tools{
+.wegas-translation .tools{
     display: block;
     order: 2;
 }
@@ -752,7 +752,7 @@
     background-color: #eee;
 }
 
-.wegas-translation.unsaved .tools span{
+.wegas-translation .tools span{
     cursor: pointer;
     font-size:1.2em;
 }
@@ -763,6 +763,27 @@
 
 .wegas-advancedmode .wegas-translation.missing {
     background-color: hotpink;
+}
+
+
+.wegas-translation.has-focus .tools .inline-editor-major-validate,
+.wegas-translation.unsaved .tools .inline-editor-major-validate{
+    display: inline;
+}
+.wegas-translation.outdated.has-focus .tools .inline-editor-catch_up-validate,
+.wegas-translation.outdated.unsaved .tools .inline-editor-catch_up-validate{
+    display: inline;
+}
+
+.wegas-translation:not(.outdated).has-focus .tools .inline-editor-outdate-validate,
+.wegas-translation:not(.outdated).unsaved .tools .inline-editor-outdade-validate{
+    display: inline;
+}
+
+/* show cancel and minor save buttons when there is an usaved translation */
+.wegas-translation.unsaved .tools .inline-editor-validate,
+.wegas-translation.unsaved .tools .inline-editor-cancel {
+    display: inline;
 }
 
 /*

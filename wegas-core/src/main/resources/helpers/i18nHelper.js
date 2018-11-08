@@ -47,7 +47,7 @@ var I18nHelper = (function() {
                                         key: p.key.value,
                                         valueLoc: p.value.loc,
                                         trValue: trProps.translation.value,
-                                        trStatus: trProps.status.value,
+                                        trStatus: trProps.status.value || "",
                                         path: path
                                     }];
                             }
