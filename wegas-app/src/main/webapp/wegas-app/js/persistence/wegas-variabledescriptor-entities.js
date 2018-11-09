@@ -1648,7 +1648,10 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                                         }
                                                     }
                                                 };
-                                            o.file.translations[I18n.getCode()] = item.value;
+                                            o.file.translations[I18n.getCode()] = {
+                                                translation: item.value,
+                                                status: ""
+                                            };
                                             value.elements[i] = tools.valueToAST(o, argDesc.items);
                                         }
                                     }

@@ -977,13 +977,12 @@ public class I18nFacade extends WegasAbstractFacade {
                     JSObject tr = (JSObject) inscript.getMember(key);
 
                     if (tr.getMember("status").equals("found")) {
-                        JSObject translation = (JSObject) tr.getMember("value");
-                        String source = (String) translation.getMember("translation");
+                        String source = (String) tr.getMember("trValue");
 
                         DeeplTranslations.DeeplTranslation deepled = this.translate(source, sourceLangCode, targetLangCode);
 
                         script = this.updateScriptWithNewTranslation(script, index,
-                                targetLangCode, deepled.getText(), "auto::" + sourceLangCode);
+                                targetLangCode, deepled.getText(), "auto:" + sourceLangCode);
                     }
                     index++;
                 }

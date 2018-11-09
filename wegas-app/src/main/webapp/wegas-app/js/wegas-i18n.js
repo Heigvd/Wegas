@@ -188,25 +188,15 @@ YUI.add("wegas-i18n", function(Y) {
             if (inlineEditor === "html") {
                 return "<div class='wegas-translation wegas-translation-std wegas-translation-html " + (favorite ? 'favorite-lang' : 'not-favorite-lang') + outdatedClass +
                     "' data-trid='" + id +
-                    "' lang='" + lang.code + "'data-lang='" + lang.lang + "'><span class='tools'>" +
-                    "<span class='inline-editor-major-validate fa fa-gavel'></span>" +
-                    "<span class='inline-editor-catch_up-validate fa fa-upload'></span>" +
-                    "<span class='inline-editor-outrdate-validate fa fa-download'></span>" +
-                    "<span class='inline-editor-validate fa fa-save'></span>" +
-                    "<span class='inline-editor-cancel fa fa-times'></span>" +
-                    "</span>" +
+                    "' lang='" + lang.code + "'data-lang='" + lang.lang + "'>"
+                    + I18n.getEditorTools() +
                     "<div class='wegas-translation--toolbar'></div>" +
                     "<div class='wegas-translation--value'><div tabindex='0' class='wegas-translation--toedit'>" + text + "</div></div></div>";
             } else if (inlineEditor === "string") {
                 return "<span class='wegas-translation wegas-translation-std wegas-translation-string " + (favorite ? 'favorite-lang' : 'not-favorite-lang') + outdatedClass +
                     "' data-trid='" + id +
-                    "' lang='" + lang.code + "'data-lang='" + lang.lang + "'><span class='tools'>" +
-                    "<span class='inline-editor-major-validate fa fa-gavel'></span>" +
-                    "<span class='inline-editor-catch_up-validate fa fa-upload'></span>" +
-                    "<span class='inline-editor-outdate-validate fa fa-download'></span>" +
-                    "<span class='inline-editor-validate fa fa-save'></span>" +
-                    "<span class='inline-editor-cancel fa fa-times'></span>" +
-                    "</span>" +
+                    "' lang='" + lang.code + "'data-lang='" + lang.lang + "'>"
+                    + I18n.getEditorTools() +
                     "<span class='wegas-translation--toolbar'></span>" +
                     "<span class='wegas-translation--value'><span tabindex='0' class='wegas-translation--toedit'>" + text + "</span></span></span>";
             } else if (inlineEditor === "FORBIDDEN") {
@@ -636,6 +626,16 @@ YUI.add("wegas-i18n", function(Y) {
             },
             resetPlayerCode: function(cb) {
                 return resetPlayerCode(cb);
+            },
+            getEditorTools: function() {
+                return "<span class='tools'>" +
+                    "<span title='Save and outdate other languages' class='inline-editor-major-validate fa fa-gavel'></span>" +
+                    "<span title='Save and mark as up-to-date' class='inline-editor-catch_up-validate fa fa-upload'></span>" +
+                    "<span title='Save and mark as outdated' class='inline-editor-outdate-validate fa fa-download'></span>" +
+                    "<span title='Save' class='inline-editor-validate fa fa-save'></span>" +
+                    "<span title='Auto translate from...' class='inline-editor-i18n fa fa-language'></span>" +
+                    "<span title='Cancel' class='inline-editor-cancel fa fa-times'></span>" +
+                    "</span>";
             }
         };
     }());
