@@ -7,6 +7,7 @@
  */
 package com.wegas.core.i18n.rest;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
@@ -14,13 +15,14 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * @author maxence
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class ScriptUpdate {
+@JsonSubTypes(value = {
+    @JsonSubTypes.Type(name = "InScriptUpdate", value = InScriptUpdate.class)
+})
+public class ScriptUpdate extends I18nUpdate {
 
     private String parentClass;
     private Long parentId;
     private String fieldName;
-    private Integer index; // optional
-    private String code; //optional
     private String value;
 
     public String getParentClass() {
@@ -47,14 +49,6 @@ public class ScriptUpdate {
         this.fieldName = fieldName;
     }
 
-    public Integer getIndex() {
-        return index;
-    }
-
-    public void setIndex(Integer index) {
-        this.index = index;
-    }
-
     public String getValue() {
         return value;
     }
@@ -62,13 +56,4 @@ public class ScriptUpdate {
     public void setValue(String value) {
         this.value = value;
     }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
 }

@@ -856,8 +856,14 @@
     cursor: pointer;
 }
 
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-i18n-auto,
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-save-all,
 .wegas-i18n-manager .wegas-i18n-manager--languages .move-up {
     cursor: pointer;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .language:not(.has-unsaved) .save-all-container{
+    display: none;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--languages .language.unsaved .tools {

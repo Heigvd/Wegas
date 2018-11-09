@@ -18,7 +18,10 @@ import com.wegas.core.i18n.deepl.DeeplTranslations;
 import com.wegas.core.i18n.deepl.DeeplUsage;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
+import com.wegas.core.i18n.rest.I18nUpdate;
+import com.wegas.core.i18n.rest.InScriptUpdate;
 import com.wegas.core.i18n.rest.ScriptUpdate;
+import com.wegas.core.i18n.rest.TranslationUpdate;
 import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.merge.utils.MergeHelper.MergeableVisitor;
 import com.wegas.core.merge.utils.WegasFieldProperties;
@@ -44,6 +47,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -274,54 +278,6 @@ public class I18nFacade extends WegasAbstractFacade {
      */
     public String getTranslatedString(Long trId, String code) {
         return this.getTranslation(trId, code).getTranslation();
-    }
-
-    public TranslatableContent updateTranslation(Long trId, String code, String newValue, UpdateType mode) {
-        TranslatableContent content = this.findTranslatableContent(trId);
-
-        if (content.belongsToProtectedGameModel()) {
-            if (content.getParentDescriptor() != null) {
-                ModelScoped.Visibility visibility = content.getParentDescriptor().getVisibility();
-                if (visibility == ModelScoped.Visibility.INTERNAL
-                        || visibility == ModelScoped.Visibility.PROTECTED) {
-                    // newTranslation belongs to a variable readonly variable descriptor
-                    return content;
-                }
-            } else if (content.getParentInstance() != null) {
-                if (content.getInheritedVisibility() == ModelScoped.Visibility.INTERNAL) {
-                    // newTranslation belongs to a variable readonly variableInstance
-                    return content;
-                }
-            }
-        }
-
-        if (null == mode) {
-            // MINOR change, do not change the status
-            content.updateTranslation(code, newValue);
-        } else {
-            switch (mode) {
-                case MAJOR:
-                    // make all tr as outdated
-                    for (Translation t : content.getRawTranslations()) {
-                        t.setStatus("outdated::" + code);
-                    }   // but this one is not
-                    content.updateTranslation(code, newValue, "");
-                    break;
-                case CATCH_UP:
-                    // clear the status as the new translation is up to date
-                    content.updateTranslation(code, newValue, "");
-                    break;
-                case OUTDATE:
-                    content.updateTranslation(code, newValue, "outdated::manual");
-                    break;
-                default:
-                    // MINOR change, do not change the status
-                    content.updateTranslation(code, newValue);
-                    break;
-            }
-        }
-
-        return content;
     }
 
     /**
@@ -601,15 +557,197 @@ public class I18nFacade extends WegasAbstractFacade {
         return null;
     }
 
-    public List<AbstractEntity> batchUpdateInScriptTranslation(List<ScriptUpdate> scriptUpdates) throws ScriptException {
-        List<AbstractEntity> ret = new ArrayList<>();
-        for (ScriptUpdate update : scriptUpdates) {
-            AbstractEntity updated = this.updateInScriptTranslation(update, UpdateType.MINOR);
-            if (updated != null) {
-                ret.add(updated);
+    public List<AbstractEntity> batchUpdate(List<I18nUpdate> i18nUpdates) throws ScriptException {
+        List<AbstractEntity> updatedEntities = new ArrayList<>();
+
+        for (I18nUpdate update : i18nUpdates) {
+            AbstractEntity r = this.update(update, UpdateType.MINOR);
+
+            if (r != null) {
+                updatedEntities.add(r);
             }
         }
-        return ret;
+
+        return updatedEntities;
+    }
+
+    /**
+     * Update a translation stored as in a translatable content entity
+     *
+     * @param update
+     * @param mode
+     *
+     * @return updated TranslatableContent
+     */
+    private TranslatableContent trUpdate(TranslationUpdate update, UpdateType mode) {
+
+        TranslatableContent content = this.findTranslatableContent(update.getTrId());
+
+        if (content.belongsToProtectedGameModel()) {
+            if (content.getParentDescriptor() != null) {
+                ModelScoped.Visibility visibility = content.getParentDescriptor().getVisibility();
+                if (visibility == ModelScoped.Visibility.INTERNAL
+                        || visibility == ModelScoped.Visibility.PROTECTED) {
+                    // newTranslation belongs to a variable readonly variable descriptor
+                    return content;
+                }
+            } else if (content.getParentInstance() != null) {
+                if (content.getInheritedVisibility() == ModelScoped.Visibility.INTERNAL) {
+                    // newTranslation belongs to a variable readonly variableInstance
+                    return content;
+                }
+            }
+        }
+
+        String code = update.getCode();
+        String newValue = update.getTranslation();
+
+        if (null == mode) {
+            // MINOR change, do not change the status
+            content.updateTranslation(code, newValue);
+        } else {
+            switch (mode) {
+                case MAJOR:
+                    // make all tr as outdated
+                    for (Translation t : content.getRawTranslations()) {
+                        t.setStatus("outdated::" + code);
+                    }   // but this one is not
+                    content.updateTranslation(code, newValue, "");
+                    break;
+                case CATCH_UP:
+                    // clear the status as the new translation is up to date
+                    content.updateTranslation(code, newValue, "");
+                    break;
+                case OUTDATE:
+                    content.updateTranslation(code, newValue, "outdated::manual");
+                    break;
+                default:
+                    // MINOR change, do not change the status
+                    content.updateTranslation(code, newValue);
+                    break;
+            }
+        }
+        return content;
+    }
+
+    /**
+     * Update a translation in a script.
+     *
+     * @param scriptUpdate
+     * @param mode
+     *
+     * @return the parent which owns the script ({@link #getParent(com.wegas.core.i18n.rest.ScriptUpdate)})
+     *
+     * @throws ScriptException
+     */
+    private AbstractEntity inScriptUpdate(InScriptUpdate scriptUpdate, UpdateType mode) throws ScriptException {
+        AbstractEntity theParent = this.getParent(scriptUpdate);
+        if (theParent != null) {
+            VariableDescriptor toReturn = this.getToReturn(scriptUpdate.getParentClass(), theParent);
+            if (toReturn != null) {
+                if (toReturn.belongsToProtectedGameModel()) {
+                    // theParent is a variableDescriptor
+                    ModelScoped.Visibility visibility = toReturn.getVisibility();
+                    if (visibility == ModelScoped.Visibility.PROTECTED || visibility == ModelScoped.Visibility.INTERNAL) {
+                        return null;
+                    }
+                }
+
+                try {
+                    // fetch impact getter and setter
+                    PropertyDescriptor property = new PropertyDescriptor(scriptUpdate.getFieldName(), theParent.getClass());
+                    Method getter = property.getReadMethod();
+
+                    // Fetch script to update
+                    Script theScript = (Script) getter.invoke(theParent);
+                    String source = theScript.getContent();
+
+                    String status;
+                    if (mode == UpdateType.MAJOR) {
+                        status = "";
+                        //TODO mark all as outdated
+                        source = this.updateStatusInScript(source, scriptUpdate.getIndex(), "outdated::" + scriptUpdate.getCode());
+                    } else if (mode == UpdateType.CATCH_UP) {
+                        status = "";
+                    } else if (mode == UpdateType.OUTDATE) {
+                        status = "outdate:manual";
+                    } else {
+                        status = null;
+                    }
+
+                    String updatedSource = this.updateScriptWithNewTranslation(source, scriptUpdate.getIndex(), scriptUpdate.getCode(), scriptUpdate.getValue(), status);
+                    theScript.setContent(updatedSource);
+
+                    Method setter = property.getWriteMethod();
+                    setter.invoke(theParent, theScript);
+
+                    return toReturn;
+
+                } catch (IntrospectionException | InvocationTargetException | IllegalAccessException | IllegalArgumentException ex) {
+                    logger.error("Error while setting {}({})#{}.{} to {}", scriptUpdate.getFieldName(), scriptUpdate.getParentId(), scriptUpdate.getFieldName(), scriptUpdate.getIndex(), scriptUpdate.getValue());
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Update the whole script identified in the scriptUpdate.
+     *
+     * @param scriptUpdate
+     * @param type
+     *
+     * @return the parent which owns the script ({@link #getParent(com.wegas.core.i18n.rest.ScriptUpdate)})
+     */
+    private AbstractEntity scriptUpdate(ScriptUpdate scriptUpdate, UpdateType type) {
+        AbstractEntity theParent = this.getParent(scriptUpdate);
+        if (theParent != null) {
+            VariableDescriptor toReturn = this.getToReturn(scriptUpdate.getParentClass(), theParent);
+
+            if (toReturn != null) {
+
+                Boolean process = true;
+                if (toReturn.belongsToProtectedGameModel()) {
+                    // theParent is a variableDescriptor
+                    ModelScoped.Visibility visibility = toReturn.getVisibility();
+                    if (visibility == ModelScoped.Visibility.PROTECTED || visibility == ModelScoped.Visibility.INTERNAL) {
+                        process = false;
+                    }
+                }
+                if (process) {
+                    try {
+
+                        // fetch impact getter and setter
+                        PropertyDescriptor property = new PropertyDescriptor(scriptUpdate.getFieldName(), theParent.getClass());
+                        Method getter = property.getReadMethod();
+
+                        Script theScript = (Script) getter.invoke(theParent);
+
+                        theScript.setContent(scriptUpdate.getValue());
+
+                        Method setter = property.getWriteMethod();
+                        setter.invoke(theParent, theScript);
+
+                        return toReturn;
+                    } catch (IntrospectionException | InvocationTargetException | IllegalAccessException | IllegalArgumentException ex) {
+                        logger.error("Error while setting {}({})#{} to {}", scriptUpdate.getParentClass(), scriptUpdate.getParentId(), scriptUpdate.getFieldName(), scriptUpdate.getValue());
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public AbstractEntity update(I18nUpdate update, UpdateType type) throws ScriptException {
+        if (update instanceof TranslationUpdate) {
+            return this.trUpdate((TranslationUpdate) update, type);
+        } else if (update instanceof InScriptUpdate) {
+            return this.inScriptUpdate((InScriptUpdate) update, type);
+        } else if (update instanceof ScriptUpdate) {
+            return this.scriptUpdate((ScriptUpdate) update, type);
+        } else {
+            throw WegasErrorMessage.error("Unknown Update Type: " + update);
+        }
     }
 
     private Object fishTranslationsByIndex(String impact, int index) throws ScriptException {
@@ -668,109 +806,6 @@ public class I18nFacade extends WegasAbstractFacade {
         }
 
         return impact;
-    }
-
-    public AbstractEntity updateInScriptTranslation(ScriptUpdate scriptUpdate, UpdateType mode) throws ScriptException {
-        AbstractEntity theParent = this.getParent(scriptUpdate);
-        if (theParent != null) {
-            VariableDescriptor toReturn = this.getToReturn(scriptUpdate.getParentClass(), theParent);
-            if (toReturn != null) {
-                if (toReturn.belongsToProtectedGameModel()) {
-                    // theParent is a variableDescriptor
-                    ModelScoped.Visibility visibility = toReturn.getVisibility();
-                    if (visibility == ModelScoped.Visibility.PROTECTED || visibility == ModelScoped.Visibility.INTERNAL) {
-                        return null;
-                    }
-                }
-
-                try {
-                    // fetch impact getter and setter
-                    PropertyDescriptor property = new PropertyDescriptor(scriptUpdate.getFieldName(), theParent.getClass());
-                    Method getter = property.getReadMethod();
-
-                    // Fetch script to update
-                    Script theScript = (Script) getter.invoke(theParent);
-                    String source = theScript.getContent();
-
-                    String status;
-                    if (mode == UpdateType.MAJOR) {
-                        status = "";
-                        //TODO mark all as outdated
-                        source = this.updateStatusInScript(source, scriptUpdate.getIndex(), "outdated::" + scriptUpdate.getCode());
-                    } else if (mode == UpdateType.CATCH_UP) {
-                        status = "";
-                    } else if (mode == UpdateType.OUTDATE) {
-                        status = "outdate:manual";
-                    } else {
-                        status = null;
-                    }
-
-                    String updatedSource = this.updateScriptWithNewTranslation(source, scriptUpdate.getIndex(), scriptUpdate.getCode(), scriptUpdate.getValue(), status);
-                    theScript.setContent(updatedSource);
-
-                    Method setter = property.getWriteMethod();
-                    setter.invoke(theParent, theScript);
-
-                    return toReturn;
-
-                } catch (IntrospectionException | InvocationTargetException | IllegalAccessException | IllegalArgumentException ex) {
-                    logger.error("Error while setting {}({})#{}.{} to {}", scriptUpdate.getFieldName(), scriptUpdate.getParentId(), scriptUpdate.getFieldName(), scriptUpdate.getIndex(), scriptUpdate.getValue());
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Process each scriptUpdate.
-     * For each scriptUpdaate, Replace the whole script by the new one.
-     *
-     * @param updates
-     *
-     * @return
-     */
-    public List<AbstractEntity> batchScriptUpdate(List<ScriptUpdate> updates) {
-        List<AbstractEntity> ret = new ArrayList<>();
-        for (ScriptUpdate scriptUpdate : updates) {
-            AbstractEntity theParent = this.getParent(scriptUpdate);
-            if (theParent != null) {
-                VariableDescriptor toReturn = this.getToReturn(scriptUpdate.getParentClass(), theParent);
-
-                if (toReturn != null) {
-
-                    Boolean process = true;
-                    if (toReturn.belongsToProtectedGameModel()) {
-                        // theParent is a variableDescriptor
-                        ModelScoped.Visibility visibility = toReturn.getVisibility();
-                        if (visibility == ModelScoped.Visibility.PROTECTED || visibility == ModelScoped.Visibility.INTERNAL) {
-                            process = false;
-                        }
-                    }
-                    if (process) {
-                        try {
-
-                            // fetch impact getter and setter
-                            PropertyDescriptor property = new PropertyDescriptor(scriptUpdate.getFieldName(), theParent.getClass());
-                            Method getter = property.getReadMethod();
-
-                            Script theScript = (Script) getter.invoke(theParent);
-
-                            theScript.setContent(scriptUpdate.getValue());
-
-                            Method setter = property.getWriteMethod();
-                            setter.invoke(theParent, theScript);
-
-                            if (toReturn != null) {
-                                ret.add(toReturn);
-                            }
-                        } catch (IntrospectionException | InvocationTargetException | IllegalAccessException | IllegalArgumentException ex) {
-                            logger.error("Error while setting {}({})#{} to {}", scriptUpdate.getFieldName(), scriptUpdate.getParentId(), scriptUpdate.getFieldName(), scriptUpdate.getIndex(), scriptUpdate.getValue());
-                        }
-                    }
-                }
-            }
-        }
-        return ret;
     }
 
     private static class TranslationsPrinter implements MergeableVisitor {

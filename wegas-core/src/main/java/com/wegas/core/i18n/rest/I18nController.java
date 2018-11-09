@@ -13,7 +13,6 @@ import com.wegas.core.i18n.deepl.DeeplTranslations.DeeplTranslation;
 import com.wegas.core.i18n.deepl.DeeplUsage;
 import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.ejb.I18nFacade.UpdateType;
-import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
@@ -82,6 +81,13 @@ public class I18nController {
         return updated;
     }
 
+    @DELETE
+    @Path("Lang/{lang : [^\\/]*}")
+    public GameModel removeLanguage(@PathParam("gameModelId") Long gameModelId, @PathParam("lang") String lang) {
+        logger.trace("DELETE new language {} for gameModel #{}", lang, gameModelId);
+        return null;
+    }
+
     @PUT
     @Path("Lang/{langId: [1-9][0-9]*}/Up")
     public GameModel updateLanguage(@PathParam("gameModelId") Long gameModelId,
@@ -97,39 +103,17 @@ public class I18nController {
     }
 
     @PUT
-    @Path("Tr/{code : [^\\/]*}/{trId: [1-9][0-9]*}/{mode : [A-Z_]+}")
-    public TranslatableContent updateTranslation(@PathParam("code") String code, @PathParam("trId") Long trId,
-            @PathParam("mode") UpdateType mode, String newValue) {
-        logger.trace("UPDATE #{} / {}", trId, code);
-        return i18nfacade.updateTranslation(trId, code, newValue, mode);
-    }
-
-    @PUT
-    @Path("ScriptTr/{mode : [A-Z_]+}")
-    public AbstractEntity updateInScript(@PathParam("mode") UpdateType mode, ScriptUpdate scriptUpdate)
+    @Path("Tr/{mode : [A-Z_]+}")
+    public AbstractEntity update(@PathParam("mode") UpdateType mode, I18nUpdate i18nUpdate)
             throws ScriptException {
-        return i18nfacade.updateInScriptTranslation(scriptUpdate, mode);
+        return i18nfacade.update(i18nUpdate, mode);
     }
 
     @PUT
-    @Path("ScriptTrBatchUpdate")
-    public List<AbstractEntity> batchUpdateInScript(List<ScriptUpdate> scriptUpdates) throws ScriptException {
-        return i18nfacade.batchUpdateInScriptTranslation(scriptUpdates);
+    @Path("BatchUpdate")
+    public List<AbstractEntity> batchUpdate(List<I18nUpdate> i18nUpdates) throws ScriptException {
+        return i18nfacade.batchUpdate(i18nUpdates);
     }
-
-    @PUT
-    @Path("ScriptBatchUpdate")
-    public List<AbstractEntity> batchScriptUpdate(List<ScriptUpdate> updates) {
-        return i18nfacade.batchScriptUpdate(updates);
-    }
-
-    @DELETE
-    @Path("Tr/{lang : [^\\/]*}")
-    public GameModel removeLanguage(@PathParam("gameModelId") Long gameModelId, @PathParam("lang") String lang) {
-        logger.trace("DELETE new language {} for gameModel #{}", lang, gameModelId);
-        return null;
-    }
-
 
     /*
      * DeppL mock
