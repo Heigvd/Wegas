@@ -768,43 +768,51 @@
 
 
 /*
+ * Alword show I18n, major catch_up and outdate button, but in light gray
+ */
 .wegas-translation .tools .inline-editor-i18n,
 .wegas-translation .tools .inline-editor-major-validate,
 .wegas-translation.outdated .tools .inline-editor-catch_up-validate,
 .wegas-translation:not(.outdated) .tools .inline-editor-outdate-validate {
     display: inline;
+    color: grey;
 }
-*/
 
+
+/**
+ * the same:hover => dark gray
+ */
 .wegas-translation:hover .tools .inline-editor-i18n,
 .wegas-translation:hover .tools .inline-editor-major-validate,
 .wegas-translation.outdated:hover .tools .inline-editor-catch_up-validate,
 .wegas-translation:not(.outdated):hover .tools .inline-editor-outdate-validate {
-    display: inline;
+    color: #4e525e;
 }
 
-
-.wegas-translation.has-focus .tools .inline-editor-i18n,
+/**
+ * dark gray when unsaved
+ */
 .wegas-translation.unsaved .tools .inline-editor-i18n,
-.wegas-translation.has-focus .tools .inline-editor-major-validate,
-.wegas-translation.unsaved .tools .inline-editor-major-validate{
-    display: inline;
-}
-
-.wegas-translation.outdated.has-focus .tools .inline-editor-catch_up-validate,
-.wegas-translation.outdated.unsaved .tools .inline-editor-catch_up-validate{
-    display: inline;
-}
-
-.wegas-translation:not(.outdated).has-focus .tools .inline-editor-outdate-validate,
-.wegas-translation:not(.outdated).unsaved .tools .inline-editor-outdate-validate{
-    display: inline;
-}
-
+.wegas-translation.unsaved .tools .inline-editor-major-validate,
+.wegas-translation.outdated.unsaved .tools .inline-editor-catch_up-validate,
+.wegas-translation:not(.outdated).unsaved .tools .inline-editor-outdate-validate,
 /* show cancel and minor save buttons when there is an usaved translation */
 .wegas-translation.unsaved .tools .inline-editor-validate,
 .wegas-translation.unsaved .tools .inline-editor-cancel {
     display: inline;
+    color: #4e525e;
+}
+
+
+/**
+ * display on editor focus
+ */
+.wegas-translation.has-focus .tools .inline-editor-major-validate,
+.wegas-translation.has-focus .tools .inline-editor-i18n,
+.wegas-translation.outdated.has-focus .tools .inline-editor-catch_up-validate,
+.wegas-translation:not(.outdated).has-focus .tools .inline-editor-outdate-validate{
+    display: inline;
+    color: #4e525e;
 }
 
 /*
