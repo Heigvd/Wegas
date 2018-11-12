@@ -316,7 +316,11 @@ ProgGameSimulation.prototype = {
      * @param {{[variable:string]: unkown}=} values to pass to the script
      */
     afterAction: function(values) {
-        var injected = Wegas.Object.assign({}, { Source: this.cObject }, values);
+        var injected = Wegas.Object.assign(
+            {},
+            { Source: this.cObject },
+            values
+        );
         this.doEval(this.level.onAction, injected);
     },
     log: function(text) {
@@ -470,40 +474,22 @@ ProgGameSimulation.prototype = {
     left: function() {
         this.rotate(1);
     },
-    fire: function() {
-        var i,
-            source = this.cObject;
-        wdebug('fire' + source.actions);
-
-        if (this.checkGameOver()) return;
-
-        if (!this.consumeActions(source, 1)) {
-            this.log('Not enough actions to fire.');
-            return;
-        }
-
-        this.sendCommand({
-            type: 'fire',
-            id: source.id,
-        });
-
-        var colidee,
-            dirV = this.dirToVector(source.direction);
-
-        for (i = 0; i <= source.range; i++) {
-            colidee = this.checkCollision(
-                this.cObject,
-                source.x + i * dirV.x,
-                source.y + i * dirV.y
-            );
-            if (colidee) {
-                colidee.life = 0;
-                this.sendCommand({
-                    type: 'die',
-                    object: Wegas.Object.clone(colidee),
-                });
+    npc: function(fn) {
+        var oldO = this.cObject;
+        var npc;
+        for (var i = 0; i < this.objects.length; i = i + 1) {
+            if (this.objects[i].components === 'NPC') {
+                npc = this.objects[i];
+                break;
             }
         }
+        if (npc === undefined) {
+            return;
+        }
+        this.cObject = npc;
+        var ret = fn();
+        this.cObject = oldO;
+        return ret;
     },
     getObjectsAt: function(x, y) {
         var k,
@@ -609,7 +595,8 @@ ProgGameSimulation.prototype = {
             return new Function(commands, code).apply(this, cb);
         } catch (e) {
             wdebug('[PROGGAME] ERRORED', e);
-            throw e;
+            this.log(e.message);
+            return null;
         }
     },
     doPlayerEval: function(playerFn) {
@@ -643,9 +630,9 @@ ProgGameSimulation.prototype = {
         var params = Wegas.scopeValue(scope);
         var f = new Function(
             params.variables,
-            '(' + playerFn.toString() + ').call({})'
+            'return (' + playerFn.toString() + ').call({})'
         );
-        f.apply(null, params.values);
+        return f.apply(null, params.values);
     },
     /**
      * Find object with correspondig id

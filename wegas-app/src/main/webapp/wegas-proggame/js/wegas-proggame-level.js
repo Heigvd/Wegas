@@ -333,7 +333,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             }
 
             if (this.get(STATE) === IDLE) {
-                var enemy = this.display.getEntity("Enemy");
+                var enemy = this.display.getEntity("Enemy") || this.display.getEntity("NPC");
                 enemy.say(texts[Math.floor(Math.random() * texts.length)], 3500, false, true);
                 enemy.wave(7);
             }
@@ -765,6 +765,9 @@ YUI.add('wegas-proggame-level', function(Y) {
             }
             if (this.findObject("Enemy")) {
                 this.updateUI(this.findObject("Enemy"), cb.one(".enemy-ui"));
+            }
+            if (this.findObject("NPC")) {
+                this.updateUI(this.findObject("NPC"), cb.one(".enemy-ui"));
             }
         },
         updateUI: function(object, el) {
@@ -1199,6 +1202,11 @@ YUI.add('wegas-proggame-level', function(Y) {
                 label: "right()",
                 tooltip: "right()\n" +
                     "Your avatar turns to the right without moving."
+            },
+            "npc": {
+                label: "npc&lt;T&gt;(fn:()=>T):T",
+                tooltip: "Ask NPC to execute the given function, it returns the value the function returns.\n\n"+
+                    "Parameters\nfn - The function to execute"
             },
             "Math.PI": {
                 pkg: "Math",
