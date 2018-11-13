@@ -30,11 +30,11 @@ var I18nHelper = (function() {
                     // current node is and TranslatableContent object
                     if (properties.translations &&
                         properties.translations.properties &&
-                        properties.translations.properties.length > 0 &&
-                        properties.translations.properties[0].value &&
-                        properties.translations.properties[0].value.type === "ObjectExpression") {
-                        // only extract i18nV2 translation
+                        properties.translations.properties.length === 0 ||
+                        (properties.translations.properties[0].value &&
+                            properties.translations.properties[0].value.type === "ObjectExpression")) {
 
+                        // only extract i18nV2 translation
                         for (i in properties.translations.properties) {
                             p = properties.translations.properties[i];
                             if (p.key.value.toUpperCase() === code) {

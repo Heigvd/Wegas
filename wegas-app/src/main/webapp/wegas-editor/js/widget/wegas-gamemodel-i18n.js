@@ -461,9 +461,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                 // current node is and TranslatableContent object
                                 if (properties.translations &&
                                     properties.translations.properties &&
-                                    properties.translations.properties.length > 0 &&
-                                    properties.translations.properties[0].value &&
-                                    properties.translations.properties[0].value.type === "ObjectExpression") {
+                                    properties.translations.properties.length === 0
+                                    || (properties.translations.properties[0].value &&
+                                        properties.translations.properties[0].value.type === "ObjectExpression")) {
                                     // I18nV2 only !
                                     sub.hasTranslations = true;
                                     content = {
@@ -490,6 +490,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                     sub.translations.push(content);
                                     return false;
                                 } else {
+                                    // translation exists but v1
                                     sub.containsOutdated = true;
                                     return false;
                                 }

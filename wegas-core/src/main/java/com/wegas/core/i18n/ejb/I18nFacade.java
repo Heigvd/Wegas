@@ -47,7 +47,6 @@ import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -511,7 +510,7 @@ public class I18nFacade extends WegasAbstractFacade {
 
             }
         }
-        return null;
+        return impact;
     }
 
     private AbstractEntity getParent(ScriptUpdate scriptUpdate) {
