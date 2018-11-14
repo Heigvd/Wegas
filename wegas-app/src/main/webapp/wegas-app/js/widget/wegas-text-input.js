@@ -258,7 +258,7 @@ YUI.add('wegas-text-input', function(Y) {
             if (this.get('showSaveButton') || !this.get('selfSaving')) {
                 this.setStatus('Not saved');
             } else {
-                this.setStatus('editing...');
+                this.setStatus('');
             }
             this.updateCounters();
             this.fire('editing', this.getPayload(content));
