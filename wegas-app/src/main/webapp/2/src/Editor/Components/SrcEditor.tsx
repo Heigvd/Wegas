@@ -52,7 +52,7 @@ class SrcEditor extends React.Component<EditorProps> {
     if (this.props.language !== prevProps.language) {
       import('monaco-editor').then(monaco => {
         monaco.editor.setModelLanguage(
-          this.editor!.getModel(),
+          this.editor!.getModel()!,
           this.props.language,
         );
       });
@@ -111,8 +111,8 @@ class SrcEditor extends React.Component<EditorProps> {
     return this.props.value;
   }
   componentWillUnmount() {
-    if (this.editor != null) {
-      this.editor.getModel().dispose();
+    if (this.editor != null && this.editor.getModel() !== null) {
+      this.editor.getModel()!.dispose();
       this.editor.dispose();
     }
   }
