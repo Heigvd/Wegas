@@ -10,7 +10,7 @@ package com.wegas.core.i18n.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
@@ -77,7 +77,11 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         return this.id;
     }
 
-    void setId(Long id) {
+    /**
+     * Use with caution (it means NEVER but in custom JSON deserialisator)
+     * @param id
+     */
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -363,7 +367,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
 
     public static TranslatableContent build(String lang, String translation) {
         TranslatableContent trC = new TranslatableContent();
-        trC.getRawTranslations().add(new Translation(lang, translation));
+        trC.getRawTranslations().add(new Translation(lang, translation, ""));
         return trC;
     }
 
@@ -427,7 +431,16 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
                 ScriptObjectMirror trs = (ScriptObjectMirror) jsTr.getMember("translations");
                 String[] langs = trs.getOwnKeys(true);
                 for (String code : langs) {
-                    trContent.updateTranslation(code, (String) trs.getMember(code));
+                    Object member = trs.getMember(code);
+                    if (member instanceof String) {
+                        trContent.updateTranslation(code, (String) trs.getMember(code));
+                    } else if (member instanceof ScriptObjectMirror){
+                        String tr = (String) ((ScriptObjectMirror) member).getMember("translation");
+                        String status = (String) ((ScriptObjectMirror) member).getMember("status");
+                        trContent.updateTranslation(code, tr, status);
+                    } else {
+                        throw WegasErrorMessage.error("Unhandled Translatable Content Type: "+ member);
+                    }
                 }
             }
             return trContent;
@@ -436,6 +449,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         }
     }
 
+    @Override
     public String toString() {
         return this.translateOrEmpty((GameModel) null);
     }

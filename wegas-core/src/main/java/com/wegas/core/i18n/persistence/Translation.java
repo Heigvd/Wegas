@@ -62,7 +62,8 @@ public class Translation implements Serializable {
     public boolean equals(Object obj) {
         if (obj != null && obj instanceof Translation) {
             Translation other = (Translation) obj;
-            return this.getLang().equals(other.getLang());
+            return this.getLang().equals(other.getLang())
+                    && Objects.equals(this.getTranslation(), other.getTranslation());
         }
         return false;
     }

@@ -70,12 +70,16 @@ public class TranslationContentDeserializer extends StdDeserializer<Translatable
                 switch (fieldName) {
 
                     case "id":
-                        Long id = p.getLongValue();
-                        trc.setId(id);
+                        if (p.getCurrentValue() != null) {
+                            Long id = p.getLongValue();
+                            trc.setId(id);
+                        }
                         break;
                     case "refId":
-                        String refId = p.getValueAsString();
-                        trc.forceRefId(refId);
+                        if (p.getCurrentValue() != null) {
+                            String refId = p.getValueAsString();
+                            trc.forceRefId(refId);
+                        }
                         break;
                     case "translations":
                         String lang;
@@ -102,7 +106,7 @@ public class TranslationContentDeserializer extends StdDeserializer<Translatable
                         }
                         break;
                     default:
-                        logger.error("Skip: {}", fieldName);
+                        logger.trace("Skip: {}", fieldName);
                         break;
                 }
             }

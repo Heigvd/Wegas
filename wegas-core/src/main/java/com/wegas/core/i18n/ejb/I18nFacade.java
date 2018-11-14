@@ -1164,16 +1164,16 @@ public class I18nFacade extends WegasAbstractFacade {
 
                             // any new newTranslation in the source ?
                             if (trSource.getMember("status").equals("found")) {
-                                newTranslation = (String) ((JSObject) trSource.getMember("value")).getMember("translation");
-                                newStatus = (String) ((JSObject) trSource.getMember("value")).getMember("status");
+                                newTranslation = (String) trSource.getMember("trValue");
+                                newStatus = (String) trSource.getMember("trStatus");
                             }
                             // has current newTranslation ?
                             if (trTarget.getMember("status").equals("found")) {
-                                currentTranslation = (String) ((JSObject) trTarget.getMember("value")).getMember("translation");
+                                currentTranslation = (String) trTarget.getMember("trValue");
                             }
 
                             if (trRef != null && trRef.getMember("status").equals("found")) {
-                                previousTranslation = (String) ((JSObject) trRef.getMember("value")).getMember("translation");
+                                previousTranslation = (String) trRef.getMember("trValue");
                             }
 
                             if (newTranslation == null) {

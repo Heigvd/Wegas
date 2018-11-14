@@ -542,6 +542,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         updateEditor: function(entity) {
             var newTree = this.genTree(entity);
             var cb = this.editor.get("contentBox");
+            var outdated = false;
 
             function updateTrSpan(trSpan, tr) {
                 if (trSpan) {
@@ -564,9 +565,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                         trSpan.toggleClass("outdated", newStatus);
                     }
                 } else {
-                    Y.Wegas.Alerts.showNotification("Outdated, please relead", {
-                        iconCss: "fa fa-warning"
-                    });
+                    outaded = true;
                 }
 
             }
@@ -614,6 +613,10 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             }
 
             update.call(this, newTree, this.getLanguagesToEdit());
+
+            if (outdated) {
+                this.showMessage("error", "Translations table is outdated, please relead");
+            }
         },
         genEditorMarkup: function(node, languages, level) {
             level = level || 0;
@@ -1056,6 +1059,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         ctrlSave: function(e) {
             e.halt(true);
             this.save(e);
+            document.activeElement.blur();
         },
         save: function(e, mode) {
             var cfg = this._getCfgFromEvent(e),
