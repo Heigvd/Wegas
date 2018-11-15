@@ -15,7 +15,10 @@ interface TranslatableProps {
         [code: string]: Translation;
     };
     onChange: (value: {[code: string]: Translation}) => void;
-    view: Schema['view'] & {label?: string};
+    view: Schema['view'] & {
+        label?: string;
+        readOnly: boolean;
+    };
 }
 
 interface EndProps {
@@ -104,13 +107,15 @@ export default function translatable<P extends EndProps>(
                         ...props.view,
                         label: (
                             <span>
-                                {(props.view || {}).label}{' '}
+                                {(props.view || {label: ''}).label}{' '}
                                 <span className={String(infoStyle)}>
                                     [{curCode.toLowerCase()}] {status ? "(" + status + ")" : ""}
                                 </span>
                             </span>
                         ),
                     };
+                    const readOnly = view.readOnly;
+
                     const editor =
                         <Comp
                             {...props}
@@ -128,23 +133,23 @@ export default function translatable<P extends EndProps>(
                                 props.onChange(v);
                             }}
                         />
-                    const majorButton =
+                    const majorButton = !readOnly ?
                         <IconButton
                             icon="fa fa-gavel"
                             tooltip="Major update"
                             onClick={() => {
                                 markAsMajor(curCode);
                             }}
-                        />;
+                        /> : "";
 
-                    const outdateButton =
+                    const outdateButton = !readOnly ?
                         <IconButton
                             icon="fa fa-download"
                             tooltip="Deprecate "
                             onClick={() => {
                                 outdate(curCode);
                             }}
-                        />;
+                        /> : "";
 
                     if (!props.value[curCode] || !props.value[curCode].status) {
                         return (
@@ -159,13 +164,13 @@ export default function translatable<P extends EndProps>(
                             <span>
                                 {editor}
                                 {majorButton}
-                                <IconButton
+                                {!readOnly ? <IconButton
                                     icon="fa fa-upload"
                                     tooltip="Catch up"
                                     onClick={() => {
                                         catchUp(curCode);
                                     }}
-                                />
+                                /> : ""}
                             </span>
                         );
                     }
