@@ -1143,7 +1143,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     public boolean isProtected() {
         // only scenarios which are based on a model are protected
         // but do no protect a gameModel when the propagation process is ongoing
-        return (this.getType().equals(GmType.SCENARIO) && this.getBasedOn() != null && !this.onGoingPropagation);
+        return (this.getType().equals(GmType.SCENARIO) && this.getBasedOnId() != null && !this.onGoingPropagation);
     }
 
     /**
