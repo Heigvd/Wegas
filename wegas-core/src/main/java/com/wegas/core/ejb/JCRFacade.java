@@ -136,7 +136,7 @@ public class JCRFacade {
     private boolean isPathAvailable(GameModel gameModel, WorkspaceType wType, String path, String name) throws RepositoryException {
         if (gameModel.isModel()) {
             for (GameModel scen : gameModelFacade.getImplementations(gameModel)) {
-                ContentConnector connector = jCRConnectorProvider.getContentConnector(gameModel, wType);
+                ContentConnector connector = jCRConnectorProvider.getContentConnector(scen, wType);
                 AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(path + "/" + name, connector);
                 if (descriptor.exist()) {
                     return false;
