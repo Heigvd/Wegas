@@ -61,7 +61,7 @@
     "jsplumb": "^2.8.4",
     "lodash-es": "^4.17.11",
     "match-sorter": "^2.3.0",
-    "monaco-editor": "^0.15.1",
+    "monaco-editor": "^0.15.2",
     "pako": "^1.0.6",
     "pusher-js": "^4.3.1",
     "react": "^16.6.3",

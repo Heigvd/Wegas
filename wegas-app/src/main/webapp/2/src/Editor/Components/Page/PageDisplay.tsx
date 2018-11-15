@@ -52,7 +52,7 @@ class PageDisplay extends React.Component<PageDisplayProps> {
                         ref={n => (this.editor = n)}
                         key="srcEditor"
                         value={JSON.stringify(state, null, 2)}
-                        uri="page.json"
+                        uri="internal://page.json"
                         language="json"
                       />
                     );

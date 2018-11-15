@@ -7815,7 +7815,6 @@ jsonify@~0.0.0:
 
 "jsoninput@github:cigit/JSONInput":
   version "0.0.15"
-  uid "0d08bfa8f8b130f03b95d2030445451ff1300adc"
   resolved "https://codeload.github.com/cigit/JSONInput/tar.gz/0d08bfa8f8b130f03b95d2030445451ff1300adc"
   dependencies:
     immer "^1.7.2"
@@ -8926,10 +8925,10 @@ monaco-editor-webpack-plugin@^1.5.4:
   resolved "https://registry.yarnpkg.com/monaco-editor-webpack-plugin/-/monaco-editor-webpack-plugin-1.6.0.tgz#90cb6062c23d1bdbc8496773eab920482fd802e1"
   integrity sha512-VoiJc6pWutAHtGVQtfYpJwg/dC7R4W6yXXj+OAr/q66miXSnBNKrroq7zYJAJi6y0cM1zT6eS2/IzIDs6Ouz3w==
 
-monaco-editor@^0.15.1:
-  version "0.15.1"
-  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.15.1.tgz#123c40770124007f330238253915ac26d4ceb4ab"
-  integrity sha512-5nFQ8JbQZBSK70G7FhlQCkgOmzGdgCeUNhSG2/5lOFUfFizC21JNA0DOSnZjUs6Faod2uvVB0IDvvOP9nCoWFg==
+monaco-editor@^0.15.2:
+  version "0.15.2"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.15.2.tgz#424bcb9c0593b034f0bd4f8c14ce45329508e249"
+  integrity sha512-N+zuKyxS6NQ0EJO/HMNp6gMWj2g5C0fCeSVXkGVf6eARS0Viblz/0aPXfCZRmhnkstKX+xgczvSQj72pW9OJCg==
 
 mout@^1.0.0:
   version "1.1.0"

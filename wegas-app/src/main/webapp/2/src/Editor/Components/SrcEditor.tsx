@@ -3,7 +3,7 @@ import * as React from 'react';
 import { SizedDiv } from '../../Components/SizedDiv';
 interface EditorProps {
   value?: string;
-  uri?: 'page.json';
+  uri?: 'internal://page.json';
   minimap: boolean;
   language: 'javascript' | 'css' | 'json';
   onChange: (value: string) => void;
@@ -85,6 +85,7 @@ class SrcEditor extends React.Component<EditorProps> {
           theme: 'vs-dark',
           model: model,
           minimap: { enabled: this.props.minimap },
+          
         });
         this.editor.onDidBlurEditorText(() => {
           this.lastValue = this.editor!.getValue();
