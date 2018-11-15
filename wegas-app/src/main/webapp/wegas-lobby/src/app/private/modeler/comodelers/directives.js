@@ -56,7 +56,7 @@ angular
             require: "^modelerComodelersIndex",
             link: function(scope, element, attrs, parentCtrl) {
 
-                scope.restrictRoles = ["Administrator", "Modeler", "Trainer"];
+                scope.restrictRoles = ["Administrator", "Modeler", "Scenarist"];
 
                 scope.exclude = parentCtrl.comodelers;
 
