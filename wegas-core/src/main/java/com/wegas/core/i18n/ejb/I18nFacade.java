@@ -1000,50 +1000,75 @@ public class I18nFacade extends WegasAbstractFacade {
         }
     }
 
-    public void translateScript(Script target, String sourceLangCode, String targetLangCode) {
-        try {
-            JSObject inscript = (JSObject) fishTranslationsByCode(target.getContent(), sourceLangCode);
+    /**
+     * Translate each TranslatabeContent found in the given script.
+     * Create or override targetLangCode translation based on the sourceLangCode one,
+     * but skip Any empty translation.
+     *
+     * @param target
+     * @param sourceLangCode
+     * @param targetLangCode
+     * @param protectionLevel
+     * @param ancestors
+     */
+    public void translateScript(Script target,
+            String sourceLangCode, String targetLangCode,
+            ProtectionLevel protectionLevel) {
 
-            if (inscript != null) {
-                int index = 0;
-                String script = target.getContent();
-                for (String key : inscript.keySet()) {
-                    JSObject tr = (JSObject) inscript.getMember(key);
+        if (!isProtected(target, ProtectionLevel.PROTECTED)) {
 
-                    if (tr.getMember("status").equals("found")) {
-                        String source = (String) tr.getMember("trValue");
+            try {
+                JSObject inscript = (JSObject) fishTranslationsByCode(target.getContent(), sourceLangCode);
 
-                        DeeplTranslations.DeeplTranslation deepled = this.translate(source, sourceLangCode, targetLangCode);
+                if (inscript != null) {
+                    int index = 0;
+                    String script = target.getContent();
+                    for (String key : inscript.keySet()) {
+                        JSObject tr = (JSObject) inscript.getMember(key);
 
-                        script = this.updateScriptWithNewTranslation(script, index,
-                                targetLangCode, deepled.getText(), "auto:" + sourceLangCode);
+                        if (tr.getMember("status").equals("found")) {
+                            String source = (String) tr.getMember("trValue");
+
+                            DeeplTranslations.DeeplTranslation deepled = this.translate(source, sourceLangCode, targetLangCode);
+
+                            script = this.updateScriptWithNewTranslation(script, index,
+                                    targetLangCode, deepled.getText(), "auto:" + sourceLangCode);
+                        }
+                        index++;
                     }
-                    index++;
+                    target.setContent(script);
                 }
-                target.setContent(script);
+
+            } catch (ScriptException ex) {
+                logger.error("Ouille ouille ouille: {}", ex);
             }
-
-        } catch (ScriptException ex) {
-            logger.error("Ouille ouille ouille: {}", ex);
         }
-
     }
 
-    private void translateTranslatableContent(TranslatableContent trTarget, String sourceLangCode, String targetLangCode, ProtectionLevel protectionLevel) {
+    /**
+     * Create or override targetLangCode translation based on the sourceLangCode one,
+     * but skip Any empty translation.
+     *
+     * @param trTarget
+     * @param sourceLangCode
+     * @param targetLangCode
+     * @param protectionLevel
+     */
+    private void translateTranslatableContent(TranslatableContent trTarget,
+            String sourceLangCode, String targetLangCode,
+            ProtectionLevel protectionLevel) {
         Translation source = trTarget.getTranslation(sourceLangCode);
 
         if (source != null && !Helper.isNullOrEmpty(source.getTranslation())) {
-            Visibility visibility = trTarget.getInheritedVisibility();
-            if (Helper.isProtected(protectionLevel, visibility)) {
-                // target is protected:don't touch !
-                return;
+            if (!isProtected(trTarget, protectionLevel)) {
+                DeeplTranslations.DeeplTranslation translate = this.translate(source.getTranslation(), sourceLangCode, targetLangCode);
+                trTarget.updateTranslation(targetLangCode, translate.getText());
             }
-
-            DeeplTranslations.DeeplTranslation translate = this.translate(source.getTranslation(), sourceLangCode, targetLangCode);
-            trTarget.updateTranslation(targetLangCode, translate.getText());
-
         }
+    }
 
+    private boolean isProtected(Mergeable target, ProtectionLevel protectionLevel) {
+        return target.belongsToProtectedGameModel() && Helper.isProtected(protectionLevel, target.getInheritedVisibility());
     }
 
     /**
@@ -1069,7 +1094,7 @@ public class I18nFacade extends WegasAbstractFacade {
             }
 
             if (target instanceof Script) {
-                facade.translateScript((Script) target, sourceLangCode, targetLangCode);
+                facade.translateScript((Script) target, sourceLangCode, targetLangCode, protectionLevel);
             }
         }
     }
