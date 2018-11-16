@@ -115,6 +115,12 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 cssClass: "create-button",
                 content: "<i class='fa fa-plus'></i>"
             });
+
+            this.languagesHeader = new Y.Wegas.FlexList({
+                cssClass: "wegas-i18n-manager--languages-header",
+                direction: 'horizontal'
+            });
+
             this.languages = new Y.Wegas.FlexList({
                 cssClass: "wegas-i18n-manager--languages",
                 direction: 'horizontal'
@@ -127,6 +133,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             this.header.add(this.refreshButton);
             this.add(this.header);
             this.add(this.addBtn);
+            this.add(this.languagesHeader);
             this.add(this.languages);
             this.add(this.editor);
         },
@@ -136,10 +143,12 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     languages = gm.get("languages"),
                     i, lang;
                 this.languages.destroyAll();
+                this.languagesHeader.destroyAll();
                 for (i in languages) {
                     lang = languages[i];
-                    this.renderLanguage(lang.get("id"), lang.get("code"), lang.get("lang"), lang.get("active"), lang.get("visibility"));
+                    this.renderLanguageInHeader(lang.get("id"), lang.get("code"));
                 }
+                //this.renderLanguageInHeader(lang.get("id"), lang.get("code"), lang.get("lang"), lang.get("active"), lang.get("visibility"));
 
                 var globals = [Y.Wegas.RForm.Script.getGlobals('getter'), Y.Wegas.RForm.Script.getGlobals('condition')];
                 Promise.all(globals).then(Y.bind(function(globalsP) {
@@ -150,13 +159,22 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 this.initTranslationService();
             }
         },
-        renderLanguage: function(id, code, lang, active, visibility) {
-            if (this.languages.size() && id) {
-                this.languages.add(new Y.Wegas.Text({
+        renderLanguageInHeader: function(id, code) {
+            if (this.languagesHeader.size() && id) {
+                this.languagesHeader.add(new Y.Wegas.Text({
                     content: "<span class='move-up fa fa-arrows-h' data-language-id='" + id + "'></>"
                 }));
             }
-
+            this.languagesHeader.add(new Y.Wegas.Text({
+                content: "<div class='language' data-language-code='" + code + "'" + "' data-language-id='" + id + "'>" +
+                    "<div>" +
+                    "  <label>Show " + code + "</label>" +
+                    "  <input type='checkbox' class='language-show' " + (this.showTable[id] ? "checked" : "") + ">" +
+                    "</div>" +
+                    "</div>"
+            }));
+        },
+        renderLanguage: function(id, code, lang, active, visibility) {
             var readonly = visibility !== "PRIVATE" &&
                 Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO";
 
@@ -165,7 +183,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     "<div class='form'>" +
                     "<div><label>Code:</label> <input size='5'" + (readonly ? " readonly" : "") + " class='language-code' value='" + code + "'></div>" +
                     "<div><label>Name:</label> <input " + (readonly ? "readonly" : "") + " class='language-name' value='" + lang + "'></div>" +
-                    "<div><label>Active:</label> <input type='checkbox' class='language-active' " + (active ? "checked" : "") + "></div>" +
+                    (id ? "<div><label>Active:</label> <input type='checkbox' class='language-active' " + (active ? "checked" : "") + "></div>" :"") +
                     "<div class='tools'>" +
                     "  <span class='validate fa fa-save'></span>" +
                     "  <span class='cancel fa fa-times'></span>" +
@@ -173,17 +191,17 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     "</div>" +
                     (id && this.supportedLanguages.indexOf(code) >= 0 ? "<div><span>Auto-Translate: <i class='wegas-language-i18n-auto fa fa-language'></i></span></div>" : "") +
                     (id ? "<div><span class='save-all-container'>Save : <i class='wegas-language-save-all fa fa-save'></i></span></div>" : "") +
-                    (id ? "<div><label>Show:</label> <input type='checkbox' class='language-show' " + (this.showTable[id] ? "checked" : "") + "></div>" : "") +
                     "</div>"
             }));
         },
         bindUI: function() {
             this.get("contentBox").delegate("click", this.addLanguageClick, ".create-button i", this);
-            this.languages.get("contentBox").delegate("change", this.toggleShow, ".language input.language-show", this);
+            this.languagesHeader.get("contentBox").delegate("click", this.languageUp, ".move-up", this);
+
+            this.languagesHeader.get("contentBox").delegate("change", this.toggleShow, ".language input.language-show", this);
             this.languages.get("contentBox").delegate(["input", "change"], this.languageChange, ".language .form input", this);
             this.languages.get("contentBox").delegate("click", this.openAutoTranslateMenu, ".wegas-language-i18n-auto", this);
             this.languages.get("contentBox").delegate("click", this.saveAll, ".wegas-language-save-all", this);
-            this.languages.get("contentBox").delegate("click", this.languageUp, ".move-up", this);
             this.languages.get("contentBox").delegate("click", this.languageSave, ".language .validate", this);
             this.languages.get("contentBox").delegate("click", this.languageCancel, ".language .cancel", this);
 
@@ -212,7 +230,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         },
 
         saveStatusChange: function(e) {
-            var langNode = this.get("contentBox").one(".language[data-language-code='" + e.lang + "']");
+            var langNode = this.languages.get("contentBox").one(".language[data-language-code='" + e.lang + "']");
             var unsaved = this.get("contentBox").one(".wegas-translation.unsaved[lang='" + e.lang + "']");
 
             langNode.toggleClass("has-unsaved", unsaved);
@@ -309,7 +327,6 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             var langNode = e.target.ancestor(".language"),
                 lang = this.findLanguage("id", +langNode.getData("language-id")),
                 code = langNode.one(".language-code").getDOMNode().value,
-                active = langNode.one(".language-active").getDOMNode().checked,
                 name = langNode.one(".language-name").getDOMNode().value;
             if (!code || !name) {
                 this.showMessage("error", "Code or name missing");
@@ -320,6 +337,8 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             } else {
                 if (lang) {
                     // language already exists -> update
+                    var active = langNode.one(".language-active").getDOMNode().checked;
+
                     lang.set("code", code);
                     lang.set("lang", name);
                     lang.set("active", active);
@@ -351,7 +370,21 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             }, this));
         },
         rebuildEditor: function() {
-            this.tree = this.genTree(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel());
+            var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
+
+            var languages = gm.get("languages");
+
+            this.languages.destroyAll();
+
+            for (var i in languages) {
+                var lang = languages[i];
+                if (this.showTable[lang.get("id")]) {
+                    this.renderLanguage(lang.get("id"), lang.get("code"), lang.get("lang"), lang.get("active"), lang.get("visibility"));
+                }
+            }
+
+            this.tree = this.genTree(gm);
+
             //this.treeview.set("content", "<ul>" + this.genTreeviewMarkup(this.tree) + "</ul>");
             //this.treeview.syncUI();
 
@@ -895,9 +928,11 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             hostCB.delegate("keydown", this.selectFileOnKeyDown, ".wegas-translation-wegasurl.favorite-lang .wegas-translation--value", this);
 
             hostCB.delegate("click", this.save, ".wegas-translation.favorite-lang .inline-editor-validate", this); // minor 
-            hostCB.delegate("click", this.majorSave, ".wegas-translation.favorite-lang .inline-editor-major-validate", this); // major
+            hostCB.delegate("click", this.majorSaveConfirmMenu, ".wegas-translation.favorite-lang .inline-editor-major-validate", this); // major
             hostCB.delegate("click", this.catchUpSave, ".wegas-translation.favorite-lang .inline-editor-catch_up-validate", this); // catch up
             hostCB.delegate("click", this.outdateSave, ".wegas-translation.favorite-lang .inline-editor-outdate-validate", this); // outdate
+
+            this.handlers.clickOut = Y.one("body").on("click", this.clickOut, this);
 
             hostCB.delegate("key", this.ctrlSave, 'down:83+ctrl', ".wegas-translation.favorite-lang .wegas-translation--value", this);
             hostCB.delegate("key", this.ctrlSave, 'down:83+meta', ".wegas-translation.favorite-lang .wegas-translation--value", this);
@@ -912,6 +947,11 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             this.publish('saveStatusChange', {
                 emitFacade: true
             });
+        },
+        clickOut: function(e) {
+            if (this.editor && !(e.target.hasClass("wegas-translation") || e.target.ancestor(".wegas-translation, clickOut, . wegas-panel-fileselect"))) {
+                this.removeEditor();
+            }
         },
         fireSaveStatusChange: function(lang) {
             this.fire("saveStatusChange", {
@@ -933,11 +973,13 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             }
         },
         _onHtmlChange: function(e) {
-            var newContent = this.toInjectorStyle(this.editor.getContent()),
-                cfg = this._getCfgFromEvent(e),
-                updated = newContent !== this.contents[cfg.key];
-            cfg.node.toggleClass("unsaved", updated);
-            this.fireSaveStatusChange(cfg.code);
+            if (this.editor) {
+                var newContent = this.toInjectorStyle(this.editor.getContent()),
+                    cfg = this._getCfgFromEvent(e),
+                    updated = newContent !== this.contents[cfg.key];
+                cfg.node.toggleClass("unsaved", updated);
+                this.fireSaveStatusChange(cfg.code);
+            }
         },
         autoTranslate: function(e) {
             var data = e.target.get("data");
@@ -1073,8 +1115,27 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             }
             // save wegas-translation--value 
         },
+        majorSaveConfirmMenu: function(e) {
+            if (!this.majorMenu) {
+                this.majorMenu = new Y.Wegas.Menu();
+                this.majorMenu.on("button:click", this.majorSave, this);
+            } else {
+                this.majorMenu.destroyAll();
+            }
+
+            this.majorMenu.add([{
+                    type: "Button",
+                    label: "Save and outdate other languages",
+                    data: {
+                        event: e
+                    }
+                }]);
+
+            this.majorMenu.attachTo(e.target);
+        },
         majorSave: function(e) {
-            return this.save(e, "MAJOR");
+            var data = e.target.get("data");
+            return this.save(data.event, "MAJOR");
         },
         catchUpSave: function(e) {
             return this.save(e, "CATCH_UP");
@@ -1264,15 +1325,19 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         },
         removeEditor: function() {
             if (this.editor) {
-                this.editor.remove();
-                this.editor.destroy();
-            }
+                Y.log("Destroy editor ");
+                this.get("host").get("contentBox").all(".wegas-translation.has-focus").each(function(node) {
+                    node.removeClass("has-focus");
+                });
 
-            this.get("host").editor.get("contentBox").all(".has-focus").each(function(node) {
-                node.removeClass("has-focus");
-            });
-            this.currentEditorKey = undefined;
-            Y.log("Destroy editor ");
+                var editor = this.editor;
+
+                this.editor = null;
+                this.currentEditorKey = undefined;
+
+                editor.remove();
+                editor.destroy();
+            }
         },
         selectFileOnKeyDown: function(event) {
             if (event.type === 'keydown') {
@@ -1375,6 +1440,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                         hidden_tootlbar: [2, 3],
                         file_browser_callback: Y.bind(this.onFileBrowserClick, this),
                         setup: Y.bind(function(editor) {
+                            Y.log("Editor ready");
                             this.editor = editor;
                             editor.on('change', Y.bind(this._onHtmlChange, this));
                             editor.on('keyUp', Y.bind(this._onHtmlChange, this));
@@ -1555,9 +1621,8 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             return false;
         },
         destructor: function() {
-            if (this.i18nMenu) {
-                this.i18nMenu.destroy();
-            }
+            this.i18nMenu && this.i18nMenu.destroy();
+            this.majorMenu && this.majorMenu.destroy();
             var k;
 
             for (k in this.handlers) {
@@ -1574,6 +1639,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
 
 
 
+    /**
+     * Upgrade not-translated or old translations version in script to up to date translated content
+     */
     GameModelScriptUpgrader = Y.Base.create("wegas-i18n-upgrader", Y.Widget,
         [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Parent], {
         initializer: function() {

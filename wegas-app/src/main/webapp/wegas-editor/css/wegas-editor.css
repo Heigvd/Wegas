@@ -739,23 +739,25 @@
 
 /* I18N */
 
-.wegas-translation.unsaved {
+.wegas-translation {
     display: flex;
     flex-direction: column;
 }
 
 .wegas-translation .tools{
-    display: block;
+    display: flex;
     order: 2;
+    width: calc(100% - 10px);
 }
 .wegas-translation .mce-content-body{
     background-color: #eee;
 }
 
-.wegas-translation .tools span{
+.wegas-translation .tools span:not(.inline-editor-separator){
     cursor: pointer;
     font-size:1.2em;
     padding-right: 5px;
+    line-height: 1.2em;
 }
 
 .wegas-advancedmode .wegas-translation.not-favorite-lang {
@@ -766,53 +768,100 @@
     background-color: hotpink;
 }
 
-
-/*
- * Alword show I18n, major catch_up and outdate button, but in light gray
- */
-.wegas-translation .tools .inline-editor-i18n,
-.wegas-translation .tools .inline-editor-major-validate,
-.wegas-translation.outdated .tools .inline-editor-catch_up-validate,
-.wegas-translation:not(.outdated) .tools .inline-editor-outdate-validate {
-    display: inline;
-    color: grey;
+.wegas-translation .tools .inline-editor-separator{
+    flex-grow: 1;
+    display: block;
 }
 
 
-/**
- * the same:hover => dark gray
- */
-.wegas-translation:hover .tools .inline-editor-i18n,
-.wegas-translation:hover .tools .inline-editor-major-validate,
-.wegas-translation.outdated:hover .tools .inline-editor-catch_up-validate,
-.wegas-translation:not(.outdated):hover .tools .inline-editor-outdate-validate {
-    color: #4e525e;
+/* Save & Undo */
+.wegas-translation .tools span.inline-editor-validate,
+.wegas-translation .tools span.inline-editor-cancel {
+    cursor: default;
+    color: lightgrey;
 }
 
-/**
- * dark gray when unsaved
- */
-.wegas-translation.unsaved .tools .inline-editor-i18n,
-.wegas-translation.unsaved .tools .inline-editor-major-validate,
-.wegas-translation.outdated.unsaved .tools .inline-editor-catch_up-validate,
-.wegas-translation:not(.outdated).unsaved .tools .inline-editor-outdate-validate,
-/* show cancel and minor save buttons when there is an usaved translation */
 .wegas-translation.unsaved .tools .inline-editor-validate,
 .wegas-translation.unsaved .tools .inline-editor-cancel {
-    display: inline;
+    cursor: pointer;
+    color: #4e525e;
+    display: block;
+}
+
+/*
+ * I18n button
+ */
+.wegas-translation .tools .inline-editor-i18n {
+    color : lightgrey;
+}
+
+.wegas-i18n-manager .wegas-translation:hover .tools .inline-editor-i18n,
+.wegas-translation.unsaved .tools .inline-editor-i18n,
+.wegas-translation.has-focus .tools .inline-editor-i18n {
+    display: block;
     color: #4e525e;
 }
 
 
-/**
- * display on editor focus
- */
-.wegas-translation.has-focus .tools .inline-editor-major-validate,
-.wegas-translation.has-focus .tools .inline-editor-i18n,
+/* Major Validate */
+.wegas-translation .tools .inline-editor-major-validate .fa-expand{
+    transform: rotate(45deg);
+    color : lightgrey;
+}
+.wegas-translation .tools .inline-editor-major-validate .fa-toggle-on {
+    color: #F57C00;
+}
+
+.wegas-i18n-manager .wegas-translation:hover .tools .inline-editor-major-validate,
+.wegas-translation.unsaved .tools .inline-editor-major-validate,
+.wegas-translation.has-focus .tools .inline-editor-major-validate{
+    display: block;
+}
+
+.wegas-i18n-manager .wegas-translation:hover .tools .inline-editor-major-validate .fa-expand,
+.wegas-translation.unsaved .tools .inline-editor-major-validate .fa-expand,
+.wegas-translation.has-focus .tools .inline-editor-major-validate .fa-expand{
+    color: darkgray;
+}
+
+.wegas-i18n-manager .wegas-translation:hover .tools .inline-editor-major-validate .fa-toggle-on,
+.wegas-translation.unsaved .tools .inline-editor-major-validate .fa-toggle-on,
+.wegas-translation.has-focus .tools .inline-editor-major-validate .fa-toggle-on{
+    color: #E65100;
+}
+
+
+/* CatchUp */ 
+.wegas-translation:not(.outdated) .tools .inline-editor-catch_up-validate {
+    display:none;
+}
+.wegas-translation.outdated .tools .inline-editor-catch_up-validate {
+    color: #F57C00;
+    padding-right: 0px;
+    padding-left: 5px;
+}
+
+.wegas-i18n-manager .wegas-translation.outdated:hover .tools .inline-editor-catch_up-validate,
 .wegas-translation.outdated.has-focus .tools .inline-editor-catch_up-validate,
-.wegas-translation:not(.outdated).has-focus .tools .inline-editor-outdate-validate{
-    display: inline;
-    color: #4e525e;
+.wegas-translation.outdated.unsaved .tools .inline-editor-catch_up-validate {
+    display: block;
+    color: #E65100;
+}
+
+/* Outdate */
+.wegas-translation.outdated .tools .inline-editor-outdate-validate{
+    display: none;
+}
+
+.wegas-translation:not(.outdated) .tools .inline-editor-outdate-validate{
+    color: #388E3C;
+}
+
+.wegas-i18n-manager .wegas-translation:not(.outdated):hover .tools .inline-editor-outdate-validate,
+.wegas-translation:not(.outdated).has-focus .tools .inline-editor-outdate-validate,
+.wegas-translation:not(.outdated).unsaved .tools .inline-editor-outdate-validate {
+    display: block;
+    color: #1B5E20;
 }
 
 /*
@@ -840,17 +889,20 @@
     flex-grow: 0;
 }
 
+.wegas-i18n-manager .wegas-i18n-manager--languages-header,
 .wegas-i18n-manager .wegas-i18n-manager--languages {
     flex-shrink: 0;
     padding-bottom: 3px;
     border-bottom: 1px solid lightgray;
 }
 
+.wegas-i18n-manager .wegas-i18n-manager--languages-header label,
 .wegas-i18n-manager .wegas-i18n-manager--languages label {
     width: 45px;
     display: inline-block;
 }
 
+.wegas-i18n-manager .wegas-i18n-manager--languages-header .language-code,
 .wegas-i18n-manager .wegas-i18n-manager--languages .language-code {
     text-transform: uppercase;
 }
@@ -866,26 +918,41 @@
 
 .wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-i18n-auto,
 .wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-save-all,
-.wegas-i18n-manager .wegas-i18n-manager--languages .move-up {
+.wegas-i18n-manager .wegas-i18n-manager--languages-header .move-up {
     cursor: pointer;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--languages .language:not(.has-unsaved) .save-all-container{
-    display: none;
+    color:lightgray;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--languages .language.unsaved .tools {
     display:block;
 }
 
-.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-text{
+.wegas-i18n-manager .wegas-i18n-manager--languages-header .wegas-text {
     padding: 0 10px;
 }
 
-.wegas-i18n-manager .wegas-i18n-manager--languages .create-button {
+.wegas-i18n-manager .create-button {
     cursor: pointer;
 }
 
+.wegas-i18n-manager .wegas-i18n-manager--languages {
+    padding-left: 60px;
+    padding-top: 15px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-flexlist-content {
+    display: flex;
+    flex-direction: row;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-text{
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+}
 
 .wegas-i18n-manager .wegas-i18n-manager--editor{
     flex-grow: 1;
@@ -959,6 +1026,11 @@
 
 .wegas-i18n-manager .wegas-i18n-manager--editor .node-children {
     /*padding-left: 0.5em;*/
+}
+
+
+.wegas-i18n-manager .wegas-translation .tools > * {
+    display: block;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--editor .i18n-script .tools {
