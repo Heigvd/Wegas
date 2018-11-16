@@ -555,13 +555,13 @@ YUI.add('wegas-mcq-view', function(Y) {
 
 
             this.get("boundingBox").delegate("click", this.selectChoice,
-                ".answerable:not(.cbx) .selectable .mcqchoice__submit span, " + // standard selectable choices from still answerable question
-                ".answerable.cbx:not(.checkbox) .wegas-mcqchoice:not(.hasReplies) .mcqchoice__submit, " + // not selected radio options
-                ".answerable.cbx.checkbox:not(.maximumReached) .mcqchoice__submit, " + // checkboxes when maximum not reached yet
-                ".answerable.cbx.checkbox.maximumReached .hasReplies .mcqchoice__submit"  // unselect checkboxes even if maximum reached
+                ".answerable:not(.locked):not(.cbx) .selectable .mcqchoice__submit span, " + // standard selectable choices from still answerable question
+                ".answerable.cbx:not(.checkbox):not(.locked) .wegas-mcqchoice:not(.hasReplies) .mcqchoice__submit, " + // not selected radio options
+                ".answerable.cbx.checkbox:not(.maximumReached):not(.locked) .mcqchoice__submit, " + // checkboxes when maximum not reached yet
+                ".answerable.cbx.checkbox.maximumReached:not(.locked) .hasReplies .mcqchoice__submit"  // unselect checkboxes even if maximum reached
                 , this);
 
-            this.get("boundingBox").delegate("click", this.validateQuestion, ".cbx.answerable .mcq-view__submit span", this);
+            this.get("boundingBox").delegate("click", this.validateQuestion, ".cbx.answerable:not(.locked) .mcq-view__submit span", this);
         },
         beforeRequest: function() {
             this.lockable.lock();

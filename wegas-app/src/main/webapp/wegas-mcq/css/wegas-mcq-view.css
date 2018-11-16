@@ -312,7 +312,7 @@
     opacity: 1;
 }
 
-.wegas-mcqview .locked.answerable:not(.cbx) .selectable .mcqchoice__submit,
+.wegas-mcqview .locked.answerable:not(.cbx) .selectable .mcqchoice__submit span,
 .wegas-mcqview .locked.answerable.cbx .mcq-view__submit,
 .wegas-mcqview .locked.answerable.cbx:not(.checkbox) .wegas-mcqchoice:not(.hasReplies) .mcqchoice__submit,
 .wegas-mcqview .locked.answerable.cbx.checkbox:not(.maximumReached) .mcqchoice__submit,
