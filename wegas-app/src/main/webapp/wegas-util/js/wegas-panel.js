@@ -132,13 +132,13 @@ YUI.add('wegas-panel', function(Y) {
                 width: 400,
                 buttons: {
                     footer: [{
-                            label: okLabel || 'OK',
+                            label: okLabel || I18n.t('global.ok') || 'OK',
                             action: function() {
                                 panel.exit();
                                 okCb && okCb();
                             }
                         }, {
-                            label: cancelLabel || 'Cancel',
+                            label: cancelLabel || I18n.t('global.cancel') || 'Cancel',
                             action: function() {
                                 panel.exit();
                                 cancelCb && cancelCb();
@@ -164,14 +164,14 @@ YUI.add('wegas-panel', function(Y) {
                 width: 400,
                 buttons: {
                     footer: [{
-                            label: okLabel || 'OK',
+                            label: okLabel || I18n.t('global.ok') || 'OK',
                             action: function() {
                                 var v = this.get("bodyContent").filter(".prompt-value").item(0).get("value");
                                 panel.exit();
                                 okCb && okCb(v);
                             }
                         }, {
-                            label: cancelLabel || 'Cancel',
+                            label: cancelLabel || I18n.t('global.cancel') || 'Cancel',
                             action: function() {
                                 panel.exit();
                                 cancelCb && cancelCb();
@@ -187,7 +187,7 @@ YUI.add('wegas-panel', function(Y) {
                 width: 400,
                 buttons: {
                     footer: [{
-                            label: 'OK',
+                            label: I18n.t('global.ok') || 'OK',
                             action: function() {
                                 panel.exit();
                                 okCb && okCb();
@@ -197,9 +197,9 @@ YUI.add('wegas-panel', function(Y) {
             }).render();
         },
         /**
-         * 
+         *
          * @param {type} children children cfg
-         * @param {type} userCfg {width: 80%, height: 80%, modal: true, style:"modern" | "legacy", title: null, titleVariable:null, cssClass} 
+         * @param {type} userCfg {width: 80%, height: 80%, modal: true, style:"modern" | "legacy", title: null, titleVariable:null, cssClass}
          * @returns {undefined}
          */
         openOverlay: function(children, userCfg) {
