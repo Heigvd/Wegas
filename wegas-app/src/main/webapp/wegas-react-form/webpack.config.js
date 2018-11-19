@@ -1,5 +1,4 @@
 const path = require('path');
-const TerserPlugin = require('terser-webpack-plugin');
 // const pkg = require('./package.json');
 
 // const packages = Object.keys(pkg.dependencies);
@@ -49,7 +48,9 @@ module.exports = {
             {
                 test: /\.jsx?$/,
                 loaders: ['babel-loader'],
-                include: [path.join(__dirname, 'src')],
+                include: [
+                    path.join(__dirname, 'src')
+                ]
             },
             {
                 test: /\.css$/,
@@ -96,8 +97,5 @@ module.exports = {
     devServer: {
         reload: false,
         inline: true,
-    },
-    optimization: {
-        minimizer: [new TerserPlugin()],
     },
 };
