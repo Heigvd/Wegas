@@ -4,6 +4,7 @@ import { deserialize } from '../AutoImport';
 import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
 import { themeVar } from '../Theme';
 import { Actions } from '../../data';
+import { TextLoader } from '../Loader';
 
 // function inferComponenent(type: string | React.ComponentType) {
 //     if (typeof type == 'string') {
@@ -95,7 +96,6 @@ interface PageLoaderProps {
   page?: Page;
   id?: string;
 }
-
 const PageLoaderTracker = new Set<PageLoader>();
 function countLoaded(id?: string) {
   let count = 0;
@@ -106,6 +106,9 @@ function countLoaded(id?: string) {
   });
   return count;
 }
+
+const Suspend = React.lazy(() => new Promise(() => {}));
+
 class PageLoader extends React.Component<PageLoaderProps, { load: boolean }> {
   constructor(props: PageLoaderProps) {
     super(props);
@@ -136,7 +139,7 @@ class PageLoader extends React.Component<PageLoaderProps, { load: boolean }> {
   }
   render() {
     if (this.props.page == null) {
-      return <span>Loading...</span>;
+      return <Suspend />;
     }
     if (!this.state.load) {
       return (
@@ -144,7 +147,8 @@ class PageLoader extends React.Component<PageLoaderProps, { load: boolean }> {
           <FontAwesome
             style={{ color: themeVar.warningColor }}
             icon="exclamation-triangle"
-          />Page {this.props.id} loaded more than once
+          />
+          Page {this.props.id} loaded more than once
         </span>
       );
     }
@@ -152,16 +156,21 @@ class PageLoader extends React.Component<PageLoaderProps, { load: boolean }> {
     return tree;
   }
 }
+
 export default function ConnectedPageLoader({ id }: { id?: string }) {
   return (
-    <StoreConsumer<Readonly<Page> | undefined>
-      selector={s => (id ? s.pages[id] : undefined)}
+    <StoreConsumer<{ page: Readonly<Page> | undefined; id?: string }>
+      selector={s => ({ page: id !== undefined ? s.pages[id] : undefined, id })}
     >
       {({ state, dispatch }) => {
-        if (state == null && id != null) {
+        if (state.page == null && state.id != null) {
           dispatch(Actions.PageActions.get(id));
         }
-        return <PageLoader id={id} page={state} />;
+        return (
+          <React.Suspense fallback={<TextLoader text="Building World!" />}>
+            <PageLoader id={id} page={state.page} />
+          </React.Suspense>
+        );
       }}
     </StoreConsumer>
   );
