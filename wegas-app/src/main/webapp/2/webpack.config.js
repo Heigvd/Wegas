@@ -1,5 +1,4 @@
 const path = require('path');
-const TerserPlugin = require('terser-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
@@ -100,8 +99,5 @@ module.exports = {
         target: 'http://localhost:8080',
       },
     },
-  },
-  optimization: {
-    minimizer: [new TerserPlugin()],
   },
 };
