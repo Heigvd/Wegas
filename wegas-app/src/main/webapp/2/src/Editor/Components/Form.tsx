@@ -22,24 +22,33 @@ export type IForm = typeof Form;
 
 export class Form<T> extends React.Component<
   FormProps<T>,
-  { val: any; oldProps: FormProps<T> }
+  {
+    val: any;
+    oldProps: FormProps<T>;
+    // Used to reset Form (for default values)
+    id: number;
+  }
 > {
   form?: JSONForm;
   static getDerivedStateFromProps(
     nextProps: FormProps<any>,
-    state: { oldProps: FormProps<any> },
+    state: { oldProps: FormProps<any>; id: number; val: any },
   ) {
     if (state.oldProps === nextProps) {
       return null;
     }
-    return { val: nextProps.entity, oldProps: nextProps };
+    return {
+      val: nextProps.entity,
+      oldProps: nextProps,
+      id: (state.id + 1) % 100,
+    };
   }
   static defaultProps = {
     actions: [],
   };
   constructor(props: FormProps<T>) {
     super(props);
-    this.state = { oldProps: props, val: props.entity };
+    this.state = { oldProps: props, val: props.entity, id: 0 };
   }
   render() {
     return (
@@ -91,6 +100,7 @@ export class Form<T> extends React.Component<
                 this.form = n;
               }
             }}
+            key={this.state.id}
             value={this.state.val}
             schema={this.props.schema}
             onChange={val => {

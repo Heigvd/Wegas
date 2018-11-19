@@ -65,7 +65,7 @@ export const config: ConfigurationSchema<IResult> = {
     index: 10,
   },
   impact: {
-    type: ['null', 'object'],
+    type: ['object', 'null'],
     properties: {
       '@class': {
         type: 'string',
@@ -93,7 +93,7 @@ export const config: ConfigurationSchema<IResult> = {
     index: 12,
   },
   ignorationImpact: {
-    type: ['null', 'object'],
+    type: ['object', 'null'],
     properties: {
       '@class': {
         type: 'string',
