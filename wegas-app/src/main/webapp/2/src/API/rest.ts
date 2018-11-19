@@ -33,8 +33,9 @@ export function rest(
   view?: View,
   contentType: ContentType = 'application/json',
 ) {
-  const v = view ? view : '';
-  return fetch(`${API_ENDPOINT}${v}${url}`, {
+  const v = view ? `${view}/` : '';
+  const u = url.startsWith('/') ? url.substr(1) : url;
+  return fetch(`${API_ENDPOINT}${v}${u}`, {
     ...COMMON_CONFIG(contentType),
     ...options,
   }).then(res => {

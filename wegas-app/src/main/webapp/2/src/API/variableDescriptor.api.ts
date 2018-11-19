@@ -19,7 +19,7 @@ export const VariableDescriptorAPI = {
     parent?: IParentDescriptor,
   ) {
     return managedModeRequest(
-      `${VD_BASE(gameModelId)}${parent ? `/${parent.id}` : ''}`,
+      `${VD_BASE(gameModelId)}${parent ? `${parent.id}` : ''}`,
       {
         method: 'POST',
         body: JSON.stringify(variableDescriptor),
@@ -59,7 +59,7 @@ export const VariableDescriptorAPI = {
     context?: IVariableDescriptor,
   ) {
     return managedModeRequest(
-      `${VD_BASE(gameModelId)}/Script/Run/${playerId}/${
+      `${VD_BASE(gameModelId)}Script/Run/${playerId}/${
         context ? context.id : ''
       }`,
       {
@@ -69,7 +69,7 @@ export const VariableDescriptorAPI = {
     );
   },
   contains(gameModelId: number, criteria: string) {
-    return rest(`${VD_BASE(gameModelId)}/contains`, {
+    return rest(`${VD_BASE(gameModelId)}contains`, {
       method: 'POST',
       body: criteria,
       headers: {
@@ -78,7 +78,7 @@ export const VariableDescriptorAPI = {
     }).then(res => res.json() as Promise<number[]>);
   },
   containsAll(gameModelId: number, criteria: string) {
-    return rest(`${VD_BASE(gameModelId)}/containsAll`, {
+    return rest(`${VD_BASE(gameModelId)}containsAll`, {
       method: 'POST',
       body: criteria,
       headers: {
@@ -87,6 +87,10 @@ export const VariableDescriptorAPI = {
     }).then(res => res.json() as Promise<number[]>);
   },
   reset(gameModelId: number) {
-    return managedModeRequest(`${VD_BASE(gameModelId)}/Reset`);
+    return managedModeRequest(
+      `${VD_BASE(gameModelId)}Reset`,
+      undefined,
+      'Editor',
+    );
   },
 };

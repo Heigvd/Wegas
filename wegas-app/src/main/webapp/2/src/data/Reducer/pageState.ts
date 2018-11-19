@@ -39,7 +39,7 @@ export function getDefault(): ThunkResult<Promise<StateActions<'PAGE_FETCH'>>> {
     );
   };
 }
-export function get(id?: string): ThunkResult {
+export function get(id?: string): ThunkResult<Promise<StateActions<'PAGE_FETCH'>>> {
   return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     return PageAPI.get(gameModelId, id).then(pages =>
