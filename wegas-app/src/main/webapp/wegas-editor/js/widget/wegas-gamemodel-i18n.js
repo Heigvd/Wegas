@@ -932,7 +932,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             hostCB.delegate("click", this.selectFile, ".wegas-translation-wegasurl.favorite-lang .wegas-translation--value", this);
             hostCB.delegate("keydown", this.selectFileOnKeyDown, ".wegas-translation-wegasurl.favorite-lang .wegas-translation--value", this);
 
-            hostCB.delegate("click", this.save, ".wegas-translation.favorite-lang .inline-editor-validate", this); // minor 
+            hostCB.delegate("click", this.save, ".wegas-translation.favorite-lang.unsaved .inline-editor-validate", this); // minor 
             hostCB.delegate("click", this.majorSaveConfirmMenu, ".wegas-translation.favorite-lang .inline-editor-major-validate", this); // major
             hostCB.delegate("click", this.catchUpSave, ".wegas-translation.favorite-lang .inline-editor-catch_up-validate", this); // catch up
             hostCB.delegate("click", this.outdateSave, ".wegas-translation.favorite-lang .inline-editor-outdate-validate", this); // outdate
@@ -942,10 +942,10 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             hostCB.delegate("key", this.ctrlSave, 'down:83+ctrl', ".wegas-translation.favorite-lang .wegas-translation--value", this);
             hostCB.delegate("key", this.ctrlSave, 'down:83+meta', ".wegas-translation.favorite-lang .wegas-translation--value", this);
 
-            hostCB.delegate("click", this.openAutoTranslateMenu, ".wegas-translation.favorite-lang .inline-editor-i18n", this); // auto
+            hostCB.delegate("click", this.openAutoTranslateMenu, ".wegas-translation.favorite-lang.unsaved .inline-editor-i18n", this); // auto
 
             //hostCB.delegate("key", this.selectAllInSpan, 'down:65+ctrl', ".wegas-translation-string span[contenteditable]", this);
-            hostCB.delegate("click", this.cancel, ".wegas-translation.favorite-lang .inline-editor-cancel", this);
+            hostCB.delegate("click", this.cancel, ".wegas-translation.favorite-lang.unsaved .inline-editor-cancel", this);
             this.contents = {};
             //hostCB.delegate("blur", this.onBlurString, ".wegas-translation-blur.favorite-lang", this);
 
@@ -1108,8 +1108,10 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         },
         ctrlSave: function(e) {
             e.halt(true);
-            this.save(e);
-            document.activeElement.blur();
+            if (e.target.ancestor(".wegas-translation.unsaved")) {
+                this.save(e);
+                document.activeElement.blur();
+            }
         },
         save: function(e, mode) {
             var cfg = this._getCfgFromEvent(e),
