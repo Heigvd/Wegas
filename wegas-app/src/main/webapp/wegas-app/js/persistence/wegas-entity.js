@@ -36,6 +36,18 @@ YUI.add('wegas-entity', function(Y) {
                 type: HIDDEN
             }
         },
+        VERSION_ATTR_DEF = {
+            type: NUMBER,
+            optional: true,
+            index: -19,
+            view: {
+                type: 'uneditable',
+                className: 'wegas-internal-feature',
+                label: 'Version',
+                layout: 'shortInline'
+                    //_type: HIDDEN
+            }
+        },
         PERMISSION = {
             optional: true,
             type: ARRAY,
@@ -87,6 +99,7 @@ YUI.add('wegas-entity', function(Y) {
                     label: "RefId"
                 }
             },
+            version: VERSION_ATTR_DEF,
             translations: {
                 type: "object",
                 value: {},
@@ -432,6 +445,7 @@ YUI.add('wegas-entity', function(Y) {
              }
              },*/
             refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
+            version: VERSION_ATTR_DEF,
             parentInstanceId: {
                 type: "number",
                 "transient": true

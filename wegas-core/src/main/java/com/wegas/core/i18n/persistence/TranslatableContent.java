@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
     @Index(columnList = "parentdescriptor_id"),
     @Index(columnList = "parentinstance_id")
 })
+//@OptimisticLocking
 public class TranslatableContent extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
@@ -56,6 +57,12 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     @ManyToOne
     @JsonIgnore
     private VariableInstance parentInstance;
+
+    @Version
+    @Column(columnDefinition = "bigint default '0'::bigint")
+    @WegasEntityProperty(sameEntityOnly = true)
+    @JsonView(Views.IndexI.class)
+    private Long version;
 
     /**
      *
@@ -79,6 +86,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
 
     /**
      * Use with caution (it means NEVER but in custom JSON deserialisator)
+     *
      * @param id
      */
     public void setId(Long id) {
@@ -131,6 +139,14 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     @JsonView(Views.IndexI.class)
     public void setParentInstanceId(Long id) {
         // Jackson happy
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     /**
@@ -434,12 +450,12 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
                     Object member = trs.getMember(code);
                     if (member instanceof String) {
                         trContent.updateTranslation(code, (String) trs.getMember(code));
-                    } else if (member instanceof ScriptObjectMirror){
+                    } else if (member instanceof ScriptObjectMirror) {
                         String tr = (String) ((ScriptObjectMirror) member).getMember("translation");
                         String status = (String) ((ScriptObjectMirror) member).getMember("status");
                         trContent.updateTranslation(code, tr, status);
                     } else {
-                        throw WegasErrorMessage.error("Unhandled Translatable Content Type: "+ member);
+                        throw WegasErrorMessage.error("Unhandled Translatable Content Type: " + member);
                     }
                 }
             }

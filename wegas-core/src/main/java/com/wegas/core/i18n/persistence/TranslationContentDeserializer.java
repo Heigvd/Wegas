@@ -66,20 +66,21 @@ public class TranslationContentDeserializer extends StdDeserializer<Translatable
             TranslatableContent trc = new TranslatableContent();
             String fieldName;
             while ((fieldName = p.nextFieldName()) != null) {
-                p.nextToken(); //consume value
+                JsonToken nextToken = p.nextToken(); //consume value
+                //consume value
                 switch (fieldName) {
 
                     case "id":
-                        if (p.getCurrentValue() != null) {
-                            Long id = p.getLongValue();
-                            trc.setId(id);
-                        }
+                        Long id = p.getLongValue();
+                        trc.setId(id);
                         break;
                     case "refId":
-                        if (p.getCurrentValue() != null) {
-                            String refId = p.getValueAsString();
-                            trc.forceRefId(refId);
-                        }
+                        String refId = p.getValueAsString();
+                        trc.forceRefId(refId);
+                        break;
+                    case "version":
+                        Long version = p.getValueAsLong();
+                        trc.setVersion(version);
                         break;
                     case "translations":
                         String lang;
