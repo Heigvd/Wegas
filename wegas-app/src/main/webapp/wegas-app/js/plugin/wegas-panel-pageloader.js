@@ -282,7 +282,8 @@ YUI.add('wegas-panel-pageloader', function(Y) {
         {
             execute: function() {
                 Y.later(0, this, function() {
-                    var panel = Y.Widget.getByNode("body > .wegas-panel");
+                    var panelNode = this.get("host").get("boundingBox").ancestor(".wegas-panel");
+                    var panel = Y.Widget.getByNode(panelNode);
                     panel && panel.destroy();
                 });
             }
