@@ -175,7 +175,7 @@ public class I18nController {
     @Path("InitLanguage/{source: [a-zA-Z]+}/{target: [a-zA-Z]+}")
     public GameModel initLanguageTranslations(@PathParam("gameModelId") Long gameModelId,
             @PathParam("target") String targetLangCode,
-            @PathParam("source") String sourceLangCode) {
+            @PathParam("source") String sourceLangCode) throws ScriptException {
 
         return i18nfacade.initLanguage(gameModelId, sourceLangCode, targetLangCode);
     }
@@ -186,7 +186,7 @@ public class I18nController {
     public DeeplTranslation translate(@PathParam("target") String targetLangCode,
             @PathParam("source") String sourceLangCode, String text) {
 
-        return i18nfacade.translate(text, sourceLangCode, targetLangCode);
+        return i18nfacade.translate(sourceLangCode, targetLangCode, text).getTranslations().get(0);
     }
 
     /**

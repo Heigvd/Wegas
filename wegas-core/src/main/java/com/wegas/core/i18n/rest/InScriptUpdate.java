@@ -31,6 +31,7 @@ public class InScriptUpdate extends ScriptUpdate{
         return code;
     }
 
+    @Override
     public void setCode(String code) {
         this.code = code;
     }

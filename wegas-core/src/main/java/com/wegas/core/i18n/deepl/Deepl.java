@@ -139,7 +139,7 @@ public class Deepl {
         HttpPost request = new HttpPost(baseUrl + url);
 
         StringEntity entity = new StringEntity(body, StandardCharsets.UTF_8);
-        entity.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        entity.setContentType(MediaType.APPLICATION_FORM_URLENCODED + ";charset=UTF-8");
 
         request.setEntity(entity);
 

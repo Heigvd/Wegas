@@ -18,7 +18,7 @@ public class TranslationUpdate extends  I18nUpdate {
 
     private Long trId;
     private String code;
-    private String translation;
+    private String value;
 
     public Long getTrId() {
         return trId;
@@ -32,15 +32,18 @@ public class TranslationUpdate extends  I18nUpdate {
         return code;
     }
 
+    @Override
     public void setCode(String code) {
         this.code = code;
     }
 
-    public String getTranslation() {
-        return translation;
+    @Override
+    public void setValue(String translation) {
+        this.value = translation;
     }
 
-    public void setTranslation(String translation) {
-        this.translation = translation;
+    @Override
+    public String getValue(){
+        return this.value;
     }
 }

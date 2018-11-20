@@ -52,6 +52,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -599,7 +600,7 @@ public class I18nFacade extends WegasAbstractFacade {
         }
 
         String code = update.getCode();
-        String newValue = update.getTranslation();
+        String newValue = update.getValue();
 
         if (null == mode) {
             // MINOR change, do not change the status
@@ -938,7 +939,7 @@ public class I18nFacade extends WegasAbstractFacade {
      *
      * @return update gameModel
      */
-    public GameModel initLanguage(Long gameModelId, String sourceLangCode, String targetLangCode) {
+    public GameModel initLanguage(Long gameModelId, String sourceLangCode, String targetLangCode) throws ScriptException {
         GameModel gameModel = gameModelFacade.find(gameModelId);
 
         Deepl.Language sourceLang = Deepl.Language.valueOf(sourceLangCode.toUpperCase());
@@ -971,6 +972,7 @@ public class I18nFacade extends WegasAbstractFacade {
         if (isTranslationServiceAvailable()) {
             return getDeeplClient().usage();
         } else {
+            // Mock deepl Usage
             DeeplUsage usage = new DeeplUsage();
             usage.setCharacterCount(0l);
             usage.setCharacterLimit(0l);
@@ -978,7 +980,7 @@ public class I18nFacade extends WegasAbstractFacade {
         }
     }
 
-    public DeeplTranslations.DeeplTranslation translate(String text, String sourceLangCode, String targetLangCode) {
+    public DeeplTranslations translate(String sourceLangCode, String targetLangCode, String... texts) {
         Deepl.Language sourceLang = Deepl.Language.valueOf(sourceLangCode.toUpperCase());
         Deepl.Language targetLang = Deepl.Language.valueOf(targetLangCode.toUpperCase());
 
@@ -987,11 +989,7 @@ public class I18nFacade extends WegasAbstractFacade {
 
                 Deepl deepl = getDeeplClient();
 
-                DeeplTranslations translate = deepl.translate(sourceLang, targetLang, text);
-                DeeplTranslations.DeeplTranslation translation = translate.getTranslations().get(0);
-
-                return translation;
-
+                return deepl.translate(sourceLang, targetLang, texts);
             } else {
                 throw WegasErrorMessage.error("Unsupported target language " + targetLangCode);
             }
@@ -1001,115 +999,142 @@ public class I18nFacade extends WegasAbstractFacade {
     }
 
     /**
-     * Translate each TranslatabeContent found in the given script.
-     * Create or override targetLangCode translation based on the sourceLangCode one,
-     * but skip Any empty translation.
+     * Is target protected ?
+     * to be protected, the target must belongs to a protectedGameModel (i.e. a scenario which depends on a model)
+     * and must stand in a protected scope according to the current protection level and its inherited visiility
      *
      * @param target
-     * @param sourceLangCode
-     * @param targetLangCode
      * @param protectionLevel
-     * @param ancestors
-     */
-    public void translateScript(Script target,
-            String sourceLangCode, String targetLangCode,
-            ProtectionLevel protectionLevel) {
-
-        if (!isProtected(target, ProtectionLevel.PROTECTED)) {
-
-            try {
-                JSObject inscript = (JSObject) fishTranslationsByCode(target.getContent(), sourceLangCode);
-
-                if (inscript != null) {
-                    int index = 0;
-                    String script = target.getContent();
-                    for (String key : inscript.keySet()) {
-                        JSObject tr = (JSObject) inscript.getMember(key);
-
-                        if (tr.getMember("status").equals("found")) {
-                            String source = (String) tr.getMember("trValue");
-
-                            DeeplTranslations.DeeplTranslation deepled = this.translate(source, sourceLangCode, targetLangCode);
-
-                            script = this.updateScriptWithNewTranslation(script, index,
-                                    targetLangCode, deepled.getText(), "auto:" + sourceLangCode);
-                        }
-                        index++;
-                    }
-                    target.setContent(script);
-                }
-
-            } catch (ScriptException ex) {
-                logger.error("Ouille ouille ouille: {}", ex);
-            }
-        }
-    }
-
-    /**
-     * Create or override targetLangCode translation based on the sourceLangCode one,
-     * but skip Any empty translation.
      *
-     * @param trTarget
-     * @param sourceLangCode
-     * @param targetLangCode
-     * @param protectionLevel
+     * @return
      */
-    private void translateTranslatableContent(TranslatableContent trTarget,
-            String sourceLangCode, String targetLangCode,
-            ProtectionLevel protectionLevel) {
-        Translation source = trTarget.getTranslation(sourceLangCode);
-
-        if (source != null && !Helper.isNullOrEmpty(source.getTranslation())) {
-            if (!isProtected(trTarget, protectionLevel)) {
-                DeeplTranslations.DeeplTranslation translate = this.translate(source.getTranslation(), sourceLangCode, targetLangCode);
-                trTarget.updateTranslation(targetLangCode, translate.getText());
-            }
-        }
-    }
-
     private boolean isProtected(Mergeable target, ProtectionLevel protectionLevel) {
         return target.belongsToProtectedGameModel() && Helper.isProtected(protectionLevel, target.getInheritedVisibility());
     }
 
     /**
-     * Copy newTranslation from one set of mergeables to another one
+     * Automatic translation.
+     * For each encountered translatable content, auto-translate targetLangCode tr from sourceLangCode on.
      */
-    private static class Translator implements MergeableVisitor {
+    private static class TranslationExtractor implements MergeableVisitor {
 
-        private final I18nFacade facade;
+        private final I18nFacade i18nFacade;
 
-        private final String sourceLangCode;
-        private final String targetLangCode;
+        private final String langCode;
 
-        public Translator(String sourceLangCode, String targetLangCode, I18nFacade facade) {
-            this.sourceLangCode = sourceLangCode;
-            this.targetLangCode = targetLangCode;
-            this.facade = facade;
+        private List<I18nUpdate> patchList = new LinkedList<>();
+
+        public TranslationExtractor(String langCode, I18nFacade facade) {
+            this.langCode = langCode;
+            this.i18nFacade = facade;
+        }
+
+        public List<I18nUpdate> getPatches() {
+            return patchList;
         }
 
         @Override
         public void visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
             if (target instanceof TranslatableContent) {
-                facade.translateTranslatableContent((TranslatableContent) target, sourceLangCode, targetLangCode, protectionLevel);
+                TranslatableContent trTarget = (TranslatableContent) target;
+                Translation source = trTarget.getTranslation(langCode);
+
+                if (source != null && !Helper.isNullOrEmpty(source.getTranslation())) {
+                    if (!i18nFacade.isProtected(trTarget, protectionLevel)) {
+                        TranslationUpdate trUpdate = new TranslationUpdate();
+                        trUpdate.setTrId(trTarget.getId());
+                        trUpdate.setCode(langCode);
+                        trUpdate.setValue(source.getTranslation());
+                        patchList.add(trUpdate);
+                    }
+                }
             }
 
             if (target instanceof Script) {
-                facade.translateScript((Script) target, sourceLangCode, targetLangCode, protectionLevel);
+                if (!i18nFacade.isProtected(target, protectionLevel)) {
+                    Script script = (Script) target;
+
+                    Mergeable parent = ancestors.getFirst();
+                    if (parent instanceof AbstractEntity) {
+                        try {
+                            JSObject inscript = (JSObject) i18nFacade.fishTranslationsByCode(script.getContent(), langCode);
+
+                            if (inscript != null) {
+                                int index = 0;
+                                for (String key : inscript.keySet()) {
+                                    JSObject tr = (JSObject) inscript.getMember(key);
+
+                                    if (tr.getMember("status").equals("found")) {
+                                        String translation = (String) tr.getMember("trValue");
+                                        InScriptUpdate patch = new InScriptUpdate();
+                                        patch.setParentClass(parent.getClass().getSimpleName());
+                                        patch.setParentId(((AbstractEntity) parent).getId());
+
+                                        patch.setFieldName(field.getField().getName());
+                                        patch.setIndex(index);
+
+                                        patch.setCode(key);
+                                        patch.setValue(translation);
+                                    }
+                                    index++;
+                                }
+                            }
+
+                        } catch (ScriptException ex) {
+                            logger.error("Ouille ouille ouille: {}", ex);
+                        }
+                    } else {
+                        throw WegasErrorMessage.error("Unsupported parent: " + parent);
+                    }
+
+                }
             }
         }
     }
 
-    private void translateGameModel(Mergeable target, String sourceLangCode, String targetLangCode) {
-        MergeHelper.visitMergeable(target, Boolean.TRUE, new Translator(sourceLangCode, targetLangCode, this));
+    private void translateGameModel(Mergeable target, String sourceLangCode, String targetLangCode) throws ScriptException {
+        /*
+         * TODO
+         **********
+         * 1) extract list of I18nUpdate
+         * 2) Translate them in one single shot
+        -> auto translate value
+        -> change code
+         * 3) apply
+         */
+        TranslationExtractor extractor = new TranslationExtractor(sourceLangCode, this);
+        MergeHelper.visitMergeable(target, Boolean.TRUE, extractor);
+        List<I18nUpdate> patches = extractor.getPatches();
+
+        String[] toTranslate = new String[patches.size()];
+        int i = 0;
+        for (I18nUpdate update : patches) {
+            toTranslate[i] = update.getValue();
+            i++;
+        }
+
+        DeeplTranslations translations = translate(sourceLangCode, targetLangCode, toTranslate);
+        i = 0;
+        for (DeeplTranslations.DeeplTranslation translation : translations.getTranslations()) {
+            I18nUpdate patch = patches.get(i);
+            patch.setCode(targetLangCode);
+            patch.setValue(translation.getText());
+            i++;
+        }
+
+        this.batchUpdate(patches);
     }
 
-    private static class LanguageUpgrader implements MergeableVisitor {
+    /**
+     * Update language code
+     */
+    private static class LanguageCodeUpgrader implements MergeableVisitor {
 
         private final String oldCode;
         private final String newCode;
         private final I18nFacade i18nFacade;
 
-        public LanguageUpgrader(String oldCode, String newCode, I18nFacade i18nFacade) {
+        public LanguageCodeUpgrader(String oldCode, String newCode, I18nFacade i18nFacade) {
             this.oldCode = oldCode;
             this.newCode = newCode;
             this.i18nFacade = i18nFacade;
@@ -1146,7 +1171,7 @@ public class I18nFacade extends WegasAbstractFacade {
      * @param newCode
      */
     public void updateTranslationCode(GameModel gameModel, String oldCode, String newCode) {
-        MergeHelper.visitMergeable(gameModel, Boolean.TRUE, new LanguageUpgrader(oldCode, newCode, this));
+        MergeHelper.visitMergeable(gameModel, Boolean.TRUE, new LanguageCodeUpgrader(oldCode, newCode, this));
     }
 
     /**

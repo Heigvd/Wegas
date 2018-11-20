@@ -49,11 +49,17 @@ public class ScriptUpdate extends I18nUpdate {
         this.fieldName = fieldName;
     }
 
+    @Override
     public String getValue() {
         return value;
     }
 
+    @Override
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public void setCode(String langCode) {
     }
 }

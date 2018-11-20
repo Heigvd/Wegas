@@ -36,6 +36,16 @@ public class MergeHelper {
 
     public interface MergeableVisitor {
 
+        /**
+         * visit
+         *
+         * @param target          the mergeable target
+         * @param protectionLevel current protection level
+         * @param level           deepness
+         * @param field           field description
+         * @param ancestors       mergeable ancestors
+         * @param references      others paralal mergeable
+         */
         public void visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references);
 
         default public void visitProperty(Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object... references) {
@@ -116,6 +126,9 @@ public class MergeHelper {
                                             referencesChildren[i] = null;
                                         }
                                     }
+                                } else {
+                                    references = new Mergeable[0];
+                                    referencesChildren = new Object[0];
                                 }
 
                                 if (children instanceof List) {
@@ -257,7 +270,11 @@ public class MergeHelper {
                                 break;
                             case PROPERTY:
                                 Object targetProperty = readMethod.invoke(target);
-                                Object[] referencesProperties = new Object[references.length];
+                                Object[] referencesProperties;
+                                if (references == null) {
+                                    references = new Mergeable[0];
+                                }
+                                referencesProperties = new Object[references.length];
 
                                 for (int i = 0; i < references.length; i++) {
                                     if (references[i] != null) {

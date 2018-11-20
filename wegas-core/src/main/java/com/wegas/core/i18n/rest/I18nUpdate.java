@@ -21,4 +21,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(name = "InScriptUpdate", value = InScriptUpdate.class)
 })
 public abstract class I18nUpdate {
+
+    public abstract void setCode(String langCode);
+
+    public abstract String getValue();
+
+    public abstract void setValue(String text);
 }

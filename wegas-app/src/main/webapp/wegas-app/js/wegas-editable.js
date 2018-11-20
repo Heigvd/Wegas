@@ -124,6 +124,7 @@ YUI.add('wegas-editable', function(Y) {
         },
         _getVisibility: function(entity, defaultVisibility) {
             if (entity && typeof entity.get === "function" && entity.get("visibility")) {
+                // entity has its own visibility
                 return entity.get("visibility");
             } else {
                 if (!defaultVisibility) {
@@ -184,6 +185,7 @@ YUI.add('wegas-editable', function(Y) {
 
             //Y.log("CurrentMode: " + mode + "  -> " + JSON.stringify(entity));
 
+            //make sure there is a view, even an empty one
             cfg.view = cfg.view || {
                 type: undefined
             };

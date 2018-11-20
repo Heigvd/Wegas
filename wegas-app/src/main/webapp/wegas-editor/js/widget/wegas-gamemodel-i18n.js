@@ -183,7 +183,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     "<div class='form'>" +
                     "<div><label>Code:</label> <input size='5'" + (readonly ? " readonly" : "") + " class='language-code' value='" + code + "'></div>" +
                     "<div><label>Name:</label> <input " + (readonly ? "readonly" : "") + " class='language-name' value='" + lang + "'></div>" +
-                    (id ? "<div><label>Active:</label> <input type='checkbox' class='language-active' " + (active ? "checked" : "") + "></div>" :"") +
+                    (id ? "<div><label>Active:</label> <input type='checkbox' class='language-active' " + (active ? "checked" : "") + "></div>" : "") +
                     "<div class='tools'>" +
                     "  <span class='validate fa fa-save'></span>" +
                     "  <span class='cancel fa fa-times'></span>" +
@@ -283,6 +283,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             var data = e.target.get("data");
             Y.Wegas.Panel.confirm("Generate (and override) " + data.target + " translations from " + data.source + "?",
                 Y.bind(function() {
+                    this.showOverlay();
                     Y.Wegas.Facade.GameModel.sendRequest({
                         request: "/" + Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id") + "/I18n/InitLanguage/" + data.source + "/" + data.target,
                         cfg: {
@@ -290,11 +291,13 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                         },
                         on: {
                             success: Y.bind(function() {
+                                this.hideOverlay();
                                 Y.Wegas.Alerts.showNotification("OK", {
                                     timeout: 500
                                 });
                             }, this),
                             failure: Y.bind(function() {
+                                this.hideOverlay();
                                 Y.Wegas.Alerts.showNotification("Translation service error", {
                                     iconCss: 'fa fa-warning'
                                 });
@@ -648,7 +651,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             update.call(this, newTree, this.getLanguagesToEdit());
 
             if (outdated) {
-                this.showMessage("error", "Translations table is outdated, please relead");
+                if (!this.get("boundingBox").one(".wegas-panel")) {
+                    this.showMessage("error", "Translations table is outdated, please relead");
+                }
             }
         },
         genEditorMarkup: function(node, languages, level) {
@@ -986,6 +991,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             Y.Wegas.Panel.confirm("Generate (and override) " + data.target + " translation from " + data.source + "?",
                 Y.bind(function() {
                     this.transactions = this.transactios || {};
+                    this.showOverlay();
 
                     var tId = Y.Wegas.Facade.GameModel.sendRequest({
                         request: "/" + Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id") + "/I18n/Translate/" + data.source + "/" + data.target,
@@ -993,7 +999,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                             method: "PUT",
                             data: data.value,
                             headers: {
-                                "Content-Type": "text/plain"
+                                "Content-Type": "text/plain;charset=UTF-8"
                             }
                         },
                         on: {
@@ -1016,8 +1022,10 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                     });
                                 }
                                 delete this.transactions[tId];
+                                this.hideOverlay();
                             }, this),
                             failure: Y.bind(function() {
+                                this.hideOverlay();
                                 Y.Wegas.Alerts.showNotification("Translation Service Error", {
                                     iconCss: 'fa fa-warning',
                                     timeout: 2500
