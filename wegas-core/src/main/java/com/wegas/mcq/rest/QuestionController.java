@@ -10,8 +10,13 @@ package com.wegas.mcq.rest;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionInstance;
+import com.wegas.mcq.persistence.QuestionInstanceI;
 import com.wegas.mcq.persistence.Reply;
+import com.wegas.mcq.persistence.wh.WhQuestionInstance;
+import java.util.LinkedList;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
@@ -23,7 +28,6 @@ import javax.ws.rs.core.Response;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
-
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/QuestionDescriptor/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -50,7 +54,6 @@ public class QuestionController {
      * @throws com.wegas.core.exception.client.WegasScriptException
      */
     @POST
-
     @Path("/SelectAndValidateChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public Response selectChoice(
             @PathParam("playerId") Long playerId,
@@ -72,7 +75,6 @@ public class QuestionController {
      * @throws com.wegas.core.exception.client.WegasScriptException
      */
     @POST
-
     @Path("/ValidateQuestion/{questionInstanceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public Response ValidateQuestion(
             @PathParam("questionInstanceId") Long questionInstanceId,
@@ -94,7 +96,6 @@ public class QuestionController {
      *         the canceled one anymore)
      */
     @GET
-
     @Path("/CancelReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public QuestionInstance cancelReply(
             @PathParam("playerId") Long playerId,
@@ -114,7 +115,6 @@ public class QuestionController {
      * @return p
      */
     @GET
-
     @Path("/SelectChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [0-9]*}")
     public QuestionInstance selectChoice(
             @PathParam("playerId") Long playerId,
@@ -141,5 +141,14 @@ public class QuestionController {
 
         //SecurityUtils.getSubject().checkPermission("Game:Edit:g" + VariableInstanceFacade.findGame(entityId).getId());
         return questionDescriptorFacade.updateReply(replyId, reply);
+    }
+
+
+    @PUT
+    @Path("Read/{playerId : [1-9][0-9]*}/{descId: [1-9][0-9]*}")
+    public QuestionInstanceI readQuestion(
+            @PathParam("playerId") Long playerId,
+            @PathParam("descId") Long id) {
+        return questionDescriptorFacade.readQuestion(playerId, id);
     }
 }

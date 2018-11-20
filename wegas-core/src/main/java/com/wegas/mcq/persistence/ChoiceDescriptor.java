@@ -251,7 +251,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         QuestionInstance qi = this.getQuestion().getInstance(p);
 
         if (this.getQuestion().getCbx()) {
-            if (!qi.getValidated()) {
+            if (!qi.isValidated()) {
                 //Check box not yet validated -> no choices have been submited, nor ignorated
                 return false;
             } else {
@@ -311,7 +311,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      */
     public boolean hasNotBeenSelected(Player p) {
         if (this.getQuestion().getCbx()) {
-            if (!this.getQuestion().getInstance(p).getValidated()) {
+            if (!this.getQuestion().getInstance(p).isValidated()) {
                 //Check box not yet validated -> no chocie have been selected
                 return true;
             } else {
@@ -339,7 +339,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *         exist
      */
     public boolean hasBeenSelected(Player p) {
-        if (this.getQuestion().getCbx() && !this.getQuestion().getInstance(p).getValidated()) {
+        if (this.getQuestion().getCbx() && !this.getQuestion().getInstance(p).isValidated()) {
             return false;
         }
         for (Reply r : this.getInstance(p).getReplies()) {

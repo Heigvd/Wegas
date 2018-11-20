@@ -32,9 +32,13 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             var questionInstance = question.getInstance(),
                 label = (questionInstance.get("validated") ? "" : (question.get("maxReplies") === 1) ? Y.Wegas.I18n.t('mcq.unanswered') : Y.Wegas.I18n.t('mcq.notDone'));
 
-            return  '<div class="'
-                + (this.get("highlightUnanswered") && !questionInstance.get("validated") ? "unread" : "")
-                + '"><div class="index-label">'
+            var unreadLabel = "";
+
+            return  '<div class="index-mcq '
+                + (questionInstance.get("unread") ? "unread " : "")
+                + (this.get("highlightUnanswered") && !questionInstance.get("validated") ? "unanswered" : "") + '">'
+                + '<div class="index-unread">' + unreadLabel + '</div>'
+                + '<div class="index-label">'
                 + (I18n.t(question.get("label"))) + "</div>"
                 + '<div class="index-status">' + label + "</div>"
                 + '</div>';
@@ -86,10 +90,13 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 label = (question.get("maxReplies") === 1) ? Y.Wegas.I18n.t('mcq.unanswered') : Y.Wegas.I18n.t('mcq.notDone');
             }
 
-            return  '<div class="'
-                + (highlightUnanswered ? "unread" : "")
-                + '"><div class="index-label">'
-                + I18n.t(question.get("label")) + "</div>"
+            var unreadLabel = "";
+
+            return  '<div class="index-mcq '
+                + (questionInstance.get("unread") ? "unread " : "")
+                + (highlightUnanswered ? "unanswered " : "") + '">'
+                + '<div class="index-unread">' + unreadLabel + '</div>'
+                + '<div class="index-label">' + I18n.t(question.get("label")) + "</div>"
                 + '<div class="index-status">' + label + "</div>"
                 + '</div>';
         },

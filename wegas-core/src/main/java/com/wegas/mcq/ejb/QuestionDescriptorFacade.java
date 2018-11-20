@@ -30,6 +30,7 @@ import com.wegas.mcq.persistence.wh.WhQuestionInstance;
 import com.wegas.messaging.persistence.Message;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -161,6 +162,29 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         for (Reply r : repliesToRemove) {
             this.getEntityManager().remove(r);
         }
+    }
+
+    public QuestionInstanceI readQuestion(Long playerId, Long whId){
+        VariableDescriptor desc = variableDescriptorFacade.find(whId);
+        QuestionInstanceI instance = (QuestionInstanceI) variableDescriptorFacade.getInstance(desc, playerFacade.find(playerId));
+
+        instance.setUnread(false);
+
+        return instance;
+    }
+
+    public List<ChoiceInstance> readChoices(Long playerId, List<Long> choiceDescIds) {
+        List<ChoiceInstance> instances = new LinkedList<>();
+        Player player = playerFacade.find(playerId);
+
+        for (Long id : choiceDescIds) {
+            ChoiceDescriptor find = this.find(id);
+            ChoiceInstance ci = (ChoiceInstance) variableDescriptorFacade.getInstance(find, player);
+            ci.setUnread(Boolean.FALSE);
+            instances.add(ci);
+        }
+
+        return instances;
     }
 
     public void reviveChoiceInstance(ChoiceInstance choiceInstance) {
@@ -317,7 +341,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         QuestionDescriptor questionDescriptor = choice.getQuestion();
         QuestionInstance questionInstance = questionDescriptor.getInstance(player);
 
-        if (questionInstance.getValidated()) {
+        if (questionInstance.isValidated()) {
             throw WegasErrorMessage.error("This question has already been validated/discarded");
         }
 
@@ -577,7 +601,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
 
         QuestionInstance questionInstance = (QuestionInstance) variableDescriptorFacade.getInstance(questionDescriptor, player);
 
-        if (questionInstance.getValidated()) {
+        if (questionInstance.isValidated()) {
             throw WegasErrorMessage.error("This question has already been validated/discarded");
         }
 

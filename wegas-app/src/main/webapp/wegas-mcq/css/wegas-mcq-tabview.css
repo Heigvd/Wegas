@@ -16,8 +16,21 @@
 /**
  * Tabview List
  */
-.wegas-mcqtabview .unread {
+.wegas-mcqtabview .unanswered {
     font-weight:bold;
+}
+
+.wegas-mcqtabview .index-mcq.unread .index-unread:before {
+    content: "new";
+    transform: rotate(-45deg);
+    position: absolute;
+    font-size: 7pt;
+    left: -1px;
+    color: green;
+}
+
+.wegas-mcqtabview .index-mcq:not(.unread) .index-unread {
+    display: none;
 }
 
 .wegas-mcqtabview .horizontal-tabview .yui3-tabview-content.smallscreen.open .menutitle .tablabel > div,

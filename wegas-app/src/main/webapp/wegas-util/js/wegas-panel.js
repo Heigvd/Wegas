@@ -122,6 +122,9 @@ YUI.add('wegas-panel', function(Y) {
             },
             zIndex: {
                 value: 100000,
+                getter: function(val) {
+                    return val + Y.all("body > .wegas-panel").size();
+                },
                 "transient": true
             }
         },

@@ -24,7 +24,7 @@ import javax.persistence.Entity;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-public class QuestionInstance extends VariableInstance {
+public class QuestionInstance extends VariableInstance implements QuestionInstanceI {
 
     private static final long serialVersionUID = 1L;
     //private static final Logger logger = LoggerFactory.getLogger(QuestionInstance.class);
@@ -51,6 +51,7 @@ public class QuestionInstance extends VariableInstance {
     /**
      * @return the active
      */
+    @Override
     public Boolean getActive() {
         return active;
     }
@@ -58,6 +59,7 @@ public class QuestionInstance extends VariableInstance {
     /**
      * @param active the active to set
      */
+    @Override
     public void setActive(Boolean active) {
         this.active = active;
     }
@@ -102,13 +104,15 @@ public class QuestionInstance extends VariableInstance {
     /**
      * @return the unread
      */
-    public Boolean getUnread() {
+    @Override
+    public Boolean isUnread() {
         return this.unread;
     }
 
     /**
      * @param unread the unread to set
      */
+    @Override
     public void setUnread(Boolean unread) {
         this.unread = unread;
     }
@@ -138,6 +142,7 @@ public class QuestionInstance extends VariableInstance {
     /**
      * @param validated the validation status to set
      */
+    @Override
     public void setValidated(Boolean validated) {
         this.validated = validated;
     }
@@ -145,7 +150,8 @@ public class QuestionInstance extends VariableInstance {
     /**
      * @return The validation status of the question
      */
-    public Boolean getValidated() {
+    @Override
+    public Boolean isValidated() {
         return this.validated;
     }
 
@@ -163,7 +169,7 @@ public class QuestionInstance extends VariableInstance {
         QuestionDescriptor qd = (QuestionDescriptor) this.findDescriptor();
         Integer maxReplies = qd.getMaxReplies();
         // the question must be selectable
-        boolean selectable = (qd.getCbx() && !this.getValidated()) // a not yet validated cbx question
+        boolean selectable = (qd.getCbx() && !this.isValidated()) // a not yet validated cbx question
                 || maxReplies == null // OR number of answers is unlimited
                 || this.getReplies().size() < maxReplies; // OR maximum number not reached
         if (selectable) {

@@ -47,6 +47,11 @@ YUI.add('wegas-app', function(Y) {
             this.publish("render");
 
             /**
+             * Fired just before resetting the scenario
+             */
+            this.publish("beforeReset");
+
+            /**
              * @name render after render event
              * @event
              */

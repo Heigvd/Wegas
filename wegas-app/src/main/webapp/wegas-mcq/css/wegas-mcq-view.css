@@ -25,9 +25,12 @@
 
 .wegas-whview__answers .wegas-input-label,
 .wegas-mcqview .wegas-mcqchoice .mcqchoice__title {
-    line-height: 35px;
     background: #d8d9dd;
     font-weight: 600;
+    min-height:35px;
+    box-sizing: border-box;
+    padding-top: 8px;
+    padding-bottom: 8px;
 }
 
 .wegas-mcqview .wegas-mcqview-content .mcq-view__choices {
@@ -51,7 +54,6 @@
 .wegas-mcqview .wegas-mcqchoice .mcqchoice__description {
     padding-left: 16px;
     padding-right: 20px;
-    min-height: 35px;
 }
 
 .wegas-whview,
@@ -310,7 +312,7 @@
     opacity: 1;
 }
 
-.wegas-mcqview .locked.answerable:not(.cbx) .selectable .mcqchoice__submit,
+.wegas-mcqview .locked.answerable:not(.cbx) .selectable .mcqchoice__submit span,
 .wegas-mcqview .locked.answerable.cbx .mcq-view__submit,
 .wegas-mcqview .locked.answerable.cbx:not(.checkbox) .wegas-mcqchoice:not(.hasReplies) .mcqchoice__submit,
 .wegas-mcqview .locked.answerable.cbx.checkbox:not(.maximumReached) .mcqchoice__submit,
