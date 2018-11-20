@@ -598,7 +598,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                         trSpan.toggleClass("outdated", newStatus);
                     }
                 } else {
-                    outaded = true;
+                    outdated = true;
                 }
 
             }
@@ -1209,7 +1209,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 "@class": "TranslationUpdate",
                 trId: cfg.trId,
                 code: cfg.code,
-                translation: translation
+                value: translation
             };
         },
         saveInScriptTranslation: function(cfg, translation, mode) {
