@@ -5,6 +5,11 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+
+.yui3-skin-sam .yui3-widget-mask {
+    z-index :99999 ! important; /* force zindex !!!*/
+}
+
 .wegas-panel {
     position: absolute;
     min-width: 300px;
