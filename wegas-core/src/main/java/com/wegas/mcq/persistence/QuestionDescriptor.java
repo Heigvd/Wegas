@@ -169,7 +169,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * @return
      */
     public boolean getValidated(Player p) {
-        return this.getInstance(p).getValidated();
+        return this.getInstance(p).isValidated();
     }
 
     /**
@@ -287,7 +287,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     public boolean isReplied(Player p) {
         QuestionInstance instance = this.getInstance(p);
         if (this.getCbx()) {
-            return instance.getValidated();
+            return instance.isValidated();
         } else {
             return !instance.getReplies(p).isEmpty();
         }
@@ -343,9 +343,9 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     public int getUnreadCount(Player player) {
         QuestionInstance instance = this.getInstance(player);
         if (this.getCbx()) {
-            return instance.getActive() && !instance.getValidated() ? 1 : 0;
+            return instance.getActive() && !instance.isValidated() ? 1 : 0;
         } else {
-            return instance.getActive() && !instance.getValidated() && instance.getReplies(player).isEmpty() ? 1 : 0;
+            return instance.getActive() && !instance.isValidated() && instance.getReplies(player).isEmpty() ? 1 : 0;
         }
     }
 }

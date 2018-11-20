@@ -296,6 +296,19 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 }
             }
             return ret;
+        },
+        isUnread: function() {
+            var choices, i, ci,
+                qDesc;
+            qDesc = this.getDescriptor();
+            choices = qDesc.get("items");
+            for (i in choices) {
+                ci = choices[i].getInstance();
+                if (ci.get("active") && ci.get("unread")) {
+                    return true;
+                }
+            }
+            return false;
         }
     }, {
         ATTRS: {
@@ -1133,6 +1146,13 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         view: {
                             label: 'Active from start'
                         }
+                    },
+                    unread: {
+                        type: BOOLEAN,
+                        value: true,
+                        view: {
+                            type: HIDDEN
+                        }
                     }
                 },
                 index: 3
@@ -1244,6 +1264,10 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             validated: {
                 value: false,
+                type: BOOLEAN
+            },
+            unread: {
+                value: true,
                 type: BOOLEAN
             }
         }

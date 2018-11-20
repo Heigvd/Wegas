@@ -155,6 +155,17 @@ YUI.add('wegas-mcq-view', function(Y) {
                 this._buttonContainer.add(this._submitButton);
                 this.mainList.add(this._buttonContainer);
             }
+
+
+            if (whQuestionInstance.get("unread")) {
+                Y.Wegas.Facade.Variable.sendRequest({
+                    request: "/QuestionDescriptor/Read/" +
+                        Wegas.Facade.Game.get('currentPlayerId') + "/" + whQuestion.get("id"),
+                    cfg: {
+                        method: "PUT"
+                    }
+                });
+            }
         },
         bindUpdatedInstance: function() {
             if (this.handlers.onInstanceUpdate) {
@@ -168,7 +179,7 @@ YUI.add('wegas-mcq-view', function(Y) {
         bindUI: function() {
             this.bindUpdatedInstance();
             this.after("variableChange", this.bindUpdatedInstance, this);
-            
+
             this.handlers.onDescriptorUpdate = Y.Wegas.Facade.Variable.after("updatedDescriptor", function(e) {
                 var question = this.get("variable.evaluated");
                 if (question && question.get("id") === e.entity.get("id")) {
@@ -731,6 +742,17 @@ YUI.add('wegas-mcq-view', function(Y) {
                             this.choiceList.add(this.choices[choice.get("id")]);
                         }
                     }
+                }
+
+
+                if (questionInstance.get("unread")) {
+                    Y.Wegas.Facade.Variable.sendRequest({
+                        request: "/QuestionDescriptor/Read/" +
+                            Wegas.Facade.Game.get('currentPlayerId') + "/" + questionDescriptor.get("id"),
+                        cfg: {
+                            method: "PUT"
+                        }
+                    });
                 }
 
                 if ((!cbx || questionInstance.get("validated")) && replies.length) {
