@@ -603,7 +603,7 @@ YUI.add('wegas-proggame-display', function(Y) {
     });
     /**
      * TintSprite component. Should be included before the actual sprite.
-     * Browser should support Canvas.
+     * Browser must support Canvas.
      * 
      * Should extract that function in an external file.
      */
@@ -611,10 +611,11 @@ YUI.add('wegas-proggame-display', function(Y) {
     Crafty.c("TintSprite", {
         _color: "rgba(255,255,255,1)",
         init: function() {
-            this.bind("Draw", this.draw)
+            this.requires("Sprite");
+            this.bind("Draw", this.__tint)
                 .bind("RemoveComponent", function(e) {
                     if (e === "TintSprite") {
-                        this.unbind("Draw", this.draw);
+                        this.unbind("Draw", this.__tint);
                     }
                 });
         },
@@ -626,10 +627,10 @@ YUI.add('wegas-proggame-display', function(Y) {
             }
             this.__newColor = true;
             this._color = "rgba(" + col._red + "," + col._green + "," + col._blue + "," + opacity + ")";
-            this.draw();
+            this.__tint();
             return this;
         },
-        draw: function() {
+        __tint: function() {
             if (!this.__newColor) {
                 return;
             }
@@ -648,9 +649,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 ctx.save();
                 ctx.globalCompositeOperation = 'source-in';
                 ctx.fillStyle = this._color;
-                ctx.beginPath();
                 ctx.fillRect(0, 0, this.__oldImg.width, this.__oldImg.height);
-                ctx.closePath();
                 ctx.restore();
                 img.src = tmp_canvas.toDataURL();
                 this.img = img;
