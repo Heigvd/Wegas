@@ -96,7 +96,11 @@ YUI.add('wegas-layout-resizable', function(Y) {
             bindUI: function() {
                 Y.on("windowresize", Y.bind(this.syncUI, this));                    // Sync the layout whenever the
                 // windows is resized
-                Y.on('domready', this.syncUI, this);
+                Y.once('domready', this.selectPreview, this);
+            },
+            selectPreview:function(){
+                this.syncUI();
+                Y.Wegas.TabView.getTab(Y.Wegas.TabView.getPreviewTabLabel()).set("selected", 2);
             },
             /**
              * @function
@@ -151,7 +155,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                 // For the initial view, hide the + menu of the Attributes tabView
                 TabView.showPlusMenu(TabView.getOppositeTabView(preferredEditorTabView));
                 editorTab.set("selected", 2);
-                TabView.getTab(TabView.getPreviewTabLabel()).set("selected", 2);
+                //TabView.getTab(TabView.getPreviewTabLabel()).set("selected", 2);
             },
             // Return as an object a safe set of "left" attributes for the three columns
             initializeInitLeft: function() {
