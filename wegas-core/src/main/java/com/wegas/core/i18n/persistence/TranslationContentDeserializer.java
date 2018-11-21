@@ -68,47 +68,50 @@ public class TranslationContentDeserializer extends StdDeserializer<Translatable
             while ((fieldName = p.nextFieldName()) != null) {
                 JsonToken nextToken = p.nextToken(); //consume value
                 //consume value
-                switch (fieldName) {
+                if (nextToken != JsonToken.VALUE_NULL) {
+                    switch (fieldName) {
 
-                    case "id":
-                        Long id = p.getLongValue();
-                        trc.setId(id);
-                        break;
-                    case "refId":
-                        String refId = p.getValueAsString();
-                        trc.forceRefId(refId);
-                        break;
-                    case "version":
-                        Long version = p.getValueAsLong();
-                        trc.setVersion(version);
-                        break;
-                    case "translations":
-                        String lang;
-                        while ((lang = p.nextFieldName()) != null) {
-                            JsonToken nextValue = p.nextValue();
-                            if (nextValue == JsonToken.VALUE_STRING) {
-                                String translation = p.getValueAsString();
-                                trc.updateTranslation(lang, translation);
-                            } else if (nextValue == JsonToken.START_OBJECT) {
+                        case "id":
+                            Long id = p.getLongValue();
+                            trc.setId(id);
+                            break;
+                        case "refId":
+                            String refId = p.getValueAsString();
 
-                                String trFieldName;
-                                String translation = "";
-                                String status = "";
-                                while ((trFieldName = p.nextFieldName()) != null) {
-                                    p.nextValue(); // consume value
-                                    if (trFieldName.equals("translation")) {
-                                        translation = p.getValueAsString();
-                                    } else if (trFieldName.equals("status")) {
-                                        status = p.getValueAsString();
+                            trc.forceRefId(refId);
+                            break;
+                        case "version":
+                            Long version = p.getValueAsLong();
+                            trc.setVersion(version);
+                            break;
+                        case "translations":
+                            String lang;
+                            while ((lang = p.nextFieldName()) != null) {
+                                JsonToken nextValue = p.nextValue();
+                                if (nextValue == JsonToken.VALUE_STRING) {
+                                    String translation = p.getValueAsString();
+                                    trc.updateTranslation(lang, translation);
+                                } else if (nextValue == JsonToken.START_OBJECT) {
+
+                                    String trFieldName;
+                                    String translation = "";
+                                    String status = "";
+                                    while ((trFieldName = p.nextFieldName()) != null) {
+                                        p.nextValue(); // consume value
+                                        if (trFieldName.equals("translation")) {
+                                            translation = p.getValueAsString();
+                                        } else if (trFieldName.equals("status")) {
+                                            status = p.getValueAsString();
+                                        }
                                     }
+                                    trc.updateTranslation(lang, translation, status);
                                 }
-                                trc.updateTranslation(lang, translation, status);
                             }
-                        }
-                        break;
-                    default:
-                        logger.trace("Skip: {}", fieldName);
-                        break;
+                            break;
+                        default:
+                            logger.trace("Skip: {}", fieldName);
+                            break;
+                    }
                 }
             }
 
