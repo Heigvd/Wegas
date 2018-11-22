@@ -1,0 +1,1019 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
+
+
+/**
+ * Prog Game Styles
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ */
+
+
+/* Fonts */
+
+@font-face {
+    font-family: "KG Ways to Say Goodbye";
+    font-style: normal;
+    font-weight: normal;
+    src: url("../../wegas-pact/images/KGWaystoSayGoodbye.ttf");
+}
+
+@font-face {
+    font-family: "Ravie";
+    font-style: normal;
+    font-weight: bold;
+    src: url("../../wegas-pact/images/Ravie.ttf");
+}
+
+
+/* Layout styles */
+
+.cl {
+    clear: both;
+}
+
+code {
+    margin: 0.5em 2em;
+    border: 1px solid white;
+    padding: 0.6em 2em;
+    display: block;
+}
+
+
+/*html, .editor-preview > .wegas-pageloader-content > .wegas-widget > div*/
+
+.wegas-playmode, .editor-preview {
+    background: url(../../wegas-pact/images/proggame-background.jpg) top left no-repeat;
+}
+
+.wegas-playerview {
+    font-family: "Verdana", "Arial", Sans-Serif;
+    font-size: 9pt;
+}
+
+
+/* The game is aligned on the left */
+
+.wegas-playerview > .wegas-pageloader-content > div {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+
+/* Menu styles */
+
+.proggame-menu {
+    background: url(../../wegas-pact/images/menuBg.png);
+    width: 633px;
+    height: 70px;
+}
+
+.proggame-money, .proggame-button-levels, .proggame-button-levels:hover, .proggame-button-shop, .proggame-button-shop:hover, .proggame-button-courses, .proggame-button-courses:hover, .proggame-button-account, .proggame-button-account:hover {
+    background: url(../../wegas-pact/images/proggame-icons.png) no-repeat 7px 0;
+    padding-left: 31px;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 0px 9px 0 39px;
+    border-radius: 12px;
+    line-height: 2.2em;
+    height: 32px;
+}
+
+.yui3-skin-sam .yui3-button-selected {
+    box-shadow: 0px 0px 3px black inset, 0px 0px 3px black;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+
+/*.progggame-button-map{
+    background: url(../../wegas-pact/images/src/iconMap.png); 
+    background-size: 36px 26px;
+    background-repeat: no-repeat;
+    padding-left: 31px;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 0px 9px 0 39px;
+    border-radius: 12px;
+    line-height: 2.2em;
+    height: 32px;
+}
+
+.proggame-button-map:hover {
+    box-shadow: 0px 0px 3px black inset,0px 0px 3px black;
+}*/
+
+.proggame-button-levels:hover, .proggame-button-shop:hover, .proggame-button-courses:hover, .proggame-button-account:hover {
+    box-shadow: 0px 0px 3px black inset, 0px 0px 3px black;
+}
+
+.proggame-money {
+    background-position: 7px -48px;
+}
+
+.proggame-button-levels, .proggame-button-levels:hover {
+    background-position: 7px -190px;
+}
+
+.proggame-button-shop, .proggame-button-shop:hover {
+    background-position: 7px -99px;
+}
+
+.proggame-button-courses, .proggame-button-courses:hover {
+    background-position: 7px -143px;
+}
+
+.wegas-unreadcount .value {
+    background-color: #FF9514;
+    /*        #ED2A07;*/
+    box-shadow: none;
+    margin: 0 0px 0 2px;
+    padding: 2px 5px 1px 5px;
+    font-size: 0.8em;
+}
+
+
+/* Inbox styles */
+
+.yui3-skin-sam .wegas-inbox .horizontal-tabview {
+    /*margin-left: 15px;*/
+    /* height: 654px; */
+    /* overflow: auto; */
+    /*width: 906px;*/
+    /*margin: 0;*/
+    height: 100%;
+}
+
+.yui3-skin-sam .wegas-inbox .horizontal-tabview .yui3-tabview-content {
+    height: 100%;
+}
+
+.yui3-skin-sam .wegas-inbox .horizontal-tabview .yui3-tabview-panel {
+    overflow: auto;
+}
+
+.yui3-skin-sam .wegas-inbox .yui3-tab {
+    border: 7px solid #FFFFFF;
+    box-shadow: none;
+    background: none;
+    -moz-border-image: url(../../wegas-pact/images/dialog.png) 7 stretch;
+    -webkit-border-image: url(../../wegas-pact/images/dialog.png) 7 stretch;
+    -o-border-image: url(../../wegas-pact/images/dialog.png) 7 stretch;
+    border-image: url(../../wegas-pact/images/dialog.png) 7 stretch;
+    opacity: 0.8;
+    width: 324px;
+}
+
+.yui3-skin-sam .wegas-inbox .yui3-tab,
+.yui3-skin-sam .wegas-inbox .yui3-tab:focus,
+.yui3-skin-sam .wegas-inbox .yui3-tab:hover,
+.yui3-skin-sam .wegas-inbox .yui3-tab-selected {
+    background: rgba(255, 255, 255, 0.2) !important;
+    opacity: 1;
+    color: black;
+}
+
+.yui3-skin-sam .horizontal-tabview .yui3-tab-panel,
+.yui3-skin-sam .wegas-inbox .wegas-message-body,
+.yui3-skin-sam .wegas-inbox .wegas-message-attachments,
+.yui3-skin-sam .wegas-inbox .wegas-message-header {
+    background: transparent;
+    border: none;
+    text-align: justify;
+}
+
+.yui3-skin-sam .wegas-inbox .wegas-message-header {
+    font-weight: bold;
+}
+
+.wegas-inbox .yui3-tab .yui3-tab-label,
+.wegas-inbox .yui3-tab .yui3-tab-label:hover {
+    color: white !important;
+    background: none !important;
+    box-shadow: none !important;
+}
+
+.wegas-inbox .yui3-tab-selected .yui3-tab-label,
+.wegas-inbox .yui3-tab-selected .yui3-tab-label:focus, 
+.wegas-inbox .yui3-tab-selected .yui3-tab-label:hover {
+    color: white !important;
+    background: none;
+    font-weight: bold;
+}
+
+
+/* Level selection styles */
+
+.yui3-skin-sam .proggame-levelselection-button, .yui3-skin-sam .proggame-button-stage, .yui3-skin-sam .proggame-button {
+    font-family: "KG Ways to Say Goodbye";
+    background: transparent;
+    text-transform: uppercase;
+    color: white;
+    font-size: 1.9em;
+    padding: 0;
+    padding-top: 4px;
+    line-height: 0.9;
+    border: 7px solid #FFFFFF;
+    box-shadow: none;
+    background: none;
+    -moz-border-image: url(../../wegas-pact/images/dialog.png) 7 stretch;
+    -webkit-border-image: url(../../wegas-pact/images/dialog.png) 7 stretch;
+    -o-border-image: url(../../wegas-pact/images/dialog.png) 7 stretch;
+    border-image: url(../../wegas-pact/images/dialog.png) 7 stretch;
+    opacity: 0.8;
+}
+
+.yui3-skin-sam .proggame-levelselection-button {
+    font-size: 1.2em !important;
+}
+
+.yui3-skin-sam .levelselection-hidden {
+    display: none;
+}
+
+.yui3-skin-sam .proggame-levelselection-button:hover, .yui3-skin-sam .proggame-button:hover, .yui3-skin-sam .proggame-button-stage:hover {
+    opacity: 1;
+}
+
+.proggame-levelselection-button.yui3-button-selected {
+    opacity: 1;
+    font-weight: bold;
+}
+
+.yui3-skin-sam .proggame-button.yui3-button-disabled, .yui3-skin-sam .proggame-levelselection-button.yui3-button-disabled, .yui3-skin-sam .proggame-button-stage.yui3-button-disabled {
+    opacity: 0.3;
+}
+
+.yui3-skin-sam .proggame-levelselection-button {
+    text-align: left;
+    font-family: "Verdana", "Arial", Sans-Serif;
+    font-size: 1em;
+    text-transform: none;
+    padding: 0;
+}
+
+.yui3-skin-sam .proggame-button-stage {
+    background: url(../../wegas-pact/images/proggame-button-stage.png) no-repeat;
+    border: none;
+    padding: 0;
+    line-height: 0.7em;
+}
+
+.yui3-skin-sam .proggame-button-stagefinished {
+    background-position: -1px -300px;
+}
+
+.yui3-skin-sam .proggame-button-stage.yui3-button-disabled {
+    background-position: 0 0;
+}
+
+
+/* Levels style */
+
+.pact-level {
+    background: url(../../wegas-pact/images/blackboardEntier.png) no-repeat;
+    height: 708px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.pact-level-hidden {
+    visibility: hidden;
+}
+
+.proggame-title {
+    display: inline-block;
+}
+
+.proggame-title h1, .proggame-title h2 {
+    text-align: left;
+    text-shadow: -1px -1px 1px black, 1px 1px 2px white, -2px -2px 2px white;
+    text-transform: uppercase;
+    font-family: "KG Ways to Say Goodbye";
+    font-size: 30px;
+    line-height: 22px;
+    padding-left: 35px;
+    letter-spacing: 3px;
+    cursor: default;
+}
+
+.proggame-title h1 {
+    padding-top: 36px;
+}
+
+.proggame-title h2 {
+    font-size: 20px;
+    letter-spacing: 2px;
+}
+
+.proggame-title .proggame-help {
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    background: url(../../wegas-pact/images/proggame-button-info.png);
+    cursor: pointer;
+}
+
+.proggame-title .proggame-help {
+    left: 181px;
+    top: 28px;
+}
+
+.proggame-title .proggame-help:hover {
+    background-position: 0 -32px;
+}
+
+.pact-level .yui3-button {
+    background: none;
+    color: white;
+    font-style: italic;
+}
+
+
+/* Level: Run code buttons */
+
+.proggame-buttons {
+    position: relative;
+    display: inline-block;
+    top: 105px;
+    left: 636px;
+    z-index: 10;
+}
+
+.proggame-buttons .yui3-button {
+    height: 44px;
+    width: 60px;
+    background: url(../../wegas-pact/images/proggame-runbuttonback.png) no-repeat;
+}
+
+.proggame-buttons .yui3-button span {
+    display: block;
+    height: 31px;
+}
+
+.proggame-play {
+    background: url(../../wegas-pact/images/proggame-play.png) no-repeat -3px -4px;
+}
+
+.proggame-playpause {
+    background: url(../../wegas-pact/images/proggame-playpause.png) no-repeat -4px -4px;
+}
+
+.proggame-stop {
+    background: url(../../wegas-pact/images/proggame-stop.png) no-repeat -2px -1px;
+    height: 29px;
+}
+
+.proggame-next {
+    background: url(../../wegas-pact/images/proggame-next.png) no-repeat 0px -4px;
+    height: 29px;
+}
+
+
+/* Level: TabView styles */
+
+.pact-level .yui3-treenode-content-label,
+.pact-level .yui3-treeleaf-content-label,
+.pact-level .yui3-tabview, 
+.pact-level .yui3-tabview a {
+    color: white;
+}
+
+.pact-level .yui3-tabview-panel {
+    overflow: auto;
+    background: none;
+    border: none;
+    height: 100%
+}
+
+.pact-level .yui3-tab-label {
+    text-transform: uppercase;
+    font-family: "KG Ways to Say Goodbye";
+    font-weight: bold;
+    background: transparent;
+    border-radius: 10px;
+    border: 7px solid #FFFFFF;
+    box-shadow: none;
+    -moz-border-image: url(../../wegas-pact/images/dialog.png) 7 stretch;
+    -webkit-border-image: url(../../wegas-pact/images/dialog.png) 7 stretch;
+    -o-border-image: url(../../wegas-pact/images/dialog.png) 7 stretch;
+    border-image: url(../../wegas-pact/images/dialog.png) 7 stretch;
+    font-size: 20px;
+    padding: 3px 0 0;
+    line-height: 10px;
+    opacity: 0.5;
+    margin: 0;
+    padding: 3px 0 0 0;
+    width: 60px;
+}
+
+.pact-level .yui3-tab-disabled {
+    display: none;
+}
+
+.pact-level .yui3-tabview-list {
+    border: none;
+    margin-bottom: 5px;
+}
+
+.pact-level .yui3-tab-selected .yui3-tab-label, .pact-level .yui3-tab-selected .yui3-tab-label:focus, .pact-level .yui3-tab-selected .yui3-tab-label:hover {
+    padding: 3px 0 0;
+    opacity: 1;
+    color: white;
+    background: none;
+    cursor: default;
+}
+
+.pact-level .yui3-tab-label:hover, .pact-level .yui3-tab-label:focus {
+    opacity: 0.8;
+    background: none;
+}
+
+.pact-level .yui3-tabview-removeable .yui3-tab-label, .pact-level .yui3-tabview-removeable .yui3-tab-label:focus, .pact-level .yui3-tabview-removeable .yui3-tab-label:hover, .pact-level .yui3-tabview-removeable .yui3-tab-label {
+    padding-right: 13px;
+}
+
+.pact-level .yui3-tab-remove {
+    font-size: 9px;
+    right: 6px;
+    top: 6px;
+}
+
+
+/* Left tab */
+
+.proggame-lefttab {
+    position: absolute;
+    top: 99px;
+    left: 46px;
+    width: 180px;
+}
+
+.proggame-api {
+    margin-top: 15px;
+}
+
+.proggame-api .selected>div>.yui3-treeleaf-content-header, .proggame-api .selected>.yui3-treenode-content-header {
+    background: none;
+    border: none;
+    font-weight: initial;
+}
+
+.proggame-api .yui3-treenode-content-header:hover, .proggame-api .yui3-treeleaf-content-header:hover {
+    background: none;
+    cursor: pointer;
+}
+
+
+/*.proggame-api .yui3-treenode-content-header:hover span,*/
+
+.proggame-api .yui3-treeleaf-content-header:hover span {
+    text-decoration: underline;
+}
+
+.pact-scriptfiles-content button {
+    margin-bottom: 5px;
+}
+
+.fileName p:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+
+/* Level: Debugger */
+
+.proggame-debugger {
+    position: relative;
+    left: 673px;
+    top: -25px;
+    width: 200px;
+    height: 100%;
+}
+
+.proggame-debugger .yui3-tabview-content {
+    height: 100%;
+}
+
+.proggame-debugger .yui3-tabview-panel {
+    min-height: 168px;
+    height: 100%;
+    width: 213px;
+}
+
+.proggame-debugger .selected>div>.yui3-treeleaf-content-header, .proggame-debugger .selected>.yui3-treenode-content-header {
+    background: rgba(100, 100, 100, 0.2);
+    border-radius: 5px;
+    font-weight: initial;
+}
+
+.proggame-debugger .yui3-treenode-content-header:hover, .proggame-debugger .yui3-treeleaf-content-header:hover {
+    background: none;
+}
+
+
+/* Override wegas treeview styles */
+
+.wegas-playerview .yui3-treeleaf-content-header, .wegas-playerview .yui3-treenode-content-header {
+    padding: 0px 0 3px;
+}
+
+.wegas-playerview .yui3-treenode-content {
+    margin-left: 8px;
+}
+
+.wegas-playerview .yui3-treenode-content-icon, .wegas-playerview .yui3-treeleaf-content-icon {
+    display: none;
+}
+
+.wegas-playerview .yui3-treeview-content {
+    padding: 0;
+}
+
+
+/* Level: crafty styles */
+
+.proggame-view {
+    width: 910px;
+    position: absolute;
+    left: 262px;
+    top: 34px;
+}
+
+.proggame-view .ui {}
+
+
+/*.proggame-view .terrain {
+    margin-left: 352px;
+    margin-top: 129px;*/
+
+
+/*}*/
+
+#cr-stage {
+    overflow: visible !important;
+    /* Allow overflow, for text (say). Works only for DOM elements */
+}
+
+#cr-stage > div {
+    width: 400px;
+}
+
+.movable {
+    position: absolute;
+    top: 360px;
+    z-index: 30;
+    background-color: #2A2A2A;
+    /*    min-height: 360px;*/
+    /*    background: url(../../wegas-pact/images/blackboard_Game.png);*/
+}
+
+.movable2 {
+    position: relative;
+    height: 100%;
+}
+
+.barre {
+    background: url(../../wegas-pact/images/ligneBoisFinal.png);
+    height: 22px;
+    width: 900px;
+}
+
+
+/* Level: Code */
+
+.code {
+    position: absolute;
+    top: 30px;
+    bottom: -18px;
+    left: 7px;
+    font-size: 5pt;
+    color: #fefefe;
+    right: 277px;
+    width: 655px;
+    overflow: hidden;
+}
+
+.pact-level .yui3-tabview {
+    height: 100%;
+}
+
+.code .yui3-tabview-content {
+    height: 100%;
+    position: relative;
+}
+
+.pact-level .code .yui3-tabview-panel {
+    position: absolute;
+    top: 32px;
+    bottom: 0px;
+    width: 653px;
+    overflow: hidden;
+}
+
+.code .yui3-tab-panel {
+    height: inherit;
+}
+
+.code .yui3-tabview {
+    height: 100%;
+}
+
+.code .inputEx-fieldWrapper {
+    height: inherit;
+}
+
+.code .inputEx-Field {
+    height: inherit;
+}
+
+.pact-level-content .inputEx-Field .ace_editor {
+    height: 100%;
+}
+
+.code .inputEx-Field {
+    float: none;
+    /* Prevent inputex default to preserve width*/
+    /*margin-top: 5px;*/
+}
+
+.pact-level-content .code textarea {
+    width: 632px;
+    height: 156px;
+    background-color: transparent;
+    color: white;
+    font-family: Myriad Pro;
+    font-size: 12pt;
+    margin-top: 6px;
+    border: 0;
+}
+
+.pact-level-content .code textarea:focus {
+    outline-color: transparent;
+}
+
+.pact-level .script-error{
+    background: red;
+    border-radius: 2px;
+    border: 1px solid white;
+    font-family: monospace;
+    padding: 5px;
+}
+
+/* Ace styles */
+
+.ace-twilight .ace_gutter {
+    height: 100% !important;
+}
+
+.ace_scroller {
+    height: 100% !important;
+}
+
+.ace_gutter-layer {
+    height: 100% !important;
+}
+
+.ace_content {
+    height: 100% !important;
+}
+
+.ace_text-input {
+    height: 100% !important;
+}
+
+.ace_gutter-cell.ace_breakpoint {
+    /*border-radius: 20px 0px 0px 20px;*/
+    /*box-shadow: 0px 0px 1px 1px red inset;*/
+    background: url(../../wegas-pact/images/proggame-breakpoint.png) no-repeat 4px 2px !important;
+}
+
+.ace_gutter-cell.proggame-currentgutterline {
+    background: green;
+}
+
+.ace_gutter-cell.ace_breakpoint.proggame-currentgutterline {
+    background: green url(../../wegas-pact/images/proggame-breakpoint.png) no-repeat 4px 2px !important;
+}
+
+.proggame-currentline {
+    background: green;
+    position: absolute;
+    z-index: 2;
+}
+
+
+/* Level: Popup overlay stayles */
+
+.proggame-panel {
+    max-width: none;
+    max-height: none;
+}
+
+.proggame-panel .wegas-panel-content {
+    background: url(../../wegas-pact/images/blackboard1.png);
+    /*    width: 800px;*/
+    border: none;
+    box-shadow: none;
+    color: white;
+    margin: 0;
+}
+
+.proggame-panel .yui3-widget-bd {
+    padding: 70px 100px;
+    text-align: center;
+    font-size: 1.4em;
+    line-height: 1.3em;
+    margin: 25px 20px 0 0;
+    height: 495px !important;
+}
+
+.proggame-panel button {
+    margin-top: 70px;
+    padding: 0.3em 1.1em 0.1em !important;
+    font-size: 2.3em !important;
+    line-height: 1.1em;
+}
+
+.yui3-skin-sam .yui3-widget-mask {
+    /* background: transparent; */
+    opacity: 0;
+}
+
+
+/* Editor: Inputex map field */
+
+.wegas-inputex-proggamemap .inputEx-List-link {
+    display: none;
+}
+
+.wegas-inputex-proggamemap .inputEx-ListField-childContainer .inputEx-ListField-childContainer {
+    height: 32px;
+}
+
+.wegas-inputex-proggamemap .inputEx-ListField-childContainer .inputEx-ListField-childContainer >div {
+    display: inline-block;
+}
+
+.wegas-inputex-proggamemap .inputEx-ListField {
+    padding: 0;
+}
+
+.add-col, .add-row {
+    cursor: pointer;
+}
+
+.add-col img {
+    background: transparent url(../../lib/inputex/src/inputex-list/assets/skins/sam/add.png) no-repeat scroll 0%;
+    width: 16px;
+    height: 16px;
+}
+
+
+/* Editor: Inputex tile field */
+
+.inputex-proggametile {
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    box-shadow: 0px 0px 1px white;
+    background: url(../../wegas-pact/images/proggame-sprite-tiles.png) no-repeat rgb(10, 10, 10);
+}
+
+.inputex-proggametile:hover {
+    box-shadow: 1px 1px 1px black, -1px -1px 1px black;
+}
+
+.inputex-proggametile:hover > div {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 1px 1px 1px black, -1px -1px 1px black;
+}
+
+.yui3-proggame-alignable {
+    position: absolute;
+    border: 1px solid lightgray;
+    box-shadow: 2px 2px 2px darkgray;
+    background: white;
+}
+
+.yui3-proggame-alignable-hidden {
+    visibility: hidden;
+}
+
+.yui3-proggame-alignable-content {
+    max-height: 512px;
+    overflow: auto;
+}
+
+.yui3-proggame-alignable .table {
+    height: 64px;
+    overflow: hidden;
+    background: url(../../wegas-pact/images/proggame-sprite-tiles.png) no-repeat rgb(10, 10, 10);
+}
+
+.yui3-proggame-alignable .table > div {
+    height: 32px;
+    white-space: nowrap;
+}
+
+.yui3-proggame-alignable .table > div > div {
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.yui3-proggame-alignable .table > div > div:hover {
+    box-shadow: 1px 1px 1px black, -1px -1px 1px black;
+}
+
+
+/* Level end screen */
+
+.pact-level .proggame-levelend {
+    background: url(../../wegas-pact/images/proggame-levelend-win.png) 30px 0;
+    width: 833px;
+    height: 168px;
+    /*    width: 833px;
+        height: 168px;*/
+    position: absolute;
+    top: -45px;
+}
+
+.pact-level .proggame-levelend-star {
+    background: url(../../wegas-pact/images/proggame-levelend-star.png);
+    width: 49px;
+    height: 49px;
+    top: 150px;
+    position: absolute;
+}
+
+.pact-level .proggame-levelend-staractive {
+    background-position: 0 -49px;
+}
+
+.proggame-levelend-star-1 {
+    top: 182px;
+    left: 354px;
+}
+
+.proggame-levelend-star-2 {
+    top: 182px;
+    left: 424px;
+}
+
+.proggame-levelend-star-3 {
+    top: 182px;
+    left: 494px;
+}
+
+.pact-level .pact-level-content .yui3-resize-handle-t {
+    width: 100%;
+    background-color: transparent !important;
+    cursor: ns-resize;
+}
+
+.pact-level .pact-level-content .yui3-resize-handle-inner {
+    display: block;
+}
+
+.proggame-levelend-money {
+    background: url(../../wegas-pact/images/proggame-icons.png) no-repeat 0 -51px;
+    padding-left: 41px;
+    font-size: 1.7em;
+    color: #faff46;
+    text-shadow: 1px 2px 1px black;
+    position: absolute;
+    top: 220px;
+    left: 385px;
+}
+
+.proggame-levelend-restart, .proggame-levelend-nextlevel {
+    opacity: 0.8;
+    position: absolute;
+    cursor: pointer;
+    color: white;
+    font-size: 2.1em;
+    letter-spacing: 0em;
+    font-family: "KG Ways to Say Goodbye";
+    padding-top: 42px;
+}
+
+.proggame-levelend-restart {
+    background: url(../../wegas-pact/images/proggame-levelend-restart.png) no-repeat top center;
+    width: 75px;
+    top: 255px;
+    left: 304px;
+}
+
+.proggame-levelend-nextlevel {
+    background: url(../../wegas-pact/images/proggame-levelend-next.png) no-repeat top center;
+    width: 87px;
+    top: 255px;
+    left: 514px;
+}
+
+.proggame-levelend-restart:hover, .proggame-levelend-nextlevel:hover {
+    opacity: 1;
+}
+
+
+/* Level tutorial */
+
+.proggame-tutorial {
+    z-index: 1002 !important;
+    transition: top 0.6s, left 0.6s;
+    -webkit-transition: top 0.6s, left 0.6s;
+    -o-transition: top 0.6s, left 0.6s;
+    -moz-transition: top 0.6s, left 0.6s;
+}
+
+.proggame-tuto-arrowleft, .proggame-tuto-arrowbottom, .proggame-tuto-arrowright, .proggame-tuto-arrowtop {
+    float: left;
+    width: 61px;
+    height: 70px;
+    background: url(../../wegas-pact/images/proggame-tuto-arrow.png) no-repeat 0px -146px;
+}
+
+.proggame-tuto-arrowbottom {
+    float: right;
+    background-position: 0 5px;
+}
+
+.proggame-tuto-arrowtop {
+    float: none;
+    background-position: 0 -77px;
+    margin-left: 120px;
+}
+
+.proggame-tuto-arrowright {
+    float: right;
+    background-position: 0 -211px;
+}
+
+.proggame-tuto-highlight {
+    z-index: 1001;
+}
+
+.proggame-tuto-mask {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    z-index: 1002;
+}
+
+.api-tooltip {
+    /*    pointer-events: none;*/
+    cursor: default;
+    text-decoration: none !important;
+    float: right;
+    position: relative;
+}
+
+.api-tooltip>div {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.api-tooltip .api-tooltip-content {
+    display: none;
+    position: fixed;
+    color: black;
+    background-color: white;
+    min-height: 40px;
+    min-width: 160px;
+    max-width: 300px;
+    padding: 10px;
+    margin-top: -20px;
+    margin-left: 15px;
+    z-index: 999;
+    white-space: pre-line;
+}
+
+.api-tooltip .api-tooltip-content:after {
+    position: absolute;
+    content: '';
+    top: 30px;
+    right: 100%;
+    width: 0;
+    height: 0;
+    margin-top: -8px;
+    border-right: 8px solid white;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+}
+
+.api-tooltip:hover .api-tooltip-content {
+    display: inline-block;
+}
