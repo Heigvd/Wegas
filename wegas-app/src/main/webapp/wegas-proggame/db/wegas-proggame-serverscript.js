@@ -188,8 +188,7 @@ ProgGameSimulation.prototype = {
         wdebug('Simulation run');
         // convert old version
         // @TODO remove ...
-        var onWin,
-            r = level.onWin;
+        var onWin = level.onWin, r;
         if (
             typeof onWin === 'string' &&
             (r = onWin.match(
