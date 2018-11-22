@@ -171,6 +171,7 @@
     color: black;
 }
 
+.yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-minimize-tab,
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-plus-tab {
     vertical-align: top;
     top: 10px;
@@ -178,8 +179,10 @@
     padding: 5px 0 0 0;
     color: white;
     width: 33px;
+    position:relative;
 }
 
+.yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-minimize-tab:hover,
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-plus-tab:hover {
     color: #5A5858;
 }
@@ -187,6 +190,7 @@
     height: inherit;
 }
 
+.yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-minimize-tab:after,
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-plus-tab:after {
     display: none;
 }
