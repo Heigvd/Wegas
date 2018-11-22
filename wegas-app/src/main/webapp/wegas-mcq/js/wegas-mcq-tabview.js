@@ -93,6 +93,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             var unreadLabel = "";
 
             return  '<div class="index-mcq '
+                + (question.isAnyChoiceAnswerable() ? "answerable " : "")
                 + (questionInstance.get("unread") ? "unread " : "")
                 + (highlightUnanswered ? "unanswered " : "") + '">'
                 + '<div class="index-unread">' + unreadLabel + '</div>'

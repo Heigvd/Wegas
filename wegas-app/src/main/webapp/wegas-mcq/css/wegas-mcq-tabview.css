@@ -20,6 +20,10 @@
     font-weight:bold;
 }
 
+.wegas-mcqtabview .index-mcq:not(.answerable) {
+    font-style: italic;
+}
+
 .wegas-mcqtabview .index-mcq.unread .index-unread:before {
     content: "new";
     transform: rotate(-45deg);
