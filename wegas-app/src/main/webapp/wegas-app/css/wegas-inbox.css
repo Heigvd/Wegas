@@ -15,7 +15,7 @@
 .wegas-inbox-content {
     height: 100%;
 }
-.wegas-inbox .yui3-tab-panel{
+.wegas-inbox .yui3-tab-panel > div{
     padding: 15px;
 }
 .wegas-inbox .horizontal-tabview,

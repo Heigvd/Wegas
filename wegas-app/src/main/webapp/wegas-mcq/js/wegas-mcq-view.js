@@ -176,9 +176,13 @@ YUI.add('wegas-mcq-view', function(Y) {
                 this.handlers.onInstanceUpdate = Y.Wegas.Facade.Instance.after(question.getInstance().get("id") + ':updatedInstance', this.renderUI, this);
             }
         },
+        afterChange: function(e) {
+            this.bindUpdatedInstance();
+            this.syncUI();
+        },
         bindUI: function() {
             this.bindUpdatedInstance();
-            this.after("variableChange", this.bindUpdatedInstance, this);
+            this.after("variableChange", this.afterChange, this);
 
             this.handlers.onDescriptorUpdate = Y.Wegas.Facade.Variable.after("updatedDescriptor", function(e) {
                 var question = this.get("variable.evaluated");
@@ -360,6 +364,7 @@ YUI.add('wegas-mcq-view', function(Y) {
     ChoiceView = Y.Base.create("wegas-mcqchoice", Y.Widget,
         [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Parent], {
         initializer: function() {
+            this.results = {};
             this.handlers = {};
             this.after("disabledChange", this.syncUI, this);
         },
@@ -383,10 +388,27 @@ YUI.add('wegas-mcq-view', function(Y) {
                 editable: false
             });
 
+            this.rLayout = new Y.Wegas.FlexList({
+                cssClass: "mcq-choice-result-layout"
+            });
+
+            this.resultTitle = new Y.Wegas.Text({
+                cssClass: "mcq-view__results-title"
+            });
+
+            this.resultList = new Y.Wegas.FlexList({
+                cssClass: "mcq-view__results"
+            });
+
+            this.rLayout.add(this.resultTitle);
+            this.rLayout.add(this.resultList);
+
             this.add(this.title);
             this.add(this.description);
             this.add(this.submit);
             this.add(this.summary);
+
+            this.add(this.rLayout);
         },
         bindUpdatedInstance: function() {
             if (this.handlers.onInstanceUpdate) {
@@ -412,7 +434,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                 choice = this.get("choice.evaluated"),
                 question = this.get("question.evaluated"),
                 maxReplies = choice.get("maxReplies"),
-                replies = Y.Array.filter(choice.getInstance().get("replies"), function(reply) {
+                allReplies = choice.getInstance().get("replies"),
+                replies = Y.Array.filter(allReplies, function(reply) {
                     return !reply.get("ignored");
                 }),
                 cbx = question.get("cbx"),
@@ -429,6 +452,69 @@ YUI.add('wegas-mcq-view', function(Y) {
 
             this.summary.syncUI();
 
+
+
+            var noFeedbacks = true;
+            if (allReplies.length &&
+                (!cbx || question.getInstance().get("validated"))
+                && !(cbx && question.get("tabular")) && this.get("displayResult") === "inline") {
+                this.resultTitle.set("content", allReplies.length > 1 ? Y.Wegas.I18n.t('mcq.results').capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize());
+                this.resultTitle.syncUI();
+                var repliesIds = {};
+                for (var i in allReplies) {
+                    var reply = allReplies[i];
+                    repliesIds[reply.get("id")] = true;
+                    if (this.results[reply.get("id")]) {
+                        noFeedbacks = false;
+                    } else {
+                        var choiceD = reply.getChoiceDescriptor(),
+                            choiceI = choiceD.getInstance(),
+                            toDisplay;
+                        // skip inactive checkbox inactive choice
+                        if (!cbx || choiceI.get("active")) {
+// select the correct text to display
+                            if (!reply.get("ignored")) {
+                                toDisplay = I18n.t(reply.get("answer"), {fallback: ''});
+                            } else {
+                                // skip empty ignoration
+                                toDisplay = I18n.t(reply.get("ignorationAnswer"), {fallback: ''});
+                                if (!toDisplay || !toDisplay.replace(/(\r\n|\n|\r)/gm, "").trim()) {
+                                    continue;
+                                }
+                            }
+                            if (toDisplay) {
+                                noFeedbacks = false;
+                                this.results[reply.get("id")] = new Y.Wegas.Text({
+                                    cssClass: "wegas-mcqview__result",
+                                    content: '<div class="mcq-reply-content">' + toDisplay + '</div>'
+                                });
+                                // Insert the latest reply at the top of the list, but not for cbx question:
+                                this.resultList.add(this.results[reply.get("id")], !cbx ? 0 : undefined);
+                            }
+                        }
+                    }
+                }
+                for (var i in this.results) {
+                    if (!repliesIds[i]) {
+                        // reply no longer exists
+                        this.results[i].destroy();
+                        delete this.results[i];
+                    }
+                }
+            }
+
+
+            if (noFeedbacks) {
+                // make sure reply list is empty
+                this.resultTitle.set("content", "");
+                this.resultTitle.syncUI();
+                for (var i in this.results) {
+                    this.results[i].destroy();
+                    delete this.results[i];
+                }
+            }
+
+            bb.toggleClass("noFeedbacks", noFeedbacks);
             bb.toggleClass("hasReplies", replies.length > 0);
             bb.toggleClass("selectable", cbx || !maxReplies || replies.length < maxReplies);
             bb.toggleClass("noTitle", !hasTitle);
@@ -471,6 +557,23 @@ YUI.add('wegas-mcq-view', function(Y) {
                 view: {
                     type: "scriptcondition"
                 }
+            },
+            displayResult: {
+                value: 'bottom',
+                type: 'string',
+                view: {
+                    type: 'select',
+                    choices: [
+                        {
+                            value: 'inline'
+                        }, {
+                            value: 'no'
+                        }
+                    ],
+                    className: 'wegas-advanced-feature',
+                    label: "Display Result"
+                }
+
             }
         }
     }
@@ -500,6 +603,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             }
         },
         renderUI: function() {
+
             this.title = new Y.Wegas.Text({
                 cssClass: "mcq-view__question-title"
             });
@@ -519,6 +623,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             this.resultList = new Y.Wegas.FlexList({
                 cssClass: "mcq-view__results"
             });
+
             this.add(this.title);
             this.add(this.description);
             this.add(this.choiceList);
@@ -528,8 +633,12 @@ YUI.add('wegas-mcq-view', function(Y) {
 
             this.plugLockable();
         },
+        afterVariableChange: function(e) {
+            this.plugLockable();
+            this.syncUI();
+        },
         bindUI: function() {
-            this.after("variableChange", this.plugLockable, this);
+            this.after("variableChange", this.afterVariableChange, this);
 
             this.handlers.rmDescriptorListener = Y.Wegas.Facade.Variable.after("delete", function(e) {
                 var choice = e.entity;
@@ -681,151 +790,200 @@ YUI.add('wegas-mcq-view', function(Y) {
         },
         syncUI: function() {
             var cb = this.get(CONTENTBOX),
-                questionDescriptor = this.get("variable.evaluated"),
-                questionInstance = questionDescriptor.getInstance(),
-                replies = questionInstance.get("replies"),
-                maxReplies = questionDescriptor.get("maxReplies"),
-                minReplies = questionDescriptor.get("minReplies"),
-                choices = questionDescriptor.get("items"),
-                cbx = questionDescriptor.get("cbx"),
-                maximumReached = maxReplies && replies.length >= maxReplies,
+                questionDescriptor,
+                questionInstance,
+                replies,
+                maxReplies,
+                minReplies, choices, cbx,
+                maximumReached,
                 answerable;
 
-            answerable =
-                //!this.get("disabled") && // not disable by a lock
-                    ((questionDescriptor.get("cbx") && !questionInstance.get("validated")) // not validated
-                        || (!questionDescriptor.get("cbx") && !maximumReached && !questionInstance.get("validated"))); // maximum not reached yet
 
-                this.title.set("content", I18n.t(questionDescriptor.get("label"), {inlineEditor: 'string', fallback: ""}));
-                this.title.syncUI();
-                this.description.set("content", I18n.t(questionDescriptor.get("description"), {inlineEditor: 'html'}));
-                this.description.syncUI();
+            questionDescriptor = this.get("variable.evaluated");
+            if (questionDescriptor) {
+                questionInstance = questionDescriptor.getInstance();
+                replies = questionInstance.get("replies");
+                maxReplies = questionDescriptor.get("maxReplies");
+                minReplies = questionDescriptor.get("minReplies");
+                choices = questionDescriptor.get("items");
+                cbx = questionDescriptor.get("cbx");
+                maximumReached = maxReplies && replies.length >= maxReplies;
 
-                if (this.gallery) {
-                    this.gallery.remove();
-                    this.gallery = null;
-                    this._gallery.remove();
-                    this._gallery = null;
-                }
+                answerable =
+                    //!this.get("disabled") && // not disable by a lock
+                        ((questionDescriptor.get("cbx") && !questionInstance.get("validated")) // not validated
+                            || (!questionDescriptor.get("cbx") && !maximumReached && !questionInstance.get("validated"))); // maximum not reached yet
 
-                if (questionDescriptor.get("pictures").length > 0) {
-                    this.gallery = new Y.Wegas.AbsoluteLayout({});
-                    this.add(this.gallery, 2);
-                    new Wegas.util.FileLibraryGallery({
-                        selectedHeight: 150,
-                        selectedWidth: 235,
-                        gallery: Y.clone(questionDescriptor.get("pictures"))
-                    }).render(this.gallery.get("contentBox"));
-                }
+                    this.title.set("content", I18n.t(questionDescriptor.get("label"), {inlineEditor: 'string', fallback: ""}));
+                    this.title.syncUI();
+                    this.description.set("content", I18n.t(questionDescriptor.get("description"), {inlineEditor: 'html'}));
+                    this.description.syncUI();
 
-                for (var i in choices) {
-                    var choice = choices[i],
-                        choiceInstance = choice.getInstance();
-                    if (this.choices[choice.get("id")]) {
-                        if (!choiceInstance.get("active")) {
-                            // deativate choice by removing its widget
-                            this.choices[choice.get("id")].remove();
-                            this.choices[choice.get("id")] = undefined;
-                        }
-                    } else {
-                        if (choiceInstance.get("active")) {
-                            this.choices[choice.get("id")] = new Y.Wegas.ChoiceView({
-                                choice: {
-                                    "@class": "Script",
-                                    "content": "Variable.find(gameModel, \"" + choice.get("name") + "\");"
-                                },
-                                question: {
-                                    "@class": "Script",
-                                    "content": "Variable.find(gameModel, \"" + questionDescriptor.get("name") + "\");"
-                                }
-                            });
-                            this.choiceList.add(this.choices[choice.get("id")]);
-                        }
+                    if (this.gallery) {
+                        this.gallery.remove();
+                        this.gallery = null;
+                        //this._gallery.remove();
+                        //this._gallery = null;
                     }
-                }
 
+                    if (questionDescriptor.get("pictures").length > 0) {
+                        this.gallery = new Y.Wegas.Text({
+                        });
+                        this.qLayout.add(this.gallery, 2);
+                        this._gallery = new Wegas.util.FileLibraryGallery({
+                            selectedHeight: 150,
+                            selectedWidth: 235,
+                            gallery: Y.clone(questionDescriptor.get("pictures"))
+                        }).render(this.gallery.get("contentBox"));
+                    }
 
-                if (questionInstance.get("unread")) {
-                    Y.Wegas.Facade.Variable.sendRequest({
-                        request: "/QuestionDescriptor/Read/" +
-                            Wegas.Facade.Game.get('currentPlayerId') + "/" + questionDescriptor.get("id"),
-                        cfg: {
-                            method: "PUT"
-                        }
-                    });
-                }
+                    var toProcess = Y.mix({}, this.choices);
 
-                if ((!cbx || questionInstance.get("validated")) && replies.length) {
-                    this.resultTitle.set("content", replies.length > 1 ? Y.Wegas.I18n.t('mcq.results').capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize());
-                    this.resultTitle.syncUI();
-                    if (cbx) {
-                        replies = [];
-                        // select replies according to order of choices
-                        for (i = 0; i < choices.length; i += 1) {
-                            var choiceD = choices[i],
-                                choiceI = choiceD.getInstance(),
-                                cReplies = choiceI.get("replies");
+                    for (var i in choices) {
+                        var choice = choices[i],
+                            choiceInstance = choice.getInstance(),
+                            cId = choice.get("id");
 
-                            // skip inactive choices or choices without replies
-                            if (choiceI.get("active") && cReplies && cReplies.length > 0) {
-                                replies.push(cReplies[0]);
+                        if (this.choices[cId]) {
+                            if (choiceInstance.get("active")) {
+                                delete toProcess[cId];
+                            }
+                        } else {
+                            if (choiceInstance.get("active")) {
+                                this.choices[cId] = new Y.Wegas.ChoiceView({
+                                    choice: {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"" + choice.get("name") + "\");"
+                                    },
+                                    question: {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"" + questionDescriptor.get("name") + "\");"
+                                    },
+                                    displayResult: this.get("displayResult")
+                                });
+                                this.choiceList.add(this.choices[choice.get("id")]);
                             }
                         }
                     }
-                    var repliesIds = {};
-                    for (var i in replies) {
-                        var reply = replies[i];
-                        repliesIds[reply.get("id")] = true;
-                        if (!this.results[reply.get("id")]) {
-                            var choiceD = reply.getChoiceDescriptor(),
-                                choiceI = choiceD.getInstance(),
-                                toDisplay;
-                            // skip inactive checkbox inactive choice
-                            if (!cbx || choiceI.get("active")) {
+
+                    for (var id in toProcess) {
+                        this.choices[id].remove();
+                        delete this.choices[id];
+                    }
+
+                    if (questionInstance.get("unread")) {
+                        Y.Wegas.Facade.Variable.sendRequest({
+                            request: "/QuestionDescriptor/Read/" +
+                                Wegas.Facade.Game.get('currentPlayerId') + "/" + questionDescriptor.get("id"),
+                            cfg: {
+                                method: "PUT"
+                            }
+                        });
+                    }
+
+                    var noFeedbacks = true;
+
+                    if (replies.length && (
+                        (this.get("displayResult") === "bottom" || this.get("displayResult") === "newBottom")
+                        && (!cbx || questionInstance.get("validated")))
+                        || (cbx && questionInstance.get("validated") && questionDescriptor.get("tabular"))) {
+                        this.resultTitle.set("content", replies.length > 1 ? Y.Wegas.I18n.t('mcq.results').capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize());
+                        this.resultTitle.syncUI();
+                        if (cbx) {
+                            replies = [];
+                            // select replies according to order of choices
+                            for (i = 0; i < choices.length; i += 1) {
+                                var choiceD = choices[i],
+                                    choiceI = choiceD.getInstance(),
+                                    cReplies = choiceI.get("replies");
+
+                                // skip inactive choices or choices without replies
+                                if (choiceI.get("active") && cReplies && cReplies.length > 0) {
+                                    replies.push(cReplies[0]);
+                                }
+                            }
+                        }
+                        var repliesIds = {};
+                        for (var i in replies) {
+                            var reply = replies[i];
+                            repliesIds[reply.get("id")] = true;
+                            if (this.results[reply.get("id")]) {
+                                noFeedbacks = false;
+                            } else {
+                                var choiceD = reply.getChoiceDescriptor(),
+                                    choiceI = choiceD.getInstance(),
+                                    toDisplay;
+                                // skip inactive checkbox inactive choice
+                                if (!cbx || choiceI.get("active")) {
 // select the correct text to display
-                                if (!reply.get("ignored")) {
-                                    toDisplay = I18n.t(reply.get("answer"), {fallback: ''});
-                                } else {
-                                    // skip empty ignoration
-                                    toDisplay = I18n.t(reply.get("ignorationAnswer"), {fallback: ''});
-                                    if (!toDisplay || !toDisplay.replace(/(\r\n|\n|\r)/gm, "").trim()) {
-                                        continue;
+                                    if (!reply.get("ignored")) {
+                                        toDisplay = I18n.t(reply.get("answer"), {fallback: ''});
+                                    } else {
+                                        // skip empty ignoration
+                                        toDisplay = I18n.t(reply.get("ignorationAnswer"), {fallback: ''});
+                                        if (!toDisplay || !toDisplay.replace(/(\r\n|\n|\r)/gm, "").trim()) {
+                                            continue;
+                                        }
+                                    }
+                                    var title = I18n.t(choiceD.get("label"));
+                                    if (toDisplay || title) {
+                                        noFeedbacks = false;
+                                        this.results[reply.get("id")] = new Y.Wegas.Text({
+                                            cssClass: "wegas-mcqview__result",
+                                            content: '<div class="mcq-reply-title">' + I18n.t(choiceD.get("label")) + '</div>' +
+                                                '<div class="mcq-reply-content">' + toDisplay + '</div>'
+                                        });
+                                        // Insert the latest reply at the top of the list, but not for cbx question:
+                                        this.resultList.add(this.results[reply.get("id")], !cbx ? 0 : undefined);
                                     }
                                 }
-
-                                this.results[reply.get("id")] = new Y.Wegas.Text({
-                                    cssClass: "wegas-mcqview__result",
-                                    content: '<div class="mcq-reply-title">' + I18n.t(choiceD.get("label")) + '</div>' +
-                                        '<div class="mcq-reply-content">' + toDisplay + '</div>'
-                                });
-                                // Insert the latest reply at the top of the list, but not for cbx question:
-                                this.resultList.add(this.results[reply.get("id")], !cbx ? 0 : undefined);
+                            }
+                        }
+                        for (var i in this.results) {
+                            if (!repliesIds[i]) {
+                                // reply no longer exists
+                                this.results[i].destroy();
+                                delete this.results[i];
                             }
                         }
                     }
-                    for (var i in this.results) {
-                        if (!repliesIds[i]) {
-                            // reply no longer exists
+
+
+                    if (noFeedbacks) {
+                        // make sure reply list is empty
+                        this.resultTitle.set("content", "");
+                        this.resultTitle.syncUI();
+                        for (var i in this.results) {
                             this.results[i].destroy();
                             delete this.results[i];
                         }
                     }
+
+                    this.get("boundingBox").setAttribute("data-displayResult", this.get("displayResult"));
+
+                    cb.setAttribute("data-nbChoices", this.choiceList.size());
+                    cb.toggleClass("noFeedbacks", noFeedbacks);
+                    cb.toggleClass("cbx", cbx);
+                    cb.toggleClass("horizontal", cbx && questionDescriptor.get("tabular"));
+                    cb.toggleClass("checkbox", (maxReplies !== 1) || (minReplies !== null && minReplies !== 1));
+                    cb.toggleClass("showSummary", !maxReplies || maxReplies > 1);
+                    cb.toggleClass("answerable", answerable);
+                    cb.toggleClass("maximumReached", maximumReached);
                 } else {
-                    // make sure reply list is empty
+                    // clear !
+                    this.title.set("content", "");
+                    this.description.set("content", "");
+                    this.gallery && this.gallery.remove();
+                    for (var i in this.choices) {
+                        this.choices[i].destroy();
+                    }
+                    this.choices = {};
                     this.resultTitle.set("content", "");
-                    this.resultTitle.syncUI();
+
                     for (var i in this.results) {
                         this.results[i].destroy();
-                        delete this.results[i];
                     }
                 }
-
-                cb.toggleClass("cbx", cbx);
-                cb.toggleClass("horizontal", cbx && questionDescriptor.get("tabular"));
-                cb.toggleClass("checkbox", (maxReplies !== 1) || (minReplies !== null && minReplies !== 1));
-                cb.toggleClass("showSummary", !maxReplies || maxReplies > 1);
-                cb.toggleClass("answerable", answerable);
-                cb.toggleClass("maximumReached", maximumReached);
             },
             destructor: function() {
                 var k;
@@ -855,6 +1013,25 @@ YUI.add('wegas-mcq-view', function(Y) {
                     view: {
                         type: "scriptcondition"
                     }
+                },
+                displayResult: {
+                    value: 'bottom',
+                    type: 'string',
+                    view: {
+                        type: 'select',
+                        choices: [
+                            {
+                                value: 'bottom'
+                            }, {
+                                value: 'inline'
+                            }, {
+                                value: 'no'
+                            }
+                        ],
+                        className: 'wegas-advanced-feature',
+                        label: "Display result"
+                    }
+
                 }
             }
         });

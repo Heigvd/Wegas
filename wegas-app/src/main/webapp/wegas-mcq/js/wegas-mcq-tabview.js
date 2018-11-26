@@ -132,7 +132,8 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 return new Y.Wegas.MCQView({
                     variable: {
                         "name": entity.get("name")
-                    }
+                    },
+                    displayResult: this.get("displayResult")
                 });
             } else if (entity instanceof Wegas.persistence.WhQuestionDescriptor) {
                 return new Y.Wegas.WhView({
@@ -193,6 +194,25 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     label: "Higlight Unanswered",
                     className: "wegas-advanced-feature"
                 }
+            },
+            displayResult: {
+                value: 'bottom',
+                type: 'string',
+                view: {
+                    type: 'select',
+                    choices: [
+                        {
+                            value: 'bottom'
+                        }, {
+                            value: 'inline'
+                        }, {
+                            value: 'no'
+                        }
+                    ],
+                    className: 'wegas-advanced-feature',
+                    label: "Template"
+                }
+
             }
         }
     });
