@@ -7,7 +7,7 @@
  */
 /**
  * Wegas Dashboard - V3
- * @author Maxence Laurent 
+ * @author Maxence Laurent
  */
 YUI.add('wegas-dashboard', function(Y) {
     "use strict";
@@ -176,8 +176,7 @@ YUI.add('wegas-dashboard', function(Y) {
             Y.Wegas.app.once('ready', Y.bind(this.syncUI, this));
 
             this.handlers.onBodyClick = Y.one("body").on("click", Y.bind(function(event) {
-                this.detailsOverlay.hide();
-                this.detailsTarget = null;
+                this.closeDetails();
             }, this), this.detailsOverlay);
         },
         syncUI: function() {
@@ -659,8 +658,19 @@ YUI.add('wegas-dashboard', function(Y) {
                 this.post(pdfLink, {"title": t, "body": h, "outputType": "pdf"});
             }, this);
             this.detailsOverlay.setStdModContent('body', body);
+            // Prevent text selection attempts from closing the window:
+            this.detailsOverlay.get("contentBox").on("click", function(event) {
+                if (! event.target.hasClass("closeIcon")) {
+                    event.halt(true);
+                }
+            }, this);
             this.detailsOverlay.set("centered", true);
             this.detailsOverlay.show();
+        },
+        closeDetails: function(event) {
+            event && event.halt(true);
+            this.detailsOverlay.hide();
+            this.detailsTarget = null;
         },
         /*
          ** Opens a new tab where the given data is posted:
