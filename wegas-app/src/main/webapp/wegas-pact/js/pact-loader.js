@@ -35,7 +35,7 @@ YUI.addGroup('wegas-pact', {
             ws_provides: 'ProgGameLevel',
         },
         'pact-display': {
-            requires: ['wegas-widget', 'crafty', 'yui-later'],
+            requires: ['wegas-widget', 'crafty', 'yui-later', "promise"],
             ws_provides: 'ProgGameDisplay',
         },
         'pact-inputex': {

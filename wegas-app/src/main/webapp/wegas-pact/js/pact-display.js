@@ -21,7 +21,52 @@ YUI.add('pact-display', function(Y) {
         MARGIN_Y = 2,
         TILE_DELTA = 10,
         Wegas = Y.Wegas,
-        ProgGameDisplay;
+        ProgGameDisplay,
+        Promise = Y.Promise,
+        ready;
+
+    /*
+     * Crafty sprites
+     */
+    ready = new Promise(function(resolve, reject) {
+        Crafty.load(
+            (function() {
+                var assets = {
+                    sprites: {},
+                };
+                assets.sprites[
+                    Wegas.app.get('base') +
+                        '/wegas-proggame/images/proggame-sprite-anim.png'
+                ] = {
+                    tile: TILESIZE,
+                    tileh: TILESIZE,
+                    map: {
+                        CharacterSprite: [0, 0],
+                        TrapSprite: [0, 9],
+                        DoorSprite: [0, 10],
+                        DoorSprite2: [0, 14],
+                        VerticalDoor: [0, 16],
+                        HorizontalDoor: [0, 18],
+                        ControllerSprite: [0, 12],
+                        PanelSprite: [5, 10],
+                        StoneSprite: [6, 10],
+                    },
+                };
+                assets.sprites[
+                    Wegas.app.get('base') +
+                        '/wegas-proggame/images/proggame-sprite-tiles_iso.png'
+                ] = {
+                    tile: 41,
+                    tileh: TILESIZE,
+                    map: { TileSprite: [0, 0] },
+                };
+                return assets;
+            })(),
+            resolve,
+            undefined,
+            reject
+        );
+    });
 
     /**
      * Level display, should handle canvas, for now renders the level as a
@@ -61,36 +106,39 @@ YUI.add('pact-display', function(Y) {
                     marginTop: '12px',
                     marginLeft: Math.floor(900 - pos.x) / 2 + 'px',
                 });
+                ready.then(
+                    function() {
+                        Crafty.init(pos.x, posy.y + TILE_DELTA); // Init crafty
 
-                Crafty.init(pos.x, posy.y + TILE_DELTA); // Init crafty
-
-                for (i = -MARGIN_Y; i < gridH + MARGIN_Y; i += 1) {
-                    // Render tiles
-                    for (j = -MARGIN_X; j < gridW + MARGIN_X; j += 1) {
-                        pos = this.getRealXYPos({ x: j, y: i });
-                        pos.y = pos.y + TILE_DELTA;
-                        Crafty.e(
-                            map[i] && map[i][j] && map[i][j].y
-                                ? 'PathTile'
-                                : 'EmptyTile'
-                        ).attr(pos);
-                    }
-                }
-
-                Y.Object.each(
-                    objects,
-                    function(cfg) {
-                        // Render objects (PC, traps, etc.)
-                        pos = this.getRealXYPos(cfg); // Place it on the map
-                        entity = Crafty.e(cfg.components) // Instantiate an entity
-                            .attr(Y.mix(pos, cfg.attrs));
-                        if (entity.execMove) {
-                            // Allows to turn the player to the right direction
-                            entity.execMove(cfg.direction, pos);
+                        for (i = -MARGIN_Y; i < gridH + MARGIN_Y; i += 1) {
+                            // Render tiles
+                            for (j = -MARGIN_X; j < gridW + MARGIN_X; j += 1) {
+                                pos = this.getRealXYPos({ x: j, y: i });
+                                pos.y = pos.y + TILE_DELTA;
+                                Crafty.e(
+                                    map[i] && map[i][j] && map[i][j].y
+                                        ? 'PathTile'
+                                        : 'EmptyTile'
+                                ).attr(pos);
+                            }
                         }
-                        this.entities[cfg.id] = entity; // Save a reference so we can look up for instances
-                    },
-                    this
+
+                        Y.Object.each(
+                            objects,
+                            function(cfg) {
+                                // Render objects (PC, traps, etc.)
+                                pos = this.getRealXYPos(cfg); // Place it on the map
+                                entity = Crafty.e(cfg.components) // Instantiate an entity
+                                    .attr(Y.mix(pos, cfg.attrs));
+                                if (entity.execMove) {
+                                    // Allows to turn the player to the right direction
+                                    entity.execMove(cfg.direction, pos);
+                                }
+                                this.entities[cfg.id] = entity; // Save a reference so we can look up for instances
+                            },
+                            this
+                        );
+                    }.bind(this)
                 );
             },
             bindUI: function() {
@@ -117,59 +165,70 @@ YUI.add('pact-display', function(Y) {
                 return this.entities[id];
             },
             execute: function(command) {
-                var entity, pos;
-                this.allowNextCommand = true;
+                ready.then(
+                    function() {
+                        var entity, pos;
+                        this.allowNextCommand = true;
 
-                switch (command.type) {
-                    case 'resetLevel':
-                        Y.Object.each(
-                            command.objects,
-                            function(object) {
-                                pos = this.getRealXYPos(object);
-                                pos.h = 32;
-                                entity = this.getEntity(object.id);
-                                entity.attr(pos);
-                                if (entity.execMove) {
-                                    entity.execMove(object.direction, pos);
+                        switch (command.type) {
+                            case 'resetLevel':
+                                Y.Object.each(
+                                    command.objects,
+                                    function(object) {
+                                        pos = this.getRealXYPos(object);
+                                        pos.h = 32;
+                                        entity = this.getEntity(object.id);
+                                        entity.attr(pos);
+                                        if (entity.execMove) {
+                                            entity.execMove(
+                                                object.direction,
+                                                pos
+                                            );
+                                        }
+                                        if (
+                                            typeof entity.reset === 'function'
+                                        ) {
+                                            entity.reset(object.attr);
+                                        }
+                                    },
+                                    this
+                                );
+                                break;
+
+                            case 'move':
+                                entity = this.getEntity(command.id);
+                                if (entity && entity.execMove) {
+                                    entity.execMove(
+                                        command.dir,
+                                        this.getRealXYPos(command),
+                                        true
+                                    );
+                                    return;
                                 }
-                                if (typeof entity.reset === 'function') {
-                                    entity.reset(object.attr);
+                                break;
+
+                            default:
+                                entity = this.getEntity(command.id);
+                                if (
+                                    entity &&
+                                    typeof entity[command.type] === 'function'
+                                ) {
+                                    entity[command.type](command);
+                                    return;
+                                } else {
+                                    Y.log(
+                                        "No action defined for '" +
+                                            command.type +
+                                            "'",
+                                        'warn',
+                                        'Wegas.ProggameDisplay'
+                                    );
+                                    return;
                                 }
-                            },
-                            this
-                        );
-                        break;
-
-                    case 'move':
-                        entity = this.getEntity(command.id);
-                        if (entity && entity.execMove) {
-                            entity.execMove(
-                                command.dir,
-                                this.getRealXYPos(command),
-                                true
-                            );
-                            return;
                         }
-                        break;
-
-                    default:
-                        entity = this.getEntity(command.id);
-                        if (
-                            entity &&
-                            typeof entity[command.type] === 'function'
-                        ) {
-                            entity[command.type](command);
-                            return;
-                        } else {
-                            Y.log(
-                                "No action defined for '" + command.type + "'",
-                                'warn',
-                                'Wegas.ProggameDisplay'
-                            );
-                            return;
-                        }
-                }
-                this.fire(COMMANDEXECUTED);
+                        this.fire(COMMANDEXECUTED);
+                    }.bind(this)
+                );
             },
             getRealXYPos: function(pos) {
                 if (
@@ -220,37 +279,6 @@ YUI.add('pact-display', function(Y) {
         }
     );
     Wegas.ProgGameDisplay = ProgGameDisplay;
-
-    /*
-     * Crafty sprites
-     */
-    Crafty.sprite(
-        TILESIZE,
-        TILESIZE,
-        Wegas.app.get('base') +
-            '/wegas-proggame/images/proggame-sprite-anim.png',
-        {
-            CharacterSprite: [0, 0],
-            TrapSprite: [0, 9],
-            DoorSprite: [0, 10],
-            DoorSprite2: [0, 14],
-            VerticalDoor: [0, 16],
-            HorizontalDoor: [0, 18],
-            ControllerSprite: [0, 12],
-            PanelSprite: [5, 10],
-            StoneSprite: [6, 10],
-        }
-    );
-    Crafty.sprite(
-        41,
-        TILESIZE,
-        Wegas.app.get('base') +
-            '/wegas-proggame/images/proggame-sprite-tiles_iso.png',
-        {
-            TileSprite: [0, 0],
-        }
-    );
-
     /*
      * Crafty Components
      */
@@ -906,7 +934,6 @@ YUI.add('pact-display', function(Y) {
             // ctx.fillStyle = radGrd;
             // ctx.fillRect(p._x - r2, p._y - r2, 2 * r2, 2 * r2);
             ctx.restore();
-            
         },
         remove: function() {
             var id = this._lights.indexOf(this);
