@@ -118,32 +118,34 @@ YUI.add('wegas-layout-resizable', function(Y) {
             },
             makeLeftMinimizable: function() {
                 var tabView = Y.Widget.getByNode(".wegas-layout-left #leftTabView");
-                var minBtn = new Y.Wegas.Button({
-                    label: "<i class='fa fa-window-minimize'></i>",
-                    cssClass: "wegas-minimize-tab"
-                });
+                if (tabView) {
+                    var minBtn = new Y.Wegas.Button({
+                        label: "<i class='fa fa-window-minimize'></i>",
+                        cssClass: "wegas-minimize-tab"
+                    });
 
-                this.handlers.push(Y.after("edit-entity:edit", function(e) {
-                    this.getPosition("left").toggleClass("hasFocus", false);
-                }, this));
-                this.get("contentBox").on("click", function(e) {
-                    var left = this.getPosition("left");
-                    if (left.hasClass("minimized")) {
-                        if ((e.target.hasClass("wegas-layout-left") || e.target.ancestor(".wegas-layout-left"))) {
-                            if ((!e.target.hasClass("wegas-minimize-tab") && !e.target.ancestor(".wegas-minimize-tab"))) {
-                                left.toggleClass("hasFocus", true);
+                    this.handlers.push(Y.after("edit-entity:edit", function(e) {
+                        this.getPosition("left").toggleClass("hasFocus", false);
+                    }, this));
+                    this.get("contentBox").on("click", function(e) {
+                        var left = this.getPosition("left");
+                        if (left.hasClass("minimized")) {
+                            if ((e.target.hasClass("wegas-layout-left") || e.target.ancestor(".wegas-layout-left"))) {
+                                if ((!e.target.hasClass("wegas-minimize-tab") && !e.target.ancestor(".wegas-minimize-tab"))) {
+                                    left.toggleClass("hasFocus", true);
+                                } else {
+                                    left.toggleClass("hasFocus", false);
+                                }
                             } else {
                                 left.toggleClass("hasFocus", false);
                             }
                         } else {
                             left.toggleClass("hasFocus", false);
                         }
-                    } else {
-                        left.toggleClass("hasFocus", false);
-                    }
-                }, this);
-                minBtn.on("click", this.toggleMin, this);
-                tabView.add(minBtn);
+                    }, this);
+                    minBtn.on("click", this.toggleMin, this);
+                    tabView.add(minBtn);
+                }
             },
             toggleMin: function(e) {
                 var left = this.getPosition("left");
