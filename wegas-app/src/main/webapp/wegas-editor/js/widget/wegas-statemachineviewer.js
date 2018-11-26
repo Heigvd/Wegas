@@ -79,6 +79,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 this.events.push(Wegas.Facade.Instance.after("*:updatedInstance", this.refreshAfterInstanceUpdate, this));
                 this.events.push(Wegas.Facade.Variable.after("updatedDescriptor", this.rebuildAfterUpdate, this));
 
+                this.events.push(Y.Wegas.app.on("newSearchVal", this.checkSearch, this));
                 cb.on("mousedown", function() {
                     this.one(".scrollable").addClass("mousedown");
                 });
@@ -126,6 +127,18 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 this.btnZoomValue.on(CLICK, function() {
                     this.setZoom(1, false);
                 }, this);
+            },
+            checkSearch: function() {
+                var searchField = Y.one(".wegas-editor-treeview .wegas-filter-input input");
+                if (searchField) {
+                    var searchVal = searchField.get("value").toLowerCase();
+                    for (var stateId in this.nodes) {
+                        this.nodes[stateId].checkSearch(searchVal);
+                        for (var trIndex in this.nodes[stateId]._items) {
+                            this.nodes[stateId]._items[trIndex].checkSearch(searchVal);
+                        }
+                    }
+                }
             },
             syncUI: function() {
                 this.highlightCurrentState();
@@ -286,7 +299,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 jp.setSuspendDrawing(false, true);
                 this.hideOverlay();
                 this.highlightUnusedStates();
-
+                this.checkSearch();
             },
             refreshState: function(entity, id) {
                 var state;
@@ -332,6 +345,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 jp.setSuspendDrawing(false, true);
                 this.hideOverlay();
                 this.highlightUnusedStates();
+                this.checkSearch();
             },
             onNewState: function(type, cfg) {
                 var state, region = this.get(CONTENT_BOX).one(".scrollable").get("region"),
@@ -561,6 +575,11 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             this.get(BOUNDING_BOX).one(".wegas-state-text").setHTML(label ||
                 "<div style='text-align: center;'><em><br />Empty</em></div>")
                 .set("title", impact ? "<b>Impact</b><br />" + impact : "").plug(Y.Plugin.Tooltip);
+        },
+        checkSearch: function(needle) {
+            var state = this.get("entity");
+            var haystack = "" + state.get("label") + state.get("onEnterEvent").get("content");
+            this.get("boundingBox").toggleClass("needle-found", needle && haystack.toLowerCase().indexOf(needle) >= 0);
         },
         showForm: function(state) {
             Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
@@ -802,6 +821,21 @@ YUI.add("wegas-statemachineviewer", function(Y) {
     Transition = Y.Base.create("wegas-transition", Y.Widget, [Y.WidgetParent, Y.WidgetChild], {
         initializer: function(cfg) {
             this.connection = cfg.connection;
+        },
+        checkSearch: function(needle) {
+            var transition = this.get("entity");
+            var condition = transition.get("triggerCondition");
+            var impact = transition.get("preStateImpact");
+
+            var haystack = "" + (condition ? condition.get("content") : "")
+                + (impact ? impact.get("content") : "");
+
+            var labelNode = this.connection.getLabelOverlay();
+            if (needle && haystack.toLowerCase().indexOf(needle) >= 0) {
+                labelNode.addClass("needle-found");
+            } else {
+                labelNode.removeClass("needle-found");
+            }
         },
         showForm: function(transition) {
             Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {

@@ -314,3 +314,13 @@
 .wegas-statemachineviewer .wegas-editing * {
     font-weight: bolder;
 }
+
+
+.wegas-statemachineviewer .transition-label.needle-found {
+    background-color: hotpink;
+}
+
+.wegas-statemachineviewer .sm-state.needle-found{
+    background-color: hotpink;
+
+}
