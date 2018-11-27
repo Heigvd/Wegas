@@ -48,6 +48,52 @@ YUI.add('wegas-mcq-entities', function(Y) {
      * QuestionDescriptor mapper
      */
     persistence.QuestionDescriptor = Y.Base.create("QuestionDescriptor", persistence.VariableDescriptor, [persistence.VariableContainer], {
+        isAnyChoiceAnswerable: function() {
+            var qInstance = this.getInstance();
+            if (this.get("cbx")) {
+                // only active and not yet validated CBX are answerable
+                return qInstance.get("active") && !qInstance.get("validated");
+            } else {
+
+                if (!qInstance.get('active') || qInstance.get('validated')) {
+                    // not active or manually validated
+                    return false;
+                } else {
+                    var qReplies = qInstance.get('replies');
+
+                    if (qReplies) {
+                        if (this.get('maxReplies')) {
+                            // is maximum reached?
+                            if (qReplies.length >= this.get("maxReplies")) {
+                                // yes -> not answerable
+                                return false;
+                            }
+                        }
+
+                        // no qMax || not yet reached
+                        //   -> find any answerable choice
+                        var choices = this.get("items"),
+                            choice, choiceI;
+                        for (var i in choices) {
+                            choice = choices[i];
+                            choiceI = choice.getInstance();
+                            if (choiceI.get("active")) {
+                                if (choice.get("maxReplies")) {
+                                    if (choiceI.get("replies").length < choice.get("maxReplies")) {
+                                        // found an answerable choice !
+                                        return true;
+                                    }
+                                } else {
+                                    // no limit -> answerable
+                                    return true;
+                                }
+                            }
+                        }
+                        return false;
+                    }
+                }
+            }
+        },
         getRepliesByStartTime: function(startTime) {
             return this.getInstance().getRepliesByStartTime(startTime);
         },

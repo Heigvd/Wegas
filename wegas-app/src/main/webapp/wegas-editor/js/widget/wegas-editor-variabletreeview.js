@@ -96,6 +96,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 }
                 this.treeView.filter.set("searchVal", this.searchRE);
                 this.treeView.filter.set("testFn", searchFn);
+                Y.Wegas.app.fire("newSearchVal");
             }, this);
             this._validateBttn = new Y.ToggleButton({
                 render: this.toolbar.get("header"),

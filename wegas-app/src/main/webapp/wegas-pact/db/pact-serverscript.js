@@ -188,8 +188,8 @@ ProgGameSimulation.prototype = {
         wdebug('Simulation run');
         // convert old version
         // @TODO remove ...
-        var onWin,
-            r = level.onWin;
+        var onWin = level.onWin,
+            r;
         if (
             typeof onWin === 'string' &&
             (r = onWin.match(
@@ -563,7 +563,7 @@ ProgGameSimulation.prototype = {
             }
             maxLevel.setValue(
                 self,
-                Math.max(maxLevel.getValue(self), this.level.onWin)
+                Math.max(maxLevel.getValue(self), Number(this.level.onWin))
             );
             return true;
         }

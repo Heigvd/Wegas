@@ -108,11 +108,56 @@ YUI.add('wegas-layout-resizable', function(Y) {
              * @description call functions "syncCenterNode" and "_syncUIStdMod";
              */
             syncUI: function() {
+                var justInit = false;
                 if (!this.initialLeft) {
                     this.initialLeft = this.initializeInitLeft();
+                    justInit = true;
+
                 }
                 this.lastEditorAdjustments();
                 this.syncCenterNode();
+                if (justInit) {
+                    this.makeLeftMinimizable();
+                }
+            },
+            makeLeftMinimizable: function() {
+                var tabView = Y.Widget.getByNode(".wegas-layout-left #leftTabView");
+                if (tabView) {
+                    var minBtn = new Y.Wegas.Button({
+                        label: "<i class='fa fa-window-minimize'></i>",
+                        cssClass: "wegas-minimize-tab"
+                    });
+
+                    this.handlers.push(Y.after("edit-entity:edit", function(e) {
+                        this.getPosition("left").toggleClass("hasFocus", false);
+                    }, this));
+                    this.get("contentBox").on("click", function(e) {
+                        var left = this.getPosition("left");
+                        if (left.hasClass("minimized")) {
+                            if ((e.target.hasClass("wegas-layout-left") || e.target.ancestor(".wegas-layout-left"))) {
+                                if ((!e.target.hasClass("wegas-minimize-tab") && !e.target.ancestor(".wegas-minimize-tab"))) {
+                                    left.toggleClass("hasFocus", true);
+                                } else {
+                                    left.toggleClass("hasFocus", false);
+                                }
+                            } else {
+                                left.toggleClass("hasFocus", false);
+                            }
+                        } else {
+                            left.toggleClass("hasFocus", false);
+                        }
+                    }, this);
+                    minBtn.on("click", this.toggleMin, this);
+                    tabView.add(minBtn);
+                }
+            },
+            toggleMin: function(e) {
+                var left = this.getPosition("left");
+                left.toggleClass("minimized");
+
+                left.toggleClass("hasFocus", false);
+                this.syncCenterNode();
+                //Y.later(0, this, this.syncCenterNode());
             },
             /**
              * @function
@@ -363,7 +408,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                     }
                 }
                 // if (rightWidth === '0px' || rightWidthStyle === '0px') {  }
-                this.savePosition(leftWidth, centerNode.getComputedStyle("width"), rightWidth);
+                this.savePosition(leftNode.getStyle("width"), centerNode.getComputedStyle("width"), rightWidth);
                 Y.Wegas.app.fire("layout:resize");
             },
             // Save column config to localStorage:

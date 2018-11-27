@@ -58,6 +58,9 @@ YUI.add('wegas-app', function(Y) {
             this.publish("ready", {
                 fireOnce: true
             });
+
+            this.publish("newSearchVal");
+
             this.dataSources = {};
 
             this._pendingRequests = 0;

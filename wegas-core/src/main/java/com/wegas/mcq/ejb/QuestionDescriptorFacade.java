@@ -164,8 +164,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         }
     }
 
-    public QuestionInstanceI readQuestion(Long playerId, Long whId){
-        VariableDescriptor desc = variableDescriptorFacade.find(whId);
+    public QuestionInstanceI readQuestion(Long playerId, Long qdId) {
+        VariableDescriptor desc = variableDescriptorFacade.find(qdId);
         QuestionInstanceI instance = (QuestionInstanceI) variableDescriptorFacade.getInstance(desc, playerFacade.find(playerId));
 
         instance.setUnread(false);
@@ -529,11 +529,13 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         } else {
             scriptManager.eval(player, validateReply.getResult().getImpact(), choiceDescriptor);
         }
-        final ReplyValidate replyV = new ReplyValidate(validateReply,
-                choiceDescriptor.getInstance(player),
-                (QuestionInstance) ((ChoiceDescriptor) validateReply.getChoiceInstance().findDescriptor()).getQuestion().getInstance(player),
+        ChoiceInstance choiceInstance = validateReply.getChoiceInstance();
+
+        final ReplyValidate replyV = new ReplyValidate(validateReply, choiceInstance,
+                (QuestionInstance) choiceDescriptor.getQuestion().getInstance(player),
                 player);
         try {
+            requestManager.addUpdatedEntities(choiceDescriptor.getEntities());
             if (validateReply.getIgnored()) {
                 scriptEvent.fire(player, "replyIgnore", replyV);
             } else {
@@ -630,6 +632,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         for (ChoiceDescriptor choice : questionDescriptor.getItems()) {
             // Test if the current choice has been selected, i.e. there is a reply for it.
             ChoiceInstance choiceInstance = choice.getInstance(player);
+
             boolean found = false;
             for (Reply r : choiceInstance.getReplies()) {
                 if (!r.getIgnored()) {

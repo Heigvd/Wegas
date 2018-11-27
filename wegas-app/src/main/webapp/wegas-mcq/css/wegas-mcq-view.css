@@ -8,11 +8,56 @@
 /**
  * Question
  */
+
+/*.wegas-mcqview:not([data-displayResult='bottom']) {*/
+.wegas-mcqview {
+    height:100%;
+}
+
+.wegas-mcqview .wegas-mcqview-content {
+    overflow-y: auto;
+}
+
+/*.wegas-mcqview:not([data-displayResult='bottom']) .wegas-mcqview-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.wegas-mcqview:not([data-displayResult='bottom']) .mcq-view-question-layout {
+    position: relative;
+    overflow-y: hidden;
+    flex-shrink: 1;
+    flex-grow: 2;
+}
+
+.wegas-mcqview:not([data-displayResult='bottom']) .mcq-view-result-layout {
+    position: relative;
+    overflow-y: hidden;
+    flex-shrink: 1;
+    flex-grow: 1;
+}
+
+.wegas-mcqview:not([data-displayResult='bottom']) .mcq-view-question-layout > div,
+.wegas-mcqview:not([data-displayResult='bottom']) .mcq-view-result-layout > div{
+    position: absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right: 0;
+}*/
+
+.wegas-mcqchoice[nbfb='0'] .mcq-choice-result-layout,
+.wegas-mcqview-content.noFeedbacks .mcq-view-result-layout {
+    display: none;
+}
+
+
 .wegas-whview__mainlist,
 .wegas-mcqview .wegas-mcqview-content {
-    padding: 0 6px 10px 6px;
+    padding: 0 0 10px 6px;
     position: relative;
     height: 100%;
+    box-sizing : border-box;
 }
 
 .wegas-whview .wegas-whview__title,
@@ -36,6 +81,75 @@
 .wegas-mcqview .wegas-mcqview-content .mcq-view__choices {
     margin-top: 1em;
     margin-bottom: 1em;
+    flex-shrink: 1;
+    overflow-y: auto;
+}
+
+.wegas-mcqview .wegas-mcqview-content[data-nbChoices='1'] .mcq-view__choices {
+    overflow-y: hidden;
+    position: relative;
+    /*height: 100%;*/
+}
+
+
+.wegas-mcqview .wegas-mcqview-content[data-nbChoices='1'] .mcq-view__choices > div {
+    /*position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0 ;
+    right: 0;*/
+}
+
+.wegas-mcqview .wegas-mcqview-content[data-nbChoices='1'] .wegas-mcqchoice,
+.wegas-mcqview .wegas-mcqview-content[data-nbChoices='1'] .wegas-mcqchoice  > div {
+    height: 100%;
+}
+
+.wegas-mcqview .wegas-mcqview-content[data-nbChoices='1'] .wegas-mcqchoice .mcq-choice-result-layout,
+.wegas-mcqview .wegas-mcqview-content[data-nbChoices='1'] .wegas-mcqchoice .mcq-choice-result-layout > div{
+    height: 100%;
+    overflow-y: hidden;
+}
+
+
+.wegas-mcqview .wegas-mcqview-content .mcq-view-result-layout .mcq-view__results {
+    flex-shrink: 1;
+    flex-grow: 1;
+    overflow-y: hidden;
+    position:relative;
+}
+.wegas-mcqview .wegas-mcqview-content .mcq-view-result-layout .mcq-view__results > div {
+    overflow-y: auto;
+    position:absolute;
+    top: 0;
+    bottom: 0;
+    left:0;
+    right:0;
+}
+
+
+
+.wegas-mcqview .wegas-mcqview-content .mcq-choice-result-layout .mcq-view__results {
+    flex-shrink: 1;
+    overflow-y: hidden;
+}
+.wegas-mcqview .wegas-mcqview-content .mcq-choice-result-layout .mcq-view__results > div {
+    height:100%;
+    overflow-y: auto;
+}
+
+
+
+.wegas-mcqview.answerable .wegas-mcqchoice.answerable .wegas-mcqchoice-content:hover .mcq-choice-result-layout {
+    background-color: whitesmoke;
+}
+
+.wegas-mcqview .wegas-mcqchoice.noTitle.noDescription .wegas-mcqchoice-content:hover .mcq-choice-result-layout {
+    background-color: unset;
+}
+
+.wegas-mcqview .wegas-mcqchoice .mcq-choice-result-layout {
+    background-color: white;
 }
 
 .wegas-mcqview .answerable.cbx:not(.horizontal) .wegas-mcqchoice.selectable.noDescription:not(.noTitle) .wegas-mcqchoice-content:hover,
@@ -43,15 +157,19 @@
     background-color: #c7c7c7;
 }
 
-
 .wegas-mcqview .answerable .wegas-mcqchoice.selectable .wegas-mcqchoice-content:hover{
     border-color : #c7c7c7;
     background-color: #f5f5f5;
 }
+.wegas-mcqview .answerable .wegas-mcqchoice.selectable.noTitle.noDescription .wegas-mcqchoice-content:hover{
+    border-color : hotpink;
+    background-color: white;
+}
 
 .wegas-whview .wegas-whview__answers .wegas-input-label,
 .wegas-mcqview .wegas-mcqchoice .mcqchoice__title ,
-.wegas-mcqview .wegas-mcqchoice .mcqchoice__description {
+.wegas-mcqview .wegas-mcqchoice .mcqchoice__description,
+.wegas-mcqview .wegas-mcqchoice .mcq-choice-result-layout > div {
     padding-left: 16px;
     padding-right: 20px;
 }
@@ -165,6 +283,7 @@
     box-sizing: border-box;
 }
 
+.wegas-mcqview .wegas-mcqchoice .mcq-choice-result-layout,
 .wegas-mcqview .wegas-mcqchoice .mcqchoice__title,
 .wegas-mcqview .cbx.horizontal .wegas-mcqchoice .mcqchoice__description {
     /* wrap checkbox / radio button */
