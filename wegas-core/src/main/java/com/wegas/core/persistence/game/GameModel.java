@@ -1143,7 +1143,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     public boolean isProtected() {
         // only scenarios which are based on a model are protected
         // but do no protect a gameModel when the propagation process is ongoing
-        return (this.getType().equals(GmType.SCENARIO) && this.getBasedOnId() != null && !this.onGoingPropagation);
+        return (this.isScenario() && this.getBasedOnId() != null && !this.onGoingPropagation);
     }
 
     /**
@@ -1160,6 +1160,21 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         return this.getType().equals(GmType.MODEL);
     }
 
+    @JsonIgnore
+    public boolean isScenario() {
+        return this.getType().equals(GmType.SCENARIO);
+    }
+
+    @JsonIgnore
+    public boolean isReference() {
+        return this.getType().equals(GmType.REFERENCE);
+    }
+
+    @JsonIgnore
+    public boolean isPlay() {
+        return this.getType().equals(GmType.PLAY);
+    }
+
     @Override
     public WithPermission getMergeableParent() {
         return null;
@@ -1167,7 +1182,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     @JsonIgnore
     public boolean isScenarioBasedOnModel() {
-        return this.getType().equals(GmType.SCENARIO) && this.getBasedOn() != null;
+        return this.isScenario() && this.getBasedOn() != null;
     }
 
     @Override
@@ -1177,7 +1192,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     @Override
     public Collection<WegasPermission> getRequieredCreatePermission() {
-        if (this.getType() == GmType.PLAY) {
+        if (this.isPlay()) {
             return WegasMembership.TRAINER;
         } else {
             return WegasMembership.SCENARIST;

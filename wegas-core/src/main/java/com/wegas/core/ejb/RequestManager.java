@@ -1247,7 +1247,7 @@ public class RequestManager implements RequestManagerI {
         // not yet persisted means the gameModel is being created right kown
         if (!(gameModel.isPersisted() || gameModelFacade.isPersisted(gameModel.getId())) || hasDirectGameModelEditPermission(gameModel)) {
             return true;
-        } else if (gameModel.getType().equals(GameModel.GmType.PLAY)) {
+        } else if (gameModel.isPlay()) {
             /**
              * GameModel permission against a "PLAY" gameModel.
              */
@@ -1544,7 +1544,7 @@ public class RequestManager implements RequestManagerI {
      */
     public boolean canInstantiateGameModel(final GameModel gameModel) {
         GameModel theOne;
-        if (gameModel.getType().equals(GameModel.GmType.PLAY) && gameModel.getBasedOn() != null) {
+        if (gameModel.isPlay() && gameModel.getBasedOnId() != null) {
             theOne = gameModel.getBasedOn();
         } else {
             theOne = gameModel;
@@ -1562,7 +1562,7 @@ public class RequestManager implements RequestManagerI {
      */
     public boolean canDuplicateGameModel(final GameModel gameModel) {
         GameModel theOne;
-        if (gameModel.getType().equals(GameModel.GmType.PLAY) && gameModel.getBasedOn() != null) {
+        if (gameModel.isPlay() && gameModel.getBasedOnId() != null) {
             theOne = gameModel.getBasedOn();
         } else {
             theOne = gameModel;

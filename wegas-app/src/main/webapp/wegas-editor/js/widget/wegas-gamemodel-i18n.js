@@ -202,8 +202,8 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             this.languages.get("contentBox").delegate(["input", "change"], this.languageChange, ".language .form input", this);
             this.languages.get("contentBox").delegate("click", this.openAutoTranslateMenu, ".wegas-language-i18n-auto", this);
             this.languages.get("contentBox").delegate("click", this.saveAll, ".wegas-language-save-all", this);
-            this.languages.get("contentBox").delegate("click", this.languageSave, ".language .validate", this);
-            this.languages.get("contentBox").delegate("click", this.languageCancel, ".language .cancel", this);
+            this.languages.get("contentBox").delegate("click", this.languageSave, ".language:not(.loading) .validate", this);
+            this.languages.get("contentBox").delegate("click", this.languageCancel, ".language:not(.loading) .cancel", this);
 
             this.handlers.onRefresh = this.refreshButton.on("click", Y.bind(this.rebuildEditor, this));
 
@@ -341,6 +341,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 if (lang) {
                     // language already exists -> update
                     var active = langNode.one(".language-active").getDOMNode().checked;
+                    langNode.addClass("loading");
 
                     lang.set("code", code);
                     lang.set("lang", name);
@@ -652,7 +653,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
 
             if (outdated) {
                 if (!this.get("boundingBox").one(".wegas-panel")) {
-                    this.showMessage("error", "Translations table is outdated, please relead");
+                    this.showMessage("error", "Translations table is outdated, please reload");
                 }
             }
         },

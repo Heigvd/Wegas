@@ -24,6 +24,7 @@ angular.module('private.admin', [
         var ctrl = this;
         ctrl.serviceUrl = window.ServiceURL;
         ctrl.loading = true;
+        ctrl.isMaster = false;
         ctrl.uploading = false;
 
         ctrl.fireAndForget = function(method, url) {
@@ -50,6 +51,10 @@ angular.module('private.admin', [
                 $rootScope.translationWorkspace = {
                     workspace: WegasTranslations.workspaces.ADMIN[$translate.use()]
                 };
+
+                $http.get(ctrl.serviceUrl + "rest/Utils/pr_number").then(function(response) {
+                    ctrl.isMaster = response.data <= 0;
+                });
                 $http.get(ctrl.serviceUrl + "rest/Utils/build_details").then(function(response) {
                     ctrl.build_details = response.data;
                     ctrl.loading = false;

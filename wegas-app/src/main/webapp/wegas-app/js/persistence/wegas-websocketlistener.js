@@ -160,7 +160,6 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 allDs = [],
                 datasource, dsId, remappedEntities = {};
             Y.log("Websocket event received.", "info", "Wegas.WebsocketListener");
-            Y.log(data);
             this._before(token);
             Y.later(0, this, function() {
                 var collector = {}, ds;

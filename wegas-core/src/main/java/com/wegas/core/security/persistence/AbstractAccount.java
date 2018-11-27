@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;

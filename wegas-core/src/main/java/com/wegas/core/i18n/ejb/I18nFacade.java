@@ -29,7 +29,6 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.GameModel.GmType;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.ModelScoped;
@@ -44,6 +43,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -55,6 +55,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -171,7 +172,7 @@ public class I18nFacade extends WegasAbstractFacade {
             newLang.setLang(name);
             newLang.setCode(code);
 
-            if (gameModel.getType().equals(GmType.MODEL)) {
+            if (gameModel.isModel()) {
                 newLang.setVisibility(Visibility.INTERNAL);
             } else {
                 newLang.setVisibility(Visibility.PRIVATE);
@@ -922,7 +923,7 @@ public class I18nFacade extends WegasAbstractFacade {
 
     private Deepl getDeeplClient() {
         if (isTranslationServiceAvailable()) {
-            return new Deepl(Helper.getWegasProperty("deepl.service_url", "https://api.deepl.com/v1"),
+            return new Deepl(Helper.getWegasProperty("deepl.service_url", "https://api.deepl.com/v2"),
                     Helper.getWegasProperty("deepl.auth_key"));
         } else {
             throw WegasErrorMessage.error("No translation service");
@@ -950,7 +951,11 @@ public class I18nFacade extends WegasAbstractFacade {
                 if (targetLang != null) {
                     if (gameModel.getLanguageByCode(targetLangCode) != null) {
 
-                        translateGameModel(gameModel, sourceLang.name(), targetLang.name());
+                        try {
+                            translateGameModel(gameModel, sourceLang.name(), targetLang.name());
+                        } catch (UnsupportedEncodingException ex) {
+                            throw WegasErrorMessage.error("Unsupported encoding exception " + ex);
+                        }
                     } else {
                         throw WegasErrorMessage.error("Unsupported target language " + targetLangCode);
                     }
@@ -980,7 +985,7 @@ public class I18nFacade extends WegasAbstractFacade {
         }
     }
 
-    public DeeplTranslations translate(String sourceLangCode, String targetLangCode, String... texts) {
+    public DeeplTranslations translate(String sourceLangCode, String targetLangCode, String... texts) throws UnsupportedEncodingException {
         Deepl.Language sourceLang = Deepl.Language.valueOf(sourceLangCode.toUpperCase());
         Deepl.Language targetLang = Deepl.Language.valueOf(targetLangCode.toUpperCase());
 
@@ -1075,6 +1080,7 @@ public class I18nFacade extends WegasAbstractFacade {
 
                                         patch.setCode(key);
                                         patch.setValue(translation);
+                                        patchList.add(patch);
                                     }
                                     index++;
                                 }
@@ -1092,34 +1098,72 @@ public class I18nFacade extends WegasAbstractFacade {
         }
     }
 
-    private void translateGameModel(Mergeable target, String sourceLangCode, String targetLangCode) throws ScriptException {
-        /*
-         * TODO
-         **********
-         * 1) extract list of I18nUpdate
-         * 2) Translate them in one single shot
-        -> auto translate value
-        -> change code
-         * 3) apply
-         */
+    /**
+     * Auto translate a something.
+     *
+     * @param target         entity to translate
+     * @param sourceLangCode translation sources language
+     * @param targetLangCode target languages
+     *
+     * @throws ScriptException
+     */
+    private void translateGameModel(Mergeable target, String sourceLangCode, String targetLangCode) throws ScriptException, UnsupportedEncodingException {
         TranslationExtractor extractor = new TranslationExtractor(sourceLangCode, this);
         MergeHelper.visitMergeable(target, Boolean.TRUE, extractor);
         List<I18nUpdate> patches = extractor.getPatches();
 
-        String[] toTranslate = new String[patches.size()];
+        List<List<String>> listOfTexts = new ArrayList<>();
+
+        final int LIMIT = 50; // maximumt 50 texts / request
+        final int SIZE_LIMIT = 30000; // maximim 30 kB / request
+
+        int currentSize = 0;
+        List<String> texts = new ArrayList<>();
+
         int i = 0;
-        for (I18nUpdate update : patches) {
-            toTranslate[i] = update.getValue();
-            i++;
+        while (i < patches.size()) {
+            I18nUpdate update = patches.get(i);
+
+            int size = update.getValue().getBytes(StandardCharsets.UTF_8).length;
+
+            if (currentSize + size > SIZE_LIMIT) {
+                // no place left for new text
+                if (texts.size() > 0) {
+                    // stack current texts
+                    listOfTexts.add(texts);
+                    texts = new ArrayList<>();
+                    currentSize = 0;
+                } else {
+                    throw WegasErrorMessage.error("One text is way too big");
+                }
+            } else {
+                // enough room
+                texts.add(update.getValue());
+                currentSize += size;
+                i++;
+
+                if (texts.size() % LIMIT == 0) {
+                    listOfTexts.add(texts);
+                    texts = new ArrayList<>();
+                    currentSize = 0;
+                }
+            }
         }
 
-        DeeplTranslations translations = translate(sourceLangCode, targetLangCode, toTranslate);
+        if (texts.size() > 0) {
+            listOfTexts.add(texts);
+        }
+
         i = 0;
-        for (DeeplTranslations.DeeplTranslation translation : translations.getTranslations()) {
-            I18nUpdate patch = patches.get(i);
-            patch.setCode(targetLangCode);
-            patch.setValue(translation.getText());
-            i++;
+        for (List<String> toTranslate : listOfTexts) {
+            DeeplTranslations translations = translate(sourceLangCode, targetLangCode, toTranslate.toArray(new String[toTranslate.size()]));
+            for (DeeplTranslations.DeeplTranslation translation : translations.getTranslations()) {
+                logger.error("{}: {} -> {}", i, patches.get(i).getValue(), translation.getText());
+                I18nUpdate patch = patches.get(i);
+                patch.setCode(targetLangCode);
+                patch.setValue(translation.getText());
+                i++;
+            }
         }
 
         this.batchUpdate(patches);

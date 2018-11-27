@@ -379,11 +379,9 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
     /**
      * @return Looked-up EJB
      */
-    public static VariableInstanceFacade
-            lookup() {
+    public static VariableInstanceFacade lookup() {
         try {
-            return Helper.lookupBy(VariableInstanceFacade.class
-            );
+            return Helper.lookupBy(VariableInstanceFacade.class);
         } catch (NamingException ex) {
             logger.error("Error retrieving var inst f", ex);
             return null;

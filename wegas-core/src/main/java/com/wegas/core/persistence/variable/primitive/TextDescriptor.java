@@ -30,7 +30,7 @@ public class TextDescriptor extends VariableDescriptor<TextInstance>
      */
     @Override
     public void setValue(Player p, String value) {
-        this.getInstance(p).setValue(value);
+        this.getInstance(p).setValue(value, p.getLang());
     }
 
     /**

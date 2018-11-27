@@ -12,6 +12,8 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import javax.ws.rs.core.MediaType;
 import org.apache.http.HttpEntity;
@@ -167,7 +169,7 @@ public class Deepl {
      *
      * @return
      */
-    public DeeplTranslations translate(Language sourceLang, Language targetLang, String... texts) {
+    public DeeplTranslations translate(Language sourceLang, Language targetLang, String... texts) throws UnsupportedEncodingException {
 
         StringBuilder sb = new StringBuilder();
         sb.append("auth_key=").append(this.key);
@@ -184,7 +186,7 @@ public class Deepl {
 
         if (texts != null) {
             for (String text : texts) {
-                sb.append("&text=").append(text);
+                sb.append("&text=").append(URLEncoder.encode(text, "UTF-8"));
             }
         } else {
             //TODO else : throw error

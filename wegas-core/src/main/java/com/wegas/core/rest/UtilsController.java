@@ -115,7 +115,7 @@ public class UtilsController {
         StringBuilder sb = new StringBuilder(this.getFullVersion());
 
         String branch = Helper.getWegasProperty("wegas.build.branch", null);
-        String travisVersion = null;
+        Long travisVersion = null;
 
         if (!Helper.isNullOrEmpty(branch)) {
             String prBranch = Helper.getWegasProperty("wegas.build.pr_branch", null);
@@ -124,7 +124,7 @@ public class UtilsController {
             if (!Helper.isNullOrEmpty(prNumber) && !"false".equals(prNumber)) {
                 sb.append("pull request ").append(prNumber).append("/").append(prBranch).append(" into ").append(branch);
 
-                travisVersion = findCurrentTravisVersionPr(prBranch, prNumber);
+                travisVersion = findCurrentTravisVersionPr("master", prNumber);
             } else {
                 sb.append(branch).append(" branch");
                 travisVersion = findCurrentTravisVersion(branch);
@@ -134,7 +134,7 @@ public class UtilsController {
             sb.append(", NinjaBuild");
         }
 
-        if (travisVersion != null) {
+        if (travisVersion != null && travisVersion > 0) {
             sb.append(", travis last build is #").append(travisVersion);
         }
 
@@ -142,13 +142,20 @@ public class UtilsController {
     }
 
     @GET
+    @Path("pr_number")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Long getPrNumber() {
+        return Long.parseLong(Helper.getWegasProperty("wegas.build.pr_number", "-1"));
+    }
+
+    @GET
     @Path("build_details_pr/{number: [1-9][0-9]*}/{branch: [a-zA-Z0-9]*}")
     @Produces(MediaType.TEXT_PLAIN)
-    public String getBuildDetailsForPr(@PathParam("number") String number, @PathParam("branch") String branch) throws URISyntaxException {
+    public Long getBuildDetailsForPr(@PathParam("number") String number, @PathParam("branch") String branch) throws URISyntaxException {
         return findCurrentTravisVersionPr(branch, number);
     }
 
-    private static String findCurrentTravisVersionPr(String branch, String prNumber) {
+    private static Long findCurrentTravisVersionPr(String branch, String prNumber) {
 
         try {
             HttpClient client = HttpClientBuilder.create().build();
@@ -177,15 +184,15 @@ public class UtilsController {
                 JsonObject build = b.getAsJsonObject();
                 String val = build.get("pull_request_number").getAsString();
                 if (prNumber.equals(val)) {
-                    return build.get("number").getAsString();
+                    return build.get("number").getAsLong();
                 }
             }
         } catch (URISyntaxException | IOException ex) {
         }
-        return "-1";
+        return -1l;
     }
 
-    private static String findCurrentTravisVersion(String branch) {
+    private static Long findCurrentTravisVersion(String branch) {
         try {
             HttpClient client = HttpClientBuilder.create().build();
 
@@ -209,14 +216,14 @@ public class UtilsController {
             Pattern p = Pattern.compile(".*\"number\": \"(\\d+)\".*", Pattern.DOTALL);
             Matcher matcher = p.matcher(strResponse);
             if (matcher.matches() && matcher.groupCount() == 1) {
-                return matcher.group(1);
+                return Long.parseLong(matcher.group(1), 10);
             } else {
-                return "-1";
+                return -1l;
             }
         } catch (URISyntaxException ex) {
-            return "-1";
+            return -1l;
         } catch (IOException ex) {
-            return "-1";
+            return -1l;
         }
     }
 

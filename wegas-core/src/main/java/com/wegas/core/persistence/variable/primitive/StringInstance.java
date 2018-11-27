@@ -96,11 +96,40 @@ public class StringInstance extends VariableInstance {
      * If the StringDescriptor defines some allowed values, the as-is value or
      * each string in the array must equal one of the allowed values. Otherwise,
      * a WegasErrorMessage is therown.
+     * <p>
+     * since no language is given, the first one defined in the game model will be used.
+     * This will erase all other translations.
      *
      * @param value the value to set
      */
     @JsonProperty
     public void setValue(String value) {
+        // guess lang code
+        VariableDescriptor desc = this.findDescriptor();
+        String lang = "en";
+        if (desc != null && desc.getGameModel() != null) {
+            List<GameModelLanguage> languages = desc.getGameModel().getRawLanguages();
+            if (languages != null && !languages.isEmpty()) {
+                lang = languages.get(0).getCode();
+            }
+        }
+
+        this.setValue(value, lang);
+    }
+
+    /**
+     * Value can be a string "as-is", or JSON array of string.
+     * <p>
+     * If the StringDescriptor defines some allowed values, the as-is value or
+     * each string in the array must equal one of the allowed values. Otherwise,
+     * a WegasErrorMessage is therown.
+     * <p>
+     * This will set the value for the given language. All other translations will be erased.
+     *
+     * @param value    the value to set
+     * @param langCode the language of the value
+     */
+    public void setValue(String value, String langCode) {
         VariableDescriptor vd = this.findDescriptor();
         if (vd instanceof StringDescriptor && value != null) {
             StringDescriptor sd = (StringDescriptor) vd;
@@ -112,16 +141,7 @@ public class StringInstance extends VariableInstance {
             }
         }
 
-        VariableDescriptor desc = this.findDescriptor();
-        String lang = "en";
-        if (desc != null && desc.getGameModel() != null) {
-            List<GameModelLanguage> languages = desc.getGameModel().getRawLanguages();
-            if (languages != null && !languages.isEmpty()) {
-                lang = languages.get(0).getCode();
-            }
-        }
-
-        this.setTrValue(TranslatableContent.merger(this.getTrValue(), TranslatableContent.build(lang, value)));
+        this.setTrValue(TranslatableContent.merger(this.getTrValue(), TranslatableContent.build(langCode, value)));
     }
 
     /**

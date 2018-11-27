@@ -12,8 +12,12 @@
 
 /* Header toggle button */
 .yui3-skin-sam.wegas-editmode .wegas-layout-hd .yui3-button.host-switchmode{
-    background-color : red;
+    background-color : #f55c5c;
 }
+.yui3-skin-sam.wegas-editmode .wegas-layout-hd .yui3-button.host-switchmode:hover{
+    color: #666;
+}
+
 .yui3-skin-sam.wegas-editmode .wegas-layout-hd .gamemodel-type{
     color : red;
 }
@@ -918,6 +922,10 @@
 .wegas-i18n-manager .wegas-i18n-manager--languages .language .tools {
     display: none;
     cursor: pointer;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .language.loading .tools {
+    cursor: wait;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-i18n-auto,

@@ -58,9 +58,9 @@
                 // Handle switch from host to edit mode
                 Y.use("wegas-button", function() {
                     var editButton = new Y.Wegas.Button({
-                        label: "Back to game",
+                        label: "<i class=\"fa fa-eye\" title=\"Back to game\"></i>",
                         cssClass: "host-switchmode"
-                    }).render(".wegas-layout-hd");
+                    }).render(".wegas-button-toolbar .wegas-flexlist-content");
                     editButton.on("click", function() {
                         window.location.replace(window.location.toString().replace("edit.", "host."));
                     }, this);

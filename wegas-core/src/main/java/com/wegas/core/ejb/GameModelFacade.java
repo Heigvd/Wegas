@@ -599,7 +599,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         final GameModel srcGameModel = this.find(entityId);
 
         if (srcGameModel != null) {
-            if (srcGameModel.getType().equals(MODEL)) {
+            if (srcGameModel.isModel()){
                 requestManager.assertCanDuplicateGameModel(this.find(entityId));
 
                 GameModel newGameModel = this.duplicate(entityId);
@@ -745,7 +745,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         for (GameModel instantiation : instantiations) {
             instantiation.setBasedOn(null);
-            if (gameModel.isModel() && instantiation.getType().equals(GmType.REFERENCE)) {
+            if (gameModel.isModel() && instantiation.isReference()){
                 this.remove(instantiation);
             }
         }
@@ -797,9 +797,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      */
     public void delete(GameModel entity) {
 
-        if (entity.getType().equals(MODEL)) {
+        if (entity.isModel()){
             for (GameModel gm : getImplementations(entity)) {
-                if (gm.getType().equals(SCENARIO) && !gm.getStatus().equals(Status.DELETE)) {
+                if (gm.isScenario() && !gm.getStatus().equals(Status.DELETE)) {
                     throw WegasErrorMessage.error("Unable to delete the model because at least one scenario still depends on it");
                 }
             }

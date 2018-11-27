@@ -109,6 +109,20 @@ public class TextInstance extends VariableInstance {
             }
         }
 
+        this.setValue(value, lang);
+    }
+
+    /**
+     * Used for player input.
+     * <p>
+     * Set the lang translation to value. erase all others
+     *
+     * @param value the value
+     * @param lang  the language
+     */
+    @JsonProperty
+    public void setValue(String value, String lang) {
+        VariableDescriptor desc = this.findDescriptor();
         this.setTrValue(TranslatableContent.merger(this.getTrValue(), TranslatableContent.build(lang, value)));
     }
 }

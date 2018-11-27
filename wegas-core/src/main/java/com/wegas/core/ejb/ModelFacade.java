@@ -26,7 +26,6 @@ import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.GameModel.GmType;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -118,10 +117,11 @@ public class ModelFacade {
     }
 
     /**
+     * Load gamemodels from list of IDs
      *
-     * @param scenarioIds
+     * @param scenarioIds IDs of the gamemodel to load
      *
-     * @return
+     * @return list of managed gameModels
      */
     private List<GameModel> loadGameModelsFromIds(List<Long> scenarioIds) {
         List<GameModel> scenarios = new ArrayList<>();
@@ -183,7 +183,13 @@ public class ModelFacade {
     }
 
     /**
-     * clean state machine in scenario before integration.
+     * Some entities deserve a special treatment before their integration in a model cluster.
+     * Target is the scenario to integrate. reference #1 is the model
+     * <ul>
+     * <li>set all descriptor, gamemodelcontents and languages as private.</li>
+     * <li>clear state machine states for each fsm which exists in the model</li>
+     * </ul>
+     * <p>
      */
     private static class PreIntegrateScenarioClear implements MergeableVisitor {
 
@@ -571,20 +577,46 @@ public class ModelFacade {
         }
     }
 
+    /**
+     * Get model reference.
+     *
+     * @param model the model
+     *
+     * @return the reference or null
+     */
     public GameModel getReference(GameModel model) {
         Collection<GameModel> implementations = gameModelFacade.getImplementations(model);
         for (GameModel gm : implementations) {
-            if (gm.getType().equals(GmType.REFERENCE)) {
+            if (gm.isReference()) {
                 return gm;
             }
         }
         return null;
     }
 
+    /**
+     * Exclude scenario identified by the given id from its model cluster.
+     *
+     * @see #releaseScenario(com.wegas.core.persistence.game.GameModel)
+     * @param scenarioId id of the scenario to release.
+     *
+     * @return the just released scenario
+     */
     public GameModel releaeScenario(Long scenarioId) {
         return this.releaseScenario(gameModelFacade.find(scenarioId));
     }
 
+    /**
+     * Exclude the given scenario from its model cluster.
+     * <ol>
+     * <li>Set all descriptors, all gamemodel contents and all languages as private ones</li>
+     * <li>Reset all refIds</li>
+     * </ol>
+     *
+     * @param scenario the scenario to release.
+     *
+     * @return the just released scenario
+     */
     public GameModel releaseScenario(GameModel scenario) {
         for (VariableDescriptor vd : scenario.getVariableDescriptors()) {
             vd.setVisibility(ModelScoped.Visibility.PRIVATE);
@@ -624,7 +656,7 @@ public class ModelFacade {
      */
     public void integrateScenario(GameModel model, List<GameModel> scenarios) throws RepositoryException {
         if (model != null) {
-            if (GmType.MODEL.equals(model.getType())) {
+            if (model.isModel()) {
                 List<GameModel> allGameModels = new ArrayList<>();
                 allGameModels.add(model);
                 allGameModels.addAll(scenarios);
@@ -638,7 +670,7 @@ public class ModelFacade {
                     // set scenarios refId to model refId
                     for (GameModel scenario : scenarios) {
                         scenario.forceRefId(model.getRefId());
-                        if (scenario.getType().equals(GmType.SCENARIO)) {
+                        if (scenario.isScenario()) {
                             scenario.setOnGoingPropagation(Boolean.TRUE);
                         }
                     }
@@ -750,7 +782,7 @@ public class ModelFacade {
                      * Clean sub-levels: make sure to clear statemachine scenarios
                      */
                     for (GameModel scenario : scenarios) {
-                        if (scenario.getType().equals(GmType.SCENARIO)) {
+                        if (scenario.isScenario()) {
                             MergeHelper.visitMergeable(scenario, true, new PreIntegrateScenarioClear(), model);
                         }
                     }
@@ -807,7 +839,7 @@ public class ModelFacade {
 
                         if (gms.contains(model)) {
                             for (GameModel scen : gms) {
-                                if (scen.getType().equals(GmType.SCENARIO)) {
+                                if (scen.isScenario()) {
                                     i18nFacade.importTranslations(scen, model, reference, languageCode);
                                 }
                             }
@@ -817,7 +849,7 @@ public class ModelFacade {
                     this.syncRepository(model);
 
                     for (GameModel scenario : scenarios) {
-                        if (scenario.getType().equals(GmType.SCENARIO)) {
+                        if (scenario.isScenario()) {
                             scenario.setOnGoingPropagation(Boolean.FALSE);
                         }
                     }
@@ -834,6 +866,15 @@ public class ModelFacade {
         }
     }
 
+    /**
+     * register JTA callbacks which propagate page changes after transaction commit.
+     * <p>
+     * Fire a pageIndexUpdate and a pageUpdagte for each page.
+     *
+     * @param scenario
+     *
+     * @throws RepositoryException
+     */
     private void registerPagesPropagates(GameModel scenario) throws RepositoryException {
 
         Pages pages = jCRConnectorProvider.getPages(scenario);
@@ -849,11 +890,12 @@ public class ModelFacade {
     }
 
     /**
+     * Propagate JCR changes to implementations and reference.
      *
      * @param model
      */
     private void syncRepository(GameModel model) throws RepositoryException {
-        if (model.getType().equals(GmType.MODEL)) {
+        if (model.isModel()) {
             GameModel reference = this.getReference(model);
             Collection<GameModel> implementations = gameModelFacade.getImplementations(model);
 
@@ -870,7 +912,7 @@ public class ModelFacade {
                 WegasPatch patch = new WegasEntityPatch(refRoot, modelRoot, Boolean.TRUE);
 
                 for (GameModel scenario : implementations) {
-                    if (scenario.getType().equals(GmType.SCENARIO)) {
+                    if (scenario.isScenario()) {
                         // apply patch to each implementations
                         ContentConnector repo = jCRConnectorProvider.getContentConnector(scenario, ContentConnector.WorkspaceType.FILES);
                         AbstractContentDescriptor root = DescriptorFactory.getDescriptor("/", repo);
@@ -947,7 +989,7 @@ public class ModelFacade {
      *
      */
     private GameModel propagateModel(GameModel gameModel) throws RepositoryException {
-        if (gameModel.getType().equals(GmType.MODEL)) {
+        if (gameModel.isModel()) {
             GameModel reference = this.getReference(gameModel);
 
             if (reference == null) {
@@ -1002,7 +1044,7 @@ public class ModelFacade {
 
                 for (GameModel scenario : implementations) {
                     // avoid propagating to game's scenarios or to the model
-                    if (scenario.getType().equals(GmType.SCENARIO)) {
+                    if (scenario.isScenario()) {
                         scenario.setOnGoingPropagation(Boolean.TRUE);
 
                         if (!languageCodes.isEmpty()) {
@@ -1057,7 +1099,7 @@ public class ModelFacade {
 
                 for (GameModel scenario : implementations) {
                     // avoid propagating to game's scenarios or to the model
-                    if (scenario.getType().equals(GmType.SCENARIO)) {
+                    if (scenario.isScenario()) {
                         scenario.setOnGoingPropagation(Boolean.FALSE);
                     }
                 }

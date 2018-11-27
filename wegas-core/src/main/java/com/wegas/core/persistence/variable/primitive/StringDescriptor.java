@@ -144,7 +144,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      */
     @Override
     public void setValue(Player p, String value) {
-        this.getInstance(p).setValue(value);
+        this.getInstance(p).setValue(value, p.getLang());
     }
 
     /**
