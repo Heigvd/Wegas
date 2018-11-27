@@ -16,6 +16,7 @@ import com.wegas.core.i18n.ejb.I18nFacade.UpdateType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -184,7 +185,7 @@ public class I18nController {
     @Path("Translate/{source: [a-zA-Z]+}/{target: [a-zA-Z]+}")
     @Consumes(MediaType.TEXT_PLAIN)
     public DeeplTranslation translate(@PathParam("target") String targetLangCode,
-            @PathParam("source") String sourceLangCode, String text) {
+            @PathParam("source") String sourceLangCode, String text) throws UnsupportedEncodingException {
 
         return i18nfacade.translate(sourceLangCode, targetLangCode, text).getTranslations().get(0);
     }
