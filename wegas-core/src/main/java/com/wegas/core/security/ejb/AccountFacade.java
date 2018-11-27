@@ -87,7 +87,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             }
         }
 
-        // Silently discard any modification attempts made by non-admins:
+        // Silently discard any modification attempts made by non-admins to the comment field:
         if (!requestManager.isAdmin() && !account.getComment().equals(super.find(entityId).getComment())) {
             account.setComment(super.find(entityId).getComment());
         }
