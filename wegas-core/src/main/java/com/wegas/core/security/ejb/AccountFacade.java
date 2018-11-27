@@ -87,6 +87,11 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             }
         }
 
+        // Silently discard any modification attempts made by non-admins:
+        if (!requestManager.isAdmin() && !account.getComment().equals(super.find(entityId).getComment())) {
+            account.setComment(super.find(entityId).getComment());
+        }
+
         AbstractAccount oAccount = super.update(entityId, account);
 
         /*
