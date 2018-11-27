@@ -106,6 +106,11 @@ public abstract class AbstractAccount extends AbstractEntity {
     private Date agreedTime = null;
 
     /**
+     * Optional remarks only visible to admins
+     */
+    private String comment = "";
+
+    /**
      *
      */
     @JsonView(Views.ExtendedI.class)
@@ -139,6 +144,7 @@ public abstract class AbstractAccount extends AbstractEntity {
                 // Never reset this attribute:
                 this.setAgreedTime(a.getAgreedTime());
             }
+            this.setComment(a.getComment());
         } else {
             throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
         }
@@ -220,6 +226,20 @@ public abstract class AbstractAccount extends AbstractEntity {
      */
     public void setLastname(String lastname) {
         this.lastname = lastname;
+    }
+
+    /**
+     * @return the comment
+     */
+    public String getComment() {
+        return comment;
+    }
+
+    /**
+     * @param comment the comment to set
+     */
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     /**

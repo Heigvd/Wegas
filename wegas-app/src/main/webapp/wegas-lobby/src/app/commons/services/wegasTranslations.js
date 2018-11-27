@@ -1163,6 +1163,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Please enter your last name",
                             'fr': "Veuillez entrer votre nom de famille"
                         },
+                        'PRIVATE-PROFILE-INPUT-PLACEHOLDER-COMMENT': {
+                            'en': "Admin comments",
+                            'fr': "Remarques administrateur"
+                        },
                         'PRIVATE-PROFILE-SAVE-BTN': {
                             'en': "Save changes",
                             'fr': "Sauver les modifications"
