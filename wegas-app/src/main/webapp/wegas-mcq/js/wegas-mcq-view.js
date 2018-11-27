@@ -829,7 +829,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                     if (questionDescriptor.get("pictures").length > 0) {
                         this.gallery = new Y.Wegas.Text({
                         });
-                        this.qLayout.add(this.gallery, 2);
+                        this.add(this.gallery, 2);
                         this._gallery = new Wegas.util.FileLibraryGallery({
                             selectedHeight: 150,
                             selectedWidth: 235,
