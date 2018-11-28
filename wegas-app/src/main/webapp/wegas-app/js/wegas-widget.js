@@ -686,7 +686,7 @@ YUI.add('wegas-widget', function(Y) {
         },
         _buildCfg: {
             aggregates: ["EDITMENU"]
-            /*statics: ["EDITMENU"]*/
+                /*statics: ["EDITMENU"]*/
         }
     });
     Wegas.Widget = Widget;
@@ -761,7 +761,7 @@ YUI.add('wegas-widget', function(Y) {
             this.get(BOUNDING_BOX).setHTML(
                 "<div class='wegas-widget-errored'><i>Failed to render<br>" +
                 e.message +
-                '</i></div>'
+                '</i><span class="wegas-advanced-feature">' + e.stack + '</span></div>'
                 );
 
             Y.log(
