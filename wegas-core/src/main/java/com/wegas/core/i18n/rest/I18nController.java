@@ -32,6 +32,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -166,7 +167,7 @@ public class I18nController {
     public DeeplUsage deepLMockUsage(@FormParam("auth_key") String auth_key) {
         DeeplUsage usage = new DeeplUsage();
 
-        usage.setCharacterCount(123443l);
+        usage.setCharacterCount(500000l);
         usage.setCharacterLimit(1000000l);
 
         return usage;
@@ -174,6 +175,7 @@ public class I18nController {
 
     @PUT
     @Path("InitLanguage/{source: [a-zA-Z]+}/{target: [a-zA-Z]+}")
+    @RequiresRoles("Administrator")
     public GameModel initLanguageTranslations(@PathParam("gameModelId") Long gameModelId,
             @PathParam("target") String targetLangCode,
             @PathParam("source") String sourceLangCode) throws ScriptException {
