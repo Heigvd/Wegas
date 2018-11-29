@@ -1941,7 +1941,12 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     ]
                 },
                 getValue: {
-                    label: VALUE,
+                    label: "is true",
+                    returns: BOOLEAN,
+                    arguments: [SELFARG]
+                },
+                isFalse: {
+                    label: "is false",
                     returns: BOOLEAN,
                     arguments: [SELFARG]
                 }
