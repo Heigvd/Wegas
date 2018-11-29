@@ -10,6 +10,8 @@ function friendlyName(label: string) {
             return 'Open page';
         case 'OpenUrlAction':
             return 'Open URL';
+        case 'OpenFileAction':
+            return 'Open File';
         case 'ExecuteScriptAction':
             return 'Impact variables';
         case 'ExecuteLocalScriptAction':

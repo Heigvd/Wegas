@@ -5,6 +5,8 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -261,6 +263,70 @@ YUI.add('wegas-plugin', function(Y) {
         }
     );
     Plugin.OpenUrlAction = OpenUrlAction;
+
+    /**
+     *  @class
+     *  @name Y.Plugin.OpenUrlAction
+     *  @extends Y.Plugin.Action
+     *  @constructor
+     */
+    var OpenFileAction = Y.Base.create(
+        'OpenFilAction',
+        Action,
+        [],
+        {
+            execute: function() {
+                var theFile =  Y.Wegas.Facade.File.get("source") + "read" + I18n.t(this.get("file"));
+
+                this.open(theFile);
+            },
+            open: function(url) {
+                if (
+                    url.indexOf('http://') !== 0 &&
+                    url.indexOf('https://') !== 0 &&
+                    url.indexOf('//') !== 0
+                    ) {
+                    url = Wegas.app.get('base') + url;
+                }
+                if (this.get('target') === 'blank') {
+                    window.open(url);
+                } else {
+                    window.location.href = url;
+                }
+            }
+        },
+        {
+            NS: 'openfileaction',
+            ATTRS: {
+                file: Y.Wegas.Helper.getTranslationAttr({
+                    type: "wegasurl", label: "File"
+                }),
+                /**
+                 * Can be "self" or "blank"
+                 */
+                target: {
+                    type: 'string',
+                    value: 'blank',
+                    view: {
+                        type: 'select',
+                        choices: [
+                            {
+                                value: 'blank',
+                                label: 'In a new page'
+                            },
+                            {
+                                value: 'self',
+                                label: 'In the same page'
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    );
+    Plugin.OpenFileAction = OpenFileAction;
+
+
 
     /**
      *  @class

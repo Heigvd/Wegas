@@ -480,6 +480,10 @@ YUI.add('wegas-widget', function(Y) {
                                     value: {fn: 'OpenUrlAction'}
                                 },
                                 {
+                                    label: 'Open file',
+                                    value: {fn: 'OpenFileAction'}
+                                },
+                                {
                                     label: 'Impact variables',
                                     value: {fn: 'ExecuteScriptAction'}
                                 },
