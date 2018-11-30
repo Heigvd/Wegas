@@ -73,7 +73,7 @@ YUI.add('wegas-resizelistener', function(Y) {
             }
         },
 
-        checkSize(newRect) {
+        checkSize: function(newRect) {
             if (this.get("destroyed") || !this.get("initialized")) {
                 return;
             }
