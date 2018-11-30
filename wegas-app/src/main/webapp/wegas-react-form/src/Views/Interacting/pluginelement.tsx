@@ -32,6 +32,8 @@ function friendlyName(label: string) {
             return 'Size';
         case 'CSSText':
             return 'Text';
+        case 'ResizeListener':
+            return 'Resize Observer';
         case 'CSSStyles':
             return 'Other styles';
         case 'ShowAfter':

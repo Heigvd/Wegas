@@ -209,6 +209,11 @@ YUI().use(function(Y) {
                 ws_provides: "PopupListener",
                 requires: "wegas-panel"
             },
+            "wegas-resizelistener": {
+                path: "js/plugin/wegas-resizelistener-min.js",
+                ws_provides: "ResizeListener"
+                    //requires: "wegas-panel"
+            },
             "wegas-button": {
                 path: "js/widget/wegas-button-min.js",
                 requires: ["wegas-widget", "wegas-plugin", "button", "wegas-tooltip", "wegas-button-css"],

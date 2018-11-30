@@ -537,6 +537,10 @@ YUI.add('wegas-widget', function(Y) {
                                     value: {fn: 'CSSText'}
                                 },
                                 {
+                                    label: 'Resize Observer',
+                                    value: {fn: 'ResizeListener'}
+                                },
+                                {
                                     label: 'Other styles',
                                     value: {fn: 'CSSStyles'}
                                 }
