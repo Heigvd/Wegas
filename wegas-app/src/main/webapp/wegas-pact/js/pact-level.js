@@ -5,9 +5,7 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-/**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
- */
+/* global ace */
 
 YUI.add('pact-level', function(Y) {
     'use strict';
@@ -17,7 +15,6 @@ YUI.add('pact-level', function(Y) {
         NUMBER = 'number',
         STRING = 'string',
         TEXT = 'text',
-        ACE = 'ace',
         CLICK = 'click',
         ID = 'id',
         LABEL = 'label',
@@ -43,33 +40,42 @@ YUI.add('pact-level', function(Y) {
         {
             // *** Fields *** //
             CONTENT_TEMPLATE:
-                '<div>' +
-                '<div class="proggame-title"><h1></h1><h2></h2><div class="proggame-help" title="Level information"></div></div>' +
-                '<div class="proggame-lefttab"></div>' +
-                '<div class="proggame-view">' +
-                '<div class="message"></div>' +
-                '<div class="ui">' +
-                '<div class="terrain-ui player-ui"></div>' +
-                '<div class="terrain-ui enemy-ui"></div>' +
-                '<div class="proggame-levelend" style="display:none">' +
-                '<div class="proggame-levelend-star proggame-levelend-star-1"></div>' +
-                '<div class="proggame-levelend-star proggame-levelend-star-2"></div>' +
-                '<div class="proggame-levelend-star proggame-levelend-star-3"></div>' +
-                '<div class="proggame-levelend-money">100</div>' +
-                '<div class="proggame-levelend-restart">TRY AGAIN</div>' +
-                '<div class="proggame-levelend-nextlevel">NEXT LEVEL</div>' +
-                '</div>' +
-                '<div class="terrain"></div>' +
-                '</div>' +
-                '<div class="movable">' +
-                '<div class="movable2">' +
-                '<div class="barre"></div>' +
-                '<div class="proggame-buttons"></div>' +
-                '<div class="proggame-debugger"></div>' +
-                '<div class="code"></div>' +
-                '</div>' +
-                '</div>' +
+                '<div class="flex row">' +
+                '    <div class="flex column">' +
+                '        <div class="proggame-title">' +
+                '            <h1></h1>' +
+                '            <h2></h2>' +
+                '            <span' +
+                '                class="proggame-help fa fa-info-circle fa-2x"' +
+                '                title="Level information"' +
+                '            ></span>' +
+                '        </div>' +
+                '        <div class="proggame-lefttab"></div>' +
+                '    </div>' +
+                '    <div class="proggame-view flex column grow">' +
+                '        <div class="proggame-levelend" style="display:none">' +
+                '            <div class="flex row">' +
+                '                <div class="proggame-levelend-star proggame-levelend-star-1"></div>' +
+                '                <div class="proggame-levelend-star proggame-levelend-star-2"></div>' +
+                '                <div class="proggame-levelend-star proggame-levelend-star-3"></div>' +
+                '            </div>' +
+                '            <div class="flex row">' +
+                '                <div class="proggame-levelend-restart">TRY AGAIN</div>' +
+                '                <div class="proggame-levelend-nextlevel">NEXT LEVEL</div>' +
+                '            </div>' +
+                '        </div>' +
+                '        <div class="play flex column grow">' +
+                '            <div class="terrain"></div>' +
+                '            <div class="barre"></div>' +
+                '            <div class="editor flex row grow">' +
+                '                <div class="code grow"></div>' +
+                '                <div class="proggame-buttons"></div>' +
+                '                <div class="proggame-debugger"></div>' +
+                '            </div>' +
+                '        </div>' +
+                '    </div>' +
                 '</div>',
+
             // *** Lifecycle Methods *** //
             initializer: function() {
                 this.handlers = [];
@@ -116,22 +122,22 @@ YUI.add('pact-level', function(Y) {
                 this.renderApiTabView(); // Render api and files treeview
                 this.resetUI(); // Reset the interface
 
-                var resize = new Y.Resize({
-                    node: '.movable',
-                    handles: 't',
-                });
-                resize.plug(Y.Plugin.ResizeConstrained, {
-                    minHeight: 250,
-                    maxHeight: 450,
-                });
-                resize.on(
-                    'resize:resize',
-                    function() {
-                        this.mainEditorTab.aceField.editor.resize();
-                    },
-                    this
-                );
-                this._resizeHandle = resize;
+                // var resize = new Y.Resize({
+                //     node: '.movable',
+                //     handles: 't',
+                // });
+                // resize.plug(Y.Plugin.ResizeConstrained, {
+                //     minHeight: 250,
+                //     maxHeight: 450,
+                // });
+                // resize.on(
+                //     'resize:resize',
+                //     function() {
+                //         this.mainEditorTab.aceField.editor.resize();
+                //     },
+                //     this
+                // );
+                // this._resizeHandle = resize;
             },
             bindUI: function() {
                 var cb = this.get(CONTENTBOX),
@@ -263,7 +269,6 @@ YUI.add('pact-level', function(Y) {
             },
             syncUI: function() {
                 this.display.syncUI(); // Sync the canvas
-                this.syncFrontUI(); // Sync the on screen display
 
                 this.disableBreakpoint = Wegas.Facade.Variable.script.localEval(
                     'Variable.find(gameModel, "inventory").getProperty(self, "debugger") != "true"'
@@ -271,7 +276,7 @@ YUI.add('pact-level', function(Y) {
             },
             destructor: function() {
                 ProgGameLevel.main = this.mainEditorTab.aceField.getValue(); // Save the actual edtion field to a static var
-                this._resizeHandle.destroy();
+                // this._resizeHandle.destroy();
                 this.display.destroy();
                 this.runButton.destroy();
                 this.stopButton.destroy();
@@ -310,7 +315,7 @@ YUI.add('pact-level', function(Y) {
                 } else {
                     if (
                         Y.Object.keys(
-                            this.mainEditorTab.aceField.editor
+                            this.mainEditorTab.aceField
                                 .getSession()
                                 .getBreakpoints()
                         ).length ||
@@ -330,7 +335,7 @@ YUI.add('pact-level', function(Y) {
                         this.mainEditorTab.aceField.getValue()
                     ),
                     breakpoints = Y.Object.keys(
-                        this.mainEditorTab.aceField.editor
+                        this.mainEditorTab.aceField
                             .getSession()
                             .getBreakpoints()
                     );
@@ -357,7 +362,7 @@ YUI.add('pact-level', function(Y) {
                         this.mainEditorTab.aceField.getValue()
                     ), // Fetch instrumented code
                     breakpoints = Y.Object.keys(
-                        this.mainEditorTab.aceField.editor
+                        this.mainEditorTab.aceField
                             .getSession()
                             .getBreakpoints()
                     ); // and breakpoints
@@ -455,9 +460,8 @@ YUI.add('pact-level', function(Y) {
                     .one('.proggame-levelend')
                     .hide();
                 this.get(CONTENTBOX)
-                    .one('.terrain')
+                    .one('.play')
                     .show();
-                this.syncFrontUI();
             },
             onServerReply: function(e) {
                 Y.log(
@@ -497,26 +501,9 @@ YUI.add('pact-level', function(Y) {
                 }
             },
             doLevelEndAnimation: function() {
-                var cb = this.get(CONTENTBOX),
-                    counter = 0,
-                    money = 100,
-                    timer = Y.later(
-                        20,
-                        this,
-                        function() {
-                            cb.one('.proggame-levelend-money').setContent(
-                                counter
-                            );
-                            counter++;
-                            if (counter > money) {
-                                timer.cancel();
-                            }
-                        },
-                        null,
-                        true
-                    );
+                var cb = this.get(CONTENTBOX);
                 cb.one('.proggame-levelend').show();
-                cb.one('.terrain').hide();
+                cb.one('.play').hide();
                 cb.all('.proggame-levelend-staractive').removeClass(
                     'proggame-levelend-staractive'
                 );
@@ -547,7 +534,6 @@ YUI.add('pact-level', function(Y) {
                                 command.object,
                                 true
                             ); // Update target object cfg
-                            this.syncFrontUI();
                             this.consumeCommand();
                             break;
                         case 'gameWon':
@@ -641,16 +627,10 @@ YUI.add('pact-level', function(Y) {
                             children: [{ type: 'Text' }],
                         })
                         .item(0),
-                    aceField = new Y.inputEx.AceField({
-                        //                           // Render ace editor
-                        parentEl: tab.get('panelNode'),
-                        name: TEXT,
-                        type: ACE,
-                        height: '85%',
-                        language: 'javascript',
-                        theme: 'twilight',
-                        value: code,
-                    });
+                    aceField = ace.edit(tab.get('panelNode').getDOMNode());
+                aceField.setTheme('ace/theme/twilight');
+                aceField.getSession().setMode('ace/mode/javascript');
+                aceField.getSession().setValue(code);
                 tab.set('selected', 1);
                 tab.aceField = aceField; // Set up a reference to the ace field
                 tab.saveTimer = saveTimer;
@@ -686,7 +666,7 @@ YUI.add('pact-level', function(Y) {
                     });
                 }
 
-                aceField.editor.on(
+                aceField.on(
                     'guttermousedown',
                     Y.bind(function(e) {
                         // Add breakpoints on gutter click
@@ -880,7 +860,7 @@ YUI.add('pact-level', function(Y) {
                             var toInsert = e.target.get('data');
                             this.editorTabView
                                 .get('selection')
-                                .aceField.editor.insert(toInsert + '();\n');
+                                .aceField.insert(toInsert + '();\n');
                             e.halt(true);
                         },
                         this
@@ -1052,7 +1032,6 @@ YUI.add('pact-level', function(Y) {
                         centered: false,
                         x: 100,
                         y: 85,
-                        zIndex: 1000,
                         width: '962px',
                         height: 709,
                         buttons: {},
@@ -1067,48 +1046,6 @@ YUI.add('pact-level', function(Y) {
                     next: 'Continuer',
                     skip: 'Ignorer le tutoriel',
                 });
-            },
-            syncFrontUI: function() {
-                var cb = this.get(CONTENTBOX);
-                if (this.findObject('Player')) {
-                    this.updateUI(
-                        this.findObject('Player'),
-                        cb.one('.player-ui')
-                    );
-                }
-                if (this.findObject('Enemy')) {
-                    this.updateUI(
-                        this.findObject('Enemy'),
-                        cb.one('.enemy-ui')
-                    );
-                }
-                if (this.findObject('NPC')) {
-                    this.updateUI(this.findObject('NPC'), cb.one('.enemy-ui'));
-                }
-            },
-            updateUI: function(object, el) {
-                var i,
-                    acc = [];
-                if (!Y.Lang.isUndefined(object.life)) {
-                    acc.push(
-                        'Life<div class="life"><span style="width:' +
-                            object.life +
-                            '%;" ></span></div>'
-                    );
-                }
-                if (!Y.Lang.isUndefined(object.actions)) {
-                    acc.push('Actions<div class="actions">');
-                    for (i = 0; i < object.actions; i += 1) {
-                        acc.push('<span></span>');
-                    }
-                    acc.push('</div>');
-                }
-                el.setHTML(acc.join(''));
-                if (acc.length === 0) {
-                    el.hide();
-                } else {
-                    el.show();
-                }
             },
         },
         {
@@ -1568,12 +1505,12 @@ YUI.add('pact-level', function(Y) {
                         "<div>Pour revoir les objectifs du niveau, cliquez sur le bouton d'information <b>i</b>.</div>",
                 },
                 {
-                    node: '.proggame-button-courses',
+                    node: '.proggame-button-theory',
                     html:
                         '<div>Vous recevrez la théorie nécessaire pour chaque niveau dans la partie théorie.</div>',
                 },
                 {
-                    node: '.proggame-button-shop',
+                    node: '.proggame-button-play',
                     html:
                         '<div>Vous pouvez rejouer les anciens niveaux en cliquant sur la carte</div>',
                 },
