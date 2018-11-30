@@ -276,7 +276,7 @@ YUI.add('wegas-plugin', function(Y) {
         [],
         {
             execute: function() {
-                var theFile =  Y.Wegas.Facade.File.get("source") + "read" + I18n.t(this.get("file"));
+                var theFile = Y.Wegas.Facade.File.get("source") + "read" + I18n.t(this.get("file"));
 
                 this.open(theFile);
             },
@@ -432,103 +432,74 @@ YUI.add('wegas-plugin', function(Y) {
      *  @module Wegas
      *  @constructor
      */
-    var OpenPageAction = Y.Base.create(
-        'OpenPageAction',
-        Action,
-        [],
-        {
-            initializer: function() {
-                this.afterHostEvent(
-                    'render',
-                    function() {
-                        var targetPageLoader = this._getTargetPageLoader();
-                        if (targetPageLoader) {
-                            this.get(HOST).set(
-                                'selected',
-                                '' + targetPageLoader.get('pageId') ===
-                                '' + this._subpage()
-                                ? 2
-                                : 0
-                                );
-                            this.handlers.push(
-                                targetPageLoader.after(
-                                    'pageIdChange',
-                                    function() {
-                                        try {
-                                            this.get(HOST).set(
-                                                'selected',
-                                                '' +
-                                                targetPageLoader.get(
-                                                    'pageId'
-                                                    ) ===
-                                                '' + this._subpage()
-                                                ? 2
-                                                : 0
-                                                );
-                                        } catch (e) {
-                                            //no more node...
-                                        }
-                                    },
-                                    this
-                                    )
-                                );
-                        }
-                    },
-                    this
-                    );
-            },
-            execute: function() {
+    var OpenPageAction = Y.Base.create('OpenPageAction', Action, [], {
+        initializer: function() {
+            this.afterHostEvent('render', function() {
                 var targetPageLoader = this._getTargetPageLoader();
-                if (!targetPageLoader || this.get(HOST).get('disabled')) {
-                    return;
+                if (targetPageLoader) {
+                    this.get(HOST).set('selected', '' + targetPageLoader.get('pageId') === '' + this._subpage() ? 2 : 0);
+                    this.handlers.push(targetPageLoader.after('pageIdChange', function() {
+                        try {
+                            this.get(HOST).set('selected', '' + targetPageLoader.get('pageId') === '' + this._subpage() ? 2 : 0);
+                        } catch (e) {
+                            //no more node...
+                        }
+                    }, this));
                 }
-                /*
-                 * Changing a page may call a page destructor and thus destroying other Action assossiated with this 'targetEvent'
-                 * in case this' host belongs to destructed page. That's the reason to delay a page change
-                 */
-                this.handlers.push(
-                    Y.soon(
-                        Y.bind(
-                            function(pageLoader) {
-                                pageLoader.set('pageId', this._subpage());
-                            },
-                            this,
-                            targetPageLoader
-                            )
-                        )
-                    );
-            },
-            _getTargetPageLoader: function() {
-                var targetPageLoader, plID = this.get('targetPageLoaderId');
-                switch (plID) {
-                    case PAGELOADER_CONFIG.FULL_PAGE.value:
-                        targetPageLoader = Wegas.PageLoader.find(
-                            PREVIEW_PAGELOADER_ID
-                            );
-                        break;
-                    case PAGELOADER_CONFIG.CURRENT_PAGE_LOADER.value:
-                        targetPageLoader = Y.Widget.getByNode(
-                            this.get(HOST)
-                            .get('root')
-                            .get('boundingBox')
-                            .ancestor()
-                            );
-                        break;
-                    default:
-                        targetPageLoader = Wegas.PageLoader.find(plID);
-                }
-                return targetPageLoader;
-            },
-            _subpage: function() {
-                if (this.get('variable.content')) {
-                    var variable = this.get('variable.evaluated');
-                    if (variable) {
-                        return variable.getInstance().get('value');
-                    }
-                }
-                return this.get('subpageId');
-            }
+            }, this);
         },
+        execute: function() {
+            var targetPageLoader = this._getTargetPageLoader();
+            if (!targetPageLoader || this.get(HOST).get('disabled')) {
+                return;
+            }
+            /*
+             * Changing a page may call a page destructor and thus destroying other Action assossiated with this 'targetEvent'
+             * in case this' host belongs to destructed page. That's the reason to delay a page change
+             */
+            this.handlers.push(Y.soon(Y.bind(function(pageLoader) {
+                var subpage = this._subpage();
+
+                if (pageLoader.get("pageId") === subpage) {
+                    if (this.get("forceReload")) {
+                        pageLoader.reload();
+                    }
+                } else {
+                    pageLoader.set('pageId', subpage);
+                }
+            }, this, targetPageLoader)));
+        },
+        _getTargetPageLoader: function() {
+            var targetPageLoader, plID = this.get('targetPageLoaderId');
+            switch (plID) {
+                case PAGELOADER_CONFIG.FULL_PAGE.value:
+                    targetPageLoader = Wegas.PageLoader.find(
+                        PREVIEW_PAGELOADER_ID
+                        );
+                    break;
+                case PAGELOADER_CONFIG.CURRENT_PAGE_LOADER.value:
+                    targetPageLoader = Y.Widget.getByNode(
+                        this.get(HOST)
+                        .get('root')
+                        .get('boundingBox')
+                        .ancestor()
+                        );
+                    break;
+                default:
+                    targetPageLoader = Wegas.PageLoader.find(plID);
+            }
+            return targetPageLoader;
+        },
+        _subpage: function() {
+            if (this.get('variable.content')) {
+                var variable = this.get('variable.evaluated');
+                if (variable) {
+                    return variable.getInstance().get('value');
+                }
+            }
+            return this.get('subpageId');
+        }
+    },
         {
             NS: 'OpenPageAction',
             ATTRS: {
@@ -549,6 +520,15 @@ YUI.add('wegas-plugin', function(Y) {
                             PAGELOADER_CONFIG.FULL_PAGE,
                             PAGELOADER_CONFIG.CURRENT_PAGE_LOADER
                         ]
+                    }
+                },
+                forceReload: {
+                    type: 'boolean',
+                    value: false,
+                    view: {
+                        type: 'boolean',
+                        label: "Force page reload",
+                        className: 'wegas-advanced-feature'
                     }
                 },
                 variable: {
