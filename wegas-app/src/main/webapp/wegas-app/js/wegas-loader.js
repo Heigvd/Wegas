@@ -405,6 +405,10 @@ YUI().use(function(Y) {
                 requires: "wegas-cssstyles",
                 ws_provides: ["CSSBackground", "CSSText", "CSSPosition", "CSSSize"]
             },
+            "wegas-conditionaldisplay": {
+                path: "js/plugin/wegas-conditionaldisplay-min.js",
+                ws_provides: "ConditionalDisplay"
+            },
             "wegas-conditionaldisable": {
                 path: "js/plugin/wegas-conditionaldisable-min.js",
                 ws_provides: "ConditionalDisable"
