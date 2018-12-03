@@ -578,7 +578,8 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         },
         checkSearch: function(needle) {
             var state = this.get("entity");
-            var haystack = "" + state.get("label") + state.get("onEnterEvent").get("content");
+            var impact = state.get("onEnterEvent");
+            var haystack = "" + state.get("label") + (impact ? impact.get("content") : "");
             this.get("boundingBox").toggleClass("needle-found", needle && haystack.toLowerCase().indexOf(needle) >= 0);
         },
         showForm: function(state) {
