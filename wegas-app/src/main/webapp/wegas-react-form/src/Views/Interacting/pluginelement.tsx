@@ -38,6 +38,8 @@ function friendlyName(label: string) {
             return 'Show after';
         case 'HideAfter':
             return 'Hide after';
+        case 'wegas-conditionaldisplay':
+            return 'Conditional display';
         case 'ConditionalDisable':
         case 'wegas-conditionaldisable':
             return 'Conditional disable';

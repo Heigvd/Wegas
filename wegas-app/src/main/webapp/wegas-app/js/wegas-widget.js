@@ -559,8 +559,13 @@ YUI.add('wegas-widget', function(Y) {
                             label: 'Variables',
                             children: [
                                 {
+                                    label: 'Conditional display',
+                                    value: {fn: 'ConditionalDisplay'}
+                                },
+                                {
                                     label: 'Conditional disable',
-                                    value: {fn: 'ConditionalDisable'}
+                                    value: {fn: 'ConditionalDisable'},
+                                    className: "wegas-advanced-feature"
                                 },
                                 {
                                     label: 'Unread count',
