@@ -332,8 +332,8 @@ YUI.add('wegas-template', function(Y) {
                 )
         },
         {
+            EDITORNAME: "Number Template",
             ATTRS: {
-                EDITORNAME: "Number Template",
                 variable: {
                     type: "object",
                     getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
