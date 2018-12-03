@@ -251,7 +251,7 @@ YUI.add('wegas-button', function(Y) {
         },
         setCounterValue: function(unreadCount) {
             var bb = this.get('host').get(BOUNDINGBOX);
-                //target = bb.one('> .wegas-unreadcount');
+            //target = bb.one('> .wegas-unreadcount');
 
             if (!this.target) {
                 // If the counter span has not been rendered, do it
@@ -268,7 +268,7 @@ YUI.add('wegas-button', function(Y) {
                         "<span class='value' data-value='" + unreadCount + "'>" +
                         (this.get('displayValue') ? unreadCount : '') +
                         '</span>'
-                    );
+                        );
                     bb.addClass('wegas-unreadcount');
                 }
             } else {
@@ -286,7 +286,6 @@ YUI.add('wegas-button', function(Y) {
                 this.handlers[k].detach();
             }
         },
-        // *** Private methods *** //
         /**
          * @function
          * @private
@@ -295,54 +294,78 @@ YUI.add('wegas-button', function(Y) {
          */
         updateCounter: function() {
             var i,
-                instance,
                 /*messages,*/ items,
                 count = 0,
                 klass,
-                list = this.get('variable.evaluated'),
+                branches = this.get('variable.evaluated'),
                 descriptor,
                 context = this,
+                branchPromises = [],
                 promises = [];
 
-            if (!list) {
+            if (!branches) {
                 return 0;
             }
 
-            if (!Y.Lang.isArray(list)) {
-                list = [list];
+            if (branches && branches.get && branches.get("@class") === "ListDescriptor") {
+                branches = branches.get("items");
             }
 
-            descriptor = list.pop();
-            while (descriptor) {
-                klass = descriptor.get('@class');
-                if (klass === 'ListDescriptor') {
-                    items = descriptor.flatten();
-                    for (i = 0; i < items.length; i = i + 1) {
-                        list.push(items[i]);
-                    }
-                } else {
-                    if (this._counters[klass]) {
-                        promises.push(
-                            new Y.Promise(function(resolve, reject) {
-                                var fcn;
-                                if (context._counters[klass] instanceof Function) {
-                                    fcn = context._counters[klass];
-                                } else {
-                                    fcn = eval('(' + context._counters[klass] + ')');
-                                }
+            if (!Y.Lang.isArray(branches)) {
+                branches = [branches];
+            }
 
-                                fcn.call(context, descriptor, descriptor.getInstance(),
-                                    function(count) {
-                                        resolve(count);
+            for (var branch in branches) {
+                var list = branches[branch];
+                if (!Y.Lang.isArray(list)) {
+                    list = [list];
+                }
+                branchPromises.push([]);
+                descriptor = list.pop();
+                while (descriptor) {
+                    klass = descriptor.get('@class');
+                    if (klass === 'ListDescriptor') {
+                        items = descriptor.flatten();
+                        for (i = 0; i < items.length; i = i + 1) {
+                            list.push(items[i]);
+                        }
+                    } else {
+                        if (this._counters[klass]) {
+                            branchPromises[branch].push(
+                                new Y.Promise(function(resolve, reject) {
+                                    var fcn;
+                                    if (context._counters[klass] instanceof Function) {
+                                        fcn = context._counters[klass];
+                                    } else {
+                                        fcn = eval('(' + context._counters[klass] + ')');
                                     }
-                                );
-                            }));
+
+                                    fcn.call(context, descriptor, descriptor.getInstance(),
+                                        function(count) {
+                                            resolve(count);
+                                        }
+                                    );
+                                }));
+                        }
                     }
+
+                    descriptor = list.pop();
                 }
 
-                descriptor = list.pop();
+                promises.push(new Y.Promise(Y.bind(function(resolve, reject) {
+                    Y.Promise.all(branchPromises[branch]).then(Y.bind(function(allCounts) {
+                        var total = 0, i;
+                        for (i = 0; i < allCounts.length; i += 1) {
+                            total += allCounts[i];
+                        }
+                        if (this.get("onePerBranch")) {
+                            resolve(total > 0 ? 1 : 0);
+                        } else {
+                            resolve(total);
+                        }
+                    }, this));
+                }, this)));
             }
-
             Y.Promise.all(promises).then(function(allCounts) {
                 var total = 0, i;
                 for (i = 0; i < allCounts.length; i += 1) {
@@ -395,6 +418,14 @@ YUI.add('wegas-button', function(Y) {
                 optional: true,
                 view: {
                     type: 'hidden'
+                }
+            },
+            onePerBranch: {
+                type: "boolean",
+                value: false,
+                view: {
+                    label: "Per subfolder",
+                    description: "Count a maximum of one for each subfolder"
                 }
             }
         }
