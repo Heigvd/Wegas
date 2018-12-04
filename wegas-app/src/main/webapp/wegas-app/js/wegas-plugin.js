@@ -746,7 +746,7 @@ YUI.add('wegas-plugin', function(Y) {
                     }
                 }
             },
-            _getMessage() {
+            _getMessage: function() {
                 var msgVar = this.get("variable.evaluated");
                 var msgValue = msgVar && I18n.t(msgVar.get("value"));
                 if (msgValue) {
