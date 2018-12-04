@@ -113,7 +113,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 }
             });
         },
-        getUsageRatio() {
+        getUsageRatio: function() {
             return this.usage.character_count / this.usage.character_limit;
         },
         initUsage: function(e) {
