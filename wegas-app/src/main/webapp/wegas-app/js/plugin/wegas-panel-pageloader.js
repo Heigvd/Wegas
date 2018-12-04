@@ -63,6 +63,7 @@ YUI.add('wegas-panel-pageloader', function(Y) {
                 var thePanel = new Y.Wegas.Panel(cfg).render();
                 thePanel.get("contentBox").addClass("wegas-panel-" + this.get("style"));
                 this.get("cssClass") && thePanel.get("contentBox").addClass(this.get("cssClass"));
+                thePanel.get("contentBox").setAttribute("data-pageId", this.get("page"));
             }
         },
         {
@@ -289,8 +290,12 @@ YUI.add('wegas-panel-pageloader', function(Y) {
             }
         }, {
         NS: 'closepanel',
+        closePage: function(pageId) {
+            var panelNode = Y.one(".wegas-panel-content[data-pageId=\"" + pageId + "\"]");
+            var panel = Y.Widget.getByNode(panelNode);
+            panel && panel.destroy();
+        },
         ATTRS: {
         }
-    }
-    );
+    });
 });
