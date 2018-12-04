@@ -5,7 +5,6 @@ jdk:
 addons:
   postgresql: "9.6"
   ssh_known_hosts: 
-  - dev.albasim.ch
   - rancher01.albasim.ch
 services: postgresql
 cache:
