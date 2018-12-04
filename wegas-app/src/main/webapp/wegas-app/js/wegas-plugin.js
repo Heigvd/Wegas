@@ -388,7 +388,7 @@ YUI.add('wegas-plugin', function(Y) {
                     getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     view: {
                         type: 'variableselect',
-                        label: 'Variable'
+                        label: 'Root Variable'
                     }
                 },
                 title: {
@@ -396,7 +396,7 @@ YUI.add('wegas-plugin', function(Y) {
                     getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     view: {
                         type: 'variableselect',
-                        label: 'Variable'
+                        label: 'Title'
                     }
                 },
                 /**
@@ -708,6 +708,80 @@ YUI.add('wegas-plugin', function(Y) {
         }
     );
     Plugin.ConfirmExecuteScriptAction = ConfirmExecuteScriptAction;
+
+
+    var ConfirmClick = Y.Base.create(
+        'wegas-confirm-click',
+        Plugin.Base,
+        [Wegas.Plugin, Wegas.Editable],
+        {
+            initializer: function() {
+                var handle = this.get("host").get("contentBox").on("click", this.beforeEvent, this);
+                this._handles.push(handle);
+            },
+            beforeEvent: function(e) {
+                if (!this.get(HOST).get('disabled')) {
+                    if (e._event.hasOwnProperty("isTrusted") && window.MouseEvent) {
+                        if (e._event.isTrusted) {
+                            // User click: event not yet confirmed : stop it ASAP
+                            Y.log("Event intercepted");
+                            e.halt(true);
+                            Y.Wegas.Panel.confirm(this._getMessage(), Y.bind(function() {
+                                // Click confirmed -> fire event again but from the widget, not the contentBox !
+                                var event = new MouseEvent('click', {
+                                    'view': window,
+                                    'bubbles': true,
+                                    'cancelable': true
+                                });
+                                e.target.getDOMNode().dispatchEvent(event);
+                            }, this));
+                        } else {
+                            Y.log("Event Confirmed :" + e);
+                        }
+                    } else {
+                        // compatibility
+                        if (!window.confirm(this._getMessage())) {
+                            e.halt(true);
+                        }
+                    }
+                }
+            },
+            _getMessage() {
+                var msgVar = this.get("variable.evaluated");
+                var msgValue = msgVar && I18n.t(msgVar.get("value"));
+                if (msgValue) {
+                    return msgValue;
+                } else {
+                    return this.get("message");
+                }
+            }
+        },
+        {
+            NS: 'confirmallaction',
+            EDITORNAME: 'Click Confirmation',
+            ATTRS: {
+                message: {
+                    type: "string",
+                    value: "Confirm Action ?",
+                    view: {
+                        label: "Message"
+                    }
+                },
+                variable: {
+                    type: 'object',
+                    getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                    view: {
+                        type: 'variableselect',
+                        label: 'Message Variable',
+                        description: "Override static message",
+                        classFilter: ['StringDescriptor', 'TextDescriptor'],
+                        className: "wegas-advanced-feature"
+                    }
+                }
+            }
+        }
+    );
+    Plugin.ConfirmClick = ConfirmClick;
 
     /**
      *  @class

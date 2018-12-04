@@ -488,6 +488,10 @@ YUI.add('wegas-widget', function(Y) {
                                     value: {fn: 'ExecuteScriptAction'}
                                 },
                                 {
+                                    label: 'Confirm Click',
+                                    value: {fn: 'ConfirmClick'}
+                                },
+                                {
                                     label: 'Local ScriptEval',
                                     value: {fn: 'ExecuteLocalScriptAction'}
                                 },
