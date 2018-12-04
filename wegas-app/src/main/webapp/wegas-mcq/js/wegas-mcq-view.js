@@ -429,6 +429,9 @@ YUI.add('wegas-mcq-view', function(Y) {
                 }
             }, this);
         },
+        isTextEmpty: function(text){
+            return !text || text === "<p></p>";
+        },
         syncUI: function() {
             var bb = this.get("boundingBox"),
                 choice = this.get("choice.evaluated"),
@@ -439,8 +442,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                     return !reply.get("ignored");
                 }),
                 cbx = question.get("cbx"),
-                hasTitle = I18n.t(choice.get("label"), {inlineEditor: 'none', fallback: ""}),
-                hasDescription = I18n.t(choice.get("description"), {inlineEditor: 'none', fallback: ""});
+                hasTitle = !this.isTextEmpty(I18n.t(choice.get("label"), {inlineEditor: 'none', fallback: ""})),
+                hasDescription = !this.isTextEmpty(I18n.t(choice.get("description"), {inlineEditor: 'none', fallback: ""}));
 
             this.title.set("content", I18n.t(choice.get("label"), {inlineEditor: 'string', fallback: ""}));
             this.title.syncUI();

@@ -9,6 +9,7 @@ package com.wegas.core.ejb;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
+import com.wegas.core.Helper;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -238,7 +239,7 @@ public class ConcurrentHelper {
         logger.info("MyLock unlock:" +  effectiveToken);
         myLocks.remove(effectiveToken);
         if (lock.counter == 0) {
-            if (audience != null && !audience.equals("internal")) {
+            if (!Helper.isNullOrEmpty(audience) && !audience.equals("internal")) {
                 websocketFacade.sendUnLock(audience, token);
             }
             this.getLock(lock).destroy();

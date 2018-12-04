@@ -482,8 +482,16 @@ YUI.add('wegas-widget', function(Y) {
                                     value: {fn: 'OpenUrlAction'}
                                 },
                                 {
+                                    label: 'Open file',
+                                    value: {fn: 'OpenFileAction'}
+                                },
+                                {
                                     label: 'Impact variables',
                                     value: {fn: 'ExecuteScriptAction'}
+                                },
+                                {
+                                    label: 'Confirm Click',
+                                    value: {fn: 'ConfirmClick'}
                                 },
                                 {
                                     label: 'Local ScriptEval',
@@ -535,6 +543,10 @@ YUI.add('wegas-widget', function(Y) {
                                     value: {fn: 'CSSText'}
                                 },
                                 {
+                                    label: 'Resize Observer',
+                                    value: {fn: 'ResizeListener'}
+                                },
+                                {
                                     label: 'Other styles',
                                     value: {fn: 'CSSStyles'}
                                 }
@@ -557,8 +569,13 @@ YUI.add('wegas-widget', function(Y) {
                             label: 'Variables',
                             children: [
                                 {
+                                    label: 'Conditional display',
+                                    value: {fn: 'ConditionalDisplay'}
+                                },
+                                {
                                     label: 'Conditional disable',
-                                    value: {fn: 'ConditionalDisable'}
+                                    value: {fn: 'ConditionalDisable'},
+                                    className: "wegas-advanced-feature"
                                 },
                                 {
                                     label: 'Unread count',

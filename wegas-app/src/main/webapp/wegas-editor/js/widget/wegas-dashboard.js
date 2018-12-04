@@ -76,7 +76,7 @@ YUI.add('wegas-dashboard', function(Y) {
         CONTENT_TEMPLATE: "<div>" +
             "<div class='dashboard-table-title'></div>" +
             "<div class='dashboard-table-data'></div>" +
-            "</dib>",
+            "</div>",
         initializer: function() {
             this.dt = this.get("datatable");
         },
@@ -439,7 +439,12 @@ YUI.add('wegas-dashboard', function(Y) {
 
                             if (fallback) {
                                 if (o.value !== undefined && o.value !== null) {
-                                    o.cell.setHTML("<span class=\"bloc__value\">" + o.value + "</span>");
+                                    if (def.kind === "number" && typeof def.decimals === "number") {
+                                        var val = o.value.toFixed(def.decimals);
+                                        o.cell.setHTML("<span class=\"bloc__value\">" + val + "</span>");
+                                    } else {
+                                        o.cell.setHTML("<span class=\"bloc__value\">" + o.value + "</span>");
+                                    }
                                 } else {
                                     o.cell.setHTML("<span class=\"bloc__value no-value\"></span>");
                                 }

@@ -7,12 +7,15 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.NumberListener;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
@@ -22,6 +25,7 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,11 +37,15 @@ import org.slf4j.LoggerFactory;
 /*@Table(indexes = {
  @Index(columnList = "history.numberinstance_id")
  })*/
-public class NumberInstance extends VariableInstance {
+public class NumberInstance extends VariableInstance implements AcceptInjection {
 
     private static final long serialVersionUID = 1L;
 
     private static final Logger logger = LoggerFactory.getLogger(NumberInstance.class);
+
+    @JsonIgnore
+    @Transient
+    private Beanjection beans;
 
     /**
      *
@@ -68,6 +76,11 @@ public class NumberInstance extends VariableInstance {
         this.value = value;
     }
 
+    @Override
+    public void setBeanjection(Beanjection beanjection) {
+        this.beans = beanjection;
+    }
+
     /**
      * @return the value
      */
@@ -79,20 +92,25 @@ public class NumberInstance extends VariableInstance {
      * @param value the value to set
      */
     public void setValue(double value) {
-        try {
-            VariableDescriptor vd = this.findDescriptor();
-            if (vd instanceof NumberDescriptor) { // @fixme (Occurs when numberinstance are used for list descriptors) (IS THAT FUCKIN EXISTS ANY MORE ???)
-                NumberDescriptor desc = (NumberDescriptor) vd;
+        VariableDescriptor vd = this.findDescriptor();
+        if (vd instanceof NumberDescriptor) {
+            NumberDescriptor desc = (NumberDescriptor) vd;
 
-                if (!desc.isValueValid(value)) {
-                    throw new WegasOutOfBoundException(desc.getMinValue(), desc.getMaxValue(), value, desc.getName(), desc.getLabel().translateOrEmpty(this.getGameModel()));
-                }
+            if (!desc.isValueValid(value)) {
+                throw new WegasOutOfBoundException(desc.getMinValue(), desc.getMaxValue(), value, desc.getName(), desc.getLabel().translateOrEmpty(this.getGameModel()));
             }
-        } catch (NullPointerException e) {
-            // @fixme (occurs when instance is a defaultInstance)
         }
 
-        this.value = value;
+        double pVal = this.value;
+
+        if (Math.abs(value - this.value) > 0.0001) {
+            // change detected
+            this.value = value;
+
+            if (beans != null) {
+                beans.getVariableInstanceFacade().fireNumberChange(this, pVal);
+            }
+        }
     }
 
     public void add(double value) {

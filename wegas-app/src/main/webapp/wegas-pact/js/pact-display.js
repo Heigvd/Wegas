@@ -102,10 +102,6 @@ YUI.add('pact-display', function(Y) {
                     x: gridW + MARGIN_X + 1,
                     y: gridH + MARGIN_Y,
                 });
-                this.get('boundingBox').setStyles({
-                    marginTop: '12px',
-                    marginLeft: Math.floor(900 - pos.x) / 2 + 'px',
-                });
                 ready.then(
                     function() {
                         Crafty.init(pos.x, posy.y + TILE_DELTA); // Init crafty

@@ -10,6 +10,8 @@ function friendlyName(label: string) {
             return 'Open page';
         case 'OpenUrlAction':
             return 'Open URL';
+        case 'OpenFileAction':
+            return 'Open File';
         case 'ExecuteScriptAction':
             return 'Impact variables';
         case 'ExecuteLocalScriptAction':
@@ -30,12 +32,16 @@ function friendlyName(label: string) {
             return 'Size';
         case 'CSSText':
             return 'Text';
+        case 'ResizeListener':
+            return 'Resize Observer';
         case 'CSSStyles':
             return 'Other styles';
         case 'ShowAfter':
             return 'Show after';
         case 'HideAfter':
             return 'Hide after';
+        case 'wegas-conditionaldisplay':
+            return 'Conditional display';
         case 'ConditionalDisable':
         case 'wegas-conditionaldisable':
             return 'Conditional disable';

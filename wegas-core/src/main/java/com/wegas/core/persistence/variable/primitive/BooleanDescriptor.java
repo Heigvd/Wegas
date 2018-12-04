@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
@@ -50,6 +51,11 @@ public class BooleanDescriptor extends VariableDescriptor<BooleanInstance> imple
     @Override
     public Boolean getValue(Player p) {
         return this.getInstance(p).getValue();
+    }
+
+    @JsonIgnore
+    public Boolean isFalse(Player p) {
+        return !this.getValue(p);
     }
 
     @Override

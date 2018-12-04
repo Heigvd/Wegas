@@ -209,6 +209,11 @@ YUI().use(function(Y) {
                 ws_provides: "PopupListener",
                 requires: "wegas-panel"
             },
+            "wegas-resizelistener": {
+                path: "js/plugin/wegas-resizelistener-min.js",
+                ws_provides: "ResizeListener"
+                    //requires: "wegas-panel"
+            },
             "wegas-button": {
                 path: "js/widget/wegas-button-min.js",
                 requires: ["wegas-widget", "wegas-plugin", "button", "wegas-tooltip", "wegas-button-css"],
@@ -399,6 +404,10 @@ YUI().use(function(Y) {
                 path: "js/plugin/wegas-cssstyles-extra-min.js",
                 requires: "wegas-cssstyles",
                 ws_provides: ["CSSBackground", "CSSText", "CSSPosition", "CSSSize"]
+            },
+            "wegas-conditionaldisplay": {
+                path: "js/plugin/wegas-conditionaldisplay-min.js",
+                ws_provides: "ConditionalDisplay"
             },
             "wegas-conditionaldisable": {
                 path: "js/plugin/wegas-conditionaldisable-min.js",
