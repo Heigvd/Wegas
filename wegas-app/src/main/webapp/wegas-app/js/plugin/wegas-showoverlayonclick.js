@@ -138,7 +138,10 @@ YUI.add("wegas-showoverlayonclick", function(Y) {
             maxwidth: {
                 type: "string",
                 value: "",
-                optional: true
+                optional: true,
+                view: {
+                    label: "Max Width"
+                }
             },
             variable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
@@ -148,12 +151,12 @@ YUI.add("wegas-showoverlayonclick", function(Y) {
                 }
             },
             theWidget: {
-                type:"object",
+                type: "object",
                 value: {
                     "type": "InboxList"
                 },
-                properties:{
-                    type:{
+                properties: {
+                    type: {
                         type: "string"
                     }
                 },
