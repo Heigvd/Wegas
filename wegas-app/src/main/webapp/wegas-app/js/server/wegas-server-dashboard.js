@@ -59,6 +59,7 @@ var WegasDashboard = (function() {
             varName: varName,
             itemType: 'variable',
             formatter: cfg.formatter,
+            decimals: cfg.decimals,
             label: cfg.label,
             index: cfg.index || Object.keys(section).length,
             sortable: cfg.sortable,
@@ -166,6 +167,7 @@ var WegasDashboard = (function() {
 
                             item.label = itemCfg.label || variables[varName].descriptor.getLabel().translateOrEmpty(self);
                             item.formatter = itemCfg.formatter;
+                            item.decimals = itemCfg.decimals;
                             item.sortable = itemCfg.sortable;
                             item.kind = variables[varName].descriptor.getClass().getSimpleName().replaceAll("Descriptor", "").toLowerCase();
                             break;
@@ -242,16 +244,16 @@ var WegasDashboard = (function() {
 
     return {
         /**
-         * 
+         *
          * @param {type} varName
-         * @param {type} cfg {section = 'monitoring', dashboard = 'overview', label =varLabel, formatter, index, sortable, mapFn = function(teamId, instance, ...extraInstances), mapFnExtraArgs = [vdNanem, vdName2, ...]}
+         * @param {type} cfg {section = 'monitoring', dashboard = 'overview', label =varLabel, formatter, decimals, index, sortable, mapFn = function(teamId, instance, ...extraInstances), mapFnExtraArgs = [vdNanem, vdName2, ...]}
          * @returns {undefined}
          */
         registerVariable: function(varName, cfg) {
             return registerVariable(varName, cfg);
         },
         /**
-         * 
+         *
          * @param {type} id
          * @param {type} cfg
          * @returns {undefined}
