@@ -100,7 +100,8 @@ YUI.add('wegas-layout-resizable', function(Y) {
             },
             selectPreview:function(){
                 this.syncUI();
-                Y.Wegas.TabView.getTab(Y.Wegas.TabView.getPreviewTabLabel()).set("selected", 2);
+                var previewTab = Y.Wegas.TabView.getTab(Y.Wegas.TabView.getPreviewTabLabel());
+                previewTab && previewTab.set("selected", 2);
             },
             /**
              * @function

@@ -59,7 +59,7 @@ var WegasDashboard = (function() {
             varName: varName,
             itemType: 'variable',
             formatter: cfg.formatter,
-            decimals: cfg.decimals,
+            transformer: cfg.transformer,
             label: cfg.label,
             index: cfg.index || Object.keys(section).length,
             sortable: cfg.sortable,
@@ -167,7 +167,7 @@ var WegasDashboard = (function() {
 
                             item.label = itemCfg.label || variables[varName].descriptor.getLabel().translateOrEmpty(self);
                             item.formatter = itemCfg.formatter;
-                            item.decimals = itemCfg.decimals;
+                            item.transformer = itemCfg.transformer;
                             item.sortable = itemCfg.sortable;
                             item.kind = variables[varName].descriptor.getClass().getSimpleName().replaceAll("Descriptor", "").toLowerCase();
                             break;
@@ -231,6 +231,9 @@ var WegasDashboard = (function() {
                     if (item.formatter) {
                         item.formatter = item.formatter + "";
                     }
+                    if (item.transformer) {
+                        item.transformer = item.transformer + "";
+                    }
                     if (item.do) {
                         item.do = item.do + "";
                     }
@@ -246,7 +249,7 @@ var WegasDashboard = (function() {
         /**
          *
          * @param {type} varName
-         * @param {type} cfg {section = 'monitoring', dashboard = 'overview', label =varLabel, formatter, decimals, index, sortable, mapFn = function(teamId, instance, ...extraInstances), mapFnExtraArgs = [vdNanem, vdName2, ...]}
+         * @param {type} cfg {section = 'monitoring', dashboard = 'overview', label =varLabel, formatter, transformer, index, sortable, mapFn = function(teamId, instance, ...extraInstances), mapFnExtraArgs = [vdNanem, vdName2, ...]}
          * @returns {undefined}
          */
         registerVariable: function(varName, cfg) {
