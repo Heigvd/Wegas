@@ -76,6 +76,14 @@ YUI.add('wegas-button', function(Y) {
         renderUI: function() {
             Button.superclass.renderUI.apply(this, arguments);
             this.get(BOUNDINGBOX).addClass('wegas-button');
+            /**
+             * @hack backward compatibility hack
+             * 
+             * use the getter to convert untranslated / I18nV1 translation to I18nv2 translations
+             * and use the setter to set the inner html
+             * 
+             */
+            this.set("label", this.get("label"));
         },
         _getLabel: function(value) {
             return value;
