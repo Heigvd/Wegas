@@ -142,8 +142,44 @@ YUI.add('wegas-entity', function(Y) {
                                 "@class": "TranslatableContent",
                                 "translations": {}
                             }, argDesc);
-                        } else if (false) {
-                            // I18nv1 !!!
+                        } else if (value.type === "ObjectExpression") {
+                            // Detect and convert i18n v1
+                            var newValue = {
+                                "@class": "TranslatableContent",
+                                "translations": {}
+                            };
+                            var v1Converted = false;
+                            var v2Detected = false;
+
+                            for (var i in value.properties) {
+                                if (value.properties[i].key.value === "translations") {
+                                    if (value.properties[i].value.type === "ObjectExpression") {
+                                        var translations = value.properties[i].value.properties;
+                                        for (var j in translations) {
+                                            var lang = translations[j].key.value;
+                                            if (translations[j].value.type === "Literal") {
+                                                // v1 detected
+                                                v1Converted = true;
+                                                newValue.translations[lang] = {
+                                                    translation: translations[j].value.value,
+                                                    status: ""
+                                                };
+                                            } else {
+                                                //  v2 detected
+                                                v2Detected = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (v1Converted && v2Detected) {
+                                throw "Error: mixin v1/v2 translations";
+                            }
+
+                            if (v1Converted) {
+                                return tools.valueToAST(newValue, argDesc);
+                            }
                         }
                     }
                     return value;
@@ -165,6 +201,61 @@ YUI.add('wegas-entity', function(Y) {
                             "@class": "TranslatableContent",
                             "translations": {}
                         };
+                    } else if (value && value.translations) {
+                        var newValue = {
+                            "@class": "TranslatableContent",
+                            "translations": {}
+                        };
+                        var converted = false;
+                        var ghosts = [];
+                        for (var lang in value.translations) {
+                            var newLang;
+                            if (I18n.findLanguageByCode(lang)) {
+                                newLang = lang.toUpperCase();
+                            } else {
+                                // language does not exists anylonger
+                                newLang = null;
+                            }
+
+                            if (typeof value.translations[lang] === "string") {
+                                // i18nv1
+                                converted = true;
+                                if (newLang) {
+                                    newValue.translations[newLang] = {
+                                        translation: value.translations[lang],
+                                        status: ""
+                                    };
+                                } else {
+                                    ghosts.push({
+                                        translation: value.translations[lang],
+                                        status: ""
+                                    });
+                                }
+                            } else if (typeof value.translations[lang] === "object") {
+                                // i18nv2
+                                if (newLang) {
+                                    newValue.translations[newLang] = value.translations[lang];
+                                } else {
+                                    ghosts.push(value.translations[lang]);
+                                }
+                            }
+                        }
+                        if (converted || ghosts.length) {
+                            if (ghosts.length) {
+                                // some translations without any known language -> try to attach to any languages which does not own a translation
+                                // this is mainly a hack to rename languages in pages
+                                var gmLanguages = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages");
+                                for (var g in ghosts) {
+                                    for (var i in gmLanguages) {
+                                        var newLang = gmLanguages[i].get("code").toUpperCase();
+                                        if (!newValue.translations.hasOwnProperty(newLang)) {
+                                            newValue.translations[newLang] = ghosts[i];
+                                        }
+                                    }
+                                }
+                            }
+                            return newValue;
+                        }
                     }
                     return value;
                 },
