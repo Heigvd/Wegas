@@ -88,7 +88,7 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
     private Integer indexOrder;
 
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty(sameEntityOnly = true)
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.INTERNAL)
     private boolean active = false;
 
     @ManyToOne

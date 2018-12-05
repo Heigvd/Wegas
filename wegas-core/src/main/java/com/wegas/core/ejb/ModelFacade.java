@@ -288,7 +288,7 @@ public class ModelFacade {
                     for (GameModelLanguage gml : gameModel.getRawLanguages()) {
                         translationSources.putIfAbsent(gml.getCode(), new ArrayList<>());
                         List<GameModel> gmRef = translationSources.get(gml.getCode());
-                        gml.setVisibility(ModelScoped.Visibility.INTERNAL);
+                        gml.setVisibility(ModelScoped.Visibility.PROTECTED);
                         gmRef.add(gameModel);
                     }
                 }
@@ -680,7 +680,7 @@ public class ModelFacade {
                             GameModelLanguage languageByCode = scenario.getLanguageByCode(mLang.getCode());
                             if (languageByCode != null) {
                                 languageByCode.forceRefId(mLang.getRefId());
-                                languageByCode.setVisibility(ModelScoped.Visibility.INTERNAL);
+                                languageByCode.setVisibility(ModelScoped.Visibility.PROTECTED);
                             }
                         }
                     }

@@ -103,8 +103,11 @@ var i18nOrdinate = (function(module) {
                 gmCodes = self.getGameModel().getPreferredLanguagesCode(code || self.getLang());
 
             for (i in gmCodes) {
-                if (i18nTable[gmCodes[i]]) {
-                    return gmCodes[i];
+                if (i18nTable[gmCodes[i].toLowerCase()]) {
+                    return gmCodes[i].toLowerCase();
+                }
+                if (i18nTable[gmCodes[i].toUpperCase()]) {
+                    return gmCodes[i].toUpperCase();
                 }
             }
 
