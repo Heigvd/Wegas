@@ -145,7 +145,12 @@ public class UtilsController {
     @Path("pr_number")
     @Produces(MediaType.TEXT_PLAIN)
     public Long getPrNumber() {
-        return Long.parseLong(Helper.getWegasProperty("wegas.build.pr_number", "-1"));
+        String prNumber = Helper.getWegasProperty("wegas.build.pr_number", "-1");
+        if (Helper.isNullOrEmpty(prNumber)) {
+            return -1l;
+        } else {
+            return Long.parseLong(prNumber);
+        }
     }
 
     @GET
