@@ -360,7 +360,7 @@ YUI.add('wegas-dashboard', function(Y) {
                 tables = {}, data = {}, i, j, tableDef,
                 teamId, team, teamData, entry,
                 cell, cellDef,
-                tableName, tableColumns, formatter,
+                tableName, tableColumns, formatter, transformer,
                 key1, key2, firstCellFormatter,
                 firstOfGroup,
                 getPlayerIcon,
@@ -411,6 +411,12 @@ YUI.add('wegas-dashboard', function(Y) {
                                 item.valueFormatter = formatter;
                             }
                         }
+                        if (def.transformer) {
+                            transformer = eval("(" + def.transformer + ")");
+                            if (transformer) {
+                                item.valueTransformer = transformer;
+                            }
+                        }
 
                         item.nodeFormatter = function(o) {
                             if (o.column.cssClass) {
@@ -439,12 +445,10 @@ YUI.add('wegas-dashboard', function(Y) {
 
                             if (fallback) {
                                 if (o.value !== undefined && o.value !== null) {
-                                    if (def.kind === "number" && typeof def.decimals === "number") {
-                                        var val = o.value.toFixed(def.decimals);
-                                        o.cell.setHTML("<span class=\"bloc__value\">" + val + "</span>");
-                                    } else {
-                                        o.cell.setHTML("<span class=\"bloc__value\">" + o.value + "</span>");
+                                    if (o.column.valueTransformer) {
+                                        o.value = o.column.valueTransformer.call(this, o.value);
                                     }
+                                    o.cell.setHTML("<span class=\"bloc__value\">" + o.value + "</span>");
                                 } else {
                                     o.cell.setHTML("<span class=\"bloc__value no-value\"></span>");
                                 }
