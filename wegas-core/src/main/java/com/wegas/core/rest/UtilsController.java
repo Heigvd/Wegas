@@ -367,7 +367,7 @@ public class UtilsController {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder("<li>");
-
+            sb.append("<div class='header'>");
             if (this.name != null && !this.name.isEmpty()) {
                 sb.append("<b>").append(this.name).append("</b>");
             }
@@ -382,7 +382,7 @@ public class UtilsController {
                 }
                 sb.append("</span>");
             }
-
+            sb.append("</div>");
             for (TreeNode child : children.values()) {
                 sb.append("<ul>").append(System.lineSeparator());
                 sb.append(child);
@@ -420,7 +420,8 @@ public class UtilsController {
                 + "\n"
                 + "li .level.direct {\n"
                 + "    text-decoration: underline;"
-                + "}"
+                + "}\n"
+                + ".header:hover {background-color: #cecece}\n"
                 + "li .level.current {\n"
                 + "    font-weight: bold;"
                 + "}"
