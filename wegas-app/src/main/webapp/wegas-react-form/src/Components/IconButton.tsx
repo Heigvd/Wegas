@@ -68,7 +68,7 @@ type IconValue = string | IconArray;
 
 interface IconArray extends Array<IconValue> {}
 
-function renderIcon(icon: IconValue, index) {
+function renderIcon(icon: IconValue, key?: any) {
     if (Array.isArray(icon)) {
         return (<span className={`fa-stack ${css({lineHeight: "inherit !important"})}`}>
             {
@@ -78,7 +78,7 @@ function renderIcon(icon: IconValue, index) {
             }
         </span>);
     } else if (typeof icon === "string") {
-        return <span key={index} className={classNames(icon)} />;
+        return <span key={key} className={classNames(icon)} />;
     }
 }
 
