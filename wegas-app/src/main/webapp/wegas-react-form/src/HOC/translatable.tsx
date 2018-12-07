@@ -2,6 +2,7 @@ import * as React from 'react';
 import {LangConsumer} from '../LangContext';
 import {Schema} from 'jsoninput';
 import {infoStyle} from './commonView';
+import {css} from 'glamor';
 import IconButton from '../Components/IconButton';
 
 
@@ -133,9 +134,23 @@ export default function translatable<P extends EndProps>(
                                 props.onChange(v);
                             }}
                         />
+
+                    const orangeStyle = css({
+                        color: "#F57C00"
+                    });
+
+                    const greenStyle =css({
+                        color: "#388E3C"
+                    });
+
                     const majorButton = !readOnly ?
                         <IconButton
-                            icon="fa fa-gavel"
+                            icon={[
+                                `fa fa-toggle-on fa-stack-1x ${orangeStyle}`,
+                                `fa fa-expand fa-stack-1x ${css({
+                                    transform: "translate(0, 8px) rotate(45deg)"
+                                })}`
+                            ]}
                             tooltip="Major update"
                             onClick={() => {
                                 markAsMajor(curCode);
@@ -144,8 +159,8 @@ export default function translatable<P extends EndProps>(
 
                     const outdateButton = !readOnly ?
                         <IconButton
-                            icon="fa fa-download"
-                            tooltip="Deprecate "
+                            icon={`fa fa-toggle-on ${greenStyle}`}
+                            tooltip="Mark as outdated "
                             onClick={() => {
                                 outdate(curCode);
                             }}
@@ -165,8 +180,8 @@ export default function translatable<P extends EndProps>(
                                 {editor}
                                 {majorButton}
                                 {!readOnly ? <IconButton
-                                    icon="fa fa-upload"
-                                    tooltip="Catch up"
+                                    icon={`fa fa-toggle-on fa-flip-horizontal ${orangeStyle}`}
+                                    tooltip="Mark as up-to-date"
                                     onClick={() => {
                                         catchUp(curCode);
                                     }}
