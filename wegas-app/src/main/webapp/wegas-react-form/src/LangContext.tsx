@@ -6,7 +6,7 @@ interface Context {
     availableLang: { code: string; label: string }[];
 }
 const LangContext = React.createContext<Context>({
-    lang: 'def',
+    lang: I18n.getCode(),
     toggleLang: () => undefined,
     availableLang: [],
 });
