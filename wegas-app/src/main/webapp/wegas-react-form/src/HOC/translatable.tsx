@@ -151,6 +151,9 @@ export default function translatable<P extends EndProps>(
                                     transform: "translate(0, 8px) rotate(45deg)"
                                 })}`
                             ]}
+                            className={`${css({
+                                lineHeight: "1.2em"
+                            })}`}
                             tooltip="Major update"
                             onClick={() => {
                                 markAsMajor(curCode);
@@ -159,7 +162,7 @@ export default function translatable<P extends EndProps>(
 
                     const outdateButton = !readOnly ?
                         <IconButton
-                            icon={`fa fa-toggle-on ${greenStyle}`}
+                            icon={[`fa fa-toggle-on ${greenStyle}`]}
                             tooltip="Mark as outdated "
                             onClick={() => {
                                 outdate(curCode);
@@ -180,7 +183,7 @@ export default function translatable<P extends EndProps>(
                                 {editor}
                                 {majorButton}
                                 {!readOnly ? <IconButton
-                                    icon={`fa fa-toggle-on fa-flip-horizontal ${orangeStyle}`}
+                                    icon={[`fa fa-toggle-on fa-flip-horizontal ${orangeStyle}`]}
                                     tooltip="Mark as up-to-date"
                                     onClick={() => {
                                         catchUp(curCode);

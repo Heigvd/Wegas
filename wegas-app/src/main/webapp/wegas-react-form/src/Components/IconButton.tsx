@@ -68,17 +68,17 @@ type IconValue = string | IconArray;
 
 interface IconArray extends Array<IconValue> {}
 
-function renderIcon(icon: IconValue) {
+function renderIcon(icon: IconValue, index) {
     if (Array.isArray(icon)) {
-        return (<span className='fa-stack'>
+        return (<span className={`fa-stack ${css({lineHeight: "inherit !important"})}`}>
             {
-                icon.map(item => {
-                    return renderIcon(item);
+                icon.map((item, index) => {
+                    return renderIcon(item, index);
                 })
             }
         </span>);
     } else if (typeof icon === "string") {
-        return <span className={classNames(icon)} />;
+        return <span key={index} className={classNames(icon)} />;
     }
 }
 
