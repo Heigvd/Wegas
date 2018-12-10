@@ -19,6 +19,7 @@ import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.*;
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.BatchFetchType;
@@ -132,19 +133,27 @@ public class ChoiceInstance extends VariableInstance {
      * @param currentResultName
      */
     public void setCurrentResultName(String currentResultName) {
-        this.currentResultName = currentResultName;
+        if (!Objects.equals(this.getCurrentResultName(), currentResultName)) {
+            this.currentResultName = currentResultName;
 
-        if (!Helper.isNullOrEmpty(this.currentResultName)) {
-            ChoiceDescriptor choiceDesc = (ChoiceDescriptor) this.findDescriptor();
-            if (choiceDesc != null) {
-                try {
-                    Result newResult = choiceDesc.getResultByName(this.currentResultName);
-                    this.setCurrentResult(newResult);
-                } catch (WegasNoResultException ex) {
-                    this.setCurrentResult(null);
+            if (!Helper.isNullOrEmpty(this.currentResultName)) {
+                ChoiceDescriptor choiceDesc = (ChoiceDescriptor) this.findDescriptor();
+                if (choiceDesc != null) {
+                    try {
+                        Result newResult = choiceDesc.getResultByName(this.currentResultName);
+                        // Result found -> set it and clear the transient name
+                        this.setCurrentResult(newResult);
+                        this.currentResultName = null;
+                    } catch (WegasNoResultException ex) {
+                        // not found, clear currentResult but not currentResultName
+                        this.currentResult = null;
+                    }
                 }
-            }
 
+            } else {
+                //Name and currentResult are null
+                this.currentResult = null;
+            }
         }
     }
 
@@ -164,7 +173,6 @@ public class ChoiceInstance extends VariableInstance {
     public void setCurrentResultIndex(Integer index) {
         this.currentResultIndex = index;
     }
-
 
     /**
      * @return the active
@@ -262,7 +270,10 @@ public class ChoiceInstance extends VariableInstance {
      */
     public void setCurrentResult(Result currentResult) {
         this.currentResult = currentResult;
-        this.setCurrentResultName(null);
+        if (currentResult != null) {
+            // do not need the name anylonger
+            this.currentResultName = null;
+        }
     }
 
     /*
