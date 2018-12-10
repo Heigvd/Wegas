@@ -57,7 +57,7 @@ public class Deepl {
         this.key = apiKey;
         this.client = HttpClientBuilder.create().build();
         this.baseUrl = url;
-        Helper.getWegasProperty("deepl.base_url", "https://apideepl.com/v1/");
+        Helper.getWegasProperty("deepl.base_url", "https://apideepl.com/v2/");
     }
 
     /**
@@ -81,6 +81,10 @@ public class Deepl {
          */
         ES,
         /**
+         * Portuguese
+         */
+        PT,
+        /**
          * Italian
          */
         IT,
@@ -91,7 +95,11 @@ public class Deepl {
         /**
          * Polish
          */
-        PL;
+        PL,
+        /**
+         * Russian
+         */
+        RU;
     }
 
     /**
