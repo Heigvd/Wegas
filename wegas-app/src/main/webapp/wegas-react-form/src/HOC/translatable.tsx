@@ -139,7 +139,7 @@ export default function translatable<P extends EndProps>(
                         color: "#F57C00"
                     });
 
-                    const greenStyle =css({
+                    const greenStyle = css({
                         color: "#388E3C"
                     });
 
@@ -151,7 +151,7 @@ export default function translatable<P extends EndProps>(
                                     transform: "translate(0, 8px) rotate(45deg)"
                                 })}`
                             ]}
-                            className={`${css({
+                            className={`wegas-advanced-feature ${css({
                                 lineHeight: "1.2em"
                             })}`}
                             tooltip="Major update"
@@ -162,6 +162,7 @@ export default function translatable<P extends EndProps>(
 
                     const outdateButton = !readOnly ?
                         <IconButton
+                            className='wegas-advanced-feature'
                             icon={[`fa fa-toggle-on ${greenStyle}`]}
                             tooltip="Mark as outdated "
                             onClick={() => {
@@ -184,6 +185,7 @@ export default function translatable<P extends EndProps>(
                                 {majorButton}
                                 {!readOnly ? <IconButton
                                     icon={[`fa fa-toggle-on fa-flip-horizontal ${orangeStyle}`]}
+                                    className='wegas-advanced-feature'
                                     tooltip="Mark as up-to-date"
                                     onClick={() => {
                                         catchUp(curCode);
