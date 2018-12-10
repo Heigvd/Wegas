@@ -174,6 +174,7 @@ YUI.add('wegas-dashboard', function(Y) {
             this.get("contentBox").delegate("click", this.onTextClick, ".bloc__text", this);
 
             Y.Wegas.app.once('ready', Y.bind(this.syncUI, this));
+            Y.on("dashboard:refresh", Y.bind(this.syncUI, this));
 
             this.handlers.onBodyClick = Y.one("body").on("click", Y.bind(function(event) {
                 this.closeDetails();
