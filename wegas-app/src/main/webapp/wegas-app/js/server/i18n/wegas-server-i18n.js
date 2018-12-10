@@ -179,6 +179,9 @@ var i18nOrdinate = (function(module) {
         }
 
         return {
+            currentLocale: function() {
+                return currentLocale();
+            },
             lang: function() {
                 return currentLocale();
             },
