@@ -47,7 +47,7 @@ YUI.add('wegas-dashboard-modals', function(Y) {
                         "do": function() {
                             this.item(0).run(this);
                             Y.later(1500, this, function() { // Wait at least 1000+200 ms for the modale to close (see wegas-console-custom.js)
-                                Y.fire("refresh");
+                                Y.fire("dashboard:refresh");
                             });
                         }
                     }, {

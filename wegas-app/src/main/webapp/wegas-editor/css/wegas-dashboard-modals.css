@@ -78,7 +78,7 @@
 
 .wegas-console-custom .content-advanced-script > div,
 .wegas-console-custom .content-advanced-script > div > div,
-.wegas-console-custom .content-advanced-script > div > div > span 
+.wegas-console-custom .content-advanced-script > div > div > span
 .wegas-console-custom .content-advanced-script > div > div > span > span,
 .wegas-console-custom .content-advanced-script > div > div > span > span > div{
     height: 100%;
@@ -391,6 +391,12 @@
 }
 .yui3-skin-sam .wegas-form.wegas-console-custom div.inputEx-valid > div.inputEx-label:before {
   display:none;
+}
+
+.yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-description {
+    color:#9a9a9a;
+    padding:2px 0px;
+    font-style: italic;
 }
 
 .yui3-skin-sam .wegas-form.wegas-console-custom .inputEx-Field{

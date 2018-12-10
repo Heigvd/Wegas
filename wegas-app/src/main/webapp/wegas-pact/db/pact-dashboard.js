@@ -6,11 +6,13 @@ var PactDashboard = (function() {
     };
 
     WegasDashboard.registerVariable("currentLevel", {
-        transformer: levelDisplay
+        transformer: levelDisplay,
+        sortable: true
     });
 
     WegasDashboard.registerVariable("maxLevel", {
-        transformer: levelDisplay
+        transformer: levelDisplay,
+        sortable: true
     });
 
     WegasDashboard.registerAction("sendTheory", function(team, payload) {
