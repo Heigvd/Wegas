@@ -247,6 +247,9 @@ ProgGameSimulation.prototype = {
         if (!this.checkGameOver()) {
             // If the game is still not won,
             this.log('You lost.'); // then it's definitely lost
+            this.sendCommand({
+                type: 'gameLost',
+            });
         }
     },
     resetActions: function() {
@@ -435,6 +438,9 @@ ProgGameSimulation.prototype = {
                                 id: o.id,
                             });
                             this.log('You lost.'); // then it's definitely lost
+                            this.sendCommand({
+                                type: 'gameLost',
+                            });
                             this.doRecordCommands = false;
                         }
                         break;

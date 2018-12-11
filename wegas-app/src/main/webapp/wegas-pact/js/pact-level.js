@@ -82,6 +82,13 @@ YUI.add('pact-level', function(Y) {
                 this.currentBreakpointLine = -1;
                 this.currentBreakpointStep = -1;
                 this.watches = [];
+                // New activity tracking variables:
+                this.previousCode = "";
+                this.currentCode = "";
+                this.feedback = "";
+                this.isUnmodifiedCode = false;
+                this.isRuntimeException = false;
+                this.isSuccessful = false;
             },
             renderUI: function() {
                 var cb = this.get(CONTENTBOX),
@@ -386,6 +393,28 @@ YUI.add('pact-level', function(Y) {
                     targetStep: this.currentBreakpointStep,
                 });
             },
+            prepareExecution: function() {
+                this.feedback = "";
+                this.currentCode = this.mainEditorTab.aceField.getValue().trim();
+                this.isUnmodifiedCode = (this.currentCode === this.previousCode);
+                this.isRuntimeException = false;
+                this.isSuccessful = false;
+            },
+            archiveExecution: function() {
+                if (!this.isRuntimeException && this.feedback === '') {
+                    this.feedback = this.isSuccessful ? "GAGNÉ" : "PERDU";
+                } else {
+                    this.feedback = "EXCEPTION: " + this.feedback;
+                }
+                Y.log("Archive execution: isSuccessful=" + this.isSuccessful +
+                    " isRuntimeException=" + this.isRuntimeException +
+                    " feedback=" + this.feedback +
+                    " code=" + this.currentCode);
+                // TODO Persist execution counters and history !!
+                if (!this.isUnmodifiedCode) {
+                    this.previousCode = this.currentCode;
+                }
+            },
             instrument: function(code) {
                 return Wegas.JSInstrument.instrument(code); // return instrumented value of the code
             },
@@ -394,6 +423,7 @@ YUI.add('pact-level', function(Y) {
                 var level = Y.Wegas.Facade.Page.cache.editable
                     ? JSON.stringify(this.get('root').get('@pageId'))
                     : Y.JSON.stringify(this.toObject());
+                this.prepareExecution();
                 Wegas.Facade.Variable.sendRequest({
                     request:
                         '/ProgGame/Run/' +
@@ -450,11 +480,15 @@ YUI.add('pact-level', function(Y) {
                                     .get('val')['@class'] ===
                                     'WegasScriptException'
                             ) {
+                                this.isSuccessful = false;
+                                this.isRuntimeException = true;
+                                this.feedback = exceptionEvent
+                                    .get('val.exceptions')[0]
+                                    .get('val').message;
+                                this.archiveExecution();
                                 this.set(
                                     'error',
-                                    exceptionEvent
-                                        .get('val.exceptions')[0]
-                                        .get('val').message
+                                    this.feedback
                                 );
                                 Y.Wegas.Alerts.showNotification(
                                     'Your script contains an error.',
@@ -486,6 +520,18 @@ YUI.add('pact-level', function(Y) {
                     .one('.play')
                     .show();
             },
+            // Returns true iff the given command stack ends with a 'gameWon':
+            getExecutionOutcome: function(arr) {
+                for (var i=arr.length-1; i>=0; i--) {
+                    var currType = arr[i].type;
+                    if (currType === 'gameWon') {
+                        return true;
+                    } else if (currType === 'gameLost') {
+                        return false;
+                    }
+                }
+                return false;
+            },
             onServerReply: function(e) {
                 Y.log(
                     'onServerReply(' + e.response.entity + ')',
@@ -493,6 +539,9 @@ YUI.add('pact-level', function(Y) {
                     PROGGAMELEVEL
                 );
                 this.commandsStack = Y.JSON.parse(e.response.entity);
+                this.isRuntimeException = false;
+                this.isSuccessful = this.getExecutionOutcome(this.commandsStack);
+                this.archiveExecution();
                 this.consumeCommand();
             },
             findObject: function(id) {
@@ -564,6 +613,9 @@ YUI.add('pact-level', function(Y) {
                                 // After shake hands animation is over,
                                 this.doLevelEndAnimation(); // display level end screen
                             });
+                            break;
+                        case 'gameLost':
+                            this.consumeCommand();
                             break;
                         case 'log':
                             this.debugTabView
