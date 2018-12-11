@@ -1,5 +1,5 @@
 // Types used accross this file
-/* global gameModel, self, Variable*/
+/* global gameModel, self, Variable, xapi, Log*/
 /**
  * @typedef ObjectsItem
  * @property {string} id
@@ -166,7 +166,7 @@ function ProgGameSimulation(cfg) {
     this.doRecordCommands =
         cfg.doRecordCommands === undefined ? true : cfg.recordCommands;
     this.ret = [];
-    /** @type {ObjectsItem} */
+    /** @type {ObjectsItem | null} */
     this.cObject = null;
     this.currentStep = -1;
     /** @type {Level} */
@@ -767,25 +767,26 @@ ProgGameSimulation.prototype = {
         };
     },
 };
-/**
- *
- * @param {(name: string) => void} playerFn fn containing player's code
- * @param {Level|string} level
- * @param {Config} cfg
- */
 /* exported run */
+/**
+ * @param {(name: string) => void} playerFn fn containing player's code
+ * @param {Level | string} level
+ * @param {Config=} cfg
+ */
 function run(playerFn, level, cfg) {
     Object.freeze(this); // Freeze global object
     /** @type {Level} */
     var realLevel;
-    cfg = cfg || {};
+    cfg = cfg || /** @type {Config} */ ({});
     if (typeof level !== 'object') {
         realLevel = Wegas.getLevelPage(level);
     } else {
         realLevel = level;
     }
     var simulation = new ProgGameSimulation(cfg);
+
     simulation.run(playerFn, realLevel);
+
     return JSON.stringify(simulation.getCommands());
 }
 //node debug

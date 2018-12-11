@@ -24,6 +24,7 @@ YUI.addGroup('wegas-pact', {
                 'ace',
                 'pact-scriptfiles',
                 'wegas-treeview',
+                'wegas-scripteval',
                 'resize',
                 'pact-display',
                 'pact-jsinstrument',
@@ -35,10 +36,10 @@ YUI.addGroup('wegas-pact', {
             ws_provides: 'ProgGameLevel',
         },
         'pact-display': {
-            requires: ['wegas-widget', 'crafty', 'yui-later', "promise"],
+            requires: ['wegas-widget', 'crafty', 'yui-later', 'promise'],
             ws_provides: 'ProgGameDisplay',
         },
-       
+
         'pact-jsinstrument': {
             requires: ['esprima', 'escodegen'],
         },

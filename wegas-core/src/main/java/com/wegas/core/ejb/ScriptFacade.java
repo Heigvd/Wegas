@@ -21,6 +21,7 @@ import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.log.xapi.*;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
@@ -162,6 +163,9 @@ public class ScriptFacade extends WegasAbstractFacade {
     @Inject
     private RequestManager requestManager;
 
+    @Inject
+    private Xapi xapi;
+
     @Resource(lookup = "timeoutExecutorService")
     private ManagedExecutorService timeoutExecutorService;
 
@@ -210,6 +214,7 @@ public class ScriptFacade extends WegasAbstractFacade {
         putBinding(bindings, "RequestManager", RequestManagerI.class, requestManager);
         putBinding(bindings, "Event", ScriptEventFacadeI.class, event);
         putBinding(bindings, "DelayedEvent", DelayedScriptEventFacadeI.class, delayedEvent);
+        putBinding(bindings, "xapi", XapiI.class, xapi);
 
         bindings.put("ErrorManager", new WegasErrorMessageManager());    // Inject the MessageErrorManager
 

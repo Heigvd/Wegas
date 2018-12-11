@@ -397,7 +397,9 @@ YUI.add('pact-level', function(Y) {
                 Wegas.Facade.Variable.sendRequest({
                     request:
                         '/ProgGame/Run/' +
-                        Wegas.Facade.Game.get('currentPlayerId'),
+                        Wegas.Facade.Game.get('currentPlayerId') +
+                        '?level=' +
+                        this.get('root').get('@pageId'),
                     cfg: {
                         method: 'POST',
                         data:
@@ -411,8 +413,29 @@ YUI.add('pact-level', function(Y) {
                             ');',
                     },
                     on: {
-                        success: Y.bind(this.onServerReply, this),
+                        success: Y.bind(function(e) {
+                            var commands = Y.JSON.parse(e.response.entity);
+                            Y.Wegas.Facade.Variable.script.remoteEval(
+                                'Log.level(' +
+                                    JSON.stringify(code) +
+                                    ', ' +
+                                    level +
+                                    ', true,' +
+                                    commands.some(function(c) {
+                                        return c.type === 'gameWon';
+                                    }) +
+                                    ')'
+                            );
+                            this.onServerReply(e);
+                        }, this),
                         failure: Y.bind(function(e) {
+                            Y.Wegas.Facade.Variable.script.remoteEval(
+                                'Log.level(' +
+                                    JSON.stringify(code) +
+                                    ', ' +
+                                    level +
+                                    ', false, false)'
+                            );
                             this.set(STATE, IDLE);
                             var events = e.response.results.events;
                             var exceptionEvent = Y.Array.find(events, function(
