@@ -37,6 +37,7 @@
 /**
  * @namespace Wegas utilities
  */
+/* exported Wegas */
 var Wegas = {
     Tool: {
         /**
@@ -337,7 +338,7 @@ ProgGameSimulation.prototype = {
     },
     /**
      *
-     * @param {{[variable:string]: unkown}=} values to pass to the script
+     * @param {{[variable:string]: unknown}=} values to pass to the script
      */
     afterAction: function(values) {
         var injected = Wegas.Object.assign(
@@ -646,9 +647,6 @@ ProgGameSimulation.prototype = {
                 // debugger tool
                 _____debug: this._____debug.bind(this),
                 watches: this.watches,
-                // Prevent bad things. Infinite loop, ...
-                // Function: Wegas.evil(Function),
-                // eval: Wegas.evil(eval),
             },
             i;
         for (i in this.api) {
