@@ -447,14 +447,14 @@ YUI.add('pact-level', function(Y) {
                             var commands = Y.JSON.parse(e.response.entity);
                             Y.Wegas.Facade.Variable.script.remoteEval(
                                 'Log.level(' +
-                                    JSON.stringify(code) +
-                                    ', ' +
-                                    level +
-                                    ', true,' +
-                                    commands.some(function(c) {
-                                        return c.type === 'gameWon';
-                                    }) +
-                                    ')'
+                                JSON.stringify(code) +
+                                ', ' +
+                                level +
+                                ', true,' +
+                                commands.some(function(c) {
+                                    return c.type === 'gameWon';
+                                }) +
+                                ')'
                             );
                             this.onServerReply(e);
                         }, this),
