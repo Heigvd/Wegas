@@ -9,7 +9,7 @@
         return I18n.t(Y.Wegas.Facade.Variable.cache.find("name", name).get("label"));
     };
 
-    // NB: This is a server script !
+    // NB: This is a server-side function !
     // Enable entering game levels as 1.1 and convert them to internal representation, i.e. 11.
     var adjustLevel = function(val) {
         if (val >= 1.1 && val <= 9.9) {
@@ -22,7 +22,7 @@
     Y.namespace("Wegas.Config").CustomImpacts = function() {
         return [
             ["Modifier une variable de jeu",
-                "var adjustLevel = " + adjustLevel + ";" +
+                "var adjustLevel=" + adjustLevel + ";" +
                 'Variable.find(gameModel, "maxLevel").setValue(self, adjustLevel(${"type":"number", "label":"' +
                 varLabel("maxLevel") + '", "description":"Entrer une valeur numérique telle que 1.1"}));']
         ];
