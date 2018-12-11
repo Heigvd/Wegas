@@ -22,7 +22,7 @@
  * @property {string} winningCondition
  * @property {string} onStart
  * @property {string} onAction
- * @property {string} onWin
+ * @property {string | number} onWin
  * @property {string} defaultCode
  * @property {number} maxTurns
  *
@@ -34,13 +34,28 @@
  * @property {number} targetStep
  * @property {boolean} recordCommands
  */
-
 /**
  * @namespace Wegas utilities
  */
 var Wegas = {
+    Tool: {
+        /**
+         *
+         * @param {number} level
+         */
+        changeLevel: function(level) {
+            Variable.find(gameModel, 'currentLevel').setValue(
+                self,
+                Number(level)
+            );
+            Log.post(Log.statement('initialized', 'level', level));
+        },
+    },
     //                                                                     // Utilities
     Object: {
+        /**
+         * @param {{ [x: string]: any; }} object
+         */
         values: function(object) {
             var r = [],
                 i;
@@ -149,10 +164,16 @@ var Wegas = {
 };
 /**
  * print arguments
+ * @callback varStr
+ * @param {...string} str
+ * @returns {void}
  */
-function wdebug() {
+/**
+ * @type {varStr}
+ */
+var wdebug = function() {
     // print.apply(null, arguments);
-}
+};
 /**
  * @constructor
  * @param {Config} cfg
@@ -617,6 +638,8 @@ ProgGameSimulation.prototype = {
                 RequestManager: undefined,
                 print: undefined,
                 Wegas: undefined,
+                Log: undefined,
+                xapi: undefined,
                 ProgGameSimulation: undefined,
                 run: undefined,
                 load: undefined,

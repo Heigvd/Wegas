@@ -447,14 +447,17 @@ YUI.add('pact-level', function(Y) {
                             var commands = Y.JSON.parse(e.response.entity);
                             Y.Wegas.Facade.Variable.script.remoteEval(
                                 'Log.level(' +
-                                JSON.stringify(code) +
-                                ', ' +
-                                level +
-                                ', true,' +
-                                commands.some(function(c) {
-                                    return c.type === 'gameWon';
-                                }) +
-                                ')'
+                                    JSON.stringify(code) +
+                                    ', ' +
+                                    level +
+                                    ', true,' +
+                                    commands.some(function(c) {
+                                        return c.type === 'gameWon';
+                                    }) +
+                                    ');' +
+                                    'Log.post(Log.statement("completed", "level", ' +
+                                    level +
+                                    '));'
                             );
                             this.onServerReply(e);
                         }, this),
@@ -683,9 +686,7 @@ YUI.add('pact-level', function(Y) {
             },
             doNextLevel: function(fn) {
                 var content =
-                    'Variable.find(gameModel, "currentLevel").setValue(self, ' +
-                    this.get('onWin') +
-                    ')';
+                    'Wegas.Tool.changeLevel(' + this.get('onWin') + ')';
                 Wegas.Facade.Variable.script.run(content, {
                     on: {
                         success: fn,

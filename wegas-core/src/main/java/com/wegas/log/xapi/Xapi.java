@@ -2,6 +2,8 @@ package com.wegas.log.xapi;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -62,5 +64,10 @@ public class Xapi implements XapiI {
     @Override
     public void post(Statement stmt) {
         logger.info("[post]{}", this.serialize(stmt));
+    }
+
+    @Override
+    public void post(List<Statement> stmts) {
+        stmts.forEach(stmt -> post(stmt));
     }
 }
