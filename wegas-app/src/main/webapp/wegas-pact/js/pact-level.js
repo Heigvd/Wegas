@@ -591,6 +591,9 @@ YUI.add('pact-level', function(Y) {
                                 this.doLevelEndAnimation(); // display level end screen
                             });
                             break;
+                        case 'gameLost':
+                            this.consumeCommand();
+                            break;
                         case 'log':
                             this.debugTabView
                                 .item(0)
