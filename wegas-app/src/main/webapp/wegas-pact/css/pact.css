@@ -11,6 +11,7 @@ code {
     border: 1px solid white;
     padding: 0.6em 2em;
     display: block;
+    white-space: pre;
 }
 .pact-title {
     flex: 1 0 auto;

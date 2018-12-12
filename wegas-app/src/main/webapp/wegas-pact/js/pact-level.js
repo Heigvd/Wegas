@@ -7,6 +7,9 @@
  */
 /* global ace */
 
+
+// TODO Detect when the player returns to a previous level => don't collect counters in that case (?)
+
 YUI.add('pact-level', function(Y) {
     'use strict';
     var CONTENTBOX = 'contentBox',
@@ -26,6 +29,9 @@ YUI.add('pact-level', function(Y) {
         STOP_BUTTON_LABEL = "<span class='proggame-stop'></span>",
         DEBUG_BUTTON_LABEL = "<span class='proggame-playpause'></span>",
         SMALLSTOP_BUTTON_LABEL = "<span class='proggame-stop-small'></span>",
+        HISTORY_INBOX = "history",
+        COUNTERS_OBJECT = "counters",
+        CURRENT_LEVEL = "currentLevel",
         Wegas = Y.Wegas,
         ProgGameLevel,
         currentLevel;
@@ -76,6 +82,16 @@ YUI.add('pact-level', function(Y) {
                 '    </div>' +
                 '</div>',
 
+            getInstance: function(name) {
+                var v = Y.Wegas.Facade.Variable.cache.find("name", name);
+                if (!v) {
+                    alert("Erreur interne: la variable \"" + name + "\" n\'existe pas");
+                    return null;
+                } else {
+                    return v.getInstance();
+                }
+            },
+
             // *** Lifecycle Methods *** //
             initializer: function() {
                 this.handlers = [];
@@ -83,12 +99,16 @@ YUI.add('pact-level', function(Y) {
                 this.currentBreakpointStep = -1;
                 this.watches = [];
                 // New activity tracking variables:
-                this.previousCode = "";
+                this.previousCode = ProgGameLevel.previousCode || "";
                 this.currentCode = "";
                 this.feedback = "";
-                this.isUnmodifiedCode = false;
+                this.isModifiedCode = false;
                 this.isRuntimeException = false;
                 this.isSuccessful = false;
+                // New persistent tracking variables:
+                this.history = this.getInstance(HISTORY_INBOX);
+                this.counters = this.getInstance(COUNTERS_OBJECT).get("properties") || {};
+                this.currentCounter = null;
             },
             renderUI: function() {
                 var cb = this.get(CONTENTBOX),
@@ -217,6 +237,7 @@ YUI.add('pact-level', function(Y) {
                 currentLevel = scriptFacade.localEval(
                     'Variable.find(gameModel,"currentLevel").getValue(self)'
                 );
+                this.initCounters();
 
                 this.handlers.push(
                     cb.one('.proggame-help').on(
@@ -265,6 +286,7 @@ YUI.add('pact-level', function(Y) {
                         this.doNextLevel(
                             function() {
                                 this.mainEditorTab.aceField.setValue('');
+                                this.previousCode = '';
                                 this.fire('gameWon'); // trigger open page plugin
                             }.bind(this)
                         );
@@ -283,21 +305,56 @@ YUI.add('pact-level', function(Y) {
             },
             destructor: function() {
                 ProgGameLevel.main = this.mainEditorTab.aceField.getValue(); // Save the actual edtion field to a static var
+                ProgGameLevel.previousCode = this.previousCode;
                 // this._resizeHandle.destroy();
                 this.display.destroy();
                 this.runButton.destroy();
                 this.stopButton.destroy();
                 this.debugTabView.destroy();
                 this.apiTabView.destroy();
-                this.idleHandler.cancel();
+                this.idleHandler && this.idleHandler.cancel();
                 Y.Array.each(this.handlers, function(h) {
                     h.detach();
                 });
                 this.editorTabView.destroy();
             },
+            isEmptyObj: function(obj) {
+                if (obj == null) return true;
+                if (typeof obj !== "object") return true;
+                for (var key in obj) {
+                    if (hasOwnProperty.call(obj, key)) return false;
+                }
+                return true;
+            },
+            initCounters: function() {
+                if (this.isEmptyObj(this.counters)) {
+                    this.counters[currentLevel] = {
+                        submissions: 0,
+                        successful: 0,
+                        incomplete: 0,
+                        exceptions: 0
+                    }
+                } else {
+                    this.counters[currentLevel] = JSON.parse(this.counters[currentLevel]);
+                }
+                return this.counters[currentLevel];
+            },
+            // Returns the highest level where the player has submitted some code at least once
+            getHighestAttemptedLevel: function() {
+                var len = this.counters.length;
+                    if (len === 1)
+                    return currentLevel;
+                var max = currentLevel;
+                for (var key in this.counters) {
+                    if (key > max && this.counters[key].submissions !== 0) {
+                        max = key;
+                    }
+                }
+                return max;
+            },
             /**
              * Override to prevent the serialization of the openpage action we
-             * created programatically.
+             * created programmatically.
              *
              * @returns {unresolved}
              */
@@ -396,23 +453,81 @@ YUI.add('pact-level', function(Y) {
             prepareExecution: function() {
                 this.feedback = "";
                 this.currentCode = this.mainEditorTab.aceField.getValue().trim();
-                this.isUnmodifiedCode = (this.currentCode === this.previousCode);
+                this.isModifiedCode = (this.currentCode !== this.previousCode);
                 this.isRuntimeException = false;
                 this.isSuccessful = false;
             },
-            archiveExecution: function() {
-                if (!this.isRuntimeException && this.feedback === '') {
-                    this.feedback = this.isSuccessful ? "GAGNÉ" : "PERDU";
-                } else {
-                    this.feedback = "EXCEPTION: " + this.feedback;
+            doPersist: function() {
+                var msgSubject =
+                    Y.JSON.stringify(
+                    (!this.isSuccessful || this.isRuntimeException ?
+                        "<span style='color:red'>" : "<span style='color:green'>") +
+                        "Exercice " +
+                        (this.isRuntimeException ? "ÉCHOUÉ avec EXCEPTION" :
+                            (this.isSuccessful ? "RÉUSSI" : "ÉCHOUÉ")) + "</span>"),
+                    msgDate =
+                        "Level " + (currentLevel/10).toFixed(1),
+                    msgBody =
+                        Y.JSON.stringify(
+                            (this.isRuntimeException ?
+                                "<b>Exception :</b> " + this.feedback + "<br/>&nbsp;<br/>" : "") +
+                            "<b>Code soumis :</b><br/><code>" + this.currentCode + "</code>");
+
+                // Update history in a separate transaction (in case the user code contains crash-prone stuff):
+                var sendToHistoryCmd =
+                    // sendDatedMessage(self, from, date, subject, content, att)
+                    'Variable.find(gameModel, \"' + HISTORY_INBOX + '\").sendDatedMessage(self, "", \"' + msgDate + '\", ' +
+                    msgSubject + ', ' + msgBody + ', []);\n';
+
+                var persistHistory = function() {
+                    Y.Wegas.Facade.Variable.script.remoteEval(sendToHistoryCmd, {
+                        on: {
+                            failure: Y.bind(function () {
+                                alert("Erreur interne: Impossible de sauvegarder " + HISTORY_INBOX + " ! \n" +
+                                    "Recharger la page dans le navigateur si ce problème se reproduit");
+                            }, this)
+                        }
+                    });
+                };
+
+                if (this.getHighestAttemptedLevel() > currentLevel) {
+                    Y.log("*** We're NOT persisting counters for this lower level");
+                    persistHistory();
+                    return;
                 }
-                Y.log("Archive execution: isSuccessful=" + this.isSuccessful +
-                    " isRuntimeException=" + this.isRuntimeException +
-                    " feedback=" + this.feedback +
-                    " code=" + this.currentCode);
-                // TODO Persist execution counters and history !!
-                if (!this.isUnmodifiedCode) {
+
+                var currCounters = this.counters[currentLevel];
+
+                currCounters.submissions++;
+                if (this.isSuccessful) {
+                    currCounters.successful++;
+                } else if (this.isRuntimeException) {
+                    currCounters.exceptions++
+                } else {
+                    currCounters.incomplete++
+                }
+
+                var persistCountersCmd =
+                    'Variable.find(gameModel, \"' + COUNTERS_OBJECT + '\").setProperty(self, \"' + currentLevel +
+                    '\", \'' + Y.JSON.stringify(currCounters) + '\');\n';
+
+                Y.Wegas.Facade.Variable.script.remoteEval(persistCountersCmd, {
+                    on: {
+                        success: Y.bind(function () {
+                            persistHistory();
+                        }, this),
+                        failure: Y.bind(function () {
+                            alert("Erreur interne: Impossible de sauvegarder les compteurs d'exécutions ! \n" +
+                                  "Recharger la page dans le navigateur si ce problème se reproduit");
+                            persistHistory();
+                        }, this)
+                    }
+                });
+            },
+            persistExecution: function() {
+                if (this.isModifiedCode) {
                     this.previousCode = this.currentCode;
+                    this.doPersist();
                 }
             },
             instrument: function(code) {
@@ -485,7 +600,7 @@ YUI.add('pact-level', function(Y) {
                                 this.feedback = exceptionEvent
                                     .get('val.exceptions')[0]
                                     .get('val').message;
-                                this.archiveExecution();
+                                this.persistExecution();
                                 this.set(
                                     'error',
                                     this.feedback
@@ -541,7 +656,7 @@ YUI.add('pact-level', function(Y) {
                 this.commandsStack = Y.JSON.parse(e.response.entity);
                 this.isRuntimeException = false;
                 this.isSuccessful = this.getExecutionOutcome(this.commandsStack);
-                this.archiveExecution();
+                this.persistExecution();
                 this.consumeCommand();
             },
             findObject: function(id) {

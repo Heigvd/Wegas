@@ -15,6 +15,8 @@ var PactDashboard = (function() {
         sortable: true
     });
 
+    WegasDashboard.registerVariable("history", {});
+
     WegasDashboard.registerAction("sendTheory", function(team, payload) {
         new Y.Wegas.ImpactsTeamModal({
             "team": team,
