@@ -11,7 +11,7 @@ var Log = (function() {
     };
     var Activities = {
         proggame: 'internal://wegas/proggame',
-        level: 'internal://Wegas/proggame-level',
+        level: 'internal://wegas/proggame-level',
     };
     /**
      * @param {keyof typeof Verbs} verb

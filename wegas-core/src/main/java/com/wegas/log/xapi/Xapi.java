@@ -2,12 +2,17 @@ package com.wegas.log.xapi;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+
 import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.User;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,16 +27,16 @@ public class Xapi implements XapiI {
 
     @Inject
     private RequestManager manager;
+    @Inject
+    private UserFacade userFacade;
 
     @Override
     public Statement userStatement(final String verb, final IStatementObject object) {
-        final Long userId = manager.getCurrentUser().getId();
-        final Agent agent = new Agent(null, new Account(String.valueOf(userId), "https://wegas.albasim.ch"));
+
+        final Agent agent = this.account(manager.getCurrentUser());
         final Verb v = new Verb(verb);
         final Statement stmt = new Statement(agent, v, object);
-        // @TODO: fill context
-        final Context context = new Context();
-        stmt.setContext(context);
+
         stmt.setTimestamp(OffsetDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
         return stmt;
     }
@@ -63,11 +68,45 @@ public class Xapi implements XapiI {
 
     @Override
     public void post(Statement stmt) {
+        stmt.setContext(this.genContext());
         logger.info("[post]{}", this.serialize(stmt));
     }
 
     @Override
     public void post(List<Statement> stmts) {
         stmts.forEach(stmt -> post(stmt));
+    }
+
+    private Context genContext() {
+        final String logID = manager.getPlayer().getGameModel().getProperties().getLogID();
+        final Game game = manager.getPlayer().getGame();
+
+        final Context context = new Context();
+        final List<User> instructorsUser = userFacade.findEditors("g" + game.getId());
+        final ArrayList<Agent> instructorsAgent = new ArrayList<>();
+        for (User u : instructorsUser) {
+            instructorsAgent.add(this.account(u));
+        }
+        context.setInstructor(new Group(instructorsAgent));
+
+        ContextActivities ctx = new ContextActivities();
+        ctx.setCategory(new ArrayList<Activity>() {
+            private static final long serialVersionUID = 1L;
+            {
+                add(new Activity("internal://wegas/log-id-" + logID));
+            }
+        });
+        ctx.setGrouping(new ArrayList<Activity>() {
+            private static final long serialVersionUID = 1L;
+            {
+                add(new Activity("internal://wegas/game-" + String.valueOf(game.getId())));
+            }
+        });
+        context.setContextActivities(ctx);
+        return context;
+    }
+
+    private Agent account(User user) {
+        return new Agent(null, new Account(String.valueOf(user.getId()), "https://wegas.albasim.ch"));
     }
 }
