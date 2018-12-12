@@ -27,7 +27,23 @@
                 varLabel("maxLevel") + '", "description":"Entrer une valeur numérique telle que 1.1"}));']
         ];
     };
-
+    app.once('render', function() {
+        Y.use('wegas-react-form', function() {
+            Y.Wegas.RForm.Script.register('getter', {
+                'Action.changeLevel': {
+                    label: '[ProgGame] change Level',
+                    arguments: [
+                        {
+                            type: 'string',
+                            view: {
+                                type: 'pageselect',
+                            },
+                        },
+                    ],
+                },
+            });
+        });
+    });
     /*
     Y.namespace("Wegas.Config").ExtraTabs = [
         {
@@ -40,6 +56,5 @@
         }
     ];
     */
-
 })();
 

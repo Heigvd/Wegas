@@ -34,24 +34,39 @@
  * @property {number} targetStep
  * @property {boolean} recordCommands
  */
+
+/* exported Action*/
+var Action = {
+    init: function() {
+        Log.post([
+            Log.statement('initialized', 'proggame'),
+            Log.statement(
+                'initialized',
+                'level',
+                Variable.find(gameModel, 'currentLevel').getValue(self)
+            ),
+        ]);
+    },
+    /**
+     *
+     * @param {number | string} level
+     */
+    changeLevel: function(level) {
+        /**
+         * @type {com.wegas.core.persistence.variable.primitive.NumberDescriptor}
+         */
+        var currentLevelDesc = Variable.find(gameModel, 'currentLevel');
+        var curValue = currentLevelDesc.getValue(self);
+        currentLevelDesc.setValue(self, Number(level));
+        if (curValue != currentLevelDesc.getValue(self)) {
+            Log.post(Log.statement('initialized', 'level', level));
+        }
+    },
+};
 /**
  * @namespace Wegas utilities
  */
-/* exported Wegas */
 var Wegas = {
-    Tool: {
-        /**
-         *
-         * @param {number} level
-         */
-        changeLevel: function(level) {
-            Variable.find(gameModel, 'currentLevel').setValue(
-                self,
-                Number(level)
-            );
-            Log.post(Log.statement('initialized', 'level', level));
-        },
-    },
     //                                                                     // Utilities
     Object: {
         /**
@@ -139,7 +154,9 @@ var Wegas = {
      * @param {{[variables:string]: any}} varValues hashmap variable -> value
      */
     scopeValue: function(varValues) {
-        var vars, vals;
+        /** @type {string[]} */
+        var vars = [];
+        var vals = [];
         if (typeof varValues === 'object') {
             vars = Object.keys(varValues);
             vals = vars.map(function(k) {
@@ -627,6 +644,9 @@ ProgGameSimulation.prototype = {
             return null;
         }
     },
+    /**
+     * @param {Function} playerFn
+     */
     doPlayerEval: function(playerFn) {
         wdebug('Player eval');
         var scope = {
@@ -639,6 +659,7 @@ ProgGameSimulation.prototype = {
                 RequestManager: undefined,
                 print: undefined,
                 Wegas: undefined,
+                Action: undefined,
                 Log: undefined,
                 xapi: undefined,
                 ProgGameSimulation: undefined,
@@ -656,7 +677,7 @@ ProgGameSimulation.prototype = {
         }
         var params = Wegas.scopeValue(scope);
         var f = new Function(
-            params.variables,
+            params.variables.join(','),
             'return (' + playerFn.toString() + ').call({})'
         );
         return f.apply(null, params.values);

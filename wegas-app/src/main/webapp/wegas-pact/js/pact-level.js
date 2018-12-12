@@ -686,7 +686,7 @@ YUI.add('pact-level', function(Y) {
             },
             doNextLevel: function(fn) {
                 var content =
-                    'Wegas.Tool.changeLevel(' + this.get('onWin') + ')';
+                    'Action.changeLevel(' + this.get('onWin') + ')';
                 Wegas.Facade.Variable.script.run(content, {
                     on: {
                         success: fn,
