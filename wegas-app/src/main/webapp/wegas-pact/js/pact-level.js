@@ -83,9 +83,9 @@ YUI.add('pact-level', function(Y) {
                 this.currentBreakpointStep = -1;
                 this.watches = [];
                 // New activity tracking variables:
-                this.previousCode = "";
-                this.currentCode = "";
-                this.feedback = "";
+                this.previousCode = '';
+                this.currentCode = '';
+                this.feedback = '';
                 this.isUnmodifiedCode = false;
                 this.isRuntimeException = false;
                 this.isSuccessful = false;
@@ -228,11 +228,6 @@ YUI.add('pact-level', function(Y) {
                         this
                     )
                 );
-                //this.plug(Y.Plugin.OpenPageAction, {//                              // Whenever level is finished,
-                //    subpageId: 2,
-                //    targetEvent: "gameWon",
-                //    targetPageLoaderId: "maindisplayarea"                           // display the page 2 which shows the last level
-                //});
 
                 this.display.after(
                     'commandExecuted',
@@ -294,22 +289,6 @@ YUI.add('pact-level', function(Y) {
                     h.detach();
                 });
                 this.editorTabView.destroy();
-            },
-            /**
-             * Override to prevent the serialization of the openpage action we
-             * created programatically.
-             *
-             * @returns {unresolved}
-             */
-            toJSON: function() {
-                var ret = Wegas.Editable.prototype.toJSON.apply(
-                    this,
-                    arguments
-                );
-                ret.plugins = Y.Array.reject(ret.plugins || [], function(i) {
-                    return i.fn === 'OpenPageAction';
-                });
-                return ret;
             },
             onRunClick: function(e) {
                 // On run button click,
@@ -394,22 +373,30 @@ YUI.add('pact-level', function(Y) {
                 });
             },
             prepareExecution: function() {
-                this.feedback = "";
-                this.currentCode = this.mainEditorTab.aceField.getValue().trim();
-                this.isUnmodifiedCode = (this.currentCode === this.previousCode);
+                this.feedback = '';
+                this.currentCode = this.mainEditorTab.aceField
+                    .getValue()
+                    .trim();
+                this.isUnmodifiedCode = this.currentCode === this.previousCode;
                 this.isRuntimeException = false;
                 this.isSuccessful = false;
             },
             archiveExecution: function() {
                 if (!this.isRuntimeException && this.feedback === '') {
-                    this.feedback = this.isSuccessful ? "GAGNÉ" : "PERDU";
+                    this.feedback = this.isSuccessful ? 'GAGNÉ' : 'PERDU';
                 } else {
-                    this.feedback = "EXCEPTION: " + this.feedback;
+                    this.feedback = 'EXCEPTION: ' + this.feedback;
                 }
-                Y.log("Archive execution: isSuccessful=" + this.isSuccessful +
-                    " isRuntimeException=" + this.isRuntimeException +
-                    " feedback=" + this.feedback +
-                    " code=" + this.currentCode);
+                Y.log(
+                    'Archive execution: isSuccessful=' +
+                        this.isSuccessful +
+                        ' isRuntimeException=' +
+                        this.isRuntimeException +
+                        ' feedback=' +
+                        this.feedback +
+                        ' code=' +
+                        this.currentCode
+                );
                 // TODO Persist execution counters and history !!
                 if (!this.isUnmodifiedCode) {
                     this.previousCode = this.currentCode;
@@ -427,9 +414,7 @@ YUI.add('pact-level', function(Y) {
                 Wegas.Facade.Variable.sendRequest({
                     request:
                         '/ProgGame/Run/' +
-                        Wegas.Facade.Game.get('currentPlayerId') +
-                        '?level=' +
-                        this.get('root').get('@pageId'),
+                        Wegas.Facade.Game.get('currentPlayerId'),
                     cfg: {
                         method: 'POST',
                         data:
@@ -443,24 +428,38 @@ YUI.add('pact-level', function(Y) {
                             ');',
                     },
                     on: {
-                        success: Y.bind(function(e) {
-                            var commands = Y.JSON.parse(e.response.entity);
-                            Y.Wegas.Facade.Variable.script.remoteEval(
-                                'Log.level(' +
-                                    JSON.stringify(code) +
-                                    ', ' +
-                                    level +
-                                    ', true,' +
-                                    commands.some(function(c) {
+                        success: Y.bind(
+                            /**
+                             * @param {{ response: { entity: any; }; }} e
+                             */
+                            function(e) {
+                                var commands = Y.JSON.parse(e.response.entity);
+                                var success = commands.some(
+                                    /**
+                                     * @param {{ type: string; }} c
+                                     */
+                                    function(c) {
                                         return c.type === 'gameWon';
-                                    }) +
-                                    ');' +
-                                    'Log.post(Log.statement("completed", "level", ' +
-                                    level +
-                                    '));'
-                            );
-                            this.onServerReply(e);
-                        }, this),
+                                    }
+                                );
+                                Y.Wegas.Facade.Variable.script.remoteEval(
+                                    'Log.level(' +
+                                        JSON.stringify(code) +
+                                        ', ' +
+                                        level +
+                                        ', true,' +
+                                        success +
+                                        ');' +
+                                        (success
+                                            ? 'Log.post(Log.statement("completed", "level", ' +
+                                              level +
+                                              '));'
+                                            : '')
+                                );
+                                this.onServerReply(e);
+                            },
+                            this
+                        ),
                         failure: Y.bind(function(e) {
                             Y.Wegas.Facade.Variable.script.remoteEval(
                                 'Log.level(' +
@@ -489,10 +488,7 @@ YUI.add('pact-level', function(Y) {
                                     .get('val.exceptions')[0]
                                     .get('val').message;
                                 this.archiveExecution();
-                                this.set(
-                                    'error',
-                                    this.feedback
-                                );
+                                this.set('error', this.feedback);
                                 Y.Wegas.Alerts.showNotification(
                                     'Your script contains an error.',
                                     { timeout: 1e3 }
@@ -525,7 +521,7 @@ YUI.add('pact-level', function(Y) {
             },
             // Returns true iff the given command stack ends with a 'gameWon':
             getExecutionOutcome: function(arr) {
-                for (var i=arr.length-1; i>=0; i--) {
+                for (var i = arr.length - 1; i >= 0; i--) {
                     var currType = arr[i].type;
                     if (currType === 'gameWon') {
                         return true;
@@ -543,7 +539,9 @@ YUI.add('pact-level', function(Y) {
                 );
                 this.commandsStack = Y.JSON.parse(e.response.entity);
                 this.isRuntimeException = false;
-                this.isSuccessful = this.getExecutionOutcome(this.commandsStack);
+                this.isSuccessful = this.getExecutionOutcome(
+                    this.commandsStack
+                );
                 this.archiveExecution();
                 this.consumeCommand();
             },
