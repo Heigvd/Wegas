@@ -15,6 +15,23 @@
             Y.Wegas.app.once("render", function() {
                 var gameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
 
+
+                    if (Y.Array.find(Y.Wegas.Facade.User.cache.get("currentUser").get("roles"),
+                        function(role) {
+                            return role.get("name") === "Administrator";
+                        })) {
+                        Y.use("wegas-button", function() {
+                            var editButton = new Y.Wegas.Button({
+                                "label": "<i class=\"fa fa-eye\" title=\"View as test player\"></i>",
+                                cssClass: "open-as-test-player"
+                            }).render(".wegas-button-toolbar .wegas-flexlist-content");
+
+                            editButton.on("click", function() {
+                                window.open("game-play.html?gameModelId=" + Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id"), "_blank");
+                            }, this);
+                        });
+                    }
+
                 if (gameModel.dependsOnModel()) {
                     if (Y.Array.find(Y.Wegas.Facade.User.cache.get("currentUser").get("roles"),
                         function(role) {
@@ -58,7 +75,7 @@
                 // Handle switch from host to edit mode
                 Y.use("wegas-button", function() {
                     var editButton = new Y.Wegas.Button({
-                        label: "<i class=\"fa fa-eye\" title=\"Back to game\"></i>",
+                        label: "<i class=\"wegas-font wegas-teacher\" title=\"Back to game\"></i>",
                         cssClass: "host-switchmode"
                     }).render(".wegas-button-toolbar .wegas-flexlist-content");
                     editButton.on("click", function() {

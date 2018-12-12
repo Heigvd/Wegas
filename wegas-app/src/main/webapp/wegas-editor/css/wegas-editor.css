@@ -13,24 +13,26 @@
 /* Header toggle button */
 .yui3-skin-sam.wegas-editmode .wegas-layout-hd .yui3-button.host-switchmode{
     background-color : #f55c5c;
+    padding-left: 8px;
+    padding-top: 2px;
 }
 .yui3-skin-sam.wegas-editmode .wegas-layout-hd .yui3-button.host-switchmode:hover{
-    color: #666;
+    color: #343539;
+}
+
+.yui3-skin-sam.wegas-editmode .wegas-layout-hd .yui3-button.open-as-test-player{
+    padding-left: 8px;
+    padding-top: 2px;
 }
 
 .yui3-skin-sam.wegas-editmode .wegas-layout-hd .gamemodel-type{
     color : red;
 }
+
+.yui3-skin-sam.wegas-editmode .wegas-layout-hd .yui3-button.open-as-test-player,
 .yui3-skin-sam .host-switchmode {
-    /* margin-right: 10px; */
-    padding: 3px 10px 3px 10px;
-    background: transparent;
-    color: white;
-    line-height: 0.5em; 
-    /* position: absolute; */
-    /* top: 12px; */
-    /* right: 133px; */
-    float: right;
+    width: 35px;
+    height: 35px;
 }
 .yui3-skin-sam .host-switchmode.yui3-button-selected {
     background: white;

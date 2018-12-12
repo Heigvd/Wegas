@@ -347,7 +347,7 @@
     background-color: #41D2FA;
 }
 
-.yui3-skin-sam .dashboard-v3 .info-view:hover {
+.yui3-skin-sam .dashboard-v3 .dashboard-action.enabled.info-view:hover {
     background-color: #06b7e8;
 }
 
