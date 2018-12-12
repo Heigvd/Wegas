@@ -7,9 +7,6 @@
  */
 /* global ace */
 
-
-// TODO Detect when the player returns to a previous level => don't collect counters in that case (?)
-
 YUI.add('pact-level', function(Y) {
     'use strict';
     var CONTENTBOX = 'contentBox',
@@ -107,8 +104,7 @@ YUI.add('pact-level', function(Y) {
                 this.isSuccessful = false;
                 // New persistent tracking variables:
                 this.history = this.getInstance(HISTORY_INBOX);
-                this.counters = this.getInstance(COUNTERS_OBJECT).get("properties") || {};
-                this.currentCounter = null;
+                this.counters = this.getInstance(COUNTERS_OBJECT).get("properties") || null;
             },
             renderUI: function() {
                 var cb = this.get(CONTENTBOX),
@@ -315,23 +311,27 @@ YUI.add('pact-level', function(Y) {
             },
             isEmptyObj: function(obj) {
                 if (obj == null) return true;
-                if (typeof obj !== "object") return true;
+                if (typeof obj !== "object") return false;
                 for (var key in obj) {
                     if (hasOwnProperty.call(obj, key)) return false;
                 }
                 return true;
             },
             initCounters: function() {
-                if (this.isEmptyObj(this.counters)) {
+                if (this.isEmptyObj(this.counters) || this.isEmptyObj(this.counters[currentLevel])) {
                     this.counters[currentLevel] = {
                         submissions: 0,
                         successful: 0,
                         incomplete: 0,
                         exceptions: 0
                     }
-                } else {
-                    this.counters[currentLevel] = JSON.parse(this.counters[currentLevel]);
                 }
+                for (var key in this.counters) {
+                    if (typeof this.counters[key] === 'string') {
+                        this.counters[key] = JSON.parse(this.counters[key]);
+                    }
+                }
+
                 return this.counters[currentLevel];
             },
             // Returns the highest level where the player has submitted some code at least once
