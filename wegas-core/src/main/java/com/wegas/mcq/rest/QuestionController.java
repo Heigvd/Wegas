@@ -10,13 +10,9 @@ package com.wegas.mcq.rest;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
-import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.QuestionInstanceI;
 import com.wegas.mcq.persistence.Reply;
-import com.wegas.mcq.persistence.wh.WhQuestionInstance;
-import java.util.LinkedList;
-import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
@@ -60,7 +56,7 @@ public class QuestionController {
             @PathParam("choiceId") Long choiceId) throws WegasScriptException {
 
         questionDescriptorFacade.selectAndValidateChoice(choiceId, playerId);
-        requestFacade.commit();
+        requestFacade.commit(playerId);
 
         return Response.ok().build();
     }
@@ -82,7 +78,7 @@ public class QuestionController {
 
         // !!!!!   CHECK TYPE OF RETURN PARAM   !!!!
         questionDescriptorFacade.validateQuestion(questionInstanceId, playerId);
-        requestFacade.commit();
+        requestFacade.commit(playerId);
 
         return Response.ok().build();
     }
@@ -102,7 +98,7 @@ public class QuestionController {
             @PathParam("replyId") Long replyId) {
 
         Reply reply = questionDescriptorFacade.cancelReply(playerId, replyId);
-        requestFacade.commit();
+        requestFacade.commit(playerId);
         return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
     }
 
@@ -123,7 +119,7 @@ public class QuestionController {
 
         Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, startTime);
 
-        requestFacade.commit();
+        requestFacade.commit(playerId);
 
         return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
     }

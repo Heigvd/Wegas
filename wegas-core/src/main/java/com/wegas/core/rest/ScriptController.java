@@ -112,7 +112,7 @@ public class ScriptController {
         logger.info("script for player {} : {}", playerId, script.getContent());
 
         Object r = scriptFacade.eval(playerId, script, context);
-        requestFacade.commit();
+        requestFacade.commit(playerId);
         return r;
     }
 

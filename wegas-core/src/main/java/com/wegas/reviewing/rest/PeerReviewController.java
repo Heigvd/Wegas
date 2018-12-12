@@ -127,7 +127,7 @@ public class PeerReviewController {
             @PathParam("reviewDescriptorId") Long prdId) {
 
         reviewFacade.submit(prdId, playerId);
-        requestFacade.commit(); // Player scoped
+        requestFacade.commit(playerId); // Player scoped
 
         return Response.ok().build();
     }
