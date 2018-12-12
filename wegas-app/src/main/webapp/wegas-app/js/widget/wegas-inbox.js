@@ -129,7 +129,7 @@ YUI.add('wegas-inbox', function(Y) {
                 if (entity.get('unread')) {
                     this.timer = Y.later(this.get('setToReadAfter') * 1000, this,
                         function(message) {
-                            Y.Wegas.Facade.Variable.sendRequest({request: '/Inbox/Message/Read/' + message.get('id'),
+                            Y.Wegas.Facade.Variable.sendRequest({request: '/Inbox/Message/Read/' + message.get('id') + "/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                                 cfg: {
                                     method: 'PUT'
                                 }
