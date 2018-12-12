@@ -11,7 +11,7 @@ var Log = (function() {
     };
     var Activities = {
         proggame: 'internal://wegas/proggame',
-        level: 'internal://Wegas/proggame-level',
+        level: 'internal://wegas/proggame-level',
     };
     /**
      * @param {keyof typeof Verbs} verb
@@ -45,7 +45,7 @@ var Log = (function() {
         result.setSuccess(success);
         result.setCompletion(completion);
         statement.setResult(result);
-        post(statement);
+        return statement;
     }
     return {
         statement: statement,

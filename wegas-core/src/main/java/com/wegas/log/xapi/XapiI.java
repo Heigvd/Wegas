@@ -1,5 +1,7 @@
 package com.wegas.log.xapi;
 
+import java.util.List;
+
 import gov.adlnet.xapi.model.*;
 
 public interface XapiI {
@@ -13,4 +15,6 @@ public interface XapiI {
     Result result();
 
     void post(Statement stmt);
+
+    void post(List<Statement> stmts);
 }

@@ -249,11 +249,6 @@ YUI.add('pact-level', function(Y) {
                         this
                     )
                 );
-                //this.plug(Y.Plugin.OpenPageAction, {//                              // Whenever level is finished,
-                //    subpageId: 2,
-                //    targetEvent: "gameWon",
-                //    targetPageLoaderId: "maindisplayarea"                           // display the page 2 which shows the last level
-                //});
 
                 this.display.after(
                     'commandExecuted',
@@ -542,9 +537,7 @@ YUI.add('pact-level', function(Y) {
                 Wegas.Facade.Variable.sendRequest({
                     request:
                         '/ProgGame/Run/' +
-                        Wegas.Facade.Game.get('currentPlayerId') +
-                        '?level=' +
-                        this.get('root').get('@pageId'),
+                        Wegas.Facade.Game.get('currentPlayerId'),
                     cfg: {
                         method: 'POST',
                         data:
@@ -558,28 +551,47 @@ YUI.add('pact-level', function(Y) {
                             ');',
                     },
                     on: {
-                        success: Y.bind(function(e) {
-                            var commands = Y.JSON.parse(e.response.entity);
-                            Y.Wegas.Facade.Variable.script.remoteEval(
-                                'Log.level(' +
-                                JSON.stringify(code) +
-                                ', ' +
-                                level +
-                                ', true,' +
-                                commands.some(function(c) {
-                                    return c.type === 'gameWon';
-                                }) +
-                                ')'
-                            );
-                            this.onServerReply(e);
-                        }, this),
+                        success: Y.bind(
+                            /**
+                             * @param {{ response: { entity: any; }; }} e
+                             */
+                            function(e) {
+                                var commands = Y.JSON.parse(e.response.entity);
+                                var success = commands.some(
+                                    /**
+                                     * @param {{ type: string; }} c
+                                     */
+                                    function(c) {
+                                        return c.type === 'gameWon';
+                                    }
+                                );
+                                Y.Wegas.Facade.Variable.script.remoteEval(
+                                    'Log.post([' +
+                                        'Log.level(' +
+                                        JSON.stringify(code) +
+                                        ', ' +
+                                        level +
+                                        ', true,' +
+                                        success +
+                                        ')' +
+                                        (success
+                                            ? ', Log.statement("completed", "level", ' +
+                                              level +
+                                              ')'
+                                            : '') +
+                                        '])'
+                                );
+                                this.onServerReply(e);
+                            },
+                            this
+                        ),
                         failure: Y.bind(function(e) {
                             Y.Wegas.Facade.Variable.script.remoteEval(
-                                'Log.level(' +
+                                'Log.post(Log.level(' +
                                     JSON.stringify(code) +
                                     ', ' +
                                     level +
-                                    ', false, false)'
+                                    ', false, false))'
                             );
                             this.set(STATE, IDLE);
                             var events = e.response.results.events;
@@ -637,7 +649,7 @@ YUI.add('pact-level', function(Y) {
             },
             // Returns true iff the given command stack ends with a 'gameWon':
             getExecutionOutcome: function(arr) {
-                for (var i=arr.length-1; i>=0; i--) {
+                for (var i = arr.length - 1; i >= 0; i--) {
                     var currType = arr[i].type;
                     if (currType === 'gameWon') {
                         return true;
@@ -798,9 +810,7 @@ YUI.add('pact-level', function(Y) {
             },
             doNextLevel: function(fn) {
                 var content =
-                    'Variable.find(gameModel, "currentLevel").setValue(self, ' +
-                    this.get('onWin') +
-                    ')';
+                    'Action.changeLevel(' + this.get('onWin') + ')';
                 Wegas.Facade.Variable.script.run(content, {
                     on: {
                         success: fn,
