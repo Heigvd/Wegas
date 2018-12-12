@@ -45,7 +45,7 @@ var Log = (function() {
         result.setSuccess(success);
         result.setCompletion(completion);
         statement.setResult(result);
-        post(statement);
+        return statement;
     }
     return {
         statement: statement,

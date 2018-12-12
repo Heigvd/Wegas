@@ -443,18 +443,20 @@ YUI.add('pact-level', function(Y) {
                                     }
                                 );
                                 Y.Wegas.Facade.Variable.script.remoteEval(
-                                    'Log.level(' +
+                                    'Log.post([' +
+                                        'Log.level(' +
                                         JSON.stringify(code) +
                                         ', ' +
                                         level +
                                         ', true,' +
                                         success +
-                                        ');' +
+                                        ')' +
                                         (success
-                                            ? 'Log.post(Log.statement("completed", "level", ' +
+                                            ? ', Log.statement("completed", "level", ' +
                                               level +
-                                              '));'
-                                            : '')
+                                              ')'
+                                            : '') +
+                                        '])'
                                 );
                                 this.onServerReply(e);
                             },
@@ -462,11 +464,11 @@ YUI.add('pact-level', function(Y) {
                         ),
                         failure: Y.bind(function(e) {
                             Y.Wegas.Facade.Variable.script.remoteEval(
-                                'Log.level(' +
+                                'Log.post(Log.level(' +
                                     JSON.stringify(code) +
                                     ', ' +
                                     level +
-                                    ', false, false)'
+                                    ', false, false))'
                             );
                             this.set(STATE, IDLE);
                             var events = e.response.results.events;
