@@ -117,8 +117,7 @@ public class InboxDescriptorController {
 
         update.setUnread(false);
         if (!Helper.isNullOrEmpty(update.getToken())) {
-            requestFacade.getRequestManager().setPlayer(playerFacade.find(playerId));
-            requestFacade.commit();
+            requestFacade.commit(playerId);
         }
         return update.getInboxInstance();
     }
@@ -126,13 +125,15 @@ public class InboxDescriptorController {
     /**
      * Mark all messages as read
      *
-     * @param id id of inbox instance to read messages from
+     * @param id       id of inbox instance to read messages from
+     * @param playerId
      *
      * @return inbox instance which contains read messages
      */
     @PUT
-    @Path("{inboxInstanceId : [1-9][0-9]*}/ReadAll")
-    public InboxInstance readAllMessages(@PathParam("inboxInstanceId") Long id) {
+    @Path("{inboxInstanceId : [1-9][0-9]*}/ReadAll/{playerId : [1-9][0-9]*}")
+    public InboxInstance readAllMessages(@PathParam("inboxInstanceId") Long id,
+            @PathParam("playerId") Long playerId) {
 
         InboxInstance inbox = (InboxInstance) variableInstanceFacade.find(id);
         boolean commit = false;
@@ -142,7 +143,7 @@ public class InboxDescriptorController {
             commit = commit || !Helper.isNullOrEmpty(message.getToken());
         }
         if (commit) {
-            requestFacade.commit();
+            requestFacade.commit(playerId);
         }
         return inbox;
     }

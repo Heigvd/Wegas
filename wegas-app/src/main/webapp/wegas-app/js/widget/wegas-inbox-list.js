@@ -113,7 +113,7 @@ YUI.add('wegas-inbox-list', function(Y) {
 
                         if (readMessages) {
                             Y.Wegas.Facade.Variable.sendRequest({// Send reqest to mark as read
-                                request: "/Inbox/" + inboxInstance.get("id") + "/ReadAll",
+                                request: "/Inbox/" + inboxInstance.get("id") + "/ReadAll" + "/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                                 cfg: {
                                     method: 'PUT'
                                 }
