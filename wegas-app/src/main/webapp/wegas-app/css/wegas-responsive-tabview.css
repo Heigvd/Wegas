@@ -64,6 +64,7 @@
     padding: 10px 5px;
     white-space: normal;
     max-width: 100%;
+    box-sizing: border-box;
 }
 
 /*  */
