@@ -4,7 +4,7 @@ var Log = (function() {
     var Verbs = {
         initialized: 'http://adlnet.gov/expapi/verbs/initialized',
         completed: 'http://adlnet.gov/expapi/verbs/completed',
-        exited: 'http://adlnet.gov/expapi/verbs/exited',
+        // exited: 'http://adlnet.gov/expapi/verbs/exited',
         resumed: 'http://adlnet.gov/expapi/verbs/resumed',
         suspended: 'http://adlnet.gov/expapi/verbs/suspended',
         responded: 'http://adlnet.gov/expapi/verbs/responded',
