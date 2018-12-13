@@ -214,6 +214,8 @@ var WegasDashboard = (function() {
                                     teamData[id] = WegasHelper.getInboxInstanceContent(variable.instances[teamId], item.item.label, teamName);
                                 } else if (item.item.kind === "text") {
                                     teamData[id] = WegasHelper.getTextInstanceContent(variable.instances[teamId], item.item.label, teamName);
+                                } else if (item.item.kind === "object") {
+                                    teamData[id] = WegasHelper.getObjectInstanceContent(variable.instances[teamId], item.item.label, teamName)
                                 } else {
                                     teamData[id] = variable.instances[teamId].getValue();
                                 }

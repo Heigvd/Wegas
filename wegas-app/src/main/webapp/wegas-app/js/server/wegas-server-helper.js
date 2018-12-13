@@ -93,6 +93,22 @@ var WegasHelper = (function() {
         return !value.trim().equals(defVal.trim());
     }
 
+    // JSON view of a Wegas "object" (i.e. a hashmap).
+    // Handles nested objects as well, i.e. when the value is a string representation of a JSON object.
+    function getObjectContent(objectInstance, objectName, teamName) {
+        var list = {},
+            props = objectInstance.getProperties(),
+            n = 0;
+            for (var key in props) {
+                try {
+                    list[key] = JSON.parse(props[key]);
+                } catch(e) {
+                    list[key] = props[key];
+                }
+                n++;
+            }
+        return {"title": teamName + ": " + objectName, "body": JSON.stringify(list), "empty": n===0};
+    }
 
 
     return {
@@ -111,7 +127,10 @@ var WegasHelper = (function() {
         },
         getTextInstanceContent: function(textInstance, textName, teamName) {
             return getTextContent(textInstance, textName, teamName);
-        }
+        },
+        getObjectInstanceContent: function(objectInstance, objectName, teamName) {
+            return getObjectContent(objectInstance, objectName, teamName);
+        },
     };
 }());
 
