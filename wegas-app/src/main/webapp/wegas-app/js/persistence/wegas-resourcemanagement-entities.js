@@ -173,20 +173,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                      }
                      },
                      */
-                    assignments: {
-                        type: ARRAY,
-                        view: {
-                            type: HIDDEN,
-                            value: []
-                        }
-                    },
-                    activities: {
-                        type: ARRAY,
-                        view: {
-                            type: HIDDEN,
-                            value: []
-                        }
-                    },
                     /* FORM2 :
                      activities: {
                      type: ARRAY,
@@ -809,58 +795,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 type: ARRAY,
                 view: {
                     label: "Resource requirements"
-                },
-                items: {
-                    type: OBJECT,
-                    properties: {
-                        "@class": {
-                            type: STRING,
-                            value: "WRequirement",
-                            view: {type: HIDDEN}
-                        },
-                        id: IDATTRDEF,
-                        name: {type: STRING, view: {type: HIDDEN}},
-                        work: {
-                            type: STRING,
-                            view: {
-                                type: SELECT,
-                                choices: persistence.Resources.SKILLS
-                            }
-                        },
-                        level: {
-                            type: NUMBER,
-                            view: {
-                                type: SELECT,
-                                choices: persistence.Resources.LEVELS
-                            }
-                        },
-                        quantity: {
-                            type: NUMBER,
-                            required: true,
-                            value: 1,
-                            view: {
-                                label: 'Quantity'
-                            }
-                        },
-                        limit: {
-                            type: NUMBER,
-                            required: true,
-                            value: 100,
-                            view: {
-                                label: 'Limit'
-                            }
-                        },
-                        completeness: {
-                            type: NUMBER,
-                            value: 0,
-                            view: {type: HIDDEN}
-                        },
-                        quality: {
-                            type: NUMBER,
-                            value: 100,
-                            view: {type: HIDDEN}
-                        }
-                    }
                 },
                 setter: function(v) {
                     v.sort(function(a, b) {
