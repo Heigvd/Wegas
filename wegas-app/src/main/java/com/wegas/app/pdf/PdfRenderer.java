@@ -143,6 +143,7 @@ public class PdfRenderer implements Filter {
                 HttpServletResponse resp = (HttpServletResponse) response;
 
                 String renderType = req.getParameter("outputType");
+                String cleanHtml = req.getParameter("cleanHtml");
                 String title = req.getParameter("title");
                 String content;
 
@@ -167,15 +168,16 @@ public class PdfRenderer implements Filter {
                     content = capContent.getContent();
                 }
 
+                Tidy tidy = new Tidy();
+                tidy.setXmlOut(true);
+                tidy.setTrimEmptyElements(false);
+
+                OutputStream os = new ByteArrayOutputStream();
+
+                InputStream iStream = new StringInputStream(content);
+                tidy.parse(iStream, os);
+
                 if (renderType != null && renderType.equals("pdf")) {
-                    Tidy tidy = new Tidy();
-                    tidy.setXmlOut(true);
-
-                    OutputStream os = new ByteArrayOutputStream();
-
-                    InputStream iStream = new StringInputStream(content);
-                    tidy.parse(iStream, os);
-
                     /**
                      * Since injecting correct url within print.xhtml.h:doctype.system leads to nothing good, let's hack
                      */
@@ -232,9 +234,12 @@ public class PdfRenderer implements Filter {
                     renderer.finishPDF();
                 } else {
                     // no specific type ? -> normal processing
-
                     log("PdfRenderer:Normal output", null);
-                    resp.getOutputStream().write(content.getBytes(StandardCharsets.UTF_8));
+                    if ("true".equals(cleanHtml)) {
+                        resp.getOutputStream().write(os.toString().getBytes(StandardCharsets.UTF_8));
+                    } else {
+                        resp.getOutputStream().write(content.getBytes(StandardCharsets.UTF_8));
+                    }
                 }
             } else {
                 throw new ServletException("Not an HTTP request");

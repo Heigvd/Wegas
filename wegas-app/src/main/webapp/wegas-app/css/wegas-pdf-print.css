@@ -182,7 +182,7 @@ div.wegas-pdf-content {
     max-height: 200px;
 }
 
-.wegas-pdf-content span.wegas-pdf-message-from{
+.wegas-pdf-content div.wegas-pdf-message-from{
     float: inherit;
     clear: both;
 }
@@ -398,20 +398,20 @@ div.wegas-pdf-content {
     font-weight: bold;
 }
 
-.wegas-pdf-content .wegas-pdf-message-container .wegas-pdf-message-header  .wegas-pdf-message-firstline span {
+.wegas-pdf-content .wegas-pdf-message-container .wegas-pdf-message-header  .wegas-pdf-message-firstline .wegas-pdf-inline-div {
     float: left;
 }
 
-.wegas-pdf-content div.wegas-pdf-message-container .wegas-pdf-message-date {
+.wegas-pdf-content .wegas-pdf-message-container .wegas-pdf-message-date {
     float: right !important;
 }
 
-.wegas-pdf-content div.wegas-pdf-message-container div {
+.wegas-pdf-content .wegas-pdf-message-container > div {
     display: block;;
     clear: both;
 }
 
-.wegas-pdf-content div.wegas-pdf-variable-container {
+.wegas-pdf-content .wegas-pdf-variable-container {
     /* border-left: 1px dashed rgb(129, 129, 129); */
     /* border-bottom: 1px dashed rgb(129, 129, 129); */
 }
