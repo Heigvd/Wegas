@@ -459,6 +459,7 @@ API TOOLTIP
 
 .yui3-skin-sam .dashboard-v3 .wegas-dashboard-datatable .dashboard-internal-table tr td:first-child {
     text-align: left;
+    padding-left: 0;
 }
 
 .yui3-skin-sam .dashboard-v3 .wegas-dashboard-datatable .dashboard-internal-table tr td {
@@ -480,3 +481,6 @@ API TOOLTIP
     font-weight: bold;
 }
 
+.wegas-dashboard-datatable .result-gray {
+    color: #999;
+}

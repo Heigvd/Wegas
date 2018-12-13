@@ -24,7 +24,7 @@
             ["Modifier une variable de jeu",
                 "var adjustLevel=" + adjustLevel + ";" +
                 'Variable.find(gameModel, "maxLevel").setValue(self, adjustLevel(${"type":"number", "label":"' +
-                varLabel("maxLevel") + '", "description":"Entrer une valeur numérique telle que 1.1"}));']
+                varLabel("maxLevel") + '", "description":"Entrer une valeur numérique telle que &thinsp;1&thinsp;<b>.</b>1"}));']
         ];
     };
     app.once('render', function() {

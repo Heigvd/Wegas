@@ -1,20 +1,24 @@
 /* global gameModel, self, Variable*/
 var PactDashboard = (function() {
 
+    // This is client-side code !
     var levelDisplay = function(value) {
         return (value/10).toFixed(1);
     };
 
     WegasDashboard.registerVariable("currentLevel", {
         transformer: levelDisplay,
+        label: 'Niveau actuel',
         sortable: true
     });
 
     WegasDashboard.registerVariable("maxLevel", {
         transformer: levelDisplay,
+        label: 'Niveau max',
         sortable: true
     });
 
+    // This is self-contained client-side code !
     var countersDisplay = function(obj) {
 
         function colored(nbErrs, nbTotal) {
@@ -32,22 +36,11 @@ var PactDashboard = (function() {
             }
         }
 
-        var counters = {},
-            props,
+        var counters = obj.object,
             res = '<table class="dashboard-internal-table">',
-            level = [0,0,0],
-            n = 0;
-        try {
-            props = JSON.parse(obj.body);
-        } catch(e) {
-            return e;
-        }
-        for (var key in props) {
-            try {
-                counters[key] = JSON.parse(props[key]);
-            } catch(e) {
-                counters[key] = props[key];
-            }
+            level = [0,0,0];
+
+        for (var key in counters) {
             // Sort keys (game levels) :
             if (key > level[0]){
                 level[2] = level[1];
@@ -59,7 +52,6 @@ var PactDashboard = (function() {
             } else if (key > level[2]) {
                 level[2] = key;
             }
-            n++;
         }
 
         // Display line of exceptions :
@@ -105,29 +97,96 @@ var PactDashboard = (function() {
         if (level[2] === 0) {
             res += '<td>-</td>';
         } else {
-            res += '<td>' + counters[level[2]].successful + '</td>';
+            res += '<td class="result-gray">' + counters[level[2]].successful + '</td>';
         }
         if (level[1] === 0) {
             res += '<td>-</td>';
         } else {
-            res += '<td>' + counters[level[1]].successful + '</td>';
+            res += '<td class="result-gray">' + counters[level[1]].successful + '</td>';
         }
         if (level[0] === 0) {
             res += '<td>-</td>';
         } else {
-            res += '<td>' + counters[level[0]].successful + '</td>';
+            res += '<td class="result-gray">' + counters[level[0]].successful + '</td>';
         }
 
         return res + '</tr></table>';
     };
 
+    // This is self-contained client-side code !
+    var countersSort = function(a, b, desc) {
+
+        function getMaxLevel(playerCounters) {
+            var max = 0;
+            for (var key in playerCounters) {
+                if (key > max){
+                    max = key;
+                }
+            }
+            return max;
+        }
+
+        // Returns infinity if the user has not yet begun the game or the current level:
+        function errorRatio(playerCounters, level) {
+            if (level === 0) return Infinity;
+            var errs = playerCounters[level].exceptions + playerCounters[level].incomplete,
+                total = playerCounters[level].submissions;
+            return errs/total;
+        }
+
+        function errors(playerCounters, level) {
+            if (level === 0) return Infinity;
+            return playerCounters[level].exceptions + playerCounters[level].incomplete;
+        }
+
+        // Return the most advanced player of a and b (?)
+        var countersA = a.get("counters").object,
+            countersB = b.get("counters").object,
+            levelA = getMaxLevel(countersA),
+            levelB = getMaxLevel(countersB),
+            errRA, errRB, errsA, errsB, res;
+
+        // Return 1 if A needs more urgent help than B, otherwise -1 (or 0 if their needs are equal).
+        // First look at their advancement levels:
+        if (levelA < levelB) {
+            res = 1;
+        } else if (levelA === levelB) { // If advancement levels are equal, consider their error ratios :
+            errRA = errorRatio(countersA, levelA);
+            errRB = errorRatio(countersB, levelB);
+            if (errRA > errRB) {
+                res = 1;
+            } else if (errRA === errRB) { // If error ratios are equal, consider the absolute number of errors
+                errsA = errors(countersA, levelA);
+                errsB = errors(countersB, levelB);
+                if (errsA > errsB) {
+                    res = 1;
+                } else if (errsA === errsB) {
+                    res = 0;
+                } else {
+                    res = -1;
+                }
+            } else {
+                res = -1;
+            }
+        } else {
+            res = -1;
+        }
+
+        return desc ? -res : res;
+
+    };
+
 
     WegasDashboard.registerVariable("counters", {
         transformer: countersDisplay,
+        sortable: true,
+        sortFn: countersSort,
         label: 'Évol. niveaux: n-2, n-1, n',
     });
 
-    WegasDashboard.registerVariable("history", {});
+    WegasDashboard.registerVariable("history", {
+        label: 'Historique',
+    });
 
     WegasDashboard.registerAction("sendTheory", function(team, payload) {
         new Y.Wegas.ImpactsTeamModal({

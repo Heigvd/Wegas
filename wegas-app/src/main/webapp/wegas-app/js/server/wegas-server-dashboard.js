@@ -63,6 +63,7 @@ var WegasDashboard = (function() {
             label: cfg.label,
             index: cfg.index || Object.keys(section).length,
             sortable: cfg.sortable,
+            sortFn: cfg.sortFn,
             mapFn: cfg.mapFn,
             mapFnExtraArgs: cfg.mapFnExtraArgs
         };
@@ -169,6 +170,7 @@ var WegasDashboard = (function() {
                             item.formatter = itemCfg.formatter;
                             item.transformer = itemCfg.transformer;
                             item.sortable = itemCfg.sortable;
+                            item.sortFn = itemCfg.sortFn;
                             item.kind = variables[varName].descriptor.getClass().getSimpleName().replaceAll("Descriptor", "").toLowerCase();
                             break;
                         default:
@@ -236,6 +238,9 @@ var WegasDashboard = (function() {
                     if (item.transformer) {
                         item.transformer = item.transformer + "";
                     }
+                    if (item.sortFn) {
+                        item.sortFn = item.sortFn + "";
+                    }
                     if (item.do) {
                         item.do = item.do + "";
                     }
@@ -251,7 +256,7 @@ var WegasDashboard = (function() {
         /**
          *
          * @param {type} varName
-         * @param {type} cfg {section = 'monitoring', dashboard = 'overview', label =varLabel, formatter, transformer, index, sortable, mapFn = function(teamId, instance, ...extraInstances), mapFnExtraArgs = [vdNanem, vdName2, ...]}
+         * @param {type} cfg {section = 'monitoring', dashboard = 'overview', label =varLabel, formatter, transformer, index, sortable, sortFn, mapFn = function(teamId, instance, ...extraInstances), mapFnExtraArgs = [vdNanem, vdName2, ...]}
          * @returns {undefined}
          */
         registerVariable: function(varName, cfg) {
