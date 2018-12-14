@@ -126,7 +126,7 @@ public class PopulatorFacade extends WegasAbstractFacade {
         try {
             utx.begin();
             player = playerFacade.find(playerId);
-            // Inform player's user its player is porocessing
+            // Inform player's user its player is processing
 
             websocketFacade.propagateNewPlayer(player);
             Team team = teamFacade.find(player.getTeamId());

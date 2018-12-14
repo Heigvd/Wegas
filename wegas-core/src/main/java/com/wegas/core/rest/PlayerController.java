@@ -112,6 +112,20 @@ public class PlayerController {
         return Response.status(Response.Status.BAD_REQUEST).build();
     }
 
+
+    /**
+     * Retry to join a team when previous attempt fails
+     *
+     * @param playerId id of player
+     *
+     * @return up to date player
+     */
+    @PUT
+    @Path("{playerId: [1-9][0-9]*}/RetryJoin")
+    public Player retry(@PathParam("playerId") Long playerId) {
+        return playerFacade.retry(playerId);
+    }
+
     /**
      * Update a player
      *

@@ -149,7 +149,11 @@ public class UtilsController {
         if (Helper.isNullOrEmpty(prNumber)) {
             return -1l;
         } else {
-            return Long.parseLong(prNumber);
+            try {
+                return Long.parseLong(prNumber);
+            } catch (NumberFormatException ex) {
+                return -1l;
+            }
         }
     }
 
