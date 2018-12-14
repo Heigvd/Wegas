@@ -154,6 +154,8 @@ public class PopulatorFacade extends WegasAbstractFacade {
                     player = playerFacade.find(playerId);
                     this.postpone(player);
                     utx.commit();
+                    // Inform Lobby about failure
+                    websocketFacade.propagateNewPlayer(player);
                 } catch (Exception ex1) {
                     logger.error("Fails to revert Team status");
                 }
@@ -177,10 +179,6 @@ public class PopulatorFacade extends WegasAbstractFacade {
     private void postpone(Populatable p) {
         if (p.getStatus().equals(Status.SEC_PROCESSING)) {
             p.setStatus(Status.FAILED);
-            if (p instanceof Player) {
-                // Inform Lobby about failure
-                websocketFacade.propagateNewPlayer((Player) p);
-            }
         } else {
             p.setStatus(Status.RESCHEDULED);
         }
