@@ -92,6 +92,21 @@ angular.module('private.player.directives', [])
             return deferred.promise;
         };
 
+        /* try to join again */
+        ctrl.retryJoin = function(teamId) {
+            $('#retry-' + teamId).removeClass('button--repeat').addClass('busy-button');
+            TeamsModel.joinRetry(teamId).then(function(response) {
+                $timeout(function() {
+                    $('#retry-' + teamId).removeClass('busy-button').addClass('button--repeat');
+                }, 500);
+                if (!response.isErroneous()) {
+                    updateTeams();
+                } else {
+                    response.flash();
+                }
+            });
+        }
+
         /* Leave the team */
         ctrl.leaveTeam = function(teamId) {
             $('#leave-' + teamId).removeClass('button--trash').addClass('busy-button');
@@ -221,6 +236,7 @@ angular.module('private.player.directives', [])
             scope: {
                 teams: "=",
                 leave: "=",
+                retry: "=",
                 player: "=",
                 loading: "="
             }
@@ -233,7 +249,8 @@ angular.module('private.player.directives', [])
             scope: {
                 team: "=",
                 player: "=",
-                leave: "="
+                leave: "=",
+                retry: "="
             },
             link: function(scope, element, attrs) {
                 scope.ServiceURL = window.ServiceURL;

@@ -83,6 +83,9 @@ public class PlayerFacade extends BaseFacade<Player> {
     @Inject
     private RequestManager requestManager;
 
+    @Inject
+    private WebsocketFacade websocketFacade;
+
     /**
      * Create a player linked to the user identified by userId(may be null) and join the team
      * identified by teamId.
@@ -593,6 +596,19 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public PlayerFacade() {
         super(Player.class);
+    }
+
+    public Player retry(Long playerId) {
+        Player p = this.find(playerId);
+        if (p.getStatus() == Status.FAILED) {
+            gameModelFacade.createAndRevivePrivateInstance(p.getGame().getGameModel(), p);
+            p.setStatus(Status.LIVE);
+
+            this.flush();
+            stateMachineFacade.runStateMachines(p);
+            websocketFacade.propagateNewPlayer(p);
+        }
+        return p;
     }
 
     /**

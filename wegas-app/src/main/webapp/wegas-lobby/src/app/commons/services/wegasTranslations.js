@@ -437,6 +437,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Error while joining " + keywords.session.singular.en,
                             'fr': "Erreur durant la tentative de rejoindre la " + keywords.session.singular.fr
                         },
+                        'COMMONS-TEAMS-JOIN-RETRY': {
+                            'en': "Retry to join the " + keywords.session.singular.en,
+                            'fr': "Tenter de rejoindre la " + keywords.session.singular.fr + " à nouveau"
+                        },
                         'COMMONS-TEAMS-JOIN-QUEUED': {
                             'en': "Scheduled for initialization",
                             'fr': "En attente de création"

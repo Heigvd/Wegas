@@ -35,6 +35,15 @@
             ng-disabled="true">
         <span class="button__label">{{'COMMONS-TEAMS-JOIN-INDIVIDUALLY-FLASH-ERROR'| translate}}</span>
     </button>
+
+    <a id="retry-{{team.id}}"
+            class="button button--small button--round button--default-reverse button--label-off button--repeat"
+            title="{{'COMMONS-TEAMS-JOIN-RETRY'| translate}}"
+            ng-click="retry(team.id)"
+            ng-disabled="true">
+        <span class="button__label">{{'COMMONS-TEAMS-JOIN-RETRY'| translate}}</span>
+    </a>
+
     <!-- leave button -->
     <a id="leave-{{team.id}}"
        class="button button--small button--round button--default-reverse button--label-off button--trash"

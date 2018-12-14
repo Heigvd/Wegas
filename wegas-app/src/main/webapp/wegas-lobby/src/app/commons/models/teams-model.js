@@ -446,6 +446,54 @@ angular.module('wegas.models.teams', [])
             return deferred.promise;
         };
 
+        model.joinRetry = function(teamId) {
+            var deferred = $q.defer(),
+                player;
+            Auth.getAuthenticatedUser().then(function(user) {
+                if (user) {
+                    var cachedTeam = teams.findTeam(teamId);
+                    if (!cachedTeam) {
+                        $translate('COMMONS-TEAMS-NO-TEAM-FLASH-ERROR').then(function(message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
+                    } else {
+                        player = _.find(cachedTeam.players, function(p) {
+                            return +p.userId === +user.id;
+                        });
+                        if (player) {
+                            $http.put(ServiceURL + "rest/GameModel/Game/Team/" + player.teamId + "/Player/" +
+                                player.id + "/RetryJoin", {
+                                    "headers": {
+                                        "managed-mode": "true"
+                                    }
+                                }).success(function(data) {
+                                $translate('COMMONS-TEAMS-JOIN-FLASH-SUCCESS').then(function(message) {
+                                    deferred.resolve(Responses.success(message, teams.cache.data));
+                                });
+                            }).error(function(data) {
+                                if (data && data.message) {
+                                    deferred.resolve(Responses.danger(data.message, false));
+                                } else {
+                                    $translate('COMMONS-TEAMS-JOIN-FLASH-ERROR').then(function(message) {
+                                        deferred.resolve(Responses.danger(message, false));
+                                    });
+                                }
+                            });
+                        } else {
+                            $translate('COMMONS-TEAMS-NO-PLAYER-FLASH-ERROR').then(function(message) {
+                                deferred.resolve(Responses.danger(message, false));
+                            });
+                        }
+                    }
+                } else {
+                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function(message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
+                }
+            });
+            return deferred.promise;
+        };
+
         /* Leave a team for current player */
         model.leaveTeam = function(teamId) {
             var deferred = $q.defer(),
