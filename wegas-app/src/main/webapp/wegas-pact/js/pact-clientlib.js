@@ -101,9 +101,44 @@
             Y.Wegas.Facade.Variable.script.remoteEval(
                 "Log.post(Log.statement('suspended', 'proggame'))"
             );
+            app.destroy(); // Allow destructor to do their thing (Log)
         });
         Y.Wegas.Facade.Variable.script.remoteEval(
             "Log.post(Log.statement('resumed', 'proggame'))"
+        );
+    });
+    Y.use('wegas-inbox', function() {
+        var OldMessageDisplay = Y.Wegas.MessageDisplay;
+        Y.Wegas.MessageDisplay = Y.Base.create(
+            'wegas-message',
+            OldMessageDisplay,
+            [],
+            {
+                initializer: function() {
+                    var message = this.getMessage();
+                    if (message.get('token')) {
+                        Y.Wegas.Facade.Variable.script.remoteEval(
+                            "Log.post(Log.statement('" +
+                                (message.get('unread')
+                                    ? 'initialized'
+                                    : 'resumed') +
+                                "', 'theory', '" +
+                                message.get('token') +
+                                "'))"
+                        );
+                    }
+                },
+                destructor: function() {
+                    var message = this.getMessage();
+                    if (message.get('token')) {
+                        Y.Wegas.Facade.Variable.script.remoteEval(
+                            "Log.post(Log.statement('suspended', 'theory', '" +
+                                message.get('token') +
+                                "'))"
+                        );
+                    }
+                },
+            }
         );
     });
 })();
