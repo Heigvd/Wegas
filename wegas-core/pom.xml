@@ -37,32 +37,6 @@
             <artifactId>httpclient</artifactId>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.glassfish.jersey.media</groupId>
-            <artifactId>jersey-media-json-jackson</artifactId>
-        </dependency>-->
-
-        <!--<dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
-            <scope>provided</scope>
-        </dependency>-->
-
-        <!--<dependency>
-        <groupId>org.glassfish.main.extras</groupId>
-        <artifactId>glassfish-embedded-all</artifactId>
-        <scope>provided</scope>-->
-        <!-- Compile scope is usefull to test JPQL queries-->
-        <!--            <scope>compile</scope>-->
-        <!--</dependency>-->
-
-        <!-- Liquibase 
-        <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-        </dependency>
-        -->
-
         <!-- Postgresql Driver -->
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -117,30 +91,8 @@
             <artifactId>liquibase-core</artifactId>
         </dependency>
 
-        <!--<dependency>
-            <groupId>net.sf.ehcache</groupId>
-            <artifactId>ehcache</artifactId>
-        </dependency> -->
-        <!--<dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jaxb-annotations</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jackson-core</artifactId>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>-->
-
 
         <!-- Test -->
-        <!--<dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <scope>test</scope>
-        </dependency>-->
-
-
         <dependency>
             <groupId>org.jboss.arquillian.junit</groupId>
             <artifactId>arquillian-junit-container</artifactId>
@@ -181,6 +133,8 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
+            <version>0.9.11</version>
+            <type>jar</type>
         </dependency>
 
         <!--<dependency>
@@ -208,11 +162,6 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
-        <!--<dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jaxb-annotations</artifactId>
-            <type>jar</type>
-        </dependency>-->
         <dependency>
             <groupId>fish.payara.extras</groupId>
             <artifactId>payara-embedded-all</artifactId>

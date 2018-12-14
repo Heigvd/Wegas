@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
-import org.codehaus.jettison.json.JSONException;
 import org.glassfish.embeddable.GlassFishException;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -96,7 +95,7 @@ public class WegasTest {
     }
 
     @Before
-    public void setUp() throws IOException, JSONException {
+    public void setUp() throws IOException {
         logger.error("TEST {}", name.getMethodName());
         logger.error("LOGIN as root");
         client.login(root);
@@ -124,7 +123,7 @@ public class WegasTest {
         client.put("/rest/User/Account/" + trainerUser.getMainAccount().getId(), trainerUser.getMainAccount());
     }
 
-    private void loadArtos() throws IOException, JSONException {
+    private void loadArtos() throws IOException {
         logger.error("LOAD ARTOS");
         artos = client.postJSONFromFile("/rest/GameModel", "src/main/webapp/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-Artos.json", GameModel.class);
     }
@@ -193,7 +192,7 @@ public class WegasTest {
     }
 
     @Test
-    public void testUpdateAndCreateGame() throws IOException, JSONException {
+    public void testUpdateAndCreateGame() throws IOException {
         GameModel myGameModel = client.postJSONFromFile("/rest/GameModel", "src/test/resources/gmScope.json", GameModel.class);
         Game myGame = client.postJSON_asString("/rest/GameModel/" + myGameModel.getId() + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + myGameModel.getId() + "\",\"access\":\"OPEN\",\"name\":\"My Test Game\"}", Game.class);
         myGame.getId();
@@ -201,7 +200,7 @@ public class WegasTest {
 
 
     @Test
-    public void testModeliseStateMachine() throws IOException, JSONException {
+    public void testModeliseStateMachine() throws IOException {
         GameModel gm1 = client.postJSONFromFile("/rest/GameModel", "src/test/resources/fsm.json", GameModel.class);
         GameModel gm2 = client.postJSONFromFile("/rest/GameModel", "src/test/resources/fsm.json", GameModel.class);
 
@@ -213,7 +212,7 @@ public class WegasTest {
     }
 
     @Test
-    public void createGameTest() throws IOException, JSONException {
+    public void createGameTest() throws IOException {
         Game myGame = client.postJSON_asString("/rest/GameModel/" + this.artos.getId() + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + this.artos.getId() + "\",\"access\":\"OPEN\",\"name\":\"My Artos Game\"}", Game.class);
 
         /* Use Editor view to load teams: */
@@ -226,7 +225,7 @@ public class WegasTest {
     }
 
     @Test
-    public void getVariableDescriptor() throws IOException, JSONException {
+    public void getVariableDescriptor() throws IOException {
         List<VariableDescriptor> descs;
 
         descs = (List<VariableDescriptor>) (client.get("/rest/GameModel/" + this.artos.getId() + "/VariableDescriptor", new TypeReference<List<VariableDescriptor>>() {
@@ -236,7 +235,7 @@ public class WegasTest {
     }
 
     @Test
-    public void manageModeTest() throws IOException, JSONException {
+    public void manageModeTest() throws IOException {
         List<GameModel> get = (List<GameModel>) client.get("/rest/GameModel", new TypeReference<List<GameModel>>() {
         });
         get.size();

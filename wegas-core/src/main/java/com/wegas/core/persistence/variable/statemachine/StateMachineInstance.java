@@ -80,7 +80,7 @@ public class StateMachineInstance extends VariableInstance {
      *
      * @param state
      */
-    @JsonIgnore
+    //@JsonIgnore
     public void setCurrentState(State state) {
         //Not meant to be used
     }

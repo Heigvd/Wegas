@@ -116,6 +116,10 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>fish.payara.api</groupId>
+            <artifactId>payara-api</artifactId>
+        </dependency>
 
         <!-- log4j -->
         <dependency>

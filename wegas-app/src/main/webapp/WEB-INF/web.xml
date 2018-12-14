@@ -29,6 +29,12 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+    <!-- Jackson, not yasson -->
+    <context-param>
+        <param-name>jersey.config.jsonFeature</param-name>
+        <param-value>JacksonFeature</param-value>
+    </context-param>
+
     <!-- JSF -->
     <context-param>
         <param-name>javax.faces.PROJECT_STAGE</param-name>

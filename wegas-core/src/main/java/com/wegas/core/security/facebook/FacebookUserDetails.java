@@ -7,8 +7,7 @@
  */
 package com.wegas.core.security.facebook;
 
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
+import com.wegas.core.exception.client.WegasErrorMessage;
 
 /**
  * Simple class for holding data relating to a facebook user
@@ -52,10 +51,9 @@ public class FacebookUserDetails {
      * @param fbResponse
      */
     public FacebookUserDetails(String fbResponse) {
+        /*
         jsonString = fbResponse;
-        JSONObject respjson;
         try {
-            respjson = new JSONObject(fbResponse);
             this.id = respjson.getString("id");
             this.firstname = respjson.has("first_name") ? respjson.getString("first_name") : " no name" + id;
             this.lastname = respjson.has("last_name") ? respjson.getString("last_name") : "";
@@ -65,6 +63,8 @@ public class FacebookUserDetails {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+         */
+        throw WegasErrorMessage.error("Not Yet Implemented");
 
     }
 

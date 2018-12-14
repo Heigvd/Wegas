@@ -146,7 +146,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         },
         // *** Private methods *** //
         getCurrentState: function() {
-            return this.getInstance().get("currentState");
+            return this.get("states")[this.getInstance().get("currentStateId")];
         },
         getInitialStateId: function() {
             return this.get("defaultInstance").get("currentStateId");
