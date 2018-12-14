@@ -2,8 +2,8 @@ import * as React from 'react';
 import {LangConsumer} from '../LangContext';
 import {Schema} from 'jsoninput';
 import {infoStyle} from './commonView';
-import {css} from 'glamor';
-import IconButton from '../Components/IconButton';
+//import {css} from 'glamor';
+//import IconButton from '../Components/IconButton';
 
 
 interface Translation {
@@ -40,47 +40,49 @@ export default function translatable<P extends EndProps>(
             return null;
         }
 
-        function catchUp(code: string) {
-            const value = props.value[code] ? props.value[code].translation : "";
-            const newValue = {
-                ...props.value,
-                [code]: {
-                    translation: value,
-                    status: ""
+        /*
+                function catchUp(code: string) {
+                    const value = props.value[code] ? props.value[code].translation : "";
+                    const newValue = {
+                        ...props.value,
+                        [code]: {
+                            translation: value,
+                            status: ""
+                        }
+                    };
+        
+                    props.onChange(newValue);
                 }
-            };
-
-            props.onChange(newValue);
-        }
-
-
-        function outdate(code: string) {
-            const value = props.value[code] ? props.value[code].translation : "";
-            const newValue = {
-                ...props.value,
-                [code]: {
-                    translation: value,
-                    status: "outdated:manual"
+        
+        
+                function outdate(code: string) {
+                    const value = props.value[code] ? props.value[code].translation : "";
+                    const newValue = {
+                        ...props.value,
+                        [code]: {
+                            translation: value,
+                            status: "outdated:manual"
+                        }
+                    };
+        
+                    props.onChange(newValue);
                 }
-            };
-
-            props.onChange(newValue);
-        }
-
-
-
-        function markAsMajor(code: string) {
-            let newValue = {};
-            for (let lang in props.value) {
-                newValue[lang] = {
-                    translation: props.value[lang].translation,
-                    status: "outdated:" + code
+        
+        
+        
+                function markAsMajor(code: string) {
+                    let newValue = {};
+                    for (let lang in props.value) {
+                        newValue[lang] = {
+                            translation: props.value[lang].translation,
+                            status: "outdated:" + code
+                        }
+                    };
+                    newValue[code].status = "";
+        
+                    props.onChange(newValue);
                 }
-            };
-            newValue[code].status = "";
-
-            props.onChange(newValue);
-        }
+                */
 
         return (
             <LangConsumer>
@@ -115,7 +117,6 @@ export default function translatable<P extends EndProps>(
                             </span>
                         ),
                     };
-                    const readOnly = view.readOnly;
 
                     const editor =
                         <Comp
@@ -134,41 +135,43 @@ export default function translatable<P extends EndProps>(
                                 props.onChange(v);
                             }}
                         />
-
-                    const orangeStyle = css({
-                        color: "#F57C00"
-                    });
-
-                    const greenStyle = css({
-                        color: "#388E3C"
-                    });
-
-                    const majorButton = !readOnly ?
-                        <IconButton
-                            icon={[
-                                `fa fa-toggle-on fa-stack-1x ${orangeStyle}`,
-                                `fa fa-expand fa-stack-1x ${css({
-                                    transform: "translate(0, 8px) rotate(45deg)"
-                                })}`
-                            ]}
-                            className={`wegas-advanced-feature ${css({
-                                lineHeight: "1.2em"
-                            })}`}
-                            tooltip="Major update"
-                            onClick={() => {
-                                markAsMajor(curCode);
-                            }}
-                        /> : "";
-
-                    const outdateButton = !readOnly ?
-                        <IconButton
-                            className='wegas-advanced-feature'
-                            icon={[`fa fa-toggle-on ${greenStyle}`]}
-                            tooltip="Mark as outdated "
-                            onClick={() => {
-                                outdate(curCode);
-                            }}
-                        /> : "";
+                    return editor;
+                    /*
+                    const readOnly = view.readOnly;
+                                        const orangeStyle = css({
+                                            color: "#F57C00"
+                                        });
+                    
+                                        const greenStyle = css({
+                                            color: "#388E3C"
+                                        });
+                    
+                                        const majorButton = !readOnly ?
+                                            <IconButton
+                                                icon={[
+                                                    `fa fa-toggle-on fa-stack-1x ${orangeStyle}`,
+                                                    `fa fa-expand fa-stack-1x ${css({
+                                                        transform: "translate(0, 8px) rotate(45deg)"
+                                                    })}`
+                                                ]}
+                                                className={`wegas-advanced-feature ${css({
+                                                    lineHeight: "1.2em"
+                                                })}`}
+                                                tooltip="Major update"
+                                                onClick={() => {
+                                                    markAsMajor(curCode);
+                                                }}
+                                            /> : "";
+                    
+                                        const outdateButton = !readOnly ?
+                                            <IconButton
+                                                className='wegas-advanced-feature'
+                                                icon={[`fa fa-toggle-on ${greenStyle}`]}
+                                                tooltip="Mark as outdated "
+                                                onClick={() => {
+                                                    outdate(curCode);
+                                                }}
+                                            /> : "";
 
                     if (!props.value[curCode] || !props.value[curCode].status) {
                         return (
@@ -194,6 +197,7 @@ export default function translatable<P extends EndProps>(
                             </span>
                         );
                     }
+                */
                 }}
             </LangConsumer>
         );
