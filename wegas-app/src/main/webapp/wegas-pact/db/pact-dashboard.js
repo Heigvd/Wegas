@@ -14,7 +14,13 @@ var PactDashboard = (function() {
 
     WegasDashboard.registerVariable("maxLevel", {
         transformer: levelDisplay,
-        label: 'Niveau max',
+        label: 'Max atteint',
+        sortable: true
+    });
+
+    WegasDashboard.registerVariable("levelLimit", {
+        transformer: levelDisplay,
+        label: 'Niveau autorisé',
         sortable: true
     });
 

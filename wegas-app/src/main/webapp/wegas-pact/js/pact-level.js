@@ -29,6 +29,9 @@ YUI.add('pact-level', function(Y) {
         HISTORY_INBOX = 'history',
         COUNTERS_OBJECT = 'counters',
         CURRENT_LEVEL = 'currentLevel',
+        MAX_LEVEL = 'maxLevel',
+        LEVEL_LIMIT = 'levelLimit',
+        LEVEL_LIMIT_REACHED = 'Il faut attendre l\'autorisation d\'aller plus loin dans le jeu.',
         Wegas = Y.Wegas,
         ProgGameLevel,
         currentLevel;
@@ -278,14 +281,25 @@ YUI.add('pact-level', function(Y) {
                 cb.delegate(
                     CLICK,
                     function() {
-                        // End level screen: next level button:
-                        this.doNextLevel(
-                            function() {
-                                this.mainEditorTab.aceField.setValue('');
-                                this.previousCode = '';
-                                this.fire('gameWon'); // trigger open page plugin
-                            }.bind(this)
-                        );
+                        var levelLimit = scriptFacade.localEval(
+                                'Variable.find(gameModel, \"' + LEVEL_LIMIT + '\").getValue(self)'
+                            ),
+                            maxLevel = scriptFacade.localEval(
+                                'Variable.find(gameModel, \"' + MAX_LEVEL + '\").getValue(self)'
+                            );
+                        if (currentLevel >= levelLimit) {
+                            alert(LEVEL_LIMIT_REACHED)
+                            // Y.Wegas.Alerts.showNotification(LEVEL_LIMIT_REACHED, { iconCss: 'fa fa-clock' });
+                        } else {
+                            // End level screen: next level button:
+                            this.doNextLevel(
+                                function () {
+                                    this.mainEditorTab.aceField.setValue('');
+                                    this.previousCode = '';
+                                    this.fire('gameWon'); // trigger open page plugin
+                                }.bind(this)
+                            );
+                        }
                     },
                     '.proggame-levelend-nextlevel',
                     this

@@ -599,17 +599,22 @@ ProgGameSimulation.prototype = {
             this.sendCommand({
                 type: 'gameWon',
             });
-            var maxLevel = Variable.find(gameModel, 'maxLevel');
+            var maxLevel = Variable.find(gameModel, 'maxLevel'),
+                levelLimit = Variable.find(gameModel, 'levelLimit'),
+                currentLevel = Variable.find(gameModel, 'currentLevel');
+            // NB: points may be awarded several times if the trainer blocks the game at this level !!!
             if (
                 maxLevel.getValue(self) <=
-                Variable.find(gameModel, 'currentLevel').getValue(self)
+                currentLevel.getValue(self)
             ) {
                 Variable.find(gameModel, 'money').add(self, 100);
             }
-            maxLevel.setValue(
-                self,
-                Math.max(maxLevel.getValue(self), Number(this.level.onWin))
-            );
+            if (levelLimit.getValue(self) > currentLevel.getValue(self)) {
+                maxLevel.setValue(
+                    self,
+                    Math.max(maxLevel.getValue(self), Number(this.level.onWin))
+                );
+            }
             return true;
         }
         return false;

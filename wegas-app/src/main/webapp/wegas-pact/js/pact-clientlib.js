@@ -53,9 +53,9 @@
                 'var adjustLevel=' +
                     adjustLevel +
                     ';' +
-                    'Variable.find(gameModel, "maxLevel").setValue(self, adjustLevel(${"type":"number", "label":"' +
-                    varLabel('maxLevel') +
-                    '", "description":"Entrer une valeur numérique telle que &thinsp;1&thinsp;<b>.</b>1"}));',
+                    'Variable.find(gameModel, "levelLimit").setValue(self, adjustLevel(${"type":"number", "label":"' +
+                    varLabel('levelLimit') +
+                    '", "description":"Entrer une valeur numérique entre &thinsp;1&thinsp;<b>.</b>1&thinsp; et &thinsp;9&thinsp;<b>.</b>9"}));',
             ],
         ];
     };
