@@ -199,7 +199,7 @@ var PactDashboard = (function() {
             "team": team,
             "customImpacts": [
                 ["Envoyer de la théorie",
-                    'PactHelper.sendMessage(${"type":"string", "label":"From"}, ${"type":"string", "label":"Subject"}, ${"type":"html", "label":"Body", "required":true}, []);']
+                    'PactHelper.sendMessage(${"type":"string", "label":"De la part de"}, ${"type":"string", "label":"Sujet"}, ${"type":"html", "label":"Message", "required":true}, []);']
             ],
             "showAdvancedImpacts": false
         }).render();
