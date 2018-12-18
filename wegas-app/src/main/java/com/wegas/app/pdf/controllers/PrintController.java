@@ -8,6 +8,7 @@
 package com.wegas.app.pdf.controllers;
 
 import com.wegas.app.jsf.controllers.*;
+import com.wegas.app.jsf.controllers.utils.HttpParam;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
@@ -19,7 +20,6 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.annotation.ManagedProperty;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -60,13 +60,13 @@ public class PrintController {
     /**
      * CASE #1 export based on a specific user
      */
-    @ManagedProperty("#{param.id}")
+    @Inject @HttpParam("id")
     private Long playerId;
 
     /**
      * CASE# 2 export from scenarist/trainer lobby: fetch default user
      */
-    @ManagedProperty("#{param.gameModelId}")
+    @Inject @HttpParam
     private Long gameModelId;
 
     /**

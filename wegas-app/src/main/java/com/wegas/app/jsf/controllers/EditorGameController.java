@@ -7,16 +7,15 @@
  */
 package com.wegas.app.jsf.controllers;
 
+import com.wegas.app.jsf.controllers.utils.HttpParam;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.security.ejb.UserFacade;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.annotation.ManagedProperty;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -33,17 +32,17 @@ public class EditorGameController extends AbstractGameController {
     /**
      *
      */
-    @ManagedProperty("#{param.gameId}")
+    @Inject @HttpParam
     private Long gameId;
     /**
      *
      */
-    @ManagedProperty("#{param.gameModelId}")
+    @Inject @HttpParam
     private Long gameModelId;
     /**
      *
      */
-    @ManagedProperty("#{param.teamId}")
+    @Inject @HttpParam
     private Long teamId;
     /**
      *
@@ -56,8 +55,6 @@ public class EditorGameController extends AbstractGameController {
     private PlayerFacade playerFacade;
     @Inject
     private GameModelFacade gameModelFacade;
-    @Inject
-    private UserFacade userFacade;
     @Inject
     private RequestManager requestManager;
 

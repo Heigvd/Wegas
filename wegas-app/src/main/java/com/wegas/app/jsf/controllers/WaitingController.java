@@ -7,6 +7,7 @@
  */
 package com.wegas.app.jsf.controllers;
 
+import com.wegas.app.jsf.controllers.utils.HttpParam;
 import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
@@ -22,7 +23,6 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.annotation.ManagedProperty;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -41,12 +41,12 @@ public class WaitingController extends AbstractGameController {
     /**
      *
      */
-    @ManagedProperty("#{param.gameId}")
+    @Inject @HttpParam
     private Long gameId;
     /**
      *
      */
-    @ManagedProperty("#{param.gameModelId}")
+    @Inject @HttpParam
     private Long gameModelId;
     /**
      *

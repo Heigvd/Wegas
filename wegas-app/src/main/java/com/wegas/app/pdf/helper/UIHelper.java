@@ -8,7 +8,6 @@
 package com.wegas.app.pdf.helper;
 
 import com.wegas.core.Helper;
-import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.messaging.persistence.Attachment;

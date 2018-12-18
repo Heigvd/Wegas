@@ -7,6 +7,7 @@
  */
 package com.wegas.app.jsf.controllers;
 
+import com.wegas.app.jsf.controllers.utils.HttpParam;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.security.ejb.UserFacade;
@@ -21,7 +22,6 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJBException;
 import javax.inject.Inject;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.annotation.ManagedProperty;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -51,12 +51,12 @@ public class RequestController implements Serializable {
     /**
      *
      */
-    @ManagedProperty("#{param.lang}")
-    private String lang = "en";
+    @Inject @HttpParam
+    private String lang;
     /**
      *
      */
-    @ManagedProperty("#{param.debug}")
+    @Inject @HttpParam
     private String debug;
 
     /**
