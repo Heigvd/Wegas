@@ -31,7 +31,7 @@ import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -78,13 +78,13 @@ public class PdfRenderer implements Filter {
     private FilterConfig filterConfig = null;
     private DocumentBuilder documentBuilder;
 
-    @EJB
+    @Inject
     private UserFacade userFacade;
 
-    @EJB
+    @Inject
     private RoleFacade roleFacade;
 
-    @EJB
+    @Inject
     private GameModelFacade gameModelFacade;
 
     @Override

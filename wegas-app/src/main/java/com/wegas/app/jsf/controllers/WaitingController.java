@@ -21,11 +21,10 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
+import javax.faces.annotation.ManagedProperty;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  *
@@ -33,9 +32,11 @@ import javax.inject.Inject;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-@ManagedBean(name = "waitController")
+@Named("waitController")
 @RequestScoped
 public class WaitingController extends AbstractGameController {
+
+    private static final long serialVersionUID = -2418779606634610894L;
 
     /**
      *
@@ -50,17 +51,17 @@ public class WaitingController extends AbstractGameController {
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private GameModelFacade gameModelFacade;
 
     @Inject

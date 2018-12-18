@@ -19,9 +19,9 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
+import javax.faces.annotation.ManagedProperty;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  *
@@ -29,7 +29,7 @@ import javax.inject.Inject;
  *
  * @author Maxence Laurent <maxence.laurent> <gmail.com>
  */
-@ManagedBean(name = "printController")
+@Named("printController")
 @RequestScoped
 public class PrintController {
 

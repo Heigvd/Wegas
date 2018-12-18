@@ -20,9 +20,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import javax.ejb.EJB;
-import javax.faces.bean.ManagedProperty;
+import javax.faces.annotation.ManagedProperty;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,13 +43,13 @@ public class AbstractGameController implements Serializable {
     /**
      *
      */
-    @EJB
+    @Inject
     private ComboController comboController;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private LibraryFacade libraryFacade;
 
     /**
