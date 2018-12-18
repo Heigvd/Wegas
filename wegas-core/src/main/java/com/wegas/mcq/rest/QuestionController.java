@@ -13,7 +13,7 @@ import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.QuestionInstanceI;
 import com.wegas.mcq.persistence.Reply;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -32,12 +32,12 @@ public class QuestionController {
     /**
      *
      */
-    @EJB
+    @Inject
     private QuestionDescriptorFacade questionDescriptorFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private RequestFacade requestFacade;
 
     /**

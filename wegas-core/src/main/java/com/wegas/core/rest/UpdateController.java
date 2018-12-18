@@ -47,7 +47,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -74,13 +73,13 @@ public class UpdateController {
 
     private static Logger logger = LoggerFactory.getLogger(UpdateController.class);
 
-    @EJB
+    @Inject
     private VariableDescriptorFacade descriptorFacade;
 
-    @EJB
+    @Inject
     private VariableDescriptorController descriptorController;
 
-    @EJB
+    @Inject
     private GameModelFacade gameModelFacade;
 
     @Inject

@@ -16,7 +16,7 @@ import com.wegas.core.security.ejb.UserFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.ejb.Stateless;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -36,27 +36,27 @@ public class StateMachineController {
     /**
      *
      */
-    @EJB
+    @Inject
     private GameFacade gameFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private RequestFacade requestFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private StateMachineFacade stateMachineFacade;
 
     /**

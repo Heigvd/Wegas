@@ -21,7 +21,6 @@ import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
 import com.wegas.reviewing.persistence.Review;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -42,28 +41,28 @@ public class PeerReviewController {
     /**
      * Commit request to eval FSM
      */
-    @EJB
+    @Inject
     private RequestFacade requestFacade;
 
     /**
-     * PeerReview EJB facade
+     * PeerReview facade
      */
-    @EJB
+    @Inject
     private ReviewingFacade reviewFacade;
 
     /**
-     * EJB Player Facade
+     * Player Facade
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
 
     @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
 
     /**
-     * EJB Variable Instance Facade
+     * Inject Variable Instance Facade
      */
-    @EJB
+    @Inject
     private VariableInstanceFacade instanceFacade;
 
     /**

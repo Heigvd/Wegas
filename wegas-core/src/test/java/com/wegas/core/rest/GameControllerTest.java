@@ -13,7 +13,7 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
 import com.wegas.test.arquillian.AbstractArquillianTest;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -22,10 +22,10 @@ import org.junit.Test;
  */
 public class GameControllerTest extends AbstractArquillianTest {
 
-    @EJB
+    @Inject
     private GameController gameController;
 
-    @EJB
+    @Inject
     private PlayerController playerController;
 
     @Test

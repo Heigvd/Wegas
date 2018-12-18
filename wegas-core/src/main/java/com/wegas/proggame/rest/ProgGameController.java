@@ -10,7 +10,7 @@ package com.wegas.proggame.rest;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Script;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.ejb.Stateless;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -29,7 +29,7 @@ public class ProgGameController {
     /**
      *
      */
-    @EJB
+    @Inject
     private ScriptFacade scriptFacade;
 
     /**

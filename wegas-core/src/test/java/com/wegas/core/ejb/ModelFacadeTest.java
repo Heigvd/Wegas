@@ -55,7 +55,6 @@ import javax.naming.NamingException;
 import javax.ws.rs.core.MediaType;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.reflections.Reflections;
 import org.slf4j.Logger;

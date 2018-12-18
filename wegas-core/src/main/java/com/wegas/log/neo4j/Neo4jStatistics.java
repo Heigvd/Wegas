@@ -13,7 +13,7 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.neo4j.driver.v1.StatementResult;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -41,13 +41,13 @@ public class Neo4jStatistics {
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private GameModelFacade gameModelFacade;
 
     @GET

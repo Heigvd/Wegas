@@ -779,7 +779,7 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     * @return Looked-up Inject
+     * @return Looked-up EJB
      */
     public static UserFacade lookup() {
         try {

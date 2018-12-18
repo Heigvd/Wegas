@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
@@ -43,13 +43,13 @@ import org.slf4j.LoggerFactory;
 @PreMatching
 public class ViewRequestFilter implements ContainerRequestFilter {
 
-    @EJB
+    @Inject
     RequestIdentifierGenerator idGenerator;
 
-    @EJB
+    @Inject
     UserFacade userFacade;
 
-    @EJB
+    @Inject
     RequestFacade requestFacade;
 
     private static final Counter requests = Counter.build()

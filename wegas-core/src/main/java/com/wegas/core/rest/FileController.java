@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jcr.PathNotFoundException;
@@ -58,7 +57,7 @@ public class FileController {
     /**
      *
      */
-    @EJB
+    @Inject
     private GameModelFacade gmFacade;
 
     @Inject

@@ -19,7 +19,6 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -42,24 +41,24 @@ public class PlayerController {
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
     @Inject
     private RequestManager requestManager;
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private TeamFacade teamFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private GameFacade gameFacade;
 
     /**

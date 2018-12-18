@@ -13,7 +13,6 @@ import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
 import com.wegas.core.ejb.WebsocketFacade;
 import io.prometheus.client.hotspot.DefaultExports;
-import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -35,7 +34,7 @@ public class ApplicationStartup extends HttpServlet {
 
     private final Logger logger = LoggerFactory.getLogger(ApplicationStartup.class);
 
-    @EJB
+    @Inject
     private WebsocketFacade websocketFacade;
 
     @Inject

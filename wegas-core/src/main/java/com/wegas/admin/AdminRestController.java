@@ -11,7 +11,7 @@ import com.wegas.admin.persistence.GameAdmin;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -27,7 +27,7 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 @RequiresRoles("Administrator")
 public class AdminRestController {
 
-    @EJB
+    @Inject
     private AdminFacade adminFacade;
 
     @Path("Game")

@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 public class FileDescriptor extends AbstractContentDescriptor {
 
     static final private Logger logger = LoggerFactory.getLogger(FileDescriptor.class);
+    private static final long serialVersionUID = 5695858459529162019L;
 
     @JsonIgnore
     @WegasEntityProperty(includeByDefault = false)

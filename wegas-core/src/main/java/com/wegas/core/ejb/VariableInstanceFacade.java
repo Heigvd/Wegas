@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -55,27 +54,27 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private RequestFacade requestFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private TeamFacade teamFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private GameFacade gameFacade;
 
     @Inject

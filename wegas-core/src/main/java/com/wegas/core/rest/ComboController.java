@@ -66,7 +66,7 @@ public class ComboController {
 
     private static final String CACHE_DISABLED_KEY = "wegas.combocache.enabled";
 
-    //@EJB
+    //@Inject
     ///private CacheManagerHolder cacheManagerHolder;
     @Inject
     private Cache<Integer, CacheObject> cache;

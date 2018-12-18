@@ -22,7 +22,7 @@ import static com.wegas.test.TestHelper.toMap;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.naming.NamingException;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class StateMachineFacadeTest extends AbstractArquillianTest {
 
-    @EJB
+    @Inject
     private StateMachineFacade stateMachineFacade;
 
     protected static final Logger logger = LoggerFactory.getLogger(StateMachineFacadeTest.class);

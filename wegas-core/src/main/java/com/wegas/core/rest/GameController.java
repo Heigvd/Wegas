@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -45,7 +44,7 @@ public class GameController {
     /**
      *
      */
-    @EJB
+    @Inject
     private GameFacade gameFacade;
     /**
      *
@@ -55,19 +54,19 @@ public class GameController {
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private TeamFacade teamFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
 
     @Inject

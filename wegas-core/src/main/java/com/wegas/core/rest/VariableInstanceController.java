@@ -17,7 +17,6 @@ import com.wegas.core.security.ejb.UserFacade;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -37,17 +36,17 @@ public class VariableInstanceController {
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableInstanceFacade variableInstanceFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
 
     /**

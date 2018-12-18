@@ -12,7 +12,7 @@ import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
 import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.rest.GameController;
 import com.wegas.test.arquillian.AbstractArquillianTest;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ public class GameFacadeTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(GameFacadeTest.class);
 
-    @EJB
+    @Inject
     private GameController gameController;
 
     @Test

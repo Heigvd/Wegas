@@ -30,7 +30,6 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
 import java.io.IOException;
 import java.util.*;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.mail.internet.AddressException;
@@ -65,25 +64,25 @@ public class UserController {
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private RoleFacade roleFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private AccountFacade accountFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private GameFacade gameFacade;
 
     @Inject
@@ -92,13 +91,13 @@ public class UserController {
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private TeamFacade teamFacade;
 
     @Inject

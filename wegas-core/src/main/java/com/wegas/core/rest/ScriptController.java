@@ -28,7 +28,6 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -51,12 +50,12 @@ public class ScriptController {
     /**
      *
      */
-    @EJB
+    @Inject
     private ScriptFacade scriptFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
     /**
      *
@@ -66,22 +65,22 @@ public class ScriptController {
     /**
      *
      */
-    @EJB
+    @Inject
     private RequestFacade requestFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacadeFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private ScriptCheck scriptCheck;
 
     @Inject

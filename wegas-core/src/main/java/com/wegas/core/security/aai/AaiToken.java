@@ -7,7 +7,6 @@
  */
 package com.wegas.core.security.aai;
 
-import org.apache.shiro.authc.HostAuthenticationToken;
 import org.apache.shiro.authc.RememberMeAuthenticationToken;
 
 /**

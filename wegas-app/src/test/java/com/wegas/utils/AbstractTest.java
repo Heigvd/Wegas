@@ -18,7 +18,7 @@ import com.wegas.core.rest.ScriptController;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.test.arquillian.AbstractArquillianTestMinimal;
 import java.io.IOException;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,7 @@ public abstract class AbstractTest extends AbstractArquillianTestMinimal {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractTest.class);
 
-    @EJB
+    @Inject
     protected ScriptController scriptController;
 
     private GameModel gameModel;

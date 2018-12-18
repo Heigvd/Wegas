@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -63,13 +62,13 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      *
      */
-    @EJB
+    @Inject
     private GameModelFacade gameModelFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private TeamFacade teamFacade;
 
     @Inject
@@ -78,7 +77,7 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
 
     @Inject
@@ -205,7 +204,7 @@ public class GameFacade extends BaseFacade<Game> {
             testPlayer.setStatus(Status.LIVE);
 
             List<GameModelLanguage> languages = game.getGameModel().getLanguages();
-            if (languages !=null && !languages.isEmpty()){
+            if (languages != null && !languages.isEmpty()) {
                 testPlayer.setLang(languages.get(0).getCode());
             }
 

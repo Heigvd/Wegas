@@ -22,7 +22,6 @@ import com.wegas.core.ejb.ApplicationLifecycle;
 import com.wegas.core.ejb.ConcurrentHelper;
 import com.wegas.core.ejb.HelperBean;
 import fish.payara.micro.cdi.Outbound;
-import fish.payara.security.oauth2.api.OAuth2State;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;

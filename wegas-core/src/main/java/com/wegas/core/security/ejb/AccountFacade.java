@@ -22,8 +22,8 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.util.*;
-import javax.ejb.EJB;
 import javax.ejb.EJBException;
+import javax.inject.Inject;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.naming.NamingException;
@@ -48,13 +48,13 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     /**
      *
      */
-    @EJB
+    @Inject
     private RoleFacade roleFacade;
 
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
 
-    @EJB
+    @Inject
     private UserFacade userFacade;
 
     /**

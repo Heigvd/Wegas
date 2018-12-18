@@ -13,7 +13,6 @@ import com.wegas.core.persistence.NumberListener;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
@@ -25,11 +24,8 @@ import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.Reply;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
@@ -55,7 +51,7 @@ public class Neo4jPlayerReply {
         NUMBER
     }
 
-    @EJB
+    @Inject
     private Neo4jCommunication neo4jCommunication;
 
     @Inject

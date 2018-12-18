@@ -15,7 +15,7 @@ import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.Map;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.naming.NamingException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,7 +26,7 @@ import org.junit.Test;
  */
 public class ScriptControllerTest extends AbstractArquillianTest {
 
-    @EJB
+    @Inject
     private ScriptController scriptController;
 
     /**

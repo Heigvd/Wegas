@@ -14,7 +14,6 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
@@ -32,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -63,24 +61,24 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private ScriptFacade scriptManager;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private RequestFacade requestFacade;
 
     /**
      *
-     * @EJB QuestionSingleton questionSingleton;
+     * @Inject QuestionSingleton questionSingleton;
      */
     /**
      *

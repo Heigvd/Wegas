@@ -38,7 +38,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
-import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.mail.internet.AddressException;
@@ -74,40 +73,40 @@ public abstract class AbstractArquillianTestMinimal {
 
     protected static final Logger logger = LoggerFactory.getLogger(AbstractArquillianTestMinimal.class);
 
-    @EJB
+    @Inject
     protected GameModelFacade gameModelFacade;
 
-    @EJB
+    @Inject
     protected GameFacade gameFacade;
 
-    @EJB
+    @Inject
     protected TeamFacade teamFacade;
 
-    @EJB
+    @Inject
     protected RoleFacade roleFacade;
 
-    @EJB
+    @Inject
     protected UserFacade userFacade;
 
-    @EJB
+    @Inject
     protected AccountFacade accountFacade;
 
-    @EJB
+    @Inject
     protected PlayerFacade playerFacade;
 
-    @EJB
+    @Inject
     protected VariableDescriptorFacade variableDescriptorFacade;
 
-    @EJB
+    @Inject
     protected VariableInstanceFacade variableInstanceFacade;
 
-    @EJB
+    @Inject
     protected ScriptFacade scriptFacade;
 
     @Inject
     protected HelperBean helperBean;
 
-    @EJB
+    @Inject
     protected RequestFacade requestFacade;
 
     @Inject
