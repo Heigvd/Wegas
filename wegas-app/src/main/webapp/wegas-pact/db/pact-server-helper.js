@@ -1,7 +1,7 @@
 var PactHelper = (function(){
 
     return {
-        sendHistory: function(title, msg, token) {
+        sendHistory: function(title, msg) {
             Variable.find(gameModel, "history").sendDatedMessage(self, "", "", title, msg);
         },
         sendMessage: function(from, title, msg){
@@ -10,7 +10,7 @@ var PactHelper = (function(){
              * Internal function: strips HTML tags from given input string, replacing them with spaces.
              */
             function strip_tags(input, allowed) {
-                //  discuss at: http://phpjs.org/functions/strip_tags/
+                //  Taken from: http://phpjs.org/functions/strip_tags/
                 allowed = (((allowed || '') + '')
                     .toLowerCase()
                     .match(/<[a-z][a-z0-9]*>/g) || [])
@@ -24,7 +24,7 @@ var PactHelper = (function(){
             }
 
             var date = '',
-                // To create a good token, strip HTML tags and non-printable characters:
+                // To create a good token, strip HTML tags and non-ASCII characters:
                 token = strip_tags(title.length > 0 ? title + ":" + msg : msg)
                         .replace(/[^ -~]+/g, "").trim().substr(0,64);
             Variable.getInstance(Variable.find(gameModel, "inbox"), self).sendMessage(from, title, msg, date, token, []);
