@@ -93,13 +93,13 @@ public class Xapi implements XapiI {
         ctx.setCategory(new ArrayList<Activity>() {
             private static final long serialVersionUID = 1L;
             {
-                add(new Activity("internal://wegas/log-id-" + logID));
+                add(new Activity("internal://wegas/log-id/" + logID));
             }
         });
         ctx.setGrouping(new ArrayList<Activity>() {
             private static final long serialVersionUID = 1L;
             {
-                add(new Activity("internal://wegas/game-" + String.valueOf(game.getId())));
+                add(new Activity("internal://wegas/game/" + String.valueOf(game.getId())));
             }
         });
         context.setContextActivities(ctx);
