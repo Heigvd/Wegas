@@ -44,14 +44,6 @@ public class WhQuestionInstance extends VariableInstance implements QuestionInst
     private Boolean validated = FALSE;
 
     /**
-     * @param a
-     */
-    @Override
-    public void revive(Beanjection beans) {
-        super.revive(beans);
-    }
-
-    /**
      * @return the active
      */
     @Override

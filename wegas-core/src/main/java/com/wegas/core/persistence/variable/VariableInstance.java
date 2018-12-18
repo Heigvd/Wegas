@@ -509,9 +509,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         }
     }
 
-    public void revive(Beanjection beans) {
-    }
-
     /**
      *
      * @return string representation of the instance (class name, id, default or

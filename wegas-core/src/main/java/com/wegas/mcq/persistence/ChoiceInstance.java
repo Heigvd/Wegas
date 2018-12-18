@@ -15,7 +15,6 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.ListUtils;
-import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.List;
@@ -298,8 +297,4 @@ public class ChoiceInstance extends VariableInstance {
 
         super.updateCacheOnDelete(beans);
     }*/
-    @Override
-    public void revive(Beanjection beans) {
-        beans.getQuestionDescriptorFacade().reviveChoiceInstance(this);
-    }
 }

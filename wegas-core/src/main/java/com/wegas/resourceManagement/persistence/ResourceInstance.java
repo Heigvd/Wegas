@@ -13,10 +13,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.VariableProperty;
-import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
@@ -35,7 +33,7 @@ import javax.persistence.*;
  * @Index(columnList = "properties.resourceinstance_id")
  * })
  */
-public class ResourceInstance extends VariableInstance implements Propertable, AcceptInjection {
+public class ResourceInstance extends VariableInstance implements Propertable {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -85,10 +83,6 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
     public List<VariableProperty> getInternalProperties() {
         return properties;
     }
-
-    @JsonIgnore
-    @Transient
-    private Beanjection beans;
 
     /**
      * @return the assignments
@@ -344,13 +338,4 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
      * }
      * }
      */
-    @Override
-    public void setBeanjection(Beanjection beanjection) {
-        this.beans = beanjection;
-    }
-
-    @Override
-    public void revive(Beanjection beans) {
-        beans.getResourceFacade().reviveResourceInstance(this);
-    }
 }

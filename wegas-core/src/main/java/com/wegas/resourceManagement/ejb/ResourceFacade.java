@@ -409,7 +409,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
                  */
                 task.getPredecessors().clear();
                 
-                for (String predecessorName : task.getImportedPredecessorNames()) {
+                for (String predecessorName : predecessorNames) {
                     try{
                     TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
                     //if (!task.getPredecessorNames().contains(predecessorName)) {

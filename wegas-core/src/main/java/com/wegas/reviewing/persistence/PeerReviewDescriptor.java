@@ -17,9 +17,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
@@ -325,12 +323,6 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
 
     public void setIncludeEvicted(Boolean includeEvicted) {
         this.includeEvicted = includeEvicted;
-    }
-
-    @Override
-    public void revive(GameModel gameModel, Beanjection beans) {
-        super.revive(gameModel, beans);
-        beans.getReviewingFacade().revivePeerReviewDescriptor(this);
     }
 
     public static class PRDCallback implements WegasCallback {

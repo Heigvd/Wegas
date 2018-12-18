@@ -14,7 +14,6 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.VariableProperty;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
@@ -425,12 +424,6 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
         this.setPredecessors(new ArrayList<>());
 
         super.updateCacheOnDelete(beans);
-    }
-
-    @Override
-    public void revive(GameModel gameModel, Beanjection beans) {
-        super.revive(gameModel, beans);
-        beans.getResourceFacade().reviveTaskDescriptor(this);
     }
 
 

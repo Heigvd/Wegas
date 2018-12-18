@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.exception.client.WegasConflictException;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
@@ -30,7 +30,6 @@ import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.primitive.*;
@@ -267,7 +266,6 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     //@WegasEntityProperty(callback = VdMergeCallback.class)
     private AbstractScope scope;
 
-
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(sameEntityOnly = true)
@@ -370,6 +368,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
 
     /**
      * Set the root gameModel. Means this descriptor stands at gameModel root level
+     *
      * @param rootGameModel
      */
     public void setRoot(GameModel rootGameModel) {
@@ -622,6 +621,11 @@ abstract public class VariableDescriptor<T extends VariableInstance>
         this.title = title;
     }
 
+    @JsonIgnore
+    public String getDeprecatedTitle() {
+        return title;
+    }
+
     /**
      * Get the descriptor internal name (aka scriptAlias)
      *
@@ -780,7 +784,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
 
             if (vd.getGameModel() != null) {
                 if (vd.getVariableDescriptorFacade().findDistinctNames(vd.getGameModel(), vd.getRefId()).contains(vd.getName())) {
-                    throw new WegasConflictException("Name already in use");
+                    throw WegasErrorMessage.error("Name already in use");
                 }
             }
 
@@ -833,30 +837,6 @@ abstract public class VariableDescriptor<T extends VariableInstance>
             return (GameModel) parent;
         } else {
             return null;
-        }
-    }
-
-    public void revive(GameModel gameModel, Beanjection beans) {
-        if (this.title != null) {
-            if (title.isEmpty()) {
-                // title is defined but empty -> not prefix, don't change label
-                // eg:  label="[r5b] Meet someone'; title=""; prefix = ""; label="[r5b] Meet someone"
-                this.setEditorTag("");
-            } else {
-                String importedLabel = getLabel().translateOrEmpty(this.getGameModel());
-                if (importedLabel == null) {
-                    importedLabel = "";
-                }
-                // eg:  label="[r5b] Meet someone'; title="Meet someone"; prefix = "[r5b]"; label="Meet someone"
-                // eg:  label="Meet someone'; title="Meet someone"; prefix = ""; label="Meet someone"
-                // eg:  label=""; title="Meet someone"; prefix = ""; label="Meet someone"
-                this.setEditorTag(importedLabel.replace(title, "").trim());
-                List<GameModelLanguage> languages = gameModel.getLanguages();
-                if (languages != null && !languages.isEmpty()) {
-                    this.setLabel(TranslatableContent.build(languages.get(0).getCode(), title));
-                }
-            }
-            this.title = null;
         }
     }
 

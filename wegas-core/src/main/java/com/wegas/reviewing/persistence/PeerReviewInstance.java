@@ -138,11 +138,6 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
     }
 
     @Override
-    public void revive(Beanjection beans) {
-        beans.getReviewingFacade().revivePeerReviewInstance(this);
-    }
-
-    @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         Collection<WegasPermission> ps = super.getRequieredReadPermission();
 

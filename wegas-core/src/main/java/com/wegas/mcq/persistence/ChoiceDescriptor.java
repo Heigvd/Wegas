@@ -22,9 +22,7 @@ import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -485,38 +483,5 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
             }
             return null;
         }
-    }
-
-    @Override
-    public void revive(GameModel gameModel, Beanjection beans) {
-        if (this.title != null) {
-            String importedLabel = getLabel().translateOrEmpty(this.getGameModel());
-            if (importedLabel == null) {
-                importedLabel = "";
-            }
-            // title = "", label= "" => prefix = "", label=""
-            // title = "", label= "[r5b] Meet someone" => prefix = "[r5b] Meet someone", label=""
-            // title = "Meet someone", label= "[r5b] Meet someone" => prefix = "[r5b]", label="Meet someone"
-            // title = "Meet someone", label="" => prefix = "", label="Meet someone"
-            this.setEditorTag(importedLabel.replace(title, "").trim());
-
-            List<GameModelLanguage> languages = gameModel.getLanguages();
-            if (languages != null && !languages.isEmpty()) {
-                this.setLabel(TranslatableContent.build(languages.get(0).getCode(), title));
-            }
-            this.title = null;
-        }
-        for (Result r : results) {
-            if (r.getLabel() != null) {
-                r.getLabel().setParentDescriptor(this);
-            }
-            if (r.getAnswer() != null) {
-                r.getAnswer().setParentDescriptor(this);
-            }
-            if (r.getIgnorationAnswer() != null) {
-                r.getIgnorationAnswer().setParentDescriptor(this);
-            }
-        }
-        super.revive(gameModel, beans);
     }
 }
