@@ -7,8 +7,6 @@
  */
 package com.wegas.core.ejb;
 
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ILock;
 import com.wegas.core.Helper;
 import com.wegas.core.api.GameModelFacadeI;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
@@ -96,13 +94,13 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
 
     @Inject
@@ -124,9 +122,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     @Inject
     private PageFacade pageFacade;
-
-    @Inject
-    private HazelcastInstance hzInstance;
 
     @Inject
     private JCRConnectorProvider jcrConnectorProvider;
@@ -599,7 +594,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         final GameModel srcGameModel = this.find(entityId);
 
         if (srcGameModel != null) {
-            if (srcGameModel.isModel()){
+            if (srcGameModel.isModel()) {
                 requestManager.assertCanDuplicateGameModel(this.find(entityId));
 
                 GameModel newGameModel = this.duplicate(entityId);
@@ -745,7 +740,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         for (GameModel instantiation : instantiations) {
             instantiation.setBasedOn(null);
-            if (gameModel.isModel() && instantiation.isReference()){
+            if (gameModel.isModel() && instantiation.isReference()) {
                 this.remove(instantiation);
             }
         }
@@ -797,7 +792,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      */
     public void delete(GameModel entity) {
 
-        if (entity.isModel()){
+        if (entity.isModel()) {
             for (GameModel gm : getImplementations(entity)) {
                 if (gm.isScenario() && !gm.getStatus().equals(Status.DELETE)) {
                     throw WegasErrorMessage.error("Unable to delete the model because at least one scenario still depends on it");
@@ -1067,31 +1062,14 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         }
     }
 
-    @Schedule(hour = "4", dayOfMonth = "Last Sat")
     public void removeGameModels() {
-        requestManager.su();
-        try {
-            ILock lock = hzInstance.getLock("GameModelFacade.Schedule");
-            logger.info("deleteGameModels(): want to delete gameModels");
-            if (lock.tryLock()) {
-                try {
-                    List<GameModel> toDelete = this.findByTypeAndStatus(SCENARIO, Status.DELETE);
-                    toDelete.addAll(this.findByTypeAndStatus(MODEL, Status.DELETE));
+            logger.info("deleteGameModels(): delete gameModels");
+            List<GameModel> toDelete = this.findByTypeAndStatus(SCENARIO, Status.DELETE);
+            toDelete.addAll(this.findByTypeAndStatus(MODEL, Status.DELETE));
 
-                    for (GameModel gm : toDelete) {
-                        this.remove(gm);
-                    }
-                    this.getEntityManager().flush();
-                } finally {
-                    lock.unlock();
-                    lock.destroy();
-                }
-            } else {
-                logger.info("somebody else got the lock...");
+            for (GameModel gm : toDelete) {
+                this.remove(gm);
             }
-
-        } finally {
-            requestManager.releaseSu();
-        }
+            this.getEntityManager().flush();
     }
 }

@@ -7,8 +7,6 @@
  */
 package com.wegas.core.security.ejb;
 
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ILock;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
@@ -33,13 +31,11 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.messaging.ejb.EMailFacade;
 import java.util.*;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.ejb.LocalBean;
-import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -64,31 +60,28 @@ public class UserFacade extends BaseFacade<User> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UserFacade.class);
 
-    @Inject
-    private HazelcastInstance hzInstance;
-
     /**
      *
      */
-    @EJB
+    @Inject
     private AccountFacade accountFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private RoleFacade roleFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private GameFacade gameFacade;
 
     /**
@@ -294,7 +287,7 @@ public class UserFacade extends BaseFacade<User> {
                     throw WegasErrorMessage.error("This email is already associated with an existing account.");
                 }
             }
-        } catch (WegasNoResultException | EJBTransactionRolledbackException e) {
+        } catch (WegasNoResultException | InjectTransactionRolledbackException e) {
             // GOTCHA
             // E-Mail not yet registered -> proceed
         }
@@ -644,7 +637,7 @@ public class UserFacade extends BaseFacade<User> {
             this.flush();
         } catch (WegasNoResultException | MessagingException ex) {
             logger.error("Error while sending new password for email: {}", email);
-        } finally{
+        } finally {
             requestManager.releaseSu();
         }
     }
@@ -685,40 +678,24 @@ public class UserFacade extends BaseFacade<User> {
     /**
      * Remove old idle guests
      */
-    @Schedule(hour = "4", minute = "12")
     public void removeIdleGuests() {
-        requestManager.su();
-        try {
-            ILock lock = hzInstance.getLock("UserFacade.Schedule");
+        logger.info("removeIdleGuests(): unused guest accounts will be removed");
+        TypedQuery<GuestJpaAccount> findIdleGuests = getEntityManager().createQuery("SELECT DISTINCT account FROM GuestJpaAccount account "
+                + "WHERE account.createdTime < :idletime", GuestJpaAccount.class);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 3);
+        findIdleGuests.setParameter("idletime", calendar.getTime(), TemporalType.DATE);
 
-            if (lock.tryLock()) {
-                try {
-                    logger.info("removeIdleGuests(): unused guest accounts will be removed");
-                    TypedQuery<GuestJpaAccount> findIdleGuests = getEntityManager().createQuery("SELECT DISTINCT account FROM GuestJpaAccount account "
-                            + "WHERE account.createdTime < :idletime", GuestJpaAccount.class);
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 3);
-                    findIdleGuests.setParameter("idletime", calendar.getTime(), TemporalType.DATE);
+        List<GuestJpaAccount> resultList = findIdleGuests.getResultList();
 
-                    List<GuestJpaAccount> resultList = findIdleGuests.getResultList();
-
-                    for (GuestJpaAccount account : resultList) {
-                        this.remove(account.getUser());
-                    }
-
-                    //Force flush before closing RequestManager !
-                    getEntityManager().flush();
-
-                    logger.info("removeIdleGuests(): {} unused guest accounts removed (idle since: {})", resultList.size(), calendar.getTime());
-
-                } finally {
-                    lock.unlock();
-                    lock.destroy();
-                }
-            }
-        } finally {
-            requestManager.releaseSu();
+        for (GuestJpaAccount account : resultList) {
+            this.remove(account.getUser());
         }
+
+        //Force flush before closing RequestManager !
+        getEntityManager().flush();
+
+        logger.info("removeIdleGuests(): {} unused guest accounts removed (idle since: {})", resultList.size(), calendar.getTime());
     }
 
     /**
@@ -802,7 +779,7 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     * @return Looked-up EJB
+     * @return Looked-up Inject
      */
     public static UserFacade lookup() {
         try {
