@@ -25,6 +25,9 @@ function EntityArrayFieldSelect(props) {
     if (results == null) {
         return null;
     }
+    if (typeof results === 'object'){
+        results = Object.values(results);
+    }
     const choices = results.map(r => ({
         value: r && r.get ? r.get(returnAttr || 'name') : r,
         label:

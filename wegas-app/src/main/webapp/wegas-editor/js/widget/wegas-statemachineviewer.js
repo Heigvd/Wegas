@@ -572,6 +572,9 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 left: x + "px",
                 top: y + "px"
             });
+
+            this.get(BOUNDING_BOX).setAttribute("data-index", entity.get("index"));
+
             this.get(BOUNDING_BOX).one(".wegas-state-text").setHTML(label ||
                 "<div style='text-align: center;'><em><br />Empty</em></div>")
                 .set("title", impact ? "<b>Impact</b><br />" + impact : "").plug(Y.Plugin.Tooltip);

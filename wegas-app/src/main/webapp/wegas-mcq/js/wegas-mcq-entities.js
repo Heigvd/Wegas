@@ -543,7 +543,8 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 setCurrentResult: {
                     label: "set current result",
                     arguments: [
-                        SELFARG, {
+                        SELFARG, 
+                        {
                             type: STRING,
                             view: {
                                 type: "entityarrayfieldselect",

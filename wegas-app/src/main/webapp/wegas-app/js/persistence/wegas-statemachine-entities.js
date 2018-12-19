@@ -8,7 +8,7 @@
 /**
  * @fileoverview
  */
-/*global YUI*/
+/*global YUI, I18n*/
 YUI.add("wegas-statemachine-entities", function(Y) {
     "use strict";
 
@@ -263,6 +263,36 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 localEval: function(self) {
                     return !this.getInstance(self).get("enabled");
                 }
+            },
+            wentThroughState: {
+                label: "went through state",
+                returns: BOOLEAN,
+                arguments: [
+                    SELFARG,
+                    {
+                        type: NUMBER,
+                        view: {
+                            type: "entityarrayfieldselect",
+                            returnAttr: "index",
+                            field: "states"
+                        }
+                    }
+                ]
+            },
+            notWentThroughState: {
+                label: "did not went through state",
+                returns: BOOLEAN,
+                arguments: [
+                    SELFARG,
+                    {
+                        type: NUMBER,
+                        view: {
+                            type: "entityarrayfieldselect",
+                            returnAttr: "index",
+                            field: "states"
+                        }
+                    }
+                ]
             }
         }
     });
@@ -272,8 +302,10 @@ YUI.add("wegas-statemachine-entities", function(Y) {
     persistence.State = Y.Base.create("State", persistence.Entity, [], {
         // *** Lifecycle methods *** //
         initializer: function() {
+        },
+        getEditorLabel: function() {
+            return "#" + this.get("index") + ": " + this.get("label");
         }
-
         // *** Private methods *** //
     }, {
         ATTRS: {
@@ -287,6 +319,13 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 "transient": false,
                 view: {
                     label: "Label"
+                }
+            },
+            index: {
+                type: [NULL, NUMBER],
+                "transient": true,
+                view: {
+                    label: "hidden"
                 }
             },
             onEnterEvent: {
@@ -658,6 +697,9 @@ YUI.add("wegas-statemachine-entities", function(Y) {
          */
         setText: function(a, token) {
             this.set(TEXT, a.join(token));
+        },
+        getEditorLabel: function() {
+            return "#" + this.get("index") + ": " + I18n.t(this.get("text"));
         }
     }, {
         EDITORNAME: "server text",

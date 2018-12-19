@@ -38,6 +38,7 @@
     height:48px;
     border:2px solid;
     border-radius: 15px;
+    border-top-left-radius: 0px;
     padding: 5px;
     z-index: 5;
     background-color:rgba(244, 244, 244, 0.8);
@@ -57,6 +58,36 @@
 .sm-state{
     border-color: #03283A;
 }
+
+
+.yui3-wegas-state:before{
+    content: "#" attr(data-index);
+    color: #636363 !important;
+    font-style: italic;
+    position: absolute;
+    top: -19px;
+    border: 2px solid #03283a;
+    padding: 1px 5px;
+    left: -2px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.sm-dialoguestate:before{
+    border-color: #4372c4;
+}
+
+.currentState:before{
+    background-color: rgba(255, 170, 0, 0.7);
+}
+
+.initial-state:before {
+    border-style: double;
+    border-width: 3px;
+    top: -25px;
+    left: -5px;
+}
+
 .sm-dialoguestate{
     border-color: #4372C4;
 }
