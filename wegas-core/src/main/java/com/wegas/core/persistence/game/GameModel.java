@@ -463,6 +463,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @JsonIgnore
     public void setStatus(Status status) {
+        if (status == Status.DELETE){
+            logger.error("SET GM {} STATUS TO DELETE", this);
+        }
         this.status = status;
     }
 
