@@ -1067,7 +1067,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         }
     }
 
-    @Schedule(hour = "4", dayOfMonth = "Last Sat")
+    //@Schedule(hour = "4", dayOfMonth = "Last Sat")
     public void removeGameModels() {
         requestManager.su();
         try {

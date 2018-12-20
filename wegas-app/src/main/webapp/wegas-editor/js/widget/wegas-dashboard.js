@@ -63,7 +63,12 @@ YUI.add('wegas-dashboard', function(Y) {
                             "label": "View playing session",
                             "hasGlobal": false,
                             "do": function(team, payload) {
-                                window.open("game-lock.html?id=" + team.get("players")[0].get("id"), "_blank");
+                                var p = team.getLivePlayer();
+                                if (p) {
+                                    window.open("game-lock.html?id=" + p.get("id"), "_blank");
+                                } else {
+                                    Y.Wegas.Alerts.showMessage("error", "No valid player in team")
+                                }
                             }
                         }
                     }
@@ -700,7 +705,7 @@ YUI.add('wegas-dashboard', function(Y) {
             this.detailsOverlay.setStdModContent('body', body);
             // Prevent text selection attempts from closing the window:
             this.detailsOverlay.get("contentBox").on("click", function(event) {
-                if (! event.target.hasClass("closeIcon")) {
+                if (!event.target.hasClass("closeIcon")) {
                     event.halt(true);
                 }
             }, this);

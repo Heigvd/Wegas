@@ -10,6 +10,7 @@ package com.wegas.core.persistence.game;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.jta.JCRClient;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
@@ -463,6 +464,10 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @JsonIgnore
     public void setStatus(Status status) {
+        if (status == Status.DELETE){
+            logger.error("SET GM {} STATUS TO DELETE", this);
+            Helper.printWegasStackTrace(WegasErrorMessage.error("Setting gm status to DELETE"));
+        }
         this.status = status;
     }
 
