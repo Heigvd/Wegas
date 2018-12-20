@@ -60,6 +60,11 @@
     border-bottom : none;
 }
 
+.yui3-skin-sam .dashboard-v3 .yui3-datatable-data .dashboard-internal-table tr td {
+    border-bottom: none;
+    padding: 2px 8px 0;
+}
+
 .yui3-skin-sam .dashboard-v3 .yui3-datatable-cell,
 .yui3-skin-sam .dashboard-v3 .yui3-datatable-header {
     padding : 2px;
@@ -195,7 +200,7 @@
     display: none;
 }
 
-.yui3-skin-sam .dashboard-v3 td:first-child {
+.yui3-skin-sam .dashboard-v3 .yui3-datatable-col-team-name {
     min-width: 300px;
     max-width: 400px;
     padding: 0;

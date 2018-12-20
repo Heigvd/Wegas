@@ -366,15 +366,36 @@ YUI.add('wegas-dashboard', function(Y) {
                 tables = {}, data = {}, i, j, tableDef,
                 teamId, team, teamData, entry,
                 cell, cellDef,
-                tableName, tableColumns, formatter, transformer,
+                tableName, tableColumns, formatter, transformer, sortFn,
                 key1, key2, firstCellFormatter,
                 firstOfGroup,
                 getPlayerIcon,
+                // Parses the given JSON string and returns the possibly nested object :
+                parseJSON = function(strObj) {
+                    var props,
+                        res = {};
+                    try {
+                        props = JSON.parse(strObj.body);
+                    } catch(e) {
+                        alert("SyncTyble: " + e);
+                        return null;
+                    }
+                    // Handle nested objects as well, i.e. when a value is a string representation of a JSON object.
+                    for (var key in props) {
+                        try {
+                            res[key] = JSON.parse(props[key]);
+                        } catch (e) {
+                            res[key] = props[key];
+                        }
+                    }
+                    return res;
+                },
                 parseItem = function(id, def, firstOfGroup) {
                     var item = {
                         key: id,
                         label: def.label,
                         sortable: (def.sortable !== undefined ? def.sortable : false),
+                        sortFn: def.sortFn,
                         // Try to use column user defined tooltip or use defaut one otherwise
                         disabledTooltip: def.disabledTooltip || "This action is not yet active",
                         cssClass: (firstOfGroup ? "first-of-group" : "")
@@ -423,6 +444,12 @@ YUI.add('wegas-dashboard', function(Y) {
                                 item.valueTransformer = transformer;
                             }
                         }
+                        if (def.sortFn) {
+                            sortFn = eval("(" + def.sortFn + ")");
+                            if (sortFn) {
+                                item.sortFn = sortFn;
+                            }
+                        }
 
                         item.nodeFormatter = function(o) {
                             if (o.column.cssClass) {
@@ -444,6 +471,9 @@ YUI.add('wegas-dashboard', function(Y) {
                                     o.cell.setHTML('<i class=\"bloc__text ' + (o.value.empty ? 'icon fa fa-file-o"' : 'icon fa fa-file-text-o"') + ' title="Click to view"></i>');
                                 } else {
                                     fallback = true;
+                                    if (def.kind === "object") {
+                                        o.value.object = parseJSON(o.value);
+                                    }
                                 }
                             } else {
                                 fallback = true;

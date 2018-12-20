@@ -203,6 +203,11 @@ YUI.add('pact-display', function(Y) {
                                 }
                                 break;
 
+                            case 'gameWon':
+                            case 'gameLost':
+                            case 'log':
+                                break;
+
                             default:
                                 entity = this.getEntity(command.id);
                                 if (

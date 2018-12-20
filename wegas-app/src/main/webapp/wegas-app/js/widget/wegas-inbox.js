@@ -36,15 +36,16 @@ YUI.add('wegas-inbox', function(Y) {
         initializer: function() {
             this.handlers = {};
         },
-        syncUI: function() {
-            var cb = this.get("contentBox"),
-                messages = this.get("variable.evaluated").getInstance().get("messages"),
-                messageId = this.get("messageId"),
-                message;
-
-            message = Y.Array.find(messages, function(item) {
+        getMessage: function () {
+            var messages = this.get("variable.evaluated").getInstance().get("messages"),
+                messageId = this.get("messageId");
+            return Y.Array.find(messages, function(item) {
                 return item.get("id") === messageId;
             });
+        },
+        syncUI: function() {
+            var cb = this.get("contentBox"),
+                message = this.getMessage();
             if (message) {
                 cb.toggleClass("unread", message.get("unread"));
                 cb.one(".wegas-message-header__subject")

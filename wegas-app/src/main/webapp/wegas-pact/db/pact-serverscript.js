@@ -1,5 +1,5 @@
 // Types used accross this file
-/* global gameModel, self, Variable*/
+/* global gameModel, self, Variable, xapi, Log*/
 /**
  * @typedef ObjectsItem
  * @property {string} id
@@ -22,7 +22,7 @@
  * @property {string} winningCondition
  * @property {string} onStart
  * @property {string} onAction
- * @property {string} onWin
+ * @property {string | number} onWin
  * @property {string} defaultCode
  * @property {number} maxTurns
  *
@@ -35,12 +35,43 @@
  * @property {boolean} recordCommands
  */
 
+/* exported Action*/
+var Action = {
+    init: function() {
+        Log.post([
+            Log.statement('initialized', 'proggame'),
+            Log.statement(
+                'initialized',
+                'level',
+                Variable.find(gameModel, 'currentLevel').getValue(self)
+            ),
+        ]);
+    },
+    /**
+     *
+     * @param {number | string} level
+     */
+    changeLevel: function(level) {
+        /**
+         * @type {com.wegas.core.persistence.variable.primitive.NumberDescriptor}
+         */
+        var currentLevelDesc = Variable.find(gameModel, 'currentLevel');
+        var curValue = currentLevelDesc.getValue(self);
+        currentLevelDesc.setValue(self, Number(level));
+        if (curValue != currentLevelDesc.getValue(self)) {
+            Log.post(Log.statement('initialized', 'level', level));
+        }
+    },
+};
 /**
  * @namespace Wegas utilities
  */
 var Wegas = {
     //                                                                     // Utilities
     Object: {
+        /**
+         * @param {{ [x: string]: any; }} object
+         */
         values: function(object) {
             var r = [],
                 i;
@@ -123,7 +154,9 @@ var Wegas = {
      * @param {{[variables:string]: any}} varValues hashmap variable -> value
      */
     scopeValue: function(varValues) {
-        var vars, vals;
+        /** @type {string[]} */
+        var vars = [];
+        var vals = [];
         if (typeof varValues === 'object') {
             vars = Object.keys(varValues);
             vals = vars.map(function(k) {
@@ -149,10 +182,16 @@ var Wegas = {
 };
 /**
  * print arguments
+ * @callback varStr
+ * @param {...string} str
+ * @returns {void}
  */
-function wdebug() {
+/**
+ * @type {varStr}
+ */
+var wdebug = function() {
     // print.apply(null, arguments);
-}
+};
 /**
  * @constructor
  * @param {Config} cfg
@@ -166,7 +205,7 @@ function ProgGameSimulation(cfg) {
     this.doRecordCommands =
         cfg.doRecordCommands === undefined ? true : cfg.recordCommands;
     this.ret = [];
-    /** @type {ObjectsItem} */
+    /** @type {ObjectsItem | null} */
     this.cObject = null;
     this.currentStep = -1;
     /** @type {Level} */
@@ -247,6 +286,9 @@ ProgGameSimulation.prototype = {
         if (!this.checkGameOver()) {
             // If the game is still not won,
             this.log('You lost.'); // then it's definitely lost
+            this.sendCommand({
+                type: 'gameLost',
+            });
         }
     },
     resetActions: function() {
@@ -313,7 +355,7 @@ ProgGameSimulation.prototype = {
     },
     /**
      *
-     * @param {{[variable:string]: unkown}=} values to pass to the script
+     * @param {{[variable:string]: unknown}=} values to pass to the script
      */
     afterAction: function(values) {
         var injected = Wegas.Object.assign(
@@ -435,6 +477,9 @@ ProgGameSimulation.prototype = {
                                 id: o.id,
                             });
                             this.log('You lost.'); // then it's definitely lost
+                            this.sendCommand({
+                                type: 'gameLost',
+                            });
                             this.doRecordCommands = false;
                         }
                         break;
@@ -554,17 +599,22 @@ ProgGameSimulation.prototype = {
             this.sendCommand({
                 type: 'gameWon',
             });
-            var maxLevel = Variable.find(gameModel, 'maxLevel');
+            var maxLevel = Variable.find(gameModel, 'maxLevel'),
+                levelLimit = Variable.find(gameModel, 'levelLimit'),
+                currentLevel = Variable.find(gameModel, 'currentLevel');
+            // NB: points may be awarded several times if the trainer blocks the game at this level !!!
             if (
                 maxLevel.getValue(self) <=
-                Variable.find(gameModel, 'currentLevel').getValue(self)
+                currentLevel.getValue(self)
             ) {
                 Variable.find(gameModel, 'money').add(self, 100);
             }
-            maxLevel.setValue(
-                self,
-                Math.max(maxLevel.getValue(self), Number(this.level.onWin))
-            );
+            if (levelLimit.getValue(self) > currentLevel.getValue(self)) {
+                maxLevel.setValue(
+                    self,
+                    Math.max(maxLevel.getValue(self), Number(this.level.onWin))
+                );
+            }
             return true;
         }
         return false;
@@ -599,6 +649,9 @@ ProgGameSimulation.prototype = {
             return null;
         }
     },
+    /**
+     * @param {Function} playerFn
+     */
     doPlayerEval: function(playerFn) {
         wdebug('Player eval');
         var scope = {
@@ -611,15 +664,15 @@ ProgGameSimulation.prototype = {
                 RequestManager: undefined,
                 print: undefined,
                 Wegas: undefined,
+                Action: undefined,
+                Log: undefined,
+                xapi: undefined,
                 ProgGameSimulation: undefined,
                 run: undefined,
                 load: undefined,
                 // debugger tool
                 _____debug: this._____debug.bind(this),
                 watches: this.watches,
-                // Prevent bad things. Infinite loop, ...
-                // Function: Wegas.evil(Function),
-                // eval: Wegas.evil(eval),
             },
             i;
         for (i in this.api) {
@@ -629,7 +682,7 @@ ProgGameSimulation.prototype = {
         }
         var params = Wegas.scopeValue(scope);
         var f = new Function(
-            params.variables,
+            params.variables.join(','),
             'return (' + playerFn.toString() + ').call({})'
         );
         return f.apply(null, params.values);
@@ -767,25 +820,26 @@ ProgGameSimulation.prototype = {
         };
     },
 };
-/**
- *
- * @param {(name: string) => void} playerFn fn containing player's code
- * @param {Level|string} level
- * @param {Config} cfg
- */
 /* exported run */
+/**
+ * @param {(name: string) => void} playerFn fn containing player's code
+ * @param {Level | string} level
+ * @param {Config=} cfg
+ */
 function run(playerFn, level, cfg) {
     Object.freeze(this); // Freeze global object
     /** @type {Level} */
     var realLevel;
-    cfg = cfg || {};
+    cfg = cfg || /** @type {Config} */ ({});
     if (typeof level !== 'object') {
         realLevel = Wegas.getLevelPage(level);
     } else {
         realLevel = level;
     }
     var simulation = new ProgGameSimulation(cfg);
+
     simulation.run(playerFn, realLevel);
+
     return JSON.stringify(simulation.getCommands());
 }
 //node debug
