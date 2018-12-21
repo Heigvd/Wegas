@@ -26,6 +26,12 @@ YUI.add('pact-level', function(Y) {
         STOP_BUTTON_LABEL = "<span class='proggame-stop'></span>",
         DEBUG_BUTTON_LABEL = "<span class='proggame-playpause'></span>",
         SMALLSTOP_BUTTON_LABEL = "<span class='proggame-stop-small'></span>",
+        HISTORY_INBOX = 'history',
+        COUNTERS_OBJECT = 'counters',
+        CURRENT_LEVEL = 'currentLevel',
+        MAX_LEVEL = 'maxLevel',
+        LEVEL_LIMIT = 'levelLimit',
+        LEVEL_LIMIT_REACHED = 'Il faut attendre l\'autorisation d\'aller plus loin dans le jeu.',
         Wegas = Y.Wegas,
         ProgGameLevel,
         currentLevel;
@@ -76,12 +82,37 @@ YUI.add('pact-level', function(Y) {
                 '    </div>' +
                 '</div>',
 
+            getInstance: function(name) {
+                var v = Y.Wegas.Facade.Variable.cache.find('name', name);
+                if (!v) {
+                    alert(
+                        'Erreur interne: la variable "' +
+                            name +
+                            '" n\'existe pas'
+                    );
+                    return null;
+                } else {
+                    return v.getInstance();
+                }
+            },
+
             // *** Lifecycle Methods *** //
             initializer: function() {
                 this.handlers = [];
                 this.currentBreakpointLine = -1;
                 this.currentBreakpointStep = -1;
                 this.watches = [];
+                // New activity tracking variables:
+                this.previousCode = ProgGameLevel.previousCode || '';
+                this.currentCode = '';
+                this.feedback = '';
+                this.isModifiedCode = false;
+                this.isRuntimeException = false;
+                this.isSuccessful = false;
+                // New persistent tracking variables:
+                this.history = this.getInstance(HISTORY_INBOX);
+                this.counters =
+                    this.getInstance(COUNTERS_OBJECT).get('properties') || null;
             },
             renderUI: function() {
                 var cb = this.get(CONTENTBOX),
@@ -210,6 +241,7 @@ YUI.add('pact-level', function(Y) {
                 currentLevel = scriptFacade.localEval(
                     'Variable.find(gameModel,"currentLevel").getValue(self)'
                 );
+                this.initCounters();
 
                 this.handlers.push(
                     cb.one('.proggame-help').on(
@@ -221,11 +253,6 @@ YUI.add('pact-level', function(Y) {
                         this
                     )
                 );
-                //this.plug(Y.Plugin.OpenPageAction, {//                              // Whenever level is finished,
-                //    subpageId: 2,
-                //    targetEvent: "gameWon",
-                //    targetPageLoaderId: "maindisplayarea"                           // display the page 2 which shows the last level
-                //});
 
                 this.display.after(
                     'commandExecuted',
@@ -254,13 +281,25 @@ YUI.add('pact-level', function(Y) {
                 cb.delegate(
                     CLICK,
                     function() {
-                        // End level screen: next level button:
-                        this.doNextLevel(
-                            function() {
-                                this.mainEditorTab.aceField.setValue('');
-                                this.fire('gameWon'); // trigger open page plugin
-                            }.bind(this)
-                        );
+                        var levelLimit = scriptFacade.localEval(
+                                'Variable.find(gameModel, \"' + LEVEL_LIMIT + '\").getValue(self)'
+                            ),
+                            maxLevel = scriptFacade.localEval(
+                                'Variable.find(gameModel, \"' + MAX_LEVEL + '\").getValue(self)'
+                            );
+                        if (currentLevel >= levelLimit) {
+                            alert(LEVEL_LIMIT_REACHED)
+                            // Y.Wegas.Alerts.showNotification(LEVEL_LIMIT_REACHED, { iconCss: 'fa fa-clock' });
+                        } else {
+                            // End level screen: next level button:
+                            this.doNextLevel(
+                                function () {
+                                    this.mainEditorTab.aceField.setValue('');
+                                    this.previousCode = '';
+                                    this.fire('gameWon'); // trigger open page plugin
+                                }.bind(this)
+                            );
+                        }
                     },
                     '.proggame-levelend-nextlevel',
                     this
@@ -276,33 +315,58 @@ YUI.add('pact-level', function(Y) {
             },
             destructor: function() {
                 ProgGameLevel.main = this.mainEditorTab.aceField.getValue(); // Save the actual edtion field to a static var
+                ProgGameLevel.previousCode = this.previousCode;
                 // this._resizeHandle.destroy();
                 this.display.destroy();
                 this.runButton.destroy();
                 this.stopButton.destroy();
                 this.debugTabView.destroy();
                 this.apiTabView.destroy();
-                this.idleHandler.cancel();
+                this.idleHandler && this.idleHandler.cancel();
                 Y.Array.each(this.handlers, function(h) {
                     h.detach();
                 });
                 this.editorTabView.destroy();
             },
-            /**
-             * Override to prevent the serialization of the openpage action we
-             * created programatically.
-             *
-             * @returns {unresolved}
-             */
-            toJSON: function() {
-                var ret = Wegas.Editable.prototype.toJSON.apply(
-                    this,
-                    arguments
-                );
-                ret.plugins = Y.Array.reject(ret.plugins || [], function(i) {
-                    return i.fn === 'OpenPageAction';
-                });
-                return ret;
+            isEmptyObj: function(obj) {
+                if (obj == null) return true;
+                if (typeof obj !== 'object') return false;
+                for (var key in obj) {
+                    if (hasOwnProperty.call(obj, key)) return false;
+                }
+                return true;
+            },
+            initCounters: function() {
+                if (
+                    this.isEmptyObj(this.counters) ||
+                    this.isEmptyObj(this.counters[currentLevel])
+                ) {
+                    this.counters[currentLevel] = {
+                        submissions: 0,
+                        successful: 0,
+                        incomplete: 0,
+                        exceptions: 0,
+                    };
+                }
+                for (var key in this.counters) {
+                    if (typeof this.counters[key] === 'string') {
+                        this.counters[key] = JSON.parse(this.counters[key]);
+                    }
+                }
+
+                return this.counters[currentLevel];
+            },
+            // Returns the highest level where the player has submitted some code at least once
+            getHighestAttemptedLevel: function() {
+                var len = this.counters.length;
+                if (len === 1) return currentLevel;
+                var max = currentLevel;
+                for (var key in this.counters) {
+                    if (key > max && this.counters[key].submissions !== 0) {
+                        max = key;
+                    }
+                }
+                return max;
             },
             onRunClick: function(e) {
                 // On run button click,
@@ -386,6 +450,120 @@ YUI.add('pact-level', function(Y) {
                     targetStep: this.currentBreakpointStep,
                 });
             },
+            prepareExecution: function() {
+                this.feedback = '';
+                this.currentCode = this.mainEditorTab.aceField
+                    .getValue()
+                    .trim();
+                this.isModifiedCode = this.currentCode !== this.previousCode;
+                this.isRuntimeException = false;
+                this.isSuccessful = false;
+            },
+            doPersist: function() {
+                var msgSubject = Y.JSON.stringify(
+                        (!this.isSuccessful || this.isRuntimeException
+                            ? "<span style='color:red'>"
+                            : "<span style='color:green'>") +
+                            'Exercice ' +
+                            (this.isRuntimeException
+                                ? 'ÉCHOUÉ avec EXCEPTION'
+                                : this.isSuccessful
+                                ? 'RÉUSSI'
+                                : 'ÉCHOUÉ') +
+                            '</span>'
+                    ),
+                    msgDate = 'Level ' + (currentLevel / 10).toFixed(1),
+                    msgBody = Y.JSON.stringify(
+                        (this.isRuntimeException
+                            ? '<b>Exception :</b> ' +
+                              this.feedback +
+                              '<br/>&nbsp;<br/>'
+                            : '') +
+                            '<b>Code soumis :</b><br/><code>' +
+                            this.currentCode +
+                            '</code>'
+                    );
+
+                // Update history in a separate transaction (in case the user code contains crash-prone stuff):
+                var sendToHistoryCmd =
+                    // sendDatedMessage(self, from, date, subject, content, att)
+                    'Variable.find(gameModel, "' +
+                    HISTORY_INBOX +
+                    '").sendDatedMessage(self, "", "' +
+                    msgDate +
+                    '", ' +
+                    msgSubject +
+                    ', ' +
+                    msgBody +
+                    ', []);\n';
+
+                var persistHistory = function() {
+                    Y.Wegas.Facade.Variable.script.remoteEval(
+                        sendToHistoryCmd,
+                        {
+                            on: {
+                                failure: Y.bind(function() {
+                                    alert(
+                                        'Erreur interne: Impossible de sauvegarder ' +
+                                            HISTORY_INBOX +
+                                            ' ! \n' +
+                                            'Recharger la page dans le navigateur si ce problème se reproduit'
+                                    );
+                                }, this),
+                            },
+                        }
+                    );
+                };
+
+                if (this.getHighestAttemptedLevel() > currentLevel) {
+                    Y.log(
+                        "*** We're NOT persisting counters for this lower level"
+                    );
+                    persistHistory();
+                    return;
+                }
+
+                var currCounters = this.counters[currentLevel];
+
+                currCounters.submissions++;
+                if (this.isSuccessful) {
+                    currCounters.successful++;
+                } else if (this.isRuntimeException) {
+                    currCounters.exceptions++;
+                } else {
+                    currCounters.incomplete++;
+                }
+
+                var persistCountersCmd =
+                    'Variable.find(gameModel, "' +
+                    COUNTERS_OBJECT +
+                    '").setProperty(self, "' +
+                    currentLevel +
+                    '", \'' +
+                    Y.JSON.stringify(currCounters) +
+                    "');\n";
+
+                Y.Wegas.Facade.Variable.script.remoteEval(persistCountersCmd, {
+                    on: {
+                        success: Y.bind(function() {
+                            persistHistory();
+                        }, this),
+                        failure: Y.bind(function() {
+                            alert(
+                                "Erreur interne: Impossible de sauvegarder les compteurs d'exécutions ! \n" +
+                                    'Recharger la page dans le navigateur si ce problème se reproduit'
+                            );
+                            persistHistory();
+                        }, this),
+                    },
+                });
+            },
+            persistExecution: function() {
+                if (this.isModifiedCode) {
+                    this.previousCode = this.currentCode;
+                    this.doPersist();
+                }
+            },
             instrument: function(code) {
                 return Wegas.JSInstrument.instrument(code); // return instrumented value of the code
             },
@@ -394,6 +572,7 @@ YUI.add('pact-level', function(Y) {
                 var level = Y.Wegas.Facade.Page.cache.editable
                     ? JSON.stringify(this.get('root').get('@pageId'))
                     : Y.JSON.stringify(this.toObject());
+                this.prepareExecution();
                 Wegas.Facade.Variable.sendRequest({
                     request:
                         '/ProgGame/Run/' +
@@ -411,8 +590,48 @@ YUI.add('pact-level', function(Y) {
                             ');',
                     },
                     on: {
-                        success: Y.bind(this.onServerReply, this),
+                        success: Y.bind(
+                            /**
+                             * @param {{ response: { entity: any; }; }} e
+                             */
+                            function(e) {
+                                var commands = Y.JSON.parse(e.response.entity);
+                                var success = commands.some(
+                                    /**
+                                     * @param {{ type: string; }} c
+                                     */
+                                    function(c) {
+                                        return c.type === 'gameWon';
+                                    }
+                                );
+                                Y.Wegas.Facade.Variable.script.remoteEval(
+                                    'Log.post([' +
+                                        'Log.level(' +
+                                        JSON.stringify(code) +
+                                        ', ' +
+                                        level +
+                                        ', true,' +
+                                        success +
+                                        ')' +
+                                        (success
+                                            ? ', Log.statement("completed", "level", ' +
+                                              level +
+                                              ')'
+                                            : '') +
+                                        '])'
+                                );
+                                this.onServerReply(e);
+                            },
+                            this
+                        ),
                         failure: Y.bind(function(e) {
+                            Y.Wegas.Facade.Variable.script.remoteEval(
+                                'Log.post(Log.level(' +
+                                    JSON.stringify(code) +
+                                    ', ' +
+                                    level +
+                                    ', false, false))'
+                            );
                             this.set(STATE, IDLE);
                             var events = e.response.results.events;
                             var exceptionEvent = Y.Array.find(events, function(
@@ -427,12 +646,13 @@ YUI.add('pact-level', function(Y) {
                                     .get('val')['@class'] ===
                                     'WegasScriptException'
                             ) {
-                                this.set(
-                                    'error',
-                                    exceptionEvent
-                                        .get('val.exceptions')[0]
-                                        .get('val').message
-                                );
+                                this.isSuccessful = false;
+                                this.isRuntimeException = true;
+                                this.feedback = exceptionEvent
+                                    .get('val.exceptions')[0]
+                                    .get('val').message;
+                                this.persistExecution();
+                                this.set('error', this.feedback);
                                 Y.Wegas.Alerts.showNotification(
                                     'Your script contains an error.',
                                     { timeout: 1e3 }
@@ -463,6 +683,18 @@ YUI.add('pact-level', function(Y) {
                     .one('.play')
                     .show();
             },
+            // Returns true iff the given command stack ends with a 'gameWon':
+            getExecutionOutcome: function(arr) {
+                for (var i = arr.length - 1; i >= 0; i--) {
+                    var currType = arr[i].type;
+                    if (currType === 'gameWon') {
+                        return true;
+                    } else if (currType === 'gameLost') {
+                        return false;
+                    }
+                }
+                return false;
+            },
             onServerReply: function(e) {
                 Y.log(
                     'onServerReply(' + e.response.entity + ')',
@@ -470,6 +702,11 @@ YUI.add('pact-level', function(Y) {
                     PROGGAMELEVEL
                 );
                 this.commandsStack = Y.JSON.parse(e.response.entity);
+                this.isRuntimeException = false;
+                this.isSuccessful = this.getExecutionOutcome(
+                    this.commandsStack
+                );
+                this.persistExecution();
                 this.consumeCommand();
             },
             findObject: function(id) {
@@ -542,6 +779,9 @@ YUI.add('pact-level', function(Y) {
                                 this.doLevelEndAnimation(); // display level end screen
                             });
                             break;
+                        case 'gameLost':
+                            this.consumeCommand();
+                            break;
                         case 'log':
                             this.debugTabView
                                 .item(0)
@@ -607,10 +847,7 @@ YUI.add('pact-level', function(Y) {
                 }
             },
             doNextLevel: function(fn) {
-                var content =
-                    'Variable.find(gameModel, "currentLevel").setValue(self, ' +
-                    this.get('onWin') +
-                    ')';
+                var content = 'Action.changeLevel(' + this.get('onWin') + ')';
                 Wegas.Facade.Variable.script.run(content, {
                     on: {
                         success: fn,
