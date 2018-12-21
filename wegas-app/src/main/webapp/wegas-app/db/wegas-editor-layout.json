@@ -76,6 +76,54 @@
                                                 },
                                                 {
                                                     "type": "Button",
+                                                    "label": "[FORM] Show WYSIWYG Script",
+                                                    "cssClass": "wegas-toggle-scriptsource-mode-button",
+                                                    "plugins": [
+                                                        {
+                                                            "fn": "ExecuteLocalScriptAction",
+                                                            "cfg": {
+                                                                "targetEvent": "click",
+                                                                "onClick": "Y.Wegas.Config.ShowImpactAsSource = false;Y.all('.wegas-toggle-scriptsource-mode-button').each(function(button){Y.Widget.getByNode(button).ConditionalDisable.conditionEval();});return;"
+                                                            }
+                                                        }, {
+                                                            "fn": "ConditionalDisable",
+                                                            "cfg": {
+                                                                "condition": {
+                                                                    "@class": "Script",
+                                                                    "content": "!Y.Wegas.Config.ShowImpactAsSource"
+                                                                },
+                                                                "attribute": "cssClass",
+                                                                "value": "button-hidden"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Button",
+                                                    "label": "[FORM] Show Script Source",
+                                                    "cssClass": "wegas-toggle-scriptsource-mode-button",
+                                                    "plugins": [
+                                                        {
+                                                            "fn": "ExecuteLocalScriptAction",
+                                                            "cfg": {
+                                                                "targetEvent": "click",
+                                                                "onClick": "Y.Wegas.Config.ShowImpactAsSource = true;Y.all('.wegas-toggle-scriptsource-mode-button').each(function(button){Y.Widget.getByNode(button).ConditionalDisable.conditionEval();});return;"
+                                                            }
+                                                        }, {
+                                                            "fn": "ConditionalDisable",
+                                                            "cfg": {
+                                                                "condition": {
+                                                                    "@class": "Script",
+                                                                    "content": "Y.Wegas.Config.ShowImpactAsSource;"
+                                                                },
+                                                                "attribute": "cssClass",
+                                                                "value": "button-hidden"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Button",
                                                     "label": "Clear Combo Cache",
                                                     "plugins": [
                                                         {

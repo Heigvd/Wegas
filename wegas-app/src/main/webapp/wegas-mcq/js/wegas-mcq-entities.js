@@ -335,14 +335,20 @@ YUI.add('wegas-mcq-entities', function(Y) {
             return ret;
         },
         isUnread: function() {
-            var choices, i, ci,
-                qDesc;
-            qDesc = this.getDescriptor();
-            choices = qDesc.get("items");
-            for (i in choices) {
-                ci = choices[i].getInstance();
-                if (ci.get("active") && ci.get("unread")) {
+            if (this.get("active")) {
+                if (this.get("unread")) {
                     return true;
+                } else {
+                    var choices, i, ci,
+                        qDesc;
+                    qDesc = this.getDescriptor();
+                    choices = qDesc.get("items");
+                    for (i in choices) {
+                        ci = choices[i].getInstance();
+                        if (ci.get("active") && ci.get("unread")) {
+                            return true;
+                        }
+                    }
                 }
             }
             return false;
@@ -543,7 +549,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 setCurrentResult: {
                     label: "set current result",
                     arguments: [
-                        SELFARG, 
+                        SELFARG,
                         {
                             type: STRING,
                             view: {

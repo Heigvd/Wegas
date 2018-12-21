@@ -46,6 +46,11 @@
     text-align: left;
     display: block;
 }
+
+.yui3-menu .yui3-button[class*="-hidden"] {
+    display: none;
+}
+
 .yui3-menu-content:empty::before{
     content: "Empty";
     font-style: italic;

@@ -9,7 +9,7 @@
  * Question
  */
 
-/*.wegas-mcqview:not([data-displayResult='bottom']) {*/
+/*.wegas-mcqview-content:not([data-displayResult='bottom']) {*/
 .wegas-mcqview {
     height:100%;
 }
@@ -18,27 +18,27 @@
     overflow-y: auto;
 }
 
-/*.wegas-mcqview:not([data-displayResult='bottom']) .wegas-mcqview-content {
+/*.wegas-mcqview-content:not([data-displayResult='bottom']) .wegas-mcqview-content {
     display: flex;
     flex-direction: column;
 }
 
-.wegas-mcqview:not([data-displayResult='bottom']) .mcq-view-question-layout {
+.wegas-mcqview-content:not([data-displayResult='bottom']) .mcq-view-question-layout {
     position: relative;
     overflow-y: hidden;
     flex-shrink: 1;
     flex-grow: 2;
 }
 
-.wegas-mcqview:not([data-displayResult='bottom']) .mcq-view-result-layout {
+.wegas-mcqview-content:not([data-displayResult='bottom']) .mcq-view-result-layout {
     position: relative;
     overflow-y: hidden;
     flex-shrink: 1;
     flex-grow: 1;
 }
 
-.wegas-mcqview:not([data-displayResult='bottom']) .mcq-view-question-layout > div,
-.wegas-mcqview:not([data-displayResult='bottom']) .mcq-view-result-layout > div{
+.wegas-mcqview-content:not([data-displayResult='bottom']) .mcq-view-question-layout > div,
+.wegas-mcqview-content:not([data-displayResult='bottom']) .mcq-view-result-layout > div{
     position: absolute;
     top:0;
     bottom:0;
@@ -162,7 +162,6 @@
     background-color: #f5f5f5;
 }
 .wegas-mcqview .answerable .wegas-mcqchoice.selectable.noTitle.noDescription .wegas-mcqchoice-content:hover{
-    border-color : hotpink;
     background-color: white;
 }
 
@@ -198,6 +197,12 @@
     border-bottom-width: 3px;
 }
 
+.wegas-mcqview .wegas-mcqchoice.noTitle:not(.noDescription) .mcqchoice__title {
+    display: none;
+}
+.wegas-mcqview .wegas-mcqchoice.noTitle:not(.noDescription) .wegas-mcqchoice-content{
+    /*border: none;*/
+}
 
 .wegas-mcqview .wegas-mcqchoice.noTitle.noDescription .wegas-mcqchoice-content {
     border :none;
@@ -225,6 +230,135 @@
 }
 
 
+
+
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__results-title,
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcqchoice__submit,
+.wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice:not(.selectable) {
+    display: none;
+}
+
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__question-description,
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-reply-feedback {
+    text-align: left;
+    border: 1px solid #CCC;
+    padding: 1em;
+    background-color: #C7EDFA;
+    margin: 5px 20% 15px 5px;
+}
+
+
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-reply-choice {
+    padding: 1em;
+    border: 1px solid #999;
+    background-color: #0981A9;
+    margin: 1px 5px 8px 20%;
+    color: white;
+}
+
+.wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__choices > .wegas-flexlist-content {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice-content {
+}
+
+.wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice {
+    width: unset;
+    max-width: 240px;
+    padding: 0;
+    overflow-y: auto;
+    position:relative;
+}
+
+.wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice > div {
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__history {
+    flex-grow: 1;
+}
+
+.wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice.noDescription:not(.noTitle) > div,
+.wegas-mcqview-content[data-displayResult='dialogue']  .wegas-mcqchoice .mcqchoice__title {
+    background-color: white;
+    /*color: white;*/
+}
+
+.wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice-content:after {
+    font-family: FontAwesome;
+    content: "\f1d8";
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    font-size: 1em;
+}
+
+.wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice-content:hover:after {
+    animation: growIcon 0.2s 1;
+    font-size: 2em;
+}
+
+
+@keyframes growIcon {
+    from {
+        font-size: 1em;
+    }
+    to {
+        font-size: 2em;
+    }
+}
+
+.wegas-mcqview-content[data-displayResult='dialogue'] .blink .mcq-reply-feedback {
+    animation: blink 2s 1;
+    box-sizing: border-box;
+}
+
+@keyframes blink {
+    0% {
+        border-color: #ccc;
+        border-width:1px;
+    }
+    50% {
+        border-color: #ccc;
+        border-width:3px;
+    }
+    100% {
+        border-color: #ccc;
+        border-width:1px;
+    }
+}
+
+.wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice-content {
+    cursor:pointer;
+}
+
+.wegas-mcqview .answerable[data-displayResult='dialogue']:not(.cbx):not(.horizontal) .wegas-mcqchoice.selectable.noDescription:not(.noTitle) .wegas-mcqchoice-content:hover,
+.answerable[data-displayResult='dialogue'] .selectable .wegas-mcqchoice-content:hover .mcqchoice__title,
+.answerable[data-displayResult='dialogue'].cbx:not(.horizontal) .wegas-mcqchoice.selectable.noDescription:not(.noTitle) .wegas-mcqchoice-content:hover,
+.answerable[data-displayResult='dialogue'] .wegas-mcqchoice.selectable .wegas-mcqchoice-content:hover,
+.answerable[data-displayResult='dialogue'] .wegas-mcqchoice-content:hover {
+    /*background-color: #3794B3;*/
+    background-color: #0981A9;
+    color:white;
+}
+
+.wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqview-content {
+    overflow-y: hidden;
+}
+
+.wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] {
+    /*overflow-y : hidden;*/
+    display:flex;
+    flex-direction: column;
+}
+
+.wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__choices {
+    flex-shrink: 0;
+}
 
 /*
  * MCQ
@@ -454,14 +588,15 @@
     border-bottom: 1px solid lightgray;
 }
 
-.wegas-mcqview .mcq-view__results .wegas-mcqview__result {
+.wegas-mcqview-content:not([data-displayResult='dialogue']) .mcq-view__results .wegas-mcqview__result {
     margin: 0 10px 6px 10px;
     border-bottom: 1px solid lightgray;
     padding-bottom: 6px;
 }
 
-/* std question: most recent reply is normal black, olders are italic grey */
-.wegas-mcqview-content:not(.cbx) .mcq-view__results .wegas-mcqview__result {
+/* std question: most recent reply is normal black, olders are italic grey, except for dialogue like dialogues */
+.wegas-mcqview-content:not(.cbx):not([data-displayResult='dialogue']) .mcq-view__results .wegas-mcqview__result,
+.wegas-mcqview-content:not(.cbx):not([data-displayResult='dialogue']) .mcq-view__results .wegas-mcqview__result {
     color: #999;
     font-style: italic;
 }

@@ -206,6 +206,8 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                         }, {
                             value: 'inline'
                         }, {
+                            value: 'dialogue'
+                        }, {
                             value: 'no'
                         }
                     ],

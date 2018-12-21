@@ -24,7 +24,7 @@ import javax.persistence.Entity;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-public class QuestionInstance extends VariableInstance implements QuestionInstanceI {
+public class QuestionInstance extends VariableInstance implements ReadableInstance {
 
     private static final long serialVersionUID = 1L;
     //private static final Logger logger = LoggerFactory.getLogger(QuestionInstance.class);
@@ -142,7 +142,6 @@ public class QuestionInstance extends VariableInstance implements QuestionInstan
     /**
      * @param validated the validation status to set
      */
-    @Override
     public void setValidated(Boolean validated) {
         this.validated = validated;
     }
@@ -150,7 +149,6 @@ public class QuestionInstance extends VariableInstance implements QuestionInstan
     /**
      * @return The validation status of the question
      */
-    @Override
     public Boolean isValidated() {
         return this.validated;
     }

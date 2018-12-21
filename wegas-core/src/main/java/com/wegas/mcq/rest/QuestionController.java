@@ -11,13 +11,13 @@ import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.QuestionInstance;
-import com.wegas.mcq.persistence.QuestionInstanceI;
 import com.wegas.mcq.persistence.Reply;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import com.wegas.mcq.persistence.ReadableInstance;
 
 /**
  *
@@ -139,10 +139,17 @@ public class QuestionController {
         return questionDescriptorFacade.updateReply(replyId, reply);
     }
 
-
+    /**
+     * Mark a question, openQuestion or choice instance as read
+     *
+     * @param playerId the reader
+     * @param id       id of the descriptor
+     *
+     * @return
+     */
     @PUT
     @Path("Read/{playerId : [1-9][0-9]*}/{descId: [1-9][0-9]*}")
-    public QuestionInstanceI readQuestion(
+    public ReadableInstance readQuestion(
             @PathParam("playerId") Long playerId,
             @PathParam("descId") Long id) {
         return questionDescriptorFacade.readQuestion(playerId, id);

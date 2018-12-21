@@ -699,7 +699,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             this.set(TEXT, a.join(token));
         },
         getEditorLabel: function() {
-            return "#" + this.get("index") + ": " + I18n.t(this.get("text"));
+            return "#" + this.get("index");
         }
     }, {
         EDITORNAME: "server text",

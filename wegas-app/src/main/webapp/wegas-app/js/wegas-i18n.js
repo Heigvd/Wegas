@@ -466,9 +466,13 @@ YUI.add("wegas-i18n", function(Y) {
         }
 
         function findLanguageByCode(code) {
-            return Y.Array.find(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"), function(item) {
-                return item.get("code").toUpperCase() === code.toUpperCase();
-            });
+            if (code) {
+                return Y.Array.find(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"), function(item) {
+                    return item.get("code").toUpperCase() === code.toUpperCase();
+                });
+            } else {
+                return null;
+            }
         }
 
         function setLangByCode(code) {

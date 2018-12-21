@@ -14,7 +14,6 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
@@ -164,9 +163,10 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         }
     }
 
-    public QuestionInstanceI readQuestion(Long playerId, Long qdId) {
+    public ReadableInstance readQuestion(Long playerId, Long qdId) {
         VariableDescriptor desc = variableDescriptorFacade.find(qdId);
-        QuestionInstanceI instance = (QuestionInstanceI) variableDescriptorFacade.getInstance(desc, playerFacade.find(playerId));
+
+        ReadableInstance instance = (ReadableInstance) variableDescriptorFacade.getInstance(desc, playerFacade.find(playerId));
 
         instance.setUnread(false);
 

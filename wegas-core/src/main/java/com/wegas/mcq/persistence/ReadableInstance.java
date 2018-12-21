@@ -11,7 +11,7 @@ package com.wegas.mcq.persistence;
  *
  * @author maxence
  */
-public interface QuestionInstanceI {
+public interface ReadableInstance {
 
     Boolean isUnread();
 
@@ -21,7 +21,8 @@ public interface QuestionInstanceI {
 
     void setActive(Boolean active);
 
+    /*
     Boolean isValidated();
-
     void setValidated(Boolean validated);
+     */
 }
