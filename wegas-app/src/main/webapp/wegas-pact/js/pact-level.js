@@ -31,7 +31,8 @@ YUI.add('pact-level', function(Y) {
         CURRENT_LEVEL = 'currentLevel',
         MAX_LEVEL = 'maxLevel',
         LEVEL_LIMIT = 'levelLimit',
-        LEVEL_LIMIT_REACHED = 'Il faut attendre l\'autorisation d\'aller plus loin dans le jeu.',
+        LEVEL_LIMIT_REACHED =
+            "Il faut attendre l'autorisation d'aller plus loin dans le jeu.",
         Wegas = Y.Wegas,
         ProgGameLevel,
         currentLevel;
@@ -282,18 +283,18 @@ YUI.add('pact-level', function(Y) {
                     CLICK,
                     function() {
                         var levelLimit = scriptFacade.localEval(
-                                'Variable.find(gameModel, \"' + LEVEL_LIMIT + '\").getValue(self)'
-                            ),
-                            maxLevel = scriptFacade.localEval(
-                                'Variable.find(gameModel, \"' + MAX_LEVEL + '\").getValue(self)'
-                            );
+                            'Variable.find(gameModel, "' +
+                                LEVEL_LIMIT +
+                                '").getValue(self)'
+                        );
+
                         if (currentLevel >= levelLimit) {
-                            alert(LEVEL_LIMIT_REACHED)
+                            alert(LEVEL_LIMIT_REACHED);
                             // Y.Wegas.Alerts.showNotification(LEVEL_LIMIT_REACHED, { iconCss: 'fa fa-clock' });
                         } else {
                             // End level screen: next level button:
                             this.doNextLevel(
-                                function () {
+                                function() {
                                     this.mainEditorTab.aceField.setValue('');
                                     this.previousCode = '';
                                     this.fire('gameWon'); // trigger open page plugin
@@ -569,7 +570,7 @@ YUI.add('pact-level', function(Y) {
             },
             sendRunRequest: function(code, interpreterCfg) {
                 interpreterCfg = interpreterCfg || {};
-                var level = Y.Wegas.Facade.Page.cache.editable
+                var level = Y.Wegas.Facade.Page.cache.isEditable()
                     ? JSON.stringify(this.get('root').get('@pageId'))
                     : Y.JSON.stringify(this.toObject());
                 this.prepareExecution();
@@ -596,6 +597,9 @@ YUI.add('pact-level', function(Y) {
                              */
                             function(e) {
                                 var commands = Y.JSON.parse(e.response.entity);
+                                var level = Y.Wegas.Facade.Variable.cache
+                                    .find('name', 'currentLevel')
+                                    .get('value');
                                 var success = commands.some(
                                     /**
                                      * @param {{ type: string; }} c
@@ -625,6 +629,9 @@ YUI.add('pact-level', function(Y) {
                             this
                         ),
                         failure: Y.bind(function(e) {
+                            var level = Y.Wegas.Facade.Variable.cache
+                                .find('name', 'currentLevel')
+                                .get('value');
                             Y.Wegas.Facade.Variable.script.remoteEval(
                                 'Log.post(Log.level(' +
                                     JSON.stringify(code) +
