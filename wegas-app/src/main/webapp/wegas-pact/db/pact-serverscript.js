@@ -57,9 +57,15 @@ var Action = {
          */
         var currentLevelDesc = Variable.find(gameModel, 'currentLevel');
         var curValue = currentLevelDesc.getValue(self);
-        currentLevelDesc.setValue(self, Number(level));
-        if (curValue != currentLevelDesc.getValue(self)) {
-            Log.post(Log.statement('initialized', 'level', level));
+        var maxValue = Math.min(
+            Variable.find(gameModel, 'maxLevel').getValue(self),
+            Variable.find(gameModel, 'levelLimit').getValue(self)
+        );
+        if (Number(level) <= maxValue) {
+            currentLevelDesc.setValue(self, Number(level));
+            if (curValue != currentLevelDesc.getValue(self)) {
+                Log.post(Log.statement('initialized', 'level', level));
+            }
         }
     },
 };
@@ -602,19 +608,14 @@ ProgGameSimulation.prototype = {
             var maxLevel = Variable.find(gameModel, 'maxLevel'),
                 levelLimit = Variable.find(gameModel, 'levelLimit'),
                 currentLevel = Variable.find(gameModel, 'currentLevel');
-            // NB: points may be awarded several times if the trainer blocks the game at this level !!!
-            if (
-                maxLevel.getValue(self) <=
-                currentLevel.getValue(self)
-            ) {
+            if (maxLevel.getValue(self) <= currentLevel.getValue(self)) {
                 Variable.find(gameModel, 'money').add(self, 100);
             }
-            if (levelLimit.getValue(self) > currentLevel.getValue(self)) {
-                maxLevel.setValue(
-                    self,
-                    Math.max(maxLevel.getValue(self), Number(this.level.onWin))
-                );
-            }
+            maxLevel.setValue(
+                self,
+                Math.max(maxLevel.getValue(self), Number(this.level.onWin))
+            );
+
             return true;
         }
         return false;
@@ -622,7 +623,7 @@ ProgGameSimulation.prototype = {
     /**
      *
      * @param {string} code code to execute
-     * @param {{[variable:string]: unkown}=} values scope values hashmap
+     * @param {{[variable:string]: unknown}=} values scope values hashmap
      */
     doEval: function(code, values) {
         wdebug('Eval', code);
