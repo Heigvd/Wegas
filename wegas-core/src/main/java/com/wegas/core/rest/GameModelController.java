@@ -487,4 +487,12 @@ public class GameModelController {
     public void deleteForceAll() {
         gameModelFacade.removeGameModels();
     }
+
+    @POST
+    @Path("{gameModelId: [1-9][0-9]*}/FindAndReplace")
+    public String findAndReplace(@PathParam("gameModelId") Long gameModelId,
+            FindAndReplacePayload payload) {
+        return gameModelFacade.findAndReplace(gameModelId, payload);
+    }
+
 }

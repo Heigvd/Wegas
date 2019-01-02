@@ -97,11 +97,7 @@ YUI.add('wegas-model-propagator', function(Y) {
             },
             title: {
                 type: "string",
-                value: "Create A New Scenario Based On A Player"
-            },
-            openPopup: {
-                type: "boolean",
-                value: true
+                value: "Propagate Model to implementations"
             }
         }
     });

@@ -1159,3 +1159,9 @@
     background-image: url("../images/tiny-toolbar.png");
     background-repeat: no-repeat;
 }
+
+
+/* Find & Replace */
+.wegas-find-and-replace .wegas-react-form > .wegas-toolbar {
+    display:none;
+}

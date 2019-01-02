@@ -30,30 +30,38 @@ import com.wegas.core.merge.patch.WegasPatch;
 import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.GmType;
 import static com.wegas.core.persistence.game.GameModel.GmType.*;
 import com.wegas.core.persistence.game.GameModel.Status;
+import static com.wegas.core.persistence.game.GameModelContent_.content;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
+import com.wegas.core.rest.FindAndReplacePayload;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -599,7 +607,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         final GameModel srcGameModel = this.find(entityId);
 
         if (srcGameModel != null) {
-            if (srcGameModel.isModel()){
+            if (srcGameModel.isModel()) {
                 requestManager.assertCanDuplicateGameModel(this.find(entityId));
 
                 GameModel newGameModel = this.duplicate(entityId);
@@ -745,7 +753,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         for (GameModel instantiation : instantiations) {
             instantiation.setBasedOn(null);
-            if (gameModel.isModel() && instantiation.isReference()){
+            if (gameModel.isModel() && instantiation.isReference()) {
                 this.remove(instantiation);
             }
         }
@@ -797,7 +805,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      */
     public void delete(GameModel entity) {
 
-        if (entity.isModel()){
+        if (entity.isModel()) {
             for (GameModel gm : getImplementations(entity)) {
                 if (gm.isScenario() && !gm.getStatus().equals(Status.DELETE)) {
                     throw WegasErrorMessage.error("Unable to delete the model because at least one scenario still depends on it");
@@ -1034,13 +1042,11 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
                                 if (text != null && Helper.insensitiveContainsAll(text, criterias)) {
                                     matches.add(vd.getId());
-
                                 }
                             }
                         }
                     }
                 }
-
             }
         });
 
@@ -1092,6 +1098,132 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         } finally {
             requestManager.releaseSu();
+        }
+    }
+
+    public String findAndReplace(Mergeable mergeable, FindAndReplacePayload payload) {
+
+        FindAndReplaceVisitor replacer = new FindAndReplaceVisitor(payload);
+        MergeHelper.visitMergeable(mergeable, Boolean.TRUE, replacer);
+
+        return replacer.getOutput();
+    }
+
+    public String findAndReplace(Long gameModelId, FindAndReplacePayload payload) {
+        return this.findAndReplace(this.find(gameModelId), payload);
+    }
+
+    private static class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
+
+        private final StringBuilder output;
+
+        private final Pattern pattern;
+
+        private final FindAndReplacePayload payload;
+        private int flags = Pattern.UNICODE_CASE | Pattern.UNICODE_CHARACTER_CLASS;
+
+        public FindAndReplaceVisitor(FindAndReplacePayload payload) {
+            this.payload = payload;
+            if (!payload.isMatchCase()) {
+                flags |= Pattern.CASE_INSENSITIVE;
+            }
+
+            if (!payload.isRegex()) {
+                flags |= Pattern.LITERAL;
+            }
+
+            this.pattern = Pattern.compile(payload.getFind(), flags);
+
+            this.output = new StringBuilder();
+        }
+
+        /**
+         *
+         * @param content
+         *
+         * @return content with replacement done or null id nothing to replace
+         */
+        private String replace(String content) {
+            if (!Helper.isNullOrEmpty(content)) {
+                Matcher matcher = pattern.matcher(content);
+                String newContent = matcher.replaceAll(payload.getReplace());
+                if (!content.equals(newContent)) {
+                    return newContent;
+                }
+            }
+            return null;
+        }
+
+        private void prettyPrintAncestors(Deque<Mergeable> ancestors, WegasFieldProperties field) {
+            Iterator<Mergeable> it = ancestors.descendingIterator();
+            while (it.hasNext()) {
+                Mergeable ancestor = it.next();
+                if (ancestor instanceof LabelledEntity) {
+                    output.append(((LabelledEntity) ancestor).getLabel());
+                    if (it.hasNext()) {
+                        output.append(" > ");
+                    }
+                } else if (ancestor instanceof NamedEntity) {
+                    output.append(((NamedEntity) ancestor).getName());
+                    if (it.hasNext()) {
+                        output.append(" > ");
+                    }
+                }
+            }
+
+            if (field != null && field.getField() != null) {
+                output.append(" > ").append(field.getField().getName());
+            }
+        }
+
+        @Override
+        public void visit(Mergeable target, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references) {
+            //logger.error("Mergeable {} => {}", field != null ? field.getField() : null, target);
+        }
+
+        @Override
+        public void visitProperty(Object target, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object... references) {
+            if (field != null) {
+                if (field.getAnnotation() != null) {
+                    if (field.getAnnotation().searchable()) {
+                        if (target instanceof Translation) {
+                            Translation tr = (Translation) target;
+                            String newContent = this.replace(tr.getTranslation());
+
+                            if (newContent != null) {
+                                output.append("<br/>");
+                                this.prettyPrintAncestors(ancestors, field);
+                                output.append("<br/>");
+                                output.append(" ").append(newContent);
+
+                                if (!payload.isPretend()) {
+                                    tr.setTranslation(newContent);
+                                }
+                            }
+                        } else if (target instanceof String) {
+                            if (field.getType() == WegasFieldProperties.FieldType.PROPERTY) {
+                                String newContent = this.replace((String) target);
+                                if (newContent != null) {
+                                    output.append("<br/>");
+                                    output.append(" ").append(newContent);
+
+                                    if (!payload.isPretend()) {
+                                        try {
+                                            field.getPropertyDescriptor().getWriteMethod().invoke(ancestors.peekFirst(), newContent);
+                                        } catch (Exception ex) {
+                                            output.append("<br/> ERROR: ").append(ex);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        String getOutput() {
+            return output.toString();
         }
     }
 }

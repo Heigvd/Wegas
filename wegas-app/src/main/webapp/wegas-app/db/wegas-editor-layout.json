@@ -49,8 +49,8 @@
                         "children": [
                             {
                                 "type": "Button",
-                                "label": "Advanced",
-                                "cssClass": "editor-scenarist-button editor-scenarist-advanced-button wegas-advanced-feature",
+                                "label": "Edit",
+                                "cssClass": "wegas-advanced-feature",
                                 "plugins": [
                                     {
                                         "fn": "WidgetMenu",
@@ -58,22 +58,27 @@
                                             "children": [
                                                 {
                                                     "type": "Button",
-                                                    "label": "EXPERIMENTAL: Create a new scenario from player state",
+                                                    "label": "Find & Replace",
                                                     "plugins": [
                                                         {
-                                                            "fn": "GmExtractorAction"
+                                                            "fn": "FindAndReplaceAction"
                                                         }
                                                     ]
-                                                },
-                                                {
-                                                    "type": "Button",
-                                                    "label": "<b>Experimental & Hazardous</b> Re-init default values from a player",
-                                                    "plugins": [
-                                                        {
-                                                            "fn": "GmDefaulterAction"
-                                                        }
-                                                    ]
-                                                },
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Button",
+                                "label": "View",
+                                "cssClass": "wegas-advanced-feature",
+                                "plugins": [
+                                    {
+                                        "fn": "WidgetMenu",
+                                        "cfg": {
+                                            "children": [
                                                 {
                                                     "type": "Button",
                                                     "label": "[FORM] Show WYSIWYG Script",
@@ -121,6 +126,48 @@
                                                             }
                                                         }
                                                     ]
+                                                }, {
+                                                    "type": "Button",
+                                                    "label": "Advanced Tabs",
+                                                    "plugins": [
+                                                        {
+                                                            "fn": "ToggleAdvancedTabsMode"
+                                                        }
+                                                    ]
+                                                }
+
+                                            ]
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Button",
+                                "label": "Advanced Tools",
+                                "cssClass": "editor-scenarist-button editor-scenarist-advanced-button wegas-advanced-feature",
+                                "plugins": [
+                                    {
+                                        "fn": "WidgetMenu",
+                                        "cfg": {
+                                            "children": [
+
+                                                {
+                                                    "type": "Button",
+                                                    "label": "EXPERIMENTAL: Create a new scenario from player state",
+                                                    "plugins": [
+                                                        {
+                                                            "fn": "GmExtractorAction"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Button",
+                                                    "label": "<b>Experimental & Hazardous</b> Re-init default values from a player",
+                                                    "plugins": [
+                                                        {
+                                                            "fn": "GmDefaulterAction"
+                                                        }
+                                                    ]
                                                 },
                                                 {
                                                     "type": "Button",
@@ -147,16 +194,7 @@
                                                             }
                                                         }
                                                     ]
-                                                }, {
-                                                    "type": "Button",
-                                                    "label": "Advanced Tabs",
-                                                    "plugins": [
-                                                        {
-                                                            "fn": "ToggleAdvancedTabsMode"
-                                                        }
-                                                    ]
-                                                }
-                                            ]
+                                                }]
                                         }
                                     }
                                 ]

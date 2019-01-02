@@ -793,6 +793,11 @@ YUI().use(function(Y) {
                 requires: ["wegas-modal", "wegas-plugin"],
                 ws_provides: ["ModelPropagator", "WegasPropagatorModel", "WegasPropagatorAction"]
             },
+            "wegas-find-and-replace": {
+                path: "js/widget/wegas-find-and-replace-min.js",
+                requires: ["wegas-modal", "wegas-plugin"],
+                ws_provides: ["FindAndReplace", "FindAndReplaceModal", "FindAndReplaceAction"]
+            },
             "wegas-statemachineviewer": {
                 path: "js/widget/wegas-statemachineviewer-min.js",
                 requires: ["wegas-statemachineviewercss", "wegas-inputex-wysiwygscript", "wegas-statemachine-entities",
