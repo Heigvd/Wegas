@@ -24,12 +24,7 @@ YUI.add('wegas-conditionaldisable', function(Y) {
                 this.onceAfterHostEvent('render', function() {
                     this.conditionEval();
                     this.handlers.push(
-                        Wegas.Facade.Variable.after(
-                            'update',
-                            this.conditionEval,
-                            this
-                        )
-                    );
+                        Wegas.Facade.Variable.after('update', this.conditionEval, this));
                 });
             },
             destructor: function() {
@@ -46,29 +41,19 @@ YUI.add('wegas-conditionaldisable', function(Y) {
                                 host = this.get('host'),
                                 result = e.response.entity;
                             if (attr === 'cssClass') {
-                                host
-                                    .get('boundingBox')
-                                    .toggleClass(this.get('value'), result || false);
+                                host.get('boundingBox').toggleClass(this.get('value'), result || false);
                             } else {
-                                if (
-                                    this.get('attribute') === 'disabled' &&
-                                    host._enable &&
-                                    host._disable
-                                ) {
+                                if (this.get('attribute') === 'disabled' && host._enable && host._disable) {
                                     if (result) {
-                                        host._disable('ConditionalDisable');
+                                        host._disable(this.constructor.NS);
                                     } else {
-                                        host._enable('ConditionalDisable');
+                                        host._enable(this.constructor.NS);
                                     }
                                 } else {
-                                    this.get('host').set(
-                                        this.get('attribute'),
-                                        result
-                                    );
+                                    this.get('host').set(this.get('attribute'), result);
                                 }
                             }
-                        }, this)
-                    );
+                        }, this));
                 }
             }
         },
