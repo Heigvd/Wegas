@@ -36,7 +36,7 @@ YUI.add('wegas-inbox', function(Y) {
         initializer: function() {
             this.handlers = {};
         },
-        getMessage: function () {
+        getMessage: function() {
             var messages = this.get("variable.evaluated").getInstance().get("messages"),
                 messageId = this.get("messageId");
             return Y.Array.find(messages, function(item) {

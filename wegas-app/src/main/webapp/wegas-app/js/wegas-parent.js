@@ -345,7 +345,7 @@ YUI.add("wegas-parent", function(Y) {
                                                             }]
                                                     }, {
                                                         type: BUTTON,
-                                                        label: "Inbox",
+                                                        label: "Inbox (tabview)",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
@@ -354,7 +354,7 @@ YUI.add("wegas-parent", function(Y) {
                                                             }]
                                                     }, {
                                                         type: BUTTON,
-                                                        label: "News list",
+                                                        label: "Inbox (list)",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
