@@ -50,6 +50,11 @@ YUI.add('wegas-inbox-list', function(Y) {
                 },
             toggleExpand: function(e) {
                 // Whenever a collapsed message is clicked,
+                this.get("contentBox").all(".wegas-message").each(function(msg){
+                    msg.removeClass("wegas-message__expanded");
+                    msg.addClass("wegas-message__collapsed");
+                });
+
                 e.currentTarget.toggleClass('wegas-message__collapsed'); // open it
                 e.currentTarget.toggleClass('wegas-message__expanded'); // open it
             },
