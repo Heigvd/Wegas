@@ -14,6 +14,139 @@
 YUI.add('wegas-text-input', function(Y) {
     'use strict';
     var CONTENTBOX = 'contentBox', TextInput, StringInput, Wegas = Y.Wegas;
+
+    /**
+     * Listen Input Event from its host and toggle cssClass to reflect underlyging inputs 
+     * saving statuses.
+     * @type type
+     */
+    var SaveStatusAggregator = Y.Base.create('SaveStatusAggregator', Y.Plugin.Base,
+        [Wegas.Plugin, Wegas.Editable], {
+        initializer: function() {
+            this.onHostEvent("*:save", this.onSave, this);
+            this.onHostEvent("*:saved", this.onSaved, this);
+            this.onHostEvent("*:editing", this.onEdit, this);
+            this.onHostEvent("*:revert", this.onRevert, this);
+            this.onHostEvent("*", this.onEvent, this);
+
+            this.locks = {};
+        },
+        onEvent: function(e) {
+            Y.log("BITCH: " + e);
+        },
+        destructor: function() {
+            for (var k in this.handlers) {
+                this.handlers[k].detach();
+            }
+        },
+        onEdit: function(e) {
+            this.lock(e);
+        },
+        onSave: function(e) {
+            this.lock(e);
+        },
+        onSaved: function(e) {
+            this.unlock(e);
+        },
+        onRevert: function(e) {
+            this.unlock(e);
+        },
+        _getText: function(attr, defaultValue) {
+            if (this.get(attr)) {
+                return this.get(attr + ".evaluated").getValue();
+            } else {
+                return defaultValue;
+            }
+        },
+        lock: function(e) {
+            this.locks[e.descriptor.get("name")] = true;
+            this.setStatus(this._getText("editingText", "editing..."));
+            this.touchWidgets(false);
+        },
+        unlock: function(e) {
+            this.locks[e.descriptor.get("name")] = false;
+            delete this.locks[e.descriptor.get("name")];
+            if (!this.isLocked()) {
+                // nothing locked any longer
+                this.setStatus(this._getText("savedText", "saved"));
+                this.touchWidgets(true);
+            }
+        },
+        isLocked: function() {
+            return Y.Array.find(Object.values(this.locks), function(item) {
+                return item; // a lock set to true !
+            });
+        },
+        getAll: function(selector, callback) {
+            if (selector) {
+                this.get("host").get("boundingBox").all(selector).each(callback);
+            }
+        },
+        setStatus: function(status) {
+            this.getAll(this.get("statusNode"), function(node) {
+                node.setContent(status);
+            });
+        },
+        touchWidgets: function(enable) {
+            this.getAll(this.get("toDisable"), function(node) {
+                var widget = Y.Widget.getByNode(node);
+                if (widget) {
+                    if (widget._enable && widget._disable) {
+                        if (enable) {
+                            widget._enable('input_aggregator');
+                        } else {
+                            widget._disable('input_aggregator');
+                        }
+                    } else {
+                        widget.set("disabled", enable);
+                    }
+                }
+            });
+        }
+    }, {
+        NS: "SaveStatusAggregator",
+        NAME: "SaveStatusAggregator",
+        ATTRS: {
+            editingText: {
+                type: 'object',
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                required: true,
+                view: {
+                    type: 'variableselect',
+                    label: 'Editing text',
+                    classFilter: ['StringDescriptor', 'TextDescriptor']
+                }
+            },
+            savedText: {
+                type: 'object',
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                required: true,
+                view: {
+                    type: 'variableselect',
+                    label: 'Saved text',
+                    classFilter: ['StringDescriptor', 'TextDescriptor']
+                }
+            },
+            toDisable: {
+                type: "string",
+                value: "",
+                view: {
+                    label: "Node(s) to disablewhile editing/saving",
+                    description: "CSS Selector from host boundingBox"
+                }
+            },
+            statusNode: {
+                type: "string",
+                value: "",
+                view: {
+                    label: "status node",
+                    description: "CSS Selector from host boundingBox"
+                }
+            }
+        }
+    });
+    Y.Plugin.SaveStatusAggregator = SaveStatusAggregator;
+
     /**
      * @name Y.Wegas.TextInput
      * @extends Y.Widget
