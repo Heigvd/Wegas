@@ -77,7 +77,13 @@ function SelectView(props: ISelectProps) {
         | Choice
         | string)[]).concat(props.view.choices || []);
     const menuItems = choices.map(genItems);
-    const value = JSON.stringify(props.value) || JSON.stringify(title.value);
+    
+    let value = JSON.stringify(props.value);
+
+    if (!menuItems.find(item => item.props.value === value)) {
+        value = JSON.stringify(title.value);
+    }
+
     return (
         <select
             id={props.id}
