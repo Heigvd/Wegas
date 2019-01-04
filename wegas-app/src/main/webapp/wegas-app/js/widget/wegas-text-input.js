@@ -388,26 +388,31 @@ YUI.add('wegas-text-input', function(Y) {
         _onChange: function() {
             var content = this.editor.getContent(),
                 desc = this.get('variable.evaluated');
-            if (this.get('showSaveButton') || !this.get('selfSaving')) {
-                this.setStatus('Not saved');
-            } else {
-                this.setStatus('');
-            }
-            this.updateCounters();
-            this.fire('editing', this.getPayload(content));
-            this.valueChanged(content);
-            if (!this.get('showSaveButton')) {
-                if (this.wait) {
-                    this.wait.cancel();
-                }
-                if (this.get('selfSaving')) {
-                    this.wait = Y.later(1000, this, function() {
-                        this.wait = null;
-                        this.onSave();
-                    });
+            if (this.previousContent === undefined || this.previousContent !== content) {
+                this.previousContent = content;
+                if (this.get('showSaveButton') || !this.get('selfSaving')) {
+                    this.setStatus('Not saved');
                 } else {
-                    this.onSave();
+                    this.setStatus('');
                 }
+                this.updateCounters();
+                this.fire('editing', this.getPayload(content));
+                this.valueChanged(content);
+                if (!this.get('showSaveButton')) {
+                    if (this.wait) {
+                        this.wait.cancel();
+                    }
+                    if (this.get('selfSaving')) {
+                        this.wait = Y.later(1000, this, function() {
+                            this.wait = null;
+                            this.onSave();
+                        });
+                    } else {
+                        this.onSave();
+                    }
+                }
+            } else {
+                Y.log("No need to process same content twice...");
             }
         },
         valueChanged: function(newValue) {
