@@ -1007,20 +1007,6 @@ public class I18nFacade extends WegasAbstractFacade {
     }
 
     /**
-     * Is target protected ?
-     * to be protected, the target must belongs to a protectedGameModel (i.e. a scenario which depends on a model)
-     * and must stand in a protected scope according to the current protection level and its inherited visiility
-     *
-     * @param target
-     * @param protectionLevel
-     *
-     * @return
-     */
-    private boolean isProtected(Mergeable target, ProtectionLevel protectionLevel) {
-        return target.belongsToProtectedGameModel() && Helper.isProtected(protectionLevel, target.getInheritedVisibility());
-    }
-
-    /**
      * Automatic translation.
      * For each encountered translatable content, auto-translate targetLangCode tr from sourceLangCode on.
      */
@@ -1062,7 +1048,7 @@ public class I18nFacade extends WegasAbstractFacade {
                 Translation source = trTarget.getTranslation(langCode);
 
                 if (source != null && !Helper.isNullOrEmpty(source.getTranslation())) {
-                    if (!i18nFacade.isProtected(trTarget, protectionLevel)) {
+                    if (!this.isProtected(trTarget, protectionLevel)) {
                         if (Helper.isNullOrEmpty(refCode) // re required empty translation
                                 || trTarget.getTranslation(refCode) == null // requiered empty is null
                                 || Helper.isNullOrEmpty(trTarget.getTranslation(refCode).getTranslation())) { // exists but is empty
@@ -1077,7 +1063,7 @@ public class I18nFacade extends WegasAbstractFacade {
             }
 
             if (target instanceof Script) {
-                if (!i18nFacade.isProtected(target, protectionLevel)) {
+                if (!this.isProtected(target, protectionLevel)) {
                     Script script = (Script) target;
 
                     Mergeable parent = ancestors.getFirst();

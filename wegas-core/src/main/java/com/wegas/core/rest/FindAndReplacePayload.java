@@ -24,6 +24,11 @@ public class FindAndReplacePayload {
 
     private boolean pretend = true;
 
+    private boolean processVariables = true;
+    private boolean processScripts = false;
+    private boolean processPages = false;
+    private boolean processStyles = false;
+
     public String getFind() {
         return find;
     }
@@ -62,5 +67,37 @@ public class FindAndReplacePayload {
 
     public void setRegex(boolean regex) {
         this.regex = regex;
+    }
+
+    public boolean getProcessVariables() {
+        return processVariables;
+    }
+
+    public void setProcessVariables(boolean processVariables) {
+        this.processVariables = processVariables;
+    }
+
+    public boolean getProcessScripts() {
+        return processScripts;
+    }
+
+    public void setProcessScripts(boolean processScripts) {
+        this.processScripts = processScripts;
+    }
+
+    public boolean getProcessPages() {
+        return processPages;
+    }
+
+    public void setProcessPages(boolean processPages) {
+        this.processPages = processPages;
+    }
+
+    public boolean getProcessStyles() {
+        return processStyles;
+    }
+
+    public void setProcessStyles(boolean processStyles) {
+        this.processStyles = processStyles;
     }
 }

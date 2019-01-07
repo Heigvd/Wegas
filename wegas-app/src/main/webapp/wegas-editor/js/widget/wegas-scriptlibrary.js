@@ -362,7 +362,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                             '@class': 'GameModelContent',
                             content: this.aceField.getValue(),
                             visibility: this.visibilityField.getValue(),
-                        },
+                        }
                     },
                     on: Wegas.superbind({
                         success: function() {

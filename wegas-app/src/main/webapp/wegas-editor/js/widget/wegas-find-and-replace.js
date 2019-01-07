@@ -53,7 +53,7 @@ YUI.add('wegas-find-and-replace', function(Y) {
                             value: true,
                             view: {
                                 type: "boolean",
-                                label: "Pretend",
+                                label: "Simulate",
                                 description: "Only show differences",
                                 layout: 'shortInline'
                             }
@@ -78,6 +78,50 @@ YUI.add('wegas-find-and-replace', function(Y) {
                                 layout: 'shortInline',
                                 description: "Use $1, $2, ..., $n to use captured groups"
                             }
+                        },
+                        processVariables: {
+                            type: "boolean",
+                            value: true,
+                            view: {
+                                className: 'wegas-advanced-feature',
+                                type: "boolean",
+                                label: "Variables",
+                                description: "Search and replace in variables",
+                                layout: 'shortInline'
+                            }
+                        },
+                        processPages: {
+                            type: "boolean",
+                            value: false,
+                            view: {
+                                className: 'wegas-advanced-feature',
+                                type: "boolean",
+                                label: "Pages",
+                                description: "Search and replace in Pages",
+                                layout: 'shortInline'
+                            }
+                        },
+                        processStyles: {
+                            type: "boolean",
+                            value: false,
+                            view: {
+                                className: 'wegas-advanced-feature',
+                                type: "boolean",
+                                label: "Styles",
+                                description: "Search and replace in styles",
+                                layout: 'shortInline'
+                            }
+                        },
+                        processScripts: {
+                            type: "boolean",
+                            value: false,
+                            view: {
+                                className: 'wegas-advanced-feature',
+                                type: "boolean",
+                                label: "Scripts",
+                                description: "Search and replace in client/server scripts",
+                                layout: 'shortInline'
+                            }
                         }
                     }
                 }
@@ -85,12 +129,22 @@ YUI.add('wegas-find-and-replace', function(Y) {
             this.form.render(this.get("contentBox").one(".the-form"));
         },
         execute: function() {
+            var data = this.form.getValue();
+
+            if (data.pretend) {
+                this._execute();
+            } else {
+                Y.Wegas.Panel.confirm("This cannot be cancelled, are you sure ?", Y.bind(this._execute, this));
+            }
+        },
+        _execute: function() {
             this.get("contentBox").one(".find-result").setContent("");
+            var data = this.form.getValue();
             Y.Wegas.Facade.GameModel.sendRequest({
                 request: "/" + this.get("gameModel").get("id") + "/FindAndReplace",
                 cfg: {
                     method: "POST",
-                    data: this.form.getValue()
+                    data: data
                 },
                 on: {
                     success: Y.bind(function(e) {
@@ -119,6 +173,7 @@ YUI.add('wegas-find-and-replace', function(Y) {
                     }, this)
                 }
             });
+
         }
     }, {
         ATTRS: {

@@ -9,7 +9,7 @@ package com.wegas.core.persistence;
 
 /**
  *
- * Entity name is kind of human-readable unique identifier
+ * Entity name human-readable unique identifier
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */

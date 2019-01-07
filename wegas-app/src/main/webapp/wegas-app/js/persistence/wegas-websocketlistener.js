@@ -25,6 +25,10 @@ YUI.add('wegas-websocketlistener', function(Y) {
                     this._hdl.push(dataSource.on("PageIndexUpdate", this.onPageIndexUpdate, this));
                     this._hdl.push(dataSource.on("LockEvent", this.onLockEvent, this));
                     this._hdl.push(dataSource.on("LifeCycleEvent", this.onLifeCycleEvent, this));
+
+                    this._hdl.push(dataSource.on("LibraryUpdate-CSS", this.onCssUpdate, this));
+                    this._hdl.push(dataSource.on("LibraryUpdate-ClientScript", this.onClientScriptUpdate, this));
+                    this._hdl.push(dataSource.on("LibraryUpdate-ServerScript", this.onServerScriptUpdate, this));
                 }
             });
         },
@@ -62,6 +66,55 @@ YUI.add('wegas-websocketlistener', function(Y) {
         onPageIndexUpdate: function(pageId) {
             Y.Wegas.Facade.Page.cache.forceIndexUpdate();
         },
+        loadLibrary: function(type, key, cb) {
+            Y.Wegas.Facade.GameModel.sendRequest({
+                request: '/' + Y.Wegas.Facade.GameModel.get('currentGameModelId') + '/Library/' + type + "/" + key + '/?view=Export',
+                cfg: {
+                    updateCache: false
+                },
+                on: {
+                    success: Y.bind(function(data) {
+                        // is there any editor ?
+                        Y.all(".wegas-scriptlibrary").each(function(node) {
+                            Y.log("Node: " + node);
+                            var widget = Y.Widget.getByNode(node);
+                            if (widget && widget.get("library") === type) {
+                                var outdated = new Y.Node.create('<span class="wegas-outdated-message">Something is outdated:reload the library tab</span>');
+                                widget.toolbar.get("header").append(outdated);
+
+                                for (var k  in widget.selectField.choicesList) {
+                                    if (widget.selectField.choicesList[k].value === key) {
+                                        widget.selectField.choicesList[k].node.innerHTML += " <- OUTDATED<i class='fa fa-warn'>";
+                                    }
+                                }
+
+                            }
+                        }, this);
+                        if (cb) {
+                            cb.call(this, data.response.entity);
+                        }
+                    }, this)
+                }
+            });
+
+        },
+        onCssUpdate: function(contentKey) {
+            this.loadLibrary("CSS", contentKey, function(stylesheet) {
+                Y.Plugin.CSSLoader.updateStyleSheet(contentKey, stylesheet);
+            });
+        },
+        onClientScriptUpdate: function(contentKey) {
+            this.loadLibrary("ClientScript", contentKey, function(clientScript) {
+                try {
+                    eval(clientScript);
+                } catch (error) {
+                    Y.log("ClientScript sync:" + error);
+                }
+            });
+        },
+        onServerScript: function(contentKey) {
+            this.loadLibrary("ServerScript", contentKey);
+        },
         onLifeCycleEvent: function(data) {
             var payload = Y.JSON.parse(data),
                 node = this._getNode();
@@ -75,7 +128,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 node.hideOverlay("maintenance");
             } else if (payload.status === "OUTDATED") {
                 //node.showMessage("error", "Some of your data are outdated, please refresh the page");
-                Y.Wegas.Alerts.showBanner("Some of your data are outdated, please <a href=\"#\" onClick=\"window.location.reload()\">reload</a> the page", {className: 'alert', iconCss:"fa fa-2x fa-warning"});
+                Y.Wegas.Alerts.showBanner("Some of your data are outdated, please <a href=\"#\" onClick=\"window.location.reload()\">reload</a> the page", {className: 'alert', iconCss: "fa fa-2x fa-warning"});
             } else {
                 node.showMessage("warn", "Unexcpected Error: Please refresh the page");
                 node.showOverlay("error");

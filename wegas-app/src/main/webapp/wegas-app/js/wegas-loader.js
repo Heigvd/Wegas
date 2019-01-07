@@ -94,6 +94,7 @@ YUI().use(function(Y) {
             },
             "wegas-websocketlistener": {
                 path: "js/persistence/wegas-websocketlistener-min.js",
+                requires: "wegas-cssloader",
                 ws_provides: "WebSocketListener"
             },
             "wegas-pusher-connector": {

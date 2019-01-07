@@ -30,10 +30,17 @@ public class LibraryFacade {
     @Inject
     private GameModelFacade gameModelFacade;
 
+    @Inject
+    private WebsocketFacade websocketFacade;
+
+    @Inject
+    private RequestManager requestManager;
+
     private List<GameModelContent> getLibrary(Long gameModelId, String name) {
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
         switch (name) {
+            case "ServerScript":
             case "Script":
                 return gameModel.getScriptLibraryList();
 
@@ -109,6 +116,7 @@ public class LibraryFacade {
         GameModelContent gameModelContent = gameModel.getGameModelContent(lib, key);
         if (gameModelContent != null) {
             gameModelContent.setContent(content.getContent());
+            websocketFacade.gameModelContentUpdate(gameModelContent, requestManager.getSocketId());
         } else {
             throw WegasErrorMessage.error("Library does not exists");
         }

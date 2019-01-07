@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.security.util.WegasPermission;
@@ -33,7 +34,7 @@ import javax.persistence.*;
     @Index(columnList = "csslibrary_gamemodel_id"),
     @Index(columnList = "csslibrary_gamemodel_id, scriptlibrary_gamemodel_id, clientscriptlibrary_gamemodel_id, contentKey", unique = true)
 })
-public class GameModelContent extends AbstractEntity implements Serializable, ModelScoped {
+public class GameModelContent extends AbstractEntity implements Serializable, ModelScoped, NamedEntity {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -197,6 +198,29 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     }
 
     @JsonIgnore
+    public String getLibraryType() {
+        if (this.clientscriptlibrary_GameModel != null) {
+            return "ClientScript";
+        } else if (this.scriptlibrary_GameModel != null) {
+            return "ServerScript";
+        } else {
+            return "CSS";
+        }
+    }
+
+    @Override
+    @JsonIgnore
+    public String getName() {
+        return this.getContentKey();
+    }
+
+    @Override
+    @JsonIgnore
+    public void setName(String name) {
+        // no implementation
+    }
+
+    @JsonIgnore
     public GameModel getScriptlibrary_GameModel() {
         return scriptlibrary_GameModel;
     }
@@ -217,7 +241,7 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     }
 
     @JsonIgnore
-    private GameModel getGameModel() {
+    public GameModel getGameModel() {
         if (this.clientscriptlibrary_GameModel != null) {
             return clientscriptlibrary_GameModel;
         } else if (this.scriptlibrary_GameModel != null) {

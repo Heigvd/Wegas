@@ -7,6 +7,7 @@
  */
 package com.wegas.core.merge.utils;
 
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Mergeable;
@@ -37,6 +38,20 @@ public class MergeHelper {
     public interface MergeableVisitor {
 
         /**
+         * Is target protected ?
+         * to be protected, the target must belongs to a protectedGameModel (i.e. a scenario which depends on a model)
+         * and must stand in a protected scope according to the current protection level and its inherited visiility
+         *
+         * @param target
+         * @param protectionLevel
+         *
+         * @return
+         */
+        default boolean isProtected(Mergeable target, ProtectionLevel protectionLevel) {
+            return target.belongsToProtectedGameModel() && Helper.isProtected(protectionLevel, target.getInheritedVisibility());
+        }
+
+        /**
          * visit
          *
          * @param target          the mergeable target
@@ -48,7 +63,17 @@ public class MergeHelper {
          */
         public void visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references);
 
-        default public void visitProperty(Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object... references) {
+        /**
+         *
+         * @param target
+         * @param protectionLevel
+         * @param level
+         * @param field
+         * @param ancestors
+         * @param key
+         * @param references
+         */
+        default public void visitProperty(Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references) {
         }
     }
 
@@ -136,7 +161,7 @@ public class MergeHelper {
 
                                     if (!childrenList.isEmpty()) {
 
-                                        for (int childIndex = 0; childIndex < childrenList.size(); childIndex++) {
+                                        for (Integer childIndex = 0; childIndex < childrenList.size(); childIndex++) {
 
                                             // for each child
                                             Object get = childrenList.get(childIndex);
@@ -177,7 +202,7 @@ public class MergeHelper {
                                                 }
                                                 MergeHelper.visitMergeable((Mergeable) get, fieldProtectionLevel, forceRecursion, visitor, level + 1, field, ancestors, refList);
                                             } else {
-                                                visitor.visitProperty(get, protectionLevel, level, field, ancestors);
+                                                visitor.visitProperty(get, protectionLevel, level, field, ancestors, childIndex);
                                             }
                                         }
                                     }
@@ -222,7 +247,7 @@ public class MergeHelper {
 
                                                 MergeHelper.visitMergeable((Mergeable) get, fieldProtectionLevel, forceRecursion, visitor, level + 1, field, ancestors, refSet);
                                             } else {
-                                                visitor.visitProperty(get, protectionLevel, level, field, ancestors);
+                                                visitor.visitProperty(get, protectionLevel, level, field, null, ancestors);
                                             }
                                         }
                                     }
@@ -263,7 +288,7 @@ public class MergeHelper {
 
                                             }
 
-                                            visitor.visitProperty(child, protectionLevel, level, field, ancestors, refs);
+                                            visitor.visitProperty(child, protectionLevel, level, field, ancestors, entry.getKey(), refs);
                                         }
                                     }
                                 }
@@ -284,7 +309,7 @@ public class MergeHelper {
                                     }
                                 }
 
-                                visitor.visitProperty(targetProperty, protectionLevel, level, field, ancestors, referencesProperties);
+                                visitor.visitProperty(targetProperty, protectionLevel, level, field, ancestors, null, referencesProperties);
                                 break;
                         }
                     }
