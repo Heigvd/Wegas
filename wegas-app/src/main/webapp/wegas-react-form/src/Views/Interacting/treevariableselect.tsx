@@ -197,7 +197,7 @@ class TreeVariableSelect extends React.Component<
         super(props);
         this.state = {
             search: '',
-            searching: !props.value,
+            searching: false,
         };
         this.handleOnSelect = this.handleOnSelect.bind(this);
         this.items = genItems(props);
