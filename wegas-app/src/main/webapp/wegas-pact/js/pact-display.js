@@ -224,7 +224,6 @@ YUI.add('pact-display', function(Y) {
                                         'warn',
                                         'Wegas.ProggameDisplay'
                                     );
-                                    return;
                                 }
                         }
                         this.fire(COMMANDEXECUTED);
@@ -350,7 +349,7 @@ YUI.add('pact-display', function(Y) {
                 {
                     alpha: 0,
                 },
-                50
+                500
             );
         },
     });
@@ -367,6 +366,7 @@ YUI.add('pact-display', function(Y) {
                 .reel('moveDown', moveSpeed, 0, 2, 7)
                 .reel('moveLeft', moveSpeed, 0, 1, 7)
                 .reel('handsUp', moveSpeed, 0, 6, 7)
+                .reel('erase', 2000, 0, 24, 7)
                 .reel('gzRight', 2000, 0, 20, 7)
                 .reel('gzLeft', 2000, 0, 21, 7)
                 .collision(
@@ -407,10 +407,19 @@ YUI.add('pact-display', function(Y) {
                     }
                 });
         },
+        outside: function() {
+            this.pauseAnimation()
+                .one('AnimationEnd', function() {
+                    if (this._currentReelId === 'erase') {
+                        Crafty.trigger(COMMANDEXECUTED);
+                    }
+                })
+                .animate('erase');
+        },
         wave: function(times) {
             var pos = Y.clone(this.__coord);
             this.pauseAnimation()
-                .bind('AnimationEnd', function() {
+                .one('AnimationEnd', function() {
                     if (this._currentReelId === 'handsUp') {
                         this.sprite(pos[0] / pos[2], pos[1] / pos[3]);
                     }

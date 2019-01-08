@@ -1,23 +1,27 @@
+/// <reference no-default-lib="true"/>
+/// <reference lib="es5"/>
+
 // Types used accross this file
-/* global gameModel, self, Variable, xapi, Log*/
+/* global gameModel, self, Variable, Log */
 /**
- * @typedef ObjectsItem
+ * @typedef MapItem
  * @property {string} id
  * @property {number} x
  * @property {number} y
- * @property {number=} direction
+ * @property {(0|1|2|3)=} direction
  * @property {boolean=} collides
  * @property {string} components
+ * @property {boolean=} open Door is open
  *
- * @typedef Level ProgGame level
- * @property {string} `@pageId` Level id
+ * @typedef LevelPage ProgGame level
+ * @property {string} `@pageId` Level's id
  * @property {"ProgGameLevel"} type
  * @property {string} label
  * @property {string} intro
  * @property {{x:0, y:0|1}[][]} map Matrix of {x, y} where
  * - y = 1 means a path
  * - x is unused (history...)
- * @property {ObjectsItem[]} objects
+ * @property {MapItem[]} objects
  * @property {string[]} api
  * @property {string} winningCondition
  * @property {string} onStart
@@ -26,7 +30,7 @@
  * @property {string} defaultCode
  * @property {number} maxTurns
  *
- * @typedef {Object} Config
+ * @typedef Configuration
  * @property {boolean} debug
  * @property {unknown[]} breakpoint
  * @property {unknown[]} watches
@@ -136,7 +140,7 @@ var Wegas = {
          */
         clone: function clone(o) {
             var i,
-                newObj = o instanceof Array ? [] : {};
+                newObj = Array.isArray(o) ? [] : {};
             for (i in o) {
                 if (i === 'clone') continue;
                 if (o[i] && typeof o[i] === 'object') {
@@ -150,7 +154,7 @@ var Wegas = {
      * Get level from database
      * Works if pages are stored in JCR
      * @param {string|number} level
-     * @returns {Level}
+     * @returns {LevelPage}
      */
     getLevelPage: function getLevelPage(level) {
         return JSON.parse(gameModel.getPages()[String(level)]);
@@ -200,7 +204,7 @@ var wdebug = function() {
 };
 /**
  * @constructor
- * @param {Config} cfg
+ * @param {Configuration} cfg
  */
 function ProgGameSimulation(cfg) {
     this.debug = cfg.debug || false;
@@ -211,14 +215,14 @@ function ProgGameSimulation(cfg) {
     this.doRecordCommands =
         cfg.doRecordCommands === undefined ? true : cfg.recordCommands;
     this.ret = [];
-    /** @type {ObjectsItem | null} */
+    /** @type {MapItem | null} */
     this.cObject = null;
     this.currentStep = -1;
-    /** @type {Level} */
+    /** @type {LevelPage} */
     this.level;
-    /** @type {Level["api"]} */
+    /** @type {LevelPage["api"]} */
     this.api; //= level.api;
-    /** @type {Level["objects"]} */
+    /** @type {LevelPage["objects"]} */
     this.objects; // Shortcut to level objects
     this.gameOverSent = false;
 }
@@ -227,7 +231,7 @@ ProgGameSimulation.prototype = {
     /**
      *
      * @param {(name: string) => void} playerFn fn containing player's code
-     * @param {Level} level
+     * @param {LevelPage} level
      */
     run: function(playerFn, level) {
         wdebug('Simulation run');
@@ -291,10 +295,7 @@ ProgGameSimulation.prototype = {
         }
         if (!this.checkGameOver()) {
             // If the game is still not won,
-            this.log('You lost.'); // then it's definitely lost
-            this.sendCommand({
-                type: 'gameLost',
-            });
+            this.gameOver();
         }
     },
     resetActions: function() {
@@ -311,7 +312,7 @@ ProgGameSimulation.prototype = {
     },
     /**
      * Queue command
-     * @param {{type: string}} cfg
+     * @param {{type: string, [key:string]:any}} cfg
      * @returns {boolean} command has been successfully queued
      */
     sendCommand: function(cfg) {
@@ -452,7 +453,11 @@ ProgGameSimulation.prototype = {
         var i,
             o,
             object = this.cObject,
-            moveV = this.dirToVector(object.direction);
+            moveV;
+        if (object == null || object.direction == null) {
+            return;
+        }
+        moveV = this.dirToVector(object.direction);
         if (!this.beforeAction(object)) return;
 
         if (!this.consumeActions(object, 1)) {
@@ -472,7 +477,6 @@ ProgGameSimulation.prototype = {
             object.x += moveV.x;
             object.y += moveV.y;
             this.doMove(object);
-
             for (i = 0; i < this.currentCollides.length; i += 1) {
                 o = this.currentCollides[i];
                 switch (o.components) {
@@ -482,16 +486,27 @@ ProgGameSimulation.prototype = {
                                 type: 'trap',
                                 id: o.id,
                             });
-                            this.log('You lost.'); // then it's definitely lost
-                            this.sendCommand({
-                                type: 'gameLost',
-                            });
-                            this.doRecordCommands = false;
+                            this.gameOver(); // then it's definitely lost
                         }
                         break;
                 }
             }
+            if (!this.checkPath(object.x, object.y)) {
+                this.sendCommand({
+                    type: 'outside',
+                    id: object.id,
+                });
+                this.gameOver();
+            }
         }
+    },
+    gameOver: function() {
+        this.log('You lost.');
+        this.sendCommand({
+            type: 'gameLost',
+        });
+        this.doRecordCommands = false;
+        this.gameOverSent = true;
     },
     doMove: function(object) {
         this.sendCommand({
@@ -552,10 +567,14 @@ ProgGameSimulation.prototype = {
         }
         return objects;
     },
+    /**
+     * @param {MapItem} source
+     * @param {number} x
+     * @param {number} y
+     */
     checkCollision: function(source, x, y) {
         var o,
             k,
-            collided = false,
             objects = this.getObjectsAt(x, y);
 
         this.currentCollides = [];
@@ -564,7 +583,6 @@ ProgGameSimulation.prototype = {
             o = objects[k];
             if (o.id !== source.id) {
                 this.currentCollides.push(o);
-                collided = true;
                 switch (o.components) {
                     case 'Door': // Doors
                         if (!o.open) {
@@ -582,16 +600,30 @@ ProgGameSimulation.prototype = {
             }
         }
 
+        // if (
+        //     this.level.map[y] === undefined || // outside map
+        //     this.level.map[y][x] === undefined || // outside map
+        //     this.level.map[y][x].y === 0 // no path
+        //         ? !collided
+        //         : false
+        // ) {
+        //     return true;
+        // }
+        return false;
+    },
+    /**
+     * @param {number} x
+     * @param {number} y
+     */
+    checkPath: function(x, y) {
         if (
             this.level.map[y] === undefined || // outside map
             this.level.map[y][x] === undefined || // outside map
             this.level.map[y][x].y === 0 // no path
-                ? !collided
-                : false
         ) {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     },
     /**
      * Check if game has ended and execute success if player
@@ -724,8 +756,8 @@ ProgGameSimulation.prototype = {
     /**
      * Check if 2 objects are at the same position
      *
-     * @param {ObjectsItem} a object
-     * @param {ObjectsItem} b object
+     * @param {MapItem} a object
+     * @param {MapItem} b object
      */
     comparePos: function(a, b) {
         return a.x === b.x && a.y === b.y;
@@ -824,14 +856,14 @@ ProgGameSimulation.prototype = {
 /* exported run */
 /**
  * @param {(name: string) => void} playerFn fn containing player's code
- * @param {Level | string} level
- * @param {Config=} cfg
+ * @param {LevelPage | string} level
+ * @param {Configuration=} cfg
  */
 function run(playerFn, level, cfg) {
     Object.freeze(this); // Freeze global object
-    /** @type {Level} */
+    /** @type {LevelPage} */
     var realLevel;
-    cfg = cfg || /** @type {Config} */ ({});
+    cfg = cfg || /** @type {Configuration} */ ({});
     if (typeof level !== 'object') {
         realLevel = Wegas.getLevelPage(level);
     } else {

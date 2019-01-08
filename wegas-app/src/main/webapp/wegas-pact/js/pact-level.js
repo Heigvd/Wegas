@@ -260,7 +260,7 @@ YUI.add('pact-level', function(Y) {
                     this.consumeCommand,
                     this
                 ); // When a command is executed, continue stack evaluation
-                this.after('commandExecuted', this.consumeCommand, this); // idem
+                //this.after('commandExecuted', this.consumeCommand, this); // idem
 
                 this.idleHandler = Y.later(
                     10000,
