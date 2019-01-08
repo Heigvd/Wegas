@@ -1167,11 +1167,13 @@
 
 
 .wegas-find-and-replace  .find-result-entry {
-
+    margin-left: 10px;
+    margin-top: 20px;
 }
 
 .wegas-find-and-replace  .find-result-entry-title {
     font-weight:bolder;
+    font-size:15px;
     text-decoration: underline;
 }
 
@@ -1197,9 +1199,25 @@
 .wegas-find-and-replace  .find-result-entry-diff {
 }
 
-.wegas-find-and-replace  .find-result-entry-diff .find-result-entry-change,
+.wegas-find-and-replace  .find-result-entry-diff .find-result-entry-line,
 .wegas-find-and-replace  .find-result-entry-diff .find-result-entry-skip{
-    margin-left:10px;
+    margin-left:20px;
+}
+
+.wegas-find-and-replace  .find-result-entry-diff .find-result-entry-number{
+    display:none;
+}
+
+.wegas-find-and-replace  .find-result-entry-diff.show-lines .find-result-entry-skip{
+    margin-left: 42px;
+}
+.wegas-find-and-replace  .find-result-entry-diff.show-lines .find-result-entry-number{
+    display:inline-block;
+    text-align: right;
+    width:20px;
+    font-style: italic;
+    color: #a2a2a2;
+    background-color: #f0f0f0; 
 }
 
 .wegas-find-and-replace  .find-result-entry-diff .find-result-entry-skip{

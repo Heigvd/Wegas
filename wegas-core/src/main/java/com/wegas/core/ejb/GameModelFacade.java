@@ -1386,14 +1386,25 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
             try {
                 List<DiffRow> rows = generator.generateDiffRows(Arrays.asList(oldContent.split("\\n")), Arrays.asList(newContent.split("\\n")));
-                output.append("  <div class='find-result-entry-diff'>");
+                output.append("  <div class='find-result-entry-diff");
+
+                if (rows.size() > 1) {
+                    output.append(" show-lines");
+                }
+                output.append("'>");
+
                 boolean skip = false;
-                for (DiffRow row : rows) {
+
+                for (int i = 0; i < rows.size(); i++) {
+                    DiffRow row = rows.get(i);
                     if (row.getTag() != DiffRow.Tag.EQUAL) {
-                        output.append("  <div class='find-result-entry-change'>").append(row.getOldLine()).append("</div>");
+                        output.append("<div class='find-result-entry-line'>");
+                        output.append("<span class='find-result-entry-number'>").append(i).append("</span>");
+                        output.append("<span class='find-result-entry-change'>").append(row.getOldLine()).append("</span>");
+                        output.append("</div>");
                         skip = false;
                     } else if (!skip) {
-                        output.append("  <div class='find-result-entry-skip'>").append("[...]").append("</div>");
+                        output.append("<div class='find-result-entry-skip'>").append("[...]").append("</div>");
                         skip = true;
                     }
                 }
