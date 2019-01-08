@@ -76,15 +76,18 @@ YUI.add('wegas-websocketlistener', function(Y) {
                     success: Y.bind(function(data) {
                         // is there any editor ?
                         Y.all(".wegas-scriptlibrary").each(function(node) {
-                            Y.log("Node: " + node);
                             var widget = Y.Widget.getByNode(node);
                             if (widget && widget.get("library") === type) {
-                                var outdated = new Y.Node.create('<span class="wegas-outdated-message">Something is outdated:reload the library tab</span>');
-                                widget.toolbar.get("header").append(outdated);
+                                if (!widget.toolbar.get("header").one(".wegas-outdated-message")) {
+                                    var outdated = new Y.Node.create('<span class="wegas-outdated-message">Something is outdated: reload the library tab</span>');
+                                    widget.toolbar.get("header").append(outdated);
+                                }
 
                                 for (var k  in widget.selectField.choicesList) {
                                     if (widget.selectField.choicesList[k].value === key) {
-                                        widget.selectField.choicesList[k].node.innerHTML += " <- OUTDATED<i class='fa fa-warn'>";
+                                        if (widget.selectField.choicesList[k].node.innerHTML.indexOf("OUTDATED") < 0) {
+                                            widget.selectField.choicesList[k].node.innerHTML += " <- OUTDATED<i class='fa fa-warn'>";
+                                        }
                                     }
                                 }
 
