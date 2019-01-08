@@ -8,7 +8,11 @@
 package com.wegas.core.ejb;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.difflib.algorithm.DiffException;
+import com.github.difflib.text.DiffRow;
+import com.github.difflib.text.DiffRowGenerator;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
 import com.wegas.core.Helper;
@@ -1134,6 +1138,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     private static class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
 
+        private final DiffRowGenerator generator;
+
         private final StringBuilder output;
 
         private final Pattern pattern;
@@ -1157,6 +1163,12 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             this.pattern = Pattern.compile(payload.getFind(), flags);
 
             this.output = new StringBuilder();
+
+            this.generator = DiffRowGenerator.create()
+                    .showInlineDiffs(true)
+                    .inlineDiffByWord(true)
+                    .mergeOriginalRevised(true)
+                    .build();
         }
 
         /**
@@ -1176,28 +1188,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             return null;
         }
 
-        private void prettyPrintAncestors(Deque<Mergeable> ancestors, WegasFieldProperties field) {
-            Iterator<Mergeable> it = ancestors.descendingIterator();
-            while (it.hasNext()) {
-                Mergeable ancestor = it.next();
-                if (ancestor instanceof LabelledEntity) {
-                    output.append(((LabelledEntity) ancestor).getLabel());
-                    if (it.hasNext()) {
-                        output.append(" > ");
-                    }
-                } else if (ancestor instanceof NamedEntity) {
-                    output.append(((NamedEntity) ancestor).getName());
-                    if (it.hasNext()) {
-                        output.append(" > ");
-                    }
-                }
-            }
-
-            if (field != null && field.getField() != null) {
-                output.append(" > ").append(field.getField().getName());
-            }
-        }
-
         @Override
         public void visit(Mergeable target, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references) {
             //logger.error("Mergeable {} => {}", field != null ? field.getField() : null, target);
@@ -1214,11 +1204,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                                 String newContent = this.replace(tr.getTranslation());
 
                                 if (newContent != null) {
-                                    output.append("<br/>");
-                                    this.prettyPrintAncestors(ancestors, field);
-                                    output.append(":<br/>");
-                                    output.append(" ").append(newContent);
-
+                                    this.genEntry(ancestors, field, tr.getTranslation(), newContent);
                                     if (!payload.isPretend()) {
                                         tr.setTranslation(newContent);
                                     }
@@ -1227,10 +1213,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                                 if (field.getType() == WegasFieldProperties.FieldType.PROPERTY) {
                                     String newContent = this.replace((String) target);
                                     if (newContent != null) {
-                                        output.append("<br/>");
-                                        this.prettyPrintAncestors(ancestors, field);
-                                        output.append(":<br/>");
-                                        output.append(" ").append(newContent);
+                                        this.genEntry(ancestors, field, (String) target, newContent);
 
                                         if (!payload.isPretend()) {
                                             try {
@@ -1244,12 +1227,10 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                             } else if (target instanceof JsonNode) {
                                 if (field.getField().getName().equals("pages") && ancestors.peekFirst() instanceof GameModel) {
                                     JsonNode node = (ObjectNode) target;
+                                    String content = node.toString();
                                     String newContent = this.replace(node.toString());
                                     if (newContent != null) {
-                                        output.append("<br/>");
-                                        this.prettyPrintAncestors(ancestors, field);
-                                        output.append(":<br/>");
-                                        output.append(" ").append(newContent);
+                                        this.genEntry(ancestors, field, content, newContent);
 
                                         if (!payload.isPretend()) {
                                             try {
@@ -1320,10 +1301,11 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                     JsonNode page = entry.getValue();
                     String pageId = entry.getKey();
 
-                    String newContent = this.replace(page.toString());
+                    String content = page.toString();
+                    String newContent = this.replace(content);
                     if (newContent != null) {
-                        output.append("<br/>").append("Page ").append(pageId).append(":<br/>");
-                        output.append(" ").append(newContent);
+
+                        this.genEntry("Page " + pageId, prettyPrintJson(content), prettyPrintJson(newContent));
 
                         if (!payload.isPretend()) {
                             try {
@@ -1345,8 +1327,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             for (GameModelContent content : library) {
                 String newContent = this.replace(content.getContent());
                 if (newContent != null) {
-                    output.append("<br/>").append(title).append(" ").append(content.getContentKey()).append(":<br/>");
-                    output.append(" ").append(newContent);
+                    this.genEntry(title + "\"" + content.getContentKey() + "\"", content.getContent(), newContent);
 
                     if (!payload.isPretend()) {
                         try {
@@ -1358,6 +1339,73 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                     }
                 }
             }
+        }
+
+        private StringBuilder ancestorsPrettyPrinter(Deque<Mergeable> ancestors, WegasFieldProperties field) {
+            StringBuilder sb = new StringBuilder();
+            Iterator<Mergeable> it = ancestors.descendingIterator();
+            while (it.hasNext()) {
+                Mergeable ancestor = it.next();
+                if (ancestor instanceof LabelledEntity) {
+                    sb.append(((LabelledEntity) ancestor).getLabel());
+                    if (it.hasNext()) {
+                        sb.append(" > ");
+                    }
+                } else if (ancestor instanceof NamedEntity) {
+                    sb.append(((NamedEntity) ancestor).getName());
+                    if (it.hasNext()) {
+                        sb.append(" > ");
+                    }
+                }
+            }
+
+            if (field != null && field.getField() != null) {
+                sb.append("::").append(field.getField().getName());
+            }
+            return sb;
+        }
+
+        private void genEntry(Deque<Mergeable> ancestors, WegasFieldProperties field, String oldContent, String newContent) {
+            this.genEntry(this.ancestorsPrettyPrinter(ancestors, field).toString(), oldContent, newContent);
+        }
+
+        private String prettyPrintJson(String content) {
+            try {
+                ObjectMapper mapper = JacksonMapperProvider.getMapper();
+                JsonNode tree = mapper.readTree(content);
+                return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(tree);
+            } catch (IOException ex) {
+                return content;
+            }
+        }
+
+        private void genEntry(String title, String oldContent, String newContent) {
+
+            output.append("<div class='find-result-entry'>");
+            output.append("  <div class='find-result-entry-title'>").append(title).append("</div>");
+
+            try {
+                List<DiffRow> rows = generator.generateDiffRows(Arrays.asList(oldContent.split("\\n")), Arrays.asList(newContent.split("\\n")));
+                output.append("  <div class='find-result-entry-diff'>");
+                boolean skip = false;
+                for (DiffRow row : rows) {
+                    if (row.getTag() != DiffRow.Tag.EQUAL) {
+                        output.append("  <div class='find-result-entry-change'>").append(row.getOldLine()).append("</div>");
+                        skip = false;
+                    } else if (!skip) {
+                        output.append("  <div class='find-result-entry-skip'>").append("[...]").append("</div>");
+                        skip = true;
+                    }
+                }
+                output.append("  </div>");
+            } catch (DiffException ex) {
+                output.append("<div class='find-result-entry-sidebyside'>");
+                output.append("  <div class='find-result-entry-old'>").append(oldContent).append("</div>");
+                output.append("  <div class='find-result-entry-new'>").append(newContent).append("</div>");
+                output.append("</div>");
+            }
+
+            output.append("</div>");
         }
 
         public void processStyles(GameModel gameModel) {

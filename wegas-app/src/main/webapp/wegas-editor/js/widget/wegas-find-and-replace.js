@@ -193,9 +193,7 @@ YUI.add('wegas-find-and-replace', function(Y) {
                 actions = [{
                         "types": ["primary"],
                         "label": "<span class='actionButton'>"
-                            + "<span class='fa-stack fa-1g'>"
-                            + "  <i class='fa fa-search fa-stack-1x'></i> "
-                            + "  <i class='fa fa-pencil fa-stack-1x'></i> "
+                            + " <i class='fa fa-search'></i> "
                             + "</span>"
                             + "Find & Replace</span>",
                         "do": function() {

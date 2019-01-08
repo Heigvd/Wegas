@@ -1124,8 +1124,7 @@
     cursor: not-allowed;
     width: calc(100% - 11px);
     color: #888bad;
-}
-
+} 
 .wegas-translation--toedit.mce-content-body{
     display: inline-block;
 }
@@ -1165,3 +1164,54 @@
 .wegas-find-and-replace .wegas-react-form > .wegas-toolbar {
     display:none;
 }
+
+
+.wegas-find-and-replace  .find-result-entry {
+
+}
+
+.wegas-find-and-replace  .find-result-entry-title {
+    font-weight:bolder;
+    text-decoration: underline;
+}
+
+.wegas-find-and-replace  .find-result-entry-sidebyside {
+    display: flex;
+    flex-direction: row;
+}
+.wegas-find-and-replace  .find-result-entry-old,
+.wegas-find-and-replace  .find-result-entry-new {
+    flex-grow: 1;
+}
+
+.wegas-find-and-replace  .find-result-entry-diff .editOldInline,
+.wegas-find-and-replace  .find-result-entry-from {
+    background-color: lightpink;
+}
+
+.wegas-find-and-replace  .find-result-entry-diff .editNewInline,
+.wegas-find-and-replace  .find-result-entry-to {
+    background-color: lightblue;
+}
+
+.wegas-find-and-replace  .find-result-entry-diff {
+}
+
+.wegas-find-and-replace  .find-result-entry-diff .find-result-entry-change,
+.wegas-find-and-replace  .find-result-entry-diff .find-result-entry-skip{
+    margin-left:10px;
+}
+
+.wegas-find-and-replace  .find-result-entry-diff .find-result-entry-skip{
+    font-style: italic;
+    color: #666;
+}
+
+.wegas-find-and-replace  .find-result-entry-diff .editOldInline{
+    text-decoration: line-through;
+}
+
+.wegas-find-and-replace  .find-result-entry-diff .editNewInline {
+    font-weight: bolder;
+}
+
