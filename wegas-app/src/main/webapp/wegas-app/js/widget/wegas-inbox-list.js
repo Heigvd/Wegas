@@ -152,8 +152,8 @@ YUI.add('wegas-inbox-list', function(Y) {
 
                         for (var i in this.messages) {
                             var m = this.messages[i];
+                            var bb = m.get("boundingBox");
                             if (this.get("collapsed")) {
-                                var bb = m.get("boundingBox");
                                 if (bb.hasClass("wegas-message__expanded")) {
                                     bb.removeClass("wegas-message__collapsed");
                                 } else if (bb.hasClass("wegas-message__expanded")) {
@@ -166,10 +166,11 @@ YUI.add('wegas-inbox-list', function(Y) {
                                  * If the content is bigger than the available height (max-height style)
                                  *  add msg-body-toggled class and content of the read more menu
                                  */
-                                var maxHeight = parseInt(m.one('.wegas-message-body').getStyle('maxHeight')),
-                                    effectiveHeight = parseInt(m.one('.wegas-message-body').getDOMNode().getBoundingClientRect().height);
-                                m.toggleClass("wegas-message__collapsed", maxHeight < effectiveHeight);
-                                m.toggleClass("wegas-message__expanded", maxHeight >= effectiveHeight);
+                                var body = bb.one('.wegas-message-body');
+                                var maxHeight = parseInt(body.getStyle('maxHeight')),
+                                    effectiveHeight = parseInt(body.getDOMNode().getBoundingClientRect().height);
+                                bb.toggleClass("wegas-message__collapsed", maxHeight < effectiveHeight);
+                                bb.toggleClass("wegas-message__expanded", maxHeight >= effectiveHeight);
                             }
                         }
                     }
