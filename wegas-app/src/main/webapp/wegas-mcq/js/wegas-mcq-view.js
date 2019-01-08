@@ -158,6 +158,7 @@ YUI.add('wegas-mcq-view', function(Y) {
 
 
             if (whQuestionInstance.get("unread")) {
+                whQuestionInstance.set("unread", false); // avoid sync hell
                 Y.Wegas.Facade.Variable.sendRequest({
                     request: "/QuestionDescriptor/Read/" +
                         Wegas.Facade.Game.get('currentPlayerId') + "/" + whQuestion.get("id"),
@@ -509,6 +510,7 @@ YUI.add('wegas-mcq-view', function(Y) {
 
 
             if (choiceInstance.get("unread")) {
+                choiceInstance.set("unread", false); // avoid sync hell
                 Y.Wegas.Facade.Variable.sendRequest({
                     request: "/QuestionDescriptor/Read/" +
                         Y.Wegas.Facade.Game.get('currentPlayerId') + "/" + choice.get("id"),
@@ -914,6 +916,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 }
 
                 if (questionInstance.get("unread")) {
+                    questionInstance.set("unread", false); // avoid sync hell
                     Y.Wegas.Facade.Variable.sendRequest({
                         request: "/QuestionDescriptor/Read/" +
                             Wegas.Facade.Game.get('currentPlayerId') + "/" + questionDescriptor.get("id"),
