@@ -193,119 +193,111 @@ YUI.add('wegas-text-input', function(Y) {
                 CB.one('.wegas-input-label').setContent(this.get('label'));
             }
             if (this.get('maxNumberOfCharacters')) {
-                this.get('contentBox')
-                    .one('.wegas-text-input-editor')
-                    .setAttribute(
-                        'data-maxChars',
-                        this.get('maxNumberOfCharacters')
-                        );
+                CB.one('.wegas-text-input-editor').setAttribute('data-maxChars', this.get('maxNumberOfCharacters'));
             }
+
+            CB.setAttribute("data-resize", this.get("resize"));
 
             if (this.get('readonly.evaluated')) {
                 CB.one('.wegas-text-input-editor').setContent(
                     '<div class="readonly wegas-template-content">' +
-                    this.getInitialContent() +
-                    '</div>'
-                    );
+                    this.getInitialContent() + '</div>');
             } else {
-                Y.once(
-                    'domready',
-                    function() {
-                        //this.editor = new tinymce.Editor(this.get("contentBox").one(".wegas-text-input-editor").getDOMNode(),
-                        if (this.editor) {
-                            return;
-                        }
-                        tinyMCE.init({
-                            //selector: this.get("contentBox").one(".wegas-text-input-editor").getDOMNode(),
-                            selector: '#' +
-                                this.get('contentBox').get('id') +
-                                ' .wegas-text-input-editor',
-                            plugins: [
-                                'autolink link image lists code media table contextmenu paste advlist textcolor'
-                                    //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
-                            ],
-                            external_plugins: {
-                                dynamic_toolbar: Y.Wegas.app.get('base') +
-                                    'wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js'
+                Y.once('domready', function() {
+                    //this.editor = new tinymce.Editor(this.get("contentBox").one(".wegas-text-input-editor").getDOMNode(),
+                    if (this.editor) {
+                        return;
+                    }
+                    tinyMCE.init({
+                        //selector: this.get("contentBox").one(".wegas-text-input-editor").getDOMNode(),
+                        selector: '#' +
+                            this.get('contentBox').get('id') +
+                            ' .wegas-text-input-editor',
+                        plugins: [
+                            'autolink link image lists code media table contextmenu paste advlist textcolor'
+                                //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
+                        ],
+                        external_plugins: {
+                            dynamic_toolbar: Y.Wegas.app.get('base') +
+                                'wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js'
+                        },
+                        branding: false,
+                        /*
+                         init_instance_callback : function(editor) {
+                         console.log("Editor: " + editor.id + " is now initialized.");
+                         },
+                         */
+                        //toolbar1: "bold italic bullist | link image media code addToolbarButton",
+                        toolbar1: this.get('toolbar1'),
+                        toolbar2: this.get('toolbar2'),
+                        toolbar3: this.get('toolbar3'),
+                        contextmenu: this.get('contextmenu'),
+                        // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselect spellchecker template
+                        menubar: false,
+                        toolbar: this.get("showToolbar"),
+                        statusbar: false,
+                        relative_urls: false,
+                        toolbar_items_size: 'small',
+                        hidden_tootlbar: [2, 3],
+                        setup: Y.bind(function(editor) {
+                            if (this.get('disablePaste')) {
+                                editor.on('paste', function(e) {
+                                    e.preventDefault();
+                                });
+                            }
+                            // Update on editor update
+                            editor.on('change', Y.bind(this._onChange, this)); // click on taskbar buttons
+                            editor.on('keyUp', Y.bind(this._onChange, this)); // text input & ctrl-related operations
+                            //editor.on('NodeChange', Y.bind(this.setContent, this)); // Update on editor update
+                            // Callback for when the editor has been initialized and setContent is allowed:
+                            editor.on('init',
+                                Y.bind(
+                                    function() {
+                                        this.editor = editor;
+                                        // This will call setContent():
+                                        this.syncUI();
+                                    },
+                                    this
+                                    )
+                                );
+                        }, this),
+                        image_advtab: true,
+                        autoresize_min_height: 35,
+                        autoresize_max_height: 500,
+                        resize: this.getResize(),
+                        content_css: [
+                            Wegas.app.get('base') +
+                                'wegas-editor/css/wegas-tinymce-editor.css'
+                        ],
+                        style_formats: [
+                            {
+                                // Style formats
+                                title: 'Title 1',
+                                block: 'h1'
                             },
-                            branding: false,
-                            /*
-                             init_instance_callback : function(editor) {
-                             console.log("Editor: " + editor.id + " is now initialized.");
-                             },
-                             */
-                            //toolbar1: "bold italic bullist | link image media code addToolbarButton",
-                            toolbar1: this.get('toolbar1'),
-                            toolbar2: this.get('toolbar2'),
-                            toolbar3: this.get('toolbar3'),
-                            contextmenu: this.get('contextmenu'),
-                            // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselect spellchecker template
-                            menubar: false,
-                            toolbar: this.get("showToolbar"),
-                            statusbar: false,
-                            relative_urls: false,
-                            toolbar_items_size: 'small',
-                            hidden_tootlbar: [2, 3],
-                            setup: Y.bind(function(editor) {
-                                if (this.get('disablePaste')) {
-                                    editor.on('paste', function(e) {
-                                        e.preventDefault();
-                                    });
-                                }
-                                // Update on editor update
-                                editor.on('change', Y.bind(this._onChange, this)); // click on taskbar buttons
-                                editor.on('keyUp', Y.bind(this._onChange, this)); // text input & ctrl-related operations
-                                //editor.on('NodeChange', Y.bind(this.setContent, this)); // Update on editor update
-                                // Callback for when the editor has been initialized and setContent is allowed:
-                                editor.on('init',
-                                    Y.bind(
-                                        function() {
-                                            this.editor = editor;
-                                            // This will call setContent():
-                                            this.syncUI();
-                                        },
-                                        this
-                                        )
-                                    );
-                            }, this),
-                            image_advtab: true,
-                            autoresize_min_height: 35,
-                            autoresize_max_height: 500,
-                            content_css: [
-                                Wegas.app.get('base') +
-                                    'wegas-editor/css/wegas-tinymce-editor.css'
-                            ],
-                            style_formats: [
-                                {
-                                    // Style formats
-                                    title: 'Title 1',
-                                    block: 'h1'
-                                },
-                                {
-                                    title: 'Title 2',
-                                    block: 'h2'
-                                        // styles : {
-                                        //    color : '#ff0000'
-                                        // }
-                                },
-                                {
-                                    title: 'Title 3',
-                                    block: 'h3'
-                                },
-                                {
-                                    title: 'Normal',
-                                    inline: 'span'
-                                },
-                                {
-                                    title: 'Code',
-                                    //icon: "code",
-                                    block: 'code'
-                                }
-                            ]
-                        });
-                    },
-                    this
-                    );
+                            {
+                                title: 'Title 2',
+                                block: 'h2'
+                                    // styles : {
+                                    //    color : '#ff0000'
+                                    // }
+                            },
+                            {
+                                title: 'Title 3',
+                                block: 'h3'
+                            },
+                            {
+                                title: 'Normal',
+                                inline: 'span'
+                            },
+                            {
+                                title: 'Code',
+                                //icon: "code",
+                                block: 'code'
+                            }
+                        ]
+                    });
+                }, this);
                 //this.editor.render();
                 //this.setContent();
                 if (this.get('showSaveButton')) {
@@ -417,6 +409,16 @@ YUI.add('wegas-text-input', function(Y) {
         },
         valueChanged: function(newValue) {
             // To Be Overwritten
+        },
+        getResize: function() {
+            var resize = this.get("resize");
+            if (resize === "false") {
+                return false;
+            } else if (resize === "true") {
+                return true;
+            } else {
+                return "both";
+            }
         },
         getStats: function() {
             var body = this.editor.getContent(),
@@ -680,6 +682,28 @@ YUI.add('wegas-text-input', function(Y) {
                 value: 'link image inserttable | cell row column deletetable | formatselect forecolor',
                 index: 9,
                 view: {label: 'Context menu'}
+            },
+            resize: {
+                type: "string",
+                value: "both",
+                view: {
+                    label: 'resize',
+                    type: "select",
+                    choices: [
+                        {
+                            value: 'both',
+                            label: 'both'
+                        },
+                        {
+                            value: 'true',
+                            label: 'Vertical'
+                        },
+                        {
+                            value: 'false',
+                            label: 'no'
+                        }
+                    ]
+                }
             }
         }
     });
