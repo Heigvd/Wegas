@@ -436,16 +436,25 @@ YUI.add('wegas-plugin', function(Y) {
             this.afterHostEvent('render', function() {
                 var targetPageLoader = this._getTargetPageLoader();
                 if (targetPageLoader) {
-                    this.get(HOST).set('selected', '' + targetPageLoader.get('pageId') === '' + this._subpage() ? 2 : 0);
+                    this.selectHost(targetPageLoader);
                     this.handlers.push(targetPageLoader.after('pageIdChange', function() {
                         try {
-                            this.get(HOST).set('selected', '' + targetPageLoader.get('pageId') === '' + this._subpage() ? 2 : 0);
+                            this.selectHost(targetPageLoader);
                         } catch (e) {
                             //no more node...
                         }
                     }, this));
                 }
             }, this);
+        },
+        selectHost: function(targetPageLoader) {
+            // rely on YUI widget parent/child selection stuff
+            var isSelected = '' + targetPageLoader.get('pageId') === '' + this._subpage();
+            var host = this.get(HOST);
+            host.set('selected', isSelected ? 2 : 0);
+
+            // but also set custom class since parent/child selection does not work on others hots than buttons
+            host.get("boundingBox").toggleClass("wegas-page-selected", isSelected);
         },
         execute: function() {
             var targetPageLoader = this._getTargetPageLoader();
