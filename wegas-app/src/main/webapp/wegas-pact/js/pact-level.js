@@ -36,6 +36,18 @@ YUI.add('pact-level', function(Y) {
         Wegas = Y.Wegas,
         ProgGameLevel,
         currentLevel;
+
+    /**
+     * @param {any} obj
+     */
+    function isEmptyObj(obj) {
+        if (obj == null) return true;
+        if (typeof obj !== 'object') return false;
+        for (var key in obj) {
+            if (Object.prototype.hasOwnProperty.call(obj, key)) return false;
+        }
+        return true; // [] {}
+    }
     /**
      *  The level display class controls script input, ia, debugger and
      *  terrain display.
@@ -329,18 +341,10 @@ YUI.add('pact-level', function(Y) {
                 });
                 this.editorTabView.destroy();
             },
-            isEmptyObj: function(obj) {
-                if (obj == null) return true;
-                if (typeof obj !== 'object') return false;
-                for (var key in obj) {
-                    if (hasOwnProperty.call(obj, key)) return false;
-                }
-                return true;
-            },
             initCounters: function() {
                 if (
-                    this.isEmptyObj(this.counters) ||
-                    this.isEmptyObj(this.counters[currentLevel])
+                    isEmptyObj(this.counters) ||
+                    isEmptyObj(this.counters[currentLevel])
                 ) {
                     this.counters[currentLevel] = {
                         submissions: 0,
@@ -820,10 +824,8 @@ YUI.add('pact-level', function(Y) {
                             this.set(STATE, 'breaking');
                             break;
                         default:
-                            break;
+                            this.display.execute(command); // Forward the command to the display
                     }
-
-                    this.display.execute(command); // Forward the command to the display
                 } else if (this.commandsStack) {
                     this.set(STATE, IDLE);
                 }
@@ -875,6 +877,7 @@ YUI.add('pact-level', function(Y) {
                 aceField.setTheme('ace/theme/twilight');
                 aceField.getSession().setMode('ace/mode/javascript');
                 aceField.getSession().setValue(code);
+                aceField.commands.removeCommand('showSettingsMenu'); // remove Settings panel.
                 tab.set('selected', 1);
                 tab.aceField = aceField; // Set up a reference to the ace field
                 tab.saveTimer = saveTimer;
