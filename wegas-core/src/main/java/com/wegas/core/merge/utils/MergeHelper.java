@@ -247,7 +247,7 @@ public class MergeHelper {
 
                                                 MergeHelper.visitMergeable((Mergeable) get, fieldProtectionLevel, forceRecursion, visitor, level + 1, field, ancestors, refSet);
                                             } else {
-                                                visitor.visitProperty(get, protectionLevel, level, field, null, ancestors);
+                                                visitor.visitProperty(get, protectionLevel, level, field, ancestors, null);
                                             }
                                         }
                                     }
