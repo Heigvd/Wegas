@@ -101,7 +101,14 @@ YUI.add('wegas-plugin', function(Y) {
                 this.get(HOST)
                     .get('boundingBox')
                     .addClass('wegas-' + this.get('targetEvent'));
-                this.onHostEvent(this.get('targetEvent'), this.execute);
+                this.onHostEvent(this.get('targetEvent'), this.filterEvent);
+            },
+            filterEvent: function(e) {
+                // Yui delegate design fire the event for each nested wiedget:we do not want this behaviour
+                // Hence, we make sure event target is the host
+                if (this.get("host") === e.target) {
+                    this.execute();
+                }
             },
             /**
              * @function
