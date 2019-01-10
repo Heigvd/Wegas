@@ -176,6 +176,14 @@ YUI().use(function(Y) {
                 requires: "wegas-parent",
                 ws_provides: ["List", "FlexList"]
             },
+            "wegas-layout-menu": {
+                path: "js/widget/wegas-layout-menu-min.js",
+                requires: ["wegas-parent", "wegas-layout-menucss"],
+                ws_provides: ["LayoutMenu", "I18nMenu"]
+            },
+            "wegas-layout-menucss": {
+                type: CSS
+            },
             "wegas-layout-absolute": {
                 path: "js/widget/wegas-layout-absolute-min.js",
                 requires: ["wegas-plugin", "wegas-layout-absolutecss", "wegas-cssstyles-extra", "wegas-parent"],
@@ -226,7 +234,7 @@ YUI().use(function(Y) {
             "wegas-loginbutton": {
                 path: "js/widget/wegas-loginbutton-min.js",
                 requires: ["wegas-widgetmenu", "wegas-i18n-global"],
-                ws_provides: ["LoginButton", "UserLoginButton", "RestartButton"]
+                ws_provides: ["LoginButton", "UserLoginButton", "RestartButton", "LanguageSelectionMenu"]
             },
             "wegas-chat": {
                 path: "js/widget/wegas-chat-min.js",

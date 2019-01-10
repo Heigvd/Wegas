@@ -101,7 +101,7 @@ YUI.add('wegas-resizelistener', function(Y) {
             for (k in this.handlers) {
                 this.handlers[k].detach();
             }
-            this.mutationObserver && this.mutationObserver.disconnect();
+            this.resizeObserver && this.resizeObserver.disconnect();
             this._windowResizeCb && window.removeEventListener("resize", this._windowResizeCb);
 
         }
