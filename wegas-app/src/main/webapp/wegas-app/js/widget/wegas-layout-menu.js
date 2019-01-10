@@ -46,7 +46,7 @@ YUI.add('wegas-layout-menu', function(Y) {
         renderUI: function() {
             this.checkDisplayMode();
         },
-        checkDisplayMode() {
+        checkDisplayMode: function() {
             if (this.isSubmenu()) {
                 this.setDisplayMode("menu");
             } else {
