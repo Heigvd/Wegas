@@ -36,7 +36,7 @@ YUI.add('pact-jsinstrument', function(Y) {
                                 arguments: [
                                     {
                                         type: 'Literal',
-                                        value: line - 1,
+                                        value: line,
                                     },
                                     {
                                         type: 'ThisExpression',

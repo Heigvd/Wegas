@@ -1,14 +1,14 @@
-/// <reference no-default-lib="true"/>
 /// <reference lib="es5"/>
 
-// Types used accross this file
 /* global gameModel, self, Variable, Log */
+
+// Types used accross this file
 /**
  * @typedef MapItem
  * @property {string} id
  * @property {number} x
  * @property {number} y
- * @property {(0|1|2|3)=} direction
+ * @property {(1|2|3|4)=} direction
  * @property {boolean=} collides
  * @property {string} components
  * @property {boolean=} open Door is open
@@ -32,6 +32,7 @@
  *
  * @typedef Configuration
  * @property {boolean} debug
+ * @property {boolean} callLine
  * @property {unknown[]} breakpoint
  * @property {unknown[]} watches
  * @property {number} startStep
@@ -189,6 +190,18 @@ var Wegas = {
         newFn.prototype = fn.prototype;
         return Wegas.Object.assign(newFn, fn);
     },
+    /**
+     * Get the callee line of the function currently executed
+     * @param {number=} depth can be higher in the call stack
+     */
+    getCalleeLine: function(depth) {
+        // 3 is self + call of this function + callee
+        return Number(
+            new RegExp('(?:\\n.*){' + (3 + (depth || 0)) + '}:(\\d+)').exec(
+                new Error().stack
+            )[1]
+        );
+    },
 };
 /**
  * print arguments
@@ -208,6 +221,8 @@ var wdebug = function() {
  */
 function ProgGameSimulation(cfg) {
     this.debug = cfg.debug || false;
+    this.callLine = cfg.callLine || false;
+    this.playerCTX = false;
     this.breakpoints = cfg.breakpoints || [];
     this.watches = cfg.watches || [];
     this.startStep = cfg.startStep === undefined ? -1 : cfg.startStep;
@@ -307,9 +322,7 @@ ProgGameSimulation.prototype = {
             });
         }
     },
-    commands: {
-        move: function() {},
-    },
+
     /**
      * Queue command
      * @param {{type: string, [key:string]:any}} cfg
@@ -392,7 +405,7 @@ ProgGameSimulation.prototype = {
     },
     say: function(msg) {
         if (!this.beforeAction()) return;
-
+        this.sendCallLine();
         this.doSay({
             text: '' + msg,
         });
@@ -419,6 +432,7 @@ ProgGameSimulation.prototype = {
     },
     read: function() {
         if (this.checkGameOver()) return;
+        this.sendCallLine();
         var panel = this.findAt(this.cObject.x, this.cObject.y, 'Panel'),
             value;
         if (panel && panel.components === 'Panel') {
@@ -454,6 +468,7 @@ ProgGameSimulation.prototype = {
             o,
             object = this.cObject,
             moveV;
+        this.sendCallLine();
         if (object == null || object.direction == null) {
             return;
         }
@@ -517,9 +532,14 @@ ProgGameSimulation.prototype = {
             y: object.y,
         });
     },
+    /**
+     * @param {number} dir
+     */
     rotate: function(dir) {
         var object = this.cObject;
-
+        if (object == null || object.direction == null) {
+            return;
+        }
         if (!this.beforeAction(object)) return;
 
         if (!this.consumeActions(object, 1)) {
@@ -535,11 +555,16 @@ ProgGameSimulation.prototype = {
         this.afterAction({ type: 'rotate', direction: dir });
     },
     right: function() {
+        this.sendCallLine();
         this.rotate(-1);
     },
     left: function() {
+        this.sendCallLine();
         this.rotate(1);
     },
+    /**
+     * @param {() => void} fn
+     */
     npc: function(fn) {
         var oldO = this.cObject;
         var npc;
@@ -599,16 +624,6 @@ ProgGameSimulation.prototype = {
                 }
             }
         }
-
-        // if (
-        //     this.level.map[y] === undefined || // outside map
-        //     this.level.map[y][x] === undefined || // outside map
-        //     this.level.map[y][x].y === 0 // no path
-        //         ? !collided
-        //         : false
-        // ) {
-        //     return true;
-        // }
         return false;
     },
     /**
@@ -638,7 +653,6 @@ ProgGameSimulation.prototype = {
                 type: 'gameWon',
             });
             var maxLevel = Variable.find(gameModel, 'maxLevel'),
-                levelLimit = Variable.find(gameModel, 'levelLimit'),
                 currentLevel = Variable.find(gameModel, 'currentLevel');
             if (maxLevel.getValue(self) <= currentLevel.getValue(self)) {
                 Variable.find(gameModel, 'money').add(self, 100);
@@ -714,11 +728,24 @@ ProgGameSimulation.prototype = {
             }
         }
         var params = Wegas.scopeValue(scope);
+        // This new function offsets initial code by 1 line.
         var f = new Function(
             params.variables.join(','),
             'return (' + playerFn.toString() + ').call({})'
         );
-        return f.apply(null, params.values);
+        this.playerCTX = true;
+        var result = f.apply(null, params.values);
+        this.playerCTX = false;
+        return result;
+    },
+    sendCallLine: function() {
+        if (this.callLine && this.playerCTX) {
+            // minus 1 to fix new Function offset
+            this.sendCommand({
+                type: 'line',
+                line: Wegas.getCalleeLine(1) - 1,
+            });
+        }
     },
     /**
      * Find object with correspondig id
