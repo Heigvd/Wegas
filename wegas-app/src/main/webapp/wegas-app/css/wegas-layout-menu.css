@@ -22,7 +22,7 @@
  * Inline menu
  * do not display the label and display all items in a row
 */
-wegas-layout-menu.wegas-layout-menu-inline > .wegas-layout-menu-label {
+.wegas-layout-menu.wegas-layout-menu-inline > .wegas-layout-menu-label {
     display: none;
 }
 
