@@ -46,6 +46,7 @@
     bottom: 0;
     left: 0;
     right: 0;
+    display: block;
 }
 
 .wegas-layout-menu-select > .wegas-layout-menu-label,
