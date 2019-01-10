@@ -397,7 +397,9 @@ YUI.add('pact-level', function(Y) {
                 }
             },
             run: function() {
-                this.sendRunRequest(this.mainEditorTab.aceField.getValue());
+                this.sendRunRequest(this.mainEditorTab.aceField.getValue(), {
+                    callLine: true,
+                });
             },
             debug: function() {
                 var code = this.instrument(
@@ -841,6 +843,7 @@ YUI.add('pact-level', function(Y) {
                     this.marker = null;
                 }
                 if (line) {
+                    line = line - 1; // 0 based
                     this.cLine = line;
                     /*global require */
                     var Range = require('ace/range').Range;

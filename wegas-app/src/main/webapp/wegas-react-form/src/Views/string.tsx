@@ -100,6 +100,7 @@ class StringView extends React.Component<
                     value={this.state.value}
                     disabled={this.props.view.disabled}
                     readOnly={this.props.view.readOnly}
+                    autoComplete="off"
                 />
             );
         }
@@ -114,6 +115,7 @@ class StringView extends React.Component<
                 onBlur={this.handleChange}
                 disabled={this.props.view.disabled}
                 readOnly={this.props.view.readOnly}
+                autoComplete="off"
             />
         );
     }
