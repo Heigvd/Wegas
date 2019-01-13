@@ -480,18 +480,18 @@ YUI.add('wegas-mcq-view', function(Y) {
                 _replies = choiceInstance.get("replies"),
                 pendingReplies = [],
                 validatedReplies = [],
-                notIgnoredValidatedReplies = [],
+                notIgnoredReplies = [],
                 cbx = question.get("cbx"),
                 hasTitle = !this.isTextEmpty(I18n.t(choice.get("label"), {inlineEditor: 'none', fallback: ""})),
                 hasDescription = !this.isTextEmpty(I18n.t(choice.get("description"), {inlineEditor: 'none', fallback: ""}));
 
             for (var i in _replies) {
                 var reply = _replies[i];
+                if (!reply.get("ignored")) {
+                    notIgnoredReplies.push(reply);
+                }
                 if (reply.get("validated")) {
                     validatedReplies.push(reply);
-                    if (!reply.get("ignored")) {
-                        notIgnoredValidatedReplies.push(reply);
-                    }
                 } else {
                     pendingReplies.push(reply);
                 }
@@ -503,21 +503,27 @@ YUI.add('wegas-mcq-view', function(Y) {
             this.description.syncUI();
 
             this.summary.set("content",
-                '<span class="numberOfReplies">' + notIgnoredValidatedReplies.length + '<span class="symbole">x</span></span>');
+                '<span class="numberOfReplies">' + notIgnoredReplies.length + '<span class="symbole">x</span></span>');
 
             this.summary.syncUI();
 
 
+            var repliesToDisplay;
+            if (cbx) {
+                repliesToDisplay = _replies; // Show all replies
+            } else {
+                repliesToDisplay = validatedReplies;
+            }
 
             var noFeedbacks = true;
-            if (validatedReplies.length &&
+            if (repliesToDisplay.length &&
                 (!cbx || question.getInstance().get("validated"))
                 && !(cbx && question.get("tabular")) && this.get("displayResult") === "inline") {
-                this.resultTitle.set("content", validatedReplies.length > 1 ? Y.Wegas.I18n.t('mcq.results').capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize());
+                this.resultTitle.set("content", repliesToDisplay.length > 1 ? Y.Wegas.I18n.t('mcq.results').capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize());
                 this.resultTitle.syncUI();
                 var repliesIds = {};
-                for (var i in validatedReplies) {
-                    var reply = validatedReplies[i];
+                for (var i in repliesToDisplay) {
+                    var reply = repliesToDisplay[i];
                     repliesIds[reply.get("id")] = true;
                     if (this.results[reply.get("id")]) {
                         noFeedbacks = false;
@@ -582,7 +588,7 @@ YUI.add('wegas-mcq-view', function(Y) {
 
             bb.toggleClass("unread", choiceInstance.get("unread"));
             bb.toggleClass("noFeedbacks", noFeedbacks);
-            bb.toggleClass("hasReplies", validatedReplies.length > 0);
+            bb.toggleClass("hasReplies", notIgnoredReplies.length > 0);
             bb.toggleClass("hasPendingReplies", pendingReplies.length > 0);
             bb.toggleClass("selectable", cbx || !maxReplies || validatedReplies.length < maxReplies);
             bb.toggleClass("noTitle", !hasTitle);
