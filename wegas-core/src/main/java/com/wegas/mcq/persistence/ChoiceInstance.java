@@ -214,6 +214,21 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
         return replies;
     }
 
+    public List<Reply> getReplies(Boolean validatedFilter) {
+        List<Reply> subReplies = new ArrayList<>();
+
+        if (validatedFilter != null) {
+            for (Reply r : replies) {
+                if (validatedFilter.equals(r.isValidated())){
+                    subReplies.add(r);
+                }
+            }
+        } else {
+            subReplies.addAll(replies);
+        }
+        return subReplies;
+    }
+
     /**
      * @param replies the replies to set
      */

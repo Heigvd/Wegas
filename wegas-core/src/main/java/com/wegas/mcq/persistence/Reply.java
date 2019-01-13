@@ -21,7 +21,6 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -73,6 +72,13 @@ public class Reply extends AbstractEntity implements DatedEntity {
     @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty
     private Boolean ignored = false;
+
+    /**
+     *
+     */
+    @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty
+    private Boolean validated = false;
     /**
      *
      */
@@ -107,6 +113,26 @@ public class Reply extends AbstractEntity implements DatedEntity {
      */
     public void setIgnored(Boolean ignored) {
         this.ignored = ignored;
+    }
+
+    /**
+     * Is the reply validated.
+     *
+     * impact (or ignoreationImapct in ignored rely case) of a validated reply has been applied
+     *
+     * @return
+     */
+    public Boolean isValidated() {
+        return validated;
+    }
+
+    /**
+     * Set validated
+     *
+     * @param validated
+     */
+    public void setValidated(Boolean validated) {
+        this.validated = validated;
     }
 
     @Override
@@ -220,7 +246,7 @@ public class Reply extends AbstractEntity implements DatedEntity {
     }
 
     public TranslatableContent getAnswer() {
-        if (result != null) {
+        if (result != null && this.isValidated()) {
             return result.getAnswer();
         } else {
             return null;
@@ -232,7 +258,7 @@ public class Reply extends AbstractEntity implements DatedEntity {
     }
 
     public TranslatableContent getIgnorationAnswer() {
-        if (result != null) {
+        if (result != null && this.isValidated()) {
             return result.getIgnorationAnswer();
         } else {
             return null;
@@ -244,7 +270,7 @@ public class Reply extends AbstractEntity implements DatedEntity {
     }
 
     public Set<String> getFiles() {
-        if (result != null) {
+        if (result != null && this.isValidated()) {
             return result.getFiles();
         } else {
             return new HashSet<>();

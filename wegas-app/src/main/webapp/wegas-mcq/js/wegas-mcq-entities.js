@@ -59,7 +59,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     // not active or manually validated
                     return false;
                 } else {
-                    var qReplies = qInstance.get('replies');
+                    var qReplies = qInstance.getValidatedReplies();
 
                     if (qReplies) {
                         if (this.get('maxReplies')) {
@@ -79,7 +79,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             choiceI = choice.getInstance();
                             if (choiceI.get("active")) {
                                 if (choice.get("maxReplies")) {
-                                    if (choiceI.get("replies").length < choice.get("maxReplies")) {
+                                    if (choiceI.getValidatedReplies().length < choice.get("maxReplies")) {
                                         // found an answerable choice !
                                         return true;
                                     }
@@ -323,6 +323,11 @@ YUI.add('wegas-mcq-entities', function(Y) {
      * QuestionInstance mapper
      */
     Wegas.persistence.QuestionInstance = Y.Base.create("QuestionInstance", Wegas.persistence.VariableInstance, [], {
+        getValidatedReplies: function() {
+            return Y.Array.filter(this.get('replies'), function(reply) {
+                return reply.get("validated");
+            });
+        },
         getRepliesByStartTime: function(startTime) {
             var i,
                 ret = [],
@@ -990,7 +995,13 @@ YUI.add('wegas-mcq-entities', function(Y) {
     /**
      * MCQ ChoiceInstance mapper
      */
-    persistence.ChoiceInstance = Y.Base.create("ChoiceInstance", persistence.VariableInstance, [], {}, {
+    persistence.ChoiceInstance = Y.Base.create("ChoiceInstance", persistence.VariableInstance, [], {
+        getValidatedReplies: function() {
+            return Y.Array.filter(this.get('replies'), function(reply) {
+                return reply.get("validated");
+            });
+        }
+    }, {
         ATTRS: {
             "@class": {
                 value: "ChoiceInstance"
@@ -1084,6 +1095,12 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: BOOLEAN,
                 view: {
                     label: 'Is ignored'
+                }
+            },
+            validated: {
+                type: BOOLEAN,
+                view: {
+                    label: 'is validated'
                 }
             },
             resultName: {

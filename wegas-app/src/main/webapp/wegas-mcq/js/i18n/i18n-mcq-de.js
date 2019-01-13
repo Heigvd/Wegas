@@ -25,7 +25,8 @@ YUI.add("wegas-i18n-mcq-de", function(Y) {
             noReply: "Bitte wählen Sie eine Antwort aus!",
             notEnoughReply: "Bitte wählen Sie mindestens {{min}} Antworten aus!",
             maximumReached: "Sie können nicht mehr als {{max}}} Antworten auswählen",
-            conflict: "Ihre Anfrage wurde nicht berücksichtigt, weil einer Ihrer Teamkollegen die gleiche Operation zur gleichen Zeit versucht hat.<br />"
+            conflict: "Ihre Anfrage wurde nicht berücksichtigt, weil einer Ihrer Teamkollegen die gleiche Operation zur gleichen Zeit versucht hat.<br />",
+            possibleChoices: 'Wahlen zu Verfügung: '
         }
     });
 });

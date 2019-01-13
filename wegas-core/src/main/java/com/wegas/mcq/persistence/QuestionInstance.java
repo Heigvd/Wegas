@@ -47,7 +47,6 @@ public class QuestionInstance extends VariableInstance implements ReadableInstan
     @WegasEntityProperty
     private Boolean validated = FALSE;
 
-
     /**
      * @return the active
      */
@@ -77,19 +76,31 @@ public class QuestionInstance extends VariableInstance implements ReadableInstan
         return Helper.copyAndSort(this.getReplies(p), new EntityComparators.CreateTimeComparator<>());
     }
 
-    public List<Reply> getReplies(Player p) {
+    /**
+     * get all, only validated or only not validated replies
+     *
+     * @param p
+     * @param validatedFilter true : only validated, false: only not validated; null:both
+     *
+     * @return
+     */
+    public List<Reply> getReplies(Player p, Boolean validatedFilter) {
         List<Reply> replies = new ArrayList<>();
         QuestionDescriptor qD = (QuestionDescriptor) this.findDescriptor();
 
         for (ChoiceDescriptor cd : qD.getItems()) {
             if (this.isDefaultInstance()) {
-                replies.addAll(cd.getDefaultInstance().getReplies());
+                replies.addAll(cd.getDefaultInstance().getReplies(validatedFilter));
             } else {
-                replies.addAll(cd.getInstance(p).getReplies());
+                replies.addAll(cd.getInstance(p).getReplies(validatedFilter));
             }
         }
 
         return replies;
+    }
+
+    public List<Reply> getReplies(Player p) {
+        return this.getReplies(p, null);
     }
 
     @JsonIgnore

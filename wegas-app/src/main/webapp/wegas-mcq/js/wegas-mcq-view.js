@@ -141,6 +141,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             }
 
             this.mainList.add(this.aList);
+
             if (!this.readonly) {
                 this._buttonContainer = new Y.Wegas.AbsoluteLayout({
                     cssClass: "wegas-whview--button-container",
@@ -148,7 +149,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 });
                 this._submitButton = new Y.Wegas.Button({
                     cssClass: "wegas-whview--submit-button",
-                    "label": Y.Wegas.I18n.t('mcq.submit'),
+                    "label": this.getAttrValueOrDefault("submitVar", I18n.t("mcq.submit")),
                     editable: false
                 });
                 this._submitButton.on("click", this.submit, this);
@@ -167,6 +168,17 @@ YUI.add('wegas-mcq-view', function(Y) {
                     }
                 });
             }
+        },
+        getAttrValueOrDefault: function(attrName, defaultValue) {
+            if (this.get(attrName)) {
+                var desc = this.get(attrName + ".evaluated");
+                if (desc instanceof Y.Wegas.persistence.ListDescriptor) {
+                    return I18n.t(desc.get("label"));
+                } else {
+                    return Y.Wegas.Helper.stripHtml(desc.getInstance().get("value"));
+                }
+            }
+            return defaultValue;
         },
         bindUpdatedInstance: function() {
             if (this.handlers.onInstanceUpdate) {
@@ -356,6 +368,19 @@ YUI.add('wegas-mcq-view', function(Y) {
                     label: "Question",
                     classFilter: ["WhQuestionDescriptor"]
                 }
+            },
+            submitVar: {
+                type: "object",
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                view: {
+                    type: 'variableselect',
+                    label: 'Submit button text',
+                    className: 'wegas-advanced-feature',
+                    classFilter: [
+                        "TextDescriptor", "StringDescriptor", // use the value
+                        "ListDescriptor" // use the label
+                    ]
+                }
             }
         }
     });
@@ -369,6 +394,17 @@ YUI.add('wegas-mcq-view', function(Y) {
             this.handlers = {};
             this.after("disabledChange", this.syncUI, this);
         },
+        getAttrValueOrDefault: function(attrName, defaultValue) {
+            if (this.get(attrName)) {
+                var desc = this.get(attrName + ".evaluated");
+                if (desc instanceof Y.Wegas.persistence.ListDescriptor) {
+                    return I18n.t(desc.get("label"));
+                } else {
+                    return Y.Wegas.Helper.stripHtml(desc.getInstance().get("value"));
+                }
+            }
+            return defaultValue;
+        },
         renderUI: function() {
             this.title = new Y.Wegas.Text({
                 cssClass: "mcqchoice__title",
@@ -380,7 +416,9 @@ YUI.add('wegas-mcq-view', function(Y) {
             });
             this.submit = new Y.Wegas.Text({
                 cssClass: "mcqchoice__submit",
-                content: "<span tabindex='0' role='button'>" + I18n.t("mcq.submit") + "</span>",
+                content: "<span tabindex='0' role='button'>"
+                    + this.getAttrValueOrDefault("submitVar", I18n.t("mcq.submit"))
+                    + "</span>",
                 editable: false
 
             });
@@ -439,13 +477,25 @@ YUI.add('wegas-mcq-view', function(Y) {
                 choiceInstance = choice.getInstance(),
                 question = this.get("question.evaluated"),
                 maxReplies = choice.get("maxReplies"),
-                allReplies = choiceInstance.get("replies"),
-                replies = Y.Array.filter(allReplies, function(reply) {
-                    return !reply.get("ignored");
-                }),
+                _replies = choiceInstance.get("replies"),
+                pendingReplies = [],
+                validatedReplies = [],
+                notIgnoredValidatedReplies = [],
                 cbx = question.get("cbx"),
                 hasTitle = !this.isTextEmpty(I18n.t(choice.get("label"), {inlineEditor: 'none', fallback: ""})),
                 hasDescription = !this.isTextEmpty(I18n.t(choice.get("description"), {inlineEditor: 'none', fallback: ""}));
+
+            for (var i in _replies) {
+                var reply = _replies[i];
+                if (reply.get("validated")) {
+                    validatedReplies.push(reply);
+                    if (!reply.get("ignored")) {
+                        notIgnoredValidatedReplies.push(reply);
+                    }
+                } else {
+                    pendingReplies.push(reply);
+                }
+            }
 
             this.title.set("content", I18n.t(choice.get("label"), {inlineEditor: this.get("translationInlineEditor") ? 'string' : null, fallback: ""}));
             this.title.syncUI();
@@ -453,21 +503,21 @@ YUI.add('wegas-mcq-view', function(Y) {
             this.description.syncUI();
 
             this.summary.set("content",
-                '<span class="numberOfReplies">' + replies.length + '<span class="symbole">x</span></span>');
+                '<span class="numberOfReplies">' + notIgnoredValidatedReplies.length + '<span class="symbole">x</span></span>');
 
             this.summary.syncUI();
 
 
 
             var noFeedbacks = true;
-            if (allReplies.length &&
+            if (validatedReplies.length &&
                 (!cbx || question.getInstance().get("validated"))
                 && !(cbx && question.get("tabular")) && this.get("displayResult") === "inline") {
-                this.resultTitle.set("content", allReplies.length > 1 ? Y.Wegas.I18n.t('mcq.results').capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize());
+                this.resultTitle.set("content", validatedReplies.length > 1 ? Y.Wegas.I18n.t('mcq.results').capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize());
                 this.resultTitle.syncUI();
                 var repliesIds = {};
-                for (var i in allReplies) {
-                    var reply = allReplies[i];
+                for (var i in validatedReplies) {
+                    var reply = validatedReplies[i];
                     repliesIds[reply.get("id")] = true;
                     if (this.results[reply.get("id")]) {
                         noFeedbacks = false;
@@ -515,7 +565,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                     request: "/QuestionDescriptor/Read/" +
                         Y.Wegas.Facade.Game.get('currentPlayerId') + "/" + choice.get("id"),
                     cfg: {
-                        method: "PUT",
+                        method: "PUT"
                     }
                 });
             }
@@ -532,8 +582,9 @@ YUI.add('wegas-mcq-view', function(Y) {
 
             bb.toggleClass("unread", choiceInstance.get("unread"));
             bb.toggleClass("noFeedbacks", noFeedbacks);
-            bb.toggleClass("hasReplies", replies.length > 0);
-            bb.toggleClass("selectable", cbx || !maxReplies || replies.length < maxReplies);
+            bb.toggleClass("hasReplies", validatedReplies.length > 0);
+            bb.toggleClass("hasPendingReplies", pendingReplies.length > 0);
+            bb.toggleClass("selectable", cbx || !maxReplies || validatedReplies.length < maxReplies);
             bb.toggleClass("noTitle", !hasTitle);
             bb.toggleClass("noDescription", !hasDescription);
         },
@@ -597,6 +648,19 @@ YUI.add('wegas-mcq-view', function(Y) {
                     className: 'wegas-advanced-feature',
                     label: "Display Result"
                 }
+            },
+            submitVar: {
+                type: "object",
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                view: {
+                    type: 'variableselect',
+                    label: 'Submit button text',
+                    className: 'wegas-advanced-feature',
+                    classFilter: [
+                        "TextDescriptor", "StringDescriptor", // use the value
+                        "ListDescriptor" // use the label
+                    ]
+                }
             }
         }
     }
@@ -622,44 +686,106 @@ YUI.add('wegas-mcq-view', function(Y) {
                 if (this.lockable) {
                     this.lockable.set("token", token);
                 } else {
-                    this.plug(Y.Plugin.Lockable, {token: token});
+                    this.plug(Y.Plugin.Lockable, {
+                        token: token,
+                        editable: false
+                    });
                 }
             }
         },
+
+        getAttrValueOrDefault: function(attrName, defaultValue) {
+            if (this.get(attrName)) {
+                var desc = this.get(attrName + ".evaluated");
+                if (desc instanceof Y.Wegas.persistence.ListDescriptor) {
+                    return I18n.t(desc.get("label"));
+                } else {
+                    return Y.Wegas.Helper.stripHtml(desc.getInstance().get("value"));
+                }
+            }
+            return defaultValue;
+        },
+        updateAvailableInvite: function(num) {
+            if (this.availableChoices) {
+                var invite = this.getAttrValueOrDefault("availableChoicesInvite", I18n.t("mcq.possibleChoices"));
+                this.availableChoices.set("content", "<span tabindex='0' role='button'>" + invite + num + "</span>");
+                this.availableChoices.syncUI();
+            }
+        },
         renderUI: function() {
+            this.destroyAll();
 
             this.title = new Y.Wegas.Text({
-                cssClass: "mcq-view__question-title"
+                cssClass: "mcq-view__question-title",
+                editable: false
             });
             this.description = new Y.Wegas.Text({
-                cssClass: "mcq-view__question-description"
+                cssClass: "mcq-view__question-description",
+                editable: false
             });
             this.choiceList = new Y.Wegas.FlexList({
-                cssClass: "mcq-view__choices"
+                cssClass: "mcq-view__choices",
+                editable: false
             });
             this.submitButton = new Y.Wegas.Text({
                 cssClass: "mcq-view__submit",
-                content: "<span tabindex='0' role='button'>" + I18n.t("mcq.submit") + "</span>"
+                content: "<span tabindex='0' role='button'>"
+                    + this.getAttrValueOrDefault("submitVar", I18n.t("mcq.submit"))
+                    + "</span>",
+                editable: false
             });
             this.resultTitle = new Y.Wegas.Text({
-                cssClass: "mcq-view__results-title"
+                cssClass: "mcq-view__results-title",
+                editable: false
             });
             this.resultList = new Y.Wegas.FlexList({
-                cssClass: "mcq-view__results"
+                cssClass: "mcq-view__results",
+                editable: false
             });
 
             this.add(this.title);
             if (this.get("displayResult") === "dialogue") {
 
                 this.history = new Y.Wegas.FlexList({
-                    cssClass: "mcq-view__history"
+                    cssClass: "mcq-view__history",
+                    editable: false
                 });
 
                 this.history.add(this.description);
                 this.history.add(this.resultTitle);
                 this.history.add(this.resultList);
                 this.add(this.history);
+
+                this.choiceHeader = new Y.Wegas.FlexList({
+                    cssClass: "mcq-view__choice_header",
+                    direction: "horizontal",
+                    editable: false
+                });
+
+                this.availableChoices = new Y.Wegas.Text({
+                    cssClass: "mcq-view__invite",
+                    content: "",
+                    editable: false
+                });
+
+                this.choicesExpander = new Y.Wegas.Text({
+                    cssClass: "mcq-view__choice_expander",
+                    content: "<span tabindex='1' role='button'></span>",
+                    editable: false
+                });
+                this.choiceHeader.add(this.availableChoices);
+                this.choiceHeader.add(this.choicesExpander);
+
+                this.add(this.choiceHeader);
                 this.add(this.choiceList);
+
+                this.pendings = new Y.Wegas.FlexList({
+                    cssClass: "mcq-view__pendings",
+                    editable: false
+                });
+
+                this.add(this.pendings);
+
                 this.add(this.submitButton);
             } else {
                 this.add(this.description);
@@ -677,6 +803,10 @@ YUI.add('wegas-mcq-view', function(Y) {
         },
         bindUI: function() {
             this.after("variableChange", this.afterVariableChange, this);
+
+            this.handlers.expandChoices = this.get("contentBox").delegate("click", function(e) {
+                this.get("contentBox").toggleClass("show_choices");
+            }, ".mcq-view__choice_header", this);
 
             this.handlers.rmDescriptorListener = Y.Wegas.Facade.Variable.after("delete", function(e) {
                 var choice = e.entity;
@@ -720,7 +850,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 ".answerable.cbx.checkbox.maximumReached:not(.locked) .hasReplies .mcqchoice__submit"  // unselect checkboxes even if maximum reached
                 , this);
 
-            this.get("boundingBox").delegate("click", this.validateQuestion, ".cbx.answerable:not(.locked) .mcq-view__submit span", this);
+            this.get("boundingBox").delegate("click", this.validateQuestion, ".answerable:not(.locked) .mcq-view__submit span", this);
         },
         beforeRequest: function() {
             this.lockable.lock();
@@ -771,8 +901,50 @@ YUI.add('wegas-mcq-view', function(Y) {
                         }
                     });
                 }
+            } else if (this.getEffectiveDisplayMode() === "dialogue") {
+                //select or cancel ?
+                var replies = choice.getInstance().get("replies"),
+                    pendingReplies = [],
+                    validatedReplies = [];
 
+                for (var i in replies) {
+                    if (replies[i].get("validated")) {
+                        validatedReplies.push(replies[i]);
+                    } else {
+                        pendingReplies.push(replies[i]);
+                    }
+                }
 
+                if (pendingReplies.length) {
+                    for (var i in pendingReplies) {
+                        this.beforeRequest();
+                        Y.Wegas.Facade.Variable.sendRequest({
+                            request: "/QuestionDescriptor/CancelReply/" + pendingReplies[i].get('id')
+                                + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
+                            cfg: {
+                                method: "GET"
+                            },
+                            on: {
+                                success: Y.bind(this.onSuccess, this),
+                                failure: Y.bind(this.onFailure, this)
+                            }
+                        });
+                    }
+                } else {
+                    this.beforeRequest();
+                    Y.Wegas.Facade.Variable.sendRequest({
+                        request: "/QuestionDescriptor/DeselectOthersAndSelectChoice/" + choice.get('id')
+                            + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
+                            + "/StartTime/0",
+                        cfg: {
+                            method: "GET" // initially: POST
+                        },
+                        on: {
+                            success: Y.bind(this.onSuccess, this),
+                            failure: Y.bind(this.onFailure, this)
+                        }
+                    });
+                }
             } else {
                 this.beforeRequest();
                 Y.Wegas.Facade.Variable.sendRequest({
@@ -796,7 +968,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 questionInstance = questionDescriptor.getInstance(),
                 minQ, maxQ;
 
-            if (questionDescriptor.get("cbx")) { // doublechecl
+            if (questionDescriptor.get("cbx")) { // doublecheck
                 // Prevent validation of questions with too few replies
                 if (Y.Lang.isNumber(questionDescriptor.get("minReplies"))) {
                     minQ = questionDescriptor.get("minReplies");
@@ -825,7 +997,38 @@ YUI.add('wegas-mcq-view', function(Y) {
                         failure: Y.bind(this.onFailure, this)
                     }
                 });
+            } else if (this.getEffectiveDisplayMode() === "dialogue") {
+                // validate all pendings replies (usually only one...)
+                var replies = Y.Array.filter(questionInstance.get("replies"), function(reply) {
+                    return !reply.get("validated");
+                }, this);
+
+                for (var i in replies) {
+                    var reply = replies[i];
+                    this.beforeRequest();
+                    Y.Wegas.Facade.Variable.sendRequest({
+                        request: "/QuestionDescriptor/ValidateReply/" + reply.get("id")
+                            + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
+                        cfg: {
+                            method: "GET" // initially: POST
+                        },
+                        on: {
+                            success: Y.bind(this.onSuccess, this),
+                            failure: Y.bind(this.onFailure, this)
+                        }
+                    });
+                }
             }
+        },
+        isCbx: function() {
+            return this.get("variable.evaluated").get("cbx");
+        },
+        getEffectiveDisplayMode: function() {
+            var effectiveDisplayResult = this.get("displayResult");
+            if (this.isCbx() && effectiveDisplayResult === "dialogue") {
+                effectiveDisplayResult = "bottom";
+            }
+            return effectiveDisplayResult;
         },
         syncUI: function() {
             var cb = this.get(CONTENTBOX),
@@ -835,7 +1038,9 @@ YUI.add('wegas-mcq-view', function(Y) {
                 maxReplies,
                 minReplies, choices, cbx,
                 maximumReached,
-                answerable;
+                answerable,
+                validatedReplies,
+                pendingReplies;
 
 
             questionDescriptor = this.get("variable.evaluated");
@@ -847,6 +1052,15 @@ YUI.add('wegas-mcq-view', function(Y) {
                 choices = questionDescriptor.get("items");
                 cbx = questionDescriptor.get("cbx");
                 maximumReached = maxReplies && replies.length >= maxReplies;
+                validatedReplies = [];
+                pendingReplies = [];
+                for (var i in replies) {
+                    if (replies[i].get("validated")) {
+                        validatedReplies.push(replies[i]);
+                    } else {
+                        pendingReplies.push(replies[i]);
+                    }
+                }
 
                 var effectiveDisplayResult = this.get("displayResult");
                 if (cbx && effectiveDisplayResult === "dialogue") {
@@ -854,8 +1068,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                 }
 
                 //!this.get("disabled") && // not disable by a lock
-                answerable = ((questionDescriptor.get("cbx") && !questionInstance.get("validated")) // not validated
-                    || (!questionDescriptor.get("cbx") && !maximumReached && !questionInstance.get("validated"))); // maximum not reached yet
+                answerable = ((cbx && !questionInstance.get("validated")) // not validated
+                    || (!cbx && !maximumReached && !questionInstance.get("validated"))); // maximum not reached yet
 
                 this.title.set("content", I18n.t(questionDescriptor.get("label"), {inlineEditor: 'string', fallback: ""}));
                 this.title.syncUI();
@@ -903,7 +1117,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                                     "content": "Variable.find(gameModel, \"" + questionDescriptor.get("name") + "\");"
                                 },
                                 translationInlineEditor: effectiveDisplayResult === "dialogue" ? false : true,
-                                displayResult: effectiveDisplayResult === "inline" ? "inline" : "no"
+                                displayResult: effectiveDisplayResult === "inline" ? "inline" : "no",
+                                submitVar: this.get("submitVar")
                             });
                             this.choiceList.add(this.choices[choice.get("id")]);
                         }
@@ -928,16 +1143,16 @@ YUI.add('wegas-mcq-view', function(Y) {
 
                 var noFeedbacks = true;
 
-                if (replies.length && (
+                if (validatedReplies.length && (
                     (effectiveDisplayResult === "bottom"
                         || effectiveDisplayResult === "newBottom"
                         || effectiveDisplayResult === "dialogue")
                     && (!cbx || questionInstance.get("validated")))
                     || (cbx && questionInstance.get("validated") && questionDescriptor.get("tabular"))) {
-                    this.resultTitle.set("content", replies.length > 1 ? Y.Wegas.I18n.t('mcq.results').capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize());
+                    this.resultTitle.set("content", validatedReplies.length > 1 ? Y.Wegas.I18n.t('mcq.results').capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize());
                     this.resultTitle.syncUI();
                     if (cbx) {
-                        replies = [];
+                        validatedReplies = [];
                         // select replies according to order of choices
                         for (i = 0; i < choices.length; i += 1) {
                             var choiceD = choices[i],
@@ -945,14 +1160,14 @@ YUI.add('wegas-mcq-view', function(Y) {
                                 cReplies = choiceI.get("replies");
 
                             // skip inactive choices or choices without replies
-                            if (choiceI.get("active") && cReplies && cReplies.length > 0) {
+                            if (choiceI.get("active") && cReplies && cReplies.length > 0 && cReplies[0].get("validated")) {
                                 replies.push(cReplies[0]);
                             }
                         }
                     }
                     var repliesIds = {};
-                    for (var i in replies) {
-                        var reply = replies[i];
+                    for (var i in validatedReplies) {
+                        var reply = validatedReplies[i];
                         repliesIds[reply.get("id")] = true;
                         if (this.results[reply.get("id")]) {
                             noFeedbacks = false;
@@ -976,15 +1191,19 @@ YUI.add('wegas-mcq-view', function(Y) {
                                 if (toDisplay || title) {
                                     noFeedbacks = false;
                                     this.results[reply.get("id")] = new Y.Wegas.Text({
-                                        cssClass: "wegas-mcqview__result " + (this.resync ? "blink" : ""),
+                                        cssClass: "wegas-mcqview__result " + (this.resync ? "typing" : ""),
                                         content: '<div class="mcq-reply-choice">' +
                                             '<div class="mcq-reply-title">' + I18n.t(choiceD.get("label")) + '</div>' +
                                             (effectiveDisplayResult === "dialogue" ?
                                                 '<div class="mcq-reply-description">' + I18n.t(choiceD.get("description")) + '</div>' : "") +
                                             '</div>' +
                                             '<div class="mcq-reply-feedback">' +
+                                            '<img class="mcq-reply-typing" src="./wegas-mcq/images/typing.gif"></img>' +
                                             '<div class="mcq-reply-content">' + toDisplay + '</div>' +
                                             '</div>'
+                                    });
+                                    Y.later(5000, this.results[reply.get("id")], function() {
+                                        this.get("boundingBox").removeClass("typing");
                                     });
                                     // Insert the latest reply at the top of the list, but not for cbx question nor dialogue :
                                     this.resultList.add(this.results[reply.get("id")], !cbx && effectiveDisplayResult !== 'dialogue' ? 0 : undefined);
@@ -1002,6 +1221,26 @@ YUI.add('wegas-mcq-view', function(Y) {
                 }
 
 
+                if (effectiveDisplayResult === "dialogue") {
+
+
+                    if (!this.resync) {
+                        // if there is no validated replies or pendings, show possible choices
+                        this.get("contentBox").toggleClass("show_choices", this.resultList.isEmpty() || pendingReplies.length);
+                    }
+
+                    for (var i in pendingReplies) {
+                        var reply = pendingReplies[i];
+                        var label = I18n.t(reply.getChoiceDescriptor().get("label"));
+                        var description = I18n.t(reply.getChoiceDescriptor().get("description"));
+                        this.pendings.destroyAll();
+                        this.pendings.add(new Y.Wegas.Text({
+                            content: "<div class='pending-label'>" + label + "</div>" +
+                                "<div class='pending-description'>" + description + "</div>"
+                        }));
+                    }
+                }
+
                 if (noFeedbacks) {
                     // make sure reply list is empty
                     this.resultTitle.set("content", "");
@@ -1012,9 +1251,14 @@ YUI.add('wegas-mcq-view', function(Y) {
                     }
                 }
 
-                this.get("contentBox").setAttribute("data-displayResult", effectiveDisplayResult);
+                cb.setAttribute("data-displayResult", effectiveDisplayResult);
+
+                var nbSelectableChoice = this.choiceList.get("boundingBox").all(".selectable").size();
+
+                this.updateAvailableInvite(nbSelectableChoice);
 
                 cb.setAttribute("data-nbChoices", this.choiceList.size());
+                cb.toggleClass("hasPendingReplies", pendingReplies.length);
                 cb.toggleClass("noFeedbacks", noFeedbacks);
                 cb.toggleClass("cbx", cbx);
                 cb.toggleClass("horizontal", cbx && questionDescriptor.get("tabular"));
@@ -1079,6 +1323,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 value: false,
                 optional: true,
                 view: {
+                    label: "Read-Only",
                     type: "scriptcondition"
                 }
             },
@@ -1102,6 +1347,34 @@ YUI.add('wegas-mcq-view', function(Y) {
                     label: "Display result"
                 }
 
+            },
+            availableChoicesInvite: {
+                type: "object",
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                visible: function(val, formVal) {
+                    return formVal.displayResult === "dialogue";
+                },
+                view: {
+                    type: 'variableselect',
+                    label: 'Available chocices invite',
+                    classFilter: [
+                        "TextDescriptor", "StringDescriptor", // use the value
+                        "ListDescriptor" // use the label
+                    ]
+                }
+            },
+            submitVar: {
+                type: "object",
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                view: {
+                    type: 'variableselect',
+                    label: 'Submit button text',
+                    className: 'wegas-advanced-feature',
+                    classFilter: [
+                        "TextDescriptor", "StringDescriptor", // use the value
+                        "ListDescriptor" // use the label
+                    ]
+                }
             }
         }
     });

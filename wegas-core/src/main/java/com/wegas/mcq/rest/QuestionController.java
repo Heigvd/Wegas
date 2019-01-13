@@ -51,7 +51,7 @@ public class QuestionController {
      */
     @POST
     @Path("/SelectAndValidateChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
-    public Response selectChoice(
+    public Response selectAnValidateChoice(
             @PathParam("playerId") Long playerId,
             @PathParam("choiceId") Long choiceId) throws WegasScriptException {
 
@@ -72,7 +72,7 @@ public class QuestionController {
      */
     @POST
     @Path("/ValidateQuestion/{questionInstanceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
-    public Response ValidateQuestion(
+    public Response validateQuestion(
             @PathParam("questionInstanceId") Long questionInstanceId,
             @PathParam("playerId") Long playerId) throws WegasScriptException {
 
@@ -81,6 +81,25 @@ public class QuestionController {
         requestFacade.commit(playerId);
 
         return Response.ok().build();
+    }
+
+    /**
+     *
+     * @param playerId
+     * @param replyId
+     *
+     * @return questionInstance with up to date replies list (not containing)
+     *         the canceled one anymore)
+     */
+    @GET
+    @Path("/ValidateReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
+    public QuestionInstance validateReply(
+            @PathParam("playerId") Long playerId,
+            @PathParam("replyId") Long replyId) {
+
+        Reply reply = questionDescriptorFacade.validateReply(playerId, replyId);
+        requestFacade.commit(playerId);
+        return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
     }
 
     /**
@@ -118,6 +137,28 @@ public class QuestionController {
             @PathParam("startTime") Long startTime) {
 
         Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, startTime);
+
+        requestFacade.commit(playerId);
+
+        return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
+    }
+
+    /**
+     *
+     * @param playerId
+     * @param choiceId
+     * @param startTime
+     *
+     * @return p
+     */
+    @GET
+    @Path("/DeselectOthersAndSelectChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [0-9]*}")
+    public QuestionInstance deselectOthersAndselectChoice(
+            @PathParam("playerId") Long playerId,
+            @PathParam("choiceId") Long choiceId,
+            @PathParam("startTime") Long startTime) {
+
+        Reply reply = questionDescriptorFacade.deselectOthersAndSelectChoice(choiceId, playerId, startTime);
 
         requestFacade.commit(playerId);
 

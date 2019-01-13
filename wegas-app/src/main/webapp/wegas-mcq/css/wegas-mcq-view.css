@@ -107,7 +107,7 @@
 
 .wegas-mcqview .wegas-mcqview-content[data-nbChoices='1'] .wegas-mcqchoice .mcq-choice-result-layout,
 .wegas-mcqview .wegas-mcqview-content[data-nbChoices='1'] .wegas-mcqchoice .mcq-choice-result-layout > div{
-    height: 100%;
+    /*height: 100%;*/
     overflow-y: hidden;
 }
 
@@ -229,17 +229,89 @@
     background: #d0d0d0;
 }
 
+.mcq-view__choice_header {
+    cursor: pointer;
+    flex-shrink: 0;
+}
 
 
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__choice_header,
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__choices,
+.mcq-view__choice_header {
+    background-color : #4e4e4e;
+    color: white;
+}
+
+.mcq-view__choice_header .mcq-view__invite {
+    flex-grow: 1;
+    padding: 10px 10px 20px 10px;
+}
+
+.mcq-view__choice_expander {
+}
+
+.mcq-view__choice_expander span:before {
+    font-family: "FontAwesome";
+    content: "\f0d7"; /* fa-caret */
+    font-size: 26px;
+    padding-right: 10px;
+}
+
+.show_choices .mcq-view__choice_expander span:before {
+    content: "\f00d"; /* fa-close */
+    padding-left: 6px;
+}
+
+.wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] {
+    /*overflow-y : hidden;*/
+    display:flex;
+    flex-direction: column;
+}
+
+
+/* Hide possible choices */
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__choices {
+    display: none;
+}
+
+/* show possible choices when toggled */
+.wegas-mcqview-content[data-displayResult='dialogue'].show_choices .mcq-view__choices {
+    display: block;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 1em 0;
+}
+
+.wega-mcqview-content[data-displayResult='dialogue'].show_choices .mcq-view__pendings {
+    display: none;
+}
 
 .wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__results-title,
+.wegas-mcqview-content .mcq-view__pendings,
 .wegas-mcqview-content[data-displayResult='dialogue'] .mcqchoice__submit,
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcqchoice__summary,
 .wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice:not(.selectable) {
     display: none;
 }
 
+.wegas-mcqview-content[data-displayResult='dialogue']:not(.cbx) .wegas-mcqchoice.noDescription .mcqchoice__title {
+    max-width: 100%;
+}
+
+/* choice with a title and a description: only show the title */
+.wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice:not(.noTitle):not(.noDescription) .mcqchoice__description {
+    display:none;
+}
+
+
+/* but display the description as soon as the choise is preselected */
+.wegas-mcqview-content[data-displayResult='dialogue'].hasPendingReplies .wegas-mcqchoice:not(.noTitle):not(.noDescription).hasPendingReplies .mcqchoice__description {
+    display: block;
+}
+
+/* left lines */
 .wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__question-description,
-.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-reply-feedback {
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-reply-feedback .mcq-reply-content {
     text-align: left;
     border: 1px solid #CCC;
     padding: 1em;
@@ -247,7 +319,12 @@
     margin: 5px 20% 15px 5px;
 }
 
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-reply-feedback .mcq-reply-typing {
+    padding: 1em;
+    margin: 5px 20% 15px 5px;
+}
 
+/* right lines */
 .wegas-mcqview-content[data-displayResult='dialogue'] .mcq-reply-choice {
     padding: 1em;
     border: 1px solid #999;
@@ -257,25 +334,26 @@
 }
 
 .wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__choices > .wegas-flexlist-content {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-end;
+    /*flex-direction: row;*/
+    /*flex-wrap: wrap;*/
+    /*justify-content: flex-end;*/
 }
 
 .wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice-content {
+    cursor:pointer;
+    border: none;
 }
 
 .wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice {
-    width: unset;
-    max-width: 240px;
-    padding: 0;
-    overflow-y: auto;
-    position:relative;
+    padding:0;
+    text-align: right;
+    max-width: 80%;
+    margin-left: auto;
 }
 
 .wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice > div {
-    height: 100%;
-    box-sizing: border-box;
+    /*height: 100%;*/
+    /*box-sizing: border-box;*/
 }
 
 .wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__history {
@@ -284,81 +362,73 @@
 
 .wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice.noDescription:not(.noTitle) > div,
 .wegas-mcqview-content[data-displayResult='dialogue']  .wegas-mcqchoice .mcqchoice__title {
-    background-color: white;
+    background-color: #4e4e4e;
     /*color: white;*/
 }
 
-.wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice-content:after {
-    font-family: FontAwesome;
-    content: "\f1d8";
+/**
+ * SUBMIT BUTTON
+ */
+.wegas-mcqview-content[data-displayResult='dialogue'].hasPendingReplies.show_choices .mcq-view__submit {
+    display: block;
+    background-color : #4e4e4e;
+    height: 32px;
+}
+
+
+.wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice.hasPendingReplies.noDescription:not(.noTitle) > div,
+.wegas-mcqview-content[data-displayResult='dialogue']  .wegas-mcqchoice.hasPendingReplies .mcqchoice__title,
+.wegas-mcqview .answerable[data-displayResult='dialogue']:not(.cbx):not(.horizontal) .wegas-mcqchoice.hasPendingReplies .wegas-mcqchoice-content {
+    background-color: #7F7F7F;
+}
+
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-reply-feedback .mcq-reply-typing,
+.wegas-mcqview-content[data-displayResult='dialogue'] .typing .mcq-reply-feedback .mcq-reply-content {
+    display: none;
+}
+
+.wegas-mcqview-content[data-displayResult='dialogue'] .typing .mcq-reply-feedback .mcq-reply-typing{
+    display : block;
+    height: 18px;
+    opacity: 0.5;
+}
+
+.wegas-mcqview .answerable[data-displayResult='dialogue'] .wegas-mcqchoice.selectable.noTitle.noDescription .wegas-mcqchoice-content:after {
+    font-family: "FontAwesome";
+    content: "\f0e5";
     position: absolute;
-    right: 5px;
-    top: 5px;
-    font-size: 1em;
+    right: 20px;
+    color: #636363;
 }
 
-.wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice-content:hover:after {
-    animation: growIcon 0.2s 1;
-    font-size: 2em;
-}
-
-
-@keyframes growIcon {
-    from {
-        font-size: 1em;
-    }
-    to {
-        font-size: 2em;
-    }
-}
-
-.wegas-mcqview-content[data-displayResult='dialogue'] .blink .mcq-reply-feedback {
-    animation: blink 2s 1;
-    box-sizing: border-box;
-}
-
-@keyframes blink {
-    0% {
-        border-color: #ccc;
-        border-width:1px;
-    }
-    50% {
-        border-color: #ccc;
-        border-width:3px;
-    }
-    100% {
-        border-color: #ccc;
-        border-width:1px;
-    }
-}
-
-.wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice-content {
-    cursor:pointer;
-}
-
+.wegas-mcqview .answerable[data-displayResult='dialogue'] .wegas-mcqchoice.selectable.noTitle.noDescription .wegas-mcqchoice-content:hover,
 .wegas-mcqview .answerable[data-displayResult='dialogue']:not(.cbx):not(.horizontal) .wegas-mcqchoice.selectable.noDescription:not(.noTitle) .wegas-mcqchoice-content:hover,
 .answerable[data-displayResult='dialogue'] .selectable .wegas-mcqchoice-content:hover .mcqchoice__title,
 .answerable[data-displayResult='dialogue'].cbx:not(.horizontal) .wegas-mcqchoice.selectable.noDescription:not(.noTitle) .wegas-mcqchoice-content:hover,
 .answerable[data-displayResult='dialogue'] .wegas-mcqchoice.selectable .wegas-mcqchoice-content:hover,
 .answerable[data-displayResult='dialogue'] .wegas-mcqchoice-content:hover {
-    /*background-color: #3794B3;*/
-    background-color: #0981A9;
+    background-color: #7F7F7F;
     color:white;
 }
 
-.wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqview-content {
-    overflow-y: hidden;
-}
 
-.wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] {
-    /*overflow-y : hidden;*/
-    display:flex;
-    flex-direction: column;
-}
 
-.wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__choices {
-    flex-shrink: 0;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
  * MCQ
@@ -403,12 +473,12 @@
 /* Choice without description are displayed on one line only
  * create space for submit
  */
-.wegas-mcqview-content:not(.cbx) .wegas-mcqchoice.noDescription .mcqchoice__title,
-.wegas-mcqview-content:not(.cbx) .wegas-mcqchoice .mcqchoice__description {
+.wegas-mcqview-content:not(.cbx) .wegas-mcqchoice.noDescription .mcqchoice__title {
     /* space for submit button */
-    max-width: calc(100% - 110px);
     box-sizing: border-box;
+    width: min-content;
 }
+
 
 .wegas-mcqview .cbx:not(.horizontal) .wegas-mcqchoice.noDescription .mcqchoice__title,
 .wegas-mcqview .cbx:not(.horizontal) .wegas-mcqchoice .mcqchoice__description {
@@ -480,16 +550,16 @@
     padding-top: 10px;
 }
 
-.wegas-mcqview .answerable.cbx .mcq-view__submit span:focus,
-.wegas-mcqview .answerable content:not(.cbx) .wegas-mcqchoice .mcqchoice__submit span:focus,
-.wegas-mcqview .answerable.cbx .mcq-view__submit span:hover,
-.wegas-mcqview .answerable:not(.cbx) .wegas-mcqchoice .mcqchoice__submit span:hover {
+.wegas-mcqview .answerable .mcq-view__submit span:focus,
+.wegas-mcqview .answerable content .wegas-mcqchoice .mcqchoice__submit span:focus,
+.wegas-mcqview .answerable .mcq-view__submit span:hover,
+.wegas-mcqview .answerabl .wegas-mcqchoice .mcqchoice__submit span:hover {
     background: #4f8c5f;
     color: #ffc;
 }
 
-.wegas-mcqview .cbx .mcq-view__submit span,
-.wegas-mcqview-content:not(.cbx) .wegas-mcqchoice .mcqchoice__submit span {
+.wegas-mcqview .mcq-view__submit span,
+.wegas-mcqview-content .wegas-mcqchoice .mcqchoice__submit span {
     background: #69bd7f;
     text-transform: uppercase;
     height: 24px;
@@ -501,8 +571,8 @@
     transition: .3s;
 }
 
-.wegas-mcqview .cbx .mcq-view__submit span:before,
-.wegas-mcqview-content:not(.cbx) .wegas-mcqchoice .mcqchoice__submit span:before {
+.wegas-mcqview .mcq-view__submit span:before,
+.wegas-mcqview-content .wegas-mcqchoice .mcqchoice__submit span:before {
     content: "\f00c";
     font-family: "FontAwesome";
     padding-left: 2px;
@@ -557,7 +627,7 @@
 }
 
 .wegas-mcqview .answerable:not(.cbx) .selectable .mcqchoice__submit span,
-.wegas-mcqview .answerable.cbx .mcq-view__submit,
+.wegas-mcqview .answerable .mcq-view__submit,
 .wegas-mcqview .answerable.cbx:not(.checkbox) .wegas-mcqchoice:not(.hasReplies) .mcqchoice__submit,
 .wegas-mcqview .answerable.cbx.checkbox:not(.maximumReached) .mcqchoice__submit,
 .wegas-mcqview .answerable.cbx.checkbox.maximumReached .hasReplies .mcqchoice__submit {

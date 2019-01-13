@@ -248,40 +248,33 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * @return true only if the choice is not selectable any longer
      */
     public boolean hasBeenIgnored(Player p) {
-        QuestionInstance qi = this.getQuestion().getInstance(p);
-
-        if (this.getQuestion().getCbx()) {
-            if (!qi.isValidated()) {
-                //Check box not yet validated -> no choices have been submited, nor ignorated
-                return false;
-            } else {
-                for (Reply r : this.getInstance(p).getReplies()) {
-                    // reply for this choice found
-                    return r.getIgnored();
-                }
+        // Is there any not ignored validated reply link to this choice
+        for (Reply r : this.getInstance(p).getReplies(Boolean.TRUE)) {
+            if (!r.getIgnored()) {
+                // validated and not ignored reply found
                 return false;
             }
+        }
+
+        /*
+         * At this point, we're sure this choice has not been selected & validated
+         */
+
+
+        // has the question been explicitly validated (either CBX case or by a specific impact)
+        if (this.getQuestion().getValidated(p)) {
+            // validated -> no longer answerable
+            return true;
         } else {
-            // Is the Choice linked to at least a reply => not ignored
-            if (!this.getInstance(p).getReplies().isEmpty()) {
-                return false;
-            }
-
-            // this choice has not been selected
-            if (this.getQuestion().getMaxReplies() != null) {
-                // maximum number of choice is set. reached ?
-                return qi.getReplies(p).size() >= this.getQuestion().getMaxReplies();
-            } else {
-                // no limit, the choice is still selectable
-                return false;
-            }
+            // question not validated & this choice not (selected && validated)
+            return !this.getQuestion().isStillAnswerabled(p);
         }
     }
 
     /**
      * Is the choice selectable.
      * This method only cares about the choice itself not the whole question.
-     * It means is will return true even when the question is no longer anserable
+     * It means is will return true even when the question is no longer answerable
      *
      * @param p
      *
@@ -297,12 +290,12 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     }
 
     /**
-     * has the choice not (yet) been selected ? <br>
+     * has the choice not (yet) been validated ? <br>
      * Such a case happened for
      * <ul>
      * <li>MCQ Questions, after the question has been validated, for all
-     * unselected choices, or before the validation, for all choices </li>
-     * <li>Standard question, if the choice is not linked to a reply </li>
+     * unselected choices, or before the validation, for all choices</li>
+     * <li>Standard question, if the choice is not linked to any validated reply </li>
      * </ul>
      *
      * @param p the player
@@ -310,28 +303,11 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * @return return true if this choice can be selected by the player
      */
     public boolean hasNotBeenSelected(Player p) {
-        if (this.getQuestion().getCbx()) {
-            if (!this.getQuestion().getInstance(p).isValidated()) {
-                //Check box not yet validated -> no chocie have been selected
-                return true;
-            } else {
-                for (Reply r : this.getInstance(p).getReplies()) {
-                    // reply for this choice found
-                    return r.getIgnored();
-                }
-                return false;
-            }
-        } else {
-            if (!this.getInstance(p).getReplies().isEmpty()) {
-                // Choice is linked to a reply => not ignored
-                return false;
-            }
-            return true;
-        }
+        return !this.hasBeenSelected(p);
     }
 
     /**
-     * Does this choice has been selected by the given player
+     * Does this choice has been validated by the given player
      * <p>
      * @param p the player
      * <p>
@@ -339,10 +315,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *         exist
      */
     public boolean hasBeenSelected(Player p) {
-        if (this.getQuestion().getCbx() && !this.getQuestion().getInstance(p).isValidated()) {
-            return false;
-        }
-        for (Reply r : this.getInstance(p).getReplies()) {
+        for (Reply r : this.getInstance(p).getReplies(Boolean.TRUE)) {
             if (!r.getIgnored()) {
                 return true;
             }
@@ -412,7 +385,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
             return super.getParentOrNull();
         }
     }
-
 
     @JsonIgnore
     @Override
