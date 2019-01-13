@@ -506,7 +506,11 @@ ProgGameSimulation.prototype = {
                         break;
                 }
             }
-            if (!this.checkPath(object.x, object.y)) {
+            if (
+                // there is nothing
+                this.currentCollides.length === 0 &&
+                !this.checkPath(object.x, object.y)
+            ) {
                 this.sendCommand({
                     type: 'outside',
                     id: object.id,

@@ -36,7 +36,7 @@ YUI.add('pact-display', function(Y) {
                 };
                 assets.sprites[
                     Wegas.app.get('base') +
-                        '/wegas-proggame/images/proggame-sprite-anim.png'
+                        '/wegas-pact/images/proggame-sprite-anim.png'
                 ] = {
                     tile: TILESIZE,
                     tileh: TILESIZE,
@@ -54,11 +54,15 @@ YUI.add('pact-display', function(Y) {
                 };
                 assets.sprites[
                     Wegas.app.get('base') +
-                        '/wegas-proggame/images/proggame-sprite-tiles_iso.png'
+                        '/wegas-pact/images/proggame-sprite-tiles_iso.png'
                 ] = {
                     tile: 41,
                     tileh: TILESIZE,
-                    map: { TileSprite: [0, 0] },
+                    map: {
+                        EmptyT: [0, 0],
+                        PathT: [0, 1],
+                        TrapT: [0, 5],
+                    },
                 };
                 return assets;
             })(),
@@ -262,12 +266,6 @@ YUI.add('pact-display', function(Y) {
                 MOVE: 1,
                 FIRE: 5,
                 TRAP: 2,
-            },
-            SPRITESHEETS: {
-                TileSprite: {
-                    width: 1,
-                    height: 4,
-                },
             },
             speedToFrame: function(speed, x, y, toX, toY) {
                 speed = speed > 0 ? speed : 1;
@@ -541,17 +539,12 @@ YUI.add('pact-display', function(Y) {
     });
     Crafty.c('EmptyTile', {
         init: function() {
-            this.requires('Tile, TileSprite')
-                .sprite(0, 0)
-                .attr('collides', true);
+            this.requires('Tile, EmptyT').attr('collides', true);
         },
     });
     Crafty.c('PathTile', {
         init: function() {
-            this.requires('Tile, TileSprite')
-                .sprite(0, 1)
-                .attr('collides', false);
-            //this.requires("Tile, TileSprite").sprite(0, Math.round(Math.random() * 3) + 1).attr("collides", false);
+            this.requires('Tile, PathT');
         },
     });
     Crafty.c('Trap', {
@@ -569,8 +562,7 @@ YUI.add('pact-display', function(Y) {
             };
             this._delayTile = Y.later(1, this, function() {
                 // Add a tile to show where the trap is
-                Crafty.e('Tile, TileSprite')
-                    .sprite(0, 5)
+                Crafty.e('Tile, TrapT')
                     .attr({
                         x: this._x,
                         y: this._y,
