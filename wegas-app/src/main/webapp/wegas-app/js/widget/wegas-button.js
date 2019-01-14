@@ -263,7 +263,7 @@ YUI.add('wegas-button', function(Y) {
 
             if (!this.target) {
                 // If the counter span has not been rendered, do it
-                this.target = bb.appendChild('<span class="wegas-unreadcount wegas-unreadcount-' + this.constructor.NS + '"></span>');
+                this.target = bb.appendChild('<span class="wegas-unreadcounter wegas-unreadcount-' + this.constructor.NS + '"></span>');
             }
 
             if (unreadCount > 0) {
@@ -275,7 +275,7 @@ YUI.add('wegas-button', function(Y) {
                     this.target.setContent("<span class='value' data-value='" + unreadCount + "'>" +
                         (this.get('displayValue') ? unreadCount : '') +
                         '</span>');
-                    bb.addClass('wegas-unreadcount');
+                    bb.addClass('wegas-unreadcount wegas-unreadcount-' + this.constructor.NS);
 
                     if (!this.toggled) {
                         var nbCounter = +bb.getAttribute("data-nb-counter") || 0;
@@ -286,6 +286,7 @@ YUI.add('wegas-button', function(Y) {
             } else {
                 this.target.setContent('');
                 var nbCounter = +bb.getAttribute("data-nb-counter");
+                bb.removeClass('wegas-unreadcount-' + this.constructor.NS);
                 if (nbCounter === 1) {
                     // was the last couter
                     bb.removeClass('wegas-unreadcount');
