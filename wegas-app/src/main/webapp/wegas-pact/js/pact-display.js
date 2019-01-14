@@ -54,14 +54,14 @@ YUI.add('pact-display', function(Y) {
                 };
                 assets.sprites[
                     Wegas.app.get('base') +
-                        '/wegas-pact/images/proggame-sprite-tiles_iso.png'
+                        '/wegas-pact/images/proggame-sprite-tiles_iso_v2.png'
                 ] = {
                     tile: 41,
                     tileh: TILESIZE,
                     map: {
                         EmptyT: [0, 0],
                         PathT: [0, 1],
-                        TrapT: [0, 5],
+                        TrapT: [0, 2],
                     },
                 };
                 return assets;
@@ -115,11 +115,13 @@ YUI.add('pact-display', function(Y) {
                             for (j = -MARGIN_X; j < gridW + MARGIN_X; j += 1) {
                                 pos = this.getRealXYPos({ x: j, y: i });
                                 pos.y = pos.y + TILE_DELTA;
-                                Crafty.e(
-                                    map[i] && map[i][j] && map[i][j].y
-                                        ? 'PathTile'
-                                        : 'EmptyTile'
-                                ).attr(pos);
+                                if (map[i] && map[i][j] && map[i][j].y) {
+                                    Crafty.e(
+                                        map[i] && map[i][j] && map[i][j].y
+                                            ? 'PathTile'
+                                            : 'EmptyTile'
+                                    ).attr(pos);
+                                }
                             }
                         }
 
@@ -562,11 +564,7 @@ YUI.add('pact-display', function(Y) {
             };
             this._delayTile = Y.later(1, this, function() {
                 // Add a tile to show where the trap is
-                Crafty.e('Tile, TrapT')
-                    .attr({
-                        x: this._x,
-                        y: this._y,
-                    });
+                Crafty.e('Tile, TrapT').attr({ x: this._x, y: this._y });
             });
             this.bind('TweenEnd', function() {
                 this.pauseAnimation().visible = false;
