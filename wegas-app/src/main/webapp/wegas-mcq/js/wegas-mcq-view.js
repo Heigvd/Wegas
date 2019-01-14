@@ -1208,7 +1208,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                                             '<div class="mcq-reply-content">' + toDisplay + '</div>' +
                                             '</div>'
                                     });
-                                    Y.later(5000, this.results[reply.get("id")], function() {
+                                    Y.later(2500, this.results[reply.get("id")], function() {
                                         this.get("boundingBox").removeClass("typing");
                                     });
                                     // Insert the latest reply at the top of the list, but not for cbx question nor dialogue :
