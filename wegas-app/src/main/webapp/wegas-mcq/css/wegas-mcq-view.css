@@ -244,7 +244,7 @@
 
 .mcq-view__choice_header .mcq-view__invite {
     flex-grow: 1;
-    padding: 10px 10px 20px 10px;
+    padding: 10px;
 }
 
 .mcq-view__choice_expander {
@@ -270,6 +270,7 @@
 
 
 /* Hide possible choices */
+.wegas-mcqview-content[data-displayResult='dialogue'][data-nbselectablechoices="0"].show_choices .mcq-view__choices,
 .wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__choices {
     display: none;
 }
@@ -279,7 +280,8 @@
     display: block;
     flex-shrink: 0;
     margin: 0;
-    padding: 1em 0;
+    padding: 0;
+    padding-bottom: 1em;
 }
 
 .wega-mcqview-content[data-displayResult='dialogue'].show_choices .mcq-view__pendings {

@@ -1196,9 +1196,16 @@ YUI.add('wegas-mcq-view', function(Y) {
                                 var title = I18n.t(choiceD.get("label"));
                                 if (toDisplay || title) {
                                     noFeedbacks = false;
+
+                                    var hasTitle = !this.isTextEmpty(I18n.t(choice.get("description"), {inlineEditor: 'none', fallback: ""}));
+                                    var hasDescription = !this.isTextEmpty(I18n.t(choice.get("description"), {inlineEditor: 'none', fallback: ""}));
+
                                     this.results[reply.get("id")] = new Y.Wegas.Text({
                                         cssClass: "wegas-mcqview__result " + (this.resync ? "typing" : ""),
-                                        content: '<div class="mcq-reply-choice">' +
+                                        content: '<div class="mcq-reply-choice'
+                                            + (hasDescription ? " hasDescription": " noDescription")
+                                            + (hasTitle ? " hasTitle": " noTitle")
+                                            +'">' +
                                             '<div class="mcq-reply-title">' + I18n.t(choiceD.get("label")) + '</div>' +
                                             (effectiveDisplayResult === "dialogue" ?
                                                 '<div class="mcq-reply-description">' + I18n.t(choiceD.get("description")) + '</div>' : "") +
@@ -1208,7 +1215,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                                             '<div class="mcq-reply-content">' + toDisplay + '</div>' +
                                             '</div>'
                                     });
-                                    Y.later(2500, this.results[reply.get("id")], function() {
+                                    Y.later(1500, this.results[reply.get("id")], function() {
                                         this.get("boundingBox").removeClass("typing");
                                     });
                                     // Insert the latest reply at the top of the list, but not for cbx question nor dialogue :
@@ -1235,11 +1242,12 @@ YUI.add('wegas-mcq-view', function(Y) {
                         this.get("contentBox").toggleClass("show_choices", this.resultList.isEmpty() || pendingReplies.length);
                     }
 
+                    this.pendings.destroyAll();
+
                     for (var i in pendingReplies) {
                         var reply = pendingReplies[i];
                         var label = I18n.t(reply.getChoiceDescriptor().get("label"));
                         var description = I18n.t(reply.getChoiceDescriptor().get("description"));
-                        this.pendings.destroyAll();
                         this.pendings.add(new Y.Wegas.Text({
                             content: "<div class='pending-label'>" + label + "</div>" +
                                 "<div class='pending-description'>" + description + "</div>"
@@ -1264,6 +1272,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 this.updateAvailableInvite(nbSelectableChoice);
 
                 cb.setAttribute("data-nbChoices", this.choiceList.size());
+                cb.setAttribute("data-nbSelectableChoices", nbSelectableChoice);
                 cb.toggleClass("hasPendingReplies", pendingReplies.length);
                 cb.toggleClass("noFeedbacks", noFeedbacks);
                 cb.toggleClass("cbx", cbx);
@@ -1302,6 +1311,9 @@ YUI.add('wegas-mcq-view', function(Y) {
             }
 
             this.resync = true;
+        },
+        isTextEmpty: function(text) {
+            return !text || text === "<p></p>";
         },
         destructor: function() {
             var k;
