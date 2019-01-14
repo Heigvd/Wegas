@@ -319,11 +319,6 @@
     margin: 5px 20% 15px 5px;
 }
 
-.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-reply-feedback .mcq-reply-typing {
-    padding: 1em;
-    margin: 5px 20% 15px 5px;
-}
-
 /* right lines */
 .wegas-mcqview-content[data-displayResult='dialogue'] .mcq-reply-choice {
     padding: 1em;
@@ -382,7 +377,11 @@
     background-color: #7F7F7F;
 }
 
-.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-reply-feedback .mcq-reply-typing,
+
+.wegas-mcqview-content .mcq-reply-feedback .mcq-reply-typing {
+    display: none;
+}
+
 .wegas-mcqview-content[data-displayResult='dialogue'] .typing .mcq-reply-feedback .mcq-reply-content {
     display: none;
 }
@@ -391,6 +390,8 @@
     display : block;
     height: 18px;
     opacity: 0.5;
+    padding: 1em;
+    margin: 5px 20% 15px 5px;
 }
 
 .wegas-mcqview .answerable[data-displayResult='dialogue'] .wegas-mcqchoice.selectable.noTitle.noDescription .wegas-mcqchoice-content:after {
