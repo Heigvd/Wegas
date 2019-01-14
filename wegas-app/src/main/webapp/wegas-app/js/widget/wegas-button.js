@@ -263,7 +263,7 @@ YUI.add('wegas-button', function(Y) {
 
             if (!this.target) {
                 // If the counter span has not been rendered, do it
-                this.target = bb.appendChild('<span class="wegas-unreadcounter wegas-unreadcount-' + this.constructor.NS + '"></span>');
+                this.target = bb.appendChild('<span class="wegas-unreadcount wegas-unreadcounter wegas-unreadcount-' + this.constructor.NS + '"></span>');
             }
 
             if (unreadCount > 0) {
