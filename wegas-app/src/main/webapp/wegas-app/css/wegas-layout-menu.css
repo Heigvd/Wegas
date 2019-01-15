@@ -87,14 +87,14 @@
     padding-right: 20px;
 }
 
-.wegas-layout-menu > .wegas-layout-menu-content >.wegas-layout-menu .wegas-layout-menu-label:after {
+.wegas-layout-menu > .wegas-layout-menu-content >.wegas-layout-menu .wegas-layout-menu-label .clone:after {
     font-family: "FontAwesome";
     content: "\f0d7"; /* fa fa-caret-down */
     padding-top: 3px;
     padding-left: 3px;
 }
 
-.wegas-layout-menu:not(.wegas-layout-menu-inline) > .wegas-layout-menu-content >.wegas-layout-menu .wegas-layout-menu-label:after {
+.wegas-layout-menu:not(.wegas-layout-menu-inline) > .wegas-layout-menu-content >.wegas-layout-menu .wegas-layout-menu-label .clone:after {
     content: "\f0da"; /* fa fa-caret-right */
     position: absolute;
     right: 2px;
