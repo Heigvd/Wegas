@@ -19,10 +19,10 @@ code {
 
 .yui3-skin-sam .wegas-playerview > .wegas-pageloader-content {
     /* background-color: #2a2a2a; */
-    background: url(../../wegas-pact/images/topground_tile.png) repeat,
+    background: url(../../wegas-pact/images/topground_tile3.png) repeat,
         url(../../wegas-pact/images/blue_light.png) no-repeat 20% 0%,
         url(../../wegas-pact/images/Red_light.png) no-repeat right center,
-        url(../../wegas-pact/images/ground_tile.png) repeat;
+        url(../../wegas-pact/images/ground_tile_v2.png) repeat;
     color: white;
     font-family: 'monospace', 'Verdana', 'Arial', Sans-Serif;
     font-size: 9pt;
