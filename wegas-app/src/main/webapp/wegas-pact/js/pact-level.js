@@ -885,7 +885,9 @@ YUI.add('pact-level', function(Y) {
                 tab.aceField = aceField; // Set up a reference to the ace field
                 tab.saveTimer = saveTimer;
                 tab.before('destroy', function() {
+                    this.aceField.session.$stopWorker();
                     this.aceField.destroy();
+                    this.aceField = null;
                     this.saveTimer.destroy();
                 });
                 aceField.session.on(
