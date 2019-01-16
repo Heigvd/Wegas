@@ -161,6 +161,7 @@ YUI.add('wegas-text-input', function(Y) {
         CONTENT_TEMPLATE: '<div>' +
             '<div class="wegas-input-label"></div>' +
             '<div class="wegas-input-body">' +
+            '  <div class="wegas-text-input-editor-toolbar"></div>' +
             '  <div class="wegas-text-input-editor"></div>' +
             '  <div class="wegas-text-input-toolbar">' +
             '    <span class="cc"></span>' +
@@ -208,13 +209,14 @@ YUI.add('wegas-text-input', function(Y) {
                     if (this.editor) {
                         return;
                     }
-                    tinyMCE.init({
+                    var tinyCfg = {
                         //selector: this.get("contentBox").one(".wegas-text-input-editor").getDOMNode(),
                         selector: '#' +
                             this.get('contentBox').get('id') +
                             ' .wegas-text-input-editor',
                         plugins: [
-                            'autolink link image lists code media table contextmenu paste advlist textcolor'
+                            'autolink link image lists code media table paste advlist textcolor ' 
+                                + (this.get('contextmenu')? "contextmenu" :"")
                                 //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
                         ],
                         external_plugins: {
@@ -296,7 +298,16 @@ YUI.add('wegas-text-input', function(Y) {
                                 block: 'code'
                             }
                         ]
-                    });
+                    };
+
+                    if (this.get("inlineEditorMode") === "inline") {
+                        tinyCfg.inline = true;
+                    } else if (this.get("inlineEditorMode") === "inlite") {
+                        tinyCfg.inline = true;
+                        tinyCfg.theme = "inlite";
+                    }
+
+                    tinyMCE.init(tinyCfg);
                 }, this);
                 //this.editor.render();
                 //this.setContent();
@@ -658,6 +669,18 @@ YUI.add('wegas-text-input', function(Y) {
                 type: 'boolean',
                 value: false,
                 view: {label: 'Disable paste'}
+            },
+            inlineEditorMode: {
+                type: 'string',
+                value: "default",
+                view: {
+                    type: "select",
+                    className: "wegas-advanced-feature",
+                    label: 'inline editor mode',
+                    choices: [
+                        "default", "inline", "inlite"
+                    ]
+                }
             },
             toolbar1: {
                 type: 'string',
