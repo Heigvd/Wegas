@@ -213,7 +213,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     return;
                 }
                 if (leaf.data.mimeType.indexOf('image') > -1) {
-                    ret += '<img src="' + this.getFullPath(leaf.path) + '" /><br />';
+                    ret += '<img src="' + this.getFullPath(leaf.path) +"?t="  + new Date().getTime() + '" /><br />';
                 }
                 ret += leaf.data.mimeType + '<br />';
                 ret += FileExplorer.formatFileSize(leaf.data.bytes) + '<br /';
@@ -785,6 +785,10 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 if (node !== this.editNode) { //hack to detect if user is updating an existing file
                     node.add(this.editNode);
                     this.editNode.hide();
+
+                    if (!this.editNode.parentPath.endsWith("/")){
+                        this.editNode.parentPath += "/";
+                    }
                 }
 
                 if (node.expand) {
