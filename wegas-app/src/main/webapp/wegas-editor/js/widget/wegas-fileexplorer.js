@@ -206,7 +206,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             });
         },
         bindUI: function() {
-            this.tooltip.on('triggerEnter', function(e) {
+            this.tooltip.on('tooltipShow', function(e) {
                 // The tooltip content is set on the fly based on the node
                 var leaf = Y.Widget.getByNode(e.node), ret = '';
                 if (!leaf.data) {
