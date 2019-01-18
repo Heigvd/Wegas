@@ -483,12 +483,12 @@ YUI.add('pact-level', function(Y) {
                     msgBody = Y.JSON.stringify(
                         (this.isRuntimeException
                             ? '<b>Exception :</b> ' +
-                              this.feedback +
+                              Y.Wegas.Helper.htmlEntities(this.feedback) +
                               '<br/>&nbsp;<br/>'
                             : '') +
-                            '<b>Code soumis :</b><br/><code>' +
-                            this.currentCode +
-                            '</code>'
+                            '<b>Code soumis :</b><br/><pre>' +
+                            Y.Wegas.Helper.htmlEntities(this.currentCode) +
+                            '</pre>'
                     );
 
                 // Update history in a separate transaction (in case the user code contains crash-prone stuff):
