@@ -12,7 +12,6 @@
 YUI.add("wegas-parent", function(Y) {
     "use strict";
     var BUTTON = "Button";
-
     /**
      * @extends Y.Wegas.Widget
      * @constructor
@@ -125,6 +124,17 @@ YUI.add("wegas-parent", function(Y) {
                                                                                         }
                                                                                     }
                                                                                 }]
+                                                                        }
+                                                                    }
+                                                                }]
+                                                        }, {
+                                                            type: BUTTON,
+                                                            label: "Line",
+                                                            plugins: [{
+                                                                    fn: "AddChildWidgetAction",
+                                                                    cfg: {
+                                                                        childCfg: {
+                                                                            type: "Line"
                                                                         }
                                                                     }
                                                                 }]

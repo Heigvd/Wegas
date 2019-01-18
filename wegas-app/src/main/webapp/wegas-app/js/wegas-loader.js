@@ -288,7 +288,7 @@ YUI().use(function(Y) {
             },
             "wegas-box": {
                 path: "js/widget/wegas-box-min.js",
-                ws_provides: "Box",
+                ws_provides: ["Box", "Line"],
                 requires: "wegas-widget"
             },
             "wegas-tabview": {

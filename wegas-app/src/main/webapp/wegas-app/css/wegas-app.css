@@ -569,6 +569,21 @@ body:not(.wegas-modeler-mode) .wegas-model-feature {
 }
 
 
+.wegas-line {
+    stroke: black;
+    stroke-width: 1px;
+    fill: none;
+}
+
+.wegas-line svg{
+    overflow: visible;
+}
+
+svg #triangleEnd,
+svg #triangleStart{
+    fill: black;
+}
+
 /* Chat widget */
 
 .wegas-chat-content {
