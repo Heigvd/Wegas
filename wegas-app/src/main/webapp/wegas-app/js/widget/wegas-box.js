@@ -99,7 +99,7 @@ YUI.add('wegas-box', function(Y) {
         getBoxCentroid: function(box) {
             return [box.x + box.width / 2, box.y + box.height / 2];
         },
-        getSegBoxIntersection(x1, y1, x2, y2, box) {
+        getSegBoxIntersection: function(x1, y1, x2, y2, box) {
             if (this.isSegIntersects(x1, y1, x2, y2, box.left, box.top, box.right, box.top)) {
                 return this.getIntersection(x1, y1, x2, y2, box.left, box.top, box.right, box.top);
 
