@@ -134,14 +134,18 @@ YUI.add('wegas-box', function(Y) {
 
             if (startSelector) {
                 var startNode = Y.one(startSelector);
-                startDom = startNode.getDOMNode();
+                if (startNode) {
+                    startDom = startNode.getDOMNode();
+                }
             } else {
                 startDom = bbox.previousSibling;
             }
 
             if (endSelector) {
                 var endNode = Y.one(endSelector);
-                endDom = endNode.getDOMNode();
+                if (endNode) {
+                    endDom = endNode.getDOMNode();
+                }
             } else {
                 endDom = bbox.nextSibling;
             }
