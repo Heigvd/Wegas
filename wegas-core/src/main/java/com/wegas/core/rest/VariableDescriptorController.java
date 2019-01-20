@@ -175,6 +175,23 @@ public class VariableDescriptorController {
         return variableDescriptorFacade.resetVisibility(vdId, visibility);
     }
 
+    @PUT
+    @Path("{id: [1-9][0-9]*}/changeScope/{scopeType: GameModelScope|TeamScope|PlayerScope}")
+    public VariableDescriptor changeScopeRecursivly(@PathParam("id") Long vdId,
+            @PathParam("scopeType") String scopeType) {
+        return variableDescriptorFacade.changeScopeRecursively(vdId, scopeType);
+    }
+
+    @PUT
+    @Path("{id: [1-9][0-9]*}/ConvertToList")
+    public VariableDescriptor convertToList(@PathParam("id") Long vdId,
+            @PathParam("scopeType") String scopeType) {
+        return variableDescriptorFacade.convertToList(vdId);
+    }
+
+
+
+
     /**
      * @param descriptorId
      * @param index

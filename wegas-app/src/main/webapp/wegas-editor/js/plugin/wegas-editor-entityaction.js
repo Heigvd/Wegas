@@ -980,7 +980,26 @@ YUI.add("wegas-editor-entityaction", function(Y) {
     });
     Plugin.ResetVisibilityAction = ResetVisibilityAction;
 
-
+    var ConvertToListAction = Y.Base.create("ConvertToListAction", EntityAction, [], {
+        execute: function() {
+            this.showOverlay();
+            Y.Wegas.Facade.Variable.cache.sendRequest({
+                request: '/' + this.get(ENTITY).get("id") + "/ConvertToList",
+                cfg: {
+                    method: 'PUT'
+                },
+                on: {
+                    success: Y.bind(this.hideOverlay, this),
+                    failure: Y.bind(this.hideOverlay, this)
+                }
+            });
+        }
+    }, {
+        NS: "ConvertToListAction",
+        ATTRS: {
+        }
+    });
+    Plugin.ConvertToListAction = ConvertToListAction;
 
     /**
      * @class

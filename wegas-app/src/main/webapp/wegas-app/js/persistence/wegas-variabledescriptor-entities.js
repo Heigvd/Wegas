@@ -742,6 +742,21 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             }
         },
         {
+            EDITMENU: {
+                convertToListBtn: {
+                    index: 21,
+                    maxVisibility: "PRIVATE", // only visible for private variables
+                    cssClass: "wegas-advanced-feature",
+                    cfg: {
+                        label: "Convert To List",
+                        type: "Button",
+                        plugins: [{
+                                fn: "ConvertToListAction"
+                            }
+                        ]
+                    }
+                }
+            },
             ATTRS: {
                 '@class': {
                     value: 'StringDescriptor'
@@ -901,6 +916,21 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             }
         },
         {
+            EDITMENU: {
+                convertToListBtn: {
+                    index: 21,
+                    maxVisibility: "PRIVATE", // only visible for private variables
+                    cssClass: "wegas-advanced-feature",
+                    cfg: {
+                        label: "Convert To List",
+                        type: "Button",
+                        plugins: [{
+                                fn: "ConvertToListAction"
+                            }
+                        ]
+                    }
+                }
+            },
             ATTRS: {
                 '@class': {
                     value: 'TextDescriptor'
