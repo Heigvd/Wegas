@@ -1284,15 +1284,8 @@ YUI.add('wegas-mcq-view', function(Y) {
 
                 if (effectiveDisplayResult === "dialogue") {
                     // last feedback
-                    var node;
-                    node = this.get("contentBox").one(".mcq-view__results .wegas-mcqview__result:last-child");
-
-                    if (node) {
-                        node.getDOMNode().scrollIntoView({
-                            behavior: this.resync ? 'smooth' : 'auto'
-                        });
-                    }
-
+                    var histDom = this.history.get("boundingBox").getDOMNode();
+                    histDom.scrollTop = histDom.scrollHeight - histDom.clientHeight;
                 }
             } else {
                 // clear !
