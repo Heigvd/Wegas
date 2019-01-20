@@ -119,6 +119,8 @@ YUI.add('wegas-box', function(Y) {
             this._windowResizeCb = Y.bind(this.syncUI, this);
             window.addEventListener("resize", this._windowResizeCb);
             this.handlers.layoutResize = Y.Wegas.app.on("layout:resize", Y.bind(this.syncUI, this));
+
+            Y.later(50, this, this.syncUI);
         },
         syncUI: function() {
             var startSelector = this.get("startNode");
