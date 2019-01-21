@@ -363,6 +363,11 @@ code {
     position: absolute;
     z-index: 2;
 }
+.proggame-currentline-error {
+    background: red;
+    position: absolute;
+    z-index: 2;
+}
 
 /* Level: Popup overlay stayles */
 
