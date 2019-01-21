@@ -556,7 +556,7 @@
 .wegas-mcqview .answerable .mcq-view__submit span:focus,
 .wegas-mcqview .answerable content .wegas-mcqchoice .mcqchoice__submit span:focus,
 .wegas-mcqview .answerable .mcq-view__submit span:hover,
-.wegas-mcqview .answerabl .wegas-mcqchoice .mcqchoice__submit span:hover {
+.wegas-mcqview .answerable .wegas-mcqchoice .mcqchoice__submit span:hover {
     background: #4f8c5f;
     color: #ffc;
 }
