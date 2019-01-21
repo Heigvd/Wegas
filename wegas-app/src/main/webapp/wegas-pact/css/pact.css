@@ -8,7 +8,9 @@
 
 code {
     margin: 0.5em 2em;
-    border: 1px solid white;
+    border: 1px solid #18e8df;
+    background-color: #2a2a2a;
+    color: white;
     padding: 0.6em 2em;
     display: block;
     white-space: pre;
@@ -23,9 +25,12 @@ code {
         url(../../wegas-pact/images/blue_light.png) no-repeat 20% 0%,
         url(../../wegas-pact/images/Red_light.png) no-repeat right center,
         url(../../wegas-pact/images/ground_tile_v2.png) repeat;
-    color: white;
-    font-family: 'monospace', 'Verdana', 'Arial', Sans-Serif;
-    font-size: 9pt;
+    color: #18e8df;
+    font-family: 'Electrolize', 'monospace', 'Verdana', 'Arial', Sans-Serif;
+    font-size: 10pt;
+    box-shadow: 0 0 67px 15px inset black;
+    box-sizing: border-box;
+    padding: 2vh 2vw;
 }
 .wegas-unreadcount .value {
     background-color: #ff9514;
@@ -56,19 +61,21 @@ code {
     height: 100%;
     flex: 1 1 auto;
 }
-.yui3-skin-sam .proggame-button,
-.yui3-skin-sam .proggame-body .yui3-tab-label {
+.yui3-skin-sam .proggame-button {
     /* text-transform: uppercase; */
-    color: white;
     font-size: 1.5em;
-    margin: 5px 10px;
+    margin: 5px 2px;
+    color: #18e8df;
     line-height: 0.9;
-    border: 2px solid #ffffff;
+    border: 2px solid #18e8df;
+    background-color: transparent;
+    background-image: url(../../wegas-pact/images/menuBg_v2.png);
     box-shadow: none;
-    background: rgba(0, 0, 0, 0.5);
-    opacity: 0.8;
+    opacity: 1;
 }
-
+.yui3-skin-sam .pact-title + .proggame-button {
+    border-radius: 1em 0 0 1em;
+}
 .pact-level .yui3-tab-disabled {
     display: none;
 }
@@ -78,9 +85,10 @@ code {
 .pact-level .yui3-tab-selected .yui3-tab-label:hover {
     padding: 2px;
     padding-top: 4px;
-    color: white;
+    color: #18e8df;
     background: none;
     cursor: default;
+    font-variant: small-caps;
 }
 .pact-level .yui3-tab-selected {
     cursor: default;
@@ -119,8 +127,6 @@ code {
     flex-direction: column;
 }
 .pact-level {
-    /* background: url(../../wegas-pact/images/blackboardEntier.png) no-repeat; */
-    /* height: 708px; */
     user-select: none;
 }
 .wegas-playerview .flex.column {
@@ -154,30 +160,41 @@ code {
 .proggame-buttons {
     align-self: center;
     z-index: 10;
+    width: 36px;
 }
 .proggame-buttons .yui3-button {
-    height: 44px;
-    width: 55px;
-    background: url(../../wegas-pact/images/proggame-runbuttonback.png)
-        no-repeat;
+    height: 72px;
+    width: 72px;
+
+    background: #002451;
+    border: 1px solid #18e8df;
+    border-radius: 50%;
+    padding: 0;
+    position: relative;
+    left: -18px;
 }
 
 .proggame-buttons .yui3-button span {
     display: block;
-    height: 31px;
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+    background-color: rgba(24, 232, 223, 0.2);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    /* height: 31px; */
 }
 
 .proggame-play {
-    background: url(../../wegas-pact/images/proggame-play.png) no-repeat -3px -4px;
+    background-image: url(../../wegas-pact/images/proggame_play_v3.png);
 }
 
 .proggame-playpause {
-    background: url(../../wegas-pact/images/proggame-playpause.png) no-repeat -4px -4px;
+    background-image: url(../../wegas-pact/images/proggame_step_v3.png);
 }
 
 .proggame-stop {
-    background: url(../../wegas-pact/images/proggame-stop.png) no-repeat -2px -1px;
-    height: 29px;
+    background-image: url(../../wegas-pact/images/proggame_stop_v3.png);
 }
 
 .proggame-next {
@@ -189,12 +206,28 @@ code {
 .pact-level .yui3-treeleaf-content-label,
 .pact-level .yui3-tabview,
 .pact-level .yui3-tabview a {
-    color: white;
+    color: #18e8df;
 }
 /* Left tab */
-
 .proggame-lefttab {
     min-width: 16em;
+    margin-right: 1em;
+    flex: 1 1 auto;
+}
+.pact-panel,
+.wegas-message {
+    background-color: rgba(9, 93, 89, 0.8);
+    border: 4px solid transparent;
+    border-image: url(../../wegas-pact/images/blackboard_LEFT_cadre.png) 4
+        stretch;
+    border-image-width: 2px;
+}
+.pact-panel .yui3-tabview-list {
+    background-image: url(../../wegas-pact/images/blackboard_LEFT_alveol_gradiant.png);
+    border-bottom: 5px solid transparent;
+    border-image: url(../../wegas-pact/images/blackboard_LEFT_separation.png) 10
+        3 stretch;
+    border-image-outset: 1;
 }
 
 .proggame-api {
@@ -290,10 +323,13 @@ code {
 }
 /* Level: Code */
 .code {
+    overflow: hidden;
     min-width: 33em;
-    max-width: 50em;
+    /* max-width: 50em; */
 }
-
+.ace-tomorrow-night-blue {
+    box-shadow: 0 0 14px 1px #002451;
+}
 .pact-level .script-error {
     background: red;
     border-radius: 2px;
@@ -339,7 +375,6 @@ code {
     background: #2a2a2a;
     border: none;
     box-shadow: none;
-    color: white;
     margin: 0;
 }
 

@@ -69,7 +69,7 @@ YUI.add('pact-level', function(Y) {
                 '                title="Level information"' +
                 '            ></span>' +
                 '        </div>' +
-                '        <div class="proggame-lefttab"></div>' +
+                '        <div class="proggame-lefttab pact-panel"></div>' +
                 '    </div>' +
                 '    <div class="proggame-view flex column grow">' +
                 '        <div class="proggame-levelend" style="display:none">' +
@@ -85,11 +85,11 @@ YUI.add('pact-level', function(Y) {
                 '        </div>' +
                 '        <div class="play flex column grow">' +
                 '            <div class="terrain"></div>' +
-                '            <div class="barre"></div>' +
+                // '            <div class="barre"></div>' +
                 '            <div class="editor flex row grow">' +
-                '                <div class="code grow"></div>' +
+                '                <div class="code grow pact-panel"></div>' +
                 '                <div class="proggame-buttons"></div>' +
-                '                <div class="proggame-debugger"></div>' +
+                '                <div class="proggame-debugger pact-panel"></div>' +
                 '            </div>' +
                 '        </div>' +
                 '    </div>' +
@@ -877,10 +877,10 @@ YUI.add('pact-level', function(Y) {
                         })
                         .item(0),
                     aceField = ace.edit(tab.get('panelNode').getDOMNode());
-                aceField.setTheme('ace/theme/twilight');
+                aceField.setTheme('ace/theme/tomorrow_night_blue');
                 aceField.getSession().setMode('ace/mode/javascript');
                 aceField.getSession().setValue(code);
-                aceField.commands.removeCommand('showSettingsMenu'); // remove Settings panel.
+                // aceField.commands.removeCommand('showSettingsMenu'); // remove Settings panel.
                 tab.set('selected', 1);
                 tab.aceField = aceField; // Set up a reference to the ace field
                 tab.saveTimer = saveTimer;

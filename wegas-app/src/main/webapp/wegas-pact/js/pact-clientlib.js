@@ -1,6 +1,12 @@
 (function() {
     'use strict';
-
+    var l = document.createElement('link');
+    l.setAttribute(
+        'href',
+        'https://fonts.googleapis.com/css?family=Electrolize'
+    );
+    l.setAttribute('rel', 'stylesheet');
+    document.head.append(l);
     /**
      * @param {(...args:unknown[])=>void} fn
      * @param {number} wait
