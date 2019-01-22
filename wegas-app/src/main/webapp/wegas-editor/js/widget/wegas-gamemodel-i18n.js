@@ -237,6 +237,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             this.languages.get("contentBox").delegate("click", this.languageSave, ".language:not(.loading) .validate", this);
             this.languages.get("contentBox").delegate("click", this.languageCancel, ".language:not(.loading) .cancel", this);
 
+
+            this.editor.get("contentBox").delegate("click", this.toggleCollapse, ".node-name .expander", this);
+
             this.handlers.onRefresh = this.refreshButton.on("click", Y.bind(this.rebuildEditor, this));
 
             this.handlers.onDescriptorUpdate = Y.Wegas.Facade.Variable.after('updatedDescriptor',
@@ -252,7 +255,10 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 var anchor = this.get("contentBox").one(".anchor[data-entityid=\"" + e.entity._yuid + "\"]"),
                     node = this.get("contentBox").one(".node[data-entityid=\"" + e.entity._yuid + "\"] .node-name");
                 this.get("contentBox").all(".highlight").removeClass("highlight");
+                
                 if (anchor) {
+                    // expand all collapsed ancestors
+                    anchor.ancestors(".node.collapsed").removeClass("collapsed");
                     Y.Wegas.Helper.scrollIntoViewIfNot(anchor);
                 }
                 if (node) {
@@ -261,6 +267,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             }, this);
         },
 
+        toggleCollapse: function(e) {
+            e.currentTarget.ancestor(".node").toggleClass("collapsed")
+        },
         saveStatusChange: function(e) {
             var langNode = this.languages.get("contentBox").one(".language[data-language-code='" + e.lang + "']");
             var unsaved = this.get("contentBox").one(".wegas-translation.unsaved[lang='" + e.lang + "']");
@@ -700,7 +709,10 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 markup.push("<span class='anchor' data-entityid='", node.entityId, "'></span>");
 
                 if ((node.nodeLabel || node.nodeName) && ((node.translations && node.translations.length > 0) || node.type === 'Script')) {
-                    markup.push("<div class='node-name'>", (node.nodeLabel || node.nodeName), " <span class='node-scriptalias'>(", node.nodeName, ")</span></div>");
+                    markup.push("<div class='node-name'>", (node.nodeLabel || node.nodeName), " <span class='node-scriptalias'>(", node.nodeName, ")</span><span class='expander'></span></div>");
+                }
+                if (node.comments) {
+                    markup.push("<div class='node-comments fa fa-info-circle'>", node.comments, " </div>");
                 }
 
                 if (node.translations && node.translations.length > 0) {
@@ -837,6 +849,10 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 if (node.nodeLabel && entity.getIconCss) {
                     // prefix non emtpy label with icon if any
                     node.nodeLabel = "<i class='" + entity.getIconCss() + "'></i> " + node.nodeLabel;
+                }
+
+                if (entity.get("comments") && typeof entity.get("comments") === "string") {
+                    node.comments = entity.get("comments");
                 }
 
                 attrs = entity.getAttrs();
