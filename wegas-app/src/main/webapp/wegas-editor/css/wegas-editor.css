@@ -996,6 +996,55 @@
     margin-bottom: 5px;
     margin-top: 20px;
     user-select: none;
+    position: relative; /* to place the expander caret on the right */
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node-name .expander:after {
+    content: "\25bc"; /* ▼ */
+    color: #666;
+    position: absolute;
+    right: 25px;
+    cursor: pointer;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node.collapsed > .node-name .expander:after {
+    content: "\25ba"; /* ► "*/
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node.collapsed > .node-children,
+.wegas-i18n-manager .wegas-i18n-manager--editor .node.collapsed > .translatedcontents{
+    display: none;
+}
+
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node-comments {
+    font-size: 12px;
+    user-select: none;
+    color: #888888;
+    font-style: italic;
+    /* border: 1px solid lightgray; */
+    margin-bottom: 10px;
+    background-color: aliceblue;
+    display: inline-block;
+    padding-left: 24px;
+    padding-right: 10px;
+    position: relative;
+    white-space: pre;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node.collapsed > .node-comments {
+    white-space: normal;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node-comments:before {
+    display: inline-block;
+    color: #99cfff;
+    font-size:15px;
+    font-style: normal;
+
+    position:absolute;
+    left: 6px;
+    top: calc(50% - 7px);
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--editor .node-scriptalias {
@@ -1040,8 +1089,9 @@
 }
 
 
-.wegas-i18n-manager .wegas-i18n-manager--editor .translatedcontents,
-.wegas-i18n-manager .wegas-i18n-manager--editor .node-name {
+.wegas-i18n-manager .wegas-i18n-manager--editor .node-name,
+.wegas-i18n-manager .wegas-i18n-manager--editor .node-comments,
+.wegas-i18n-manager .wegas-i18n-manager--editor .translatedcontents {
     margin-left : 60px;
 }
 
