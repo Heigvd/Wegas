@@ -1,3 +1,4 @@
+/// <reference lib="dom"/>
 /*
  * Wegas
  * http://wegas.albasim.ch
@@ -6,7 +7,11 @@
  * Licensed under the MIT License
  */
 /* global ace */
-
+/**
+ * @typedef SourceLocation
+ * @property {{line: number, column:number}} start
+ * @property {{line: number, column:number}} end
+ */
 YUI.add('pact-level', function(Y) {
     'use strict';
     var CONTENTBOX = 'contentBox',
@@ -34,9 +39,15 @@ YUI.add('pact-level', function(Y) {
         LEVEL_LIMIT_REACHED =
             "Il faut attendre l'autorisation d'aller plus loin dans le jeu.",
         Wegas = Y.Wegas,
+        Promise = Y.Promise,
         ProgGameLevel,
         currentLevel;
-
+    /**
+     * Create a webworker with simulation code.
+     */
+    function createRunner() {
+        return new Worker('wegas-pact/js/worker.js');
+    }
     /**
      * @param {any} obj
      */
@@ -110,6 +121,9 @@ YUI.add('pact-level', function(Y) {
             },
 
             // *** Lifecycle Methods *** //
+            /**
+             * @constructor
+             */
             initializer: function() {
                 this.handlers = [];
                 this.currentBreakpointLine = -1;
@@ -122,6 +136,7 @@ YUI.add('pact-level', function(Y) {
                 this.isModifiedCode = false;
                 this.isRuntimeException = false;
                 this.isSuccessful = false;
+                this.runner = createRunner();
                 // New persistent tracking variables:
                 this.history = this.getInstance(HISTORY_INBOX);
                 this.counters =
@@ -216,7 +231,7 @@ YUI.add('pact-level', function(Y) {
                         case IDLE:
                             this.runButton.set(LABEL, RUN_BUTTON_LABEL);
                             this.commandsStack = null;
-                            this.setCurrentLine(null);
+                            this.highlight(null);
                             this.currentBreakpointLine = -1;
                             this.currentBreakpointStep = -1;
                             break;
@@ -340,6 +355,7 @@ YUI.add('pact-level', function(Y) {
                     h.detach();
                 });
                 this.editorTabView.destroy();
+                this.runner.terminate();
             },
             initCounters: function() {
                 if (
@@ -576,105 +592,31 @@ YUI.add('pact-level', function(Y) {
             },
             sendRunRequest: function(code, interpreterCfg) {
                 interpreterCfg = interpreterCfg || {};
-                var level = Y.Wegas.Facade.Page.cache.isEditable()
-                    ? JSON.stringify(this.get('root').get('@pageId'))
-                    : Y.JSON.stringify(this.toObject());
                 this.prepareExecution();
-                Wegas.Facade.Variable.sendRequest({
-                    request:
-                        '/ProgGame/Run/' +
-                        Wegas.Facade.Game.get('currentPlayerId'),
-                    cfg: {
-                        method: 'POST',
-                        data:
-                            'run(' +
-                            'function (name) {' +
-                            code +
-                            '\n}, ' + // Player's code
-                            level +
-                            ', ' + // the current level
-                            Y.JSON.stringify(interpreterCfg) +
-                            ');',
-                    },
-                    on: {
-                        success: Y.bind(
-                            /**
-                             * @param {{ response: { entity: any; }; }} e
-                             */
-                            function(e) {
-                                var commands = Y.JSON.parse(e.response.entity);
-                                var level = Y.Wegas.Facade.Variable.cache
-                                    .find('name', 'currentLevel')
-                                    .get('value');
-                                var success = commands.some(
-                                    /**
-                                     * @param {{ type: string; }} c
-                                     */
-                                    function(c) {
-                                        return c.type === 'gameWon';
-                                    }
-                                );
-                                Y.Wegas.Facade.Variable.script.remoteEval(
-                                    'Log.post([' +
-                                        'Log.level(' +
-                                        JSON.stringify(code) +
-                                        ', ' +
-                                        level +
-                                        ', true,' +
-                                        success +
-                                        ')' +
-                                        (success
-                                            ? ', Log.statement("completed", "level", ' +
-                                              level +
-                                              ')'
-                                            : '') +
-                                        '])'
-                                );
-                                this.onServerReply(e);
-                            },
-                            this
-                        ),
-                        failure: Y.bind(function(e) {
-                            var level = Y.Wegas.Facade.Variable.cache
-                                .find('name', 'currentLevel')
-                                .get('value');
-                            Y.Wegas.Facade.Variable.script.remoteEval(
-                                'Log.post(Log.level(' +
-                                    JSON.stringify(code) +
-                                    ', ' +
-                                    level +
-                                    ', false, false))'
-                            );
-                            this.set(STATE, IDLE);
-                            var events = e.response.results.events;
-                            var exceptionEvent = Y.Array.find(events, function(
-                                e
-                            ) {
-                                return e.get('@class') === 'ExceptionEvent';
-                            });
-                            if (
-                                exceptionEvent &&
-                                exceptionEvent
-                                    .get('val.exceptions')[0]
-                                    .get('val')['@class'] ===
-                                    'WegasScriptException'
-                            ) {
-                                this.isSuccessful = false;
-                                this.isRuntimeException = true;
-                                this.feedback = exceptionEvent
-                                    .get('val.exceptions')[0]
-                                    .get('val').message;
-                                this.persistExecution();
-                                this.set('error', this.feedback);
-                                Y.Wegas.Alerts.showNotification(
-                                    'Your script contains an error.',
-                                    { timeout: 1e3 }
-                                );
-                            }
-                            // alert("Your script contains an error.");
-                        }, this),
-                    },
-                });
+                var to = setTimeout(
+                    function() {
+                        this.runner.terminate();
+                        this.runner = createRunner();
+                        this.onReply(
+                            [
+                                'timeout',
+                                "Cela fait 3 secondes que le code s'exécute. Et la taille de l'univers n'est toujours pas connue...",
+                            ],
+                            code
+                        );
+                    }.bind(this),
+                    3e3
+                );
+                this.runner.onmessage = function(m) {
+                    clearTimeout(to);
+                    this.onReply(m.data, code);
+                }.bind(this);
+                this.runner.postMessage([
+                    code, // Player's code
+                    this.toObject(),
+                    interpreterCfg,
+                ]);
+                return;
             },
             resetUI: function() {
                 Y.log('resetUI()', INFO, 'Wegas.ProgGameDisplay');
@@ -708,19 +650,94 @@ YUI.add('pact-level', function(Y) {
                 }
                 return false;
             },
-            onServerReply: function(e) {
+            /**
+             * @param {['success', {type:string, [key:string]:any}[]] |
+             *  ['parseError', string, SourceLocation?] |
+             *  ['runtimeError', string, SourceLocation] |
+             *  ['timeout', string]
+             * } result
+             * @param {string} code
+             */
+            onReply: function(result, code) {
                 Y.log(
-                    'onServerReply(' + e.response.entity + ')',
+                    'onReply(' + Y.JSON.stringify(result) + ')',
                     INFO,
                     PROGGAMELEVEL
                 );
-                this.commandsStack = Y.JSON.parse(e.response.entity);
-                this.isRuntimeException = false;
-                this.isSuccessful = this.getExecutionOutcome(
-                    this.commandsStack
+                var level = Y.Wegas.Facade.Variable.cache
+                    .find('name', 'currentLevel')
+                    .get('value');
+                switch (result[0]) {
+                    case 'success':
+                        var commands = result[1];
+
+                        var success = commands.some(
+                            /**
+                             * @param {{ type: string; }} c
+                             */
+                            function(c) {
+                                return c.type === 'gameWon';
+                            }
+                        );
+                        Y.Wegas.Facade.Variable.script.remoteEval(
+                            'Log.post([' +
+                                'Log.level(' +
+                                JSON.stringify(code) +
+                                ', ' +
+                                level +
+                                ', true,' +
+                                success +
+                                ')' +
+                                (success
+                                    ? ', Log.statement("completed", "level", ' +
+                                      level +
+                                      ')'
+                                    : '') +
+                                ']);' +
+                                (success
+                                    ? 'Action.completeLevel(' + level + ');'
+                                    : '')
+                        );
+                        this.commandsStack = commands;
+                        this.isRuntimeException = false;
+                        this.isSuccessful = this.getExecutionOutcome(
+                            this.commandsStack
+                        );
+                        this.persistExecution();
+                        this.consumeCommand();
+                        return;
+                    case 'parseError':
+                        this.isRuntimeException = false;
+                        this.isSuccessful = false;
+                        this.feedback = result[1];
+                        break;
+                    case 'runtimeError':
+                        this.isRuntimeException = true;
+                        this.isSuccessful = false;
+                        this.feedback = result[1];
+                        break;
+                    case 'timeout':
+                        this.isRuntimeException = true;
+                        this.isSuccessful = false;
+                        this.feedback = result[1];
+                        break;
+                }
+                this.set('state', IDLE);
+                this.highlight(result[2], true);
+                Y.Wegas.Facade.Variable.script.remoteEval(
+                    'Log.post(Log.level(' +
+                        JSON.stringify(code) +
+                        ', ' +
+                        level +
+                        ', false, false))'
                 );
+
                 this.persistExecution();
-                this.consumeCommand();
+                this.set('error', this.feedback);
+                Y.Wegas.Alerts.showNotification(
+                    'Your script contains an error.',
+                    { timeout: 1e3 }
+                );
             },
             findObject: function(id) {
                 return Y.Array.find(this.get('objects'), function(o) {
@@ -803,7 +820,7 @@ YUI.add('pact-level', function(Y) {
                             Y.later(100, this, this.consumeCommand);
                             break;
                         case 'line':
-                            this.setCurrentLine(command.line);
+                            this.highlight(command.line);
                             this.consumeCommand();
                             break;
                         case 'breakpoint':
@@ -818,7 +835,7 @@ YUI.add('pact-level', function(Y) {
                             this.mainEditorTab.set('selected', 1);
                             if (command.line !== this.currentBreakpointLine) {
                                 // May occur on rerun
-                                this.setCurrentLine(command.line);
+                                this.highlight(command.line);
                             }
                             this.currentBreakpointLine = command.line;
                             this.currentBreakpointStep = command.step;
@@ -832,8 +849,13 @@ YUI.add('pact-level', function(Y) {
                     this.set(STATE, IDLE);
                 }
             },
-            setCurrentLine: function(line) {
+            /**
+             * @param {number|SourceLocation} loc
+             */
+            highlight: function(loc, error) {
                 var session = this.mainEditorTab.aceField.session;
+                /*global require */
+                var Range = require('ace/range').Range;
                 if (this.marker) {
                     session.removeGutterDecoration(
                         this.cLine,
@@ -842,19 +864,28 @@ YUI.add('pact-level', function(Y) {
                     session.removeMarker(this.marker);
                     this.marker = null;
                 }
-                if (line) {
-                    line = line - 1; // 0 based
-                    this.cLine = line;
-                    /*global require */
-                    var Range = require('ace/range').Range;
+                if (typeof loc === 'number') {
+                    loc = loc - 1; // 0 based
+                    this.cLine = loc;
                     this.marker = session.addMarker(
-                        new Range(line, 0, line, 200),
-                        'proggame-currentline',
+                        new Range(loc, 0, loc, 200),
+                        'proggame-currentline' + (error ? '-error' : ''),
                         TEXT
                     );
                     session.addGutterDecoration(
-                        line,
+                        loc,
                         'proggame-currentgutterline'
+                    );
+                } else if (loc != null && typeof loc === 'object') {
+                    this.marker = session.addMarker(
+                        new Range(
+                            loc.start.line - 1,
+                            loc.start.column,
+                            loc.end.line - 1,
+                            loc.end.column
+                        ),
+                        'proggame-currentline' + (error ? '-error' : ''),
+                        TEXT
                     );
                 }
             },
@@ -880,7 +911,13 @@ YUI.add('pact-level', function(Y) {
                 aceField.setTheme('ace/theme/tomorrow_night_blue');
                 aceField.getSession().setMode('ace/mode/javascript');
                 aceField.getSession().setValue(code);
-                // aceField.commands.removeCommand('showSettingsMenu'); // remove Settings panel.
+                aceField.getSession().on(
+                    'change',
+                    function() {
+                        this.highlight(null);
+                    }.bind(this)
+                );
+                aceField.commands.removeCommand('showSettingsMenu'); // remove Settings panel.
                 tab.set('selected', 1);
                 tab.aceField = aceField; // Set up a reference to the ace field
                 tab.saveTimer = saveTimer;
