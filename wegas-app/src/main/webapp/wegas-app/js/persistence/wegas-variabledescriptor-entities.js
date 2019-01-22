@@ -746,10 +746,10 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 convertToListBtn: {
                     index: 21,
                     maxVisibility: "PRIVATE", // only visible for private variables
-                    cssClass: "wegas-advanced-feature",
                     cfg: {
                         label: "Convert To List",
                         type: "Button",
+                        cssClass: "wegas-advanced-feature",
                         plugins: [{
                                 fn: "ConvertToListAction"
                             }
@@ -920,10 +920,10 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 convertToListBtn: {
                     index: 21,
                     maxVisibility: "PRIVATE", // only visible for private variables
-                    cssClass: "wegas-advanced-feature",
                     cfg: {
                         label: "Convert To List",
                         type: "Button",
+                        cssClass: "wegas-advanced-feature",
                         plugins: [{
                                 fn: "ConvertToListAction"
                             }
