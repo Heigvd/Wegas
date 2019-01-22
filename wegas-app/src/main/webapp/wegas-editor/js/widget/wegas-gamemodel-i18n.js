@@ -140,7 +140,17 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             });
             this.addBtn = new Y.Wegas.Text({
                 cssClass: "create-button",
-                content: "<i class='fa fa-plus'></i>"
+                content: "Create new language: <i class='fa fa-plus'></i>"
+            });
+
+            this.toggleHide = new Y.Wegas.Text({
+                cssClass: "hide-empty--button",
+                content: "Hide empty: <i class='fa fa-square-o'></i>"
+            });
+
+            this.toolbar = new Y.Wegas.FlexList({
+                cssClass: "wegas-i18n-manager--toolbar",
+                direction: 'horizontal'
             });
 
             this.languagesHeader = new Y.Wegas.FlexList({
@@ -152,6 +162,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 cssClass: "wegas-i18n-manager--languages",
                 direction: 'horizontal'
             });
+
             this.editor = new Y.Wegas.Text({
                 cssClass: "wegas-i18n-manager--editor",
                 content: "loading translation table <i class='fa fa-pulse fa-spinner'></i>"
@@ -159,7 +170,12 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             this.header.add(this.title);
             this.header.add(this.refreshButton);
             this.add(this.header);
-            this.add(this.addBtn);
+
+            this.toolbar.add(this.addBtn);
+            this.toolbar.add(this.toggleHide);
+
+            this.add(this.toolbar);
+
             this.add(this.languagesHeader);
             this.add(this.languages);
             this.add(this.editor);
@@ -227,6 +243,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             }));
         },
         bindUI: function() {
+            this.get("contentBox").delegate("click", this.toggleShowEmpty, ".hide-empty--button i", this);
             this.get("contentBox").delegate("click", this.addLanguageClick, ".create-button i", this);
             this.languagesHeader.get("contentBox").delegate("click", this.languageUp, ".move-up", this);
 
@@ -255,7 +272,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 var anchor = this.get("contentBox").one(".anchor[data-entityid=\"" + e.entity._yuid + "\"]"),
                     node = this.get("contentBox").one(".node[data-entityid=\"" + e.entity._yuid + "\"] .node-name");
                 this.get("contentBox").all(".highlight").removeClass("highlight");
-                
+
                 if (anchor) {
                     // expand all collapsed ancestors
                     anchor.ancestors(".node.collapsed").removeClass("collapsed");
@@ -266,9 +283,11 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 }
             }, this);
         },
-
+        toggleShowEmpty: function(e) {
+            this.get("contentBox").toggleClass("hide-empty-translation");
+        },
         toggleCollapse: function(e) {
-            e.currentTarget.ancestor(".node").toggleClass("collapsed")
+            e.currentTarget.ancestor(".node").toggleClass("collapsed");
         },
         saveStatusChange: function(e) {
             var langNode = this.languages.get("contentBox").one(".language[data-language-code='" + e.lang + "']");
@@ -787,13 +806,31 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                             markup.push("</div>");
                         } else {
                             field = tr.label || tr.key;
-                            markup.push("<div class='translatedcontent'>");
-                            this.detectGhostLanguages(Object.keys(tr.value.get("translations")));
+                            markup.push("<div class='translatedcontent");
+
+
+
+                            var allEmpty = true;
+
                             for (var l in languages) {
+                                allEmpty = allEmpty && !Y.Wegas.Helper.stripHtml(I18n.t(tr.value, {lang: languages[l].get("code")}) || "");
+                            }
+
+                            if (allEmpty){
+                                // emtpy translation
+                                markup.push(" all-translations-empty");
+                            }
+                            markup.push("'>");
+
+                            this.detectGhostLanguages(Object.keys(tr.value.get("translations")));
+
+                            for (var l in languages) {
+
                                 markup.push("<div class='translation");
                                 if (this.isLanguageSupported(languages[l].get("code"))) {
                                     markup.push(" supported-language");
                                 }
+
                                 markup.push("'>");
                                 markup.push("<div class='translation-title'>");
                                 markup.push("<span class='field-name'>", field, "</span>");

@@ -910,6 +910,7 @@
     flex-grow: 0;
 }
 
+.wegas-i18n-manager .wegas-i18n-manager--toolbar,
 .wegas-i18n-manager .wegas-i18n-manager--languages-header,
 .wegas-i18n-manager .wegas-i18n-manager--languages {
     flex-shrink: 0;
@@ -1103,6 +1104,9 @@
     /*padding-left: 0.5em;*/
 }
 
+.wegas-i18n-manager .hide-empty-translation .hide-empty--button i:before {
+    content: "\f046";
+}
 
 .wegas-i18n-manager .wegas-translation .tools > * {
     display: block;
@@ -1120,6 +1124,10 @@
     display: flex;
     flex-direction: row;
     /*border: 1px dashed grey;*/
+}
+
+.wegas-i18n-manager .hide-empty-translation .wegas-i18n-manager--editor .all-translations-empty {
+    display: none;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--editor .translation {
