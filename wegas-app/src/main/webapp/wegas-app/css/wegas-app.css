@@ -568,6 +568,10 @@ body:not(.wegas-modeler-mode) .wegas-model-feature {
     height: 100px;
 }
 
+.wegas-line-origin {
+    transform: scale(1); /* hack to reset the origin */
+}
+
 
 .wegas-line {
     stroke: black;
