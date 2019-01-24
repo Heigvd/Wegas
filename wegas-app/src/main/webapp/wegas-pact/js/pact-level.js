@@ -214,10 +214,21 @@ YUI.add('pact-level', function(Y) {
                     )
                 ).render(cb.one('.terrain'));
                 this.editorTabView = new Y.TabView().render(cb.one('.code')); // Render the tabview for scripts
+                var defaultCode = this.get('defaultCode');
                 this.mainEditorTab = this.addEditorTab(
                     'Code',
-                    this.get('defaultCode')
-                ); // Add the "Main" tabview, which containes the code that will be executed
+                    defaultCode + (defaultCode.length === 0 || defaultCode.charAt(defaultCode.length-1) === "\n" ? '' : "\n")
+                );
+                var ace = this.editorTabView
+                    .get('selection')
+                    .aceField;
+                // Set insertion point after the default text, i.e. at the end of the code:
+                ace.navigateFileEnd();
+                ace.focus();
+                Y.later(0, this, function() {
+                    ace.clearSelection();
+                });
+                // Add the "Main" tabview, which containes the code that will be executed
                 if (ProgGameLevel.main) {
                     this.mainEditorTab.aceField.setValue(ProgGameLevel.main);
                 }
@@ -556,9 +567,9 @@ YUI.add('pact-level', function(Y) {
                         (this.isRuntimeException
                             ? '<b>Exception :</b> ' +
                               Y.Wegas.Helper.htmlEntities(this.feedback) +
-                              '<br/>&nbsp;<br/>'
+                              '<br>&nbsp;<br>'
                             : '') +
-                        '<b>Code soumis :</b><br/><pre>' +
+                        '<b>Code soumis :</b><br><pre>' +
                         Y.Wegas.Helper.htmlEntities(this.currentCode) +
                         '</pre>';
 
@@ -644,7 +655,8 @@ YUI.add('pact-level', function(Y) {
                         this.onReply(
                             [
                                 'timeout',
-                                "Cela fait 3 secondes que le code s'exécute. Et la taille de l'univers n'est toujours pas connue...",
+                                // Don't tell how much CPU is available, as it's not related to the duration of the animation:
+                                "Ce code s'exécute depuis trop longtemps. Il contient probablement une boucle infinie.",
                             ],
                             code
                         );
@@ -860,12 +872,13 @@ YUI.add('pact-level', function(Y) {
                             break;
                         case 'gameLost':
                             this.consumeCommand();
+                            this.focusCode();
                             break;
                         case 'log':
                             this.debugTabView
                                 .item(0)
                                 .get('panelNode')
-                                .append(command.text + '<br />');
+                                .append(command.text + '<br>');
                             Y.later(100, this, this.consumeCommand);
                             break;
                         case 'line':
@@ -1198,7 +1211,9 @@ YUI.add('pact-level', function(Y) {
                             var toInsert = e.target.get('data');
                             this.editorTabView
                                 .get('selection')
-                                .aceField.insert(toInsert + '();\n');
+                                .aceField
+                                .insert(toInsert + '();\n');
+                            this.focusCode();
                             e.halt(true);
                         },
                         this
@@ -1342,6 +1357,8 @@ YUI.add('pact-level', function(Y) {
                                         '11'
                                     ) {
                                         this.showTutorial();
+                                    } else {
+                                        this.focusCode();
                                     }
                                 }, this)
                             );
@@ -1370,8 +1387,16 @@ YUI.add('pact-level', function(Y) {
                 Y.Wegas.Tutorial(ProgGameLevel.TUTORIAL, {
                     next: 'Continuer',
                     skip: 'Ignorer le tutoriel',
-                });
+                }).then(function() {
+                    this.focusCode();
+                }.bind(this));
             },
+            focusCode: function() {
+                var ace = this.editorTabView
+                    .get('selection')
+                    .aceField;
+                ace.focus();
+            }
         },
         {
             ATTRS: {
@@ -1698,7 +1723,7 @@ YUI.add('pact-level', function(Y) {
                 },
                 defaultCode: {
                     type: STRING,
-                    value: '//Put your code here...\n',
+                    value: '//Put your code here...',
                     view: {
                         type: 'jseditor',
                         label: 'Code input placeholder',
@@ -1782,9 +1807,9 @@ YUI.add('pact-level', function(Y) {
                         'The floor() method rounds a number DOWNWARDS to the nearest integer, and returns the result.\n\n' +
                         'Parameters\nx:Number - The number you want to round\n' +
                         'Returns\nNumber - The nearest integer when rounding downwards',
-                    //tooltipHTML: "The floor() method rounds a number DOWNWARDS to the nearest integer, and returns the result.<br /><br />"
-                    //        + "<b>Parameters</b><br />x:Number - The number you want to round"
-                    //        + "<b>Returns</b><br />Number - The nearest integer when rounding downwards",
+                    //tooltipHTML: "The floor() method rounds a number DOWNWARDS to the nearest integer, and returns the result.<br><br>"
+                    //        + "<b>Parameters</b><br>x:Number - The number you want to round"
+                    //        + "<b>Returns</b><br>Number - The nearest integer when rounding downwards",
                 },
                 'Math.round': {
                     pkg: 'Math',
@@ -1820,8 +1845,8 @@ YUI.add('pact-level', function(Y) {
                 {
                     node: '.proggame-lefttab',
                     html:
-                        "<div>L'<b>API</b>(Application Programming Interface) expose les instructions que vous avez à disposition.<br/><br/>" +
-                        'Le <b>?</b> donne des informations supplémentaires pour chaque instruction<br/><br/>' +
+                        "<div>L'<b>API</b>(Application Programming Interface) expose les instructions que vous avez à disposition.<br><br>" +
+                        'Le <b>?</b> donne des informations supplémentaires pour chaque instruction<br><br>' +
                         'Vous pouvez ajouter des instructions en cliquant directement dessus.</div>',
                 },
                 {
