@@ -46,13 +46,8 @@ YUI.add('pact-level', function(Y) {
      * Serialize a function and executs it on the server.
      * Batching all calls made in the same loop.
      * In case of an error, everything fails.
-     *
      * @see Y.Wegas.Facade.Variable.script.serializeFn
-     * @template Arguments
-     * @template ReturnValue
-     * @param {(...args:Arguments[]) => ReturnValue} fn function to execute on server
-     * @param {...Arguments} _args additional arguments passed to the function
-     * @returns {PromiseLike<ReturnValue>} server return value;
+     * @type {<Arguments, ReturnValue>(fn:(...args:Arguments[])=>ReturnValue, ...args:Arguments[])=>PromiseLike<ReturnValue>}
      */
     var batchRemoteCall = (function() {
         // Private vars

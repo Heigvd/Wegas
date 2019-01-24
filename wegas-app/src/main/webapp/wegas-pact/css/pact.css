@@ -61,14 +61,16 @@ code {
     height: 100%;
     flex: 1 1 auto;
 }
-.yui3-skin-sam .proggame-button {
+.yui3-skin-sam .proggame-button,
+.yui3-skin-sam .yui3-wegas-responsive-tabview .inbox .yui3-tab
+ {
     /* text-transform: uppercase; */
     font-size: 1.5em;
     margin: 5px 2px;
     color: #18e8df;
     line-height: 0.9;
     border: 2px solid #18e8df;
-    background-color: transparent;
+    background-color: rgba(9, 93, 89, 0.8);
     background-image: url(../../wegas-pact/images/menuBg_v2.png);
     box-shadow: none;
     opacity: 1;
@@ -211,16 +213,21 @@ code {
 /* Left tab */
 .proggame-lefttab {
     min-width: 16em;
-    margin-right: 1em;
     flex: 1 1 auto;
 }
 .pact-panel,
+.proggame-panel,
 .wegas-message {
     background-color: rgba(9, 93, 89, 0.8);
     border: 4px solid transparent;
     border-image: url(../../wegas-pact/images/blackboard_LEFT_cadre.png) 4
         stretch;
     border-image-width: 2px;
+    width: auto;
+    margin: 2px;
+}
+.yui3-skin-sam .yui3-wegas-responsive-tabview .inbox .yui3-tab {
+    background-image: url(../../wegas-pact/images/menuBg_v2.png);
 }
 .pact-panel .yui3-tabview-list {
     background-image: url(../../wegas-pact/images/blackboard_LEFT_alveol_gradiant.png);
@@ -229,7 +236,22 @@ code {
         3 stretch;
     border-image-outset: 1;
 }
-
+.yui3-skin-sam .inbox .yui3-tab .yui3-tab-label {
+    color: #18e8df;
+    font-size: 1em;
+}
+.inbox .yui3-tab-selected .yui3-tab-label,
+.inbox .yui3-tab-selected .yui3-tab-label:focus,
+.inbox .yui3-tab-selected .yui3-tab-label:hover {
+    font-weight: bold;
+}
+.yui3-skin-sam .inbox .horizontal-tabview .yui3-tab-panel {
+    /* border-left: 4px solid transparent; */
+    border-image: url(../../wegas-pact/images/blackboard_LEFT_cadre.png) 4
+        stretch;
+    border-width: 0 0 0 4px;
+}
+/*  */
 .proggame-api {
     margin-top: 15px;
 }
@@ -378,7 +400,8 @@ code {
 }
 
 .proggame-panel .wegas-panel-content {
-    background: #2a2a2a;
+    background: none;
+    color: #18e8df;
     border: none;
     box-shadow: none;
     margin: 0;
