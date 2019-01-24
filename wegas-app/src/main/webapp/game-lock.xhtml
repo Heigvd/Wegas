@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
-
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
     <ui:composition template="game-play.xhtml">
-        <ui:define name="title">#{gameController.currentGameModel.properties.freeForAll ? gameController.currentPlayer.name : gameController.currentPlayer.team.name} - #{gameController.currentGame.name}</ui:define>
-
-
+        <ui:define name="app-init">
+            <c:set var="extraBodyClass" value="wegas-playmode"/>
+            <c:set var="wegasMode" value="SPY"/>
+        </ui:define>
         <ui:define name="pageUri">wegas-app/db/wegas-app-noaction-layout.json</ui:define>
 
     </ui:composition>
-
 </html>

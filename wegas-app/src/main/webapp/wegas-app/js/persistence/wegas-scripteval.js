@@ -141,7 +141,7 @@ YUI.add('wegas-scripteval', function(Y) {
             var args = arguments;
             return new Promise(function (resolve, reject) {
                 this.remoteEval(
-                    '[' + serializeFn.apply(this, args) + ']', // Wrap into an array to be sure to have if as first element
+                    '[' + this.serializeFn.apply(this, args) + ']', // Wrap into an array to be sure to have if as first element
                     {
                         on: {
                             success: function (res) {
