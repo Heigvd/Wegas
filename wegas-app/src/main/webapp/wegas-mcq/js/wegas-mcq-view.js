@@ -1167,7 +1167,7 @@ YUI.add('wegas-mcq-view', function(Y) {
 
                             // skip inactive choices or choices without replies
                             if (choiceI.get("active") && cReplies && cReplies.length > 0 && cReplies[0].get("validated")) {
-                                replies.push(cReplies[0]);
+                                validatedReplies.push(cReplies[0]);
                             }
                         }
                     }
