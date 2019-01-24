@@ -122,6 +122,15 @@ YUI.add('wegas-box', function(Y) {
 
             Y.later(50, this, this.syncUI);
         },
+        getOrigin: function() {
+            var oNode = this.get("boundingBox").ancestor(".wegas-line-origin");
+            if (oNode) {
+                var bbox = oNode.getDOMNode().getBoundingClientRect();
+                return [bbox.x, bbox.y];
+            } else {
+                return [0, 0];
+            }
+        },
         syncUI: function() {
             var startSelector = this.get("startNode");
             var endSelector = this.get("endNode");
@@ -173,6 +182,13 @@ YUI.add('wegas-box', function(Y) {
                     }
                 }
 
+                var origin = this.getOrigin();
+
+                startPoint[0] -= origin[0];
+                startPoint[1] -= origin[1];
+                
+                endPoint[0] -= origin[0];
+                endPoint[1] -= origin[1];
 
                 width = Math.abs(startPoint[0] - endPoint[0]); //delta x
                 height = Math.abs(startPoint[1] - endPoint[1]); // delty y
