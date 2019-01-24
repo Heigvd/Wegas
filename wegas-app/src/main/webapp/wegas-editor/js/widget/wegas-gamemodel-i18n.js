@@ -871,11 +871,11 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                             for (var l in languages) {
                                 var isGhost = typeof languages[l] === "string";
 
+                                var langCode = isGhost ? languages[l] : languages[l].get("code");
                                 if (isGhost && !I18n.t(tr.value, {lang: langCode, caseSensitiveCode: true}) || "") {
                                     continue;
                                 }
 
-                                var langCode = isGhost ? languages[l] : languages[l].get("code");
 
                                 markup.push("<div class='translation");
                                 if (!isGhost && this.isLanguageSupported(langCode)) {

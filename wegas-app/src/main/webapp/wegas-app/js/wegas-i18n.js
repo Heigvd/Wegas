@@ -275,6 +275,8 @@ YUI.add("wegas-i18n", function(Y) {
                     if (forcedLang) {
                         if (lang) {
                             langs = [lang];
+                        } else {
+                            langs = [];
                         }
                     } else {
                         if (lang) {

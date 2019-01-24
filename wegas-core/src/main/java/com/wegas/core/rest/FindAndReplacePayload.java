@@ -8,6 +8,10 @@
 package com.wegas.core.rest;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.JsonNode;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  *
@@ -28,6 +32,10 @@ public class FindAndReplacePayload {
     private boolean processScripts = false;
     private boolean processPages = false;
     private boolean processStyles = false;
+
+    private JsonNode languages;
+
+    private ArrayList<String> langs = new ArrayList<>();
 
     public String getFind() {
         return find;
@@ -99,5 +107,28 @@ public class FindAndReplacePayload {
 
     public void setProcessStyles(boolean processStyles) {
         this.processStyles = processStyles;
+    }
+
+    public JsonNode getLanguages() {
+        return languages;
+    }
+
+    public void setLanguages(JsonNode languages) {
+        this.languages = languages;
+
+        if (this.languages != null) {
+            this.langs.clear();
+            Iterator<Map.Entry<String, JsonNode>> fields = this.languages.fields();
+            while(fields.hasNext()){
+                Map.Entry<String, JsonNode> next = fields.next();
+                if (next.getValue().asBoolean()){
+                    this.langs.add(next.getKey());
+                }
+            }
+        }
+    }
+
+    public boolean shouldProcessLang(String lang) {
+        return this.langs.contains(lang);
     }
 }

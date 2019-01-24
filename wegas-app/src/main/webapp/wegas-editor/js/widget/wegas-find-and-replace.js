@@ -22,109 +22,137 @@ YUI.add('wegas-find-and-replace', function(Y) {
             + '<div class="find-result"></div>'
             + '</div>',
         renderUI: function() {
-            this.form = new Y.Wegas.RForm({
-                values: {},
-                cfg: {
-                    type: "object",
-                    properties: {
-                        '@class': {
-                            value: 'FindAndReplacePayload',
-                            type: "string",
-                            view: {
-                                type: "hidden"
-                            }
-                        },
-                        find: {
-                            value: "",
-                            type: "string",
-                            view: {
-                                label: "Find"
-                            }
-                        },
-                        replace: {
-                            type: "string",
-                            value: "",
-                            view: {
-                                label: "Replace"
-                            }
-                        },
-                        pretend: {
+            var cfg = {
+                type: "object",
+                properties: {
+                    '@class': {
+                        value: 'FindAndReplacePayload',
+                        type: "string",
+                        view: {
+                            type: "hidden"
+                        }
+                    },
+                    find: {
+                        value: "",
+                        type: "string",
+                        view: {
+                            label: "Find"
+                        }
+                    },
+                    replace: {
+                        type: "string",
+                        value: "",
+                        view: {
+                            label: "Replace"
+                        }
+                    },
+                    pretend: {
+                        type: "boolean",
+                        value: true,
+                        view: {
                             type: "boolean",
-                            value: true,
-                            view: {
-                                type: "boolean",
-                                label: "Simulate",
-                                description: "Only show differences",
-                                layout: 'shortInline'
-                            }
-                        },
-                        matchCase: {
+                            label: "Simulate",
+                            description: "Only show differences",
+                            layout: 'shortInline'
+                        }
+                    },
+                    matchCase: {
+                        type: "boolean",
+                        value: false,
+                        view: {
                             type: "boolean",
-                            value: false,
-                            view: {
-                                type: "boolean",
-                                label: "Match case",
-                                layout: 'shortInline',
-                                description: "case insensitive"
-                            }
-                        },
-                        regex: {
+                            label: "Match case",
+                            layout: 'shortInline',
+                            description: "case insensitive"
+                        }
+                    },
+                    regex: {
+                        type: "boolean",
+                        value: false,
+                        view: {
+                            className: 'wegas-advanced-feature',
                             type: "boolean",
-                            value: false,
-                            view: {
-                                className: 'wegas-advanced-feature',
-                                type: "boolean",
-                                label: "Regular Expression",
-                                layout: 'shortInline',
-                                description: "Use $1, $2, ..., $n to use captured groups"
-                            }
-                        },
-                        processVariables: {
+                            label: "Regular Expression",
+                            layout: 'shortInline',
+                            description: "Use $1, $2, ..., $n"
+                        }
+                    },
+                    processVariables: {
+                        type: "boolean",
+                        value: true,
+                        view: {
+                            className: 'wegas-advanced-feature',
                             type: "boolean",
-                            value: true,
-                            view: {
-                                className: 'wegas-advanced-feature',
-                                type: "boolean",
-                                label: "Variables",
-                                description: "Search and replace in variables",
-                                layout: 'shortInline'
-                            }
-                        },
-                        processPages: {
+                            label: "Variables",
+                            description: "Search and replace in variables",
+                            layout: 'shortInline'
+                        }
+                    },
+                    processPages: {
+                        type: "boolean",
+                        value: false,
+                        view: {
+                            className: 'wegas-advanced-feature',
                             type: "boolean",
-                            value: false,
-                            view: {
-                                className: 'wegas-advanced-feature',
-                                type: "boolean",
-                                label: "Pages",
-                                description: "Search and replace in Pages",
-                                layout: 'shortInline'
-                            }
-                        },
-                        processStyles: {
+                            label: "Pages",
+                            description: "Search and replace in Pages",
+                            layout: 'shortInline'
+                        }
+                    },
+                    processStyles: {
+                        type: "boolean",
+                        value: false,
+                        view: {
+                            className: 'wegas-advanced-feature',
                             type: "boolean",
-                            value: false,
-                            view: {
-                                className: 'wegas-advanced-feature',
-                                type: "boolean",
-                                label: "Styles",
-                                description: "Search and replace in styles",
-                                layout: 'shortInline'
-                            }
-                        },
-                        processScripts: {
+                            label: "Styles",
+                            description: "Search and replace in styles",
+                            layout: 'shortInline'
+                        }
+                    },
+                    processScripts: {
+                        type: "boolean",
+                        value: false,
+                        view: {
+                            className: 'wegas-advanced-feature',
                             type: "boolean",
-                            value: false,
-                            view: {
-                                className: 'wegas-advanced-feature',
-                                type: "boolean",
-                                label: "Scripts",
-                                description: "Search and replace in client/server scripts",
-                                layout: 'shortInline'
-                            }
+                            label: "Scripts",
+                            description: "Search and replace in client/server scripts",
+                            layout: 'shortInline'
+                        }
+                    },
+                    languages: {
+                        type: "object",
+                        value: {},
+                        properties: {},
+                        visible: function(val, formValue){
+                            return formValue.processVariables;
+                        },
+                        view: {
+                            className: "wegas-internal-feature",
+                            label: "Languages"
                         }
                     }
                 }
+            };
+
+            var languages = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages");
+            for (var l in languages) {
+                var lang = languages[l];
+                var code = lang.get("code");
+                cfg.properties.languages.value[code] = true;
+                cfg.properties.languages.properties[code] = {
+                    type: "boolean",
+                    view: {
+                        label: code,
+                        layout: 'shortInline'
+                    }
+                };
+            }
+
+            this.form = new Y.Wegas.RForm({
+                values: {},
+                cfg: cfg
             });
             this.form.render(this.get("contentBox").one(".the-form"));
         },

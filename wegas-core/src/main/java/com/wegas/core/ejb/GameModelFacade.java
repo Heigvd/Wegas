@@ -1201,12 +1201,15 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                         if (field.getAnnotation().searchable()) {
                             if (target instanceof Translation) {
                                 Translation tr = (Translation) target;
-                                String newContent = this.replace(tr.getTranslation());
 
-                                if (newContent != null) {
-                                    this.genEntry(ancestors, field, tr.getTranslation(), newContent);
-                                    if (!payload.isPretend()) {
-                                        tr.setTranslation(newContent);
+                                if (this.payload.shouldProcessLang(tr.getLang())) {
+                                    String newContent = this.replace(tr.getTranslation());
+
+                                    if (newContent != null) {
+                                        this.genEntry(ancestors, field, tr.getTranslation(), newContent);
+                                        if (!payload.isPretend()) {
+                                            tr.setTranslation(newContent);
+                                        }
                                     }
                                 }
                             } else if (target instanceof String) {
