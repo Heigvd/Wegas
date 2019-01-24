@@ -297,7 +297,7 @@ public class I18nFacade extends WegasAbstractFacade {
         Map<String, Object> args = new HashMap<>();
         args.put("impact", impact);
         args.put("index", index);
-        args.put("code", code.toUpperCase());
+        args.put("code", code);
         args.put("newValue", newValue);
 
         ScriptContext ctx = new SimpleScriptContext();
@@ -456,7 +456,30 @@ public class I18nFacade extends WegasAbstractFacade {
     }
 
     public String updateScriptWithNewTranslation(String impact, int index, String code, String newValue, String newTrStatus) throws ScriptException {
-        JSObject result = (JSObject) fishTranslationLocation(impact, index, code, newValue);
+
+        JSObject result;
+
+        if (code.equals(code.toUpperCase())) {
+            result = (JSObject) fishTranslationLocation(impact, index, code, newValue);
+        } else {
+            JSObject lowerCaseResult = (JSObject) fishTranslationLocation(impact, index, code, newValue);
+
+            String lowerStatus = (String) lowerCaseResult.getMember("status");
+
+            if (lowerStatus.equals("found")) {
+                result = lowerCaseResult;
+            } else {
+                JSObject upperCaseResult = (JSObject) fishTranslationLocation(impact, index, code.toUpperCase(), newValue);
+                String upperStatus = (String) upperCaseResult.getMember("status");
+
+                if (upperStatus.equals("found") || upperStatus.equals("missingCode")) {
+                    // no lower case, but a upper case one
+                    result = upperCaseResult;
+                } else {
+                    result = lowerCaseResult;
+                }
+            }
+        }
 
         if (result != null) {
 
@@ -503,7 +526,7 @@ public class I18nFacade extends WegasAbstractFacade {
                         Integer endIndex = indexes[1];
                         StringBuilder sb = new StringBuilder(impact);
                         // insert new code property right after opening bracket
-                        sb.replace(startIndex + 1, startIndex + 1, "\"" + code + "\": " + translation + ", ");
+                        sb.replace(startIndex + 1, startIndex + 1, "\"" + code.toUpperCase() + "\": " + translation + ", ");
                         return sb.toString();
                     }
                 default:

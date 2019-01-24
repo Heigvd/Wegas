@@ -186,7 +186,7 @@ YUI.add('wegas-box', function(Y) {
 
                 startPoint[0] -= origin[0];
                 startPoint[1] -= origin[1];
-                
+
                 endPoint[0] -= origin[0];
                 endPoint[1] -= origin[1];
 

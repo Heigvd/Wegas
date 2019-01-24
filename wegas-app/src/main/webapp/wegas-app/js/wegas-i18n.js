@@ -238,6 +238,7 @@ YUI.add("wegas-i18n", function(Y) {
                 translations,
                 forcedLang = params && params.lang,
                 inlineEditor = params && params.inlineEditor,
+                caseSensitiveCode = params && params.caseSensitiveCode,
                 theOne, tr,
                 isOutdated;
 
@@ -261,14 +262,20 @@ YUI.add("wegas-i18n", function(Y) {
                         };
                     });
                     if (forcedLang) {
-                        favoriteCode = forcedLang.toUpperCase();
+                        if (caseSensitiveCode) {
+                            favoriteCode = forcedLang;
+                        } else {
+                            favoriteCode = forcedLang.toUpperCase();
+                        }
                     }
                     // move favorite language at first position
                     lang = Y.Array.find(langs, function(item) {
                         return item.code === favoriteCode;
                     });
                     if (forcedLang) {
-                        langs = [lang];
+                        if (lang) {
+                            langs = [lang];
+                        }
                     } else {
                         if (lang) {
                             i = langs.indexOf(lang);
@@ -278,7 +285,7 @@ YUI.add("wegas-i18n", function(Y) {
                     }
                     for (i in langs) {
                         lang = langs[i];
-                        tr = translations[lang.code] || translations[lang.code.toLowerCase()];
+                        tr = translations[lang.code] || (!caseSensitiveCode && translations[lang.code.toLowerCase()]);
                         if (tr !== undefined) {
                             if (tr.translation) {
                                 theOne = lang;
