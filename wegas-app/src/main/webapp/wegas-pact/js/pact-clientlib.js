@@ -67,84 +67,100 @@
     };
 
     app.once('render', function() {
-        /* global Log, Y */
-        Y.use('wegas-react-form', function() {
-            Y.Wegas.RForm.Script.register('getter', {
-                'Action.changeLevel': {
-                    label: '[ProgGame] change Level',
-                    arguments: [
-                        {
-                            type: 'string',
-                            view: {
-                                type: 'pageselect',
+        /* global Y */
+        if (Y.config.Wegas.mode === 'EDIT') {
+            Y.use('wegas-react-form', function() {
+                Y.Wegas.RForm.Script.register('getter', {
+                    'Action.changeLevel': {
+                        label: '[ProgGame] change Level',
+                        arguments: [
+                            {
+                                type: 'string',
+                                view: {
+                                    type: 'pageselect',
+                                },
                             },
-                        },
-                    ],
-                },
+                        ],
+                    },
+                });
             });
-        });
-
-        // Focus blur xapi
-        var blured = false;
-        var blur = debounce(function() {
-            blured = true;
-            Y.Wegas.Facade.Variable.script.remoteEval(
-                "Log.post(Log.statement('suspended', 'proggame'))"
-            );
-        }, 3000);
-        window.addEventListener('focus', function() {
-            if (blured) {
-                blured = false;
-                Y.Wegas.Facade.Variable.script.remoteEval(
-                    "Log.post(Log.statement('resumed', 'proggame'))"
-                );
-            } else {
-                blur.cancel();
-            }
-        });
-        window.addEventListener('blur', blur);
-        window.addEventListener('beforeunload', function() {
-            Y.Wegas.Facade.Variable.script.remoteEval(
-                "Log.post(Log.statement('suspended', 'proggame'))"
-            );
-            app.destroy(); // Allow destructor to do their thing (Log)
-        });
-        Y.Wegas.Facade.Variable.script.remoteEval(
-            "Log.post(Log.statement('resumed', 'proggame'))"
-        );
+        }
+        if (Y.config.Wegas.mode === 'PLAY') {
+            // Focus blur xapi
+            var blured = false;
+            var blur = debounce(function() {
+                blured = true;
+                Y.Wegas.Facade.Variable.script.remoteFnEval(function() {
+                    Log.post(Log.statement('suspended', 'proggame'));
+                });
+            }, 3000);
+            window.addEventListener('focus', function() {
+                if (blured) {
+                    blured = false;
+                    Y.Wegas.Facade.Variable.script.remoteFnEval(function() {
+                        Log.post(Log.statement('resumed', 'proggame'));
+                    });
+                } else {
+                    blur.cancel();
+                }
+            });
+            window.addEventListener('blur', blur);
+            window.addEventListener('beforeunload', function() {
+                Y.Wegas.Facade.Variable.script.remoteFnEval(function() {
+                    Log.post(Log.statement('suspended', 'proggame'));
+                });
+                app.destroy(); // Allow destructor to do their thing (Log)
+            });
+            Y.Wegas.Facade.Variable.script.remoteFnEval(function() {
+                Log.post(Log.statement('resumed', 'proggame'));
+            });
+        }
     });
-    Y.use('wegas-inbox', function() {
-        var OldMessageDisplay = Y.Wegas.MessageDisplay;
-        Y.Wegas.MessageDisplay = Y.Base.create(
-            'wegas-message',
-            OldMessageDisplay,
-            [],
-            {
-                initializer: function() {
-                    var message = this.getMessage();
-                    if (message.get('token')) {
-                        Y.Wegas.Facade.Variable.script.remoteEval(
-                            "Log.post(Log.statement('" +
-                                (message.get('unread')
-                                    ? 'initialized'
-                                    : 'resumed') +
-                                "', 'theory', '" +
-                                message.get('token') +
-                                "'))"
-                        );
-                    }
-                },
-                destructor: function() {
-                    var message = this.getMessage();
-                    if (message.get('token')) {
-                        Y.Wegas.Facade.Variable.script.remoteEval(
-                            "Log.post(Log.statement('suspended', 'theory', '" +
-                                message.get('token') +
-                                "'))"
-                        );
-                    }
-                },
-            }
-        );
-    });
+    if (Y.config.Wegas.mode === 'PLAY') {
+        Y.use('wegas-inbox', function() {
+            var OldMessageDisplay = Y.Wegas.MessageDisplay;
+            Y.Wegas.MessageDisplay = Y.Base.create(
+                'wegas-message',
+                OldMessageDisplay,
+                [],
+                {
+                    initializer: function() {
+                        var message = this.getMessage();
+                        if (message.get('token')) {
+                            Y.Wegas.Facade.Variable.script.remoteFnEval(
+                                function(unread, token) {
+                                    Log.post(
+                                        Log.statement(
+                                            unread ? 'initialized' : 'resumed',
+                                            'theory',
+                                            token
+                                        )
+                                    );
+                                },
+                                message.get('unread'),
+                                message.get('token')
+                            );
+                        }
+                    },
+                    destructor: function() {
+                        var message = this.getMessage();
+                        if (message.get('token')) {
+                            Y.Wegas.Facade.Variable.script.remoteFnEval(
+                                function(token) {
+                                    Log.post(
+                                        Log.statement(
+                                            'suspended',
+                                            'theory',
+                                            token
+                                        )
+                                    );
+                                },
+                                message.get('token')
+                            );
+                        }
+                    },
+                }
+            );
+        });
+    }
 })();
