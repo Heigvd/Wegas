@@ -43,6 +43,62 @@ YUI.add('pact-level', function(Y) {
         ProgGameLevel,
         currentLevel;
     /**
+     * Serialize a function and executs it on the server.
+     * Batching all calls made in the same loop.
+     * In case of an error, everything fails.
+     *
+     * @see Y.Wegas.Facade.Variable.script.serializeFn
+     * @template Arguments
+     * @template ReturnValue
+     * @param {(...args:Arguments[]) => ReturnValue} fn function to execute on server
+     * @param {...Arguments} _args additional arguments passed to the function
+     * @returns {PromiseLike<ReturnValue>} server return value;
+     */
+    var batchRemoteCall = (function() {
+        // Private vars
+        var calls = [];
+        var cbs = [];
+        var errorCbs = [];
+        var to = null;
+
+        return function batch(fn, _args) {
+            var args = arguments;
+            return new Promise(function(resolve, reject) {
+                calls.push(
+                    Y.Wegas.Facade.Variable.script.serializeFn.apply(null, args)
+                );
+                cbs.push(resolve);
+                errorCbs.push(reject);
+                clearTimeout(to);
+                to = setTimeout(function() {
+                    var newCalls = calls;
+                    calls = [];
+                    var newCbs = cbs;
+                    cbs = [];
+                    var newErrorCbs = errorCbs;
+                    errorCbs = [];
+                    Y.Wegas.Facade.Variable.script.remoteEval(
+                        '[' + newCalls.join(',') + ']',
+                        {
+                            on: {
+                                success: function(res) {
+                                    newCbs.forEach(function(cb, i) {
+                                        cb(res.response.entities[i]);
+                                    });
+                                },
+                                failure: function(res) {
+                                    newErrorCbs.forEach(function(cb) {
+                                        cb(res.response.results.events);
+                                    });
+                                },
+                            },
+                        }
+                    );
+                }, 0);
+            });
+        };
+    })();
+    /**
      * Create a webworker with simulation code.
      */
     function createRunner() {
@@ -496,53 +552,47 @@ YUI.add('pact-level', function(Y) {
                             '</span>'
                     ),
                     msgDate = 'Level ' + (currentLevel / 10).toFixed(1),
-                    msgBody = Y.JSON.stringify(
+                    msgBody =
                         (this.isRuntimeException
                             ? '<b>Exception :</b> ' +
                               Y.Wegas.Helper.htmlEntities(this.feedback) +
                               '<br/>&nbsp;<br/>'
                             : '') +
-                            '<b>Code soumis :</b><br/><pre>' +
-                            Y.Wegas.Helper.htmlEntities(this.currentCode) +
-                            '</pre>'
-                    );
+                        '<b>Code soumis :</b><br/><pre>' +
+                        Y.Wegas.Helper.htmlEntities(this.currentCode) +
+                        '</pre>';
 
-                // Update history in a separate transaction (in case the user code contains crash-prone stuff):
-                var sendToHistoryCmd =
-                    // sendDatedMessage(self, from, date, subject, content, att)
-                    'Variable.find(gameModel, "' +
-                    HISTORY_INBOX +
-                    '").sendDatedMessage(self, "", "' +
-                    msgDate +
-                    '", ' +
-                    msgSubject +
-                    ', ' +
-                    msgBody +
-                    ', []);\n';
-
-                var persistHistory = function() {
-                    Y.Wegas.Facade.Variable.script.remoteEval(
-                        sendToHistoryCmd,
-                        {
-                            on: {
-                                failure: Y.bind(function() {
-                                    alert(
-                                        'Erreur interne: Impossible de sauvegarder ' +
-                                            HISTORY_INBOX +
-                                            ' ! \n' +
-                                            'Recharger la page dans le navigateur si ce problème se reproduit'
-                                    );
-                                }, this),
-                            },
-                        }
+                batchRemoteCall(
+                    function(HISTORY_INBOX, msgDate, msgSubject, msgBody) {
+                        Variable.find(
+                            gameModel,
+                            HISTORY_INBOX
+                        ).sendDatedMessage(
+                            self,
+                            '',
+                            msgDate,
+                            msgSubject,
+                            msgBody,
+                            []
+                        );
+                    },
+                    HISTORY_INBOX,
+                    msgDate,
+                    msgSubject,
+                    msgBody
+                ).catch(function() {
+                    alert(
+                        'Erreur interne: Impossible de sauvegarder ' +
+                            HISTORY_INBOX +
+                            ' ! \n' +
+                            'Recharger la page dans le navigateur si ce problème se reproduit'
                     );
-                };
+                });
 
                 if (this.getHighestAttemptedLevel() > currentLevel) {
                     Y.log(
                         "*** We're NOT persisting counters for this lower level"
                     );
-                    persistHistory();
                     return;
                 }
 
@@ -557,28 +607,22 @@ YUI.add('pact-level', function(Y) {
                     currCounters.incomplete++;
                 }
 
-                var persistCountersCmd =
-                    'Variable.find(gameModel, "' +
-                    COUNTERS_OBJECT +
-                    '").setProperty(self, "' +
-                    currentLevel +
-                    '", \'' +
-                    Y.JSON.stringify(currCounters) +
-                    "');\n";
-
-                Y.Wegas.Facade.Variable.script.remoteEval(persistCountersCmd, {
-                    on: {
-                        success: Y.bind(function() {
-                            persistHistory();
-                        }, this),
-                        failure: Y.bind(function() {
-                            alert(
-                                "Erreur interne: Impossible de sauvegarder les compteurs d'exécutions ! \n" +
-                                    'Recharger la page dans le navigateur si ce problème se reproduit'
-                            );
-                            persistHistory();
-                        }, this),
+                batchRemoteCall(
+                    function(currentLevel, currCounters, COUNTERS_OBJECT) {
+                        Variable.find(gameModel, COUNTERS_OBJECT).setProperty(
+                            self,
+                            String(currentLevel),
+                            JSON.stringify(currCounters)
+                        );
                     },
+                    currentLevel,
+                    currCounters,
+                    COUNTERS_OBJECT
+                ).catch(function() {
+                    alert(
+                        "Erreur interne: Impossible de sauvegarder les compteurs d'exécutions ! \n" +
+                            'Recharger la page dans le navigateur si ce problème se reproduit'
+                    );
                 });
             },
             persistExecution: function() {
@@ -679,24 +723,29 @@ YUI.add('pact-level', function(Y) {
                                 return c.type === 'gameWon';
                             }
                         );
-                        Y.Wegas.Facade.Variable.script.remoteEval(
-                            'Log.post([' +
-                                'Log.level(' +
-                                JSON.stringify(code) +
-                                ', ' +
-                                level +
-                                ', true,' +
-                                success +
-                                ')' +
-                                (success
-                                    ? ', Log.statement("completed", "level", ' +
-                                      level +
-                                      ')'
-                                    : '') +
-                                ']);' +
-                                (success
-                                    ? 'Action.completeLevel(' + level + ');'
-                                    : '')
+                        batchRemoteCall(
+                            function(code, level, success) {
+                                /* global Log, Action */
+                                var stmts = [
+                                    Log.level(code, level, true, success),
+                                ];
+                                if (success) {
+                                    stmts.push(
+                                        Log.statement(
+                                            'completed',
+                                            'level',
+                                            level
+                                        )
+                                    );
+                                }
+                                Log.post(stmts);
+                                if (success) {
+                                    Action.completeLevel(level);
+                                }
+                            },
+                            code,
+                            level,
+                            success
                         );
                         this.commandsStack = commands;
                         this.isRuntimeException = false;
@@ -724,12 +773,12 @@ YUI.add('pact-level', function(Y) {
                 }
                 this.set('state', IDLE);
                 this.highlight(result[2], true);
-                Y.Wegas.Facade.Variable.script.remoteEval(
-                    'Log.post(Log.level(' +
-                        JSON.stringify(code) +
-                        ', ' +
-                        level +
-                        ', false, false))'
+                batchRemoteCall(
+                    function(code, level) {
+                        Log.post(Log.level(code, level, false, false));
+                    },
+                    code,
+                    level
                 );
 
                 this.persistExecution();
@@ -1198,19 +1247,6 @@ YUI.add('pact-level', function(Y) {
                         this
                     );
             },
-            //        hover: function (Y) {
-            //            var hoverMe = Y.one('#hover-me');
-            //
-            //            hoverMe.on('mouseenter', function () {
-            //                this.one('.label').on("click", function (e) {
-            //                    alert('hello');
-            //                });
-            //            });
-            //
-            //            hoverMe.on('mouseleave', function () {
-            //                this.one('.label').hide('.span');
-            //            });
-            //        },
             updateDebugTreeview: function(object) {
                 var watches = {};
                 Y.Array.each(this.watches, function(i) {
