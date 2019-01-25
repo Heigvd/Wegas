@@ -338,13 +338,14 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @param choiceId  selected choice
      * @param player    player who select the choice
      * @param startTime time the player select the choice
+     * @param quiet     a quiet selectChoice do not send any lock to others users and do not fire any replySelect event
      *
      * @return the new reply
      *
      * @throws WegasErrorMessage if the question is fully validated or the maximum number of replies has been reached
      */
     @Override
-    public Reply selectChoice(Long choiceId, Player player, Long startTime)
+    public Reply selectChoice(Long choiceId, Player player, Long startTime, boolean quiet)
             throws WegasErrorMessage {
         ChoiceDescriptor choice = getEntityManager().find(ChoiceDescriptor.class, choiceId);
         QuestionDescriptor questionDescriptor = choice.getQuestion();
@@ -354,7 +355,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             throw WegasErrorMessage.error("This question has already been validated/discarded");
         }
 
-        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getEffectiveOwner());
+        if (!quiet) {
+            requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getEffectiveOwner());
+        }
 
         Integer maxQ = questionDescriptor.getMaxReplies();
         Integer maxC;
@@ -397,11 +400,13 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
 
         Reply reply = this.createReply(choiceId, player, startTime, false);
 
-        try {
-            scriptEvent.fire(player, "replySelect", new ReplyValidate(reply));
-        } catch (WegasScriptException e) {
-            // GOTCHA no eventManager is instantiated
-            logger.error("EventListener error (\"replySelect\")", e);
+        if (!quiet) {
+            try {
+                scriptEvent.fire(player, "replySelect", new ReplyValidate(reply));
+            } catch (WegasScriptException e) {
+                // GOTCHA no eventManager is instantiated
+                logger.error("EventListener error (\"replySelect\")", e);
+            }
         }
 
         return reply;
@@ -417,8 +422,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @return the new reply
      */
     @Override
-    public Reply selectChoice(Long choiceId, Long playerId) {
-        return this.selectChoice(choiceId, playerFacade.find(playerId), (long) 0);
+    public Reply selectChoice(Long choiceId, Long playerId
+    ) {
+        return this.selectChoice(choiceId, playerFacade.find(playerId), 0l, false);
     }
 
     /**
@@ -429,8 +435,10 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @return the new reply
      */
     @Override
-    public Reply selectChoice(Long choiceId, Long playerId, Long startTime) {
-        return this.selectChoice(choiceId, playerFacade.find(playerId), startTime);
+    public Reply selectChoice(Long choiceId, Long playerId,
+            Long startTime
+    ) {
+        return this.selectChoice(choiceId, playerFacade.find(playerId), startTime, false);
     }
 
     /**
@@ -451,10 +459,11 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
 
         List<Reply> pendingReplies = questionInstance.getReplies(player, Boolean.FALSE);
         for (Reply r : pendingReplies) {
-            this.cancelReplyTransactional(player, r);
+            this.internalCancelReply(r);
+            //this.cancelReplyTransactional(player, r);
         }
 
-        return this.selectChoice(choiceId, player, startTime);
+        return this.selectChoice(choiceId, player, startTime, true);
     }
 
     /**
@@ -482,7 +491,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
     @Override
     public Reply selectAndValidateChoice(Long choiceId, Long playerId) {
         Player player = playerFacade.find(playerId);
-        Reply reply = this.selectChoice(choiceId, player, (long) 0);
+        Reply reply = this.selectChoice(choiceId, player, 0l, false);
         //try {
         //this.validateReply(player, reply.getId());
         this.validateReply(player, reply);

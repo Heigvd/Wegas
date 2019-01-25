@@ -160,7 +160,7 @@ public class QuestionController {
 
         Reply reply = questionDescriptorFacade.deselectOthersAndSelectChoice(choiceId, playerId, startTime);
 
-        requestFacade.commit(playerId);
+        //requestFacade.commit(playerId);
 
         return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
     }

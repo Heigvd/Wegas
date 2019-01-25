@@ -79,10 +79,11 @@ public interface QuestionDescriptorFacadeI {
      * @param choiceId  selected choice
      * @param player    player who select the choice
      * @param startTime time the player select the choice
+     * @param quiet     a quiet selectChoice do not send any lock to others users and do not fire any replySelect event
      *
      * @return the new reply
      */
-    Reply selectChoice(Long choiceId, Player player, Long startTime);
+    Reply selectChoice(Long choiceId, Player player, Long startTime, boolean quiet);
 
     /**
      *
