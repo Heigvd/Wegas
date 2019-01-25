@@ -58,7 +58,7 @@ YUI.add('wegas-box', function(Y) {
             this.defs = "<defs>"
                 + "  <marker orient='auto' refY='0.0' refX='0.0' id='triangleStart' style='overflow:visible'>"
                 + "    <path id='triangle_start_path'"
-                + "      d='M 8.5,0.0 L 0,5.0 L 0,-5.0 L 8.5,0.0 z '/>"
+                + "      d='M 8.5,5 L 0,0 L 8.5,-5 L 8.5,5 z '/>"
                 + "  </marker>"
                 + "  <marker orient='auto' refY='0.0' refX='0.0' id='triangleEnd' style='overflow:visible'>"
                 + "    <path id='triangle_end_path'"
