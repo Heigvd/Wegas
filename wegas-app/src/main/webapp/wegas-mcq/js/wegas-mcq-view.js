@@ -718,12 +718,17 @@ YUI.add('wegas-mcq-view', function(Y) {
                 this.availableChoices.syncUI();
             }
         },
+        toObject: function() {
+            // do not use toObject from Wegas-parent as we do NOT want to serialise children
+            return Y.Wegas.Editable.prototype.toObject.apply(this, arguments);
+        },
         renderUI: function() {
             this.destroyAll();
 
             this.title = new Y.Wegas.Text({
                 cssClass: "mcq-view__question-title",
-                editable: false
+                editable: false,
+                "transient": true
             });
             this.description = new Y.Wegas.Text({
                 cssClass: "mcq-view__question-description",
