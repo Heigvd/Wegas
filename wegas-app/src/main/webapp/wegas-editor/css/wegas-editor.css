@@ -942,10 +942,14 @@
     cursor: wait;
 }
 
-.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-i18n-auto,
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-i18n-auto {
+    cursor: pointer;
+}
+
 .wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-save-all,
 .wegas-i18n-manager .wegas-i18n-manager--languages-header .move-up {
     cursor: pointer;
+    font-size: 30px;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--languages .language:not(.has-unsaved) .save-all-container{

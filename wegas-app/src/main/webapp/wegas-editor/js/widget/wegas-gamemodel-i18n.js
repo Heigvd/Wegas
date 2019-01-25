@@ -688,9 +688,14 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                         }
                         trSpan.ancestor().one(".translation-status").setContent(newStatus);
                         trSpan.toggleClass("outdated", newStatus);
+                    } else {
+                        Y.log("a cell exists for a translation, but transtion is not here... what should we do ?");
                     }
                 } else {
-                    outdated = true;
+                    if (tr) {
+                        // no cell in translation table but there is a translation
+                        outdated = true;
+                    }
                 }
 
             }
