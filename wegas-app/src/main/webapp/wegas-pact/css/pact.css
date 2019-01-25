@@ -62,8 +62,7 @@ code {
     flex: 1 1 auto;
 }
 .yui3-skin-sam .proggame-button,
-.yui3-skin-sam .yui3-wegas-responsive-tabview .inbox .yui3-tab
- {
+.yui3-skin-sam .yui3-wegas-responsive-tabview .inbox .yui3-tab {
     /* text-transform: uppercase; */
     font-size: 1.5em;
     margin: 5px 2px;
@@ -275,15 +274,6 @@ code {
     text-decoration: underline;
 }
 
-.pact-scriptfiles-content button {
-    margin-bottom: 5px;
-}
-
-.fileName p:hover {
-    cursor: pointer;
-    text-decoration: underline;
-}
-
 /* Level: Debugger */
 .proggame-debugger {
     width: 20em;
@@ -332,11 +322,6 @@ code {
 #cr-stage > div {
     width: inherit;
     height: inherit;
-}
-
-.barre {
-    background: white;
-    min-height: 2px;
 }
 
 .editor,
@@ -438,15 +423,6 @@ code {
 }
 .pact-level .proggame-levelend {
     max-width: 33em;
-}
-.pact-level .pact-level-content .yui3-resize-handle-t {
-    width: 100%;
-    background-color: transparent !important;
-    cursor: ns-resize;
-}
-
-.pact-level .pact-level-content .yui3-resize-handle-inner {
-    display: block;
 }
 
 .proggame-levelend-restart,
