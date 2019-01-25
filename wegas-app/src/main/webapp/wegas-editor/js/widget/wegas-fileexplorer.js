@@ -249,7 +249,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                         } catch (er) {
                             // TODO: find out that after a delete
                         }
-                        file.treeLeaf.parentPath = node.path;
+                        file.treeLeaf.parentPath = node.path + "/";
                         try {
                             this.fileUploader.addFile(file);
                         } catch (er) {
