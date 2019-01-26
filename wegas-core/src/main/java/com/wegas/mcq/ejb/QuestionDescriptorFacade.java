@@ -285,7 +285,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @param playerId id of player who wants to cancel the reply
      * @param replyId  id of reply to cancel
      *
-     * @return reply being canceled
+     * @return reply being cancelled
      */
     private Reply internalCancelReply(Long replyId) {
         final Reply reply = this.getEntityManager().find(Reply.class, replyId);
@@ -514,7 +514,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @param player player who wants to cancel the reply
      * @param reply  the reply to cancel
      *
-     * @return reply being canceled
+     * @return reply being cancelled
      */
     public Reply cancelReplyTransactional(Player player, Reply reply) {
         Reply r = this.internalCancelReply(reply);
@@ -531,7 +531,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @param player  player who wants to cancel the reply
      * @param replyId id of reply to cancel
      *
-     * @return reply being canceled
+     * @return reply being cancelled
      */
     public Reply cancelReplyTransactional(Player player, Long replyId) {
         Reply reply = this.internalCancelReply(replyId);
@@ -548,7 +548,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @param playerId id of player who wants to cancel the reply
      * @param replyId  id of reply to cancel
      *
-     * @return reply being canceled
+     * @return reply being cancelled
      */
     public Reply cancelReplyTransactional(Long playerId, Long replyId) {
         Player player = playerFacade.find(playerId);
@@ -559,12 +559,25 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @param playerId id of player who wants to cancel the reply
      * @param replyId  id of reply to cancel
      *
-     * @return reply being canceled
+     * @return reply being cancelled
      */
     @Override
     public Reply cancelReply(Long playerId, Long replyId) {
         return this.cancelReplyTransactional(playerId, replyId);
     }
+
+
+    /**
+     * @param playerId id of player who wants to cancel the reply
+     * @param replyId  id of reply to cancel
+     *
+     * @return reply being cancelled
+     */
+    public Reply quietCancelReply(Long playerId, Long replyId) {
+        return this.internalCancelReply(replyId);
+    }
+
+
 
     /**
      * @param player

@@ -410,7 +410,7 @@
 .answerable[data-displayResult='dialogue'].cbx:not(.horizontal) .wegas-mcqchoice.selectable.noDescription:not(.noTitle) .wegas-mcqchoice-content:hover,
 .answerable[data-displayResult='dialogue'] .wegas-mcqchoice.selectable .wegas-mcqchoice-content:hover,
 .answerable[data-displayResult='dialogue'] .wegas-mcqchoice-content:hover {
-    background-color: #7F7F7F;
+    background-color: #5c5c5c;
     color:white;
 }
 

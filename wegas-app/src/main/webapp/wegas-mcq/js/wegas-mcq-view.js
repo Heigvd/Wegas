@@ -714,7 +714,10 @@ YUI.add('wegas-mcq-view', function(Y) {
         updateAvailableInvite: function(num) {
             if (this.availableChoices) {
                 var invite = this.getAttrValueOrDefault("availableChoicesInvite", I18n.t("mcq.possibleChoices"));
-                this.availableChoices.set("content", "<span tabindex='0' role='button'>" + invite + num + "</span>");
+
+                invite = invite.replace("#", num);
+
+                this.availableChoices.set("content", "<span tabindex='0' role='button'>" + invite + "</span>");
                 this.availableChoices.syncUI();
             }
         },
@@ -930,7 +933,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                     for (var i in pendingReplies) {
                         this.beforeRequest();
                         Y.Wegas.Facade.Variable.sendRequest({
-                            request: "/QuestionDescriptor/CancelReply/" + pendingReplies[i].get('id')
+                            request: "/QuestionDescriptor/QuietCancelReply/" + pendingReplies[i].get('id')
                                 + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
                             cfg: {
                                 method: "GET"
@@ -1373,6 +1376,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 view: {
                     type: 'variableselect',
                     label: 'Available chocices invite',
+                    description: "each # will be replaced by the number of available choices",
                     classFilter: [
                         "TextDescriptor", "StringDescriptor", // use the value
                         "ListDescriptor" // use the label

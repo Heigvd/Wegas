@@ -108,7 +108,7 @@ public class QuestionController {
      * @param replyId
      *
      * @return questionInstance with up to date replies list (not containing)
-     *         the canceled one anymore)
+     *         the cancelled one anymore)
      */
     @GET
     @Path("/CancelReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
@@ -118,6 +118,27 @@ public class QuestionController {
 
         Reply reply = questionDescriptorFacade.cancelReply(playerId, replyId);
         requestFacade.commit(playerId);
+        return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
+    }
+
+    /**
+     *
+     * Same as CancelReply, but skip state machine check and do not send any events
+     *
+     * @param playerId
+     * @param replyId
+     *
+     * @return questionInstance with up to date replies list (not containing)
+     *         the cancelled one anymore)
+     */
+    @GET
+    @Path("/QuietCancelReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
+    public QuestionInstance quietCancelReply(
+            @PathParam("playerId") Long playerId,
+            @PathParam("replyId") Long replyId) {
+
+        Reply reply = questionDescriptorFacade.quietCancelReply(playerId, replyId);
+
         return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
     }
 
@@ -152,6 +173,7 @@ public class QuestionController {
      * @return p
      */
     @GET
+
     @Path("/DeselectOthersAndSelectChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [0-9]*}")
     public QuestionInstance deselectOthersAndselectChoice(
             @PathParam("playerId") Long playerId,
@@ -161,7 +183,6 @@ public class QuestionController {
         Reply reply = questionDescriptorFacade.deselectOthersAndSelectChoice(choiceId, playerId, startTime);
 
         //requestFacade.commit(playerId);
-
         return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
     }
 
