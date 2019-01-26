@@ -52,6 +52,7 @@ import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
+import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.rest.FindAndReplacePayload;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
@@ -1349,15 +1350,35 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             Iterator<Mergeable> it = ancestors.descendingIterator();
             while (it.hasNext()) {
                 Mergeable ancestor = it.next();
-                if (ancestor instanceof LabelledEntity) {
-                    sb.append(((LabelledEntity) ancestor).getLabel());
-                    if (it.hasNext()) {
-                        sb.append(" > ");
+
+                String name = null;
+                if (ancestor instanceof GameModel == false) {
+
+                    if (Helper.isNullOrEmpty(name) && ancestor instanceof VariableDescriptor) {
+                        name = ((VariableDescriptor) ancestor).getEditorLabel();
                     }
-                } else if (ancestor instanceof NamedEntity) {
-                    sb.append(((NamedEntity) ancestor).getName());
-                    if (it.hasNext()) {
-                        sb.append(" > ");
+
+                    if (Helper.isNullOrEmpty(name) && ancestor instanceof LabelledEntity) {
+                        name = ((LabelledEntity) ancestor).getLabel().translateOrEmpty((GameModel) null);
+                    }
+
+                    if (Helper.isNullOrEmpty(name) && ancestor instanceof NamedEntity) {
+                        name = ((NamedEntity) ancestor).getName();
+                    }
+
+                    if (Helper.isNullOrEmpty(name) && ancestor instanceof State) {
+                        name = "#" + ((State) ancestor).getIndex();
+                    }
+
+                    /*if (Helper.isNullOrEmpty(name)) {
+                    name = ancestor.getClass().getSimpleName();
+                    }*/
+                    if (!Helper.isNullOrEmpty(name)) {
+                        sb.append(name);
+
+                        if (it.hasNext()) {
+                            sb.append("/");
+                        }
                     }
                 }
             }
