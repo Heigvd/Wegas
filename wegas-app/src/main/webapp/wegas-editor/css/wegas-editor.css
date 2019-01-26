@@ -1307,6 +1307,59 @@
     font-weight: bolder;
 }
 
+/*
+ * Find & Replace Widget
+ */
+
+.wegas-find-and-replace-widget-content .actions{
+    margin: 10px;
+}
+
+.wegas-find-and-replace-widget-content .actions .execute{
+    display: inline-block;
+    background-color: #4a4a4a;
+    color:white;
+    cursor: pointer;
+    padding: 10px;
+}
+
+
+.panel-inner .wegas-find-and-replace-widget {
+    height : 100%;
+}
+
+.panel-inner .wegas-find-and-replace-widget-content {
+    height : 100%;
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+}
+
+.panel-inner .wegas-find-and-replace-widget .widget {
+    flex-grow:1;
+    position:relative;
+}
+.panel-inner .wegas-find-and-replace-widget .widget > div {
+    position: absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+}
+
+.panel-inner .wegas-find-and-replace-widget .widget .wegas-find-and-replace-content{
+    height:100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-inner .wegas-find-and-replace-widget .widget .find-result{
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: auto;
+}
+
+
 .wegas-disclaimer {
     background: orange;
     color: white;

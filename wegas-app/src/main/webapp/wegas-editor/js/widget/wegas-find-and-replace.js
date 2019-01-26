@@ -125,7 +125,7 @@ YUI.add('wegas-find-and-replace', function(Y) {
                         type: "object",
                         value: {},
                         properties: {},
-                        visible: function(val, formValue){
+                        visible: function(val, formValue) {
                             return formValue.processVariables;
                         },
                         view: {
@@ -155,6 +155,9 @@ YUI.add('wegas-find-and-replace', function(Y) {
                 cfg: cfg
             });
             this.form.render(this.get("contentBox").one(".the-form"));
+        },
+        destructor: function() {
+            this.form && this.form.destroy();
         },
         execute: function() {
             var data = this.form.getValue();
@@ -201,7 +204,6 @@ YUI.add('wegas-find-and-replace', function(Y) {
                     }, this)
                 }
             });
-
         }
     }, {
         ATTRS: {
@@ -255,6 +257,40 @@ YUI.add('wegas-find-and-replace', function(Y) {
         }
     });
     Y.Wegas.FindAndReplaceModal = FindAndReplaceModal;
+
+    var FindAndReplaceWidget = Y.Base.create("wegas-find-and-replace-widget", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+        CONTENT_TEMPLATE: '<div>'
+            + '<div class="widget">'
+            + '</div>'
+            + '<div class="actions">'
+            + '<span class="execute">Find & Replace</span>'
+            + '</div>'
+            + '</div>',
+        initializer: function() {
+        },
+        renderUI: function() {
+            var gameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
+            if (gameModel) {
+                this.findAndReplace = new Y.Wegas.FindAndReplace({
+                    "gameModel": gameModel
+                });
+                this.findAndReplace.render(this.get("contentBox").one((".widget")));
+            }
+        },
+        bindUI: function() {
+            this.get("contentBox").delegate("click", this.execute, ".actions .execute", this);
+        },
+        destructor: function() {
+            this.findAndReplace && this.findAndReplace.destroy();
+        },
+        execute: function() {
+            this.findAndReplace.execute();
+        }
+    }, {
+        ATTRS: {
+        }
+    });
+    Y.Wegas.FindAndReplaceWidget = FindAndReplaceWidget;
 
 
 

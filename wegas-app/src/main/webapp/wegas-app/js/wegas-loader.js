@@ -805,7 +805,7 @@ YUI().use(function(Y) {
             "wegas-find-and-replace": {
                 path: "js/widget/wegas-find-and-replace-min.js",
                 requires: ["wegas-modal", "wegas-plugin"],
-                ws_provides: ["FindAndReplace", "FindAndReplaceModal", "FindAndReplaceAction"]
+                ws_provides: ["FindAndReplace", "FindAndReplaceWidget", "FindAndReplaceModal", "FindAndReplaceAction"]
             },
             "wegas-statemachineviewer": {
                 path: "js/widget/wegas-statemachineviewer-min.js",

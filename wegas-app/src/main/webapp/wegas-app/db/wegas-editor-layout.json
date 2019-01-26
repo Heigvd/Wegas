@@ -436,6 +436,15 @@
                                                 }
                                             ]
                                         }, {
+                                            "type": "OpenTabButton",
+                                            "cssClass": "wegas-advanced-feature",
+                                            "label": "Find & Replace",
+                                            "wchildren": [
+                                                {
+                                                    "type": "FindAndReplaceWidget"
+                                                }
+                                            ]
+                                        }, {
                                             "type": "Button",
                                             "cssClass": "wegas-advanced-feature",
                                             "label": "Scenario properties",
@@ -658,9 +667,20 @@
                                         }, {
                                             "type": "OpenTabButton",
                                             "label": "Translations",
+                                            "tabSelector": "#rightTabView",
                                             "wchildren": [
                                                 {
                                                     "type": "LanguagesManager"
+                                                }
+                                            ]
+                                        }, {
+                                            "type": "OpenTabButton",
+                                            "cssClass": "wegas-advanced-feature",
+                                            "label": "Find & Replace",
+                                            "tabSelector": "#rightTabView",
+                                            "wchildren": [
+                                                {
+                                                    "type": "FindAndReplaceWidget"
                                                 }
                                             ]
                                         }, {
