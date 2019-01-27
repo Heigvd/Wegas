@@ -659,7 +659,12 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             };
         },
         afterInstanceUpdate: function(e) {
-            this.updateEditor(e.entity);
+            var instance = e.entity;
+
+            if (instance instanceof Y.Wegas.persistence.VariableInstance && instance.get("scopeKey") === null) {
+                // only update default instances
+                this.updateEditor(e.entity);
+            }
         },
         afterDescriptorUpdate: function(e) {
             this.updateEditor(e.entity);
