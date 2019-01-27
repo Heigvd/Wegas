@@ -271,7 +271,8 @@ YUI.add('wegas-box', function(Y) {
                 height = 100;
                 start = [0, 0];
                 end = [width, height];
-                position = null;
+                // not well anchored lines are fixed too, so they are not alter others elements position
+                position = "position: fixed; top: 0; left: 0";
             }
 
 
