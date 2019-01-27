@@ -211,56 +211,58 @@ YUI.add('wegas-box', function(Y) {
                     startPoint = this.getEllipseIntersection(endPoint[1] - startPoint[1], endPoint[0] - startPoint[0], startBox);
                 }
 
-                if (this.get("endPoint") === "edge") {
-                    endPoint = this.getSegBoxIntersection(startPoint[0], startPoint[1], endPoint[0], endPoint[1], endBox);
-                } else if (this.get("endPoint") === "ellipse") {
-                    endPoint = this.getEllipseIntersection(startPoint[1] - endPoint[1], startPoint[0] - endPoint[0], endBox);
-                }
-
-                var origin = this.getOrigin();
-
-                if (startPoint && endPoint) {
-
-                    startPoint[0] -= origin[0];
-                    startPoint[1] -= origin[1];
-
-                    endPoint[0] -= origin[0];
-                    endPoint[1] -= origin[1];
-
-                    width = Math.abs(startPoint[0] - endPoint[0]); //delta x
-                    height = Math.abs(startPoint[1] - endPoint[1]); // delty y
-
-                    start = [null, null];
-                    end = [null, null];
-
-                    if (startPoint[0] < endPoint[0]) {
-                        // left to right
-                        left = startPoint[0];
-                        start[0] = 0;
-                        end[0] = width;
-                    } else {
-                        // right to left
-                        left = endPoint[0];
-                        start[0] = width;
-                        end[0] = 0;
+                if (startPoint) {
+                    if (this.get("endPoint") === "edge") {
+                        endPoint = this.getSegBoxIntersection(startPoint[0], startPoint[1], endPoint[0], endPoint[1], endBox);
+                    } else if (this.get("endPoint") === "ellipse") {
+                        endPoint = this.getEllipseIntersection(startPoint[1] - endPoint[1], startPoint[0] - endPoint[0], endBox);
                     }
 
-                    if (startPoint[1] < endPoint[1]) {
-                        // top to bottom
-                        top = startPoint[1];
-                        start[1] = 0;
-                        end[1] = height;
-                    } else {
-                        //bottom to top
-                        top = endPoint[1];
-                        start[1] = height;
-                        end[1] = 0;
+
+                    if (endPoint) {
+                        var origin = this.getOrigin();
+
+                        startPoint[0] -= origin[0];
+                        startPoint[1] -= origin[1];
+
+                        endPoint[0] -= origin[0];
+                        endPoint[1] -= origin[1];
+
+                        width = Math.abs(startPoint[0] - endPoint[0]); //delta x
+                        height = Math.abs(startPoint[1] - endPoint[1]); // delty y
+
+                        start = [null, null];
+                        end = [null, null];
+
+                        if (startPoint[0] < endPoint[0]) {
+                            // left to right
+                            left = startPoint[0];
+                            start[0] = 0;
+                            end[0] = width;
+                        } else {
+                            // right to left
+                            left = endPoint[0];
+                            start[0] = width;
+                            end[0] = 0;
+                        }
+
+                        if (startPoint[1] < endPoint[1]) {
+                            // top to bottom
+                            top = startPoint[1];
+                            start[1] = 0;
+                            end[1] = height;
+                        } else {
+                            //bottom to top
+                            top = endPoint[1];
+                            start[1] = height;
+                            end[1] = 0;
+                        }
+
+                        height += 1;
+                        width += 1;
+
+                        position = "position: fixed; top: " + (top) + "px; left: " + (left) + "px";
                     }
-
-                    height += 1;
-                    width += 1;
-
-                    position = "position: fixed; top: " + (top) + "px; left: " + (left) + "px";
                 }
             }
 
