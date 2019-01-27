@@ -135,7 +135,7 @@ YUI.add('wegas-box', function(Y) {
                 var x = (a * b) / (Math.sqrt(b * b + a * a * tan * tan));
                 var y = x * tan;
 
-                if (deltaX < 0){
+                if (deltaX < 0) {
                     point[0] -= x;
                     point[1] -= y;
                 } else {
@@ -219,46 +219,49 @@ YUI.add('wegas-box', function(Y) {
 
                 var origin = this.getOrigin();
 
-                startPoint[0] -= origin[0];
-                startPoint[1] -= origin[1];
+                if (startPoint && endPoint) {
 
-                endPoint[0] -= origin[0];
-                endPoint[1] -= origin[1];
+                    startPoint[0] -= origin[0];
+                    startPoint[1] -= origin[1];
 
-                width = Math.abs(startPoint[0] - endPoint[0]); //delta x
-                height = Math.abs(startPoint[1] - endPoint[1]); // delty y
+                    endPoint[0] -= origin[0];
+                    endPoint[1] -= origin[1];
 
-                start = [null, null];
-                end = [null, null];
+                    width = Math.abs(startPoint[0] - endPoint[0]); //delta x
+                    height = Math.abs(startPoint[1] - endPoint[1]); // delty y
 
-                if (startPoint[0] < endPoint[0]) {
-                    // left to right
-                    left = startPoint[0];
-                    start[0] = 0;
-                    end[0] = width;
-                } else {
-                    // right to left
-                    left = endPoint[0];
-                    start[0] = width;
-                    end[0] = 0;
+                    start = [null, null];
+                    end = [null, null];
+
+                    if (startPoint[0] < endPoint[0]) {
+                        // left to right
+                        left = startPoint[0];
+                        start[0] = 0;
+                        end[0] = width;
+                    } else {
+                        // right to left
+                        left = endPoint[0];
+                        start[0] = width;
+                        end[0] = 0;
+                    }
+
+                    if (startPoint[1] < endPoint[1]) {
+                        // top to bottom
+                        top = startPoint[1];
+                        start[1] = 0;
+                        end[1] = height;
+                    } else {
+                        //bottom to top
+                        top = endPoint[1];
+                        start[1] = height;
+                        end[1] = 0;
+                    }
+
+                    height += 1;
+                    width += 1;
+
+                    position = "position: fixed; top: " + (top) + "px; left: " + (left) + "px";
                 }
-
-                if (startPoint[1] < endPoint[1]) {
-                    // top to bottom
-                    top = startPoint[1];
-                    start[1] = 0;
-                    end[1] = height;
-                } else {
-                    //bottom to top
-                    top = endPoint[1];
-                    start[1] = height;
-                    end[1] = 0;
-                }
-
-                height += 1;
-                width += 1;
-
-                position = "position: fixed; top: " + (top) + "px; left: " + (left) + "px";
             }
 
             if (!start || !end) {
