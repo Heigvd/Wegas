@@ -114,6 +114,39 @@ YUI.add('wegas-box', function(Y) {
             }
             return null;
         },
+        getEllipseIntersection: function(deltaY, deltaX, box) {
+            var a = box.width / 2;
+            var b = box.height / 2;
+
+            var point = [box.left + a, box.top + b]; // init point to ellipse center
+
+            if (Math.abs(deltaY) < 4) {
+                // ϑ ~= 0° | 180° => tan(ϑ) = 0
+                // less than 4px high means horizontal line
+                point[0] += deltaX < 0 ? -a : a;
+            } else if (Math.abs(deltaX) < 4) {
+                // ϑ ~= +/- 90° => tan(ϑ) = NaN
+                // less than 4px wide means vertical line
+                point[1] += deltaY < 0 ? -b : b;
+            } else {
+                var tan = deltaY / deltaX;
+
+
+                var x = (a * b) / (Math.sqrt(b * b + a * a * tan * tan));
+                var y = x * tan;
+
+                if (deltaX < 0){
+                    point[0] -= x;
+                    point[1] -= y;
+                } else {
+                    point[0] += x;
+                    point[1] += y;
+                }
+
+            }
+
+            return  point;
+        },
         bindUI: function() {
             // rely on document resize and layout-resize
             this._windowResizeCb = Y.bind(this.syncUI, this);
@@ -172,14 +205,16 @@ YUI.add('wegas-box', function(Y) {
                 var startPoint = this.getBoxCentroid(startBox);
                 var endPoint = this.getBoxCentroid(endBox);
 
-                if (this.get("endpoints") === "edges") {
-                    var nStartPoint = this.getSegBoxIntersection(startPoint[0], startPoint[1], endPoint[0], endPoint[1], startBox);
-                    var nEndPoint = this.getSegBoxIntersection(startPoint[0], startPoint[1], endPoint[0], endPoint[1], endBox);
+                if (this.get("startPoint") === "edge") {
+                    startPoint = this.getSegBoxIntersection(startPoint[0], startPoint[1], endPoint[0], endPoint[1], startBox);
+                } else if (this.get("startPoint") === "ellipse") {
+                    startPoint = this.getEllipseIntersection(endPoint[1] - startPoint[1], endPoint[0] - startPoint[0], startBox);
+                }
 
-                    if (nStartPoint && nEndPoint) {
-                        startPoint = nStartPoint;
-                        endPoint = nEndPoint;
-                    }
+                if (this.get("endPoint") === "edge") {
+                    endPoint = this.getSegBoxIntersection(startPoint[0], startPoint[1], endPoint[0], endPoint[1], endBox);
+                } else if (this.get("endPoint") === "ellipse") {
+                    endPoint = this.getEllipseIntersection(startPoint[1] - endPoint[1], startPoint[0] - endPoint[0], endBox);
                 }
 
                 var origin = this.getOrigin();
@@ -292,15 +327,29 @@ YUI.add('wegas-box', function(Y) {
                     label: "arrow on line end"
                 }
             },
-            endpoints: {
+            startPoint: {
                 type: "string",
-                value: "edges",
+                value: "edge",
+                view: {
+                    type: "select",
+                    label: "put start point on",
+                    choices: [
+                        "edge",
+                        "centroid",
+                        "ellipse"
+                    ]
+                }
+            },
+            endPoint: {
+                type: "string",
+                value: "edge",
                 view: {
                     type: "select",
                     label: "Connection points on",
                     choices: [
-                        "edges",
-                        "centroid"
+                        "edge",
+                        "centroid",
+                        "ellipse"
                     ]
                 }
             }
