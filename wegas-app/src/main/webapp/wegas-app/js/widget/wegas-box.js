@@ -345,7 +345,7 @@ YUI.add('wegas-box', function(Y) {
                 value: "edge",
                 view: {
                     type: "select",
-                    label: "Connection points on",
+                    label: "put end point on",
                     choices: [
                         "edge",
                         "centroid",
