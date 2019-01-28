@@ -143,11 +143,11 @@ YUI.add("wegas-prettyprinter", function(Y) {
 
             output = "<div style='padding-bottom: 10px;'>";
 
+            // @hack injector: Place both href and src so it works for a and img tags
             output += instance.get("value").replace(
                 new RegExp('data-file="([^"]*)"', 'gi'),
-                `src="${Y.Wegas.Facade.File.getPath()}$1"
-             href="${Y.Wegas.Facade.File.getPath()}$1"`
-                ); // @hack Place both href and src so it
+                "src=\"" + Y.Wegas.Facade.File.getPath() + "$1\""
+                + " href=\"" + Y.Wegas.Facade.File.getPath() + "$1\"");
 
             output += "</div>";
 
