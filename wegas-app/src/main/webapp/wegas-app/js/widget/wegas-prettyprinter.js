@@ -131,17 +131,17 @@ YUI.add("wegas-prettyprinter", function(Y) {
 
     var TextPrettyPrinter = Y.Base.create("wegas-prettyprinter-text", Y.Wegas.AbstractPrettyPrinter, [], {
         newFolderStart: function(theVar, level) {
-            return "";
+            return "<div class='wegas-prettyprinted-text-directory'>";
         },
         newFolderEnd: function(theVar, level) {
-            return "";
+            return "</div>";
         },
         generateOutput: function(theVar) {
             var output = "", instance;
 
             instance = theVar.getInstance();
 
-            output = "<div style='padding-bottom: 10px;'>";
+            output = "<div class='wegas-prettyprinted-text'>";
 
             // @hack injector: Place both href and src so it works for a and img tags
             output += instance.get("value").replace(

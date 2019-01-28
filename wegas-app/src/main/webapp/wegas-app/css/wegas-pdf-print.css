@@ -430,3 +430,26 @@ div.wegas-pdf-content {
 .wegas-pdf-content img {
     page-break-inside: avoid;
 }
+
+.wegas-prettyprinted-text table p {
+    padding: 0px;
+    margin: 0px;
+}
+
+.wegas-prettyprinted-text table ol,
+.wegas-prettyprinted-text table ul {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.wegas-prettyprinted-text:first-child h1:first-child {
+    page-break-before: never;
+}
+
+.wegas-prettyprinted-text {
+    position:relative;
+}
+
+@page{
+    margin: 45px;
+}
