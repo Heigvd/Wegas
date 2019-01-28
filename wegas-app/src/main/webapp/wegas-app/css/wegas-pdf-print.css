@@ -443,7 +443,7 @@ div.wegas-pdf-content {
 }
 
 .wegas-prettyprinted-text:first-child h1:first-child {
-    page-break-before: never;
+    page-break-before: avoid;
 }
 
 .wegas-prettyprinted-text {
