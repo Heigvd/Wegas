@@ -274,7 +274,7 @@ YUI().use(function(Y) {
             },
             "wegas-prettyprinter": {
                 path: "js/widget/wegas-prettyprinter-min.js",
-                ws_provides: ["AbstractPrettyPrinter"],
+                ws_provides: ["AbstractPrettyPrinter", "TextPrettyPrinter"],
                 requires: ["wegas-widget", "wegas-pdf-print-css"]
             },
             "wegas-text": {

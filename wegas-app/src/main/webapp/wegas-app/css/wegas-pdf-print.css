@@ -197,7 +197,6 @@ div.wegas-pdf-content {
 
 .wegas-pdf-content img {
     background : #ededed;
-    border : 1px solid lightgrey;
 }
 
 .wegas-pdf-content span.wegas-pdf-title {
@@ -422,4 +421,12 @@ div.wegas-pdf-content {
 .wegas-pdf-content span.wegas-pdf-error {
     color: #f00;
     font-style: italic;
+}
+
+.wegas-pdf-content h1 {
+    page-break-before: always;
+}
+
+.wegas-pdf-content img {
+    page-break-inside: avoid;
 }

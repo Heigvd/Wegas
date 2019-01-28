@@ -7,7 +7,7 @@
  */
 /**
  * @fileoverview
- * @author maxcence
+ * @author maxence
  */
 YUI.add("wegas-prettyprinter", function(Y) {
     "use strict";
@@ -47,6 +47,8 @@ YUI.add("wegas-prettyprinter", function(Y) {
                 }
                 output += this.newFolderEnd(theVar, l);
                 return output;
+            } else {
+                return this.generateOutput(theVar);
             }
         },
         newFolderStart: function(theVar, level) {
@@ -99,11 +101,21 @@ YUI.add("wegas-prettyprinter", function(Y) {
         ATTRS: {
             displayMode: {
                 type: "string",
-                value: "icon" // icon, plain, or both 
+                value: "icon", // icon, plain, or both 
+                view: {
+                    type: "select",
+                    choices: ["icon", "plain", "both"],
+                    label: "Display "
+                }
             },
             outputType: {
                 type: "string",
-                value: "pdf"
+                value: "pdf",
+                view: {
+                    type: "select",
+                    choices: ["pdf", "html"],
+                    label: "Format "
+                }
             },
             variable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
@@ -114,6 +126,47 @@ YUI.add("wegas-prettyprinter", function(Y) {
             }
         }
     });
-
     Y.Wegas.AbstractPrettyPrinter = AbstractPrettyPrinter;
+
+
+    var TextPrettyPrinter = Y.Base.create("wegas-prettyprinter-text", Y.Wegas.AbstractPrettyPrinter, [], {
+        newFolderStart: function(theVar, level) {
+            return "";
+        },
+        newFolderEnd: function(theVar, level) {
+            return "";
+        },
+        generateOutput: function(theVar) {
+            var output = "", instance;
+
+            instance = theVar.getInstance();
+
+            output = "<div style='padding-bottom: 10px;'>";
+
+            output += instance.get("value").replace(
+                new RegExp('data-file="([^"]*)"', 'gi'),
+                `src="${Y.Wegas.Facade.File.getPath()}$1"
+             href="${Y.Wegas.Facade.File.getPath()}$1"`
+                ); // @hack Place both href and src so it
+
+            output += "</div>";
+
+            return output;
+        }
+    }, {
+        EDITORNAME: "Text PrettyPrinter",
+        PRETTYPRINT: "TextDescriptor",
+        ATTRS: {
+            variable: {
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                type: "object",
+                view: {
+                    type: "variableselect",
+                    label: "Variable",
+                    classFilter: ["TextDescriptor", "ListDescriptor"]
+                }
+            }
+        }
+    });
+    Y.Wegas.TextPrettyPrinter = TextPrettyPrinter;
 });
