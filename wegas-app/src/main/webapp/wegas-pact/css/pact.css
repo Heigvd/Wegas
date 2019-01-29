@@ -360,6 +360,8 @@ code {
 .proggame-view .terrain {
     margin: auto;
     overflow: hidden;
+    background: #0000004d;
+    box-shadow: 0 0 500px 19px black;
 }
 
 #cr-stage {

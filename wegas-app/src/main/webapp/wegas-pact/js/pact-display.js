@@ -54,14 +54,14 @@ YUI.add('pact-display', function(Y) {
                 };
                 assets.sprites[
                     Wegas.app.get('base') +
-                        '/wegas-pact/images/proggame-sprite-tiles_iso_v2.png'
+                        '/wegas-pact/images/proggame-sprite-tiles_iso_v4.png'
                 ] = {
                     tile: 41,
                     tileh: TILESIZE,
                     map: {
-                        EmptyT: [0, 0],
-                        PathT: [0, 1],
-                        TrapT: [0, 2],
+                        EmptyT: [0, 2],
+                        PathT: [0, 0],
+                        TrapT: [0, 1],
                     },
                 };
                 return assets;
@@ -115,13 +115,13 @@ YUI.add('pact-display', function(Y) {
                             for (j = -MARGIN_X; j < gridW + MARGIN_X; j += 1) {
                                 pos = this.getRealXYPos({ x: j, y: i });
                                 pos.y = pos.y + TILE_DELTA;
-                                if (map[i] && map[i][j] && map[i][j].y) {
+                                // if (map[i] && map[i][j] && map[i][j].y) {
                                     Crafty.e(
                                         map[i] && map[i][j] && map[i][j].y
                                             ? 'PathTile'
                                             : 'EmptyTile'
                                     ).attr(pos);
-                                }
+                                // }
                             }
                         }
 

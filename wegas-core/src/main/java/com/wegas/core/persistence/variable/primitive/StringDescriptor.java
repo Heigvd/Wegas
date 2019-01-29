@@ -124,7 +124,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
     }
 
     /*
-     * SUGARY 
+     * SUGARY
      */
     /**
      *
@@ -183,6 +183,17 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
             }
         }
         return false;
+    }
+
+    /**
+     *
+     * @param p
+     * @param value
+     *
+     * @return
+     */
+    public boolean isNotSelectedValue(Player p, String value) {
+        return !this.isValueSelected(p, value);
     }
 
     public boolean isValueAllowed(String value) {
