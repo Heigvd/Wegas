@@ -123,7 +123,7 @@ YUI.add('pact-level', function(Y) {
             CONTENT_TEMPLATE:
                 '<div class="flex row">' +
                 '    <div class="flex column">' +
-                '        <div class="proggame-title">' +
+                '        <div class="proggame-title pact-panel">' +
                 '            <h1></h1>' +
                 '            <h2></h2>' +
                 '            <span' +
@@ -212,11 +212,13 @@ YUI.add('pact-level', function(Y) {
                 var defaultCode = this.get('defaultCode');
                 this.mainEditorTab = this.addEditorTab(
                     'Code',
-                    defaultCode + (defaultCode.length === 0 || defaultCode.charAt(defaultCode.length-1) === "\n" ? '' : "\n")
+                    defaultCode +
+                        (defaultCode.length === 0 ||
+                        defaultCode.charAt(defaultCode.length - 1) === '\n'
+                            ? ''
+                            : '\n')
                 );
-                var ace = this.editorTabView
-                    .get('selection')
-                    .aceField;
+                var ace = this.editorTabView.get('selection').aceField;
                 // Set insertion point after the default text, i.e. at the end of the code:
                 ace.navigateFileEnd();
                 ace.focus();
@@ -1206,8 +1208,7 @@ YUI.add('pact-level', function(Y) {
                             var toInsert = e.target.get('data');
                             this.editorTabView
                                 .get('selection')
-                                .aceField
-                                .insert(toInsert + '();\n');
+                                .aceField.insert(toInsert + '();\n');
                             this.focusCode();
                             e.halt(true);
                         },
@@ -1382,16 +1383,16 @@ YUI.add('pact-level', function(Y) {
                 Y.Wegas.Tutorial(ProgGameLevel.TUTORIAL, {
                     next: 'Continuer',
                     skip: 'Ignorer le tutoriel',
-                }).then(function() {
-                    this.focusCode();
-                }.bind(this));
+                }).then(
+                    function() {
+                        this.focusCode();
+                    }.bind(this)
+                );
             },
             focusCode: function() {
-                var ace = this.editorTabView
-                    .get('selection')
-                    .aceField;
+                var ace = this.editorTabView.get('selection').aceField;
                 ace.focus();
-            }
+            },
         },
         {
             ATTRS: {
@@ -1802,9 +1803,6 @@ YUI.add('pact-level', function(Y) {
                         'The floor() method rounds a number DOWNWARDS to the nearest integer, and returns the result.\n\n' +
                         'Parameters\nx:Number - The number you want to round\n' +
                         'Returns\nNumber - The nearest integer when rounding downwards',
-                    //tooltipHTML: "The floor() method rounds a number DOWNWARDS to the nearest integer, and returns the result.<br><br>"
-                    //        + "<b>Parameters</b><br>x:Number - The number you want to round"
-                    //        + "<b>Returns</b><br>Number - The nearest integer when rounding downwards",
                 },
                 'Math.round': {
                     pkg: 'Math',
