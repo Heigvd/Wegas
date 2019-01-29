@@ -820,6 +820,7 @@ YUI.add('wegas-mcq-view', function(Y) {
 
             this.handlers.expandChoices = this.get("contentBox").delegate("click", function(e) {
                 this.get("contentBox").toggleClass("show_choices");
+                this.scrollToBottom();
             }, ".mcq-view__choice_header", this);
 
             this.handlers.rmDescriptorListener = Y.Wegas.Facade.Variable.after("delete", function(e) {
@@ -1211,9 +1212,9 @@ YUI.add('wegas-mcq-view', function(Y) {
                                     this.results[reply.get("id")] = new Y.Wegas.Text({
                                         cssClass: "wegas-mcqview__result " + (this.resync ? "typing" : ""),
                                         content: '<div class="mcq-reply-choice'
-                                            + (hasDescription ? " hasDescription": " noDescription")
-                                            + (hasTitle ? " hasTitle": " noTitle")
-                                            +'">' +
+                                            + (hasDescription ? " hasDescription" : " noDescription")
+                                            + (hasTitle ? " hasTitle" : " noTitle")
+                                            + '">' +
                                             '<div class="mcq-reply-title">' + I18n.t(choiceD.get("label")) + '</div>' +
                                             (effectiveDisplayResult === "dialogue" ?
                                                 '<div class="mcq-reply-description">' + I18n.t(choiceD.get("description")) + '</div>' : "") +
@@ -1223,9 +1224,10 @@ YUI.add('wegas-mcq-view', function(Y) {
                                             '<div class="mcq-reply-content">' + toDisplay + '</div>' +
                                             '</div>'
                                     });
-                                    Y.later(1500, this.results[reply.get("id")], function() {
-                                        this.get("boundingBox").removeClass("typing");
-                                    });
+                                    Y.later(1500, this, function(reply){
+                                        reply.get("boundingBox").removeClass("typing");
+                                        this.scrollToBottom();
+                                    }, this.results[reply.get("id")]);
                                     // Insert the latest reply at the top of the list, but not for cbx question nor dialogue :
                                     this.resultList.add(this.results[reply.get("id")], !cbx && effectiveDisplayResult !== 'dialogue' ? 0 : undefined);
                                 }
@@ -1291,9 +1293,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                 cb.toggleClass("maximumReached", maximumReached);
 
                 if (effectiveDisplayResult === "dialogue") {
-                    // last feedback
-                    var histDom = this.history.get("boundingBox").getDOMNode();
-                    histDom.scrollTop = histDom.scrollHeight - histDom.clientHeight;
+                    this.scrollToBottom();
                 }
             } else {
                 // clear !
@@ -1312,6 +1312,11 @@ YUI.add('wegas-mcq-view', function(Y) {
             }
 
             this.resync = true;
+        },
+        scrollToBottom: function() {
+            // last feedback
+            var histDom = this.history.get("boundingBox").getDOMNode();
+            histDom.scrollTop = histDom.scrollHeight - histDom.clientHeight;
         },
         isTextEmpty: function(text) {
             return !text || text === "<p></p>";
