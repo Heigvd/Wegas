@@ -33,8 +33,15 @@ YUI.add('wegas-console-custom', function(Y) {
                     i += 1;
                     if (cfg[i - 1].type === "string" || cfg[i - 1].type === "html" || cfg[i - 1].type === "flatvariableselect") {
                         return Y.JSON.stringify(val[i - 1]);
+                    } else if (cfg[i - 1].type === "number") {
+                        if (Y.Lang.isNumber(val[i - 1])) {
+                            return +val[i - 1];
+                        } else {
+                            return undefined;
+                        }
+                    } else {
+                        return val[i - 1];
                     }
-                    return val[i - 1];
                 });
             }
         },
