@@ -136,6 +136,10 @@ YUI.add("wegas-prettyprinter", function(Y) {
         newFolderEnd: function(theVar, level) {
             return "</div>";
         },
+        generateHTML: function() {
+            var css = "<style>" + this.get("css") + "</style>";
+            return css + this.go(this.get("variable.evaluated"));
+        },
         generateOutput: function(theVar) {
             var output = "", instance;
 
@@ -164,6 +168,14 @@ YUI.add("wegas-prettyprinter", function(Y) {
                     type: "variableselect",
                     label: "Variable",
                     classFilter: ["TextDescriptor", "ListDescriptor"]
+                }
+            },
+            css: {
+                type: "string",
+                value: "",
+                view: {
+                    type: "textarea",
+                    label: "CUSTOM CSS"
                 }
             }
         }
