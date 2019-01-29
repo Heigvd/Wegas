@@ -841,6 +841,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     }
                 },
                 isValueSelected: {
+                    label: "selected value is",
                     returns: BOOLEAN,
                     arguments: [SELFARG, {
                             type: STRING,
@@ -862,6 +863,18 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                          }
                          return v === value;
                          }*/
+                },
+                isNotSelectedValue: {
+                    label: "selected value is not",
+                    returns: BOOLEAN,
+                    arguments: [SELFARG, {
+                        type: STRING,
+                        view: {
+                            type: "entityarrayfieldselect",
+                            field: "allowedValues",
+                            returnAttr: "name"
+                        }
+                    }]
                 }
             }
         }
