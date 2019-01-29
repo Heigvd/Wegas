@@ -427,6 +427,12 @@ div.wegas-pdf-content {
     page-break-before: always;
 }
 
+/* do not start with a blank page */
+body > .wegas-prettyprinted-text-directory > .wegas-prettyprinted-text:first-child > h1:first-child,
+body > .wegas-prettyprinted-text h1:first-child {
+    page-break-before: avoid;
+}
+
 .wegas-pdf-content img {
     page-break-inside: avoid;
 }
@@ -440,10 +446,6 @@ div.wegas-pdf-content {
 .wegas-prettyprinted-text table ul {
     margin-top: 0px;
     margin-bottom: 0px;
-}
-
-.wegas-prettyprinted-text:first-child h1:first-child {
-    page-break-before: avoid;
 }
 
 .wegas-prettyprinted-text {
