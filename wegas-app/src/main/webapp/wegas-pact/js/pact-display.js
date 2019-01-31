@@ -16,6 +16,7 @@ YUI.add('pact-display', function(Y) {
 
     var COMMANDEXECUTED = 'commandExecuted',
         RENDERMETHOD = Crafty.support.canvas ? 'Canvas' : 'DOM',
+        SCALE = 1.2,
         TILESIZE = 32,
         MARGIN_X = 3,
         MARGIN_Y = 2,
@@ -108,19 +109,23 @@ YUI.add('pact-display', function(Y) {
                 });
                 ready.then(
                     function() {
-                        Crafty.init(pos.x, posy.y + TILE_DELTA); // Init crafty
-
+                        Crafty.init(
+                            pos.x * SCALE,
+                            (posy.y + TILE_DELTA) * SCALE
+                        ); // Init crafty
+                        Crafty.viewport.scale(SCALE);
                         for (i = -MARGIN_Y; i < gridH + MARGIN_Y; i += 1) {
                             // Render tiles
                             for (j = -MARGIN_X; j < gridW + MARGIN_X; j += 1) {
                                 pos = this.getRealXYPos({ x: j, y: i });
                                 pos.y = pos.y + TILE_DELTA;
+                                pos.z = 0;
                                 // if (map[i] && map[i][j] && map[i][j].y) {
-                                    Crafty.e(
-                                        map[i] && map[i][j] && map[i][j].y
-                                            ? 'PathTile'
-                                            : 'EmptyTile'
-                                    ).attr(pos);
+                                Crafty.e(
+                                    map[i] && map[i][j] && map[i][j].y
+                                        ? 'PathTile'
+                                        : 'EmptyTile'
+                                ).attr(pos);
                                 // }
                             }
                         }
@@ -131,7 +136,7 @@ YUI.add('pact-display', function(Y) {
                                 // Render objects (PC, traps, etc.)
                                 pos = this.getRealXYPos(cfg); // Place it on the map
                                 entity = Crafty.e(cfg.components) // Instantiate an entity
-                                    .attr(Y.mix(pos, cfg.attrs));
+                                    .attr(Y.mix(pos, { z: 1 }, cfg.attrs));
                                 if (entity.execMove) {
                                     // Allows to turn the player to the right direction
                                     entity.execMove(cfg.direction, pos);
@@ -436,7 +441,7 @@ YUI.add('pact-display', function(Y) {
                 text = text.text;
             }
 
-            var pos = [this._x, this._y],
+            var pos = [this._x * SCALE, this._y * SCALE],
                 textE = Crafty.e('2D, DOM, Text')
                     .text(text)
                     .attr({
