@@ -97,7 +97,7 @@ YUI.add('pact-level', function(Y) {
      * Create a webworker with simulation code.
      */
     function createRunner() {
-        return new Worker('wegas-pact/js/worker.js');
+        return new Worker('wegas-pact/js/worker-min.js');
     }
     /**
      * @param {any} obj
