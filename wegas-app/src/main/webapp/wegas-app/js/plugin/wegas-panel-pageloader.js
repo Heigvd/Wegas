@@ -136,8 +136,7 @@ YUI.add('wegas-panel-pageloader', function(Y) {
                     type: "string",
                     value: "",
                     view: {
-                        label: 'CSS class',
-                        className: 'wegas-advanced-feature'
+                        label: 'CSS class'
                     }
                 }
             }

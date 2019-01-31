@@ -37,23 +37,11 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                             parentNode: "yui3-treeview"
                         }]
                 });
-                this.toolbar.add({
-                    label: "<span class=\"fa fa-plus-circle\"></span> New",
-                    on: {
-                        click: Y.bind(function() {
-                            DATASOURCE.createPage(PageTreeview.DEFAULT_NEWPAGE, Y.bind(function(page, id) {
-                                this.changePage(id, Y.bind(function(id) {
-                                    this.treeView.some(function() {
-                                        if (+this.get("data.page") === +id) {
-                                            this.fire("click");
-                                            return true;
-                                        }
-                                    });
-                                }, this, id), true);
-                            }, this));
-                        }, this)
-                    }
-                });
+
+                var header = this.toolbar.get("header");
+                this.btnNew = new Y.Button({
+                    label: "<span class=\"fa fa-plus-circle\"></span> New page"
+                }).render(header);
             }
             this.getIndex();
         },
@@ -159,6 +147,50 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             this.handlers.push(Y.after("edit-entity:cancel", function(e) {
                 this.currentSelection = -1;
                 this.treeView.set("selected", 0);
+            }, this));
+
+            // Initialize the 'New page' button menu :
+            var menu = [];
+            menu.push({
+                type: "Button",
+                label: "Standard (Flex layout)",
+                on: {
+                    click: Y.bind(
+                        function(e) {
+                            this.newPage({
+                                type: "FlexList"
+                            })
+                        }, this)
+                }
+            });
+            menu.push({
+                type: "Button",
+                label: "Beginner (Absolute layout)",
+                on: {
+                    click: Y.bind(
+                        function(e) {
+                            this.newPage({
+                                type: "AbsoluteLayout"
+                            })
+                        }, this)
+                }
+            });
+
+            this.btnNew.plug(Plugin.WidgetMenu, {
+                children: menu
+            });
+
+        },
+        newPage: function(pageType) {
+            DATASOURCE.createPage(pageType, Y.bind(function(page, id) {
+                this.changePage(id, Y.bind(function(id) {
+                    this.treeView.some(function() {
+                        if (+this.get("data.page") === +id) {
+                            this.fire("click");
+                            return true;
+                        }
+                    });
+                }, this, id), true);
             }, this));
         },
         getIndex: function() {
@@ -422,9 +454,6 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
         }
     }, {
         CSS_PREFIX: "wegas-page-editor",
-        DEFAULT_NEWPAGE: {
-            type: "AbsoluteLayout"
-        },
         ATTRS: {
             pageLoader: {
                 value: "previewPageLoader",

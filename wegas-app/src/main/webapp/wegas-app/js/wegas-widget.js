@@ -287,8 +287,7 @@ YUI.add('wegas-widget', function(Y) {
                 optional: true,
                 index: 4,
                 view: {
-                    label: 'CSS class',
-                    className: 'wegas-advanced-feature'
+                    label: 'CSS class'
                 },
                 getter: Wegas.Editable.removeNullValue
             },
