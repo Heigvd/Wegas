@@ -945,4 +945,81 @@ YUI.add('pact-display', function(Y) {
             this._lights.splice(id, 1);
         },
     });
+    Crafty.defaultShader(
+        'Sprite',
+        new Crafty.WebGLShader(
+            'attribute vec2 aPosition;\n' +
+                'attribute vec3 aOrientation;\n' +
+                'attribute vec4 aColor;\n' +
+                'attribute vec2 aLayer;\n' +
+                'attribute vec2 aTextureCoord;\n' +
+                '\n' +
+                '\n' +
+                'varying mediump vec3 vTextureCoord;\n' +
+                'varying lowp vec4 vColor;\n' +
+                '\n' +
+                'uniform vec4 uViewport;\n' +
+                'uniform mediump vec2 uTextureDimensions;\n' +
+                '\n' +
+                'mat4 viewportScale = mat4(2.0 / uViewport.z, 0, 0, 0,    0, -2.0 / uViewport.w, 0,0,    0, 0,1,0,    -1,+1,0,1);\n' +
+                'vec4 viewportTranslation = vec4(uViewport.xy, 0, 0);\n' +
+                '\n' +
+                'void main() {\n' +
+                '  vec2 pos = aPosition;\n' +
+                '  vec2 entityOrigin = aOrientation.xy;\n' +
+                '  mat2 entityRotationMatrix = mat2(cos(aOrientation.z), sin(aOrientation.z), -sin(aOrientation.z), cos(aOrientation.z));\n' +
+                '  \n' +
+                '  pos = entityRotationMatrix * (pos - entityOrigin) + entityOrigin ;\n' +
+                '  gl_Position = viewportScale * (viewportTranslation + vec4(pos, 1.0/(1.0+exp(aLayer.x) ), 1) );\n' +
+                '  vTextureCoord = vec3(aTextureCoord, aLayer.y);\n' +
+                '  vColor = aColor;\n' +
+                '}\n',
+            'precision mediump float;\n' +
+                'varying mediump vec3 vTextureCoord;\n' +
+                'varying lowp vec4 vColor;\n' +
+                '\n' +
+                'uniform sampler2D uSampler;\n' +
+                'uniform mediump vec2 uTextureDimensions;\n' +
+                '\n' +
+                'void main(void) {\n' +
+                '  highp vec2 coord =   vTextureCoord.xy / uTextureDimensions;\n' +
+                '  mediump vec4 base_color = texture2D(uSampler, coord); \n' +
+                '  lowp vec4 tinted_color = vec4( base_color.r * (1.0 - vColor.a) + vColor.r * vColor.a, base_color.g * (1.0 - vColor.a) + vColor.g * vColor.a, base_color.b * (1.0 - vColor.a) + vColor.b * vColor.a, base_color.a);\n' +
+                '  gl_FragColor = vec4(tinted_color.rgb*tinted_color.a*vTextureCoord.z, tinted_color.a*vTextureCoord.z);\n' +
+                '}\n',
+            [
+                { name: 'aColor', width: 4 },
+                { name: 'aPosition', width: 2 },
+                { name: 'aOrientation', width: 3 },
+                { name: 'aLayer', width: 2 },
+                { name: 'aTextureCoord', width: 2 },
+            ],
+            function(e, _entity) {
+                var co = e.co;
+                // Write texture coordinates
+                e.program.writeVector(
+                    'aTextureCoord',
+                    co.x,
+                    co.y,
+                    co.x,
+                    co.y + co.h,
+                    co.x + co.w,
+                    co.y,
+                    co.x + co.w,
+                    co.y + co.h
+                );
+                if (_entity._color) {
+                    var col = {};
+                    Crafty.assignColor(_entity._color, col);
+                    e.program.writeVector(
+                        'aColor',
+                        col._red / 255,
+                        col._green / 255,
+                        col._blue / 255,
+                        col._strength
+                    );
+                }
+            }
+        )
+    );
 });
