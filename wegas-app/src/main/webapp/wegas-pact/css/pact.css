@@ -75,6 +75,7 @@ code {
     background-image: url(../../wegas-pact/images/menuBg_v2.png);
     box-shadow: none;
     opacity: 1;
+    z-index: 1;
 }
 .yui3-skin-sam .pact-title + .proggame-button {
     border-radius: 1em 0 0 1em;
@@ -93,6 +94,7 @@ code {
     cursor: default;
     font-variant: small-caps;
     font-size: 1.5em;
+    margin-left: 1em;
 }
 .pact-level .yui3-tab-selected {
     cursor: default;
@@ -180,6 +182,16 @@ code {
     margin: 2.5px 5px;
     text-align: left;
 }
+.map-selection .proggame-levelselection {
+    border-left: 4px solid transparent;
+    border-image: url(../../wegas-pact/images/blackboard_LEFT_cadre.png) 4
+        stretch;
+    margin: 2.5px 0;
+}
+.map-selection .proggame-levelselection .proggame-button {
+    border-width: 6px;
+    background-color: rgb(9, 93, 89);
+}
 /* Level: Run code buttons */
 
 .proggame-buttons {
@@ -251,7 +263,7 @@ code {
         stretch;
     border-image-width: 2px;
     width: auto;
-    margin: 2px;
+    margin: 2px 4px;
 }
 .wegas-inbox {
     width: 100%;
@@ -360,8 +372,6 @@ code {
 .proggame-view .terrain {
     margin: auto;
     overflow: hidden;
-    background: #0000004d;
-    box-shadow: 0 0 500px 19px black;
 }
 
 #cr-stage {
@@ -378,6 +388,9 @@ code {
 .terrain {
     min-height: 15em;
 }
+.editor {
+    max-height: 36em;
+}
 /* Level: Code */
 .code {
     overflow: hidden;
@@ -388,10 +401,10 @@ code {
     box-shadow: 0 0 14px 1px #002451;
 }
 .pact-level .script-error {
-    background: red;
-    color: black;
+    background: #4e0000;
+    color: red;
     border-radius: 2px;
-    border: 1px solid white;
+    border: 3px solid #a70000;
     padding: 5px;
 }
 
@@ -422,7 +435,7 @@ code {
     z-index: 2;
 }
 .proggame-currentline-error {
-    background: red;
+    background: #a70000;
     position: absolute;
     z-index: 2;
 }
@@ -430,8 +443,8 @@ code {
 /* Level: Popup overlay stayles */
 
 .proggame-panel {
-    max-width: none;
-    max-height: none;
+    max-width: 80%;
+    max-height: 95%;
 }
 
 .proggame-panel .wegas-panel-content {
@@ -440,24 +453,12 @@ code {
     border: none;
     box-shadow: none;
     margin: 0;
-}
-
-.proggame-panel .yui3-widget-bd {
-    padding: 70px 100px;
-    text-align: center;
-    font-size: 1.4em;
-    line-height: 1.3em;
-    margin: 25px 20px 0 0;
+    font-size: 1.1em;
 }
 
 .proggame-panel .yui3-widget-bd button {
-    margin-top: 70px;
     padding: 0.3em 1.1em;
     font-size: 2.3em;
-}
-
-.yui3-skin-sam .yui3-widget-mask {
-    opacity: 0;
 }
 
 /* Level end screen */
@@ -473,6 +474,8 @@ code {
 }
 .pact-level .proggame-levelend {
     max-width: 33em;
+    margin: auto;
+    min-width: 50%;
 }
 
 .proggame-levelend-restart,

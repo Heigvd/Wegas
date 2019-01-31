@@ -449,46 +449,15 @@ YUI.add('pact-display', function(Y) {
                         visible: false,
                     })
                     .css({
-                        'background-color': 'rgb(50, 50, 40)',
-                        border: '7px solid #FFFFFF',
-                        '-moz-border-image':
-                            'url(' +
-                            Wegas.app.get('base') +
-                            '/wegas-proggame/images/dialog.png' +
-                            ') 7 stretch',
-                        '-webkit-border-image':
-                            'url(' +
-                            Wegas.app.get('base') +
-                            '/wegas-proggame/images/dialog.png' +
-                            ') 7 stretch',
-                        '-o-border-image':
-                            'url(' +
-                            Wegas.app.get('base') +
-                            '/wegas-proggame/images/dialog.png' +
-                            ') 7 stretch',
+                        'background-color': 'rgba(9, 93, 89, 0.8)',
+                        border: '4px solid transparent',
                         'border-image':
                             'url(' +
                             Wegas.app.get('base') +
-                            '/wegas-proggame/images/dialog.png' +
-                            ') 7 stretch',
-                        // "font-family": "KG Ways to Say Goodbye",
-                        'line-height': '1.1em',
-                        // "font-size": "1.6em",
-                        'max-width': '400px',
-                        color: 'white',
-                        padding: '4px 4px 2px',
-                    }),
-                connector = Crafty.e('2D, DOM')
-                    .css({
-                        background:
-                            'url(' +
-                            Wegas.app.get('base') +
-                            '/wegas-proggame/images/dialogConnector.png) 0 ' +
-                            (think ? 0 : -32 + 'px'),
-                    })
-                    .attr({
-                        z: 402,
-                        visible: false,
+                            '/wegas-pact/images/blackboard_LEFT_cadre.png) 4 stretch',
+                        'border-image-width': '2px',
+                        width: 'auto',
+                        margin: '2px',
                     });
 
             textE.bind('Draw', function() {
@@ -499,21 +468,14 @@ YUI.add('pact-display', function(Y) {
                 });
                 this._renderTimer = Y.later(300, this, function() {
                     // Attach a little later so the font file has enough time to be loaded
-                    this.attach(connector).attr({
-                        x: pos[0] - this._element.offsetWidth / 2 + 14,
-                        y: pos[1] - this._element.offsetHeight - 32,
+                    this.attr({
+                        x:
+                            pos[0] -
+                            this._element.offsetWidth / 2 +
+                            (TILESIZE * SCALE) / 2,
+                        y: pos[1] - this._element.offsetHeight,
                     });
                     this.visible = true;
-                    connector
-                        .shift(
-                            this._element.offsetWidth / 2 - 16,
-                            this._element.offsetHeight - 7
-                        )
-                        .css({
-                            width: '32px',
-                            height: '32px',
-                        });
-                    connector.visible = true;
                 });
             });
             textE.bind('Remove', function() {
