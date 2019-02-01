@@ -456,24 +456,23 @@ YUI.add('pact-display', function(Y) {
                             Wegas.app.get('base') +
                             '/wegas-pact/images/blackboard_LEFT_cadre.png) 4 stretch',
                         'border-image-width': '2px',
+                        'font-size': '1em',
                         width: 'auto',
                         margin: '2px',
                     });
-
-            textE.bind('Draw', function() {
-                this.unbind('Draw');
+            textE._element.classList.add('pact-display-say');
+            textE.one('Draw', function() {
                 this.css({
                     width: 'initial',
                     height: 'initial',
                 });
-                this._renderTimer = Y.later(300, this, function() {
-                    // Attach a little later so the font file has enough time to be loaded
+                this._renderTimer = Y.later(10, this, function() {
                     this.attr({
                         x:
                             pos[0] -
                             this._element.offsetWidth / 2 +
                             (TILESIZE * SCALE) / 2,
-                        y: pos[1] - this._element.offsetHeight,
+                        y: pos[1] - this._element.offsetHeight - 8, // 8 = arrow height.
                     });
                     this.visible = true;
                 });
