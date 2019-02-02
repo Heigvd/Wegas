@@ -463,6 +463,7 @@ ProgGameSimulation.prototype = {
         this.rotate(1);
     },
     /**
+     * Run a function with NPC context
      * @param {() => void} fn
      */
     npc: function(fn) {
@@ -597,6 +598,7 @@ ProgGameSimulation.prototype = {
         }
     },
     /**
+     * Run player code 
      * @param {Function} playerFn
      */
     doPlayerEval: function(playerFn) {
