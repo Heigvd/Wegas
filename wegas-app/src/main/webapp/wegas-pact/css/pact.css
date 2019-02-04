@@ -374,7 +374,7 @@ code {
 
 .proggame-view .terrain {
     margin: auto;
-    overflow: hidden;
+    overflow: visible;
 }
 
 #cr-stage {
