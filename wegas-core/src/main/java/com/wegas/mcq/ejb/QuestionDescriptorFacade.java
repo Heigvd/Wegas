@@ -932,7 +932,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                 }
 
                 if (showReplies) {
-                    List<Reply> replies = qi.getReplies(self);
+                    List<Reply> replies = qi.getSortedReplies(self);
                     String title;
                     if (replies.size() > 1) {
                         title = (String) translate.call(i18n, "question.results", null, code);

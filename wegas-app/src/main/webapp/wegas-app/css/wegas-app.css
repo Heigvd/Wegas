@@ -907,6 +907,11 @@ svg #triangleStart{
     font-weight:600;
 }
 
+.question-history .replies {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
 .question-history .replies .replyDiv {
     border-top: solid 1px #bbb;
     color: #bbb;
@@ -929,7 +934,7 @@ svg #triangleStart{
     padding-left: 24px;
 }
 
-.question-history .replies .replyDiv:first-child {
+.question-history .replies .replyDiv:last-child {
     border-top: none;
     color: black;
 }
