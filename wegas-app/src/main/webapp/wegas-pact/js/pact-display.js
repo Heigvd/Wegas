@@ -119,6 +119,7 @@ YUI.add('pact-display', function(Y) {
                             for (j = -MARGIN_X; j < gridW + MARGIN_X; j += 1) {
                                 pos = this.getRealXYPos({ x: j, y: i });
                                 pos.y = pos.y + TILE_DELTA;
+                                pos.x = pos.x - 3;
                                 pos.z = 0;
                                 // if (map[i] && map[i][j] && map[i][j].y) {
                                 Crafty.e(
@@ -327,9 +328,9 @@ YUI.add('pact-display', function(Y) {
             );
         },
         dir2anim: {
-            1: 'moveUp',
+            1: 'moveDown',
             2: 'moveRight',
-            3: 'moveDown',
+            3: 'moveUp',
             4: 'moveLeft',
         },
     });
@@ -376,13 +377,13 @@ YUI.add('pact-display', function(Y) {
                 .reel('gzLeft', 2000, 0, 21, 7)
                 .collision(
                     new Crafty.polygon([
-                        0 + 17,
+                        0 + 15,
                         0 + TILE_DELTA + 5,
                         0,
                         28 + TILE_DELTA,
                         25,
                         28 + TILE_DELTA,
-                        25 + 17,
+                        25 + 15,
                         0 + TILE_DELTA + 5,
                     ])
                 )
@@ -519,13 +520,15 @@ YUI.add('pact-display', function(Y) {
         init: function() {
             this.requires(
                 'Tile, TrapSprite, SpriteAnimation, Tween, Collision, GridOffset'
-            ).collision([10, 13], [3, 24], [10, 27], [25, 25], [28, 13]);
+            ).collision(
+                new Crafty.polygon([10, 13, 3, 24, 10, 27, 25, 25, 28, 13])
+            );
             //.collision([10, 13 + TILE_DELTA], [3, 24 + TILE_DELTA], [10, 27 + TILE_DELTA], [25, 25 + TILE_DELTA], [28, 13 + TILE_DELTA]);
             var c = this.__coord;
             this.reset();
             this.reel('trap', 100, c[0] / c[2], c[1] / c[3], 5);
             this._offset = {
-                x: 0,
+                x: -3,
                 y: TILE_DELTA,
             };
             this._delayTile = Y.later(1, this, function() {
@@ -534,7 +537,7 @@ YUI.add('pact-display', function(Y) {
             });
             this.bind('TweenEnd', function() {
                 this.pauseAnimation().visible = false;
-                this._roche = Crafty.e('Tile, StoneSprite, Collision').attr({
+                this._roche = Crafty.e('Tile, StoneSprite').attr({
                     x: this._x,
                     y: this._y,
                 });
@@ -556,7 +559,7 @@ YUI.add('pact-display', function(Y) {
             this.tween(
                 {
                     x: this._x,
-                    y: this._y + 60,
+                    y: this._y + 64,
                 },
                 frameTime
             );
