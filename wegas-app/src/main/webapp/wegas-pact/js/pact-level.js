@@ -225,10 +225,6 @@ YUI.add('pact-level', function(Y) {
                 Y.later(0, this, function() {
                     ace.clearSelection();
                 });
-                // Add the "Main" tabview, which containes the code that will be executed
-                if (ProgGameLevel.main) {
-                    this.mainEditorTab.aceField.setValue(ProgGameLevel.main);
-                }
 
                 this.runButton = new Wegas.Button({
                     //                               // Render run button
@@ -320,15 +316,16 @@ YUI.add('pact-level', function(Y) {
                     currentLevel !==
                         scriptFacade.localEval(
                             'Variable.find(gameModel,"currentLevel").getValue(self)'
-                        ) &&
-                    scriptFacade.localEval(
-                        'Variable.find(gameModel,"currentLevel").getValue(self)'
-                    ) ===
-                        scriptFacade.localEval(
-                            'Variable.find(gameModel,"maxLevel").getValue(self)'
                         )
                 ) {
                     this.showMessage(INFO, this.get('intro')); // Display introduction text at startup
+                } else {
+                    // Add the "Main" tabview, which containes the code that will be executed
+                    if (ProgGameLevel.main) {
+                        this.mainEditorTab.aceField.setValue(
+                            ProgGameLevel.main
+                        );
+                    }
                 }
                 currentLevel = scriptFacade.localEval(
                     'Variable.find(gameModel,"currentLevel").getValue(self)'
