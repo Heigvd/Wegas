@@ -64,13 +64,21 @@ var WegasHelper = (function() {
                 var curmsg = msgs[i],
                     subj = curmsg.getSubject() && curmsg.getSubject().translateOrEmpty(self),
                     date = curmsg.getDate() && curmsg.getDate().translateOrEmpty(self),
-                    body = curmsg.getBody() && curmsg.getBody().translateOrEmpty(self);
-                if (subj && subj.length)
+                    body = curmsg.getBody() && curmsg.getBody().translateOrEmpty(self),
+                    from = curmsg.getFrom() && curmsg.getFrom().translateOrEmpty(self);
+
+                if (from && from.length) {
+                    content += "<b>" + subj + "</b><br/>";
+                }
+                if (subj && subj.length) {
                     content += "<b>" + subj + "</b>&nbsp;&nbsp;";
-                if (date && date.length)
+                }
+                if (date && date.length) {
                     content += "(" + date + ")";
-                if (body && body.length)
+                }
+                if (body && body.length) {
                     content += "<br/>&nbsp;<br/>" + body;
+                }
 
                 content += '<hr/><br/>';
             }
@@ -99,15 +107,15 @@ var WegasHelper = (function() {
         var list = {},
             props = objectInstance.getProperties(),
             n = 0;
-            for (var key in props) {
-                try {
-                    list[key] = JSON.parse(props[key]);
-                } catch(e) {
-                    list[key] = props[key];
-                }
-                n++;
+        for (var key in props) {
+            try {
+                list[key] = JSON.parse(props[key]);
+            } catch (e) {
+                list[key] = props[key];
             }
-        return {"title": teamName + ": " + objectName, "body": JSON.stringify(list), "empty": n===0};
+            n++;
+        }
+        return {"title": teamName + ": " + objectName, "body": JSON.stringify(list), "empty": n === 0};
     }
 
 
@@ -130,7 +138,7 @@ var WegasHelper = (function() {
         },
         getObjectInstanceContent: function(objectInstance, objectName, teamName) {
             return getObjectContent(objectInstance, objectName, teamName);
-        },
+        }
     };
 }());
 
