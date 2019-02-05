@@ -45,10 +45,10 @@
     // NB: This is a server-side function !
     // Enable entering game levels as 1.1 and convert them to internal representation, i.e. 11.
     var adjustLevel = function(val) {
-        if (val >= 1.1 && val <= 9.9) {
+        if (val >= 1.1 && val <= 99.9) {
             return val * 10;
         } else {
-            ErrorManager.throwWarn('Une valeur entre 1.1 et 9.9 est attendue.');
+            ErrorManager.throwWarn('Une valeur entre 1.1 et 99.9 est attendue.');
         }
     };
 
@@ -61,7 +61,7 @@
                     ';' +
                     'Variable.find(gameModel, "levelLimit").setValue(self, adjustLevel(${"type":"number", "label":"' +
                     varLabel('levelLimit') +
-                    '", "description":"Entrer une valeur numérique entre &thinsp;1&thinsp;<b>.</b>1&thinsp; et &thinsp;9&thinsp;<b>.</b>9"}));',
+                    '", "description":"Entrer une valeur numérique entre &thinsp;1&thinsp;<b>.</b>1&thinsp; et &thinsp;99&thinsp;<b>.</b>9 (écran final)"}));',
             ],
         ];
     };
