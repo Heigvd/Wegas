@@ -6,7 +6,7 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-/* global ace */
+/* global ace, Log, Action, require */
 /**
  * @typedef SourceLocation
  * @property {{line: number, column:number}} start
@@ -97,7 +97,7 @@ YUI.add('pact-level', function(Y) {
      * Create a webworker with simulation code.
      */
     function createRunner() {
-        return new Worker('wegas-pact/js/worker.js');
+        return new Worker('wegas-pact/js/worker-min.js');
     }
     /**
      * @param {any} obj
@@ -134,7 +134,7 @@ YUI.add('pact-level', function(Y) {
                 '        <div class="proggame-lefttab pact-panel"></div>' +
                 '    </div>' +
                 '    <div class="proggame-view flex column grow">' +
-                '        <div class="proggame-levelend" style="display:none">' +
+                '        <div class="proggame-levelend pact-panel" style="display:none">' +
                 '            <div class="flex row">' +
                 '                <div class="proggame-levelend-star proggame-levelend-star-1"></div>' +
                 '                <div class="proggame-levelend-star proggame-levelend-star-2"></div>' +
@@ -225,10 +225,6 @@ YUI.add('pact-level', function(Y) {
                 Y.later(0, this, function() {
                     ace.clearSelection();
                 });
-                // Add the "Main" tabview, which containes the code that will be executed
-                if (ProgGameLevel.main) {
-                    this.mainEditorTab.aceField.setValue(ProgGameLevel.main);
-                }
 
                 this.runButton = new Wegas.Button({
                     //                               // Render run button
@@ -320,15 +316,16 @@ YUI.add('pact-level', function(Y) {
                     currentLevel !==
                         scriptFacade.localEval(
                             'Variable.find(gameModel,"currentLevel").getValue(self)'
-                        ) &&
-                    scriptFacade.localEval(
-                        'Variable.find(gameModel,"currentLevel").getValue(self)'
-                    ) ===
-                        scriptFacade.localEval(
-                            'Variable.find(gameModel,"maxLevel").getValue(self)'
                         )
                 ) {
                     this.showMessage(INFO, this.get('intro')); // Display introduction text at startup
+                } else {
+                    // Add the "Main" tabview, which containes the code that will be executed
+                    if (ProgGameLevel.main) {
+                        this.mainEditorTab.aceField.setValue(
+                            ProgGameLevel.main
+                        );
+                    }
                 }
                 currentLevel = scriptFacade.localEval(
                     'Variable.find(gameModel,"currentLevel").getValue(self)'
@@ -734,7 +731,6 @@ YUI.add('pact-level', function(Y) {
                         );
                         batchRemoteCall(
                             function(code, level, success) {
-                                /* global Log, Action */
                                 var stmts = [
                                     Log.level(code, level, true, success),
                                 ];
@@ -822,7 +818,7 @@ YUI.add('pact-level', function(Y) {
                         false,
                         true
                     );
-                    enemy.wave(7);
+                    enemy.sayAnimation(7);
                 }
             },
             doLevelEndAnimation: function() {
@@ -862,7 +858,7 @@ YUI.add('pact-level', function(Y) {
                             this.consumeCommand();
                             break;
                         case 'gameWon':
-                            Y.later(2500, this, function() {
+                            Y.later(100, this, function() {
                                 // After shake hands animation is over,
                                 this.doLevelEndAnimation(); // display level end screen
                             });
@@ -913,7 +909,6 @@ YUI.add('pact-level', function(Y) {
              */
             highlight: function(loc, error) {
                 var session = this.mainEditorTab.aceField.session;
-                /*global require */
                 var Range = require('ace/range').Range;
                 if (this.marker) {
                     session.removeGutterDecoration(
@@ -1314,50 +1309,18 @@ YUI.add('pact-level', function(Y) {
                             "</div><button class='yui3-button proggame-button'>Continuer</button>",
                     });
 
-                panel
-                    .get(BOUNDING_BOX)
-                    .setStyles({
-                        transformOrigin: 'top left',
-                        transform: 'scale(0.01)',
-                        opacity: 0.2,
-                        top: Math.round(target.top) + 10 + 'px',
-                        left: Math.round(target.left) + 10 + 'px',
-                    })
-                    .transition({
-                        duration: 0.3,
-                        top: panel.get('x') + 'px', // panel default value
-                        left: panel.get('y') + 'px',
-                        transform: 'scale(1)',
-                        opacity: 1,
-                    });
-
                 Y.later(50, this, function() {
                     // Hide panel anywhere user clicks
                     Y.one('body').once(
                         CLICK,
                         function() {
+                            panel.destroy();
+                            if ('' + this.get('root').get('@pageId') === '11') {
+                                this.showTutorial();
+                            } else {
+                                this.focusCode();
+                            }
                             //this.show();
-                            panel.get(BOUNDING_BOX).transition(
-                                {
-                                    duration: 0.3,
-                                    top: Math.round(target.top) + 10 + 'px',
-                                    left: Math.round(target.left) + 10 + 'px',
-                                    transform: 'scale(0.01)',
-                                    opacity: 0.2,
-                                },
-                                Y.bind(function() {
-                                    panel.destroy();
-                                    //this.show();
-                                    if (
-                                        '' + this.get('root').get('@pageId') ===
-                                        '11'
-                                    ) {
-                                        this.showTutorial();
-                                    } else {
-                                        this.focusCode();
-                                    }
-                                }, this)
-                            );
                         },
                         this
                     );
@@ -1367,11 +1330,7 @@ YUI.add('pact-level', function(Y) {
                 var panel = new Wegas.Panel(
                     Y.mix(cfg, {
                         modal: true,
-                        centered: false,
-                        x: 100,
-                        y: 85,
-                        width: '962px',
-                        height: 709,
+                        centered: true,
                         buttons: {},
                     })
                 ).render();
