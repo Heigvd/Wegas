@@ -6,7 +6,7 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-/* global ace */
+/* global ace, Log, Action, require */
 /**
  * @typedef SourceLocation
  * @property {{line: number, column:number}} start
@@ -731,7 +731,6 @@ YUI.add('pact-level', function(Y) {
                         );
                         batchRemoteCall(
                             function(code, level, success) {
-                                /* global Log, Action */
                                 var stmts = [
                                     Log.level(code, level, true, success),
                                 ];
@@ -910,7 +909,6 @@ YUI.add('pact-level', function(Y) {
              */
             highlight: function(loc, error) {
                 var session = this.mainEditorTab.aceField.session;
-                /*global require */
                 var Range = require('ace/range').Range;
                 if (this.marker) {
                     session.removeGutterDecoration(
