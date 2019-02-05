@@ -819,7 +819,7 @@ YUI.add('pact-level', function(Y) {
                         false,
                         true
                     );
-                    enemy.wave(7);
+                    enemy.sayAnimation(7);
                 }
             },
             doLevelEndAnimation: function() {

@@ -24,7 +24,17 @@ YUI.add('pact-display', function(Y) {
         Wegas = Y.Wegas,
         ProgGameDisplay,
         Promise = Y.Promise,
-        ready;
+        ready,
+        HIT_BOX = new Crafty.polygon([
+            0 + 15,
+            0 + TILE_DELTA + 5,
+            0,
+            28 + TILE_DELTA,
+            25,
+            28 + TILE_DELTA,
+            25 + 15,
+            0 + TILE_DELTA + 5,
+        ]);
 
     /*
      * Crafty sprites
@@ -42,7 +52,7 @@ YUI.add('pact-display', function(Y) {
                     tile: TILESIZE,
                     tileh: TILESIZE,
                     map: {
-                        CharacterSprite: [0, 0],
+                        // CharacterSprite: [0, 0],
                         TrapSprite: [0, 9],
                         DoorSprite: [0, 10],
                         DoorSprite2: [0, 14],
@@ -63,6 +73,36 @@ YUI.add('pact-display', function(Y) {
                         EmptyT: [0, 2],
                         PathT: [0, 0],
                         TrapT: [0, 1],
+                    },
+                };
+                assets.sprites[
+                    Wegas.app.get('base') +
+                        '/wegas-pact/images/sprite_sheet_girl.png'
+                ] = {
+                    tile: TILESIZE,
+                    tileh: TILESIZE,
+                    map: {
+                        CharacterSprite: [0, 0],
+                    },
+                };
+                assets.sprites[
+                    Wegas.app.get('base') +
+                        '/wegas-pact/images/sprite_sheet_girl_blond.png'
+                ] = {
+                    tile: TILESIZE,
+                    tileh: TILESIZE,
+                    map: {
+                        BlondSprite: [0, 0],
+                    },
+                };
+                assets.sprites[
+                    Wegas.app.get('base') +
+                        '/wegas-pact/images/sprite_sheet_monstre.png'
+                ] = {
+                    tile: TILESIZE,
+                    tileh: TILESIZE,
+                    map: {
+                        MonsterSprite: [0, 0],
                     },
                 };
                 return assets;
@@ -310,7 +350,11 @@ YUI.add('pact-display', function(Y) {
         },
         execMove: function(direction, target, minDuration) {
             var animDir = this.dir2anim[direction];
-
+            if (direction === 4) {
+                this.flip('X');
+            } else {
+                this.unflip('X');
+            }
             if (!this.isPlaying(animDir)) {
                 this.doDelay = minDuration && this.reel() !== animDir;
                 this.pauseAnimation();
@@ -361,35 +405,24 @@ YUI.add('pact-display', function(Y) {
     });
     Crafty.c('Character', {
         init: function() {
-            var moveSpeed = 500;
+            var moveSpeed = 1000;
             this.requires(
                 '2D,' +
                     RENDERMETHOD +
                     ', CharacterSprite, SpriteAnimation, move4Direction, Speaker, Collision'
             )
-                .reel('moveUp', moveSpeed, 0, 2, 7)
+                .reel('moveUp', moveSpeed, 0, 2, 4)
                 .reel('moveRight', moveSpeed, 0, 0, 7)
-                .reel('moveDown', moveSpeed, 0, 2, 7)
-                .reel('moveLeft', moveSpeed, 0, 1, 7)
+                .reel('moveDown', moveSpeed, 0, 1, 4)
+                .reel('moveLeft', moveSpeed, 0, 0, 7)
                 .reel('handsUp', moveSpeed, 0, 6, 7)
-                .reel('erase', 2000, 0, 24, 7)
-                .reel('gzRight', 2000, 0, 20, 7)
-                .reel('gzLeft', 2000, 0, 21, 7)
-                .collision(
-                    new Crafty.polygon([
-                        0 + 15,
-                        0 + TILE_DELTA + 5,
-                        0,
-                        28 + TILE_DELTA,
-                        25,
-                        28 + TILE_DELTA,
-                        25 + 15,
-                        0 + TILE_DELTA + 5,
-                    ])
-                )
-                .onHit('Collide', function() {
-                    this.h -= 1;
-                    this.y += 1;
+                .reel('fall', 1000, 0, 4, 9)
+                .reel('endAnim', 500, 0, 3, 7)
+                .collision(HIT_BOX)
+                .onHit('Collide', function(_data, first) {
+                    if (first) {
+                        this.pauseAnimation().animate('fall');
+                    }
                 })
                 .bind('TweenEnd', function() {
                     var col = this.hit('Character');
@@ -416,11 +449,11 @@ YUI.add('pact-display', function(Y) {
         outside: function() {
             this.pauseAnimation()
                 .one('AnimationEnd', function() {
-                    if (this._currentReelId === 'erase') {
+                    if (this._currentReelId === 'fall') {
                         Crafty.trigger(COMMANDEXECUTED);
                     }
                 })
-                .animate('erase');
+                .animate('fall');
         },
         wave: function(times) {
             var pos = Y.clone(this.__coord);
@@ -491,14 +524,73 @@ YUI.add('pact-display', function(Y) {
             });
         },
     });
+    Crafty.c('Monster', {
+        init: function() {
+            var moveSpeed = 500;
+            this.requires(
+                '2D,' +
+                    RENDERMETHOD +
+                    ', MonsterSprite, SpriteAnimation, move4Direction, Speaker, Collision'
+            )
+                .reel('moveUp', moveSpeed, 0, 2, 5)
+                .reel('moveRight', moveSpeed, 0, 2, 5)
+                .reel('moveDown', moveSpeed, 0, 2, 5)
+                .reel('moveLeft', moveSpeed, 0, 2, 5)
+                .reel('endAnim', 500, 0, 1, 4)
+                .reel('say', 200, 0, 4, 8)
+                .collision(HIT_BOX);
+        },
+        sayAnimation: function(times) {
+            var pos = Y.clone(this.__coord);
+            this.pauseAnimation()
+                .one('AnimationEnd', function() {
+                    if (this._currentReelId === 'say') {
+                        this.sprite(pos[0] / pos[2], pos[1] / pos[3]);
+                    }
+                })
+                .animate('say', times || 1);
+        },
+    });
+    Crafty.c('Blond', {
+        init: function() {
+            this.requires(
+                '2D,' +
+                    RENDERMETHOD +
+                    ', BlondSprite, SpriteAnimation, Speaker, Collision'
+            )
+                .reel('say', 200, 0, 2, 3)
+                .reel('endAnim', 500, 0, 0, 8)
+                .collision(HIT_BOX);
+        },
+        sayAnimation: function(times) {
+            var pos = Y.clone(this.__coord);
+            this.pauseAnimation()
+                .one('AnimationEnd', function() {
+                    if (this._currentReelId === 'say') {
+                        this.sprite(pos[0] / pos[2], pos[1] / pos[3]);
+                    }
+                })
+                .animate('say', times || 1);
+        },
+    });
     Crafty.c('PC', {
         init: function() {
             this.requires('Character');
+            this.onHit('NPC', function(_data, first) {
+                if (first && this.getReel('endAnim') !== undefined) {
+                    this.pauseAnimation().animate('endAnim');
+                }
+            });
         },
     });
     Crafty.c('NPC', {
         init: function() {
-            this.requires('TintSprite, Character').tintSprite('#D6D600', 1);
+            this.requires('Blond');
+            this.onHit('PC', function(_data, first) {
+                if (first && this.getReel('endAnim') !== undefined) {
+                    this.pauseAnimation().animate('endAnim');
+                }
+            });
         },
     });
     Crafty.c('Tile', {
