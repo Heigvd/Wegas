@@ -117,11 +117,20 @@ YUI.add('wegas-layout-menu', function(Y) {
         },
         rebindUI: function() {
             var bb = this.get(BOUNDINGBOX);
-            var event = this.isSubmenu() && this.isParentNotInline() ? "mouseenter" : "click";
             if (this.openListener) {
                 this.openListener.detach();
             }
-            this.openListener = bb.delegate(event, this.open, "> .wegas-layout-menu-label", this);
+
+            if (this.openListener2) {
+                this.openListener2.detach();
+            }
+
+            this.openListener = bb.delegate("click", this.open, "> .wegas-layout-menu-label", this);
+
+            if (this.isSubmenu() && this.isParentNotInline()) {
+                // allow to open sub-menus on mouseenter
+                this.openListener2 = bb.delegate("mouseenter", this.open, "> .wegas-layout-menu-label", this);
+            }
         },
         rebindSubmenus: function(e) {
             this.get(CONTENTBOX).all(".wegas-layout-menu").each(function(submenu) {
@@ -135,14 +144,19 @@ YUI.add('wegas-layout-menu', function(Y) {
             }, this);
         },
         close: function(e) {
-            var bb = this.get(BOUNDINGBOX);
-            bb.toggleClass("wegas-layout-menu-open", false);
-            Y.later(0, this, this.syncLabel);
-            if (this.handlers.closeListener) {
-                this.handlers.closeListener.detach();
-                delete this.handlers.closeListener;
-                this.handlers.closeListener2.detach();
-                delete this.handlers.closeListener2;
+            if (e && e.target && Y.Widget.getByNode(e.target) instanceof Y.Wegas.LayoutMenu) {
+                // do not close on sub menu click
+                return;
+            } else {
+                var bb = this.get(BOUNDINGBOX);
+                bb.toggleClass("wegas-layout-menu-open", false);
+                Y.later(0, this, this.syncLabel);
+                if (this.handlers.closeListener) {
+                    this.handlers.closeListener.detach();
+                    delete this.handlers.closeListener;
+                    this.handlers.closeListener2.detach();
+                    delete this.handlers.closeListener2;
+                }
             }
         },
         open: function(e) {
