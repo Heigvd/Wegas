@@ -1,6 +1,6 @@
 /// <reference lib="es5"/>
 
-/* global gameModel, self, Variable, Log */
+/* global gameModel, self, Variable, Log, ErrorManager */
 
 // Types used accross this file
 /**
@@ -71,6 +71,10 @@ var Action = {
             if (curValue != currentLevelDesc.getValue(self)) {
                 Log.post(Log.statement('initialized', 'level', level));
             }
+        } else {
+            ErrorManager.throwWarn(
+                'Vous ne pouvez pas encore aller à ce niveau'
+            );
         }
     },
     /**
