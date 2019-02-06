@@ -590,7 +590,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 var form, entity, cfg;
                 var stateMachine = this.get(PARENT).get(ENTITY);
                 state = state || this.get(ENTITY);
-                Plugin.EditEntityAction.destroyEditionTab();
+                //Plugin.EditEntityAction.destroyEditionTab();
                 this.editionHighlight();
 
                 entity = this.get(ENTITY);
@@ -737,7 +737,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 parent.save(Y.bind(function(e) {
                     var stateId = Plugin.EditEntityAction.currentEntity.get("id"),
                         fsmDesc = e.response.entity,
-                        state = Y.Array.find(fsmDesc.get("states"), function(state) {
+                        state = Y.Array.find(Object.values(fsmDesc.get("states")), function(state) {
                             return state.get("id") === stateId;
                         });
 
@@ -853,7 +853,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         showForm: function(transition) {
             Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
                 var form, stateMachine, cfg;
-                Plugin.EditEntityAction.destroyEditionTab();
+                //Plugin.EditEntityAction.destroyEditionTab();
                 this.editionHighlight();
 
                 transition = transition || this.get(ENTITY);
