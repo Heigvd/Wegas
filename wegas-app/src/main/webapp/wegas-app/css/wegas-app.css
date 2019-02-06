@@ -730,6 +730,20 @@ svg #triangleStart{
     border: none;
 }
 
+/*
+ * Wegas skin for menu
+ */
+.yui3-menu {
+    box-shadow: none;
+}
+
+.yui3-menu .yui3-button {
+    font-size: 13px;
+}
+
+.yui3-menu .yui3-button:hover {
+    background: #A7CEF6;
+}
 
 /* Onclick pointer style */
 
