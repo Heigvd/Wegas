@@ -1116,9 +1116,9 @@ YUI.add('pact-level', function(Y) {
                     } else {
                         node = {
                             label:
-                                "<span class='api-tooltip'>?<div><div class='api-tooltip-content'>" +
+                                "<div class='api-tooltip'><span class='fa fa-question'/><div><div class='api-tooltip-content'>" +
                                 ProgGameLevel.API[i].tooltip +
-                                '</div></div></span>' +
+                                '</div></div></div>' +
                                 ProgGameLevel.API[i].label,
                         };
                     }
@@ -1132,11 +1132,12 @@ YUI.add('pact-level', function(Y) {
                     //                    };
                     //                }
                     node.data = i;
+                    // node.pkg = ProgGameLevel.API[i].pkg;
                     if (node.pkg) {
                         if (!packages[node.pkg]) {
                             packages[node.pkg] = {
                                 type: 'TreeNode',
-                                label: node.pkg,
+                                label: node.pkg + ' <i>package</i>',
                                 collapsed: false,
                                 children: [],
                             };
@@ -1711,36 +1712,36 @@ YUI.add('pact-level', function(Y) {
             },
             API: {
                 say: {
-                    label: 'say(text:String)',
+                    label: 'say(text)',
                     tooltip:
-                        'say(text: String)\n' +
-                        'Your avatar will loudly say the content of the text parameter.\n\n' +
-                        'Parameters\ntext:String - The text you want to say out loud',
+                        'say(text: any)\n' +
+                        'Say the content of the text parameter.\n\n' +
+                        'Parameters\ntext: any - The text you want to say',
                 },
                 read: {
-                    label: 'read():Number',
+                    label: 'read()',
                     tooltip:
-                        'read():Number\n' +
-                        'Your avatar will read any panel on the same case as he is and return it.\n\n' +
-                        'Returns\nNumber - The text on the panel',
+                        'read() &rarr; any\n' +
+                        'Read any panel on the same tile and obtain its value.\n\n' +
+                        'Returns\nany - The value on the panel',
                 },
                 move: {
                     label: 'move()',
                     tooltip:
                         'move()\n' +
-                        'Using this function, your avatar will move one tile\nin the direction he is currently facing.',
+                        'Move one tile\nin the direction your avatar is currently facing.',
                 },
                 left: {
                     label: 'left()',
                     tooltip:
                         'left()\n' +
-                        'Your avatar turns to the left without moving.',
+                        'Turn to the left without moving.',
                 },
                 right: {
                     label: 'right()',
                     tooltip:
                         'right()\n' +
-                        'Your avatar turns to the right without moving.',
+                        'Turn to the right without moving.',
                 },
                 npc: {
                     label: 'npc&lt;T&gt;(fn:()=>T):T',
@@ -1751,35 +1752,35 @@ YUI.add('pact-level', function(Y) {
                 'Math.PI': {
                     pkg: 'Math',
                     tooltip:
-                        'Math:PI:Number\n\nConstant containing the value of PI (approx. 3.14)',
-                    label: 'PI:Number',
+                        'Math.PI:Number\n\nConstant containing the value of PI (approx. 3.14)',
+                    label: 'Math.PI',
                 },
                 'Math.floor': {
-                    label: 'floor():Number',
+                    label: 'Math.floor(value)',
                     pkg: 'Math',
                     tooltip:
-                        'Math.floor():Number\n' +
-                        'The floor() method rounds a number DOWNWARDS to the nearest integer, and returns the result.\n\n' +
-                        'Parameters\nx:Number - The number you want to round\n' +
+                        'Math.floor(value: Number) &rarr; Number\n' +
+                        'Rounds a number DOWNWARDS to the nearest integer, and returns the result.\n\n' +
+                        'Parameters\nvalue: Number - The number you want to floor\n' +
                         'Returns\nNumber - The nearest integer when rounding downwards',
                 },
                 'Math.round': {
                     pkg: 'Math',
-                    label: 'round(x:Number):Number',
+                    label: 'Math.round(value)',
                     tooltip:
-                        'Math.round(x:Number):Number\n\n' +
+                        'Math.round(value: Number) &rarr; Number\n\n' +
                         'If the fractional portion of number is .5 or greater, the argument is rounded to the next higher integer. If the fractional portion of number is less than .5, the argument is rounded to the next lower integer.\n' +
                         'Because round is a static method of Math, you always use it as Math.round(), rather than as a method of a Math object you created.\n\n' +
                         //+ "The Math.round() function returns the value of a number rounded to the nearest integer.\n\n"+
                         'Parameters\n' +
-                        'x:Number - The number you want to round\n' +
+                        'value: Number - The number you want to round\n' +
                         'Returns\n' +
                         'Number - the value of x rounded to the nearest integer',
                 },
                 include: {
-                    label: 'include(name:String)',
+                    label: 'include(name: String)',
                     tooltip:
-                        'include(name:String)\n\n' +
+                        'include(name: String)\n\n' +
                         'Allows to include a file from your file library. This way you can reuse your code multiple times.',
                 },
             },
@@ -1799,7 +1800,7 @@ YUI.add('pact-level', function(Y) {
                     html:
                         "<div>L'<b>API</b>(Application Programming Interface) expose les instructions que vous avez à disposition.<br><br>" +
                         'Le <b>?</b> donne des informations supplémentaires pour chaque instruction<br><br>' +
-                        'Vous pouvez ajouter des instructions en cliquant directement dessus.</div>',
+                        'Vous pouvez ajouter des instructions en cliquant dessus.</div>',
                 },
                 {
                     node: '.proggame-help',
