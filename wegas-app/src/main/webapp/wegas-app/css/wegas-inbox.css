@@ -32,7 +32,7 @@
 }
 
 .wegas-inbox .yui3-tabview-list .unread {
-    font-weight: bolder;
+    font-weight: bold;
 }
 
 .wegas-inbox .msg-subject {
@@ -208,6 +208,9 @@
     content:"\f003"; /*fa-envelope-o*/
 }
 
+.wegas-inbox-list .wegas-message .unread {
+    font-weight: bold;
+}
 
 .wegas-inbox-list .wegas-inbox-list--clean .wegas-message-content > div {
     margin-left: 65px;
