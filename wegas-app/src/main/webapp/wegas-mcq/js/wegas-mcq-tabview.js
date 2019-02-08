@@ -36,7 +36,8 @@ YUI.add('wegas-mcq-tabview', function(Y) {
 
             return  '<div class="index-mcq '
                 + (questionInstance.get("unread") ? "unread " : "")
-                + (this.get("highlightUnanswered") && !questionInstance.get("validated") ? "unanswered" : "") + '">'
+                + (!questionInstance.get("validated") ? "answerable " : "")
+                + (this.get("highlightUnanswered") && !questionInstance.get("validated") ? "unanswered " : "") + '">'
                 + '<div class="index-unread">' + unreadLabel + '</div>'
                 + '<div class="index-label">'
                 + (I18n.t(question.get("label"))) + "</div>"

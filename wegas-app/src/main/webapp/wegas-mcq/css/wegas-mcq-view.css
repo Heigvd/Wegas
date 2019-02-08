@@ -10,11 +10,14 @@
  */
 
 /*.wegas-mcqview-content:not([data-displayResult='bottom']) {*/
+.wegas-vhview,
 .wegas-mcqview {
     height:100%;
 }
 
+.wegas-whview .wegas-whview-content,
 .wegas-mcqview .wegas-mcqview-content {
+    height:100%;
     overflow-y: auto;
 }
 
@@ -898,4 +901,3 @@
 .wegas-whview .wegas-string-input ul.wegas-string-input-checkboxes li:first-child {
     margin-left: 0;
 }
-
