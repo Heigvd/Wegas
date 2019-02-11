@@ -757,13 +757,11 @@
     through2 "^2.0.3"
 
 "@tinymce/tinymce-react@^2.4.0":
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/@tinymce/tinymce-react/-/tinymce-react-2.4.0.tgz#e2140bc9d0ccc3aab8b7d702f345d0f1a96422ab"
-  integrity sha512-WrxevgJzDht4purKVzhTzwh43S9/j4OTsbVHpOJ2/VHkQ6pUqa4d2NTIBsUGOhK6a8LDIUjU2u98R66iSgPF4g==
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/@tinymce/tinymce-react/-/tinymce-react-2.6.1.tgz#240fd586eec5e7a24544548640a6d420834c28f2"
+  integrity sha512-HUfYCbQmwKys9H9jVg4FJJVxbB4m48uPpA6Q+3MqhvJobBnqPh+xoSXA9G2W9tGKKgPGcpZvT0Lesl+mWDnYgw==
   dependencies:
-    prop-types "^15.6.0"
-    react "^16.2.0"
-    react-dom "^16.2.0"
+    prop-types "^15.6.2"
 
 "@types/json5@^0.0.29":
   version "0.0.29"
@@ -9124,7 +9122,7 @@ prop-types-extra@^1.0.1:
     react-is "^16.3.2"
     warning "^3.0.0"
 
-prop-types@^15.5.10, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2:
+prop-types@^15.5.10, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.1, prop-types@^15.6.2:
   version "15.6.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.2.tgz#05d5ca77b4453e985d60fc7ff8c859094a497102"
   integrity sha512-3pboPvLiWD7dkI3qf3KbUe6hKFKa52w+AE0VCqECtf+QHAKgOL37tTaNCnuX1nAAQ4ZhyP+kYVKf8rLmJ/feDQ==
@@ -9363,10 +9361,10 @@ rcloader@0.1.2:
     lodash "~2.4.1"
     rcfinder "~0.1.6"
 
-react-ace@^6.1.4:
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/react-ace/-/react-ace-6.2.0.tgz#9ab0fd88cd1ef6712fec4b243b61431964481c11"
-  integrity sha512-Cr27xFNZV2wlQi+mFjgUWfd3yPZV84Sf7XVrEXkDBZmQ5I/oY3x4KvtBjX6ImN7SCWu3sU6z9F3Zh6jH3/jtzw==
+react-ace@^6.4.0:
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/react-ace/-/react-ace-6.4.0.tgz#49152a9e04108324fa3e7438ed9f1454fe0738c1"
+  integrity sha512-woTTgGk9x4GRRWiM4QLNOspjaJAYLX3UZ3J2XRYQvJiN6wyxrFY9x7rdOKc+4Tj+khb/ccPiDj/kll4UeJEDPw==
   dependencies:
     brace "^0.11.1"
     diff-match-patch "^1.0.4"
@@ -9393,7 +9391,7 @@ react-component-managers@^3.1.0:
     prop-types "^15.6.1"
     spy-on-component "^1.1.0"
 
-react-dom@^16.2.0, react-dom@^16.6.3:
+react-dom@^16.6.3:
   version "16.6.3"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.6.3.tgz#8fa7ba6883c85211b8da2d0efeffc9d3825cccc0"
   integrity sha512-8ugJWRCWLGXy+7PmNh8WJz3g1TaTUt1XyoIcFN+x0Zbkoz+KKdUyx1AQLYJdbFXjuF41Nmjn5+j//rxvhFjgSQ==
@@ -9514,7 +9512,7 @@ react-widgets@^4.4.4:
     uncontrollable "^5.0.0"
     warning "^3.0.0"
 
-react@^16.2.0, react@^16.6.3:
+react@^16.6.3:
   version "16.6.3"
   resolved "https://registry.yarnpkg.com/react/-/react-16.6.3.tgz#25d77c91911d6bbdd23db41e70fb094cc1e0871c"
   integrity sha512-zCvmH2vbEolgKxtqXL2wmGCUxUyNheYn/C+PD1YAjfxHC54+MhdruyhO7QieQrYsYeTxrn93PM2y0jRH1zEExw==

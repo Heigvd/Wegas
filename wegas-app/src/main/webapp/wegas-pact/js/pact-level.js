@@ -6,7 +6,7 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-/* global ace, Log, Action, require */
+/* global ace, Log, Action */
 /**
  * @typedef SourceLocation
  * @property {{line: number, column:number}} start
@@ -909,7 +909,7 @@ YUI.add('pact-level', function(Y) {
              */
             highlight: function(loc, error) {
                 var session = this.mainEditorTab.aceField.session;
-                var Range = require('ace/range').Range;
+                var Range = ace.require('ace/range').Range;
                 if (this.marker) {
                     session.removeGutterDecoration(
                         this.cLine,
