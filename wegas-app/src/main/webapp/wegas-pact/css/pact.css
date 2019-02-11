@@ -380,6 +380,7 @@ code {
 
 #cr-stage {
     overflow: visible !important;
+    pointer-events: none; /* Don't handle click. Allows to touch scroll */
     /* Allow overflow, for text (say). Works only for DOM elements */
 }
 
