@@ -544,18 +544,17 @@ YUI.add('pact-level', function(Y) {
                 this.isSuccessful = false;
             },
             doPersist: function() {
-                var msgSubject = Y.JSON.stringify(
+                var msgSubject =
                         (!this.isSuccessful || this.isRuntimeException
-                            ? "<span style='color:red'>"
-                            : "<span style='color:green'>") +
-                            'Exercice ' +
-                            (this.isRuntimeException
-                                ? 'ÉCHOUÉ avec EXCEPTION'
-                                : this.isSuccessful
-                                ? 'RÉUSSI'
-                                : 'ÉCHOUÉ') +
-                            '</span>'
-                    ),
+                            ? "<span class='history-error'>"
+                            : "<span class='history-success'>") +
+                        'Exercice ' +
+                        (this.isRuntimeException
+                            ? 'ÉCHOUÉ avec EXCEPTION'
+                            : this.isSuccessful
+                            ? 'RÉUSSI'
+                            : 'ÉCHOUÉ') +
+                        '</span>',
                     msgDate = 'Level ' + (currentLevel / 10).toFixed(1),
                     msgBody =
                         (this.isRuntimeException

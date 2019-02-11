@@ -305,6 +305,12 @@ code {
 .inbox .yui3-tab-selected .yui3-tab-label:hover {
     font-weight: bold;
 }
+.wegas-playerview .inbox .yui3-tabview-list .history-success {
+    color: #013501;
+}
+.wegas-playerview .inbox .yui3-tabview-list .history-error {
+    color: #670000;
+}
 .yui3-skin-sam .inbox .horizontal-tabview .yui3-tab-panel {
     /* border-left: 4px solid transparent; */
     border-image: url(../../wegas-pact/images/blackboard_LEFT_cadre.png) 4
@@ -606,4 +612,11 @@ API TOOLTIP
 
 .wegas-dashboard-datatable .result-gray {
     color: #999;
+}
+
+.wegas-hostmode .history-error {
+    color: red;
+}
+.wegas-hostmode .history-success {
+    color: green;
 }
