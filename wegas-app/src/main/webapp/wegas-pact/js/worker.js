@@ -151,7 +151,16 @@ function ProgGameSimulation(cfg) {
     this.api; //= level.api;
     /** @type {LevelPage["objects"]} */
     this.objects; // Shortcut to level objects
-    this.gameOverSent = false;
+    /**
+     * -1 : not sent
+     *
+     *  0 : with success
+     *
+     *  1 : with error
+     *  @type {-1 | 0 | 1}
+     */
+
+    this.gameOverSent = -1;
     this.doRecordCommands = true;
 }
 
@@ -181,7 +190,7 @@ ProgGameSimulation.prototype = {
         this.level = level;
         this.api = level.api;
         this.objects = level.objects;
-        this.gameOverSent = false;
+        this.gameOverSent = -1;
         //"sendCommand({type:'resetLevel', objects: " + JSON.stringify(this.get("objects")) + "});"
         var o, i, j, a;
         for (i = 0; i < this.objects.length; i += 1) {
@@ -421,7 +430,7 @@ ProgGameSimulation.prototype = {
             type: 'gameLost',
         });
         this.doRecordCommands = false;
-        this.gameOverSent = true;
+        this.gameOverSent = 1;
     },
     doMove: function(object) {
         this.sendCommand({
@@ -545,10 +554,10 @@ ProgGameSimulation.prototype = {
      * Check if game has ended and execute success if player
      */
     checkGameOver: function() {
-        if (this.gameOverSent) {
+        if (this.gameOverSent > -1) {
             return true;
         } else if (this.doEval('return ' + this.level.winningCondition)) {
-            this.gameOverSent = true;
+            this.gameOverSent = 0;
             this.log('You won!');
             this.sendCommand({
                 type: 'gameWon',
@@ -598,7 +607,7 @@ ProgGameSimulation.prototype = {
         }
     },
     /**
-     * Run player code 
+     * Run player code
      * @param {Function} playerFn
      */
     doPlayerEval: function(playerFn) {
@@ -808,10 +817,18 @@ ProgGameSimulation.prototype = {
  * @param {Configuration=} cfg
  */
 function run(playerFn, level, cfg) {
+    var count = 10,
+        simulation;
     cfg = cfg || /** @type {Configuration} */ ({});
-    var simulation = new ProgGameSimulation(cfg);
-
-    simulation.run(playerFn, level);
+    var o = JSON.stringify(level.objects);
+    do {
+        level.objects = JSON.parse(o);
+        simulation = new ProgGameSimulation(cfg);
+        simulation.run(playerFn, level);
+        if (simulation.gameOverSent > 0) {
+            return simulation.getCommands();
+        }
+    } while (--count);
     return simulation.getCommands();
 }
 self.onmessage = function(m) {

@@ -655,7 +655,7 @@ YUI.add('pact-level', function(Y) {
                             code
                         );
                     }.bind(this),
-                    3e3
+                    5e3
                 );
                 this.runner.onmessage = function(m) {
                     clearTimeout(to);
@@ -1733,15 +1733,11 @@ YUI.add('pact-level', function(Y) {
                 },
                 left: {
                     label: 'left()',
-                    tooltip:
-                        'left()\n' +
-                        'Turn to the left without moving.',
+                    tooltip: 'left()\n' + 'Turn to the left without moving.',
                 },
                 right: {
                     label: 'right()',
-                    tooltip:
-                        'right()\n' +
-                        'Turn to the right without moving.',
+                    tooltip: 'right()\n' + 'Turn to the right without moving.',
                 },
                 npc: {
                     label: 'npc&lt;T&gt;(fn:()=>T):T',
