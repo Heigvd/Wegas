@@ -1315,7 +1315,9 @@ YUI.add('pact-level', function(Y) {
                         CLICK,
                         function() {
                             panel.destroy();
-                            if ('' + this.get('root').get('@pageId') === '11') {
+                            if (
+                                String(this.get('root').get('@pageId')) === '10'
+                            ) {
                                 this.showTutorial();
                             } else {
                                 this.focusCode();
