@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 enum STATUS {
     STOP = 'stop',
@@ -54,10 +54,7 @@ function promised<P, O>(Comp: React.ComponentType<O>) {
                 if (this.state.status === STATUS.STOP) {
                     return null;
                 }
-                if (typeof this.state.result === 'object') {
-                    return <Comp {...this.props} {...this.state.result} />;
-                }
-                return <Comp {...this.props} />;
+                return <Comp {...this.props} {...this.state.result} />;
             }
         }
         return Async;
