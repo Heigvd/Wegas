@@ -693,7 +693,7 @@ YUI.add('wegas-entity', function(Y) {
                 }
             },
             description: {
-                type: STRING,
+                type: [STRING, 'null'],
                 view: {
                     type: 'html',
                     label: 'Description'
