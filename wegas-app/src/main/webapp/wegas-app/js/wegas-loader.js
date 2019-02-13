@@ -1164,7 +1164,7 @@ YUI().use(function(Y) {
             },
             ace: {
                 async: false,
-                path: "ace/src-min/ace.js"
+                path: "ace/src-min-noconflict/ace.js"
             },
             pusher: {
                 fullpath: "//js.pusher.com/4.3.1/pusher.min.js"

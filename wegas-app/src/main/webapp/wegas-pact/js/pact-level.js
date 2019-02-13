@@ -6,7 +6,7 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-/* global ace, Log, Action, require */
+/* global ace, Log, Action */
 /**
  * @typedef SourceLocation
  * @property {{line: number, column:number}} start
@@ -544,18 +544,17 @@ YUI.add('pact-level', function(Y) {
                 this.isSuccessful = false;
             },
             doPersist: function() {
-                var msgSubject = Y.JSON.stringify(
+                var msgSubject =
                         (!this.isSuccessful || this.isRuntimeException
-                            ? "<span style='color:red'>"
-                            : "<span style='color:green'>") +
-                            'Exercice ' +
-                            (this.isRuntimeException
-                                ? 'ÉCHOUÉ avec EXCEPTION'
-                                : this.isSuccessful
-                                ? 'RÉUSSI'
-                                : 'ÉCHOUÉ') +
-                            '</span>'
-                    ),
+                            ? "<span class='history-error'>"
+                            : "<span class='history-success'>") +
+                        'Exercice ' +
+                        (this.isRuntimeException
+                            ? 'ÉCHOUÉ avec EXCEPTION'
+                            : this.isSuccessful
+                            ? 'RÉUSSI'
+                            : 'ÉCHOUÉ') +
+                        '</span>',
                     msgDate = 'Level ' + (currentLevel / 10).toFixed(1),
                     msgBody =
                         (this.isRuntimeException
@@ -655,7 +654,7 @@ YUI.add('pact-level', function(Y) {
                             code
                         );
                     }.bind(this),
-                    3e3
+                    5e3
                 );
                 this.runner.onmessage = function(m) {
                     clearTimeout(to);
@@ -909,7 +908,7 @@ YUI.add('pact-level', function(Y) {
              */
             highlight: function(loc, error) {
                 var session = this.mainEditorTab.aceField.session;
-                var Range = require('ace/range').Range;
+                var Range = ace.require('ace/range').Range;
                 if (this.marker) {
                     session.removeGutterDecoration(
                         this.cLine,
@@ -1316,7 +1315,9 @@ YUI.add('pact-level', function(Y) {
                         CLICK,
                         function() {
                             panel.destroy();
-                            if ('' + this.get('root').get('@pageId') === '11') {
+                            if (
+                                String(this.get('root').get('@pageId')) === '10'
+                            ) {
                                 this.showTutorial();
                             } else {
                                 this.focusCode();
@@ -1733,15 +1734,11 @@ YUI.add('pact-level', function(Y) {
                 },
                 left: {
                     label: 'left()',
-                    tooltip:
-                        'left()\n' +
-                        'Turn to the left without moving.',
+                    tooltip: 'left()\n' + 'Turn to the left without moving.',
                 },
                 right: {
                     label: 'right()',
-                    tooltip:
-                        'right()\n' +
-                        'Turn to the right without moving.',
+                    tooltip: 'right()\n' + 'Turn to the right without moving.',
                 },
                 npc: {
                     label: 'npc&lt;T&gt;(fn:()=>T):T',

@@ -1,4 +1,5 @@
-import React from 'react';
+import * as React from 'react';
+import 'brace';
 import AceEditor, { AceEditorProps } from 'react-ace';
 import 'brace/mode/javascript';
 import 'brace/theme/kuroir';

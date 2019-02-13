@@ -25,7 +25,7 @@
     "lodash-es": "^4.17.11",
     "prop-types": "^15.6.2",
     "react": "^16.6.3",
-    "react-ace": "^6.1.4",
+    "react-ace": "^6.4.0",
     "react-color": "^2.14.1",
     "react-dom": "^16.6.3",
     "react-sortable-hoc": "^0.8.3",
