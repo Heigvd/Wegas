@@ -54,6 +54,8 @@ YUI.add('wegas-mcq-selector', function(Y) {
                 this.input = "";
                 this.requireValidate = this.get('requireValidate');
                 this.showDescription = this.get('showDescription');
+                this.attemptsVarName = this.get("numberOfAttempts.evaluated").get("name");
+                this.isUpdatingCounter = false;
             },
 
             // Tells if the given string is only made of letters and numbers
@@ -151,16 +153,21 @@ YUI.add('wegas-mcq-selector', function(Y) {
                 }
             },
 
-            // Modifier une variable définie au niveau scénariste Wegas
-            affecterWegas: function(nomVariable, valeur){
-                Y.Wegas.Facade.Variable.script.remoteEval("Variable.find(gameModel, \"" + nomVariable + "\").setValue(self, " + valeur + ");", {
+            // Perform server-side incrementation of attempts counter
+            incrementAttempts: function(){
+                if (this.isUpdatingCounter){
+                    // Skip too frequent update requests
+                    return;
+                }
+                this.isUpdatingCounter = true;
+                Y.Wegas.Facade.Variable.script.remoteEval("Variable.find(gameModel, \"" + this.attemptsVarName + "\").add(self, 1);", {
                     on: {
                         success: Y.bind(function () {
-                            //alert(nomVariable + " OK!");
+                            this.isUpdatingCounter = false;
                         }, this),
                         failure: Y.bind(function () {
-                            alert("Erreur interne: Impossible de sauvegarder " + nomVariable + " !! \n Tenter de recommencer cet exercice en rechargeant la page (ctrl-R)");
-                            throw "Impossible de sauvegarder la variable " + nomVariable;
+                            this.isUpdatingCounter = false;
+                            //throw "Cannot save variable " + nomVariable;
                         }, this)
                     }
                 });
@@ -172,9 +179,7 @@ YUI.add('wegas-mcq-selector', function(Y) {
                     this.scanFolder();
                     this.get(CONTENTBOX).one(SELECTORBOX).empty();
                     this.updateCandidatesDisplay();
-                    var attempts = this.get("numberOfAttempts.evaluated"),
-                        nb = 1 + attempts.getInstance().get("value");
-                    this.affecterWegas(attempts.get("name"), nb);
+                    this.incrementAttempts();
                 }
             },
 
@@ -189,7 +194,14 @@ YUI.add('wegas-mcq-selector', function(Y) {
                         this.hideCandidates(SelectorStates.EDITING);
                         this.enableSubmitBtn();
                     } else {
-                        this.submitKeywords();
+                        // Wait for a typing pause of at least one second before using the search string:
+                        if (this.wait) {
+                            this.wait.cancel();
+                        }
+                        this.wait = Y.later(1000, this, function() {
+                            this.wait = null;
+                            this.submitKeywords();
+                        });
                     }
                 }
             },
