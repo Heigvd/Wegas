@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
 import commonView from '../HOC/commonView';
 import labeled from '../HOC/labeled';
@@ -8,16 +8,15 @@ import { css } from 'glamor';
 
 function filterChildren<P extends { editKey: string }>(
     properties: string[],
-    children?: (React.ComponentType<P>)[]
+    children?: React.ReactElement<P>[]
 ) {
     const child: React.ReactElement<P>[] = [];
-    React.Children.forEach(children, c => {
+    React.Children.forEach(children!, c => {
         if (
-            properties.includes(
-                (c as React.ReactElement<P>).props.editKey
-            )
+            React.isValidElement<P>(c) &&
+            properties.includes(c.props.editKey)
         ) {
-            child.push(c as React.ReactElement<P>);
+            child.push(c);
         }
     });
     return child;

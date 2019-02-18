@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import {css} from 'glamor';
 import FormStyles from './form-styles';
 import commonView from '../HOC/commonView';
@@ -18,7 +18,7 @@ const arrayStyle = css({
 });
 
 const binStyle = css({
-    //alignSelf: 'center'
+    // alignSelf: 'center'
     // opacity: 0,
     // transition: 'opacity .3s 100ms',
     // 'div:hover > &': {

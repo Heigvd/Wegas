@@ -1,10 +1,9 @@
 import * as React from 'react';
-import {LangConsumer} from '../LangContext';
-import {Schema} from 'jsoninput';
-import {infoStyle} from './commonView';
+import { LangConsumer } from '../LangContext';
+import { Schema } from 'jsoninput';
+import { infoStyle } from './commonView';
 //import {css} from 'glamor';
 //import IconButton from '../Components/IconButton';
-
 
 interface Translation {
     translation: string;
@@ -15,7 +14,7 @@ interface TranslatableProps {
     value: {
         [code: string]: Translation;
     };
-    onChange: (value: {[code: string]: Translation}) => void;
+    onChange: (value: { [code: string]: Translation }) => void;
     view: Schema['view'] & {
         label?: string;
         readOnly: boolean;
@@ -35,7 +34,6 @@ export default function translatable<P extends EndProps>(
     Comp: React.ComponentType<P>
 ): React.SFC<TranslatableProps & P> {
     function Translated(props: TranslatableProps) {
-
         if (!props.value) {
             return null;
         }
@@ -50,11 +48,9 @@ export default function translatable<P extends EndProps>(
                             status: ""
                         }
                     };
-        
+
                     props.onChange(newValue);
                 }
-        
-        
                 function outdate(code: string) {
                     const value = props.value[code] ? props.value[code].translation : "";
                     const newValue = {
@@ -64,12 +60,9 @@ export default function translatable<P extends EndProps>(
                             status: "outdated:manual"
                         }
                     };
-        
                     props.onChange(newValue);
                 }
-        
-        
-        
+
                 function markAsMajor(code: string) {
                     let newValue = {};
                     for (let lang in props.value) {
@@ -79,17 +72,19 @@ export default function translatable<P extends EndProps>(
                         }
                     };
                     newValue[code].status = "";
-        
+
                     props.onChange(newValue);
                 }
                 */
 
         return (
             <LangConsumer>
-                {({lang, availableLang}) => {
+                {({ lang, availableLang }) => {
                     // Updade label
                     const curCode = (
-                        availableLang.find(l => l.code.toUpperCase() === lang.toUpperCase()) || {
+                        availableLang.find(
+                            l => l.code.toUpperCase() === lang.toUpperCase()
+                        ) || {
                             code: '',
                         }
                     ).code;
@@ -98,54 +93,60 @@ export default function translatable<P extends EndProps>(
                     let status;
 
                     if (props.value.hasOwnProperty(lang.toUpperCase())) {
-                        translation = props.value[lang.toUpperCase()].translation;
+                        translation =
+                            props.value[lang.toUpperCase()].translation;
                         status = props.value[lang.toUpperCase()].status;
                     } else if (props.value.hasOwnProperty(lang.toLowerCase())) {
-                        translation = props.value[lang.toLowerCase()].translation;
+                        translation =
+                            props.value[lang.toLowerCase()].translation;
                         status = props.value[lang.toLowerCase()].status;
                     }
-
 
                     const view = {
                         ...props.view,
                         label: (
                             <span>
-                                {(props.view || {label: ''}).label}{' '}
+                                {(props.view || { label: '' }).label}{' '}
                                 <span className={String(infoStyle)}>
-                                    [{curCode.toLowerCase()}] {status ? "(" + status + ")" : ""}
+                                    [{curCode.toLowerCase()}]{' '}
+                                    {status ? '(' + status + ')' : ''}
                                 </span>
                             </span>
                         ),
                     };
 
-                    const editor =
+                    const editor = (
+                        // @ts-ignore https://github.com/Microsoft/TypeScript/issues/28748
                         <Comp
                             {...props}
                             value={translation}
                             view={view}
                             onChange={value => {
-                                const status = props.value[lang] ? props.value[lang].status : "";
+                                const status = props.value[lang]
+                                    ? props.value[lang].status
+                                    : '';
                                 const v = {
                                     ...props.value,
                                     [lang]: {
                                         translation: value,
-                                        status: status
-                                    }
+                                        status: status,
+                                    },
                                 };
                                 props.onChange(v);
                             }}
                         />
+                    );
                     return editor;
                     /*
                     const readOnly = view.readOnly;
                                         const orangeStyle = css({
                                             color: "#F57C00"
                                         });
-                    
+
                                         const greenStyle = css({
                                             color: "#388E3C"
                                         });
-                    
+
                                         const majorButton = !readOnly ?
                                             <IconButton
                                                 icon={[
@@ -162,7 +163,7 @@ export default function translatable<P extends EndProps>(
                                                     markAsMajor(curCode);
                                                 }}
                                             /> : "";
-                    
+
                                         const outdateButton = !readOnly ?
                                             <IconButton
                                                 className='wegas-advanced-feature'
