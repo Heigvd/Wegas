@@ -59,6 +59,7 @@ interface ITreeSelectProps extends WidgetProps.BaseProps {
         additional: Item[];
         classFilter?: string | string[];
         readOnly?: boolean;
+        openIfEmpty?: boolean;
         // maxLevel?: number;
         // root?: string;
         // selectableLevels?: number[];
@@ -197,7 +198,7 @@ class TreeVariableSelect extends React.Component<
         super(props);
         this.state = {
             search: '',
-            searching: false,
+            searching: Boolean(props.view.openIfEmpty) && !props.value,
         };
         this.handleOnSelect = this.handleOnSelect.bind(this);
         this.items = genItems(props);
@@ -274,7 +275,7 @@ class TreeVariableSelect extends React.Component<
                             }
                             placeholder="Please select ..."
                             type="text"
-                            readOnly={true}
+                            readOnly
                         />
                     </div>
                 </div>
