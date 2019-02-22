@@ -253,7 +253,7 @@ public class Reply extends AbstractEntity implements DatedEntity {
         }
     }
 
-    public void setAnswer(String answer) {
+    public void setAnswer(Object answer) {
         // Make Jackson happy
     }
 
@@ -265,7 +265,7 @@ public class Reply extends AbstractEntity implements DatedEntity {
         }
     }
 
-    public void setIgnorationAnswer(String answer) {
+    public void setIgnorationAnswer(Object answer) {
         // Make Jackson happy
     }
 

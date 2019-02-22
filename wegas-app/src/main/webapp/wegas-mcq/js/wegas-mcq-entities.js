@@ -1117,18 +1117,21 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             answer: {
                 type: OBJECT,
+                "transient": true,
                 view: {
                     type: HIDDEN
                 }
             },
             ignorationAnswer: {
                 type: OBJECT,
+                "transient": true,
                 view: {
                     type: HIDDEN
                 }
             },
             files: {
                 type: ARRAY,
+                "transient": true,
                 view: {
                     type: HIDDEN
                 }
