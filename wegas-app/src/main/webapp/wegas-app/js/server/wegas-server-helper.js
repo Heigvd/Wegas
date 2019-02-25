@@ -62,10 +62,10 @@ var WegasHelper = (function() {
         } else {
             for (var i = 0; i < msgs.length; i++) {
                 var curmsg = msgs[i],
-                    subj = curmsg.getSubject() && curmsg.getSubject().translateOrEmpty(self),
-                    date = curmsg.getDate() && curmsg.getDate().translateOrEmpty(self),
-                    body = curmsg.getBody() && curmsg.getBody().translateOrEmpty(self),
-                    from = curmsg.getFrom() && curmsg.getFrom().translateOrEmpty(self);
+                    subj = curmsg.getSubject() && I18n.t(curmsg.getSubject()),
+                    date = curmsg.getDate() && I18n.t(curmsg.getDate()),
+                    body = curmsg.getBody() && I18n.t(curmsg.getBody()),
+                    from = curmsg.getFrom() && I18n.t(curmsg.getFrom());
 
                 if (from && from.length) {
                     content += "<b>" + subj + "</b><br/>";
@@ -89,7 +89,7 @@ var WegasHelper = (function() {
 
     // Text field presentation function: returns object { title, body, empty }
     function getTextContent(textInstance, textName, teamName) {
-        var body = textInstance.getTrValue().translateOrEmpty(self),
+        var body = I18n.t(textInstance.getTrValue()),
             empty = body.length === 0 || !isModifiedText(textInstance, body);
         return {"title": teamName + ": " + textName, "body": body, "empty": empty};
     }
@@ -97,7 +97,7 @@ var WegasHelper = (function() {
 
     // Tells if given text instance has been edited, i.e. if it's different from its default value:
     function isModifiedText(textInstance, value) {
-        var defVal = textInstance.getDescriptor().getDefaultInstance().getTrValue().translateOrEmpty(self);
+        var defVal = I18n.t(textInstance.getDescriptor().getDefaultInstance().getTrValue());
         return !value.trim().equals(defVal.trim());
     }
 

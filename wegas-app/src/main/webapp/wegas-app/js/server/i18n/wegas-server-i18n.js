@@ -11,7 +11,7 @@
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
 
-/*global Variable, gameModel, self */
+/*global Variable, gameModel, self, I18nFacade */
 var i18nOrdinate = (function(module) {
     return module;
 }(i18nOrdinate || {})),
@@ -138,7 +138,7 @@ var i18nOrdinate = (function(module) {
             if (typeof key === "string") {
                 return translateKey(key, object, code);
             } else {
-                return translateObject(key, object, code);
+                return I18nFacade.interpolate(translateObject(key, object, code), self);
             }
         }
 

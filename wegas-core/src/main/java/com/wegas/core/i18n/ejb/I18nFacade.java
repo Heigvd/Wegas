@@ -8,11 +8,14 @@
 package com.wegas.core.i18n.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.api.I18nFacadeI;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.ScriptFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.WegasAbstractFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.i18n.deepl.Deepl;
 import com.wegas.core.i18n.deepl.DeeplTranslations;
 import com.wegas.core.i18n.deepl.DeeplUsage;
@@ -24,12 +27,15 @@ import com.wegas.core.i18n.rest.ScriptUpdate;
 import com.wegas.core.i18n.rest.TranslationUpdate;
 import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.merge.utils.MergeHelper.MergeableVisitor;
+import com.wegas.core.merge.utils.WegasEntitiesHelper;
+import com.wegas.core.merge.utils.WegasEntityFields;
 import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
@@ -55,10 +61,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.naming.NamingException;
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
@@ -73,7 +82,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class I18nFacade extends WegasAbstractFacade {
+public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
 
     private static final Logger logger = LoggerFactory.getLogger(I18nFacade.class);
 
@@ -82,6 +91,9 @@ public class I18nFacade extends WegasAbstractFacade {
 
     @Inject
     private ScriptFacade scriptFacade;
+
+    @Inject
+    private VariableDescriptorFacade variableDescriptorFacade;
 
     public static enum UpdateType {
         /**
@@ -1420,5 +1432,89 @@ public class I18nFacade extends WegasAbstractFacade {
 
     public void importTranslations(Mergeable target, Mergeable source, Mergeable sourceRef, String languageCode) {
         MergeHelper.visitMergeable(target, Boolean.TRUE, new TranslationsImporter(languageCode, this), source, sourceRef);
+    }
+
+    @Override
+    public String interpolate(String str, Player player) {
+        try {
+            GameModel gameModel = player.getGameModel();
+
+            String p = "\\{\\{([\\w _\\.\\(\\)]*)\\}\\}";
+            Pattern pattern = Pattern.compile(p);
+            Matcher matcher = pattern.matcher(str);
+
+            while (matcher.find()) {
+                String value = matcher.group(1);
+                String[] params = value.split("\\.");
+                String param = params[0];
+                Object entity = null;
+
+                Matcher m2 = Pattern.compile("Variable\\((.*)\\)").matcher(param);
+                if (m2.find()) {
+                    entity = variableDescriptorFacade.find(gameModel, m2.group(1));
+                } else {
+                    m2 = Pattern.compile("VariableInstance\\((.*)\\)").matcher(param);
+                    if (m2.find()) {
+                        entity = variableDescriptorFacade.find(gameModel, m2.group(1)).getInstance(player);
+                    } else if ("Player".equals(param)) {
+                        entity = player;
+                    } else if ("Team".equals(param)) {
+                        entity = player.getTeam();
+                    } else if ("Game".equals(param)) {
+                        entity = player.getGame();
+                    } else if ("GameModel".equals(param)) {
+                        entity = gameModel;
+                    }
+                }
+
+                if (entity != null) {
+                    for (int i = 1; i < params.length; i++) {
+                        param = params[i];
+                        if (entity instanceof Mergeable) {
+                            Mergeable m = (Mergeable) entity;
+                            WegasEntityFields fields = WegasEntitiesHelper.getEntityIterator(m.getClass());
+                            WegasFieldProperties field = fields.getField(param);
+                            entity = field.getPropertyDescriptor().getReadMethod().invoke(entity);
+                        } else if (entity instanceof List) {
+                            List l = (List) entity;
+                            entity = l.get(Integer.parseInt(param, 10));
+                        } else if (entity instanceof Map) {
+                            Map map = (Map) entity;
+                            entity = map.get(param);
+                        }
+                    }
+
+                    if (entity != null) {
+                        String newValue;
+                        if (entity instanceof TranslatableContent) {
+                            newValue = interpolate(((TranslatableContent) entity).translateOrEmpty(player), player);
+                        } else {
+                            newValue = entity.toString();
+                        }
+
+                        str = matcher.replaceFirst(newValue);
+                        matcher.reset(str);
+                    }
+
+                }
+            }
+
+            return str;
+
+        } catch (WegasNoResultException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            throw WegasErrorMessage.error("Something went wrong: " + ex);
+        }
+    }
+
+    /**
+     * @return Looked-up EJB
+     */
+    public static I18nFacade lookup() {
+        try {
+            return Helper.lookupBy(I18nFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving var desc facade", ex);
+            return null;
+        }
     }
 }

@@ -8,6 +8,7 @@
 package com.wegas.app.pdf.uicomponent;
 
 import com.wegas.app.pdf.helper.UIHelper;
+import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -101,9 +102,18 @@ public class UIVariableDescriptor extends UIComponentBase {
     Boolean editorMode;
     Boolean defaultValues;
 
+    private I18nFacade i18nFacade;
+
     @Override
     public String getFamily() {
         return "com.wegas.app.pdf.uicomponent.VariableDescriptor";
+    }
+
+    private I18nFacade getI18nFacade() {
+        if (i18nFacade == null) {
+            i18nFacade = I18nFacade.lookup();
+        }
+        return i18nFacade;
     }
 
     /**
@@ -213,7 +223,7 @@ public class UIVariableDescriptor extends UIComponentBase {
         if (editorMode) {
             title = vDesc.getEditorLabel();
         } else {
-            title = vDesc.getLabel().translateOrEmpty(player);
+            title = getI18nFacade().interpolate(vDesc.getLabel().translateOrEmpty(player), player);
         }
 
         writer.write("<a name=\"vd" + vDesc.getId() + "\" />");
@@ -291,7 +301,7 @@ public class UIVariableDescriptor extends UIComponentBase {
         //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
         encodeBase(context, writer, obj, editorMode);
         TextInstance instance = obj.getInstance(defaultValues, player);
-        UIHelper.printPropertyTextArea(context, writer, "Value", instance.getTrValue().translateOrEmpty(player), false, true);
+        UIHelper.printPropertyTextArea(context, writer, "Value", getI18nFacade().interpolate(instance.getTrValue().translateOrEmpty(player), player), false, true);
         UIHelper.endDiv(writer);
     }
 
@@ -309,7 +319,7 @@ public class UIVariableDescriptor extends UIComponentBase {
         encodeBase(context, writer, obj, editorMode);
 
         StringInstance instance = obj.getInstance(defaultValues, player);
-        UIHelper.printPropertyTextArea(context, writer, "Value", instance.getTrValue().translateOrEmpty(player), false, true);
+        UIHelper.printPropertyTextArea(context, writer, "Value", getI18nFacade().interpolate(instance.getTrValue().translateOrEmpty(player), player), false, true);
         UIHelper.endDiv(writer);
     }
 
@@ -330,7 +340,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             encodeBase(context, writer, task, editorMode);
 
-            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, task.getDescription().translateOrEmpty(player), false, editorMode);
+            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, getI18nFacade().interpolate(task.getDescription().translateOrEmpty(player), player), false, editorMode);
 
             if (editorMode) {
                 if (task.getIndex() != null) {
@@ -402,7 +412,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             encodeBase(context, writer, resource, editorMode);
             UIHelper.printProperty(context, writer, UIHelper.TEXT_LABEL, resource.getLabel());
 
-            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, resource.getDescription().translateOrEmpty(player), false, editorMode);
+            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, getI18nFacade().interpolate(resource.getDescription().translateOrEmpty(player), player), false, editorMode);
 
             /*if (!instance.getSkillsets().isEmpty()) {
                 UIHelper.printProperty(context, writer, UIHelper.TEXT_MAIN_SKILL, instance.getMainSkill() + " (lvl: " + resource.getDefaultInstance().getMainSkillLevel() + ")");
@@ -487,7 +497,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             encodeBase(context, writer, question, editorMode);
 
-            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, question.getDescription().translateOrEmpty(player), false, editorMode);
+            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, getI18nFacade().interpolate(question.getDescription().translateOrEmpty(player), player), false, editorMode);
 
             if (editorMode) {
                 UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, instance.getActive());
@@ -534,7 +544,7 @@ public class UIVariableDescriptor extends UIComponentBase {
 
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_COLUMN);
 
-            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, question.getDescription().translateOrEmpty(player), false, editorMode);
+            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, getI18nFacade().interpolate(question.getDescription().translateOrEmpty(player), player), false, editorMode);
 
             if (editorMode) {
                 UIHelper.printProperty(context, writer, "Min: ", question.getMinReplies());
@@ -585,7 +595,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             encodeBase(context, writer, choice, editorMode);
 
-            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, choice.getDescription().translateOrEmpty(player), false, editorMode);
+            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, getI18nFacade().interpolate(choice.getDescription().translateOrEmpty(player), player), false, editorMode);
 
             if (editorMode) {
                 UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, instance.getActive());
@@ -698,10 +708,10 @@ public class UIVariableDescriptor extends UIComponentBase {
 
         for (Message msg : instance.getSortedMessages()) {
             UIHelper.printMessage(context, writer, "",
-                    msg.getFrom().translateOrEmpty(player),
-                    msg.getSubject().translateOrEmpty(player),
-                    msg.getDate().translateOrEmpty(player),
-                    msg.getBody().translateOrEmpty(player),
+                    getI18nFacade().interpolate(msg.getFrom().translateOrEmpty(player), player),
+                    getI18nFacade().interpolate(msg.getSubject().translateOrEmpty(player), player),
+                    getI18nFacade().interpolate(msg.getDate().translateOrEmpty(player), player),
+                    getI18nFacade().interpolate(msg.getBody().translateOrEmpty(player), player),
                     msg.getToken(), msg.getAttachments());
         }
 
