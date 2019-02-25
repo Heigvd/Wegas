@@ -8,6 +8,7 @@
 package com.wegas.app.pdf.uicomponent;
 
 import com.wegas.app.pdf.helper.UIHelper;
+import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.Reply;
 import com.wegas.mcq.persistence.Result;
@@ -21,7 +22,7 @@ import javax.faces.context.ResponseWriter;
 /**
  *
  * Faces component that print a CHoice's Result as xHTML.
- *
+ * <p>
  * <pre>
  * <b>Usage:</b>
  * &lt;<b>Result</b> <b>value</b>="#{the Result object}"
@@ -44,6 +45,15 @@ import javax.faces.context.ResponseWriter;
 @FacesComponent("com.wegas.app.pdf.uicomponent.Result")
 public class UIResult extends UIComponentBase {
 
+    private I18nFacade i18nFacade;
+
+    private I18nFacade getI18nFacade() {
+        if (i18nFacade == null) {
+            i18nFacade = I18nFacade.lookup();
+        }
+        return i18nFacade;
+    }
+
     public UIResult() {
         super();
     }
@@ -65,6 +75,7 @@ public class UIResult extends UIComponentBase {
      * Print Choice[*]Descriptor Result Please use encodeAll();
      *
      * @param context
+     *
      * @throws IOException
      */
     @Override
@@ -93,7 +104,7 @@ public class UIResult extends UIComponentBase {
         if (editorMode || hasBeenSelected) {
             String title;
             if (result.getChoiceDescriptor().getLabel() != null && !result.getChoiceDescriptor().getLabel().translateOrEmpty(player).trim().isEmpty()) {
-                title = result.getChoiceDescriptor().getLabel().translateOrEmpty(player);
+                title = getI18nFacade().interpolate(result.getChoiceDescriptor().getLabel().translateOrEmpty(player), player);
             } else {
                 title = UIHelper.TEXT_IMPACT_TEXT;
             }
@@ -101,7 +112,7 @@ public class UIResult extends UIComponentBase {
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             UIHelper.printText(context, writer, title, UIHelper.CSS_CLASS_VARIABLE_TITLE);
 
-            UIHelper.printTextArea(context, writer, result.getAnswer().translateOrEmpty(player), UIHelper.CSS_CLASS_PROPERTY_VALUE_TEXTAREA, false);
+            UIHelper.printTextArea(context, writer, getI18nFacade().interpolate(result.getAnswer().translateOrEmpty(player), player), UIHelper.CSS_CLASS_PROPERTY_VALUE_TEXTAREA, false);
             UIHelper.endDiv(writer);
             //UIHelper.printPropertyTextArea(context, writer, title, result.getAnswer(), false, editorMode);
         }

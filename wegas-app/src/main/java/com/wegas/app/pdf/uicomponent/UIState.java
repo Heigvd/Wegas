@@ -8,6 +8,7 @@
 package com.wegas.app.pdf.uicomponent;
 
 import com.wegas.app.pdf.helper.UIHelper;
+import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.statemachine.DialogueState;
 import com.wegas.core.persistence.variable.statemachine.DialogueTransition;
@@ -43,6 +44,7 @@ public class UIState extends UIComponentBase {
 
     private Boolean editorMode;
     private Player player;
+    private I18nFacade i18nFacade;
 
     public UIState() {
         super();
@@ -55,6 +57,13 @@ public class UIState extends UIComponentBase {
         getAttributes().put("player", player);
         getAttributes().put("editorMode", editorMode);
         getAttributes().put("defaultValues", defaultValues);
+    }
+
+    private I18nFacade getI18nFacade() {
+        if (i18nFacade == null) {
+            i18nFacade = I18nFacade.lookup();
+        }
+        return i18nFacade;
     }
 
     @Override
@@ -86,7 +95,7 @@ public class UIState extends UIComponentBase {
         UIHelper.printProperty(context, writer, UIHelper.TEXT_NAME, state.getLabel());
 
         if (state instanceof DialogueState) {
-            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_TEXT, ((DialogueState) state).getText().translateOrEmpty(player), false, editorMode);
+            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_TEXT, getI18nFacade().interpolate(((DialogueState) state).getText().translateOrEmpty(player), player), false, editorMode);
         }
 
         UIHelper.printPropertyImpactScript(context, writer, UIHelper.TEXT_ON_ENTER_IMPACT, state.getOnEnterEvent());
@@ -114,7 +123,7 @@ public class UIState extends UIComponentBase {
         UIHelper.printProperty(context, writer, UIHelper.TEXT_NEXT_STATE, transition.getNextStateId());
 
         if (transition instanceof DialogueTransition) {
-            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_TEXT, ((DialogueTransition) transition).getActionText().translateOrEmpty(player), true, editorMode);
+            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_TEXT, getI18nFacade().interpolate(((DialogueTransition) transition).getActionText().translateOrEmpty(player), player), true, editorMode);
         }
 
         UIHelper.printPropertyScript(context, writer, UIHelper.TEXT_CONDITION, transition.getTriggerCondition());

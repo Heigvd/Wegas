@@ -18,6 +18,7 @@ import com.wegas.core.exception.WegasErrorMessageManager;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -145,6 +146,9 @@ public class ScriptFacade extends WegasAbstractFacade {
     @Inject
     private ReviewingFacade reviewingFacade;
 
+    @Inject
+    private I18nFacade i18nFacade;
+
     /**
      *
      */
@@ -198,6 +202,7 @@ public class ScriptFacade extends WegasAbstractFacade {
         bindings.put("gameModel", player.getGameModel());       // Inject current gameModel
 
         putBinding(bindings, "GameModelFacade", GameModelFacadeI.class, gameModelFacade);
+        putBinding(bindings, "I18nFacade", I18nFacadeI.class, i18nFacade);
 
         putBinding(bindings, "Variable", VariableDescriptorFacadeI.class, variableDescriptorFacade);
         putBinding(bindings, "VariableDescriptorFacade", VariableDescriptorFacadeI.class, variableDescriptorFacade);

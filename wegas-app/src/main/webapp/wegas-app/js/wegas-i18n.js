@@ -97,6 +97,56 @@ YUI.add("wegas-i18n", function(Y) {
             return str;
         }
 
+        function interpolateParam(str, param) {
+            var params = param.split(".");
+            if (params && params.length) {
+                var value;
+                var match;
+                if (match = /Variable\((.*)\)/.exec(params[0])) {
+                    value = Y.Wegas.Facade.Variable.cache.find("name", match[1]);
+                } else if (match = /VariableInstance\((.*)\)/.exec(params[0])) {
+                    value = Y.Wegas.Facade.Variable.cache.find("name", match[1]).getInstance();
+                } else if (params[0] === "Player") {
+                    value = Y.Wegas.Facade.Game.cache.getCurrentPlayer();
+                } else if (params[0] === "Team") {
+                    value = Y.Wegas.Facade.Game.cache.getCurrentTeam();
+                } else if (params[0] === "Game") {
+                    value = Y.Wegas.Facade.Game.cache.getCurrentGame();
+                } else if (params[0] === "GameModel") {
+                    value = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
+                }
+
+                if (value) {
+                    for (var i = 1; i < params.length; i++) {
+                        if (value) {
+                            if (value.get) {
+                                value = value.get(params[i]);
+                            } else {
+                                value = value[params[i]];
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+                }
+
+                if (value) {
+                    if (value instanceof Y.Wegas.persistence.TranslatableContent) {
+                        return I18n.t(value);
+                    } else {
+                        return value;
+                    }
+                }
+            }
+
+            return str;
+        }
+
+        function interpolate(str) {
+            var pattern = /\{\{([a-zA-Z0-9 _\.\(\)]*)\}\}/g;
+            return str.replace(pattern, interpolateParam);
+        }
+
         function currentNumericLocale() {
             return (Y.Wegas.I18n._currentNumericLocale ? Y.Wegas.I18n._currentNumericLocale : currentLocale());
         }
@@ -146,7 +196,7 @@ YUI.add("wegas-i18n", function(Y) {
             if (typeof key === "string") {
                 return translateFromTable(key, args);
             } else if (typeof key === "object") {
-                return translateFromObject(key, args);
+                return interpolate(translateFromObject(key, args));
             }
         }
 
