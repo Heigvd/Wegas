@@ -9,6 +9,10 @@ package com.wegas.core.persistence.game;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
 import javax.persistence.*;
@@ -19,74 +23,76 @@ import javax.persistence.*;
  */
 @Embeddable
 @JsonIgnoreProperties(value = {"imageUri"})
-public class GameModelProperties implements Serializable {
+public class GameModelProperties implements Serializable, Mergeable {
 
+    @Override
+    public String getRefId() {
+        return "GameModelProperties";
+    }
+
+    @Override
+    public void setRefId(String refId) {
+    }
+    
     private static final long serialVersionUID = 1L;
     /**
      *
      */
+    @WegasEntityProperty
     private Boolean freeForAll = false;
     /**
      *
      */
+    @WegasEntityProperty
     private Boolean guestAllowed = false;
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
+    @WegasEntityProperty
     private String pagesUri = "";
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
+    @WegasEntityProperty
     private String cssUri = "";
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
+    @WegasEntityProperty
     private String websocket = "";
 
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
+    @WegasEntityProperty
     private String logID = "";
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
+    @WegasEntityProperty
     private String scriptUri = "";
 
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
+    @WegasEntityProperty
     private String clientScriptUri = "";
     /**
      *
      */
+    @WegasEntityProperty
     private String iconUri = "";
 
     /**
      *
      */
     public GameModelProperties() {
-    }
-
-    /**
-     *
-     * @param other
-     */
-    public void merge(GameModelProperties other) {
-        this.setFreeForAll(other.getFreeForAll());
-        this.setGuestAllowed(other.getGuestAllowed());
-        this.setPagesUri(other.getPagesUri());
-        this.setIconUri(other.getIconUri());
-        this.setWebsocket(other.getWebsocket());
-        this.setLogID(other.getLogID());
-        this.setCssUri(other.getCssUri());
-        this.setScriptUri(other.getScriptUri());
-        this.setClientScriptUri(other.getClientScriptUri());
     }
 
     /**
@@ -224,6 +230,22 @@ public class GameModelProperties implements Serializable {
      */
     public void setClientScriptUri(String clientScriptUri) {
         this.clientScriptUri = clientScriptUri;
+    }
+
+    @Override
+    public <T extends Mergeable> T getMergeableParent() {
+        return null;
+    }
+
+    @Override
+    public boolean belongsToProtectedGameModel() {
+        return false;
+    }
+
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return Visibility.INHERITED;
     }
 
 }

@@ -152,7 +152,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
         state1.setOnEnterEvent(new Script("Variable.find(gameModel, \"testnumber\").getInstance(self).value += 5"));
         State state2 = new State();
         state2.setOnEnterEvent(new Script("Variable.find(gameModel, \"testnumber\").getInstance(self).value += 10"));
-        sm.setStates(toMap(toList(1L, 2L, 3L), toList(state0, state1, state2)));
+        sm.setStatesFromMap(toMap(toList(1L, 2L, 3L), toList(state0, state1, state2)));
         Transition t1 = new Transition();
         t1.setPreStateImpact(new Script("Variable.find(gameModel, \"testnumber\").getInstance(self).value +=1"));
         Transition t2 = new Transition();
@@ -190,13 +190,13 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         DialogueState ds1 = new DialogueState();
         DialogueState ds2 = new DialogueState();
-        ds1.setText(TranslatableContent.build("def", "Hello"));
-        ds2.setText(TranslatableContent.build("def", "World"));
-        dial.setStates(toMap(toList(1L, 2L), toList(ds1, ds2)));
+        ds1.setText(TranslatableContent.build("en", "Hello"));
+        ds2.setText(TranslatableContent.build("en", "World"));
+        dial.setStatesFromMap(toMap(toList(1L, 2L), toList(ds1, ds2)));
 
         DialogueTransition s1ToS2 = new DialogueTransition();
         s1ToS2.setNextStateId(2L);
-        s1ToS2.setActionText(TranslatableContent.build("def", ", "));
+        s1ToS2.setActionText(TranslatableContent.build("en", ", "));
         ds1.setTransitions(toList(s1ToS2));
         variableDescriptorFacade.create(scenario.getId(), dial);
         gameModelFacade.reset(scenario.getId());
@@ -227,7 +227,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
         State state2 = new State();
         //Second state will read an object parameter
         state2.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 10)"));
-        sm.setStates(toMap(toList(1L, 2L, 3L), toList(state0, state1, state2)));
+        sm.setStatesFromMap(toMap(toList(1L, 2L, 3L), toList(state0, state1, state2)));
 
         Transition t1 = new Transition();
         t1.setTriggerCondition(new Script("Event.fired('event')"));
@@ -288,7 +288,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
         State state2 = new State();
         //Second state will read an object parameter
         state2.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 10)"));
-        sm.setStates(toMap(toList(1L, 2L, 3L), toList(state0, state1, state2)));
+        sm.setStatesFromMap(toMap(toList(1L, 2L, 3L), toList(state0, state1, state2)));
 
         Transition t1 = new Transition();
         t1.setTriggerCondition(new Script("Event.fired('event') && Event.fired('event')"));
@@ -364,7 +364,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
         State state4 = new State();
         state4.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 100)"));
 
-        sm.setStates(toMap(toList(1L, 2L, 3L, 4L), toList(state1, state2, state3, state4)));
+        sm.setStatesFromMap(toMap(toList(1L, 2L, 3L, 4L), toList(state1, state2, state3, state4)));
 
         Transition t1 = new Transition();
         t1.setTriggerCondition(new Script("Event.fired('event') && Event.fired('event2')"));
@@ -452,7 +452,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
         State state4 = new State();
         state4.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 100)"));
 
-        sm.setStates(toMap(toList(1L, 2L, 3L, 4L), toList(state1, state2, state3, state4)));
+        sm.setStatesFromMap(toMap(toList(1L, 2L, 3L, 4L), toList(state1, state2, state3, state4)));
 
         Transition t1 = new Transition();
         t1.setTriggerCondition(new Script("Event.fired('event') || Event.fired('event2')"));

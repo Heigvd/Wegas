@@ -231,7 +231,7 @@ public class ScopeTest extends AbstractArquillianTest {
         }
 
         // find Instances
-        Assert.assertEquals(pScoped.getDefaultInstance(), pScoped.findInstance(tScoped.getDefaultInstance())); // default instances
+        Assert.assertEquals(pScoped.getDefaultInstance(), pScoped.findInstance(tScoped.getDefaultInstance(), null)); // default instances
 
         login(user);
         TextInstance instance = pScoped.getInstance(player);

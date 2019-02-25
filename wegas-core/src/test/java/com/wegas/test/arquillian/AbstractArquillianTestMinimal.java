@@ -32,6 +32,7 @@ import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.test.TestHelper;
+import com.wegas.test.WegasFactory;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -114,6 +115,9 @@ public abstract class AbstractArquillianTestMinimal {
 
     @Inject
     private PopulatorScheduler populatorScheduler;
+
+    @Inject
+    protected WegasFactory wegasFactory;
 
     @Rule
     public TestName testName = new TestName();

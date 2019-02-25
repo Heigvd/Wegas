@@ -173,7 +173,19 @@ angular.module('private.scenarist.directives', [
             }
             ctrl.scenarios = [];
             ctrl.rawScenarios = [];
+            ctrl.models = [];
+
             ctrl.loading = true;
+            ctrl.modelLoading = true;
+
+            ScenariosModel.getModels('LIVE').then(function(response) {
+                ctrl.models = response.data;
+                ScenariosModel.getModels('BIN').then(function(response) {
+                    ctrl.models = ctrl.models.concat(response.data);
+                    ctrl.modelLoading = false;
+                });
+            });
+
             ScenariosModel.getScenarios('LIVE').then(function(response) {
                 ctrl.rawScenarios = $filter('filter')(response.data, {canEdit: true}) || [];
                 if (ctrl.mefirst && ctrl.username.length > 0) {
@@ -203,6 +215,11 @@ angular.module('private.scenarist.directives', [
                 // Keep the "loading" indicator on screen as long as possible:
                 ctrl.loading = false;
             });
+        };
+
+        ctrl.getModelName = function(modelId) {
+            var m = $filter('filter')(ctrl.models, {id: modelId});
+            return (m && m.length > 0) ? m[0].name : "";
         };
 
         ctrl.archiveScenario = function(scenario) {
@@ -339,11 +356,17 @@ angular.module('private.scenarist.directives', [
                     scope.loadingScenarios = true;
                     ScenariosModel.getScenarios("LIVE").then(function(response) {
                         if (!response.isErroneous()) {
-                            scope.loadingScenarios = false;
                             var expression = {canDuplicate: true},
                                 filtered = $filter('filter')(response.data, expression) || [];
-                            scope.rawscenariomenu = $filter('orderBy')(filtered, 'name');
-                            updateDisplay(scope.rawscenariomenu);
+                            ScenariosModel.getModels("LIVE").then(function(response) {
+                                if (!response.isErroneous()) {
+                                    scope.loadingScenarios = false;
+                                    var expr = {canInstantiate: true},
+                                        filtered2 = $filter("filter")(response.data, expr) || [];
+                                    scope.rawscenariomenu = $filter('orderBy')(filtered.concat(filtered2), 'name');
+                                    updateDisplay(scope.rawscenariomenu);
+                                }
+                            });
                         }
                     });
                 };
@@ -424,6 +447,8 @@ angular.module('private.scenarist.directives', [
             scope: {
                 scenarios: '=',
                 archive: '=',
+                modelname: '=',
+                modelloading: '=',
                 search: '=',
                 duplicate: '=',
                 duplicating: '=',
@@ -440,6 +465,8 @@ angular.module('private.scenarist.directives', [
             scope: {
                 scenario: '=',
                 archive: '=',
+                modelname: '=',
+                modelloading: '=',
                 duplicate: '=',
                 duplicating: '=',
                 user: '=',

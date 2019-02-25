@@ -153,6 +153,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     },
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
+                    refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                     descriptorId: IDATTRDEF,
                     active: {
                         type: BOOLEAN,
@@ -172,20 +173,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                      }
                      },
                      */
-                    assignments: {
-                        type: ARRAY,
-                        view: {
-                            type: HIDDEN,
-                            value: []
-                        }
-                    },
-                    activities: {
-                        type: ARRAY,
-                        view: {
-                            type: HIDDEN,
-                            value: []
-                        }
-                    },
                     /* FORM2 :
                      activities: {
                      type: ARRAY,
@@ -212,6 +199,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                     value: "Occupation",
                                     view: {type: HIDDEN}
                                 },
+                                refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                                 id: IDATTRDEF,
                                 editable: {
                                     type: BOOLEAN,
@@ -533,7 +521,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         getEditorLabel: function() {
             var trLabel = this.getLabel(),
                 index = this.get("index");
-            if (index){
+            if (index) {
                 index += ". ";
             } else {
                 index = "";
@@ -559,13 +547,19 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             index: {
                 type: STRING,
-                index: -1,
+                index: -11,
                 required: true,
                 view: {
                     label: "Task number",
                     layout: "extraShort"
                 }
             },
+            label: Y.Wegas.Helper.getTranslationAttr({
+                label: "Label",
+                index: -10,
+                description: "Displayed to players",
+                type: STRING
+            }),
             predecessors: {
                 type: ARRAY,
                 items: {
@@ -613,11 +607,13 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     },
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
+                    refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                     descriptorId: IDATTRDEF,
                     requirements: {
                         type: ARRAY,
                         view: {
-                            label: "Resource requirements"
+                            label: "Resource requirements",
+                            highlight:true
                         },
                         items: {
                             type: OBJECT,
@@ -628,6 +624,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                     view: {type: HIDDEN}
                                 },
                                 id: IDATTRDEF,
+                                refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                                 name: {type: STRING, view: {type: HIDDEN}},
                                 work: {
                                     type: STRING,
@@ -799,58 +796,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 view: {
                     label: "Resource requirements"
                 },
-                items: {
-                    type: OBJECT,
-                    properties: {
-                        "@class": {
-                            type: STRING,
-                            value: "WRequirement",
-                            view: {type: HIDDEN}
-                        },
-                        id: IDATTRDEF,
-                        name: {type: STRING, view: {type: HIDDEN}},
-                        work: {
-                            type: STRING,
-                            view: {
-                                type: SELECT,
-                                choices: persistence.Resources.SKILLS
-                            }
-                        },
-                        level: {
-                            type: NUMBER,
-                            view: {
-                                type: SELECT,
-                                choices: persistence.Resources.LEVELS
-                            }
-                        },
-                        quantity: {
-                            type: NUMBER,
-                            required: true,
-                            value: 1,
-                            view: {
-                                label: 'Quantity'
-                            }
-                        },
-                        limit: {
-                            type: NUMBER,
-                            required: true,
-                            value: 100,
-                            view: {
-                                label: 'Limit'
-                            }
-                        },
-                        completeness: {
-                            type: NUMBER,
-                            value: 0,
-                            view: {type: HIDDEN}
-                        },
-                        quality: {
-                            type: NUMBER,
-                            value: 100,
-                            view: {type: HIDDEN}
-                        }
-                    }
-                },
                 setter: function(v) {
                     v.sort(function(a, b) {
                         if (a.get("work") === b.get("work")) {
@@ -895,6 +840,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 optional: true,
                 type: NUMBER
             },
+            refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
             name: {
                 optional: true,
                 type: STRING
@@ -927,6 +873,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             "@class": {
                 value: "Activity"
             },
+            refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
             taskDescriptorName: {
                 type: STRING
             },
@@ -952,6 +899,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             "@class": {
                 value: "Occupation"
             },
+            refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
             time: {
                 type: NUMBER
             },
@@ -968,6 +916,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             "@class": {
                 value: "TaskInstance"
             },
+            refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
             taskDescriptorName: {
                 type: STRING
             }
@@ -1007,6 +956,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     },
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
+                    refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                     iterations: {
                         type: ARRAY,
                         value: [],

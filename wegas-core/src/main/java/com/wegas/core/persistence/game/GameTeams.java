@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.game;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -85,7 +86,7 @@ public class GameTeams extends AbstractEntity {
             default:
                 return game.getRequieredUpdatePermission();
         }
-        */
+         */
         // case TWO no restriction
         return null;
     }
@@ -96,6 +97,7 @@ public class GameTeams extends AbstractEntity {
     }
 
     @Override
-    public void merge(AbstractEntity other) {
+    public WithPermission getMergeableParent() {
+        return getGame();
     }
 }

@@ -5,6 +5,8 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -998,7 +1000,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                             var items = genChoices(i.get("items"), level + 1);
                             if (items.length > 0 || enableFolder) {
                                 ret.push({
-                                    label: genSpaces(level) + i.get("label"),
+                                    label: genSpaces(level) + I18n.t(i.get("label")),
                                     value: i.get("name")
                                 });
                                 if (!enableFolder || (that.options.selectable && that.options.selectable.indexOf(level) === -1)) {
@@ -1008,7 +1010,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                             }
                         } else if (!that.options.classFilter || that.options.classFilter.indexOf(i.get("@class")) !== -1) {
                             ret.push({
-                                label: genSpaces(level) + i.get("label"),
+                                label: genSpaces(level) + I18n.t(i.get("label")),
                                 value: i.get("name")
                             });
                             if (that.options.selectable && that.options.selectable.indexOf(level) === -1) {

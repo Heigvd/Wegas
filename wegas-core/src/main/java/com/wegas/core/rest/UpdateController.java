@@ -15,11 +15,14 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
+import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.persistence.variable.ListDescriptor;
+import com.wegas.core.persistence.variable.ListInstance;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
@@ -54,6 +57,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -92,6 +96,9 @@ public class UpdateController {
     private StateMachineFacade stateMachineFacade;
 
     @Inject
+    private ScriptController scriptController;
+
+    @Inject
     private GameModelCheck gameModelCheck;
 
     /**
@@ -125,7 +132,7 @@ public class UpdateController {
     public String encode(@PathParam("gameModelId") Long gameModelId) {
         List<VariableDescriptor> findAll = descriptorFacade.findByGameModelId(gameModelId);
         for (VariableDescriptor vd : findAll) {
-            List<String> findDistinctNames = descriptorFacade.findDistinctNames(vd.getGameModel());
+            List<String> findDistinctNames = descriptorFacade.findDistinctNames(vd.getGameModel(), vd.getRefId());
             List<TranslatableContent> findDistinctLabels = descriptorFacade.findDistinctLabels(vd.getGameModel());
             findDistinctNames.remove(vd.getName());
             findDistinctLabels.remove(vd.getLabel());
@@ -144,7 +151,7 @@ public class UpdateController {
     @GET
     @Path("UpdateScript/{gameModelId : ([1-9][0-9]*)}")
     public String script(@PathParam("gameModelId") Long gameModelId) {
-        Set<VariableDescriptor> findAll = descriptorFacade.findAll(gameModelId);
+        Collection<VariableDescriptor> findAll = descriptorFacade.findAll(gameModelId);
         List<String> keys = new ArrayList<>();
         List<String> values = new ArrayList<>();
         for (VariableDescriptor vd : findAll) {
@@ -160,7 +167,7 @@ public class UpdateController {
                 }
             } else if (vd instanceof StateMachineDescriptor) {
                 StateMachineDescriptor fsm = (StateMachineDescriptor) vd;
-                for (Map.Entry<Long, State> s : fsm.getStates().entrySet()) {
+                for (Map.Entry<Long, State> s : fsm.getStatesAsMap().entrySet()) {
                     replaceAll(s.getValue().getOnEnterEvent(), keys, values);
                     for (Transition t : s.getValue().getTransitions()) {
                         replaceAll(t.getPreStateImpact(), keys, values);
@@ -193,11 +200,11 @@ public class UpdateController {
 
         if (scenarioOnly) {
             where = criteriaBuilder.and(
-                    criteriaBuilder.equal(e.get("template"), true),
-                    criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-private/wegas-pmg/js/wegas-pmg-loader.js%")
+                    criteriaBuilder.equal(e.get("type"), GameModel.GmType.SCENARIO),
+                    criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-private/wegas-pmg/js/wegas-pmg-loader.js;wegas-private/wegas-pmg/scripts/wegas-pmg-client.js")
             );
         } else {
-            where = criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-private/wegas-pmg/js/wegas-pmg-loader.js%");
+            where = criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-private/wegas-pmg/js/wegas-pmg-loader.js;wegas-private/wegas-pmg/scripts/wegas-pmg-client.js");
         }
 
         query.select(e)
@@ -266,8 +273,8 @@ public class UpdateController {
         }
     }
 
-    private String listDescriptorScope(GameModel gameModel) {
-        Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+    private String updateListDescriptorScope(GameModel gameModel) {
+        Collection<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
         StringBuilder sb = new StringBuilder();
         sb.append("[");
 
@@ -285,7 +292,7 @@ public class UpdateController {
     @Path("ListDescriptorScope/{gameModelId : ([1-9][0-9]*)}")
     public String listDUpdate(@PathParam("gameModelId") Long gameModelId) {
         GameModel find = gameModelFacade.find(gameModelId);
-        return listDescriptorScope(find);
+        return updateListDescriptorScope(find);
     }
 
     /*private String rtsUpdateScope(GameModel gameModel) {
@@ -314,18 +321,6 @@ public class UpdateController {
 
         return sb.toString();
     }*/
-
-    private void updateListDescriptorScope(GameModel gameModel) {
-        Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
-
-        for (VariableDescriptor vd : variableDescriptors) {
-            if (vd instanceof ListDescriptor) {
-                this.updateScope(vd);
-            }
-        }
-
-    }
-
     private String lawUpdateScope(GameModel gameModel) {
         this.updateListDescriptorScope(gameModel);
         StringBuilder sb = new StringBuilder();
@@ -359,8 +354,7 @@ public class UpdateController {
         GameModel find = gameModelFacade.find(gameModelId);
         return rtsUpdateScope(find);
     }
-    */
-
+     */
     private String newScope(GameModel gameModel, VariableDescriptor vd) {
         StringBuilder sb = new StringBuilder();
         try {
@@ -389,7 +383,7 @@ public class UpdateController {
 
     /*
     private String rtsNewScope(GameModel gameModel) {
-        Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        Collection<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
         StringBuilder sb = new StringBuilder();
         sb.append("[");
 
@@ -416,17 +410,16 @@ public class UpdateController {
 
         return sb.toString();
     }
-    */
+     */
 
-    /*
+ /*
     @GET
     @Path("RtsNewScope/{gameModelId : ([1-9][0-9]*)}")
     public String rtsNewScope(@PathParam("gameModelId") Long gameModelId) {
         GameModel find = gameModelFacade.find(gameModelId);
         return rtsNewScope(find);
     }
-    */
-
+     */
     private String addVariable(GameModel gm, String json, String varName, String parentName) {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
         logger.error("Going to add {}/{} variable", parentName, varName);
@@ -460,6 +453,149 @@ public class UpdateController {
             logger.error("Error While Reading JSON: {}", json);
             return "JSON Error";
         }
+    }
+
+    /**
+     * Make sure all PMGshare the same structure.
+     * Make extractModel smarter
+     *
+     * @return some output
+     */
+    @GET
+    @Path("NORMALISE_PMG")
+    public String pmg_normalise() {
+        List<GameModel> PMGs = this.findPMGs(true);
+        StringBuilder ret = new StringBuilder();
+
+        ret.append("<ul>");
+        for (GameModel pmg : PMGs) {
+            ret.append("<li>").append(pmg.getName()).append("</li>");
+            ret.append(this.normalisePmg(pmg));
+        }
+        ret.append("</ul>");
+        return ret.toString();
+    }
+
+    @GET
+    @Path("PMG_CHECK_SCRIPT")
+    public String pmg_checkScript() {
+        List<GameModel> PMGs = this.findPMGs(true);
+        StringBuilder ret = new StringBuilder();
+
+        ret.append("<ul>");
+        for (GameModel pmg : PMGs) {
+            logger.info("Check {}", pmg);
+            Map<Long, WegasScriptException> results = scriptController.testGameModel(pmg.getId());
+            if (!results.isEmpty()) {
+                logger.info("#Errors: {}", results.size());
+                ret.append("<li>").append(pmg.getName()).append(" (").append(pmg.getId()).append(")").append("</li>");
+                ret.append("<ul>");
+                for (Entry<Long, WegasScriptException> result : results.entrySet()) {
+                    Long key = result.getKey();
+                    String message = result.getValue().getMessage();
+                    ret.append("<li>").append(key).append(" -> ").append(message).append("</li>");
+                    logger.info("  {} ->  {}", key, message);
+                }
+                ret.append("</ul>");
+            }
+        }
+        ret.append("</ul>");
+        return ret.toString();
+    }
+
+    /**
+     * Rename existing subfolders and ensure at least 'count' exists.
+     *
+     * @param gameModel
+     * @param parentName
+     * @param childrenPrefix
+     * @param count
+     *
+     * @return
+     */
+    private String processChildren(GameModel gameModel, String parentName, String childrenPrefix, int count) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            ListDescriptor parent = (ListDescriptor) descriptorFacade.find(gameModel, parentName);
+            List<VariableDescriptor> children = parent.getItems();
+
+            // rename existing subfolder
+            int i = 1;
+            for (; i <= children.size(); i++) {
+                VariableDescriptor child = children.get(i - 1);
+
+                if (child instanceof ListDescriptor) {
+                    String newName = childrenPrefix + i;
+                    if (!child.getName().equals(newName)) {
+                        child.setName(childrenPrefix + i);
+                        sb.append("<li>Rename ").append(child.getName()).append("</li>");
+                    }
+                } else {
+                    break;
+                }
+            }
+
+            // make sure parent accept subfolders
+            Set<String> allowedTypes = parent.getAllowedTypes();
+            if (!allowedTypes.isEmpty() && !allowedTypes.contains("ListDescriptor")) {
+                allowedTypes.add("ListDescriptor");
+                sb.append("<li>Accept ListDescriptor</li>");
+            }
+
+            // creating missing ones
+            for (; i <= count; i++) {
+                ListDescriptor newChild = new ListDescriptor(childrenPrefix + i);
+                newChild.setDefaultInstance(new ListInstance());
+                newChild.setScope(new GameModelScope());
+                descriptorFacade.createChild(gameModel, parent, newChild);
+                if (i < parent.size()) {
+                    // move new folder at the right place
+                    descriptorFacade.move(newChild.getId(), parent.getId(), i - 1);
+                }
+
+                sb.append("<li>Create ").append(newChild.getName()).append("</li>");
+            }
+        } catch (WegasErrorMessage ex) {
+            sb.append("<li><b>folder").append(ex.getMessage()).append(" not found</b></li>");
+        } catch (WegasNoResultException ex) {
+            sb.append("<li><b>folder").append(parentName).append(" not found</b></li>");
+        } catch (ClassCastException ex) {
+            sb.append("<li><b>folder").append(parentName).append(" is not a folder</b></li>");
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Move given descriptor in targetList
+     * <p>
+     */
+    public String move(GameModel gameModel, String descName, String targetName, Integer index) {
+        try {
+            VariableDescriptor desc = descriptorFacade.find(gameModel, descName);
+            ListDescriptor list = (ListDescriptor) descriptorFacade.find(gameModel, targetName);
+            descriptorFacade.move(desc.getId(), list.getId(), index);
+            return "OK";
+        } catch (WegasNoResultException ex) {
+            return "NOT FOUND";
+        }
+    }
+
+    private String normalisePmg(GameModel pmg) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<ul>");
+
+        sb.append(this.processChildren(pmg, "questions", "questionsPhase", 4));
+        sb.append(this.processChildren(pmg, "questionsPhase1", "questionsPeriod1_", 1));
+        sb.append(this.processChildren(pmg, "questionsPhase2", "questionsPeriod2_", 1));
+        sb.append(this.processChildren(pmg, "questionsPhase3", "questionsPeriod3_", 1));
+        sb.append(this.processChildren(pmg, "questionsPhase4", "questionsPeriod4_", 1));
+
+        sb.append(this.processChildren(pmg, "actions", "actionsPhase", 4));
+
+        sb.append("</ul>");
+
+        return sb.toString();
     }
 
     /**
@@ -584,11 +720,11 @@ public class UpdateController {
             ResourceInstance defaultInstance = rd.getDefaultInstance();
             List<Occupation> occupations = defaultInstance.getOccupations();
 
-            HashMap<Long, List<Occupation>> map = new HashMap<>();
+            HashMap<Integer, List<Occupation>> map = new HashMap<>();
             List<Occupation> cleanList = new ArrayList<>();
 
             for (Occupation occ : occupations) {
-                Long key = ((Double) occ.getTime()).longValue();
+                int key = occ.getTime();
                 if (!map.containsKey(key)) {
                     map.put(key, new ArrayList<>());
                     cleanList.add(occ);
@@ -605,8 +741,8 @@ public class UpdateController {
             Collection<VariableInstance> resourceInstances = descriptorFacade.getInstances(rd).values();
             for (VariableInstance vi : resourceInstances) {
                 ResourceInstance resourceInstance = (ResourceInstance) vi;
-                for (Entry<Long, List<Occupation>> entry : map.entrySet()) {
-                    if (!hasOccupation(resourceInstance, entry.getKey().doubleValue())) {
+                for (Entry<Integer, List<Occupation>> entry : map.entrySet()) {
+                    if (!hasOccupation(resourceInstance, entry.getKey())) {
                         resourceFacade.addOccupation(resourceInstance.getId(), false, entry.getKey());
                         created++;
                     }
@@ -663,19 +799,30 @@ public class UpdateController {
         return query.getResultList();
     }
 
+    @POST
+    @Path("CreateEmptyModel")
+    public String createEmptyModel() {
+        GameModel emptyModel = new GameModel();
+        emptyModel.setName("_EmptyModel (en)");
+        emptyModel.setType(GameModel.GmType.MODEL);
+
+        gameModelFacade.createWithDebugGame(emptyModel);
+
+        return "OK";
+    }
+
     @GET
     @Path("CheckAllLiveGameModel")
     public String checkAllGameModels() {
         StringBuilder sb = new StringBuilder();
 
-        //List<GameModel> findByTypeAndStatus = gameModelFacade.findByTypeAndStatus(GameModel.GmType.SCENARIO, GameModel.Status.LIVE);
-        List<GameModel> findByTypeAndStatus = gameModelFacade.findByStatus(GameModel.Status.LIVE);
+        List<GameModel> findByTypeAndStatus = gameModelFacade.findByTypeAndStatus(GameModel.GmType.SCENARIO, GameModel.Status.LIVE);
         sb.append("<ul>");
         for (GameModel gm : findByTypeAndStatus) {
             logger.error("CHECK {}", gm);
             Exception validate = gameModelCheck.validate(gm);
             sb.append("<li>");
-            sb.append(gm.getName()).append(" (").append(gm.getId()).append(") =>");
+            sb.append(gm.getName()).append(";").append(gm.getId()).append(";");
             if (validate != null) {
                 logger.error(" FAILURE");
                 sb.append(validate);
@@ -688,4 +835,43 @@ public class UpdateController {
 
         return sb.toString();
     }
+
+    private List<Long> getIdsFromString(String ids) {
+        List<Long> scenarioIds = new ArrayList<>();
+
+        for (String id : ids.split(",")) {
+            scenarioIds.add(Long.parseLong(id));
+        }
+
+        return scenarioIds;
+    }
+
+    @GET
+    @Path("CheckSomeGameModel/{ids}")
+    public String checkSomeGameModels(@PathParam("ids") String ids) {
+        StringBuilder sb = new StringBuilder();
+
+        List<Long> idsFromString = getIdsFromString(ids);
+
+        sb.append("<ul>");
+        for (Long gmId : idsFromString) {
+            GameModel gm = gameModelFacade.find(gmId);
+
+            logger.error("CHECK {}", gm);
+            Exception validate = gameModelCheck.validate(gm);
+            sb.append("<li>");
+            sb.append(gm.getName()).append(";").append(gm.getId()).append(";");
+            if (validate != null) {
+                logger.error(" FAILURE");
+                sb.append(validate);
+            } else {
+                sb.append("OK");
+            }
+            sb.append("</li>");
+        }
+        sb.append("</ul>");
+
+        return sb.toString();
+    }
+
 }

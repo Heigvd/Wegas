@@ -8,11 +8,11 @@
 package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.DatedEntity;
-import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
@@ -122,6 +122,7 @@ public class Review extends AbstractEntity implements DatedEntity, AcceptInjecti
      * 'reviewer' only)
      */
     @OneToMany(mappedBy = "feedbackReview", cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty
     private List<EvaluationInstance> feedback = new ArrayList<>();
 
     /**
@@ -129,6 +130,7 @@ public class Review extends AbstractEntity implements DatedEntity, AcceptInjecti
      * (writable by 'author' only)
      */
     @OneToMany(mappedBy = "commentsReview", cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty
     private List<EvaluationInstance> comments = new ArrayList<>();
 
     @Override
@@ -230,6 +232,9 @@ public class Review extends AbstractEntity implements DatedEntity, AcceptInjecti
      */
     public void setFeedback(List<EvaluationInstance> feedback) {
         this.feedback = feedback;
+        for (EvaluationInstance ei : feedback) {
+            ei.setFeedbackReview(this);
+        }
     }
 
     /**
@@ -249,25 +254,9 @@ public class Review extends AbstractEntity implements DatedEntity, AcceptInjecti
      */
     public void setComments(List<EvaluationInstance> comments) {
         this.comments = comments;
-    }
 
-    /*@Override
-    public Map<String, List<AbstractEntity>> getEntities() {
-        Map<String, List<AbstractEntity>> entities = new HashMap<>();
-        Helper.merge(entities, this.getAuthor().getEntities());
-        Helper.merge(entities, this.getReviewer().getEntities());
-        return entities;
-    }*/
-    @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof Review) {
-            Review o = (Review) other;
-            //this.setAuthor(o.getAuthor());
-            //this.setReviewer(o.getReviewer());
-            this.setFeedback(ListUtils.mergeLists(this.getFeedback(), o.getFeedback()));
-            this.setComments(ListUtils.mergeLists(this.getComments(), o.getComments()));
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
+        for (EvaluationInstance ei : comments) {
+            ei.setCommentsReview(this);
         }
     }
 
@@ -300,6 +289,12 @@ public class Review extends AbstractEntity implements DatedEntity, AcceptInjecti
         return p;
     }
      */
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return this.getAuthor();
+    }
+
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         if (this.beans != null) {

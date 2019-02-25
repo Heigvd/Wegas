@@ -23,23 +23,52 @@ angular.module('private.admin', [
         "use strict";
         var ctrl = this;
         ctrl.serviceUrl = window.ServiceURL;
-        ctrl.loading = false;
+        ctrl.loading = true;
+        ctrl.isMaster = false;
+        ctrl.i18nUsage = false;
+        ctrl.uploading = false;
+
+        ctrl.fireAndForget = function(method, url) {
+            switch (method) {
+                case "GET":
+                    $http.get(ctrl.serviceUrl + url);
+                    break;
+                case "DELETE":
+                    $http.delete(ctrl.serviceUrl + url);
+                    break;
+                case "POST":
+                    $http.post(ctrl.serviceUrl + url);
+                    break;
+            }
+        };
+
         Auth.getAuthenticatedUser().then(function(user) {
             if (user) {
                 if (!user.isAdmin) {
                     $state.go("wegas.private.scenarist");
                 }
                 $rootScope.currentRole = "ADMIN";
-                $("body").removeClass("player scenarist trainer").addClass("admin");
+                $("body").removeClass("player scenarist trainer modeler").addClass("admin");
                 $rootScope.translationWorkspace = {
                     workspace: WegasTranslations.workspaces.ADMIN[$translate.use()]
                 };
+
+                $http.get(ctrl.serviceUrl + "rest/Utils/pr_number").then(function(response) {
+                    ctrl.isMaster = response.data <= 0;
+                });
+
+                $http.get(ctrl.serviceUrl + "rest/GameModel/I18n/Usage").then(function(response) {
+                    ctrl.i18nUsage = response.data;
+                });
+
                 $http.get(ctrl.serviceUrl + "rest/Utils/build_details").then(function(response) {
                     ctrl.build_details = response.data;
                     ctrl.loading = false;
                 });
             }
         });
+
+
     })
     .directive('scenarioCreateUpload', function(ScenariosModel) {
         "use strict";

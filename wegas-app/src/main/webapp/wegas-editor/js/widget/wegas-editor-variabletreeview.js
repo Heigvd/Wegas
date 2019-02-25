@@ -96,6 +96,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 }
                 this.treeView.filter.set("searchVal", this.searchRE);
                 this.treeView.filter.set("testFn", searchFn);
+                Y.Wegas.app.fire("newSearchVal");
             }, this);
             this._validateBttn = new Y.ToggleButton({
                 render: this.toolbar.get("header"),
@@ -249,17 +250,17 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         },
         updateDescriptor: function(e) {
             if (!this.get("bypassSyncEvents")) {
-                var oldElement, entity, parent, index, newElement;
-                entity = e.entity;
-                oldElement = this.findNode(entity);
-                if (oldElement) {
-                    parent = oldElement.get("parent");
-                    index = parent.indexOf(oldElement);
-                    newElement = this.genTreeViewElement(entity);
-                    oldElement.remove();
-                    parent.add(newElement, index);
-                }
-                //oldElement.set("label", e.entity.getEditorLabel());
+            var oldElement, entity, parent, index, newElement;
+            entity = e.entity;
+            oldElement = this.findNode(entity);
+            if (oldElement) {
+                parent = oldElement.get("parent");
+                index = parent.indexOf(oldElement);
+                newElement = this.genTreeViewElement(entity);
+                oldElement.remove();
+                parent.add(newElement, index);
+            }
+            //oldElement.set("label", e.entity.getEditorLabel());
             }
         },
         updateInstance: function(e) {
@@ -288,7 +289,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 elClass = entity.get(CLASS),
                 collapsed = !this.isNodeExpanded(entity),
                 selected = (this.currentSelection === entity.get(ID)) ? 1 : 0,
-                text = entity.getEditorLabel(),
+                text = entity.getEditorLabel() + "<i class='scriptalias wegas-internal-feature'> (" + entity.get("name") + ")</i>",
                 node,
                 /* + "  <span class='treeview-sub'>" + el.getType().replace("Descriptor", "") + "</span>"
                  tooltip = entity.getType().replace("Descriptor", "") + ": " + entity.getEditorLabel(),*/
@@ -381,6 +382,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     children = Y.Array.map(entity.get("results"), function(result) {
                         return {
                             label: result.getEditorLabel(),
+
                             selected: (result.get(ID) === this.currentSelection) ? 2 : 0,
                             data: {
                                 entity: result,
@@ -422,7 +424,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         var container = entity.get(category),
                             children = Y.Array.map(container.get("evaluations"), function(ev) {
                                 return {
-                                    label: ev.getEditorLabel(),
+                                    label: ev.getEditorLabel() ,
                                     selected: (ev.get(ID) === this.currentSelection) ? 2 : 0,
                                     data: {
                                         entity: ev,

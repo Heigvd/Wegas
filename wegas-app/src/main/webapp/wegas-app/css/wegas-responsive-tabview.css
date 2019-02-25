@@ -12,7 +12,7 @@
 .yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen:not(.open) .yui3-tabview-list .yui3-tab,
 .yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen > .yui3-tabview-list {
     width: 100%;
-    min-height: 10px;
+    /*min-height: 10px;*/
 }
 
 /*
@@ -20,6 +20,17 @@
  */
 .yui3-wegas-responsive-tabview .horizontal-tabview .yui3-tabview-content.smallscreen.open .yui3-tabview-panel{
     display: none;
+}
+
+.yui3-skin-sam .yui3-wegas-responsive-tabview .yui3-tabview-content.smallscreen {
+    display:flex;
+    flex-direction: column;
+}
+
+.yui3-skin-sam .yui3-wegas-responsive-tabview .yui3-tabview-content.smallscreen div.yui3-tabview-panel {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow-y: auto;
 }
 
 /* reset padding */
@@ -53,6 +64,7 @@
     padding: 10px 5px;
     white-space: normal;
     max-width: 100%;
+    box-sizing: border-box;
 }
 
 /*  */

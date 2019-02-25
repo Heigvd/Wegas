@@ -12,18 +12,27 @@
 
 /* Header toggle button */
 .yui3-skin-sam.wegas-editmode .wegas-layout-hd .yui3-button.host-switchmode{
-    background-color : red;
+    background-color : #f55c5c;
+    padding-left: 8px;
+    padding-top: 2px;
 }
+.yui3-skin-sam.wegas-editmode .wegas-layout-hd .yui3-button.host-switchmode:hover{
+    color: #343539;
+}
+
+.yui3-skin-sam.wegas-editmode .wegas-layout-hd .yui3-button.open-as-test-player{
+    padding-left: 8px;
+    padding-top: 2px;
+}
+
+.yui3-skin-sam.wegas-editmode .wegas-layout-hd .gamemodel-type{
+    color : red;
+}
+
+.yui3-skin-sam.wegas-editmode .wegas-layout-hd .yui3-button.open-as-test-player,
 .yui3-skin-sam .host-switchmode {
-    /* margin-right: 10px; */
-    padding: 3px 10px 3px 10px;
-    background: transparent;
-    color: white;
-    line-height: 0.5em; 
-    /* position: absolute; */
-    /* top: 12px; */
-    /* right: 133px; */
-    float: right;
+    width: 35px;
+    height: 35px;
 }
 .yui3-skin-sam .host-switchmode.yui3-button-selected {
     background: white;
@@ -171,6 +180,7 @@
     color: black;
 }
 
+.yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-minimize-tab,
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-plus-tab {
     vertical-align: top;
     top: 10px;
@@ -178,8 +188,10 @@
     padding: 5px 0 0 0;
     color: white;
     width: 33px;
+    position:relative;
 }
 
+.yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-minimize-tab:hover,
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-plus-tab:hover {
     color: #5A5858;
 }
@@ -187,6 +199,7 @@
     height: inherit;
 }
 
+.yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-minimize-tab:after,
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-plus-tab:after {
     display: none;
 }
@@ -334,6 +347,10 @@
     position: absolute;
 }
 
+.wegas-scriptlibrary > .readonly .ace_editor .ace_content {
+    backgroun-color: #ddd;
+}
+
 /* Panel Widget Styles */
 .yui3-panel-hidden {
     display: none; /* added to the defaulty yui3 visibility: hidden */
@@ -367,62 +384,72 @@
     padding: 0; /* Override yui default */
 }
 
+
+
 /* Editor layout styles */
+
 .yui3-skin-sam .wegas-layout-hd {
-    white-space: nowrap;
-    min-width: 600px;
+    /*white-space: nowrap;*/
+    /*min-width: 600px;*/
 }
 
-.yui3-skin-sam .wegas-layout-hd > div {
-    display: inline-block;
-    vertical-align: top;
+
+.wegas-edit-maintoolbar {
+    width: 100%;
+}
+
+.wegas-edit-maintoolbar .wegas-toolbar-menu {
+    flex-grow: 1;
+}
+
+.wegas-edit-maintoolbar .wegas-button-toolbar .wegas-flexlist-content,
+.wegas-edit-maintoolbar .wegas-toolbar-menu .wegas-flexlist-content{
+    height: 100%;
+    align-items: center;
 }
 
 .yui3-skin-sam .wegas-layout-hd .yui3-button {
-    border: none;
     font-weight: bold;
     font-size: 11px;
-    line-height: 1.9em;
     color: #4c4c4c;
-    -moz-box-shadow: none;
-    -webkit-box-shadow: none;
-    box-shadow: none;
-    padding: 3px 20px 3px 10px;
     background: none;
-    margin-top: 10px;
 }
 
-.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-widgetmenu-hassubmenu:after {
-    background: url("../../wegas-app/images/wegas-icon-toggle.png") 0 1px; /* white version of toggle: -40px; */
-    top: 1.1em;
-}
-
-.yui3-skin-sam .wegas-layout-hd .editor-restart-button,
-.yui3-skin-sam .wegas-layout-hd .wegas-login {
+.yui3-skin-sam .wegas-layout-hd .wegas-button-toolbar button {
     color: #666;
-    font-size: 21px;
-    line-height: 1em;
-    float: right !important;
-    margin-right: 15px;
-    padding: 5px;
-    -webkit-border-radius: 50%;
-    -moz-border-radius: 50%;
+    height:35px;
+    /*width: 30px;*/
+    font-size: 20px;
     border-radius: 50%;
 }
 
+.yui3-skin-sam .wegas-layout-hd .wegas-login {
+    order:99;
+}
+
+.yui3-skin-sam .wegas-layout-hd .wegas-button-toolbar button.edit-openmodel{
+    order: 71;
+    font-size:18px;
+}
+
+.yui3-skin-sam .wegas-layout-hd .wegas-button-toolbar button.edit-propagatemodel{
+    order: 71;
+}
+
 .yui3-skin-sam .wegas-layout-hd .editor-restart-button {
-    font-size: 18px;
-    margin-right: 10px;
+    order: 31;
 }
 
 .yui3-skin-sam .wegas-layout-hd .wegas-login:after {
     display: none;
 }
 
-.yui3-skin-sam .wegas-layout-hd .editor-restart-button:hover,
-.yui3-skin-sam .wegas-layout-hd .wegas-login:hover {
+.yui3-skin-sam .wegas-layout-hd .wegas-button-toolbar button:hover {
     background: rgba(221, 221, 221, 0.25);
     color: red;
+}
+.yui3-skin-sam .wegas-layout-hd .wegas-button-toolbar button.edit-openmodel:hover{
+    color: palevioletred;
 }
 
 .yui3-skin-sam .wegas-layout-resizable .wegas-layout-column .yui3-resize-handle {
@@ -653,24 +680,100 @@
     display: none;
 }
 
+/*
+ * Modeler
+ */
+
+.wegas-modeler-mode.yui3-skin-sam .wegas-editview {
+    background: url(../../wegas-app/images/editor-polygons_modeler.png) no-repeat;
+    background-size: 100% 80px;
+}
+
+
+.wegas-modeler-mode.yui3-skin-sam .wegas-removeTabview,
+.wegas-modeler-mode.yui3-skin-sam .wegas-tabview-fullheight > .wegas-tabview-resizetabs > .yui3-tabview-list .yui3-tab-selected .yui3-tab-label,
+.wegas-modeler-mode.yui3-skin-sam .wegas-tabview-fullheight > .wegas-tabview-resizetabs > .yui3-tabview-list .yui3-tab-selected .yui3-tab-label:focus,
+.wegas-modeler-mode.yui3-skin-sam .wegas-tabview-fullheight > .wegas-tabview-resizetabs > .yui3-tabview-list .yui3-tab-selected .yui3-tab-label:hover,
+/*.yui3-skin-sam.wegas-modeler-mode .wegas-layout-resizable,*/
+.yui3-skin-sam.wegas-modeler-mode .wegas-layout-resizable .yui3-resize-handle,
+.yui3-skin-sam.wegas-modeler-mode .wegas-layout-resizable .wegas-layout-column .yui3-resize-handle,
+.yui3-skin-sam.wegas-modeler-mode .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-plus-tab,
+.yui3-skin-sam.wegas-modeler-mode .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-list > .wegas-minimize-tab {
+    /*background-color: palevioletred;*/
+    background-color: #BC828A !important;
+}
+
+.yui3-skin-sam.wegas-modeler-mode .wegas-layout-left.minimized:not(.hasFocus) .yui3-tabview-list,
+.yui3-skin-sam.wegas-modeler-mode .wegas-layout-left.minimized .yui3-tab-panel{
+    border-color: #BC828A !important;
+}
+
+.yui3-skin-sam.wegas-modeler-mode .host-switchmode.yui3-button-selected {
+    /* color: palevioletred;*/
+    color: #BC828A;
+}
+.yui3-skin-sam.wegas-modeler-mode .wegas-layout-left.minimized:not(.hasFocus) .yui3-tabview-list li > *,
+.wegas-modeler-mode .selected > div > .yui3-treeleaf-content-header,
+.wegas-modeler-mode .selected > .yui3-treenode-content-header,
+.wegas-modeler-mode .yui3-treeview-multiselect .sub-fully-selected > .yui3-treenode-content-header,
+.wegas-modeler-mode.yui3-skin-sam .yui3-tab-label {
+    background: #E1A7AF !important;
+}
+
+.wegas-modeler-mode.yui3-skin-sam .wegas-layout-left.minimized:not(.hasFocus) .yui3-tabview-list li > *,
+.wegas-modeler-mode.yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tab:hover .yui3-tab-label,
+.wegas-modeler-mode.yui3-skin-sam .yui3-tab-label:hover,
+.wegas-modeler-mode.yui3-skin-sam .yui3-tab-label:focus {
+    background-color: #CC929C
+}
+
+
+.yui3-skin-sam.wegas-modeler-mode .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel {
+    /*border-top: 4px solid palevioletred !important;*/
+    border-top: 4px solid #BC828A !important;
+}
+
+.wegas-modeler-mode .hasBorderTop{
+    border-top: 3px solid #BC828A;
+}
+
+/* wegas-presence.css
+.yui3-skin-sam.wegas-modeler-mode .yui3-wegas-editorchat .conversation {
+    background-color: #daa8bd;
+}
+*/
+
+
+.wegas-entity--visibility-attribute{
+    display: none;
+}
+
+.wegas-modeler-mode .wegas-entity--visibility-attribute,
+.wegas-advancedmode .wegas-entity--visibility-attribute{
+    display: block;
+}
+
 /* I18N */
 
-.wegas-translation.unsaved {
+.wegas-translation {
     display: flex;
     flex-direction: column;
 }
 
-.wegas-translation.unsaved .tools{
-    display: block;
+.wegas-translation .tools{
+    display: flex;
     order: 2;
+    width: calc(100% - 10px);
 }
 .wegas-translation .mce-content-body{
     background-color: #eee;
 }
 
-.wegas-translation.unsaved .tools span{
+.wegas-translation .tools span:not(.inline-editor-separator){
     cursor: pointer;
     font-size:1.2em;
+    padding-right: 5px;
+    line-height: 1.2em;
 }
 
 .wegas-advancedmode .wegas-translation.not-favorite-lang {
@@ -679,6 +782,107 @@
 
 .wegas-advancedmode .wegas-translation.missing {
     background-color: hotpink;
+}
+
+.wegas-translation .tools .inline-editor-separator{
+    flex-grow: 1;
+    display: block;
+}
+
+
+/* Save & Undo */
+.wegas-translation .tools span.inline-editor-validate,
+.wegas-translation .tools span.inline-editor-cancel {
+    cursor: default;
+    color: lightgrey;
+}
+
+.wegas-translation.unsaved .tools .inline-editor-validate,
+.wegas-translation.unsaved .tools .inline-editor-cancel {
+    cursor: pointer;
+    color: #4e525e;
+    display: block;
+}
+
+/*
+ * I18n button
+ */
+.wegas-translation .tools .inline-editor-i18n {
+    color : lightgrey;
+}
+
+.wegas-i18n-manager .wegas-translation:hover .tools .inline-editor-i18n,
+.wegas-translation.unsaved .tools .inline-editor-i18n,
+.wegas-translation.has-focus .tools .inline-editor-i18n {
+    display: block;
+    color: #4e525e;
+}
+
+.wegas-i18n-manager .translation:not(.supported-language) .tools .inline-editor-i18n,
+.wegas-i18n-manager .limit-reached .wegas-translation .tools .inline-editor-i18n{
+    display:none;
+}
+
+
+/* Major Validate */
+.wegas-translation .tools .inline-editor-major-validate .fa-expand{
+    transform: translate(0, 8px) rotate(45deg);
+    color : lightgrey;
+}
+.wegas-translation .tools .inline-editor-major-validate .fa-toggle-on {
+    color: #F57C00;
+}
+
+.wegas-i18n-manager .wegas-translation:hover .tools .inline-editor-major-validate,
+.wegas-translation.unsaved .tools .inline-editor-major-validate,
+.wegas-translation.has-focus .tools .inline-editor-major-validate{
+    display: block;
+}
+
+.wegas-i18n-manager .wegas-translation:hover .tools .inline-editor-major-validate .fa-expand,
+.wegas-translation.unsaved .tools .inline-editor-major-validate .fa-expand,
+.wegas-translation.has-focus .tools .inline-editor-major-validate .fa-expand{
+    color: #4e525e;
+}
+
+.wegas-i18n-manager .wegas-translation:hover .tools .inline-editor-major-validate .fa-toggle-on,
+.wegas-translation.unsaved .tools .inline-editor-major-validate .fa-toggle-on,
+.wegas-translation.has-focus .tools .inline-editor-major-validate .fa-toggle-on{
+    color: #E65100;
+}
+
+
+/* CatchUp */
+.wegas-translation:not(.outdated) .tools .inline-editor-catch_up-validate {
+    display:none;
+}
+.wegas-translation.outdated .tools .inline-editor-catch_up-validate {
+    color: #F57C00;
+    padding-right: 0px;
+    padding-left: 5px;
+}
+
+.wegas-i18n-manager .wegas-translation.outdated:hover .tools .inline-editor-catch_up-validate,
+.wegas-translation.outdated.has-focus .tools .inline-editor-catch_up-validate,
+.wegas-translation.outdated.unsaved .tools .inline-editor-catch_up-validate {
+    display: block;
+    color: #E65100;
+}
+
+/* Outdate */
+.wegas-translation.outdated .tools .inline-editor-outdate-validate{
+    display: none;
+}
+
+.wegas-translation:not(.outdated) .tools .inline-editor-outdate-validate{
+    color: #388E3C;
+}
+
+.wegas-i18n-manager .wegas-translation:not(.outdated):hover .tools .inline-editor-outdate-validate,
+.wegas-translation:not(.outdated).has-focus .tools .inline-editor-outdate-validate,
+.wegas-translation:not(.outdated).unsaved .tools .inline-editor-outdate-validate {
+    display: block;
+    color: #1B5E20;
 }
 
 /*
@@ -706,15 +910,23 @@
     flex-grow: 0;
 }
 
+.wegas-i18n-manager .wegas-i18n-manager--toolbar,
+.wegas-i18n-manager .wegas-i18n-manager--languages-header,
 .wegas-i18n-manager .wegas-i18n-manager--languages {
     flex-shrink: 0;
     padding-bottom: 3px;
     border-bottom: 1px solid lightgray;
 }
 
+.wegas-i18n-manager .wegas-i18n-manager--languages-header label,
 .wegas-i18n-manager .wegas-i18n-manager--languages label {
     width: 45px;
     display: inline-block;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages-header .language-code,
+.wegas-i18n-manager .wegas-i18n-manager--languages .language-code {
+    text-transform: uppercase;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--languages .form {
@@ -726,22 +938,51 @@
     cursor: pointer;
 }
 
-.wegas-i18n-manager .wegas-i18n-manager--languages .move-up {
+.wegas-i18n-manager .wegas-i18n-manager--languages .language.loading .tools {
+    cursor: wait;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-i18n-auto {
     cursor: pointer;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-save-all,
+.wegas-i18n-manager .wegas-i18n-manager--languages-header .move-up {
+    cursor: pointer;
+    font-size: 30px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .language:not(.has-unsaved) .save-all-container{
+    color:lightgray;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--languages .language.unsaved .tools {
     display:block;
 }
 
-.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-text{
+.wegas-i18n-manager .wegas-i18n-manager--languages-header .wegas-text {
     padding: 0 10px;
 }
 
-.wegas-i18n-manager .wegas-i18n-manager--languages .create-button {
+.wegas-i18n-manager .create-button {
     cursor: pointer;
 }
 
+.wegas-i18n-manager .wegas-i18n-manager--languages {
+    padding-left: 60px;
+    padding-top: 15px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-flexlist-content {
+    display: flex;
+    flex-direction: row;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-text{
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+}
 
 .wegas-i18n-manager .wegas-i18n-manager--editor{
     flex-grow: 1;
@@ -749,9 +990,10 @@
     padding-bottom: 25px;
 }
 
-.wegas-i18n-manager .wegas-i18n-manager--editor {
-    /*border: 1px dashed #eee;*/
-    /*background-color: #db70937d;*/
+.wegas-i18n-manager .wegas-i18n-manager--editor .node,
+.wegas-i18n-manager .wegas-i18n-manager--editor .node > .translatedcontents {
+    display: flex;
+    flex-direction: column;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--editor .node-name {
@@ -760,6 +1002,54 @@
     margin-bottom: 5px;
     margin-top: 20px;
     user-select: none;
+    position: relative; /* to place the expander caret on the right */
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node-name .expander:after {
+    content: "\25bc"; /* ▼ */
+    color: #666;
+    position: absolute;
+    right: 25px;
+    cursor: pointer;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node.collapsed > .node-name .expander:after {
+    content: "\25ba"; /* ► "*/
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node.collapsed > .node-children,
+.wegas-i18n-manager .wegas-i18n-manager--editor .node.collapsed > .translatedcontents{
+    display: none;
+}
+
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node-comments {
+    font-size: 12px;
+    user-select: none;
+    color: #888888;
+    font-style: italic;
+    margin-bottom: 10px;
+    background-color: aliceblue;
+    display: inline-block;
+    padding-left: 24px;
+    padding-right: 10px;
+    position: relative;
+    white-space: pre;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node.collapsed > .node-comments {
+    white-space: normal;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node-comments:before {
+    display: inline-block;
+    color: #99cfff;
+    font-size:15px;
+    font-style: normal;
+
+    position:absolute;
+    left: 6px;
+    top: calc(50% - 7px);
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--editor .node-scriptalias {
@@ -773,39 +1063,41 @@
 }
 
 
-.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='0'] .node-name
-.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='1'] .node-name,
-.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='2'] .node-name {
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='0'] > .node-name
+.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='1'] > .node-name,
+.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='2'] > .node-name {
     margin-left : 5px;
 }
 
-.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='3'] .node-name {
+.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='3'] > .node-name {
     margin-left : 10px;
 }
 
-.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='4'] .node-name {
+.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='4'] > .node-name {
     margin-left : 15px;
 }
 
-.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='5'] .node-name {
+.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='5'] > .node-name {
     margin-left : 20px;
 }
 
-.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='6'] .node-name {
+.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='6'] > .node-name {
     margin-left : 25px;
 }
 
-.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='7'] .node-name {
+.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='7'] > .node-name {
     margin-left : 30px;
 }
 
-.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='8'] .node-name {
+.wegas-i18n-manager .wegas-i18n-manager--editor .node[data-level='8'] > .node-name {
     margin-left : 35px;
 }
 
 
-.wegas-i18n-manager .wegas-i18n-manager--editor .translatedcontents,
-.wegas-i18n-manager .wegas-i18n-manager--editor .node-name {
+.wegas-i18n-manager .wegas-i18n-manager--editor .node-name,
+.wegas-i18n-manager .wegas-i18n-manager--editor .node-comments,
+.wegas-i18n-manager .wegas-i18n-manager--editor .translatedcontents {
     margin-left : 60px;
 }
 
@@ -815,6 +1107,14 @@
 
 .wegas-i18n-manager .wegas-i18n-manager--editor .node-children {
     /*padding-left: 0.5em;*/
+}
+
+.wegas-i18n-manager .hide-empty-translation .hide-empty--button i:before {
+    content: "\f046";
+}
+
+.wegas-i18n-manager .wegas-translation .tools > * {
+    display: block;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--editor .i18n-script .tools {
@@ -831,10 +1131,16 @@
     /*border: 1px dashed grey;*/
 }
 
+.wegas-i18n-manager .hide-empty-translation .wegas-i18n-manager--editor .all-translations-empty {
+    display: none;
+}
+
 .wegas-i18n-manager .wegas-i18n-manager--editor .translation {
     flex-grow:1;
     flex-shrink:1;
-    flex-basis: 0;
+    flex-basis: 10px;
+    display:flex;
+    flex-direction: column;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--editor .translation-title {
@@ -848,7 +1154,8 @@
     user-select: none;
 }
 
-.wegas-i18n-manager .wegas-i18n-manager--editor .translation .translation-language {
+.wegas-i18n-manager .wegas-i18n-manager--editor .translation .translation-language,
+.wegas-i18n-manager .wegas-i18n-manager--editor .translation .translation-status {
     user-select: none;
     cursor: default;
     color: #99a6b2;
@@ -867,7 +1174,8 @@
 }
 
 
-.wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation--value{
+.wegas-i18n-manager .wegas-readonly-translation,
+.wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation--value {
     min-height: 1.2em;
     min-width: 5em;
     display:inline-block;
@@ -876,7 +1184,12 @@
     margin-right: 10px;
 }
 
-
+.wegas-i18n-manager input[readonly],
+.wegas-i18n-manager .wegas-readonly-translation{
+    cursor: not-allowed;
+    width: calc(100% - 11px);
+    color: #888bad;
+}
 .wegas-translation--toedit.mce-content-body{
     display: inline-block;
 }
@@ -885,6 +1198,7 @@
     display: inline-block;
     width: 100%;
     min-height: 1em;
+    line-height: 1.3;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--editor .wegas-translation--value:focus,
@@ -892,17 +1206,8 @@
     border:1px solid #6AACF1;
 }
 
-@keyframes highlight {
-    0% {
-        background: #cecece
-    }
-    100% {
-        background: #f5f5f5;
-    }
-}
 .wegas-i18n-manager .wegas-i18n-manager--editor .highlight {
-    animation: highlight 3s;
-    background: #f5f5f5;
+    background: #a7cef6;
 }
 
 .wegas-i18n-manager .wegas-translation-html .wegas-translation--toolbar,
@@ -911,3 +1216,159 @@
     background-image: url("../images/tiny-toolbar.png");
     background-repeat: no-repeat;
 }
+
+
+.wegas-i18n-manager .ghost-translation .translation-title:after{
+    content: "GHOST";
+    color: hotpink;
+    font-weight: bold;
+}
+
+.wegas-i18n-manager .ghost-translation .wegas-translation .tools > span {
+    visibility: hidden;
+}
+
+.wegas-i18n-manager .ghost-translation .wegas-translation .tools .inline-editor-cancel ,
+.wegas-i18n-manager .ghost-translation .wegas-translation .tools .inline-editor-validate {
+    visibility: visible;
+}
+
+
+/* Find & Replace */
+.wegas-find-and-replace .wegas-react-form > .wegas-toolbar {
+    display:none;
+}
+
+
+.wegas-find-and-replace  .find-result-entry {
+    margin-left: 10px;
+    margin-top: 20px;
+}
+
+.wegas-find-and-replace  .find-result-entry-title {
+    font-weight:bolder;
+    font-size:15px;
+    text-decoration: underline;
+    user-select: none;
+}
+
+.wegas-find-and-replace  .find-result-entry-sidebyside {
+    display: flex;
+    flex-direction: row;
+}
+.wegas-find-and-replace  .find-result-entry-old,
+.wegas-find-and-replace  .find-result-entry-new {
+    flex-grow: 1;
+}
+
+.wegas-find-and-replace  .find-result-entry-diff .editOldInline,
+.wegas-find-and-replace  .find-result-entry-from {
+    background-color: lightpink;
+}
+
+.wegas-find-and-replace  .find-result-entry-diff .editNewInline,
+.wegas-find-and-replace  .find-result-entry-to {
+    background-color: lightblue;
+}
+
+.wegas-find-and-replace  .find-result-entry-diff {
+}
+
+.wegas-find-and-replace  .find-result-entry-diff .find-result-entry-line,
+.wegas-find-and-replace  .find-result-entry-diff .find-result-entry-skip{
+    margin-left:20px;
+}
+
+.wegas-find-and-replace  .find-result-entry-diff .find-result-entry-number{
+    display:none;
+}
+
+.wegas-find-and-replace  .find-result-entry-diff.show-lines .find-result-entry-skip{
+    margin-left: 42px;
+}
+.wegas-find-and-replace  .find-result-entry-diff.show-lines .find-result-entry-number{
+    display:inline-block;
+    text-align: right;
+    width:20px;
+    font-style: italic;
+    color: #a2a2a2;
+    background-color: #f0f0f0;
+    user-select: none;
+}
+
+.wegas-find-and-replace  .find-result-entry-diff .find-result-entry-skip{
+    font-style: italic;
+    color: #666;
+    user-select: none;
+}
+
+.wegas-find-and-replace  .find-result-entry-diff .editOldInline{
+    text-decoration: line-through;
+}
+
+.wegas-find-and-replace  .find-result-entry-diff .editNewInline {
+    font-weight: bolder;
+}
+
+/*
+ * Find & Replace Widget
+ */
+
+.wegas-find-and-replace-widget-content .actions{
+    margin: 10px;
+}
+
+.wegas-find-and-replace-widget-content .actions .execute{
+    display: inline-block;
+    background-color: #4a4a4a;
+    color:white;
+    cursor: pointer;
+    padding: 10px;
+}
+
+
+.panel-inner .wegas-find-and-replace-widget {
+    height : 100%;
+}
+
+.panel-inner .wegas-find-and-replace-widget-content {
+    height : 100%;
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+}
+
+.panel-inner .wegas-find-and-replace-widget .widget {
+    flex-grow:1;
+    position:relative;
+}
+.panel-inner .wegas-find-and-replace-widget .widget > div {
+    position: absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+}
+
+.panel-inner .wegas-find-and-replace-widget .widget .wegas-find-and-replace-content{
+    height:100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-inner .wegas-find-and-replace-widget .widget .find-result{
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: auto;
+}
+
+
+.wegas-disclaimer {
+    background: orange;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+}
+

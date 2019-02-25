@@ -11,10 +11,11 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,7 +37,6 @@ import javax.persistence.*;
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 @Entity
-
 @Table(indexes = {
     @Index(columnList = "burndowninstance_id")
 })
@@ -49,9 +50,10 @@ public class Iteration extends AbstractEntity implements DatedEntity {
         COMPLETED
     };
 
-    @JsonIgnore
+    //@JsonIgnore
     @Transient
-    private List<String> deserialisedNames;
+    @WegasEntityProperty
+    private Set<String> taskNames;
 
     /**
      *
@@ -68,23 +70,29 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     /**
      * Iteration Name
      */
+    @WegasEntityProperty
     private String name;
 
     @Enumerated(value = EnumType.STRING)
+    @WegasEntityProperty
     private IterationStatus status = IterationStatus.NOT_STARTED;
 
     /**
      * Period number the iteration shall start on
      */
+    @WegasEntityProperty
     private Long beginAt;
 
     /**
      * Total workload as computed at iteration beginning
      */
+    @WegasEntityProperty
     private Double totalWorkload;
 
+    @WegasEntityProperty
     private Double spi;
 
+    @WegasEntityProperty
     private Double wpi;
 
     private Double cpi;
@@ -96,6 +104,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      */
     @ElementCollection
     @JsonIgnore
+    @WegasEntityProperty
     private List<IterationPlanning> plannedWorkloads = new ArrayList<>();
 
     /**
@@ -104,6 +113,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      */
     @ElementCollection
     @JsonIgnore
+    @WegasEntityProperty
     private List<IterationPlanning> replannedWorkloads = new ArrayList<>();
 
     /**
@@ -111,6 +121,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      * indicates the total remaining workload for the corresponding period.
      */
     @OneToMany(mappedBy = "iteration", cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty
     private List<Workload> workloads = new ArrayList<>();
 
     /**
@@ -139,14 +150,6 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      *
      */
     public Iteration() {
-    }
-
-    public List<String> getDeserialisedNames() {
-        return deserialisedNames;
-    }
-
-    public void setDeserialisedNames(List<String> deserialisedNames) {
-        this.deserialisedNames = deserialisedNames;
     }
 
     @Override
@@ -307,7 +310,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
 
         if (Math.abs(upTo - upToPeriod) > 0.01) {
             Double prevPv = this.getPlannedValue(upToPeriod);
-            Double nextPv =this.getPlannedValue(Math.ceil(upTo));
+            Double nextPv = this.getPlannedValue(Math.ceil(upTo));
             Double delta = upTo - upToPeriod;
             return prevPv + delta * (nextPv - prevPv);
         } else {
@@ -367,8 +370,10 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     @JsonProperty
     public void setPlannedWorkloads(Map<Long, Double> plannedWorkloads) {
         this.plannedWorkloads.clear();
-        for (Entry<Long, Double> entry : plannedWorkloads.entrySet()) {
-            this.plannedWorkloads.add(new IterationPlanning(entry.getKey(), entry.getValue()));
+        if (plannedWorkloads != null) {
+            for (Entry<Long, Double> entry : plannedWorkloads.entrySet()) {
+                this.plannedWorkloads.add(new IterationPlanning(entry.getKey(), entry.getValue()));
+            }
         }
     }
 
@@ -397,8 +402,10 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      */
     public void setWorkloads(List<Workload> workloads) {
         this.workloads = workloads;
-        for (Workload wl : workloads) {
-            wl.setIteration(this);
+        if (this.workloads != null) {
+            for (Workload wl : workloads) {
+                wl.setIteration(this);
+            }
         }
     }
 
@@ -446,8 +453,10 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      */
     public void setReplannedWorkloads(Map<Long, Double> replannedWorkloads) {
         this.replannedWorkloads.clear();
-        for (Entry<Long, Double> entry : replannedWorkloads.entrySet()) {
-            this.replannedWorkloads.add(new IterationPlanning(entry.getKey(), entry.getValue()));
+        if (replannedWorkloads != null) {
+            for (Entry<Long, Double> entry : replannedWorkloads.entrySet()) {
+                this.replannedWorkloads.add(new IterationPlanning(entry.getKey(), entry.getValue()));
+            }
         }
     }
 
@@ -471,34 +480,38 @@ public class Iteration extends AbstractEntity implements DatedEntity {
             for (TaskInstance taskInstance : tasks) {
                 taskInstance.getIterations().add(this);
             }
-            this.setDeserialisedNames(null);
+            this.setTaskNames(null);
         }
     }
 
     public void addTask(TaskInstance taskD) {
         this.tasks.add(taskD);
-        this.setDeserialisedNames(null);
+        this.setTaskNames(null);
     }
 
     public void removeTask(TaskInstance task) {
         this.tasks.remove(task);
-        this.setDeserialisedNames(null);
+        this.setTaskNames(null);
     }
 
-    public List<String> getTaskNames() {
-        if (this.getDeserialisedNames() == null || this.getDeserialisedNames().isEmpty()) {
-            List<String> names = new ArrayList<>();
+    public Set<String> getDeserialisedTaskNames() {
+        return taskNames;
+    }
+
+    public Set<String> getTaskNames() {
+        if (taskNames == null) {
+            Set<String> names = new HashSet<>();
             for (TaskInstance ti : getTasks()) {
                 names.add(ti.findDescriptor().getName());
             }
             return names;
         } else {
-            return this.getDeserialisedNames();
+            return taskNames;
         }
     }
 
-    public void setTaskNames(List<String> names) {
-        this.deserialisedNames = names;
+    public void setTaskNames(Set<String> names) {
+        this.taskNames = names;
     }
 
     private void internalPlan(Long periodNumber, Double workload, Map<Long, Double> planning) {
@@ -519,36 +532,6 @@ public class Iteration extends AbstractEntity implements DatedEntity {
         Map<Long, Double> planning = this.getModifiableReplannedWorkloads();
         internalPlan(periodNumber, workload, planning);
         this.setReplannedWorkloads(planning);
-    }
-
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof Iteration) {
-            Iteration other = (Iteration) a;
-            this.setBeginAt(other.getBeginAt());
-            this.setName(other.getName());
-            this.setStatus(other.getStatus());
-
-            this.setWpi(other.getWpi());
-
-            this.setSpi(other.getSpi());
-
-            this.setTotalWorkload(other.getTotalWorkload());
-
-            this.setPlannedWorkloads(other.getPlannedWorkloads());
-
-            this.setReplannedWorkloads(other.getReplannedWorkloads());
-
-            this.setWorkloads(ListUtils.mergeLists(this.getWorkloads(), other.getWorkloads()));
-
-            this.setDeserialisedNames(other.getTaskNames());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
     }
 
     /**
@@ -576,6 +559,11 @@ public class Iteration extends AbstractEntity implements DatedEntity {
             }
         }
         this.setTasks(new ArrayList<>());
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return getBurndownInstance();
     }
 
     @Override

@@ -8,7 +8,6 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.AbstractEntity;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -42,9 +41,9 @@ public interface AbstractFacade<T extends AbstractEntity> {
      *
      * @param entityId
      * @return entity copy
-     * @throws IOException
+     * @throws java.lang.CloneNotSupportedException
      */
-    T duplicate(final Long entityId) throws IOException;
+    T duplicate(final Long entityId) throws CloneNotSupportedException;
 
     /**
      * Destroy the given entity

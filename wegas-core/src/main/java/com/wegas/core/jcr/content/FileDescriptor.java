@@ -10,30 +10,42 @@ package com.wegas.core.jcr.content;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import org.apache.commons.lang3.ArrayUtils;
-import org.slf4j.LoggerFactory;
-
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Calendar;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class FileDescriptor extends AbstractContentDescriptor {
 
-    @JsonIgnore
-    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileDescriptor.class);
+    static final private Logger logger = LoggerFactory.getLogger(FileDescriptor.class);
 
     @JsonIgnore
+    @WegasEntityProperty(includeByDefault = false)
     private Calendar dataLastModified;
 
+    /**
+     * File size in bytes
+     */
     @JsonIgnore
     private Long bytes;
+
+    /**
+     * Some ghost field (since not yet possible to define a WegasEntityProperty without a corresponding field)
+     */
+    @JsonIgnore
+    @WegasEntityProperty(includeByDefault = false)
+    private FileContent data; // TODO -> allow to define such a transient field withen the WegasEntity class anotation extraProperties = {@WegasEntityProperty + name}
 
     /**
      * @param absolutePath
@@ -68,7 +80,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     @JsonIgnore
     public long getLength() {
         try {
-            return connector.getLength(this.fileSystemAbsolutePath);
+            return getConnector().getLength(this.fileSystemAbsolutePath);
         } catch (PathNotFoundException ex) {
             logger.debug("Node does not exist or has no content, nothing to return");
         } catch (RepositoryException ex) {
@@ -80,12 +92,13 @@ public class FileDescriptor extends AbstractContentDescriptor {
     /**
      * @param from
      * @param len
+     *
      * @return file parital content as Base64 within an inputStream
      */
     @JsonIgnore
     public InputStream getBase64Data(long from, int len) {
         try {
-            return connector.getData(this.fileSystemAbsolutePath, from, len);
+            return getConnector().getData(this.fileSystemAbsolutePath, from, len);
         } catch (PathNotFoundException ex) {
             logger.debug("Node does not exist or has no content, nothing to return");
         } catch (RepositoryException | IOException ex) {
@@ -100,7 +113,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     @JsonIgnore
     public InputStream getBase64Data() {
         try {
-            return connector.getData(this.fileSystemAbsolutePath);
+            return getConnector().getData(this.fileSystemAbsolutePath);
         } catch (PathNotFoundException ex) {
             logger.debug("Node does not exist or has no content, nothing to return");
         } catch (RepositoryException ex) {
@@ -115,24 +128,26 @@ public class FileDescriptor extends AbstractContentDescriptor {
      *
      * @param data     The InputStream to store
      * @param mimeType The data type
+     *
      * @throws IOException
      */
     public void setBase64Data(InputStream data, String mimeType) throws IOException {
         try {
             this.mimeType = mimeType;
             this.sync();
-            connector.setData(this.fileSystemAbsolutePath, mimeType, data);
-            this.bytes = connector.getBytesSize(fileSystemAbsolutePath);
+            ContentConnector c = getConnector();
+            c.setData(this.fileSystemAbsolutePath, mimeType, data);
+            this.bytes = c.getBytesSize(fileSystemAbsolutePath);
             if (WFSConfig.MAX_FILE_SIZE < this.bytes) {
                 this.delete(true);
                 throw WegasErrorMessage.error(this.getName() + "[" + ContentConnector.bytesToHumanReadable(this.bytes) + "] file max size exceeded. Max " + ContentConnector.bytesToHumanReadable(WFSConfig.MAX_FILE_SIZE));
             }
-            Long totalSize = DescriptorFactory.getDescriptor("/", connector).getBytes();
+            Long totalSize = DescriptorFactory.getDescriptor("/", c).getBytes();
             if (totalSize > WFSConfig.MAX_REPO_SIZE) {
                 this.delete(true);
                 throw WegasErrorMessage.error("Exceeds total files storage capacity for this scenario [" + ContentConnector.bytesToHumanReadable(totalSize) + "/" + ContentConnector.bytesToHumanReadable(WFSConfig.MAX_REPO_SIZE) + "].");
             }
-            this.dataLastModified = connector.getLastModified(fileSystemAbsolutePath);
+            this.dataLastModified = c.getLastModified(fileSystemAbsolutePath);
             this.mimeType = mimeType;
         } catch (PathNotFoundException ex) {
             logger.error("Parent directory ({}) does not exist, consider checking the way you try to store datas", ex.getMessage());
@@ -148,6 +163,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
      *
      * @param data     The String to store as data
      * @param mimeType The data type
+     *
      * @throws IOException
      */
     public void setBase64Data(String data, String mimeType) throws IOException {
@@ -160,6 +176,15 @@ public class FileDescriptor extends AbstractContentDescriptor {
     @JsonProperty("dataLastModified")
     public Calendar getDataLastModified() {
         return dataLastModified;
+    }
+
+    @JsonProperty("dataLastModified")
+    public void setDataLastModified(Calendar date) {
+        this.dataLastModified = date;
+        try {
+            getConnector().setLastModified(fileSystemAbsolutePath, dataLastModified);
+        } catch (RepositoryException ex) {
+        }
     }
 
     /**
@@ -180,23 +205,85 @@ public class FileDescriptor extends AbstractContentDescriptor {
             //DirectorDescriptor
             throw new ClassCastException("Trying to retrieve a directory as a file");
         }
-        this.dataLastModified = connector.getLastModified(fileSystemAbsolutePath);
-        this.bytes = connector.getBytesSize(fileSystemAbsolutePath);
+        this.dataLastModified = getConnector().getLastModified(fileSystemAbsolutePath);
+        this.bytes = getConnector().getBytesSize(fileSystemAbsolutePath);
         super.getContentFromRepository();
+    }
+
+    @Override
+    public void setContentToRepository() throws RepositoryException {
+        getConnector().setLastModified(fileSystemAbsolutePath, dataLastModified);
+        super.setContentToRepository();
     }
 
     /**
      * @return @throws IOException
      */
     @JsonIgnore
-    protected byte[] getBytesData() throws IOException {
+    public byte[] getBytesData() throws IOException {
         try {
-            return connector.getBytesData(this.fileSystemAbsolutePath);
+            return getConnector().getBytesData(this.fileSystemAbsolutePath);
         } catch (PathNotFoundException ex) {
             logger.debug("Node does not exist or has no content, nothing to return");
         } catch (RepositoryException ex) {
             logger.error("Something bad append, Roger!", ex);
         }
         return ArrayUtils.EMPTY_BYTE_ARRAY;
+    }
+
+    public void setBytesData(byte[] bytesData) throws RepositoryException {
+        getConnector().setData(this.fileSystemAbsolutePath, bytesData);
+    }
+
+    @JsonIgnore
+    public FileContent getData() throws IOException {
+        return new FileContent(this.getBytesData());
+    }
+
+    @JsonIgnore
+    public void setData(FileContent data) throws RepositoryException {
+        this.setBytesData(data.getContent());
+    }
+
+    /**
+     * File content purpose is to define equals methods against the content
+     */
+    public static class FileContent {
+
+        private byte[] content;
+
+        public FileContent(byte[] content) {
+            this.content = Arrays.copyOf(content, content.length);
+        }
+
+        public byte[] getContent() {
+            return Arrays.copyOf(content, content.length);
+        }
+
+        public void setContent(byte[] content) {
+            this.content = Arrays.copyOf(content, content.length);
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash += 23 * hash + Arrays.hashCode(content);
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (this.getClass() != obj.getClass()) {
+                return false;
+            }
+            final FileContent other = (FileContent) obj;
+            return Arrays.equals(content, other.content);
+        }
     }
 }

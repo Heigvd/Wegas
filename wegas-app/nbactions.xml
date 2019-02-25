@@ -68,7 +68,7 @@
     </action>   
     <action>
         <actionName>CUSTOM-clean build run exploded skiptest</actionName>
-        <displayName>Clean Build Run -exploded -skipTests</displayName>
+        <displayName>Clean Build Run -exploded -skipTests (yarn)</displayName>
         <goals>
             <goal>clean</goal>
             <goal>install</goal>

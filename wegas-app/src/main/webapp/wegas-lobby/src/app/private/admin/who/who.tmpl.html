@@ -24,19 +24,21 @@
              user="user">
             <div class="card__description" title="ID: {{ user.userId}} &#10;Username: {{ user.username}} &#10;Connection: {{ adminWhoCtrl.getConnectionDate(user)}}&#10;Activity: {{ adminWhoCtrl.getLastActivityDate(user)}}">
                 <div class="line line--primary" style="padding: 0px; line-height: 17px;">
-                    <div class="card-number">{{ ($index + 1) + "."}}</div>
-                    <div class="card-fullname">{{ user.fullname}}</div>
-                    <div class="card-be button button--small button--round button--default-reverse button--label-off button--play"
-                         title="Impersonate !"
-                         ng-click="adminWhoCtrl.beByAccountId(user.mainAccountId, user.fullname)">
-                        <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN'| translate}}</span>
-                    </div>
-                    <div class="card-be button button--small button--round button--default-reverse button--label-off button--customize"
-                         title="{{'ADMIN-USERS-CARD-EDIT-BTN'| translate}}"
-                         ui-sref="wegas.private.admin.users.edit({id: user.userId})">
-                        <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN'| translate}}</span>
-                    </div>
-                    <div class="card-email">{{ user.email}}</div>
+                    <span class="card-number">{{ ($index + 1) + "."}}</span>
+                    <span class="card-fullname">{{ user.fullname}}</span>
+                    <span class="card-email">{{ user.email}}</span>
+                </div>
+            </div>
+            <div class="card__actions">
+                <div class="card-be button button--small button--round button--default-reverse button--label-off button--play"
+                     title="Impersonate !"
+                     ng-click="adminWhoCtrl.beByAccountId(user.mainAccountId, user.fullname)">
+                    <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN'| translate}}</span>
+                </div>
+                <div class="card-be button button--small button--round button--default-reverse button--label-off button--customize"
+                     title="{{'ADMIN-USERS-CARD-EDIT-BTN'| translate}}"
+                     ui-sref="wegas.private.admin.users.edit({id: user.userId})">
+                    <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN'| translate}}</span>
                 </div>
             </div>
         </div>

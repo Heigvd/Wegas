@@ -7,7 +7,9 @@
  */
 package com.wegas.core.security.util;
 
+import com.nimbusds.jose.util.StandardCharset;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -46,6 +48,7 @@ public class CacheControlFilter implements Filter {
             resp.setHeader("Cache-Control", "no-cache");
             logger.trace("CacheControl Filter: {} to no-cache", url);
         }
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         chain.doFilter(request, response);
     }
 

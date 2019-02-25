@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 @RequestScoped
 public class GameController extends AbstractGameController {
 
-    private static final long serialVersionUID = 569534896590048360L;
+    private static final long serialVersionUID = 1563759464312489408L;
 
     private static final Logger logger = LoggerFactory.getLogger(GameController.class);
 
@@ -120,7 +120,7 @@ public class GameController extends AbstractGameController {
         if (this.gameModelId != null) {
             GameModel gameModel = gameModelFacade.find(this.gameModelId);
             if (gameModel != null) {
-                if (gameModel.getTemplate()) {
+                if (gameModel.isScenario() || gameModel.isModel()){
                     // use the debug player from the debug game
                     currentPlayer = gameModel.getAnyLivePlayer();
                 } else {

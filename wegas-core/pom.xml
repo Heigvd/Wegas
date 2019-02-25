@@ -19,6 +19,11 @@
             <artifactId>commons-collections</artifactId>
         </dependency>
         <dependency>
+            <groupId>gov.adlnet</groupId>
+            <artifactId>jxapi</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
@@ -35,6 +40,11 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.java-diff-utils</groupId>
+            <artifactId>java-diff-utils</artifactId>
         </dependency>
 
         <!--<dependency>
@@ -74,6 +84,12 @@
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>oak-jcr</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -97,6 +113,12 @@
         <dependency>
             <groupId>com.github.fge</groupId>
             <artifactId>json-patch</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Liquibase -->
@@ -165,6 +187,12 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+        </dependency>
+
         <!--<dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>

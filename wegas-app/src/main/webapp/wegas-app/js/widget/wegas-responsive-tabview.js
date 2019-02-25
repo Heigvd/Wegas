@@ -105,7 +105,9 @@ YUI.add('wegas-responsive-tabview', function(Y) {
                     this.closeMenu();
                 } else {
 
-                    if (lastSelection < 0 && this.get("autoOpenFirst") || lastSelection >= this.tabView.size()) {
+                    if (lastSelection < 0 && (this.get("autoOpenFirst") && !this.get("contentBox").one(".smallscreen")) // autoOpen first item (butnot in smallsceen mode)
+                        || lastSelection >= this.tabView.size() // restore previous selection
+                        ) {
                         lastSelection = 0;
                     }
 

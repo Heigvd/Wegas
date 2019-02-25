@@ -1,9 +1,9 @@
 import React from 'react';
 import classNames from 'classnames';
-import { css } from 'glamor';
+import {css} from 'glamor';
 
 interface Props {
-    icon: string;
+    icon: IconValue;
     onClick: () => void;
     label?: string;
     disabled?: boolean;
@@ -15,8 +15,6 @@ interface Props {
     className?: string;
     prefixedLabel?: boolean;
     labelClassName?: string;
-    stackedOnIcon?: string; // For FontAwesome stacking feature, name/code of background icon
-    stackedOnClassName?: string; // Idem, className of background icon
 }
 const shapeStyle = css({
     width: 'auto',
@@ -44,7 +42,7 @@ const disabledStyle = css({
 const opacityStyle = css({
     opacity: 0,
 });
-const activeStyle = css({ textShadow: '0 0 4px' });
+const activeStyle = css({textShadow: '0 0 4px'});
 const grayStyle = css({
     color: 'darkslategray',
     fontWeight: 'bold',
@@ -66,16 +64,21 @@ function renderLabel(label?: string, labelClassName?: string) {
     return null;
 }
 
-function renderIcon(icon: string, stackedOnIcon?: string) {
-    if (stackedOnIcon) {
-        return (
-            <span className="fa-stack">
-                <span className={classNames(stackedOnIcon, 'fa-stack-2x')} />
-                <span className={classNames(icon, 'fa-stack-1x')} />
-            </span>
-        );
-    } else {
-        return <span className={classNames(icon)} />;
+type IconValue = string | IconArray;
+
+interface IconArray extends Array<IconValue> {}
+
+function renderIcon(icon: IconValue, key?: any) {
+    if (Array.isArray(icon)) {
+        return (<span className={`fa-stack ${css({lineHeight: "inherit !important"})}`}>
+            {
+                icon.map((item, index) => {
+                    return renderIcon(item, index);
+                })
+            }
+        </span>);
+    } else if (typeof icon === "string") {
+        return <span key={key} className={classNames(icon)} />;
     }
 }
 
@@ -84,16 +87,15 @@ function IconButton({
     onClick,
     grey,
     disabled,
-    iconColor,
     tooltip,
     opacity,
     active,
     className,
     label,
     prefixedLabel,
-    labelClassName,
-    stackedOnIcon,
+    labelClassName
 }: Props) {
+
     return (
         <span
             onClick={onClick}
@@ -108,7 +110,7 @@ function IconButton({
             {label && prefixedLabel === true
                 ? renderLabel(label, labelClassName)
                 : ''}
-            {renderIcon(icon, stackedOnIcon)}
+            {renderIcon(icon)}
             {label && !prefixedLabel ? renderLabel(label, labelClassName) : ''}
         </span>
     );

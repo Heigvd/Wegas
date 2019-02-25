@@ -8,19 +8,29 @@
 package com.wegas.core.persistence.game;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.Orderable;
+import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 /**
@@ -33,13 +43,13 @@ import javax.persistence.UniqueConstraint;
 @Entity
 @Table(
         uniqueConstraints = {
-            @UniqueConstraint(columnNames = {"gamemodel_id", "refname"})
+            @UniqueConstraint(columnNames = {"gamemodel_id", "code"})
         },
         indexes = {
             @Index(columnList = "gamemodel_id")
         }
 )
-public class GameModelLanguage extends AbstractEntity implements Orderable {
+public class GameModelLanguage extends AbstractEntity implements Orderable, NamedEntity, ModelScoped {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -49,30 +59,37 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
-    /**
-     * arbitrary code
-     */
-    @Column(length = 16, columnDefinition = "character varying(16) default ''::character varying")
-    private String refName;
 
     /**
      * short name like en, en_uk, or fr_ch
      */
     @Column(length = 16, columnDefinition = "character varying(16) default ''::character varying")
+    @WegasEntityProperty
     private String code;
+
+    @JsonIgnore
+    @Transient
+    private String refName;
 
     /**
      * Language name to display
      */
+    @WegasEntityProperty
     private String lang;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL)
+    private Visibility visibility = Visibility.PRIVATE;
 
     /**
      * Order, first language is the default one
      */
     private Integer indexOrder;
 
-    @Column(columnDefinition = "boolean default true")
-    private boolean active = true;
+    @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.INTERNAL)
+    private boolean active = false;
 
     @ManyToOne
     @JsonIgnore
@@ -81,6 +98,29 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
     @Override
     public Long getId() {
         return id;
+
+    }
+
+    /**
+     * Get the language unique name (ie its code...)
+     * TODO.rename/refactor
+     *
+     * @return
+     */
+    @Override
+    @JsonIgnore
+    public String getName() {
+        return this.getCode();
+    }
+
+    /**
+     * Set the language name  (ie its code)
+     * @param name
+     */
+    @Override
+    @JsonIgnore
+    public void setName(String name) {
+        this.setCode(name);
     }
 
     @Override
@@ -105,28 +145,77 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
         this.indexOrder = indexOrder;
     }
 
+    /**
+     * get the language identification code.
+     * Code is always uppercase.
+     *
+     * @return Uppercase language identification code
+     */
     public String getCode() {
-        return code;
+        return code != null ? code.toUpperCase() : null;
     }
 
+    /**
+     * Set the language identification code.
+     * The code will be uppercased.
+     *
+     * @param code the mew identification code
+     */
     public void setCode(String code) {
-        this.code = code;
+        if (this.refName != null) {
+            this.code = refName.toUpperCase();
+            this.refName = null;
+        } else {
+            this.code = code != null ? code.toUpperCase() : null;
+        }
     }
 
-    public String getLang() {
-        return lang;
-    }
-
-    public void setLang(String language) {
-        this.lang = language;
-    }
-
+    @JsonIgnore
     public String getRefName() {
         return refName;
     }
 
+    @JsonProperty
     public void setRefName(String refName) {
-        this.refName = refName;
+        if (refName != null) {
+            this.refName = refName;
+            this.code = refName.toUpperCase();
+        } else {
+            this.code = null;
+            this.refName = null;
+        }
+    }
+
+    /**
+     * Language full name
+     *
+     * @return the language name to display
+     */
+    public String getLang() {
+        return lang;
+    }
+
+    /**
+     * Set the language displayed name
+     *
+     * @param language name to display
+     */
+    public void setLang(String language) {
+        if (language != null) {
+            this.lang = language.toLowerCase();
+        } else {
+            this.lang = null;
+        }
+    }
+
+    @Override
+    public Visibility getVisibility() {
+        return this.visibility;
+    }
+
+    @Override
+    public void setVisibility(Visibility visibility) {
+        this.visibility = visibility;
     }
 
     public GameModel getGameModel() {
@@ -148,12 +237,7 @@ public class GameModelLanguage extends AbstractEntity implements Orderable {
     }
 
     @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof GameModelLanguage) {
-            GameModelLanguage lg = (GameModelLanguage) other;
-            this.setCode(lg.getCode());
-            this.setActive(lg.isActive());
-            this.setLang(lg.getLang());
-        }
+    public WithPermission getMergeableParent() {
+        return this.gameModel;
     }
 }

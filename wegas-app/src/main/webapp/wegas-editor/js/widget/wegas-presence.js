@@ -47,10 +47,13 @@ YUI.add('wegas-presence', function(Y) {
      * @class
      */
     Chat = Y.Base.create("wegas-editorchat", Y.Widget, [Y.WidgetChild], {
-        BOUNDING_TEMPLATE: "<div><div class='conversation'>" +
-            "<div class='msgs'></div>" +
-            "<div style='clear: both'></div><textarea  rows='3' class='input' placeholder='Your message'></textarea></div>" +
-            "<div class='editorchat-footer'><i class='chat-icon fa fa-comments'></i> <span class='pusher-status'></span><span class='count'></span><span class='user-list'></span></div></div>",
+        BOUNDING_TEMPLATE: "<div>" +
+            "<div class='editorchat-footer'>" +
+            "  <i class='chat-icon fa fa-comments'></i>" +
+            "  <span class='pusher-status'></span>" +
+            "  <span class='count'></span>" +
+            "  <span class='user-list'></span>" +
+            "</div></div>",
         CONTENT_TEMPLATE: null,
         initializer: function() {
             this.closed = true;
@@ -60,6 +63,18 @@ YUI.add('wegas-presence', function(Y) {
             } else {
                 Y.Wegas.Facade.Pusher.once("statusChange", this._initConnection, this);
             }
+
+            this.chatOverlay = new Y.Overlay({
+                zIndex: 100,
+                cssClass: "yui3-wegas-editorchat",
+                constrain: true,
+                bodyContent: "<div class='wegas-editorchat-conversation'>" +
+                    "  <div class='msgs'></div>" +
+                    "  <div style='clear: both'></div>" +
+                    "  <textarea  rows='3' class='input' placeholder='Your message'></textarea>" +
+                    "</div>",
+                visible: false
+            }).render();
         },
         _initConnection: function() {
             var gmID = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id");
@@ -69,20 +84,21 @@ YUI.add('wegas-presence', function(Y) {
             pagePresence.bind('pusher:subscription_succeeded', this.onConnected, this);
             pagePresence.bind("pusher:member_removed", this.onRemoved, this);
             pagePresence.bind("pusher:member_added", this.onAdded, this);
-        //pagePresence.bind_all(Y.bind(this.onEvent, this));
+            //pagePresence.bind_all(Y.bind(this.onEvent, this));
         },
         renderUI: function() {
-            var cb = this.get(CONTENTBOX);
-
-            this.field = cb.one(".input");
-            this.footer = cb.one(".editorchat-footer");
-            this.get(CONTENTBOX).one(".conversation").toggleClass("closed", this.closed);
+            this.field = this.chatOverlay.get("contentBox").one(".input");
+            this.footer = this.get("contentBox").one(".editorchat-footer");
+            //this.get(CONTENTBOX).one(".conversation").toggleClass("closed", this.closed);
             updateState(this.get(CONTENTBOX).one(".pusher-status"), Y.Wegas.Facade.Pusher.get("status"));
         },
         bindUI: function() {
-            this._handlers.push(this.get(CONTENTBOX).on("clickoutside", function() {
-                this.closed = true;
-                this.get(CONTENTBOX).one(".conversation").toggleClass("closed", this.closed);
+            //this._handlers.push(this.chatOverlay.get(CONTENTBOX).on("clic", function() {
+            this._handlers.push(Y.one("body").on("click", function() {
+                if (!this.closed) {
+                    this.closed = true;
+                    this.chatOverlay.hide();
+                }
             }, this));
             this._handlers.push(Y.Wegas.Facade.Pusher.on("statusChange", function(e) {
                 updateState(this.get(CONTENTBOX).one(".pusher-status"), e.newVal);
@@ -93,11 +109,26 @@ YUI.add('wegas-presence', function(Y) {
                     this.sendInput();
                 }
             }, "enter", this));
-            this._handlers.push(this.footer.on("click", function() {
-                this.closed = !this.closed;
-                this.get(CONTENTBOX).one(".conversation").toggleClass("closed", this.closed);
-                this.get(CONTENTBOX).removeClass("new-message");
-                this.get(CONTENTBOX).all("span").removeClass("new-message");
+
+            this._handlers.push(this.chatOverlay.get("contentBox").on("click", function(e) {
+                // do not bubble
+                e.halt(true);
+            }, this));
+            this._handlers.push(this.footer.on("click", function(e) {
+                if (this.closed) {
+                    this.closed = false;
+
+                    Y.later(0, this, function() {
+                        this.chatOverlay.get("boundingBox").setStyle("left", this.get("boundingBox").getDOMNode().getBoundingClientRect().x
+                            - this.chatOverlay.get("contentBox").getDOMNode().getBoundingClientRect().width - 10);
+                    });
+
+                    this.chatOverlay.show();
+                    //this.get(CONTENTBOX).one(".conversation").toggleClass("closed", this.closed);
+                    this.get(CONTENTBOX).removeClass("new-message");
+                    this.get(CONTENTBOX).all("span").removeClass("new-message");
+                    e.halt(true);
+                }
             }, this));
         },
         sendInput: function() {
@@ -159,9 +190,9 @@ YUI.add('wegas-presence', function(Y) {
             }
         },
         addToChat: function(html, notification) {
-            var msgBox = this.get(CONTENTBOX).one('.msgs'),
+            var msgBox = this.chatOverlay.get(CONTENTBOX).one('.msgs'),
                 node = (html instanceof Y.Node) ? html :
-                    Y.Node.create(html);
+                Y.Node.create(html);
             msgBox.append(node);
             this.lastNode = node;
             msgBox.getDOMNode().scrollTop = msgBox.getDOMNode().scrollHeight;
@@ -172,15 +203,13 @@ YUI.add('wegas-presence', function(Y) {
         onMessage: function(data) {
             var sender = ((pagePresence.members.me.id === data.sender) ? "me" : pagePresence.members.get(data.sender).info.name);
             data.data = Y.Escape.html(data.data);
-            if (this.lastNode && this.lastNode.one(".sender") &&
-                this.lastNode.one(".sender").get("text") === sender) {
-                this.lastNode.append('<div class="content">' + data.data + '</div>');
-                this.addToChat(this.lastNode);
-            } else {
-                this.addToChat('<div class="msg ' + (sender === "me" ? "me" : "") +
-                    '"><div class="sender">' + sender + '</div>' +
-                    '<div class="content">' + data.data + '</div></div>');
+            if (sender !== "me") {
+                Y.Wegas.Alerts.showNotification(sender + " sent a message in the chat room", {timeout: 2000});
             }
+            this.addToChat('<div class="msg ' + (sender === "me" ? "me" : "") +
+                '"><div class="sender">' + sender + " (" + (new Date()).toLocaleTimeString() + ')</div>' +
+                '<div class="content">' + data.data + '</div></div>');
+            //}
             if (this.closed) {
                 this.get(CONTENTBOX).all(".u" + data.sender).addClass("new-message");
             }

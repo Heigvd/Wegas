@@ -11,7 +11,6 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.GameController;
-import java.util.logging.Level;
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -39,10 +38,13 @@ public class GameModelCheck {
     private UserTransaction utx;
 
     @Inject
-    private RequestFacade requestFacade;
+    private RequestManager requestManager;
 
     @Inject
     private GameController gameController;
+
+    @Inject
+    private HelperBean helperBean;
 
     public Exception validate(GameModel gameModel) {
         return this.createGameAndRollback(gameModel);
@@ -56,11 +58,13 @@ public class GameModelCheck {
                 Game game = new Game();
                 game.setName("aGame");
                 gameController.create(gameModel.getId(), game);
-            } catch (Exception  ex) {
+            } catch (Exception ex) {
                 logger.error("Fail to create a game based on {} ({})", gameModel, ex);
                 return ex;
             } finally {
+                requestManager.setPlayer(null);
                 utx.rollback();
+                helperBean.wipeCache();
             }
         } catch (NotSupportedException | SystemException ex) {
             logger.error("Transaction failed", ex);

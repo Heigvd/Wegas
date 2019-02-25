@@ -13,14 +13,17 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.Orderable;
-import com.wegas.core.persistence.variable.Searchable;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
@@ -55,7 +58,7 @@ import javax.persistence.UniqueConstraint;
             @Index(columnList = "parentstring_id")
         }
 )
-public class EnumItem extends AbstractEntity implements Searchable, LabelledEntity, Orderable {
+public class EnumItem extends AbstractEntity implements LabelledEntity, Orderable {
 
     private static final long serialVersionUID = 1L;
 
@@ -75,6 +78,7 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
     /**
      * Internal identifier
      */
+    @WegasEntityProperty(searchable = true)
     private String name;
 
     @Column(name = "item_order")
@@ -82,6 +86,8 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
     private Integer order;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
     private TranslatableContent label;
 
     @Override
@@ -154,6 +160,15 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
     }
 
     @Override
+    public WithPermission getMergeableParent() {
+        if (this.getParentString() != null) {
+            return getParentString();
+        } else {
+            return getParentEvaluation();
+        }
+    }
+
+    @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         if (this.parentEvaluation != null) {
             return parentEvaluation.getRequieredReadPermission();
@@ -173,21 +188,6 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
         }
 
         return null;
-    }
-
-    @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof EnumItem) {
-            EnumItem o = (EnumItem) other;
-            this.setName(o.getName());
-            this.setLabel(TranslatableContent.merger(this.getLabel(), o.getLabel()));
-        }
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(getName(), criterias)
-                || Helper.insensitiveContainsAll(getLabel(), criterias);
     }
 
     public static class ListDeserializer extends StdDeserializer<List<EnumItem>> {
@@ -219,7 +219,7 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
                     if (currentToken == JsonToken.VALUE_STRING) {
                         String strItem = p.getText();
                         EnumItem item = new EnumItem();
-                        item.setLabel(TranslatableContent.build("def", strItem));
+                        item.setLabel(TranslatableContent.build("en", strItem));
                         item.setName(strItem);
                         items.add(item);
                     } else if (currentToken == JsonToken.START_OBJECT) {
@@ -239,11 +239,10 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
                 TypeDeserializer typeDeserializer) throws IOException {
             JsonToken currentToken = p.currentToken();
             if (currentToken == JsonToken.VALUE_STRING) {
-                return TranslatableContent.build("def", p.getText());
+                return TranslatableContent.build("en", p.getText());
             }
             return super.deserializeWithType(p, ctxt, typeDeserializer);
         }
 
     }
-
 }

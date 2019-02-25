@@ -68,7 +68,7 @@ angular.module('private.player', [
             } else if ($state.current.name === 'wegas.private.guest') {
                 $state.go("wegas.private.player");
             }
-            $("body").removeClass("admin scenarist trainer").addClass("player");
+            $("body").removeClass("admin scenarist trainer modeler").addClass("player");
 
             if (user.isGuest) {
                 $("body").addClass("guest");

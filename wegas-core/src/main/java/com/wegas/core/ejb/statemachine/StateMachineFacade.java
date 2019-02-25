@@ -21,11 +21,11 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
@@ -117,7 +117,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements  StateMac
      * @return all stateMachines which exists in gameModel
      */
     private List<StateMachineDescriptor> getAllStateMachines(final GameModel gameModel) {
-        final Set<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
+        final Collection<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
         final List<StateMachineDescriptor> stateMachineDescriptors = new ArrayList<>();
         for (VariableDescriptor vd : variableDescriptors) {
             if (vd instanceof StateMachineDescriptor) {

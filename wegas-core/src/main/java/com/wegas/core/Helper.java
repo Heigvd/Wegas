@@ -16,6 +16,8 @@ import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
+import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.EnumItem;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
@@ -42,6 +44,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -316,19 +319,19 @@ public class Helper {
         Map<String, List<String>> mapUsedlabels = new HashMap<>();
 
         for (TranslatableContent label : usedLabels) {
-            for (Entry<String, String> translation : label.getTranslations().entrySet()) {
+            for (Entry<String, Translation> translation : label.getTranslations().entrySet()) {
                 if (!mapUsedlabels.containsKey(translation.getKey())) {
                     mapUsedlabels.put(translation.getKey(), new ArrayList<>());
                 }
-                mapUsedlabels.get(translation.getKey()).add(translation.getValue());
+                mapUsedlabels.get(translation.getKey()).add(translation.getValue().getTranslation());
             }
         }
 
-        Map<String, String> translations = theLabel.getTranslations();
-        for (String refName : translations.keySet()) {
-            String currentLabel = translations.get(refName);
-            if (!Helper.isNullOrEmpty(currentLabel)) {
-                theLabel.updateTranslation(refName, findUniqueLabel(currentLabel, mapUsedlabels.get(refName)));
+        Map<String, Translation> translations = theLabel.getTranslations();
+        for (String code : translations.keySet()) {
+            Translation currentLabel = translations.get(code);
+            if (!Helper.isNullOrEmpty(currentLabel.getTranslation())) {
+                theLabel.updateTranslation(code, findUniqueLabel(currentLabel.getTranslation(), mapUsedlabels.get(code)));
             }
         }
 
@@ -560,6 +563,8 @@ public class Helper {
      * @return String token
      */
     public static String genToken(final int length) {
+        //return random.ints(length, 48, 110) // 48-57 [0-9] 58-83 -> 65-90 [A-Z] 84-109 -> 97-122 [a-z]
+        //        .map(i -> (i < 58 ? i : (i > 83 ? i + 13 : i + 7)))
         return random.ints(48, 123) // 48-57 [0-9] 65-90 [A-Z] 97-122 [a-z]
                 .filter(i -> (i < 58) || (i > 64 && i < 91) || (i > 96))
                 .limit(length)
@@ -762,19 +767,6 @@ public class Helper {
     }
 
     /**
-     * @param trContent
-     * @param criterias needles
-     *
-     * @return true if trContent is not null and matches all criterias
-     */
-    public static Boolean insensitiveContainsAll(TranslatableContent trContent, List<String> criterias) {
-        if (trContent != null) {
-            return trContent.containsAll(criterias);
-        }
-        return false;
-    }
-
-    /**
      * Checked conversion from long to int
      *
      * @param value value to convert
@@ -912,6 +904,67 @@ public class Helper {
         }
     }
 
+    private static void indent(StringBuilder sb, int ident) {
+        for (int i = 0; i < ident; i++) {
+            sb.append("  ");
+        }
+    }
+
+    private static void newLine(StringBuilder sb, int ident) {
+        sb.append("\n");
+        Helper.indent(sb, ident);
+    }
+
+    private static void printDescriptors(GameModel gameModel, List<VariableDescriptor> list, StringBuilder sb, int level) {
+        for (VariableDescriptor vd : list) {
+            newLine(sb, level);
+            sb.append(vd).append("(").append(gameModel.getVariableDescriptors().contains(vd)).append(" -> ").append(vd.getDefaultInstance());
+            if (vd instanceof DescriptorListI) {
+                printDescriptors(gameModel, ((DescriptorListI) vd).getItems(), sb, level + 1);
+            }
+        }
+    }
+
+    public static String printGameModel(GameModel gameModel) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("GameModel ").append(gameModel);
+
+        newLine(sb, 0);
+
+        printDescriptors(gameModel, gameModel.getItems(), sb, 1);
+
+        return sb.toString();
+    }
+
+    public static Level setLoggerLevel(Class klass, Level level) {
+        return Helper.setLoggerLevel(LoggerFactory.getLogger(klass), level);
+    }
+
+    /**
+     * Set logger level and returns the previous level.
+     *
+     * @param logger
+     * @param level
+     *
+     * @return the previous level
+     */
+    public static Level setLoggerLevel(Logger logger, Level level) {
+        if (logger instanceof ch.qos.logback.classic.Logger) {
+            ch.qos.logback.classic.Logger qLogger = (ch.qos.logback.classic.Logger) logger;
+            ch.qos.logback.classic.Level pLevel = qLogger.getLevel();
+            if (level != null) {
+                qLogger.setLevel(ch.qos.logback.classic.Level.valueOf(level.toString()));
+            } else {
+                qLogger.setLevel(null);
+            }
+            if (pLevel != null) {
+                return Level.valueOf(pLevel.toString());
+            }
+        }
+        return null;
+    }
+
     /**
      * Returns the IP address of the requesting host by looking first at headers provided by (reverse) proxies.
      * Depending on local config, it may be necessary to check additional headers.
@@ -930,4 +983,26 @@ public class Helper {
         }
         return ip;
     }
+
+    /**
+     * Check if current visibility imply read only access for scenarist under given protection level.
+     *
+     * @param level      protection level
+     * @param visibility visibility to check
+     *
+     * @return true if a scenarist is not allowed to perform an update
+     */
+    public static boolean isProtected(ProtectionLevel level, Visibility visibility) {
+        //             all, protected, internal
+        // internal    t        t         t
+        // protected   t        t         f
+        // inherited   t        f         f
+        // private     t        f         f
+
+        return (level == ProtectionLevel.ALL
+                || visibility == Visibility.INTERNAL
+                || (level == ProtectionLevel.PROTECTED && visibility == Visibility.PROTECTED)
+                || (level == ProtectionLevel.INHERITED && (visibility == Visibility.PROTECTED || visibility == Visibility.INHERITED)));
+    }
+
 }

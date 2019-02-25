@@ -60,12 +60,13 @@ YUI.add('wegas-editor-action', function(Y) {
             // Ask confirmation when editing the scenario of a real game
             if (!editGame || confirm("This action will reset all players in the game you're editing the scenario for. Do you really want to continue?")) {
                 this.showOverlay();
+                Y.Wegas.app.fire("beforeReset");
                 Wegas.Facade.Variable.sendRequest({
                     request: '/Reset/',
                     on: {
                         success: cb,
-                        failure: cb,
-                    },
+                        failure: cb
+                    }
                 });
             }
         }

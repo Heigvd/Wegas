@@ -47,12 +47,20 @@ YUI.add('wegas-app', function(Y) {
             this.publish("render");
 
             /**
+             * Fired just before resetting the scenario
+             */
+            this.publish("beforeReset");
+
+            /**
              * @name render after render event
              * @event
              */
             this.publish("ready", {
                 fireOnce: true
             });
+
+            this.publish("newSearchVal");
+
             this.dataSources = {};
 
             this._pendingRequests = 0;
@@ -87,7 +95,7 @@ YUI.add('wegas-app', function(Y) {
                 events = [], event,
                 requestCounter = 0, //                                          // Request counter 
                 onRequest = function() { // When a response to initial requests is received
-                    var playerRefName, playerLanguage;
+                    var playerCode, playerLanguage;
                     requestCounter -= 1;
                     Y.one(".wegas-loading-app-current").setAttribute("style", "width:" + ((1 - requestCounter / totalRequests) * 100) + "%");
 
@@ -113,22 +121,22 @@ YUI.add('wegas-app', function(Y) {
 
                         this.fire("preRender");
 
-                        playerRefName = Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("refName");
-                        playerLanguage = I18n.findLanguageByRefName(playerRefName);
+                        playerCode = Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("lang");
+                        playerLanguage = I18n.findLanguageByCode(playerCode);
                         if (playerLanguage && playerLanguage.get("active")) {
-                            I18n.setRefName(playerRefName);
+                            I18n.setCode(playerCode);
 
                             Y.later(10, this, function() { // Let the loading div update
-                                this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
-                                    .render(); // and render it
+                                    this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
+                                        .render(); // and render it
                                 this.fire("render"); // Fire a render event for some post processing
                                 this.fire("ready"); // Fire a ready event for some eventual post processing
                                 Y.log("Ready");
                                 Y.one(".wegas-loading-app").remove();
                             });
                         } else {
-                            I18n.resetPlayerRefName(Y.bind(function(newRefName) {
-                                I18n.setRefName(newRefName);
+                            I18n.resetPlayerCode(Y.bind(function(newCode) {
+                                I18n.setCode(newCode);
                                 Y.later(10, this, function() { // Let the loading div update
                                     this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
                                         .render(); // and render it
@@ -218,6 +226,10 @@ YUI.add('wegas-app', function(Y) {
                         .toggleClass("wegas-advancedmode");
                     Y.config.win.Y = Y; // Allow access to Y instance
                 }, "167", this);
+
+                Y.one("body").on("key", function(e) { // Add shortcut to activate internal mode on key '°' pressed
+                    e.currentTarget.toggleClass("wegas-internalmode");
+                }, "176", this);
             });
         },
         resume: function() {
@@ -303,10 +315,10 @@ YUI.add('wegas-app', function(Y) {
          * @public
          */
         destructor: function() {
+            this.widget.destroy();
             Y.Object.each(this.dataSources, function(i) {
                 i.destroy();
             });
-            this.widget.destroy();
         },
         // ** Private methods ** //
         /**

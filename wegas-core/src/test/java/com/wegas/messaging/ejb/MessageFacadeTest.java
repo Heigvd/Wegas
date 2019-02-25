@@ -67,6 +67,7 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         this.exec(player, "Variable.find(gameModel, \"inbox\").sendDatedMessage(self, \"from3\", \"date\", \"subject\", \"body\");");
 
         this.exec(player, "Variable.find(gameModel, \"inbox\").sendMessage(self, \"from4\", \"subject\", \"body\", [\"att\"]);");
+        //NPE
         this.exec(player, "Variable.find(gameModel, \"inbox\").sendMessage(self, \"from5\", \"date\", \"subject\", \"body\", \"token\", [\"att1\"]);");
         this.exec(player, "Variable.find(gameModel, \"inbox\").sendDatedMessage(self, \"from6\", \"date\", \"subject\", \"body\", [\"att\"]);");
 

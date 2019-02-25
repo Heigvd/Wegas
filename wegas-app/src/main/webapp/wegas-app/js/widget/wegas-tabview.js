@@ -93,31 +93,32 @@ YUI.add('wegas-tabview', function(Y) {
                 value: "Tab"
             }
         },
-        EDITMENU: [{
-                type: "Button",
-                label: "Edit",
-                plugins: [{
-                        fn: "EditWidgetAction"
-                    }
-                ]
-            }, {
-                type: "Button",
-                label: "Add tab",
-                plugins: [{
-                        fn: "AddChildWidgetAction",
-                        cfg: {
-                            childType: "Tab"
+        EDITMENU: {
+            addBtn: {
+                cfg: {
+                    type: "Button",
+                    label: "Add tab",
+                    plugins: [{
+                            fn: "AddChildWidgetAction",
+                            cfg: {
+                                childType: "Tab"
+                            }
                         }
-                    }
-                ]
-            }, {
-                type: "Button",
-                label: "Delete",
-                plugins: [{
-                        fn: "DeleteLayoutWidgetAction"
-                    }
-                ]
-            }],
+
+                    ]
+                }
+            },
+            deletBtn: {
+                index: 30,
+                cfg: {
+                    type: "Button",
+                    label: "Delete",
+                    plugins: [{
+                            fn: "DeleteLayoutWidgetAction"
+                        }]
+                }
+            }
+        },
         /**
          * References to tabs
          */
@@ -333,7 +334,7 @@ YUI.add('wegas-tabview', function(Y) {
                 return;
             }
             plusMenu.show();
-            if (!Y.Wegas.Config.EditorAdvancedTabs){
+            if (!Y.Wegas.Config.EditorAdvancedTabs) {
                 Y.one(TabView.getOppositeTabView(tabViewId) + " .wegas-plus-tab").hide();
             }
 

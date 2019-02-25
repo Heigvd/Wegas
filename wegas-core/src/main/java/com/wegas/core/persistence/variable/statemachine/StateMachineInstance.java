@@ -7,19 +7,19 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.EntityComparators;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.*;
 
 /**
  *
@@ -44,11 +44,13 @@ public class StateMachineInstance extends VariableInstance {
      *
      */
     @Column(name = "currentstate_id")
+    @WegasEntityProperty
     private Long currentStateId;
     /**
      *
      */
     @Column(columnDefinition = "boolean default true")
+    @WegasEntityProperty
     private Boolean enabled = true;
     /**
      *
@@ -56,6 +58,8 @@ public class StateMachineInstance extends VariableInstance {
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "transitionHistory")
     @JsonIgnore
+    @WegasEntityProperty
+    // history refers to ids of travelled transitions
     private List<TransitionHistoryEntry> transitionHistory = new ArrayList<>();
 
     /**
@@ -70,7 +74,7 @@ public class StateMachineInstance extends VariableInstance {
      */
     @JsonProperty("currentState")
     public State getCurrentState() {
-        final Map<Long, State> states = ((StateMachineDescriptor) this.findDescriptor()).getStates();
+        final Map<Long, State> states = ((StateMachineDescriptor) this.findDescriptor()).getStatesAsMap();
         return states.get(this.currentStateId);
     }
 
@@ -148,19 +152,6 @@ public class StateMachineInstance extends VariableInstance {
         this.setTransitionHistory(h);
     }
 
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof StateMachineInstance) {
-            StateMachineInstance other = (StateMachineInstance) a;
-            super.merge(a);
-            this.setCurrentStateId(other.getCurrentStateId());
-            this.setEnabled(other.getEnabled());
-            this.setTransitionHistory(new ArrayList<>());
-            this.getTransitionHistory().addAll(other.getTransitionHistory());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
-    }
 
     @Override
     public String toString() {

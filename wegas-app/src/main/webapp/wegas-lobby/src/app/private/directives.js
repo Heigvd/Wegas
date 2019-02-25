@@ -56,6 +56,9 @@ angular.module('private.directives', [])
                     // Decide which controller to display in background
                     var profileState;
                     switch($state.current.name){
+                        case "wegas.private.modeler":
+                            profileState = "wegas.private.profile.modeler";
+                            break;
                         case "wegas.private.scenarist":
                             profileState = "wegas.private.profile.scenarist";
                             break;

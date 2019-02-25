@@ -41,7 +41,7 @@ YUI.add("wegas-showoverlayonclick", function(Y) {
             this.bind();
         },
         bind: function() {
-            this.handlers.push(this.get("host").get("boundingBox").on("click", this.onClick, this));
+            this.onHostEvent("click", this.onClick, this);
             this.handlers.push(this.get("host").get("boundingBox").on("clickoutside", this.hide, this));
             //this.handlers.push(Y.one("body").on("click", this.hide, this));
             this.onceAfterHostEvent("render", this._sync);
@@ -62,6 +62,7 @@ YUI.add("wegas-showoverlayonclick", function(Y) {
             bb.toggleClass("wegas-onclick-overlay--displayed", false);
         },
         onClick: function(e) {
+            Y.log("ONCLICK SHOWOVERLAY");
             if (this.displayed) {
                 this.hide(null);
             } else {
@@ -138,7 +139,10 @@ YUI.add("wegas-showoverlayonclick", function(Y) {
             maxwidth: {
                 type: "string",
                 value: "",
-                optional: true
+                optional: true,
+                view: {
+                    label: "Max Width"
+                }
             },
             variable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
@@ -148,12 +152,12 @@ YUI.add("wegas-showoverlayonclick", function(Y) {
                 }
             },
             theWidget: {
-                type:"object",
+                type: "object",
                 value: {
                     "type": "InboxList"
                 },
-                properties:{
-                    type:{
+                properties: {
+                    type: {
                         type: "string"
                     }
                 },

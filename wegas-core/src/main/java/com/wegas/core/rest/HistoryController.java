@@ -22,15 +22,14 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import org.slf4j.LoggerFactory;
-
+import java.util.Date;
+import java.util.List;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.util.Date;
-import java.util.List;
-import javax.inject.Inject;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -54,7 +53,6 @@ public class HistoryController {
 
     @Inject
     private RequestManager requestManager;
-    
 
     @Inject
     private UserFacade userFacade;
@@ -64,20 +62,19 @@ public class HistoryController {
 
     /**
      * @param gameModelId
-     * @param directory
      *
      * @return list of directory content
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<AbstractContentDescriptor> listDirectory(@PathParam("gameModelId") Long gameModelId) {
-        return jcrFacade.listDirectory(gameModelId, ContentConnector.WorkspaceType.HISTORY, "/");
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        return jcrFacade.listDirectory(gameModel, ContentConnector.WorkspaceType.HISTORY, "/");
     }
 
     /**
      * @param gameModelId
      * @param absolutePath
-     * @param force
      *
      * @return the destroyed element or HTTP not modified
      *
@@ -88,9 +85,12 @@ public class HistoryController {
     @Path("{absolutePath : .*?}")
     @Produces(MediaType.APPLICATION_JSON)
     public Object delete(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("absolutePath") String absolutePath){
+            @PathParam("absolutePath") String absolutePath) {
 
-        return jcrFacade.delete(gameModelId, ContentConnector.WorkspaceType.HISTORY, absolutePath, "true");
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gameModel);
+
+        return jcrFacade.delete(gameModel, ContentConnector.WorkspaceType.HISTORY, absolutePath, "true");
     }
 
     /**
@@ -129,7 +129,7 @@ public class HistoryController {
             name = name + ".json";
         }
 
-        jcrFacade.createFile(gameModelId, ContentConnector.WorkspaceType.HISTORY, name + ".json", "/",
+        jcrFacade.createFile(gameModel, ContentConnector.WorkspaceType.HISTORY, name + ".json", "/",
                 "application/octet-stream", null, null,
                 new ByteArrayInputStream(gameModelFacade.find(gameModelId).toJson(Views.Export.class).getBytes("UTF-8")), false);
     }
@@ -166,14 +166,21 @@ public class HistoryController {
     public GameModel createFromVersion(@PathParam("gameModelId") Long gameModelId,
             @PathParam("path") String path) throws IOException {
 
-        InputStream file = jcrFacade.getFile(gameModelId, WorkspaceType.HISTORY, path);           // Retrieve file from content repository
+        GameModel original = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(original);
 
-        ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
-        GameModel gm = mapper.readValue(file, GameModel.class);                 // and deserialize file
+        // Retrieve file from content repository
+        InputStream file = jcrFacade.getFile(original, WorkspaceType.HISTORY, path);
 
-        gm.setName(gameModelFacade.findUniqueName(gm.getName()));               // Find a unique name for this new game
+        // Retrieve a jackson mapper instance and deserialize file
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();
+        GameModel gm = mapper.readValue(file, GameModel.class);
+
+        // Find a unique name for this new gameModel
+        gm.setName(gameModelFacade.findUniqueName(gm.getName(), gm.getType()));
         gameModelFacade.createWithDebugGame(gm);
 
+        // TODO
         return gm;
     }
 }

@@ -1,11 +1,11 @@
-import React, { CSSProperties } from 'react';
+import React, {CSSProperties} from 'react';
 import TextField from './string';
 import commonView from '../HOC/commonView';
 import ObjectView from './object';
 import IconButton from '../Components/IconButton';
-import { WidgetProps } from 'jsoninput/typings/types';
-import { AddStatementButton } from '../Script/Views/Button';
-import { css } from 'glamor';
+import {WidgetProps} from 'jsoninput/typings/types';
+import {AddStatementButton} from '../Script/Views/Button';
+import {css} from 'glamor';
 
 const KEY_DEFAULT_VALUE = '';
 const halfWidth: CSSProperties = {
@@ -20,14 +20,17 @@ const flex = css({
 const bottom = css({
     alignSelf: 'flex-end',
 });
-type HashListProps = WidgetProps.ObjectProps<{ keyLabel?: string }> & {
+type HashListProps = WidgetProps.ObjectProps<{keyLabel?: string}> & {
     id: string;
+    view: {
+        readOnly: boolean;
+    };
 };
 class HashlistView extends React.Component<
     HashListProps,
-    { newInputValue: string }
-> {
-    child: { [key: string]: HTMLElement };
+    {newInputValue: string}
+    > {
+    child: {[key: string]: HTMLElement};
     constructor(props: HashListProps) {
         super(props);
         this.state = {
@@ -47,9 +50,9 @@ class HashlistView extends React.Component<
         }, 20);
     }
     render() {
-        const { id, removeKey, alterKey, children, ...restProps } = this.props;
+        const {id, removeKey, alterKey, children, ...restProps} = this.props;
         const newChildren = React.Children.map(children, child => {
-            const c = child as React.ReactElement<{ editKey: string }>;
+            const c = child as React.ReactElement<{editKey: string; schema : {view: {label: string}}}>;
             function remove() {
                 removeKey(c.props.editKey);
             }
@@ -61,11 +64,12 @@ class HashlistView extends React.Component<
                     // duplicate key
                 }
             }
+            const readOnly = restProps.view.readOnly;
 
             return (
                 <div {...flex} key={c.props.editKey}>
                     <div
-                        style={{ position: 'relative', flex: 1 }}
+                        style={{position: 'relative', flex: 1}}
                         ref={node => {
                             if (node !== null) {
                                 this.child[c.props.editKey] = node;
@@ -80,16 +84,19 @@ class HashlistView extends React.Component<
                             view={{
                                 label: this.props.view.keyLabel || 'Key',
                                 style: halfWidth,
+                                readOnly: readOnly
                             }}
                         />
                         <div style={halfWidth}>{child}</div>
                     </div>
-                    <IconButton
-                        icon="fa fa-trash"
-                        tooltip="Remove property"
-                        className={String(bottom)}
-                        onClick={remove}
-                    />
+                    {!readOnly ?
+                        <IconButton
+                            icon="fa fa-trash"
+                            tooltip="Remove property"
+                            className={String(bottom)}
+                            onClick={remove}
+                        />
+                        : null}
                 </div>
             );
         });
@@ -110,13 +117,15 @@ class HashlistView extends React.Component<
             <ObjectView {...restProps}>
                 {newChildren}
                 <br />
-                <AddStatementButton
-                    key="newkeyadd"
-                    icon="fa fa-plus-circle"
-                    tooltip="Add property value"
-                    label="Property"
-                    onClick={this.addChild}
-                />
+                {!this.props.view.readOnly ?
+                    <AddStatementButton
+                        key="newkeyadd"
+                        icon="fa fa-plus-circle"
+                        tooltip="Add property value"
+                        label="Property"
+                        onClick={this.addChild}
+                    />
+                    : null}
             </ObjectView>
         );
     }

@@ -5,6 +5,8 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global I18n */
+
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -99,7 +101,14 @@ YUI.add('wegas-plugin', function(Y) {
                 this.get(HOST)
                     .get('boundingBox')
                     .addClass('wegas-' + this.get('targetEvent'));
-                this.onHostEvent(this.get('targetEvent'), this.execute);
+                this.onHostEvent(this.get('targetEvent'), this.filterEvent);
+            },
+            filterEvent: function(e) {
+                // Yui delegate design fire the event for each nested wiedget:we do not want this behaviour
+                // Hence, we make sure event target is the host
+                if (this.get("host") === e.target) {
+                    this.execute();
+                }
             },
             /**
              * @function
@@ -147,57 +156,56 @@ YUI.add('wegas-plugin', function(Y) {
      *  @extends Y.Plugin.Action
      *  @constructor
      */
-    var FireAndForgetRequestAction = Y.Base.create(
-        'FireAndForgetRequest',
-        Action,
-        [],
-        {
-            execute: function() {
-                Y.io(Y.Wegas.app.get('base') + this.get('url'), {
-                    method: this.get('method'),
-                    data: this.get('data'),
-                    headers: {'Content-Type': 'application/json'}
-                });
-            }
-        },
-        {
-            NS: 'fireandforgetrequestaction',
-            ATTRS: {
-                url: {
-                    type: 'string',
-                    view: {
-                        label: 'Url'
-                    }
-                },
-                method: {
-                    type: 'string',
-                    value: 'GET',
-                    view: {
-                        choices: [
-                            {
-                                value: 'GET'
-                            },
-                            {
-                                value: 'POST'
-                            },
-                            {
-                                value: 'DELETE'
-                            },
-                            {
-                                value: 'PUT'
-                            }
-                        ]
-                    }
-                },
-                data: {
-                    type: 'string',
-                    view: {
-                        label: 'Data'
-                    }
+    var FireAndForgetRequestAction = Y.Base.create('FireAndForgetRequest',
+        Action, [], {
+        execute: function() {
+            var headers = Y.mix({}, this.get("headers"));
+            Y.mix(headers, {
+                "Content-Type": "application/json"
+            });
+
+            Y.io(Y.Wegas.app.get('base') + this.get('url'), {
+                method: this.get('method'),
+                data: this.get('data'),
+                headers: headers
+            });
+        }
+    }, {
+        NS: 'fireandforgetrequestaction',
+        ATTRS: {
+            url: {
+                type: 'string',
+                view: {
+                    label: 'Url'
                 }
+            },
+            method: {
+                type: 'string',
+                value: 'GET',
+                view: {
+                    choices: [{
+                            value: 'GET'
+                        }, {
+                            value: 'POST'
+                        }, {
+                            value: 'DELETE'
+                        }, {
+                            value: 'PUT'
+                        }
+                    ]}
+            },
+            data: {
+                type: 'string',
+                view: {
+                    label: 'Data'
+                }
+            },
+            headers: {
+                type: "object",
+                value: {}
             }
         }
-    );
+    });
     Plugin.FireAndForgetRequestAction = FireAndForgetRequestAction;
     /**
      *  @class
@@ -264,6 +272,70 @@ YUI.add('wegas-plugin', function(Y) {
 
     /**
      *  @class
+     *  @name Y.Plugin.OpenUrlAction
+     *  @extends Y.Plugin.Action
+     *  @constructor
+     */
+    var OpenFileAction = Y.Base.create(
+        'OpenFilAction',
+        Action,
+        [],
+        {
+            execute: function() {
+                var theFile = Y.Wegas.Facade.File.get("source") + "read" + I18n.t(this.get("file"));
+
+                this.open(theFile);
+            },
+            open: function(url) {
+                if (
+                    url.indexOf('http://') !== 0 &&
+                    url.indexOf('https://') !== 0 &&
+                    url.indexOf('//') !== 0
+                    ) {
+                    url = Wegas.app.get('base') + url;
+                }
+                if (this.get('target') === 'blank') {
+                    window.open(url);
+                } else {
+                    window.location.href = url;
+                }
+            }
+        },
+        {
+            NS: 'openfileaction',
+            ATTRS: {
+                file: Y.Wegas.Helper.getTranslationAttr({
+                    type: "wegasurl", label: "File"
+                }),
+                /**
+                 * Can be "self" or "blank"
+                 */
+                target: {
+                    type: 'string',
+                    value: 'blank',
+                    view: {
+                        type: 'select',
+                        choices: [
+                            {
+                                value: 'blank',
+                                label: 'In a new page'
+                            },
+                            {
+                                value: 'self',
+                                label: 'In the same page'
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    );
+    Plugin.OpenFileAction = OpenFileAction;
+
+
+
+    /**
+     *  @class
      *  @name Y.Plugin.PrintActionPlugin
      *  @extends Y.Plugin.Action
      *  @constructor
@@ -322,7 +394,7 @@ YUI.add('wegas-plugin', function(Y) {
                     getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     view: {
                         type: 'variableselect',
-                        label: 'Variable'
+                        label: 'Root Variable'
                     }
                 },
                 title: {
@@ -330,7 +402,7 @@ YUI.add('wegas-plugin', function(Y) {
                     getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     view: {
                         type: 'variableselect',
-                        label: 'Variable'
+                        label: 'Title'
                     }
                 },
                 /**
@@ -366,103 +438,83 @@ YUI.add('wegas-plugin', function(Y) {
      *  @module Wegas
      *  @constructor
      */
-    var OpenPageAction = Y.Base.create(
-        'OpenPageAction',
-        Action,
-        [],
-        {
-            initializer: function() {
-                this.afterHostEvent(
-                    'render',
-                    function() {
-                        var targetPageLoader = this._getTargetPageLoader();
-                        if (targetPageLoader) {
-                            this.get(HOST).set(
-                                'selected',
-                                '' + targetPageLoader.get('pageId') ===
-                                '' + this._subpage()
-                                ? 2
-                                : 0
-                                );
-                            this.handlers.push(
-                                targetPageLoader.after(
-                                    'pageIdChange',
-                                    function() {
-                                        try {
-                                            this.get(HOST).set(
-                                                'selected',
-                                                '' +
-                                                targetPageLoader.get(
-                                                    'pageId'
-                                                    ) ===
-                                                '' + this._subpage()
-                                                ? 2
-                                                : 0
-                                                );
-                                        } catch (e) {
-                                            //no more node...
-                                        }
-                                    },
-                                    this
-                                    )
-                                );
-                        }
-                    },
-                    this
-                    );
-            },
-            execute: function() {
+    var OpenPageAction = Y.Base.create('OpenPageAction', Action, [], {
+        initializer: function() {
+            this.afterHostEvent('render', function() {
                 var targetPageLoader = this._getTargetPageLoader();
-                if (!targetPageLoader || this.get(HOST).get('disabled')) {
-                    return;
+                if (targetPageLoader) {
+                    this.selectHost(targetPageLoader);
+                    this.handlers.push(targetPageLoader.after('pageIdChange', function() {
+                        try {
+                            this.selectHost(targetPageLoader);
+                        } catch (e) {
+                            //no more node...
+                        }
+                    }, this));
                 }
-                /*
-                 * Changing a page may call a page destructor and thus destroying other Action assossiated with this 'targetEvent'
-                 * in case this' host belongs to destructed page. That's the reason to delay a page change
-                 */
-                this.handlers.push(
-                    Y.soon(
-                        Y.bind(
-                            function(pageLoader) {
-                                pageLoader.set('pageId', this._subpage());
-                            },
-                            this,
-                            targetPageLoader
-                            )
-                        )
-                    );
-            },
-            _getTargetPageLoader: function() {
-                var targetPageLoader, plID = this.get('targetPageLoaderId');
-                switch (plID) {
-                    case PAGELOADER_CONFIG.FULL_PAGE.value:
-                        targetPageLoader = Wegas.PageLoader.find(
-                            PREVIEW_PAGELOADER_ID
-                            );
-                        break;
-                    case PAGELOADER_CONFIG.CURRENT_PAGE_LOADER.value:
-                        targetPageLoader = Y.Widget.getByNode(
-                            this.get(HOST)
-                            .get('root')
-                            .get('boundingBox')
-                            .ancestor()
-                            );
-                        break;
-                    default:
-                        targetPageLoader = Wegas.PageLoader.find(plID);
-                }
-                return targetPageLoader;
-            },
-            _subpage: function() {
-                if (this.get('variable.content')) {
-                    var variable = this.get('variable.evaluated');
-                    if (variable) {
-                        return variable.getInstance().get('value');
-                    }
-                }
-                return this.get('subpageId');
-            }
+            }, this);
         },
+        selectHost: function(targetPageLoader) {
+            // rely on YUI widget parent/child selection stuff
+            var isSelected = '' + targetPageLoader.get('pageId') === '' + this._subpage();
+            var host = this.get(HOST);
+            host.set('selected', isSelected ? 2 : 0);
+
+            // but also set custom class since parent/child selection does not work on others hots than buttons
+            host.get("boundingBox").toggleClass("wegas-page-selected", isSelected);
+        },
+        execute: function() {
+            var targetPageLoader = this._getTargetPageLoader();
+            if (!targetPageLoader || this.get(HOST).get('disabled')) {
+                return;
+            }
+            /*
+             * Changing a page may call a page destructor and thus destroying other Action assossiated with this 'targetEvent'
+             * in case this' host belongs to destructed page. That's the reason to delay a page change
+             */
+            this.handlers.push(Y.soon(Y.bind(function(pageLoader) {
+                var subpage = this._subpage();
+
+                if (pageLoader.get("pageId") === subpage) {
+                    if (this.get("forceReload")) {
+                        pageLoader.reload();
+                    }
+                } else {
+                    pageLoader.set('pageId', subpage);
+                }
+            }, this, targetPageLoader)));
+        },
+        _getTargetPageLoader: function() {
+            var targetPageLoader, plID = this.get('targetPageLoaderId');
+            switch (plID) {
+                case PAGELOADER_CONFIG.FULL_PAGE.value:
+                    targetPageLoader = Wegas.PageLoader.find(
+                        PREVIEW_PAGELOADER_ID
+                        );
+                    break;
+                case PAGELOADER_CONFIG.CURRENT_PAGE_LOADER.value:
+                    targetPageLoader = Y.Widget.getByNode(
+                        this.get(HOST)
+                        .get('root')
+                        .get('boundingBox')
+                        .ancestor()
+                        );
+                    break;
+                default:
+                    targetPageLoader = Wegas.PageLoader.find(plID);
+            }
+            return targetPageLoader;
+        },
+        _subpage: function() {
+            if (this.get('variable.content')) {
+                var variable = this.get('variable.evaluated');
+                if (variable) {
+                    return variable.getInstance().get('value');
+                }
+            }
+            return this.get('subpageId');
+        }
+    },
         {
             NS: 'OpenPageAction',
             ATTRS: {
@@ -483,6 +535,15 @@ YUI.add('wegas-plugin', function(Y) {
                             PAGELOADER_CONFIG.FULL_PAGE,
                             PAGELOADER_CONFIG.CURRENT_PAGE_LOADER
                         ]
+                    }
+                },
+                forceReload: {
+                    type: 'boolean',
+                    value: false,
+                    view: {
+                        type: 'boolean',
+                        label: "Force page reload",
+                        className: 'wegas-advanced-feature'
                     }
                 },
                 variable: {
@@ -662,6 +723,80 @@ YUI.add('wegas-plugin', function(Y) {
         }
     );
     Plugin.ConfirmExecuteScriptAction = ConfirmExecuteScriptAction;
+
+
+    var ConfirmClick = Y.Base.create(
+        'wegas-confirm-click',
+        Plugin.Base,
+        [Wegas.Plugin, Wegas.Editable],
+        {
+            initializer: function() {
+                var handle = this.get("host").get("contentBox").on("click", this.beforeEvent, this);
+                this._handles.push(handle);
+            },
+            beforeEvent: function(e) {
+                if (!this.get(HOST).get('disabled')) {
+                    if (e._event.hasOwnProperty("isTrusted") && window.MouseEvent) {
+                        if (e._event.isTrusted) {
+                            // User click: event not yet confirmed : stop it ASAP
+                            Y.log("Event intercepted");
+                            e.halt(true);
+                            Y.Wegas.Panel.confirm(this._getMessage(), Y.bind(function() {
+                                // Click confirmed -> fire event again but from the widget, not the contentBox !
+                                var event = new MouseEvent('click', {
+                                    'view': window,
+                                    'bubbles': true,
+                                    'cancelable': true
+                                });
+                                e.target.getDOMNode().dispatchEvent(event);
+                            }, this));
+                        } else {
+                            Y.log("Event Confirmed :" + e);
+                        }
+                    } else {
+                        // compatibility
+                        if (!window.confirm(this._getMessage())) {
+                            e.halt(true);
+                        }
+                    }
+                }
+            },
+            _getMessage: function() {
+                var msgVar = this.get("variable.evaluated");
+                var msgValue = msgVar && msgVar.getValue && msgVar.getValue();
+                if (msgValue) {
+                    return msgValue;
+                } else {
+                    return this.get("message");
+                }
+            }
+        },
+        {
+            NS: 'confirmallaction',
+            EDITORNAME: 'Click Confirmation',
+            ATTRS: {
+                message: {
+                    type: "string",
+                    value: "Confirm Action ?",
+                    view: {
+                        label: "Message"
+                    }
+                },
+                variable: {
+                    type: 'object',
+                    getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                    view: {
+                        type: 'variableselect',
+                        label: 'Message Variable',
+                        description: "Override static message",
+                        classFilter: ['StringDescriptor', 'TextDescriptor'],
+                        className: "wegas-advanced-feature"
+                    }
+                }
+            }
+        }
+    );
+    Plugin.ConfirmClick = ConfirmClick;
 
     /**
      *  @class

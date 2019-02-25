@@ -9,8 +9,8 @@ package com.wegas.messaging.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.List;
 import static java.lang.Boolean.FALSE;
@@ -32,19 +32,9 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * Tells if the inbox has a capacity of just one message.
      */
     @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty
     private Boolean capped = FALSE;
 
-    /**
-     * Merge descriptor
-     *
-     * @param a descriptor to read value from
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        super.merge(a);
-        InboxDescriptor other = (InboxDescriptor) a;
-        this.setCapped(other.getCapped());
-    }
 
     /**
      * @return the limited capacity

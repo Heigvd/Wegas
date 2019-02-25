@@ -8,11 +8,12 @@
 package com.wegas.core.jcr;
 
 import com.wegas.core.Helper;
-
-import javax.jcr.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.jcr.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -21,8 +22,11 @@ public class SessionManager {
 
     final static private SimpleCredentials admin = new SimpleCredentials(Helper.getWegasProperty("jcr.admin.username"), Helper.getWegasProperty("jcr.admin.password").toCharArray());
 
+    private static final Logger logger = LoggerFactory.getLogger(SessionManager.class);
+
     /**
      * @return JCR session, logged as admin
+     *
      * @throws RepositoryException
      */
     public static Session getSession() throws RepositoryException {
@@ -35,7 +39,10 @@ public class SessionManager {
      */
     public static void closeSession(Session session) {
         if (session.isLive()) {
+            logger.info("Close repository");
             session.logout();
+        } else {
+            logger.info("Close repository: already closed");
         }
     }
 

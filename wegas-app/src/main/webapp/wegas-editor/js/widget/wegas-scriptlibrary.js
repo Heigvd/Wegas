@@ -133,7 +133,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                 this.selectField.destroy();
                 this.aceField.destroy();
                 this.newButton.destroy();
-                this.selectField.destroy();
+                this.visibilityField.destroy();
                 this.saveButton.destroy();
                 this.deleteButton.destroy();
             },
@@ -153,12 +153,14 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                     cb = this.get(CONTENTBOX),
                     libraries = this.scripts ? this.scripts.get('val') : {};
                 delete libraries['@class'];
-                for (i in libraries) {
+                var keys = Object.keys(libraries).sort();
+
+                for (i in keys) {
                     if (!this.currentScriptName) {
-                        this.currentScriptName = i;
+                        this.currentScriptName = keys[i];
                     }
                     this.selectField.addChoice({
-                        value: i
+                        value: keys[i]
                     });
                     isEmpty = false;
                 }
@@ -174,7 +176,13 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                     this.selectField.setValue(this.currentScriptName, false);
                 }
 
+
                 this.saveButton.set('disabled', isEmpty);
+                if (isEmpty || Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") !== "MODEL") {
+                    this.visibilityField.disable();
+                } else {
+                    this.visibilityField.enable();
+                }
                 this.deleteButton.set('disabled', isEmpty);
                 isEmpty ? cb.one('.empty').show() : cb.one('.empty').hide();
 
@@ -187,8 +195,26 @@ YUI.add('wegas-scriptlibrary', function(Y) {
             syncEditor: function() {
                 var libraries = this.scripts ? this.scripts.get('val') : {},
                     selected = this.selectField.getValue(),
-                    val = libraries[selected] ? libraries[selected].content || '' : '';
+                    val, visibility = "PRIVATE";
 
+                if (libraries[selected]) {
+                    val = libraries[selected].content || '';
+                    visibility = libraries[selected].visibility;
+                } else {
+                    val = '';
+                }
+
+                if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "REFERENCE" ||
+                    (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO"
+                        && (visibility === "INTERNAL" || visibility === "PROTECTED"))) {
+                    this.get("contentBox").addClass("readonly");
+                    this.aceField.disable();
+                } else {
+                    this.get("contentBox").removeClass("readonly");
+                    this.aceField.enable();
+                }
+
+                this.visibilityField.setValue(visibility, false);
                 this.aceField.setValue(val, false);
             },
             /**
@@ -246,6 +272,25 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                         }],
                     parentEl: toolbarNode
                 });
+
+                this.visibilityField = new Y.inputEx.SelectField({
+                    choices: [{
+                            value: "INTERNAL",
+                            label: "Model"
+                        }, {
+                            value: "PROTECTED",
+                            label: "Protected"
+                        }, {
+                            value: "INHERITED",
+                            label: "Inherited"
+                        }, {
+                            value: "PRIVATE",
+                            label: "Private"
+                        }],
+                    parentEl: toolbarNode
+                }
+                );
+
 
                 //if (this.get("library") === "CSS") {                              // Preview button for css (will be applied on save
                 //    this.previewButton = new Y.Button({
@@ -315,7 +360,8 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                         updateCache: false,
                         data: {
                             '@class': 'GameModelContent',
-                            content: this.aceField.getValue()
+                            content: this.aceField.getValue(),
+                            visibility: this.visibilityField.getValue(),
                         }
                     },
                     on: Wegas.superbind({

@@ -15,6 +15,7 @@ import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -69,6 +70,10 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     @JsonIgnore
     @Transient
     private Beanjection beans;
+
+    @JsonIgnore
+    @Transient
+    private boolean shouldCreateInstance = false;
 
     /**
      *
@@ -157,6 +162,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     /**
      *
      * @return {@link #getVariableInstance(Player)} with the current player
+     *
      * @deprecated
      */
     @Deprecated
@@ -266,6 +272,14 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
         this.broadcastScope = broadcastScope;
     }
 
+    public boolean getShouldCreateInstance() {
+        return shouldCreateInstance;
+    }
+
+    public void setShouldCreateInstance(boolean shouldCreateInstance) {
+        this.shouldCreateInstance = shouldCreateInstance;
+    }
+
     @Override
     public void setBeanjection(Beanjection beanjection) {
         this.beans = beanjection;
@@ -294,6 +308,11 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     }
 
     @Override
+    public WithPermission getMergeableParent() {
+        return this.getVariableDescriptor();
+    }
+
+    @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getVariableDescriptor().getGameModel().getRequieredUpdatePermission();
     }
@@ -312,9 +331,5 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
         logger.error("LOOKUP OCCURS: {}", this);
         Helper.printWegasStackTrace(new Exception());
         return RequestFacade.lookup().getPlayer();
-    }
-
-    @Override
-    public void merge(AbstractEntity other) {
     }
 }

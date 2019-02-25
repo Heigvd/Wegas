@@ -11,10 +11,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -53,11 +52,13 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      *
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
+    @WegasEntityProperty
     private TranslatableContent description;
 
     @OneToMany(mappedBy = "parentWh", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @OrderColumn(name = "whd_items_order")
+    @WegasEntityProperty(includeByDefault = false)
     private List<VariableDescriptor> items = new ArrayList<>();
 
     /**
@@ -86,15 +87,9 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
         return this.items;
     }
 
-    /**
-     * @param items
-     */
     @Override
-    public void setItems(List<VariableDescriptor> items) {
+    public void resetItemsField() {
         this.items = new ArrayList<>();
-        for (VariableDescriptor vd : items) {
-            this.addItem(vd);
-        }
     }
 
     /**
@@ -122,22 +117,8 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
         }
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof WhQuestionDescriptor) {
-            super.merge(a);
-            WhQuestionDescriptor other = (WhQuestionDescriptor) a;
-            this.setDescription(TranslatableContent.merger(this.getDescription(), other.getDescription()));
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
-    }
+    // ~~~ Sugar for scripts ~~~
 
-// ~~~ Sugar for scripts ~~~
     /**
      *
      * @param p
@@ -198,12 +179,6 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      */
     public boolean isNotReplied(Player p) {
         return !this.isReplied(p);
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(getDescription(), criterias)
-                || super.containsAll(criterias);
     }
 
     // This method seems to be unused:

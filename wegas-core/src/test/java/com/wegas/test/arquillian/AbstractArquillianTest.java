@@ -13,7 +13,6 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.rest.UserController;
-import java.io.IOException;
 import java.sql.SQLException;
 import javax.ejb.EJB;
 import javax.naming.NamingException;
@@ -67,7 +66,7 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestMinim
     final static private String GAMETOKEN = "test-game-token";
 
     @Before
-    public void populate() throws IOException {
+    public void populate() throws CloneNotSupportedException {
         scenarist = this.signup("scenarist@local");
         trainer = this.signup("trainer@local");
         user = this.signup("user@local");
@@ -136,7 +135,7 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestMinim
         requestFacade.setPlayer(player.getId());
     }
 
-    public void reseAndSetUpDB() throws SQLException, NamingException, WegasNoResultException, IOException {
+    public void reseAndSetUpDB() throws SQLException, NamingException, WegasNoResultException, CloneNotSupportedException {
         this.init();
         this.populate();
     }

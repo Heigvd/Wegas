@@ -1,3 +1,4 @@
+
 /*
  * Wegas
  * http://wegas.albasim.ch
@@ -18,7 +19,8 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         Promise = Y.Promise,
         Wegas = Y.Wegas, persistence = Wegas.persistence,
         EntityAction, EditFSMAction, EditEntityAction, NewEntityAction,
-        EditEntityArrayFieldAction, AddEntityChildAction, DuplicateEntityAction, SortEntityAction,
+        EditEntityArrayFieldAction, AddEntityChildAction, DuplicateEntityAction,
+        SortEntityAction, ResetVisibilityAction,
         DeleteEntityAction, SearchEntityAction, ToolbarMenu;
 
     var MESSAGE_DISCARD_EDITS = "Unsaved changes!";
@@ -136,10 +138,14 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             i = EditEntityAction.stackedIcon(i, 'fa-download');
                             i.tooltip = 'Export';
                             break;
-
                         case "Search for usages":
                             i = EditEntityAction.stackedIcon(i, 'fa-compass');
                             i.tooltip = 'Find usage';
+                            break;
+                        case "Reset visibilities":
+                            i = EditEntityAction.stackedIcon(i, 'fa-paw');
+                            i.tooltip = 'Reset visibilities recursively';
+                            break;
                     }
                 }
             });
@@ -787,7 +793,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     targetArray = container.get(this.get("attributeKey"));
                     Y.Array.find(targetArray, function(e, i, a) {
                         if (e.get(ID) === entity.get(ID)) {
-                            newEntity = new entity.constructor(entity.toObject(ID));
+                            newEntity = new entity.constructor(entity.toObject(ID, "refId"));
                             a.push(newEntity);
                             return true;
                         }
@@ -946,6 +952,54 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         NS: "SortEntityAction"
     });
     Plugin.SortEntityAction = SortEntityAction;
+
+
+    ResetVisibilityAction = Y.Base.create("ResetVisibilityAction", EntityAction, [], {
+        execute: function() {
+            if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "MODEL") {
+                this.showOverlay();
+                Y.Wegas.Facade.Variable.cache.sendRequest({
+                    request: '/' + this.get(ENTITY).get("id") + "/visibility/" + this.get("visibility"),
+                    cfg: {
+                        method: 'PUT'
+                    },
+                    on: {
+                        success: Y.bind(this.hideOverlay, this),
+                        failure: Y.bind(this.hideOverlay, this)
+                    }
+                });
+            }
+        }
+    }, {
+        NS: "ResetVisibilityAction",
+        ATTRS: {
+            visibility: {
+                type: "string"
+            }
+        }
+    });
+    Plugin.ResetVisibilityAction = ResetVisibilityAction;
+
+    var ConvertToListAction = Y.Base.create("ConvertToListAction", EntityAction, [], {
+        execute: function() {
+            this.showOverlay();
+            Y.Wegas.Facade.Variable.cache.sendRequest({
+                request: '/' + this.get(ENTITY).get("id") + "/ConvertToList",
+                cfg: {
+                    method: 'PUT'
+                },
+                on: {
+                    success: Y.bind(this.hideOverlay, this),
+                    failure: Y.bind(this.hideOverlay, this)
+                }
+            });
+        }
+    }, {
+        NS: "ConvertToListAction",
+        ATTRS: {
+        }
+    });
+    Plugin.ConvertToListAction = ConvertToListAction;
 
     /**
      * @class
@@ -1202,7 +1256,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
          */
         initializer: function() {
             this.plug(Plugin.WidgetMenu, {
-                children: Y.Array.map(Wegas.persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children,
+                children: Y.Array.map(Wegas.persistence.ListDescriptor.EDITMENU["addBtn"].cfg.plugins[0].cfg.children,
                     function(o) {
                         return Y.mix({
                             type: "NewEntityButton"

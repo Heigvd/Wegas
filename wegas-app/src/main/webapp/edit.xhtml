@@ -9,25 +9,78 @@
 
         <ui:define name="app-init">
             <c:set var="extraBodyClass" value="wegas-editmode"/>
+            <c:set var="wegasMode" value="EDIT"/>
         </ui:define>
 
         <script>//<ui:define name = "editorFooter"><![CDATA[
             Y.Wegas.app.once("render", function() {
+                var gameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
+
+
+                /*
+                 * Shortcut to open current debug player in its own tab
+                 */
+                Y.use("wegas-button", function() {
+                    var editButton = new Y.Wegas.Button({
+                        "label": "<i class=\"fa fa-eye\" title=\"View as test player\"></i>",
+                        cssClass: "open-as-test-player"
+                    }).render(".wegas-button-toolbar .wegas-flexlist-content");
+
+                    editButton.on("click", function() {
+                        window.open("game-play.html?gameModelId=" + Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id"), "_blank");
+                    }, this);
+                });
+
+                if (gameModel.dependsOnModel()) {
+                    if (Y.Array.find(Y.Wegas.Facade.User.cache.get("currentUser").get("roles"),
+                        function(role) {
+                            return role.get("name") === "Administrator";
+                        })) {
+                        Y.use("wegas-button", function() {
+                            var editButton = new Y.Wegas.Button({
+                                "label": "<i class=\"fa fa-cubes\" title=\"Edit the model\"></i>",
+                                cssClass: "edit-openmodel"
+                            }).render(".wegas-button-toolbar .wegas-flexlist-content");
+
+                            editButton.on("click", function() {
+                                window.open("edit.html?gameModelId=" + Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("basedOnId"), "_blank");
+                            }, this);
+                        });
+                    }
+                }
+
+                if (gameModel.get("type") === "MODEL") {
+                    Y.one("body").addClass("wegas-modeler-mode");
+                    if (Y.Array.find(Y.Wegas.Facade.User.cache.get("currentUser").get("roles"),
+                        function(role) {
+                            return role.get("name") === "Administrator";
+                        })) {
+                        Y.use(["wegas-button", "wegas-model-propagator"], function() {
+                            var propagateButton = new Y.Wegas.Button({
+                                "label": "<i class=\"fa fa-rocket\" title=\"Propagate the model\"></i>",
+                                cssClass: "edit-propagatemodel",
+                                "plugins": [
+                                    {
+                                        "fn": "ModelPropagatorAction"
+                                    }
+                                ]
+                            }).render(".wegas-button-toolbar .wegas-flexlist-content");
+                        });
+                    }
+                }
 
                 //]]><ui:fragment rendered = "#{editorGameController.gameId != null}"><![CDATA[
                 Y.one("body").addClass("wegas-editmode-game");
                 // Handle switch from host to edit mode
                 Y.use("wegas-button", function() {
                     var editButton = new Y.Wegas.Button({
-                        label: "Back to game",
+                        label: "<i class=\"wegas-font wegas-teacher\" title=\"Back to game\"></i>",
                         cssClass: "host-switchmode"
-                    }).render(".wegas-layout-hd");
-
+                    }).render(".wegas-button-toolbar .wegas-flexlist-content");
                     editButton.on("click", function() {
                         window.location.replace(window.location.toString().replace("edit.", "host."));
                     }, this);
                 });
-
                 //]]></ui:fragment><![CDATA[
             });
             //]]></ui:define></script>

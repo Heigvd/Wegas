@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="maxence" id="1527578387-1">
+        <addColumn tableName="abstractaccount">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="abstractscope">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="activity">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="assignment">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="evaluationdescriptor">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="evaluationdescriptorcontainer">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="evaluationinstance">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="fsm_state">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="game">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="gameadmin">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="gamemodel">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="gamemodelcontent">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="iteration">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="mcqreply">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="mcqresult">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="message">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="occupation">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="permission">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="player">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="review">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="roles">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="team">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="transition">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="users">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="variabledescriptor">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="variableinstance">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="workload">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="wrequirement">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="enumitem">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="attachment">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="translatablecontent">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="gamemodellanguage">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="maxence" id="1527578387-2">
+        <addColumn tableName="gamemodel">
+            <column defaultValue="SCENARIO" name="type" type="varchar(24)"/>
+        </addColumn>
+        <sql>UPDATE gamemodel SET status = 'LIVE', type = 'PLAY' WHERE status = 'PLAY';</sql>
+        <sql>UPDATE gamemodel SET type = 'SCENARIO' WHERE status IS NULL;</sql>
+    </changeSet>
+
+    <changeSet author="maxence (generated)" id="1527578387-3">
+        <addColumn tableName="gamemodelcontent">
+            <column defaultValue="PRIVATE" name="visibility" type="varchar(24)"/>
+        </addColumn>
+        <sql>UPDATE gamemodelcontent SET visibility = 'PRIVATE';</sql>
+        <addColumn tableName="variabledescriptor">
+            <column defaultValue="PRIVATE" name="visibility" type="varchar(24)"/>
+        </addColumn>
+        <sql>UPDATE variabledescriptor SET visibility = 'PRIVATE';</sql>
+    </changeSet>
+
+    <changeSet author="maxence" id="1527578387-3bis">
+        <addColumn tableName="gamemodellanguage">
+            <column defaultValue="PRIVATE" name="visibility" type="varchar(24)"/>
+        </addColumn>
+        <sql>UPDATE gamemodellanguage SET visibility = 'PRIVATE';</sql>
+    </changeSet>
+
+    <changeSet author="maxence" id="1527578387-4">
+        <sql splitStatements="false">
+            <![CDATA[
+            Create or replace function random_string(length integer) returns text as
+            $$
+            declare
+              chars text[] := '{0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z}';
+              result text := '';
+              i integer := 0;
+            begin
+              if length < 0 then
+                raise exception 'Given length cannot be less than 0';
+              end if;
+              for i in 1..length loop
+                  result := result || chars[1+random()*(array_length(chars, 1)-1)];
+              end loop;
+              return result;
+            end;
+            $$ language plpgsql;
+            ]]>
+        </sql>
+        <sql>UPDATE abstractaccount SET refid = 'abstractaccount' || id || random_string(6);</sql>
+        <sql>UPDATE abstractscope SET refid = 'abstractscope' || id || random_string(6);</sql>
+        <sql>UPDATE activity SET refid = 'activity' || id || random_string(6);</sql>
+        <sql>UPDATE assignment SET refid = 'assignment' || id || random_string(6);</sql>
+        <sql>UPDATE evaluationdescriptor SET refid = 'evaluationdescriptor' || id || random_string(6);</sql>
+        <sql>UPDATE evaluationdescriptorcontainer SET refid = 'evaluationdescriptorcontainer' || id || random_string(6);</sql>
+        <sql>UPDATE evaluationinstance SET refid = 'evaluationinstance:' || id || random_string(6);</sql>
+        <sql>UPDATE fsm_state SET refid = 'fsm_state:' || id || random_string(6);</sql>
+        <sql>UPDATE game SET refid = 'game:' || id || random_string(6);</sql>
+        <sql>UPDATE gameadmin SET refid = 'gameadmin:' || id || random_string(6);</sql>
+        <sql>UPDATE gamemodel SET refid = 'gamemodel:' || id || random_string(6);</sql>
+        <sql>UPDATE gamemodelcontent SET refid = 'gamemodelcontent:' || id || random_string(6);</sql>
+        <sql>UPDATE iteration SET refid = 'iteration:' || id || random_string(6);</sql>
+        <sql>UPDATE mcqreply SET refid = 'mcqreply:' || id || random_string(6);</sql>
+        <sql>UPDATE mcqresult SET refid = 'mcqresult:' || id || random_string(6);</sql>
+        <sql>UPDATE message SET refid = 'message:' || id || random_string(6);</sql>
+        <sql>UPDATE occupation SET refid = 'occupation:' || id || random_string(6);</sql>
+        <sql>UPDATE permission SET refid = 'permission:' || id || random_string(6);</sql>
+        <sql>UPDATE player SET refid = 'player:' || id || random_string(6);</sql>
+        <sql>UPDATE review SET refid = 'review:' || id || random_string(6);</sql>
+        <sql>UPDATE roles SET refid = 'roles:' || id || random_string(6);</sql>
+        <sql>UPDATE team SET refid = 'team:' || id || random_string(6);</sql>
+        <sql>UPDATE transition SET refid = 'transition:' || id || random_string(6);</sql>
+        <sql>UPDATE users SET refid = 'users:' || id || random_string(6);</sql>
+        <sql>UPDATE variabledescriptor SET refid = 'variabledescriptor:' || id || random_string(6);</sql>
+        <sql>UPDATE variableinstance SET refid = 'variableinstance:' || id || random_string(6);</sql>
+        <sql>UPDATE workload SET refid = 'workload:' || id || random_string(6);</sql>
+        <sql>UPDATE wrequirement SET refid = 'wrequirement:' || id || random_string(6);</sql>
+        <sql>UPDATE enumitem SET refid = 'enumitem:' || id || random_string(6);</sql>
+        <sql>UPDATE attachment SET refid = 'attachment:' || id || random_string(6);</sql>
+        <sql>UPDATE translatablecontent SET refid = 'translatablecontent:' || id || random_string(6);</sql>
+        <sql>UPDATE gamemodellanguage SET refid = 'gamemodellanguage:' || id || random_string(6);</sql>
+
+        <sql>drop function random_string ( integer);</sql>
+    </changeSet>
+
+
+
+    <changeSet author="maxence" id="1527578387-4b">
+        <sql>
+            UPDATE wrequirement
+            SET refid = ireqs.dreq_refid
+            FROM (
+                SELECT dreq.refid AS dreq_refid , ireq.id AS ireq_id
+                FROM variabledescriptor td  -- select all varaible descriptor
+                JOIN wrequirement dreq ON dreq.taskinstance_id = td.defaultinstance_id -- join their default wrequirements through their default instance
+                JOIN variableinstance vi ON vi.playerscope_id = scope_id  -- join all effective instances through scopes
+                                            OR vi.teamscope_id = scope_id
+                                            OR vi.gamemodelscope_id = scope_id
+                JOIN wrequirement ireq ON ireq.taskinstance_id = vi.id  -- join effective requirements from effetive instances
+                WHERE ireq.wrequirement_name = dreq.wrequirement_name -- but make sure dreq names match effective ones
+                    AND ireq.refid != dreq.refid
+            ) AS ireqs
+            WHERE id = ireqs.ireq_id;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

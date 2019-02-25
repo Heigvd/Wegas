@@ -7,6 +7,7 @@ import commonView from '../HOC/commonView';
 import labeled from '../HOC/labeled';
 import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar';
 import { getY } from './../index';
+import FormStyles from './form-styles';
 
 const {Wegas} = getY();
 const tinymceStyle = css({
@@ -310,19 +311,28 @@ class HTMLView extends React.Component {
     }
 
     render() {
-        return (<div {...tinymceStyle}>
-            <div id={this.id} className="tinymce-toolbar"></div>
-            <Editor
-                value={this.state.content}
-                init={getTinyConfig("#" + this.id)}
-                onEditorChange={this.onChangeHandler}
-                />
-        </div>);
+        if (this.props.view.readOnly) {
+            return <div  className={FormStyles.disabled.toString()}
+                  dangerouslySetInnerHTML={{
+                                __html: this.state.content
+                  }} />;
+            } else {
+                return (
+                    <div {...tinymceStyle}>
+                        <div id={this.id} className="tinymce-toolbar"></div>
+                        <Editor
+                            value={this.state.content}
+                            init={getTinyConfig("#" + this.id)}
+                            onEditorChange={this.onChangeHandler}
+                            />
+                    </div>
+                    );
+            }
+        }
     }
-}
-HTMLView.propTypes = {
-    onChange: PropTypes.func.isRequired,
-    value: PropTypes.string,
-};
+    HTMLView.propTypes = {
+        onChange: PropTypes.func.isRequired,
+        value: PropTypes.string,
+    };
 
-export default commonView(labeled(HTMLView));
+    export default commonView(labeled(HTMLView));

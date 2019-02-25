@@ -9,10 +9,12 @@ package com.wegas.core.persistence.game;
 
 import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.Helper;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
@@ -81,6 +83,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @NotNull
     @Basic(optional = false)
+    @WegasEntityProperty
     private String name;
 
     /**
@@ -103,6 +106,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @Lob
     @JsonView(value = Views.EditorI.class)
+    @WegasEntityProperty
     private String notes;
 
     /**
@@ -180,16 +184,6 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
         if (createdBy != null) {
             createdBy.getTeams().add(this);
         }
-    }
-
-    /**
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        Team t = (Team) a;
-        this.setName(t.getName());
-        this.setNotes(t.getNotes());
     }
 
     public GameTeams getGameTeams() {
@@ -429,6 +423,11 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
             default:
                 return WegasPermission.FORBIDDEN; // nobody can create
         }
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return getGame();
     }
 
     @Override

@@ -1,7 +1,8 @@
 import React from 'react';
 import Form, { Schema } from 'jsoninput';
 import { getY } from '../../index';
-import load from '../../HOC/loadAsyncComp';
+import { useAsync } from '../../Hooks/async';
+import { SimpleLoader } from '../../Components/Loader';
 
 // Temporary solution until the friendly name is added as a standard widget attribute?
 function friendlyName(label: string) {
@@ -10,6 +11,8 @@ function friendlyName(label: string) {
             return 'Open page';
         case 'OpenUrlAction':
             return 'Open URL';
+        case 'OpenFileAction':
+            return 'Open File';
         case 'ExecuteScriptAction':
             return 'Impact variables';
         case 'ExecuteLocalScriptAction':
@@ -30,12 +33,16 @@ function friendlyName(label: string) {
             return 'Size';
         case 'CSSText':
             return 'Text';
+        case 'ResizeListener':
+            return 'Resize Observer';
         case 'CSSStyles':
             return 'Other styles';
         case 'ShowAfter':
             return 'Show after';
         case 'HideAfter':
             return 'Hide after';
+        case 'wegas-conditionaldisplay':
+            return 'Conditional display';
         case 'ConditionalDisable':
         case 'wegas-conditionaldisable':
             return 'Conditional disable';
@@ -82,13 +89,17 @@ interface IValue {
     cfg: { [key: string]: any };
 }
 const Y = getY();
-const AsyncForm = load<{
+function PluginElement({
+    value,
+    onChange,
+    view,
+}: {
     value: IValue;
-    onChange: (value: IValue) => void;
-}>(
-    ({ value, onChange }) => {
-        return new Promise((resolve, reject) => {
-            let schema: Schema;
+    onChange: (value: object) => void;
+    view: { choices: {}[] };
+}) {
+    const schema = useAsync(
+        new Promise<Schema>((resolve, reject) => {
             if (value && value.fn) {
                 Y.Wegas.use({ type: value.fn }, () => {
                     // load required modules
@@ -103,26 +114,20 @@ const AsyncForm = load<{
                             targetPlg.EDITORNAME ||
                             friendlyName(targetPlg.NAME),
                     };
-                    schema = updateCfg(cfg);
-                    resolve(props => <Form schema={schema} {...props} />);
+                    resolve(updateCfg(cfg));
                 });
+            } else {
+                reject(Error('Wrong config'));
             }
-        });
-    },
-    () => <i>Loading ...</i>
-);
-function PluginElement({
-    value,
-    onChange,
-    view,
-}: {
-    value: IValue;
-    onChange: (value: object) => void;
-    view: { choices: {}[] };
-}) {
-    if (value && value.fn) {
-        return <AsyncForm key={value.fn} value={value} onChange={onChange} />;
+        }),
+        [value.fn]
+    );
+    if (schema.status === 'pending') {
+        return <SimpleLoader />;
     }
-    return <span>Wrong config</span>;
+    if (schema.status === 'rejected') {
+        return <span>{schema.error.message}</span>;
+    }
+    return <Form value={value} schema={schema.data} onChange={onChange} />;
 }
 export default PluginElement;

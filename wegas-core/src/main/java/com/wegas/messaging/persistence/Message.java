@@ -11,15 +11,14 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
+import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
-import com.wegas.core.persistence.ListUtils;
-import com.wegas.core.persistence.variable.Searchable;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ import javax.persistence.*;
     @Index(columnList = "date_id"),
     @Index(columnList = "body_id")
 })
-public class Message extends AbstractEntity implements DatedEntity, Searchable {
+public class Message extends AbstractEntity implements DatedEntity {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -54,43 +53,52 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
     /**
      *
      */
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty
     private TranslatableContent subject;
+
     /**
      * Kind of message identifier
      */
     @Column(length = 64, columnDefinition = "character varying(64) default ''::character varying")
+    @WegasEntityProperty
     private String token;
 
     /**
      * Message body
      */
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty
     private TranslatableContent body;
+
     /**
      * real world time for sorting purpose
      */
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(columnDefinition = "timestamp with time zone")
-    private Date sentTime = new Date();
+    @Column(name = "senttime", columnDefinition = "timestamp with time zone")
+    @WegasEntityProperty
+    private Date time = new Date();
 
     /**
      * Simulation date, for display purpose
      */
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty
     private TranslatableContent date;
     /**
      *
      */
+    @WegasEntityProperty
     private Boolean unread = true;
     /**
      *
      */
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty
     private TranslatableContent from;
     /**
      *
@@ -98,6 +106,7 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
     @OneToMany(mappedBy = "message", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonDeserialize(using = Attachment.ListDeserializer.class)
     //@JsonView(Views.ExtendedI.class)
+    @WegasEntityProperty
     private List<Attachment> attachments = new ArrayList<>();
     /**
      *
@@ -118,49 +127,48 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
     public Message() {
     }
 
-    /**
+    /*
      *
      * @param from
      * @param subject
      * @param body
-     */
     public Message(String from, String subject, String body) {
         this(from, subject, body, null, null, null);
-    }
+    }*/
 
-    /**
+    /*
      *
      * @param from
      * @param subject
      * @param body
      * @param attachments
-     */
+     *
     public Message(String from, String subject, String body, List<String> attachments) {
         this(from, subject, body, null, null, attachments);
-    }
+    }*/
 
-    /**
+    /*
      *
      * @param from
      * @param subject
      * @param body
      * @param date
-     */
+     *
     public Message(String from, String subject, String body, String date) {
         this(from, subject, body, date, null, null);
-    }
+    }*/
 
-    /**
+    /*
      *
      * @param from
      * @param subject
      * @param body
      * @param date
      * @param attachments
-     */
+     *
     public Message(String from, String subject, String body, String date, List<String> attachments) {
         this(from, subject, body, date, null, attachments);
-    }
+    }*/
 
     /**
      *
@@ -170,17 +178,19 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
      * @param date
      * @param token
      * @param attachments
+     * @param lang
      */
-    public Message(String from, String subject, String body, String date, String token, List<String> attachments) {
-        this.from = TranslatableContent.build("def", from);
-        this.subject = TranslatableContent.build("def", subject);
-        this.date = TranslatableContent.build("def", date);
-        this.body = TranslatableContent.build("def", body);
+    public Message(String from, String subject, String body, String date, String token, List<String> attachments, String lang) {
+        this.from = TranslatableContent.build(lang, from);
+        this.subject = TranslatableContent.build(lang, subject);
+        this.date = TranslatableContent.build(lang, date);
+        this.body = TranslatableContent.build(lang, body);
         this.token = token;
         if (attachments != null) {
             for (String strA : attachments) {
                 Attachment a = new Attachment();
-                a.setFile(TranslatableContent.build("def", strA));
+                a.setFile(TranslatableContent.build(lang, strA));
+                a.setMessage(this);
                 this.attachments.add(a);
             }
         }
@@ -191,30 +201,6 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
     public Date getCreatedTime() {
         return this.getTime();
     }
-
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof Message) {
-            Message other = (Message) a;
-            this.setBody(TranslatableContent.merger(this.getBody(), other.getBody()));
-            this.setFrom(TranslatableContent.merger(this.getFrom(), other.getFrom()));
-            this.setSubject(TranslatableContent.merger(this.getSubject(), other.getSubject()));
-            this.setDate(TranslatableContent.merger(this.getDate(), other.getDate()));
-
-            this.setAttachments(ListUtils.mergeLists(this.getAttachments(), other.getAttachments()));
-
-            this.setUnread(other.getUnread());
-            this.setTime(other.getTime());
-            this.setToken(other.getToken());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
-    }
-
 
     /*@Override
     public Map<String, List<AbstractEntity>> getEntities() {
@@ -335,14 +321,14 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
      * @return the startTime
      */
     public Date getTime() {
-        return (Date) sentTime.clone();
+        return (Date) time.clone();
     }
 
     /**
      * @param time
      */
     public void setTime(Date time) {
-        this.sentTime.setTime(time.getTime());
+        this.time.setTime(time.getTime());
     }
 
     /**
@@ -397,6 +383,11 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
     }
 
     @Override
+    public WithPermission getMergeableParent() {
+        return this.getInboxInstance();
+    }
+
+    @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getInboxInstance().getRequieredUpdatePermission();
     }
@@ -404,23 +395,5 @@ public class Message extends AbstractEntity implements DatedEntity, Searchable {
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getInboxInstance().getRequieredReadPermission();
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        if (Helper.insensitiveContainsAll(getFrom(), criterias)
-                || Helper.insensitiveContainsAll(getSubject(), criterias)
-                || Helper.insensitiveContainsAll(getBody(), criterias)
-                || Helper.insensitiveContainsAll(getDate(), criterias)) {
-            return true;
-        }
-        if (this.attachments != null) {
-            for (Attachment a : this.attachments) {
-                if (a.containsAll(criterias)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }

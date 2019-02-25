@@ -1,0 +1,28 @@
+<div class="card__illustration illustration illustration--icon" illustration="{{scenario.properties.iconUri}}"></div>
+<div class="card__description">
+    <div class="line line--primary">{{scenario.name}}</div>
+    <div class="line">{{'SCENARIST-CARD-CREATED-ON' | translate}} {{'COMMONS-DATE' | translate: {date: scenario.createdTime} }}
+        <span ng-if="(user.isAdmin)">{{'SCENARIST-CARD-CREATED-BY' | translate}}
+            <span ng-class="{true:'highlighted'}[scenario.createdByName !== username]">{{scenario.createdByName}}</span>
+        </span>
+    </div>
+    <!--<div ng-if="scenario.basedOnName" class="line">{{'SCENARIST-CARD-DETAILS-MODEL' | translate}}:&nbsp;{{scenario.basedOnName}}</div>-->
+    <div ng-if="(scenario.comments)" class="line line--optional">{{scenario.comments}}</div>
+</div>
+<div class="card__actions">
+  <a class="button button--small button--round button--default-reverse button--label-off button--settings" title="{{'SCENARIST-CARD-SETTINGS-BTN' | translate}}" ui-sref="wegas.private.scenarist.settings({scenarioId: scenario.id})">
+    <span class="button__label">{{'SCENARIST-CARD-SETTINGS-BTN' | translate}}</span>
+  </a>
+  <a class="button button--small button--round button--default-reverse button--label-off button--user" title="{{'SCENARIST-CARD-USERS-BTN' | translate}}" ui-sref="wegas.private.scenarist.coscenarists({scenarioId: scenario.id})">
+    <span class="button__label">{{'SCENARIST-CARD-USERS-BTN' | translate}}</span>
+  </a>
+
+  <a ng-click="releaseScenario(scenario)"class="button button--small button--round button--default-reverse button--label-off button--remove" title="{{'MODELER-INSTANCES-RELEASE-BTN' | translate}}">
+    <span class="button__label">{{'MODELER-INSTANCES-RELEASE-BTN' | translate}}</span>
+  </a>
+
+  <a class="button button--small button--round button--default button--label-off button--scenarist action--button" title="{{'SCENARIST-CARD-EDIT-BTN' | translate}}" href="{{ServiceURL}}edit.html?gameModelId={{scenario.id}}" target="_blank">
+    <span class="button__label">{{'SCENARIST-CARD-EDIT-BTN' | translate}}</span>
+  </a>
+</div>
+

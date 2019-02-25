@@ -259,8 +259,11 @@ public class SerializationTest {
         choiceD.setQuestion(questionD);
         questionD.addItem(choiceD);
 
-        Result result11 = new Result("R1.1");
-        Result result12 = new Result("R1.2");
+        Result result11 = new Result();
+        result11.setName("R1.1");
+
+        Result result12 = new Result();
+        result12.setName("R1.1");
 
         choiceD.addResult(result11);
         choiceD.addResult(result12);
@@ -269,7 +272,9 @@ public class SerializationTest {
         ChoiceInstance singleChoiceI = new ChoiceInstance();
         singleChoiceI.setDefaultDescriptor(singleResult);
         singleResult.setDefaultInstance(singleChoiceI);
-        Result result21 = new Result("R2.1");
+        Result result21 = new Result();
+        result21.setName("R2.1");
+
         singleResult.addResult(result21);
 
         Reply reply = new Reply();
@@ -300,8 +305,8 @@ public class SerializationTest {
         InboxInstance inboxI = new InboxInstance();
         inboxI.setDefaultDescriptor(inboxD);
         inboxD.setDefaultInstance(inboxI);
-        Message msg1 = new Message("FROM", "SUBJECT", "CONTENT");
-        Message msg2 = new Message("FROM", "SUBJECT", "CONTENT");
+        Message msg1 = new Message("FROM", "SUBJECT", "CONTENT", "DATE", null, null, "en");
+        Message msg2 = new Message("FROM", "SUBJECT", "CONTENT", "DATE", null, null, "en");
         msg1.setInboxInstance(inboxI);
         msg2.setInboxInstance(inboxI);
         inboxI.addMessage(msg1);
@@ -323,7 +328,7 @@ public class SerializationTest {
 
         TaskDescriptor taskD = new TaskDescriptor();
         TaskDescriptor taskD2 = new TaskDescriptor();
-        taskD.setDescription(TranslatableContent.build("def", "DESC"));
+        taskD.setDescription(TranslatableContent.build("en", "DESC"));
         taskD.addPredecessor(taskD2);
         taskD.setName("taskD");
         taskD.setProperty("descriptorProperty", propertyValue);
@@ -348,7 +353,7 @@ public class SerializationTest {
 
         ResourceDescriptor resourceD = new ResourceDescriptor();
         resourceD.setName("resourceD");
-        resourceD.setDescription(TranslatableContent.build("def", "DESC"));
+        resourceD.setDescription(TranslatableContent.build("en", "DESC"));
         ResourceInstance resourceI = new ResourceInstance();
         resourceD.setDefaultInstance(resourceI);
         resourceI.setProperty("Level", "8");
@@ -363,7 +368,7 @@ public class SerializationTest {
         assignment.setTaskInstance(taskI);
         assignment.setResourceInstance(resourceI);
 
-        Occupation occupation = new Occupation(2.0);
+        Occupation occupation = new Occupation(2);
         occupation.setResourceInstance(resourceI);
 
         WRequirement req = new WRequirement("Carpenter");
@@ -381,7 +386,7 @@ public class SerializationTest {
     public void testExceptionMapper() throws JsonProcessingException {
         NumberDescriptor nd = new NumberDescriptor();
         nd.setName("x");
-        nd.setLabel(TranslatableContent.build("def", "x"));
+        nd.setLabel(TranslatableContent.build("en", "x"));
         NumberInstance ns = new NumberInstance(0);
 
         nd.setDefaultInstance(ns);

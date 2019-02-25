@@ -67,7 +67,7 @@ YUI.add('wegas-layout-absolute', function(Y) {
          */
         NAME: "wegas-absolutelayout",
         CSS_PREFIX: "wegas-absolutelayout",
-        EDITORNAME: "Layout",
+        EDITORNAME: "Absolute layout",
         ATTRS: {
         }
     });

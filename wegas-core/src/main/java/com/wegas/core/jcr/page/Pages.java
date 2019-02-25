@@ -10,18 +10,18 @@ package com.wegas.core.jcr.page;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.AlphanumericComparator;
-import org.codehaus.jettison.json.JSONException;
-import org.slf4j.LoggerFactory;
-
+import java.util.*;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
-import java.util.*;
+import org.slf4j.LoggerFactory;
+import com.wegas.core.jcr.jta.JTARepositoryConnector;
+import java.util.function.Consumer;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-public class Pages implements AutoCloseable {
+public class Pages extends JTARepositoryConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Pages.class);
 
@@ -30,35 +30,39 @@ public class Pages implements AutoCloseable {
 
     /**
      * @param gameModelId
+     *
      * @throws RepositoryException
      */
     public Pages(Long gameModelId) throws RepositoryException {
         this.connector = new PageConnector(gameModelId);
     }
 
+    @Override
+    public void setManaged(boolean managed) {
+        connector.setManaged(managed);
+    }
+
+    @Override
+    public boolean getManaged() {
+        return connector.getManaged();
+    }
+
     /**
      * @return Page index
+     *
      * @throws RepositoryException
-     * @throws JSONException
      */
     public List<HashMap<String, String>> getIndex() throws RepositoryException {
-        final List<HashMap<String, String>> ret = new LinkedList<>();
-        NodeIterator it = this.connector.listChildren();
-        Node n;
-        while (it.hasNext()) {
-            final HashMap<String, String> keyVal = new HashMap<>();
-            n = (Node) it.next();
+        final List<HashMap<String, String>> index = new LinkedList<>();
 
-            keyVal.put("id", n.getName());
-            if (n.hasProperty(Page.NAME_KEY)) {
-                keyVal.put("name", n.getProperty(Page.NAME_KEY).getString());
-            }
-            if (n.hasProperty(Page.INDEX_KEY)) {
-                keyVal.put("index", Long.toString(n.getProperty(Page.INDEX_KEY).getLong()));
-            }
-            ret.add(keyVal);
+        for (Page page : this.getPages()){
+            final HashMap<String, String> entry = new HashMap<>();
+            entry.put("id", page.getId());
+            entry.put("name", page.getName());
+            entry.put("index", page.getIndex().toString());
+            index.add(entry);
         }
-        return ret;
+        return index;
     }
 
     public Boolean pageExist(String id) throws RepositoryException {
@@ -68,6 +72,7 @@ public class Pages implements AutoCloseable {
 
     /**
      * @return Map complete pages.
+     *
      * @throws RepositoryException
      */
     public Map<String, JsonNode> getPagesContent() throws RepositoryException {
@@ -90,7 +95,9 @@ public class Pages implements AutoCloseable {
 
     /**
      * @param id
+     *
      * @return the page
+     *
      * @throws RepositoryException
      */
     public Page getPage(String id) throws RepositoryException {
@@ -105,6 +112,7 @@ public class Pages implements AutoCloseable {
 
     /**
      * @param page
+     *
      * @throws RepositoryException
      */
     public void store(Page page) throws RepositoryException {
@@ -115,6 +123,7 @@ public class Pages implements AutoCloseable {
 
     /**
      * @param page
+     *
      * @throws RepositoryException
      */
     public void setMeta(Page page) throws RepositoryException {
@@ -129,6 +138,7 @@ public class Pages implements AutoCloseable {
 
     /**
      * @param pageId
+     *
      * @throws RepositoryException
      */
     public void deletePage(String pageId) throws RepositoryException {
@@ -145,8 +155,27 @@ public class Pages implements AutoCloseable {
     }
 
     @Override
-    public void close() throws RepositoryException {
-        this.connector.close();
+    public void prepare() {
+        this.connector.prepare();
+    }
+
+    /**
+     *
+     */
+    @Override
+    public void commit() {
+        this.runCommitCallbacks();
+        this.connector.commit();
+        this.runAfterCommitCallbacks();
+    }
+
+    /**
+     *
+     */
+    @Override
+    public void rollback() {
+        this.runRollbackCallbacks();
+        this.connector.rollback();
     }
 
     /**
@@ -154,6 +183,7 @@ public class Pages implements AutoCloseable {
      *
      * @param pageId page's id to move
      * @param pos    position to move page to.
+     *
      * @throws RepositoryException
      */
     public void move(final String pageId, final int pos) throws RepositoryException {
@@ -178,7 +208,6 @@ public class Pages implements AutoCloseable {
 //        final NodeIterator query = this.connector.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('" + this.gameModelId + "') order by n.index, localname(n)," +
 //            " LIMIT " + (Math.abs(pos - oldPos) + 1L) + " OFFSET " + Math.min(pos, oldPos));
 
-
     }
 
     private void updateIndex(Page page) throws RepositoryException {
@@ -194,15 +223,30 @@ public class Pages implements AutoCloseable {
         while (nodeIterator.hasNext()) {
             pages.add(new Page(nodeIterator.nextNode()));
         }
+
+        Collections.sort(pages, (Page o1, Page o2) -> o1.getIndex().compareTo(o2.getIndex()));
+
         return pages;
     }
 
+    /**
+     * Return the first page or null is there is no pages
+     *
+     * @return
+     *
+     * @throws RepositoryException
+     */
     public Page getDefaultPage() throws RepositoryException {
-        final NodeIterator query = this.connector.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('" +
-                this.connector.getRootPath() + "') order by n.index, localname(n)", 1);
+        final NodeIterator query = this.connector.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('"
+                + this.connector.getRootPath() + "') order by n.index, localname(n)", 1);
         if (query.hasNext()) {
             return new Page(query.nextNode());
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "Pages(" + connector.getRootPath() + ")";
     }
 }

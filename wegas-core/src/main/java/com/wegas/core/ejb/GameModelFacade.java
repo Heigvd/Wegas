@@ -7,6 +7,12 @@
  */
 package com.wegas.core.ejb;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.difflib.algorithm.DiffException;
+import com.github.difflib.text.DiffRow;
+import com.github.difflib.text.DiffRowGenerator;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
 import com.wegas.core.Helper;
@@ -18,37 +24,52 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.i18n.ejb.I18nFacade;
+import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.jcr.content.ContentConnector;
-import com.wegas.core.jcr.page.Pages;
+import com.wegas.core.jcr.content.ContentConnector.WorkspaceType;
+import com.wegas.core.jcr.content.DescriptorFactory;
+import com.wegas.core.jcr.jta.JCRConnectorProvider;
+import com.wegas.core.merge.patch.WegasEntityPatch;
+import com.wegas.core.merge.patch.WegasPatch;
+import com.wegas.core.merge.utils.MergeHelper;
+import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.LabelledEntity;
+import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModel.GmType;
+import static com.wegas.core.persistence.game.GameModel.GmType.*;
 import com.wegas.core.persistence.game.GameModel.Status;
+import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
+import com.wegas.core.persistence.variable.statemachine.State;
+import com.wegas.core.rest.FindAndReplacePayload;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import javax.ejb.*;
@@ -115,13 +136,44 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     @Inject I18nFacade i18nFacade;
 
     @Inject
+    private PageFacade pageFacade;
+
+    @Inject
     private HazelcastInstance hzInstance;
+
+    @Inject
+    private JCRConnectorProvider jcrConnectorProvider;
+
+    @Inject
+    private WebsocketFacade websocketFacade;
 
     /**
      * Dummy constructor
      */
     public GameModelFacade() {
         super(GameModel.class);
+    }
+
+    /**
+     * Duplicate game model.
+     * Handle MODEL and SCENARIO.
+     *
+     * @param entityId id of the gamemodel to duplicate
+     *
+     * @return a new model or a new scenario
+     *
+     * @throws CloneNotSupportedException
+     */
+    public GameModel duplicateGameModel(Long entityId) throws CloneNotSupportedException {
+        GameModel gm = this.find(entityId);
+        switch (gm.getType()) {
+            case MODEL:
+                return this.createModelWithDebugGame(entityId);
+            case SCENARIO:
+                return this.createScenarioWithDebugGame(entityId);
+            default:
+                throw new WegasIncompatibleType("Invalid gameModel type");
+        }
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -141,10 +193,19 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     public void create(final GameModel entity) {
 
         if (entity.getRawLanguages().isEmpty()) {
-            i18nFacade.createLanguage(entity, "def", "default");
+            i18nFacade.createLanguage(entity, "en", "English");
         }
 
+        // So What?
         getEntityManager().persist(entity);
+
+        try {
+            this.openRepositories(entity);
+        } catch (RepositoryException ex) {
+            throw WegasErrorMessage.error("Unable to create repository " + ex);
+        }
+
+        // create File and history repositories
         final User currentUser = userFacade.getCurrentUser();
         entity.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
 
@@ -155,6 +216,16 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         entity.setCanEdit(true);
         entity.setCanDuplicate(true);
         entity.setCanInstantiate(true);
+
+        /*
+         * This flush is required by several EntityRevivedEvent listener,
+         * which opperate some SQL queries (which didn't return anything before
+         * entites have been flushed to database
+         *
+         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
+         * it will not return any result if this flush not occurs
+         */
+        variableDescriptorFacade.flush();
 
         variableDescriptorFacade.reviveItems(entity, entity, true); // brand new GameModel -> revive all descriptor
         createdGameModelEvent.fire(new EntityCreated<>(entity));
@@ -326,7 +397,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      */
     public GameModel createFromPlayer(Long gameModelId, Long playerId) {
         try {
-            GameModel duplicata = this.duplicate(gameModelId);
+            GameModel duplicata = this.createScenario(gameModelId);
             //this.getEntityManager().flush();
 
             GameModel source = this.find(gameModelId);
@@ -336,7 +407,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             this.addDebugGame(duplicata);
 
             return duplicata;
-        } catch (IOException ex) {
+        } catch (CloneNotSupportedException ex) {
             throw WegasErrorMessage.error("GameModels does not match");
         }
     }
@@ -365,8 +436,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      *
      * @return new unique name
      */
-    public String findUniqueName(String oName) {
-        String newName = oName;
+    public String findUniqueName(String oName, GmType type) {
+        String newName = oName != null ? oName : "";
 
         Pattern p = Pattern.compile("(.*)\\((\\d*)\\)");
         Matcher matcher = p.matcher(oName);
@@ -381,12 +452,27 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             suffix = 2l;
         }
 
-        while (this.countByName(newName) > 0) {
+        while (this.countByName(newName, type) > 0) {
             newName = baseName + " (" + suffix + ")";
             suffix++;
         }
         return newName;
 
+    }
+
+    /**
+     * Open both File and History repository through the jctConnectorProvider.
+     * <p>
+     * If one of the repository does not yet exists, it will be create and saved at JTA commit
+     *
+     * @param gameModel open repository which belong to this gameModel
+     *
+     * @throws RepositoryException unable to open repository
+     */
+    private void openRepositories(GameModel gameModel) throws RepositoryException {
+        for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
+            ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel, wt);
+        }
     }
 
     public GameModel unzip(ZipInputStream zip) throws IOException, RepositoryException {
@@ -408,12 +494,11 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         if (gameModelStream != null && filesStream != null) {
             gameModel = JacksonMapperProvider.getMapper().readValue(gameModelStream, GameModel.class);
 
-            gameModel.setName(this.findUniqueName(gameModel.getName()));
+            gameModel.setName(this.findUniqueName(gameModel.getName(), GmType.SCENARIO));
             this.createWithDebugGame(gameModel);
 
-            try (ContentConnector connector = ContentConnector.getFilesConnector(gameModel.getId())) {
-                connector.importXML(filesStream);
-            }
+            ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel, WorkspaceType.FILES);
+            connector.importXML(filesStream);
         }
 
         return gameModel;
@@ -422,8 +507,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     public StreamingOutput zip(Long gameModelId) throws RepositoryException {
 
         GameModel gameModel = this.find(gameModelId);
-
-        ContentConnector connector = ContentConnector.getFilesConnector(gameModelId);
 
         StreamingOutput out;
         out = new StreamingOutput() {
@@ -442,8 +525,15 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                     ZipEntry filesEntry = new ZipEntry("files.xml");
                     zipOutputStream.putNextEntry(filesEntry);
 
-                    connector.exportXML(zipOutputStream);
-                    zipOutputStream.closeEntry();
+                    ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel, WorkspaceType.FILES);
+                    try {
+                        connector.exportXML(zipOutputStream);
+                        zipOutputStream.closeEntry();
+                    } finally {
+                        if (!connector.getManaged()) {
+                            connector.rollback();
+                        }
+                    }
 
                 } catch (RepositoryException ex) {
                     logger.error(null, ex);
@@ -454,28 +544,34 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         return out;
     }
 
-    private void duplicateRepository(GameModel newGameModel, GameModel srcGameModel) {
-// Clone Pages
-        // newGameModel.setPages(srcGameModel.getPages()); //already done by srcGameModel.duplicate(), no ?
-        //Clone files & history (?)
+    public void duplicateRepository(GameModel newGameModel, GameModel srcGameModel) {
         for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
-            try (ContentConnector connector = new ContentConnector(newGameModel.getId(), wt)) {
-                connector.cloneRoot(srcGameModel.getId());
+            try {
+                ContentConnector srcRepo = jcrConnectorProvider.getContentConnector(srcGameModel, wt);
+                AbstractContentDescriptor srcRoot = DescriptorFactory.getDescriptor("/", srcRepo);
+
+                ContentConnector newRepo = jcrConnectorProvider.getContentConnector(newGameModel, wt);
+                AbstractContentDescriptor newRoot = DescriptorFactory.getDescriptor("/", newRepo);
+
+                WegasPatch patch = new WegasEntityPatch(newRoot, srcRoot, true);
+
+                patch.applyForce(newGameModel, newRoot);
             } catch (RepositoryException ex) {
-                logger.error("Duplicating repository {} failure, {}", srcGameModel.getId(), ex.getMessage());
+                throw WegasErrorMessage.error("Duplicating repository gm_" + srcGameModel.getId() + " failure: " + ex);
             }
         }
     }
 
-    public GameModel createGameGameModel(final Long entityId) throws IOException {
+    public GameModel createPlayGameModel(final Long entityId) throws CloneNotSupportedException {
         final GameModel srcGameModel = this.find(entityId);                     // Retrieve the entity to duplicate
-        if (srcGameModel != null) {
-            final GameModel newGameModel = (GameModel) srcGameModel.duplicate();
+        GameModel newGameModel = this.duplicate(entityId);
+        if (srcGameModel != null && newGameModel != null) {
 
             // Clear comments
             newGameModel.setComments("");
-            // to right restriction for trainer, status PLAY must be set before persisting the gameModel
-            newGameModel.setStatus(GameModel.Status.PLAY);
+            // to right restriction for trainer, status PLAY/LIVE must be set before persisting the gameModel
+            newGameModel.setStatus(GameModel.Status.LIVE);
+            newGameModel.setType(PLAY);
             newGameModel.setBasedOn(srcGameModel);
 
             this.create(newGameModel);
@@ -488,23 +584,149 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         }
     }
 
+    /**
+     *
+     * @param entityId
+     *
+     * @return
+     *
+     * @throws CloneNotSupportedException
+     */
     @Override
-    public GameModel duplicate(final Long entityId) throws IOException {
-        // Retrieve the entity to duplicate
+    public GameModel duplicate(final Long entityId) throws CloneNotSupportedException {
+        final GameModel srcGameModel = this.find(entityId);
+        if (srcGameModel != null) {
+            return (GameModel) srcGameModel.duplicate();
+        }
+        return null;
+    }
+
+    /**
+     * Duplicate a model to create a brand new one.
+     * The srcGameModel must be a model.
+     *
+     * @param entityId id of the model to duplicate must be a MODEL gameModel.
+     *
+     * @return
+     *
+     * @throws CloneNotSupportedException
+     */
+    public GameModel createModel(final Long entityId) throws CloneNotSupportedException {
         final GameModel srcGameModel = this.find(entityId);
 
         if (srcGameModel != null) {
-            requestManager.assertCanDuplicateGameModel(this.find(entityId));
-            final GameModel newGameModel = (GameModel) srcGameModel.duplicate();
+            if (srcGameModel.isModel()) {
+                requestManager.assertCanDuplicateGameModel(this.find(entityId));
 
-            newGameModel.setName(this.findUniqueName(srcGameModel.getName()));
-            this.create(newGameModel);
+                GameModel newGameModel = this.duplicate(entityId);
+                if (newGameModel != null) {
 
-            this.duplicateRepository(newGameModel, srcGameModel);
-            return newGameModel;
+                    // make sure the new GameModel is a MODEL
+                    newGameModel.setType(MODEL);
+
+                    // add a suffix to the name
+                    newGameModel.setName(this.findUniqueName(srcGameModel.getName(), MODEL));
+
+                    // new refIds
+                    MergeHelper.resetRefIds(newGameModel, null, true);
+
+                    // persist
+                    this.create(newGameModel);
+
+                    this.duplicateRepository(newGameModel, srcGameModel);
+                    return newGameModel;
+                } else {
+                    throw WegasErrorMessage.error("Unable to duplicate srcModel");
+                }
+            } else {
+                throw WegasErrorMessage.error("Model to duplicate is not a model");
+            }
         } else {
             throw new WegasNotFoundException("GameModel not found");
         }
+    }
+
+    /**
+     * Create a new scenario based on another gameModel (the source).
+     * The source GameModel must be either a MODEL or a SCENARIO.
+     * <ul>
+     * <li><b>MODEL:</b> the new scenario will be a copy of the model,
+     * whithout any PRIVATE content.</li>
+     * <li><b>SCENARIO:</b> the new scenario will be a copy of the source, including PRIVATE content</li>
+     * </ul>
+     *
+     * @param sourceId id of the gameModel to based the new one on
+     *
+     * @return a new SCENARIO gameModel
+     *
+     * @throws CloneNotSupportedException
+     */
+    public GameModel createScenario(final Long sourceId) throws CloneNotSupportedException {
+        final GameModel srcGameModel = this.find(sourceId);
+
+        if (srcGameModel != null) {
+
+            GameModel newGameModel = null;
+            switch (srcGameModel.getType()) {
+                case MODEL:
+                    requestManager.assertCanInstantiateGameModel(srcGameModel);
+                    newGameModel = new GameModel();
+                    // merge deep but skip PRIVATE content
+                    newGameModel.deepMerge(srcGameModel);
+                    newGameModel.setBasedOn(srcGameModel);
+                    break;
+                case SCENARIO:
+                    requestManager.assertCanDuplicateGameModel(srcGameModel);
+                    newGameModel = this.duplicate(sourceId);
+                    // duplicating a scenario which is based on a model
+                    newGameModel.setBasedOn(srcGameModel.getBasedOn());
+                    break;
+                case PLAY:
+                    GameModel basedOn = srcGameModel.getBasedOn();
+                    if (basedOn != null) {
+                        requestManager.assertCanDuplicateGameModel(basedOn);
+                        newGameModel = this.duplicate(sourceId);
+                        newGameModel.setBasedOn(srcGameModel.getBasedOn());
+                        break;
+                    }
+                default:
+                    throw new WegasIncompatibleType("Couldn not create a new scenario from " + srcGameModel);
+            }
+
+            if (newGameModel != null) {
+                newGameModel.setName(this.findUniqueName(srcGameModel.getName(), SCENARIO));
+
+                // one should be able to create/modifiy everything
+                newGameModel.setOnGoingPropagation(Boolean.TRUE);
+                this.create(newGameModel);
+
+                newGameModel.setType(SCENARIO);
+
+                this.duplicateRepository(newGameModel, srcGameModel);
+                newGameModel.setOnGoingPropagation(Boolean.FALSE);
+                return newGameModel;
+            } else {
+                throw WegasErrorMessage.error("Something went wrong");
+            }
+        } else {
+            throw new WegasNotFoundException("GameModel not found");
+        }
+    }
+
+    /**
+     * Create a new model based on the given one.
+     *
+     * @param gameModelId id of the model to duplicate
+     *
+     * @return a new model
+     *
+     * @throws CloneNotSupportedException
+     */
+    public GameModel createModelWithDebugGame(final Long gameModelId) throws CloneNotSupportedException {
+        GameModel gm = this.createModel(gameModelId);
+
+        this.addDebugGame(gm);
+        return gm;
     }
 
     /**
@@ -512,13 +734,20 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      *
      * @return gameModel copy
      *
-     * @throws IOException
+     * @throws java.lang.CloneNotSupportedException
+     *
      */
-    public GameModel duplicateWithDebugGame(final Long gameModelId) throws IOException {
-        GameModel gm = this.duplicate(gameModelId);
+    public GameModel createScenarioWithDebugGame(final Long gameModelId) throws CloneNotSupportedException {
+        GameModel gm = this.createScenario(gameModelId);
         this.addDebugGame(gm);
 //        userFacade.duplicatePermissionByInstance("gm" + gameModelId, "gm" + gm.getId());
         return gm;
+    }
+
+    public List<GameModel> getImplementations(GameModel gm) {
+        TypedQuery<GameModel> query = this.getEntityManager().createNamedQuery("GameModel.findAllInstantiations", GameModel.class);
+        query.setParameter("id", gm.getId());
+        return query.getResultList();
     }
 
     @Override
@@ -532,6 +761,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         for (GameModel instantiation : instantiations) {
             instantiation.setBasedOn(null);
+            if (gameModel.isModel() && instantiation.isReference()) {
+                this.remove(instantiation);
+            }
         }
 
         for (Game g : this.find(id).getGames()) {
@@ -540,13 +772,15 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         preRemovedGameModelEvent.fire(new PreEntityRemoved<>(this.find(id)));
         getEntityManager().remove(gameModel);
         // Remove pages.
-        try (Pages pages = new Pages(id)) {
-            pages.delete();
+        try {
+            pageFacade.deletePages(gameModel);
         } catch (RepositoryException e) {
             logger.error("Error suppressing pages for gameModel {}, {}", id, e.getMessage());
         }
+
         for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
-            try (ContentConnector connector = new ContentConnector(gameModel.getId(), wt)) {
+            try {
+                ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel, wt);
                 connector.deleteRoot();
             } catch (RepositoryException ex) {
                 logger.error("Error suppressing repository {}, {}", id, ex.getMessage());
@@ -578,6 +812,15 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @param entity GameModel
      */
     public void delete(GameModel entity) {
+
+        if (entity.isModel()) {
+            for (GameModel gm : getImplementations(entity)) {
+                if (gm.isScenario() && !gm.getStatus().equals(Status.DELETE)) {
+                    throw WegasErrorMessage.error("Unable to delete the model because at least one scenario still depends on it");
+                }
+            }
+        }
+
         entity.setStatus(Status.DELETE);
     }
 
@@ -588,23 +831,33 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
+     * @param gmType
      * @param status
      *
      * @return all gameModel matching the given status
      */
-    public List<GameModel> findByStatus(final GameModel.Status status) {
-        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findByStatus", GameModel.class);
+    public List<GameModel> findByTypeAndStatus(final GameModel.GmType gmType, final GameModel.Status status) {
+        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findByTypeAndStatus", GameModel.class);
+        query.setParameter("type", gmType);
         query.setParameter("status", status);
         return query.getResultList();
     }
 
     /**
      * @param name
+     * @param type
      *
      * @return the number of gamemodel having the given name
      */
-    public long countByName(final String name) {
-        final TypedQuery<Long> query = getEntityManager().createNamedQuery("GameModel.countByName", Long.class);
+    public long countByName(final String name, GmType type) {
+        final TypedQuery<Long> query;
+
+        if (type == MODEL) {
+            query = getEntityManager().createNamedQuery("GameModel.countModelByName", Long.class);
+        } else {
+            query = getEntityManager().createNamedQuery("GameModel.countByName", Long.class);
+        }
+
         query.setParameter("name", name);
         try {
             return query.getSingleResult();
@@ -654,7 +907,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         teamFacade.reset(player.getTeam());
     }
 
-    public Collection<GameModel> findByStatusAndUser(GameModel.Status status) {
+    public Collection<GameModel> findByTypeStatusAndUser(GameModel.GmType type,
+            GameModel.Status status) {
         ArrayList<GameModel> gameModels = new ArrayList<>();
         Map<Long, List<String>> pMatrix = new HashMap<>();
 
@@ -665,13 +919,13 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         String userQuery = "SELECT p FROM Permission p WHERE p.user.id = :userId ";
 
-        this.processQuery(userQuery, pMatrix, null, status, null);
-        this.processQuery(roleQuery, pMatrix, null, status, null);
+        this.processQuery(userQuery, pMatrix, null, type, status, null);
+        this.processQuery(roleQuery, pMatrix, null, type, status, null);
 
         for (Map.Entry<Long, List<String>> entry : pMatrix.entrySet()) {
             Long id = entry.getKey();
             GameModel gm = this.find(id);
-            if (gm != null && gm.getStatus() == status) {
+            if (gm != null && gm.getType() == type && gm.getStatus() == status) {
                 List<String> perm = entry.getValue();
                 this.detach(gm);
                 gm.setCanView(perm.contains("View") || perm.contains("*"));
@@ -685,19 +939,18 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         return gameModels;
     }
 
-    public void processQuery(String sqlQuery, Map<Long, List<String>> gmMatrix, Map<Long, List<String>> gMatrix, GameModel.Status gmStatus, Game.Status gStatus) {
+    public void processQuery(String sqlQuery, Map<Long, List<String>> gmMatrix, Map<Long, List<String>> gMatrix, GameModel.GmType gmType, GameModel.Status gmStatus, Game.Status gStatus) {
         TypedQuery<Permission> query = this.getEntityManager().createQuery(sqlQuery, Permission.class);
         User user = userFacade.getCurrentUser();
         query.setParameter("userId", user.getId());
         List<Permission> resultList = query.getResultList();
 
         for (Permission p : resultList) {
-            processPermission(p.getValue(), gmMatrix, gMatrix, gmStatus, gStatus);
-            //processPermission(p.getInducedPermission(), gmMatrix, gMatrix, gmStatus, gStatus);
+            processPermission(p.getValue(), gmMatrix, gMatrix, gmType, gmStatus, gStatus);
         }
     }
 
-    private void processPermission(String permission, Map<Long, List<String>> gmMatrix, Map<Long, List<String>> gMatrix, GameModel.Status gmStatus, Game.Status gStatus) {
+    private void processPermission(String permission, Map<Long, List<String>> gmMatrix, Map<Long, List<String>> gMatrix, GameModel.GmType gmType, GameModel.Status gmStatus, Game.Status gStatus) {
         if (permission != null && !permission.isEmpty()) {
             String[] split = permission.split(":");
             if (split.length == 3) {
@@ -705,7 +958,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 String idPrefix = null;
                 Map<Long, List<String>> pMatrix;
 
-                if (split[0].equals("GameModel") && gmStatus != null) {
+                if (split[0].equals("GameModel") && gmStatus != null && gmType != null) {
                     type = "GameModel";
                     idPrefix = "gm";
                     pMatrix = gmMatrix;
@@ -722,7 +975,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 if (!pId.isEmpty()) {
                     if (pId.equals("*")) {
                         if (type.equals("GameModel")) {
-                            for (GameModel gm : this.findByStatus(gmStatus)) {
+                            for (GameModel gm : this.findByTypeAndStatus(gmType, gmStatus)) {
                                 ids.add(gm.getId());
                             }
                         } else { //ie Game
@@ -757,6 +1010,57 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         }
     }
 
+    public Set<Long> findMatchingDescriptorIds(Long gameModelId, String criteria) {
+        List<String> criterias = new ArrayList<>();
+        criterias.add(criteria);
+        return this.findMatchingDescriptorIds(gameModelId, criterias);
+    }
+
+    public Set<Long> findMatchingDescriptorIds(Long gameModelId, List<String> criterias) {
+        GameModel gameModel = this.find(gameModelId);
+        requestManager.assertUpdateRight(gameModel);
+
+        Set<Long> matches = new HashSet<>();
+
+        MergeHelper.visitMergeable(gameModel, Boolean.TRUE, new MergeHelper.MergeableVisitor() {
+            @Override
+            public void visit(Mergeable target, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
+            }
+
+            @Override
+            public void visitProperty(Object target, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object[] references) {
+                if (field != null) {
+                    if (field.getAnnotation() != null) {
+                        if (field.getAnnotation().searchable()) {
+                            VariableDescriptor vd = null;
+                            for (Mergeable ancestor : ancestors) {
+                                if (ancestor instanceof VariableDescriptor) {
+                                    vd = (VariableDescriptor) ancestor;
+                                    break;
+                                }
+                            }
+                            if (vd != null && !matches.contains(vd.getId())) {
+                                String text = null;
+
+                                if (target instanceof Translation) {
+                                    text = ((Translation) target).getTranslation();
+                                } else if (target != null) {
+                                    text = target.toString();
+                                }
+
+                                if (text != null && Helper.insensitiveContainsAll(text, criterias)) {
+                                    matches.add(vd.getId());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        return matches;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -777,7 +1081,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         }
     }
 
-    @Schedule(hour = "4", dayOfMonth = "Last Sat")
+    //@Schedule(hour = "4", dayOfMonth = "Last Sat")
     public void removeGameModels() {
         requestManager.su();
         try {
@@ -785,8 +1089,10 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             logger.info("deleteGameModels(): want to delete gameModels");
             if (lock.tryLock()) {
                 try {
-                    List<GameModel> byStatus = this.findByStatus(Status.DELETE);
-                    for (GameModel gm : byStatus) {
+                    List<GameModel> toDelete = this.findByTypeAndStatus(SCENARIO, Status.DELETE);
+                    toDelete.addAll(this.findByTypeAndStatus(MODEL, Status.DELETE));
+
+                    for (GameModel gm : toDelete) {
                         this.remove(gm);
                     }
                     this.getEntityManager().flush();
@@ -800,6 +1106,359 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         } finally {
             requestManager.releaseSu();
+        }
+    }
+
+    public String findAndReplace(GameModel mergeable, FindAndReplacePayload payload) {
+
+        FindAndReplaceVisitor replacer = new FindAndReplaceVisitor(payload);
+
+        if (payload.getProcessVariables()) {
+            MergeHelper.visitMergeable(mergeable, Boolean.TRUE, replacer);
+        }
+
+        if (payload.getProcessPages()) {
+            replacer.processPages(mergeable);
+        }
+
+        if (payload.getProcessScripts()) {
+            replacer.processScripts(mergeable);
+        }
+
+        if (payload.getProcessStyles()) {
+            replacer.processStyles(mergeable);
+        }
+
+        replacer.propagate(mergeable, websocketFacade);
+        return replacer.getOutput();
+    }
+
+    public String findAndReplace(Long gameModelId, FindAndReplacePayload payload) {
+        return this.findAndReplace(this.find(gameModelId), payload);
+    }
+
+    private static class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
+
+        private final DiffRowGenerator generator;
+
+        private final StringBuilder output;
+
+        private final Pattern pattern;
+
+        private final List<String> pages = new ArrayList<>();
+        private final List<GameModelContent> contents = new ArrayList<>();
+
+        private final FindAndReplacePayload payload;
+        private int flags = Pattern.UNICODE_CASE | Pattern.UNICODE_CHARACTER_CLASS;
+
+        public FindAndReplaceVisitor(FindAndReplacePayload payload) {
+            this.payload = payload;
+            if (!payload.isMatchCase()) {
+                flags |= Pattern.CASE_INSENSITIVE;
+            }
+
+            if (!payload.isRegex()) {
+                flags |= Pattern.LITERAL;
+            }
+
+            this.pattern = Pattern.compile(payload.getFind(), flags);
+
+            this.output = new StringBuilder();
+
+            this.generator = DiffRowGenerator.create()
+                    .showInlineDiffs(true)
+                    .inlineDiffByWord(true)
+                    .mergeOriginalRevised(true)
+                    .build();
+        }
+
+        /**
+         *
+         * @param content
+         *
+         * @return content with replacement done or null id nothing to replace
+         */
+        public String replace(String content) {
+            if (!Helper.isNullOrEmpty(content)) {
+                Matcher matcher = pattern.matcher(content);
+                String newContent = matcher.replaceAll(payload.getReplace());
+                if (!content.equals(newContent)) {
+                    return newContent;
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public void visit(Mergeable target, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references) {
+            //logger.error("Mergeable {} => {}", field != null ? field.getField() : null, target);
+        }
+
+        @Override
+        public void visitProperty(Object target, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references) {
+            if (!this.isProtected(ancestors.peekFirst(), protectionLevel)) {
+                if (field != null) {
+                    if (field.getAnnotation() != null) {
+                        if (field.getAnnotation().searchable()) {
+                            if (target instanceof Translation) {
+                                Translation tr = (Translation) target;
+
+                                if (this.payload.shouldProcessLang(tr.getLang())) {
+                                    String newContent = this.replace(tr.getTranslation());
+
+                                    if (newContent != null) {
+                                        this.genEntry(ancestors, field, tr.getTranslation(), newContent);
+                                        if (!payload.isPretend()) {
+                                            tr.setTranslation(newContent);
+                                        }
+                                    }
+                                }
+                            } else if (target instanceof String) {
+                                if (field.getType() == WegasFieldProperties.FieldType.PROPERTY) {
+                                    String newContent = this.replace((String) target);
+                                    if (newContent != null) {
+                                        this.genEntry(ancestors, field, (String) target, newContent);
+
+                                        if (!payload.isPretend()) {
+                                            try {
+                                                update(newContent, target, protectionLevel, level, field, ancestors, key, references);
+                                            } catch (Exception ex) {
+                                                output.append("<br/> ERROR: ").append(ex);
+                                            }
+                                        }
+                                    }
+                                }
+                            } else if (target instanceof JsonNode) {
+                                if (field.getField().getName().equals("pages") && ancestors.peekFirst() instanceof GameModel) {
+                                    JsonNode node = (ObjectNode) target;
+                                    String content = node.toString();
+                                    String newContent = this.replace(node.toString());
+                                    if (newContent != null) {
+                                        this.genEntry(ancestors, field, content, newContent);
+
+                                        if (!payload.isPretend()) {
+                                            try {
+                                                JsonNode newNode = JacksonMapperProvider.getMapper().readTree(newContent);
+                                                update(newNode, target, protectionLevel, level, field, ancestors, key, references);
+
+                                            } catch (Exception ex) {
+                                                output.append("<br/> ERROR: ").append(ex);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /**
+         * Update the property
+         *
+         * @param newValue
+         * @param target
+         * @param protectionLevel
+         * @param level
+         * @param field
+         * @param ancestors
+         * @param key
+         * @param references
+         *
+         * @throws IllegalAccessException
+         * @throws IllegalArgumentException
+         * @throws InvocationTargetException
+         */
+        private void update(Object newValue, Object target, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references)
+                throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+            if (field.getType() == WegasFieldProperties.FieldType.CHILDREN) {
+                Object get = field.getPropertyDescriptor().getReadMethod().invoke(ancestors.peekFirst());
+                if (get instanceof Map) {
+                    Map map = (Map) get;
+                    map.put(key, newValue);
+                    field.getPropertyDescriptor().getWriteMethod().invoke(ancestors.peekFirst(), map);
+                } else if (get instanceof List && key instanceof Integer) {
+                    List list = (List) get;
+                    list.remove(key);
+                    list.add((int) key, newValue);
+                    field.getPropertyDescriptor().getWriteMethod().invoke(ancestors.peekFirst(), list);
+                } else if (get instanceof Set) {
+                    Set set = (Set) get;
+                    set.remove(target);
+                    set.add(newValue);
+                    field.getPropertyDescriptor().getWriteMethod().invoke(ancestors.peekFirst(), set);
+                }
+            } else if (field.getType() == WegasFieldProperties.FieldType.PROPERTY) {
+                field.getPropertyDescriptor().getWriteMethod().invoke(ancestors.peekFirst(), newValue);
+            }
+        }
+
+        String getOutput() {
+            return output.toString();
+        }
+
+        public void processPages(GameModel gameModel) {
+            if (!this.isProtected(gameModel, ModelScoped.ProtectionLevel.ALL)) {
+                Map<String, JsonNode> pages = gameModel.getPages();
+                for (Entry<String, JsonNode> entry : pages.entrySet()) {
+                    JsonNode page = entry.getValue();
+                    String pageId = entry.getKey();
+
+                    String content = page.toString();
+                    String newContent = this.replace(content);
+                    if (newContent != null) {
+
+                        this.genEntry("Page " + pageId, prettyPrintJson(content), prettyPrintJson(newContent));
+
+                        if (!payload.isPretend()) {
+                            try {
+                                JsonNode newNode = JacksonMapperProvider.getMapper().readTree(newContent);
+                                pages.put(pageId, newNode);
+                                // propagation
+                                this.pages.add(pageId);
+                            } catch (Exception ex) {
+                                output.append("<br/> ERROR: ").append(ex);
+                            }
+                        }
+                    }
+                }
+                gameModel.setPages(pages);
+            }
+        }
+
+        private void processLibrary(List<GameModelContent> library, String title) {
+            for (GameModelContent content : library) {
+                String newContent = this.replace(content.getContent());
+                if (newContent != null) {
+                    this.genEntry(title + "\"" + content.getContentKey() + "\"", content.getContent(), newContent);
+
+                    if (!payload.isPretend()) {
+                        try {
+                            content.setContent(newContent);
+                            this.contents.add(content);
+                        } catch (Exception ex) {
+                            output.append("<br/> ERROR: ").append(ex);
+                        }
+                    }
+                }
+            }
+        }
+
+        private StringBuilder ancestorsPrettyPrinter(Deque<Mergeable> ancestors, WegasFieldProperties field) {
+            StringBuilder sb = new StringBuilder();
+            Iterator<Mergeable> it = ancestors.descendingIterator();
+            while (it.hasNext()) {
+                Mergeable ancestor = it.next();
+
+                String name = null;
+                if (ancestor instanceof GameModel == false) {
+
+                    if (Helper.isNullOrEmpty(name) && ancestor instanceof VariableDescriptor) {
+                        name = ((VariableDescriptor) ancestor).getEditorLabel();
+                    }
+
+                    if (Helper.isNullOrEmpty(name) && ancestor instanceof LabelledEntity) {
+                        name = ((LabelledEntity) ancestor).getLabel().translateOrEmpty((GameModel) null);
+                    }
+
+                    if (Helper.isNullOrEmpty(name) && ancestor instanceof NamedEntity) {
+                        name = ((NamedEntity) ancestor).getName();
+                    }
+
+                    if (Helper.isNullOrEmpty(name) && ancestor instanceof State) {
+                        name = "#" + ((State) ancestor).getIndex();
+                    }
+
+                    /*if (Helper.isNullOrEmpty(name)) {
+                    name = ancestor.getClass().getSimpleName();
+                    }*/
+                    if (!Helper.isNullOrEmpty(name)) {
+                        sb.append(name);
+
+                        if (it.hasNext()) {
+                            sb.append("/");
+                        }
+                    }
+                }
+            }
+
+            if (field != null && field.getField() != null) {
+                sb.append("::").append(field.getField().getName());
+            }
+            return sb;
+        }
+
+        private void genEntry(Deque<Mergeable> ancestors, WegasFieldProperties field, String oldContent, String newContent) {
+            this.genEntry(this.ancestorsPrettyPrinter(ancestors, field).toString(), oldContent, newContent);
+        }
+
+        private String prettyPrintJson(String content) {
+            try {
+                ObjectMapper mapper = JacksonMapperProvider.getMapper();
+                JsonNode tree = mapper.readTree(content);
+                return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(tree);
+            } catch (IOException ex) {
+                return content;
+            }
+        }
+
+        private void genEntry(String title, String oldContent, String newContent) {
+
+            output.append("<div class='find-result-entry'>");
+            output.append("  <div class='find-result-entry-title'>").append(title).append("</div>");
+
+            try {
+                List<DiffRow> rows = generator.generateDiffRows(Arrays.asList(oldContent.split("\\n")), Arrays.asList(newContent.split("\\n")));
+                output.append("  <div class='find-result-entry-diff");
+
+                if (rows.size() > 1) {
+                    output.append(" show-lines");
+                }
+                output.append("'>");
+
+                boolean skip = false;
+
+                for (int i = 0; i < rows.size(); i++) {
+                    DiffRow row = rows.get(i);
+                    if (row.getTag() != DiffRow.Tag.EQUAL) {
+                        output.append("<div class='find-result-entry-line'>");
+                        output.append("<span class='find-result-entry-number'>").append(i).append("</span>");
+                        output.append("<span class='find-result-entry-change'>").append(row.getOldLine()).append("</span>");
+                        output.append("</div>");
+                        skip = false;
+                    } else if (!skip) {
+                        output.append("<div class='find-result-entry-skip'>").append("[...]").append("</div>");
+                        skip = true;
+                    }
+                }
+                output.append("  </div>");
+            } catch (DiffException ex) {
+                output.append("<div class='find-result-entry-sidebyside'>");
+                output.append("  <div class='find-result-entry-old'>").append(oldContent).append("</div>");
+                output.append("  <div class='find-result-entry-new'>").append(newContent).append("</div>");
+                output.append("</div>");
+            }
+
+            output.append("</div>");
+        }
+
+        public void processStyles(GameModel gameModel) {
+            this.processLibrary(gameModel.getCssLibraryList(), "Stylesheet");
+        }
+
+        public void processScripts(GameModel gameModel) {
+            this.processLibrary(gameModel.getClientScriptLibraryList(), "Client Script");
+            this.processLibrary(gameModel.getScriptLibraryList(), "Server Script");
+        }
+
+        public void propagate(GameModel gameModel, WebsocketFacade websocketFacade) {
+            for (String pageId : pages) {
+                websocketFacade.pageUpdate(gameModel.getId(), pageId, null); //no requestId allows the requester to be notified too
+            }
+            for (GameModelContent content : contents) {
+                websocketFacade.gameModelContentUpdate(content, null); //no requestId allows the requester to be notified too
+            }
         }
     }
 }

@@ -7,7 +7,7 @@
  */
 /**
  * Wegas Dashboard - V3
- * @author Maxence Laurent 
+ * @author Maxence Laurent
  */
 YUI.add('wegas-dashboard', function(Y) {
     "use strict";
@@ -63,7 +63,12 @@ YUI.add('wegas-dashboard', function(Y) {
                             "label": "View playing session",
                             "hasGlobal": false,
                             "do": function(team, payload) {
-                                window.open("game-lock.html?id=" + team.get("players")[0].get("id"), "_blank");
+                                var p = team.getLivePlayer();
+                                if (p) {
+                                    window.open("game-lock.html?id=" + p.get("id"), "_blank");
+                                } else {
+                                    Y.Wegas.Alerts.showMessage("error", "No valid player in team")
+                                }
                             }
                         }
                     }
@@ -76,7 +81,7 @@ YUI.add('wegas-dashboard', function(Y) {
         CONTENT_TEMPLATE: "<div>" +
             "<div class='dashboard-table-title'></div>" +
             "<div class='dashboard-table-data'></div>" +
-            "</dib>",
+            "</div>",
         initializer: function() {
             this.dt = this.get("datatable");
         },
@@ -174,10 +179,10 @@ YUI.add('wegas-dashboard', function(Y) {
             this.get("contentBox").delegate("click", this.onTextClick, ".bloc__text", this);
 
             Y.Wegas.app.once('ready', Y.bind(this.syncUI, this));
+            Y.on("dashboard:refresh", Y.bind(this.syncUI, this));
 
             this.handlers.onBodyClick = Y.one("body").on("click", Y.bind(function(event) {
-                this.detailsOverlay.hide();
-                this.detailsTarget = null;
+                this.closeDetails();
             }, this), this.detailsOverlay);
         },
         syncUI: function() {
@@ -361,15 +366,36 @@ YUI.add('wegas-dashboard', function(Y) {
                 tables = {}, data = {}, i, j, tableDef,
                 teamId, team, teamData, entry,
                 cell, cellDef,
-                tableName, tableColumns, formatter,
+                tableName, tableColumns, formatter, transformer, sortFn,
                 key1, key2, firstCellFormatter,
                 firstOfGroup,
                 getPlayerIcon,
+                // Parses the given JSON string and returns the possibly nested object :
+                parseJSON = function(strObj) {
+                    var props,
+                        res = {};
+                    try {
+                        props = JSON.parse(strObj.body);
+                    } catch(e) {
+                        alert("SyncTyble: " + e);
+                        return null;
+                    }
+                    // Handle nested objects as well, i.e. when a value is a string representation of a JSON object.
+                    for (var key in props) {
+                        try {
+                            res[key] = JSON.parse(props[key]);
+                        } catch (e) {
+                            res[key] = props[key];
+                        }
+                    }
+                    return res;
+                },
                 parseItem = function(id, def, firstOfGroup) {
                     var item = {
                         key: id,
                         label: def.label,
                         sortable: (def.sortable !== undefined ? def.sortable : false),
+                        sortFn: def.sortFn,
                         // Try to use column user defined tooltip or use defaut one otherwise
                         disabledTooltip: def.disabledTooltip || "This action is not yet active",
                         cssClass: (firstOfGroup ? "first-of-group" : "")
@@ -412,6 +438,18 @@ YUI.add('wegas-dashboard', function(Y) {
                                 item.valueFormatter = formatter;
                             }
                         }
+                        if (def.transformer) {
+                            transformer = eval("(" + def.transformer + ")");
+                            if (transformer) {
+                                item.valueTransformer = transformer;
+                            }
+                        }
+                        if (def.sortFn) {
+                            sortFn = eval("(" + def.sortFn + ")");
+                            if (sortFn) {
+                                item.sortFn = sortFn;
+                            }
+                        }
 
                         item.nodeFormatter = function(o) {
                             if (o.column.cssClass) {
@@ -433,6 +471,9 @@ YUI.add('wegas-dashboard', function(Y) {
                                     o.cell.setHTML('<i class=\"bloc__text ' + (o.value.empty ? 'icon fa fa-file-o"' : 'icon fa fa-file-text-o"') + ' title="Click to view"></i>');
                                 } else {
                                     fallback = true;
+                                    if (def.kind === "object") {
+                                        o.value.object = parseJSON(o.value);
+                                    }
                                 }
                             } else {
                                 fallback = true;
@@ -440,6 +481,9 @@ YUI.add('wegas-dashboard', function(Y) {
 
                             if (fallback) {
                                 if (o.value !== undefined && o.value !== null) {
+                                    if (o.column.valueTransformer) {
+                                        o.value = o.column.valueTransformer.call(this, o.value);
+                                    }
                                     o.cell.setHTML("<span class=\"bloc__value\">" + o.value + "</span>");
                                 } else {
                                     o.cell.setHTML("<span class=\"bloc__value no-value\"></span>");
@@ -659,8 +703,19 @@ YUI.add('wegas-dashboard', function(Y) {
                 this.post(pdfLink, {"title": t, "body": h, "outputType": "pdf"});
             }, this);
             this.detailsOverlay.setStdModContent('body', body);
+            // Prevent text selection attempts from closing the window:
+            this.detailsOverlay.get("contentBox").on("click", function(event) {
+                if (!event.target.hasClass("closeIcon")) {
+                    event.halt(true);
+                }
+            }, this);
             this.detailsOverlay.set("centered", true);
             this.detailsOverlay.show();
+        },
+        closeDetails: function(event) {
+            event && event.halt(true);
+            this.detailsOverlay.hide();
+            this.detailsTarget = null;
         },
         /*
          ** Opens a new tab where the given data is posted:

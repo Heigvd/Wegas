@@ -230,7 +230,8 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
 
         int numberOfReview;
 
-        if (prd.getGameModel().getTemplate()) {
+        if (!prd.getGameModel().isPlay()) {
+            // Not a real game
             // Edit Scenario Case -> there is only one game (debug) and one player (TestPlayer)
             // In this case, allow the player to review itself once
             numberOfReview = 2;

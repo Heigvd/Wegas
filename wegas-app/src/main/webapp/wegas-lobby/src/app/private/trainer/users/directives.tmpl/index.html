@@ -8,11 +8,11 @@
     </a>
 </div>
 <!-- Tabs -->
-<div class="modal__nav modal__nav--2tab">
-    <a class="modal__nav__tab modal__nav__tab--left"
+<div class="modal__nav">
+    <a class="modal__nav__tab"
        ng-class="{'modal__nav__tab--active': usersIndexCtrl.playersViewActived}"
        ng-click="usersIndexCtrl.activePlayersView()">{{'TRAINER-MODALE-USERS-TAB-PLAYER' | translate}}</a>
-    <a class="modal__nav__tab modal__nav__tab--right"
+    <a class="modal__nav__tab"
        ng-class="{'modal__nav__tab--active': !usersIndexCtrl.playersViewActived}"
        ng-click="usersIndexCtrl.activeTrainersView()">{{'TRAINER-MODALE-USERS-TAB-TRAINER' | translate}}</a>
 </div>

@@ -14,18 +14,23 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasNotFoundException;
+import com.wegas.core.merge.annotations.WegasEntity;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
+import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.LabelledEntity;
+import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.primitive.*;
@@ -83,6 +88,33 @@ import org.slf4j.LoggerFactory;
 })
 @NamedQueries({
     @NamedQuery(
+            name = "VariableDescriptor.findAllNamesInModelAndItsScenarios",
+            query = "SELECT DISTINCT(vd.name)"
+            + "FROM GameModel model "
+            + "LEFT JOIN GameModel scen ON (model = scen.basedOn AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
+            + "JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
+            + "WHERE model.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
+    ),
+    /*@NamedQuery(
+            name = "VariableDescriptor.findAllNamesInScenarioAndItsModelCluster",
+            query = "SELECT DISTINCT(vd.name)"
+            + " FROM GameModel scen "
+            + " LEFT JOIN GameModel model ON (scen.basedOn = model)"
+            + " LEFT JOIN GameModel other ON (scen.basedOn IS NOT NULL "
+            + "                               AND other.basedOn = model "
+            + "                               AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
+            + " JOIN VariableDescriptor vd ON (vd.gameModel = other OR vd.gameModel = model)"
+            + " WHERE scen.id = :gameModelId"
+    ),*/
+    @NamedQuery(
+            name = "VariableDescriptor.findAllNamesInScenarioAndItsModel",
+            query = "SELECT DISTINCT(vd.name)"
+            + " FROM GameModel scen "
+            + " LEFT JOIN GameModel model ON (model = scen.basedOn AND model.type = com.wegas.core.persistence.game.GameModel.GmType.MODEL)"
+            + " JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
+            + " WHERE scen.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
+    ),
+    @NamedQuery(
             name = "VariableDescriptor.findByRootGameModelId",
             query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
     ),
@@ -93,6 +125,7 @@ import org.slf4j.LoggerFactory;
                 @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
                 @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)}
     )
+
 })
 @CacheIndexes(value = {
     @CacheIndex(columnNames = {"GAMEMODEL_ID", "NAME"}) // bug uppercase: https://bugs.eclipse.org/bugs/show_bug.cgi?id=407834
@@ -116,7 +149,10 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
 })
 //@MappedSuperclass
-abstract public class VariableDescriptor<T extends VariableInstance> extends AbstractEntity implements Searchable, LabelledEntity, Broadcastable, AcceptInjection {
+@WegasEntity(callback = VariableDescriptor.VdMergeCallback.class)
+abstract public class VariableDescriptor<T extends VariableInstance>
+        extends AbstractEntity
+        implements LabelledEntity, Broadcastable, AcceptInjection, ModelScoped {
 
     private static final long serialVersionUID = 1L;
 
@@ -144,14 +180,21 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
     @Lob
     @JsonView(value = Views.EditorI.class)
     @Column(name = "comments")
+    @WegasEntityProperty(searchable = true)
     private String comments;
 
     /**
+     *
+     * The default instance for this variable.
+     * <p>
+     * According to WegasPatch spec, OVERRIDE should not be propagated to the instance when the descriptor is protected
+     * <p>
      * Here we cannot use type T, otherwise jpa won't handle the db ref
      * correctly
      */
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
     @JsonView(value = Views.EditorI.class)
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.INTERNAL)
     private VariableInstance defaultInstance;
 
     /**
@@ -182,36 +225,52 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
     @JsonIgnore
     private GameModel root;
 
-    /**
-     * variable name: used as identifier
-     */
-    @NotNull
-    @Basic(optional = false)
-    protected String name;
+    @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
+    @Enumerated(value = EnumType.STRING)
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL)
+    private Visibility visibility = Visibility.PRIVATE;
 
     /**
      * a token to prefix the label with. For editors only
      */
+    //@JsonView(Views.EditorI.class)
+    @WegasEntityProperty(searchable = true)
     private String editorTag;
+
+    /**
+     * Variable descriptor human readable name
+     * Player visible
+     */
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
+    @OneToOne(cascade = CascadeType.ALL /*, orphanRemoval = true*/)
+    @WegasEntityProperty
+    private TranslatableContent label;
 
     @Transient
     @JsonIgnore
     protected String title;
 
     /**
-     * Variable descriptor human readable name
-     * Player visible
+     * variable name: used as identifier
      */
-    @JsonDeserialize(using = TranslationDeserializer.class)
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private TranslatableContent label;
+    @NotNull
+    @Basic(optional = false)
+    //@CacheIndex
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.INHERITED, searchable = true)
+    protected String name;
 
-    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
+    //@BatchFetch(BatchFetchType.JOIN)
+    //@JsonManagedReference
+    @OneToOne(cascade = {CascadeType.ALL}/*, orphanRemoval = true*/, optional = false)
     @JoinFetch
+    //@JsonView(value = Views.WithScopeI.class)
+    //@WegasEntityProperty(callback = VdMergeCallback.class)
     private AbstractScope scope;
+
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
+    @WegasEntityProperty(sameEntityOnly = true)
     private Long version;
 
     public Long getVersion() {
@@ -226,6 +285,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
      *
      */
     public VariableDescriptor() {
+        super();
     }
 
     /**
@@ -233,6 +293,15 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
      */
     public VariableDescriptor(String name) {
         this.name = name;
+    }
+
+    /**
+     * @param name
+     * @param defaultInstance
+     */
+    public VariableDescriptor(String name, T defaultInstance) {
+        this.name = name;
+        this.defaultInstance = defaultInstance;
     }
 
     /**
@@ -288,11 +357,21 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
         this.gameModel = gameModel;
     }
 
+    /**
+     * Get the gameModel this descriptor stands in.
+     * RootLevel descriptor only.
+     *
+     * @return
+     */
     @JsonIgnore
     public GameModel getRoot() {
         return root;
     }
 
+    /**
+     * Set the root gameModel. Means this descriptor stands at gameModel root level
+     * @param rootGameModel
+     */
     public void setRoot(GameModel rootGameModel) {
         this.root = rootGameModel;
         logger.trace("set {} root to {}", this, this.root);
@@ -328,6 +407,21 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
         }
     }
 
+    /**
+     * @return
+     */
+    @JsonIgnore
+    public DescriptorListI<? extends VariableDescriptor> getParentOrNull() {
+        if (parentList != null) {
+            return parentList;
+        } else if (parentWh != null) {
+            return parentWh;
+        } else if (root != null) {
+            return root;
+        }
+        return null;
+    }
+
     @JsonIgnore
     public DescriptorListI<? extends VariableDescriptor> getParent() {
         if (parentList != null) {
@@ -337,7 +431,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
         } else if (root != null) {
             return root;
         } else {
-            throw new WegasNotFoundException("ORPHAN DESCRIPTOR");
+            throw new WegasNotFoundException("ORPHAN DESCRIPTOR: " + this); // is somebody expect this exception or return null will do the job ?
         }
     }
 
@@ -567,34 +661,14 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
         }
     }
 
-    /**
-     * @param a
-     */
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof VariableDescriptor) {
-            try {
-                VariableDescriptor other = (VariableDescriptor) a;
-                this.setVersion(other.getVersion());
-                this.setName(other.getName());
-                this.setEditorTag(other.getEditorTag());
-                this.setLabel(TranslatableContent.merger(this.getLabel(), other.getLabel()));
-                this.setComments(other.getComments());
-                this.getDefaultInstance().merge(other.getDefaultInstance());
-                if (other.getScope() != null) {
-                    if (this.getScope() != null && this.getScope().getClass() != other.getScope().getClass()) {
-                        this.getVariableDescriptorFacade().updateScope(this, other.getScope());
-                    } else {
-                        this.getScope().setBroadcastScope(other.getScope().getBroadcastScope());
-                    }
-                }
-            } catch (PersistenceException pe) {
-                throw WegasErrorMessage.error("The name is already in use");
-            }
-            //this.scope.merge(vd.getScope());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+    public Visibility getVisibility() {
+        return visibility;
+    }
+
+    @Override
+    public void setVisibility(Visibility visibility) {
+        this.visibility = visibility;
     }
 
     /**
@@ -649,31 +723,11 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
     }
 
     /**
-     * true if this descriptor or (if applicable) its default instance matches
-     * all the given criterias
-     *
-     * @param criterias
-     *
-     * @return return true if there is a match
-     */
-    @Override
-    public Boolean containsAll(final List<String> criterias) {
-        Boolean found = Helper.insensitiveContainsAll(this.getName(), criterias)
-                || Helper.insensitiveContainsAll(this.getEditorTag(), criterias)
-                || Helper.insensitiveContainsAll(this.getLabel(), criterias)
-                || Helper.insensitiveContainsAll(this.getComments(), criterias);
-        if (!found && (this.getDefaultInstance() instanceof Searchable)) {
-            return ((Searchable) this.getDefaultInstance()).containsAll(criterias);
-        }
-        return found;
-    }
-
-    /**
      * @return Class simple name + id
      */
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getName() + ")";
+        return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getName() + ", #" + Integer.toHexString(this.hashCode()) + " )";
     }
 
     @Override
@@ -693,7 +747,96 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
         return this.variableDescriptorFacade;
     }
 
-    public void revive(Beanjection beans) {
+    /**
+     * WegasCallback for VariableDescriptor merge.
+     * Two purpose:
+     * <ul>
+     * <li>create/destroy instances when scope changes</li>
+     * <li>assert name is valid within the model cluster</li>
+     * </ul>
+     */
+    public static class VdMergeCallback implements WegasCallback {
+
+        private AbstractScope cloneScope(AbstractScope scope) {
+            AbstractScope newScope = null;
+            try {
+                if (scope != null) {
+                    newScope = scope.getClass().getDeclaredConstructor().newInstance();
+                    newScope.setBroadcastScope(scope.getBroadcastScope());
+                }
+            } catch (Exception ex) {
+                logger.error("Fails to copy scope {}", newScope);
+            }
+            if (newScope == null) {
+                newScope = new TeamScope();
+                newScope.setBroadcastScope("TeamScope");
+            }
+            return newScope;
+        }
+
+        @Override
+        public void postUpdate(Mergeable entity, Object originalNewValue, Object identifier) {
+            VariableDescriptor vd = (VariableDescriptor) entity;
+
+            if (vd.getGameModel() != null) {
+                if (vd.getVariableDescriptorFacade().findDistinctNames(vd.getGameModel(), vd.getRefId()).contains(vd.getName())) {
+                    throw new WegasConflictException("Name already in use");
+                }
+            }
+
+            AbstractScope scope = vd.getScope();
+            AbstractScope newScope = ((VariableDescriptor) originalNewValue).getScope();
+
+            if (scope != null && newScope != null) {
+                if (!scope.getClass().equals(newScope.getClass())) {
+                    vd.getVariableDescriptorFacade().updateScope(vd, cloneScope(newScope));
+                } else {
+                    scope.setBroadcastScope(newScope.getBroadcastScope());
+                }
+            } else if (scope == null) {
+                newScope = cloneScope(newScope);
+                newScope.setShouldCreateInstance(true);
+                vd.setScope(newScope);
+            }
+        }
+
+        @Override
+        public void destroy(Mergeable entity, Object identifier) {
+            if (entity instanceof VariableDescriptor) {
+                VariableDescriptor vd = (VariableDescriptor) entity;
+                vd.getVariableDescriptorFacade().preDestroy(vd.getGameModel(), vd);
+            }
+        }
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        DescriptorListI<? extends VariableDescriptor> parent = getParent();
+        if (parent instanceof VariableDescriptor) {
+            return ((VariableDescriptor<VariableInstance>) parent).getVisibility();
+        } else {
+            return Visibility.INHERITED;
+        }
+    }
+
+    @Override
+    public boolean belongsToProtectedGameModel() {
+        return this.getGameModel() != null && this.getGameModel().belongsToProtectedGameModel();
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        DescriptorListI<? extends VariableDescriptor> parent = this.getParentOrNull();
+        if (parent instanceof VariableDescriptor) {
+            return (VariableDescriptor) parent;
+        } else if (parent instanceof GameModel) {
+            return (GameModel) parent;
+        } else {
+            return null;
+        }
+    }
+
+    public void revive(GameModel gameModel, Beanjection beans) {
         if (this.title != null) {
             if (title.isEmpty()) {
                 // title is defined but empty -> not prefix, don't change label
@@ -708,7 +851,10 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Abs
                 // eg:  label="Meet someone'; title="Meet someone"; prefix = ""; label="Meet someone"
                 // eg:  label=""; title="Meet someone"; prefix = ""; label="Meet someone"
                 this.setEditorTag(importedLabel.replace(title, "").trim());
-                this.setLabel(TranslatableContent.build("def", title));
+                List<GameModelLanguage> languages = gameModel.getLanguages();
+                if (languages != null && !languages.isEmpty()) {
+                    this.setLabel(TranslatableContent.build(languages.get(0).getCode(), title));
+                }
             }
             this.title = null;
         }

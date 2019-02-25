@@ -17,6 +17,7 @@ import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnector.WorkspaceType;
 import com.wegas.core.jcr.content.DescriptorFactory;
 import com.wegas.core.jcr.content.FileDescriptor;
+import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.annotations.CacheMaxAge;
 import java.io.*;
@@ -69,10 +70,13 @@ public class FileController {
     @Inject
     private GameModelFacade gameModelFacade;
 
+    @Inject
+    private JCRConnectorProvider jCRConnectorProvider;
+
     private ContentConnector getContentConnector(long gameModelId) throws RepositoryException {
         // find the gameModel to check readRight
-        gameModelFacade.find(gameModelId);
-        return ContentConnector.getFilesConnector(gameModelId);
+        GameModel find = gameModelFacade.find(gameModelId);
+        return jCRConnectorProvider.getContentConnector(find, WorkspaceType.FILES);
     }
 
     /**
@@ -83,9 +87,9 @@ public class FileController {
      * @param path
      * @param file
      * @param details
-     * @param force       ovveride
+     * @param force       override
      *
-     * @return HTTP 200 if everything ok, 4xx otherwise
+     * @return HTTP 200 if everything OK, 4xx otherwise
      *
      * @throws RepositoryException
      */
@@ -114,9 +118,9 @@ public class FileController {
         try {
             if (details.getContentDisposition().getFileName() == null
                     || details.getContentDisposition().getFileName().equals("")) {//Assuming an empty filename means a directory
-                detachedFile = jcrFacade.createDirectory(gameModelId, WorkspaceType.FILES, name, path, note, description);
+                detachedFile = jcrFacade.createDirectory(gameModel, WorkspaceType.FILES, name, path, note, description);
             } else {
-                detachedFile = jcrFacade.createFile(gameModelId, WorkspaceType.FILES, name, path, details.getMediaType().toString(),
+                detachedFile = jcrFacade.createFile(gameModel, WorkspaceType.FILES, name, path, details.getMediaType().toString(),
                         note, description, file, override);
             }
         } catch (final WegasRuntimeException ex) {
@@ -161,7 +165,8 @@ public class FileController {
         AbstractContentDescriptor fileDescriptor;
         // ContentConnector connector = null;
         Response.ResponseBuilder response = Response.status(404);
-        try (final ContentConnector connector = this.getContentConnector(gameModelId)) {
+        try {
+            final ContentConnector connector = this.getContentConnector(gameModelId);
 
             fileDescriptor = DescriptorFactory.getDescriptor(name, connector);
 
@@ -233,7 +238,8 @@ public class FileController {
     @Produces(MediaType.APPLICATION_JSON)
     public AbstractContentDescriptor getMeta(@PathParam("gameModelId") Long gameModelId, @PathParam("absolutePath") String name) {
 
-        try (final ContentConnector connector = this.getContentConnector(gameModelId)) {
+        try {
+            final ContentConnector connector = this.getContentConnector(gameModelId);
             return DescriptorFactory.getDescriptor(name, connector);
         } catch (PathNotFoundException e) {
             logger.debug("Asked path does not exist: {}", e.getMessage());
@@ -258,7 +264,7 @@ public class FileController {
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
 
-        return jcrFacade.listDirectory(gameModelId, ContentConnector.WorkspaceType.FILES, directory);
+        return jcrFacade.listDirectory(gameModel, ContentConnector.WorkspaceType.FILES, directory);
     }
 
     /**
@@ -277,12 +283,18 @@ public class FileController {
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
 
-        final ContentConnector connector = this.getContentConnector(gameModelId);
         StreamingOutput out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
                 try {
-                    connector.exportXML(output);
+                    final ContentConnector connector = getContentConnector(gameModelId);
+                    try {
+                        connector.exportXML(output);
+                    } finally {
+                        if (!connector.getManaged()) {
+                            connector.rollback();
+                        }
+                    }
                 } catch (RepositoryException ex) {
                     logger.error(null, ex);
                 }
@@ -307,15 +319,21 @@ public class FileController {
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
 
-        final ContentConnector connector = this.getContentConnector(gameModelId);
         StreamingOutput out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
                 try {
                     try (ByteArrayOutputStream xmlStream = new ByteArrayOutputStream()) {
-                        connector.exportXML(xmlStream);
-                        try (GZIPOutputStream o = new GZIPOutputStream(output)) {
-                            o.write(xmlStream.toByteArray());
+                        final ContentConnector connector = getContentConnector(gameModelId);
+                        try {
+                            connector.exportXML(xmlStream);
+                            try (GZIPOutputStream o = new GZIPOutputStream(output)) {
+                                o.write(xmlStream.toByteArray());
+                            }
+                        } finally {
+                            if (!connector.getManaged()) {
+                                connector.rollback();
+                            }
                         }
                     }
 
@@ -342,12 +360,18 @@ public class FileController {
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
 
-        final ContentConnector connector = this.getContentConnector(gameModelId);
         StreamingOutput out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
                 try (ZipOutputStream zipOutputStream = new ZipOutputStream(output)) {
-                    connector.zipDirectory(zipOutputStream, "/");
+                    final ContentConnector connector = getContentConnector(gameModelId);
+                    try {
+                        connector.zipDirectory(zipOutputStream, "/");
+                    } finally {
+                        if (!connector.getManaged()) {
+                            connector.rollback();
+                        }
+                    }
                 } catch (RepositoryException ex) {
                     logger.error(null, ex);
                 }
@@ -383,7 +407,8 @@ public class FileController {
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
 
-        try (final ContentConnector connector = this.getContentConnector(gameModelId)) {
+        try {
+            final ContentConnector connector = this.getContentConnector(gameModelId);
             switch (details.getMediaType().getSubtype()) {
                 case "x-gzip":
                 case "gzip":
@@ -398,7 +423,6 @@ public class FileController {
                     throw WegasErrorMessage.error("Uploaded file mimetype does not match requirements [XML or Gunzip], found:"
                             + details.getMediaType().toString());
             }
-            connector.save();
         } finally {
             file.close();
         }
@@ -425,10 +449,12 @@ public class FileController {
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
 
-        return jcrFacade.delete(gameModelId, ContentConnector.WorkspaceType.FILES, absolutePath, force);
+        return jcrFacade.delete(gameModel, ContentConnector.WorkspaceType.FILES, absolutePath, force);
     }
 
     /**
+     * Update File Meta
+     *
      * @param tmpDescriptor
      * @param gameModelId
      * @param absolutePath
@@ -448,11 +474,13 @@ public class FileController {
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
 
-        try (final ContentConnector connector = this.getContentConnector(gameModelId)) {
+        try {
+            final ContentConnector connector = this.getContentConnector(gameModelId);
 
             descriptor = DescriptorFactory.getDescriptor(absolutePath, connector);
             descriptor.setNote(tmpDescriptor.getNote());
             descriptor.setDescription(tmpDescriptor.getDescription());
+            descriptor.setVisibility(tmpDescriptor.getVisibility());
             descriptor.setContentToRepository();
             descriptor.getContentFromRepository();                              //Update
             return descriptor;
@@ -473,7 +501,8 @@ public class FileController {
 
         requestManager.checkPermission("GameModel:Delete:gm" + gameModelId);
 
-        try (final ContentConnector fileManager = this.getContentConnector(gameModelId)) {
+        try {
+            final ContentConnector fileManager = this.getContentConnector(gameModelId);
             fileManager.deleteRoot();
         } catch (RepositoryException ex) {
             logger.error(null, ex);

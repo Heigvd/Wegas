@@ -60,9 +60,13 @@ angular.module('private.admin.users.edit.directives', ['wegas.directive.permissi
                     }
                 });
 
-                // Create a new
+                // Add a new role to the user, proposing Trainer as the default option
                 scope.addGroup = function() {
-                    var newGroup = angular.copy(scope.groups[0]);
+                    var trainerGroup = scope.groups.filter(function(item) {
+                        return item.name === 'Trainer';
+                    });
+                    // Fall back to admin group if no trainer group was found:
+                    var newGroup = angular.copy(trainerGroup[0] || scope.groups[0]);
                     scope.user.roles.push(newGroup);
                     scope.user.account.roles.push(newGroup);
                 };
@@ -87,6 +91,8 @@ angular.module('private.admin.users.edit.directives', ['wegas.directive.permissi
                 });
 
                 scope.selectedGroup = scope.currentGroup;
+                // Scroll new role into view:
+                $('.modal .modal__content').scrollTop(9999);
 
                 // Updating user groups when user select another role in the list
                 scope.$watch('selectedGroup', function() {
@@ -95,7 +101,6 @@ angular.module('private.admin.users.edit.directives', ['wegas.directive.permissi
                         scope.user.account.roles[index] = scope.selectedGroup;
                         scope.currentGroup = scope.selectedGroup;
                     }
-
                 });
 
                 scope.removeGroup = function() {

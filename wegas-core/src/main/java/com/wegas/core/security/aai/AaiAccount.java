@@ -8,12 +8,10 @@
 package com.wegas.core.security.aai;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.security.persistence.AbstractAccount;
 
 import javax.persistence.*;
-import java.util.Date;
 
 /**
  * Wegas
@@ -34,7 +32,10 @@ public class AaiAccount extends AbstractAccount {
     private static final long serialVersionUID = 1L;
 
     @Column(columnDefinition = "text")
+    @WegasEntityProperty(ignoreNull = true)
     private String persistentId;
+
+    @WegasEntityProperty
     private String homeOrg;
 
     /*
@@ -60,21 +61,6 @@ public class AaiAccount extends AbstractAccount {
         this.setHomeOrg(userDetails.getHomeOrg());
     }
 
-    @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof AaiAccount) {
-            super.merge(other);
-            AaiAccount a = (AaiAccount) other;
-            String persistentId = a.getPersistentId();
-            // Don't propagate or persist missing (censored) information:
-            if (persistentId != null && persistentId != "") {
-                this.setPersistentId(a.getPersistentId());
-            }
-            this.setHomeOrg(a.getHomeOrg());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
-        }
-    }
 
     // This attribute should not be sent to the client side, hence the JsonIgnore:
     @JsonIgnore

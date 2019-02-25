@@ -79,10 +79,31 @@ public interface QuestionDescriptorFacadeI {
      * @param choiceId  selected choice
      * @param player    player who select the choice
      * @param startTime time the player select the choice
+     * @param quiet     a quiet selectChoice do not send any lock to others users and do not fire any replySelect event
      *
      * @return the new reply
      */
-    Reply selectChoice(Long choiceId, Player player, Long startTime);
+    Reply selectChoice(Long choiceId, Player player, Long startTime, boolean quiet);
+
+    /**
+     *
+     * @param choiceId  new choice to select
+     * @param player    player who select the choice
+     * @param startTime time the player select the choice
+     *
+     * @return the new reply
+     */
+    Reply deselectOthersAndSelectChoice(Long choiceId, Player player, Long startTime);
+
+    /**
+     *
+     * @param choiceId  new choice to select
+     * @param playerId  id of the player who select the choice
+     * @param startTime time the player select the choice
+     *
+     * @return the new reply
+     */
+    Reply deselectOthersAndSelectChoice(Long choiceId, Long playerId, Long startTime);
 
     /**
      * @param replyId
@@ -133,22 +154,28 @@ public interface QuestionDescriptorFacadeI {
     /**
      * @param playerId
      * @param replyVariableInstanceId
+     *
+     * @return the validated reply
      */
-    void validateReply(Long playerId, Long replyVariableInstanceId);
+    public Reply validateReply(Long playerId, Long replyVariableInstanceId);
 
     /**
      * @param player
      * @param replyVariableInstanceId
+     *
+     * @return the validated reply
      */
-    void validateReply(Player player, Long replyVariableInstanceId);
+    Reply validateReply(Player player, Long replyVariableInstanceId);
 
     /**
      * @param player
      * @param validateReply
      *
+     * @return the validated reply
+     *
      * @throws com.wegas.core.exception.client.WegasRuntimeException
      */
-    void validateReply(final Player player, final Reply validateReply) throws WegasRuntimeException;
+    Reply validateReply(final Player player, final Reply validateReply) throws WegasRuntimeException;
 
     /**
      * According to whValidate event, create a message to be send to an inbox

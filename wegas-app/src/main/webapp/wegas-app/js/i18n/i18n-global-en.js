@@ -31,7 +31,9 @@ YUI.add("wegas-i18n-global-en", function(Y) {
             statistics: "Statistics",
             peerReview: "Peer Review",
             backToMenu: "back to menu",
-            mcqBackToMenu: "back to question list"
+            mcqBackToMenu: "back to question list",
+            ok: "OK",
+            cancel: "Cancel"
         },
         i18n:{
             manager: {

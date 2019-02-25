@@ -1,0 +1,44 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="maxence" id="1542629385-1">
+        
+        <addColumn tableName="whquestioninstance">
+            <column name="unread" type="bool" />
+        </addColumn>
+        
+        
+        <sql>
+            -- mark all choiceinsstance as read
+            UPDATE questioninstance set unread= FALSE;
+        </sql>
+        <sql>
+            UPDATE whquestioninstance set unread= FALSE;
+        </sql>
+
+        <sql>
+            -- but not default question instances
+            UPDATE questioninstance 
+            SET unread = true 
+            FROM (
+            SELECT defaultinstance_id AS id 
+            FROM variabledescriptor 
+            WHERE dtype LIKE 'QuestionDescriptor'
+            ) AS foo 
+            WHERE foo.id = questioninstance.id;
+        </sql>
+
+        <sql>
+            -- but not default instances
+            UPDATE whquestioninstance 
+            SET unread = true 
+            FROM (
+            SELECT defaultinstance_id AS id 
+            FROM variabledescriptor 
+            WHERE dtype LIKE 'WhQuestionDescriptor'
+            ) AS foo 
+            WHERE foo.id = whquestioninstance.id;
+        </sql>
+
+    </changeSet>
+
+</databaseChangeLog>

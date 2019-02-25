@@ -10,8 +10,10 @@ package com.wegas.resourceManagement.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
@@ -41,7 +43,7 @@ import javax.validation.constraints.NotNull;
             @Index(columnList = "taskinstance_id")
         }
 )
-public class WRequirement extends AbstractEntity {
+public class WRequirement extends AbstractEntity implements NamedEntity {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -57,21 +59,25 @@ public class WRequirement extends AbstractEntity {
      */
     @Column(name = "wrequirement_name")
     @NotNull
+    @WegasEntityProperty
     private String name;
     /**
      *
      */
     @Column(name = "wlimit")
+    @WegasEntityProperty
     private Integer limit = 0;
     /**
      *
      */
     @Column(name = "wwork")
+    @WegasEntityProperty
     private String work = "";
     /*
      *
      */
     @Column(name = "wlevel")
+    @WegasEntityProperty
     private Integer level = 0;
     /**
      *
@@ -81,14 +87,17 @@ public class WRequirement extends AbstractEntity {
     /*
      *
      */
+    @WegasEntityProperty
     private Long quantity = 0L;
     /*
      *
      */
+    @WegasEntityProperty
     private Double completeness = 0.0D;
     /*
      *
      */
+    @WegasEntityProperty
     private Double quality = 0.0D;
 
     /**
@@ -112,21 +121,6 @@ public class WRequirement extends AbstractEntity {
         this.work = work;
     }
 
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof WRequirement) {
-            WRequirement other = (WRequirement) a;
-            this.setLevel(other.getLevel());
-            this.setLimit(other.getLimit());
-            this.setQuantity(other.getQuantity());
-            this.setWork(other.getWork());
-            this.setCompleteness(other.getCompleteness());
-            this.setQuality(other.getQuality());
-            this.setName(other.getName());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
-    }
 
     /**
      * @return the id
@@ -333,6 +327,11 @@ public class WRequirement extends AbstractEntity {
         if (name == null || name.isEmpty()) {
             name = work + level + quantity + Helper.genToken(4);
         }
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return this.getTaskInstance();
     }
 
     @Override

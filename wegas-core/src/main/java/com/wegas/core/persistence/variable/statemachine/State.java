@@ -8,17 +8,15 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
-import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.Scripted;
-import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.io.Serializable;
@@ -46,7 +44,7 @@ import javax.persistence.*;
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
 })
 //@OptimisticLocking(cascade = true)
-public class State extends AbstractEntity implements Searchable, Scripted, Broadcastable {
+public class State extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
 
@@ -56,6 +54,7 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
+    @WegasEntityProperty(sameEntityOnly = true)
     private Long version;
 
     public Long getVersion() {
@@ -70,6 +69,7 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
      *
      */
     @JsonView(value = Views.EditorI.class)
+    @WegasEntityProperty
     private Coordinate editorPosition;
 
     /**
@@ -81,9 +81,18 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
     @JsonView(Views.IndexI.class)
     private Long id;
 
+
     /**
      *
      */
+    @Column(name = "fsm_statekey")
+    @WegasEntityProperty
+    private Long index;
+
+    /**
+     *
+     */
+    @WegasEntityProperty(searchable = true)
     private String label;
 
     /**
@@ -91,12 +100,14 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
      */
     @Embedded
     @JsonView(Views.EditorI.class)
+    @WegasEntityProperty
     private Script onEnterEvent;
 
     /**
      *
      */
     @OneToMany(mappedBy = "state", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty
     private List<Transition> transitions = new ArrayList<>();
 
     /**
@@ -118,28 +129,14 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
         this.stateMachine = stateMachine;
     }
 
+    @JsonView(Views.IndexI.class)
     public Long getStateMachineId() {
         return getStateMachine().getId();
     }
 
+    @JsonView(Views.IndexI.class)
     public void setStateMachineId(Long stateMachineId) {
         //this.stateMachine = stateMachine;
-    }
-
-    @Override
-    public Boolean containsAll(final List<String> criterias) {
-        if (Helper.insensitiveContainsAll(this.getLabel(), criterias)) {
-            return true;
-        }
-        if (this.getOnEnterEvent() != null && this.getOnEnterEvent().containsAll(criterias)) {
-            return true;
-        }
-        for (Transition t : this.getTransitions()) {
-            if (t.containsAll(criterias)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -161,6 +158,17 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
         return id;
     }
 
+    @JsonProperty
+    public Long getIndex() {
+        return index;
+    }
+
+    @JsonIgnore
+    public void setIndex(Long index) {
+        this.index = index;
+    }
+
+
     /**
      * @return state name
      */
@@ -181,7 +189,14 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
      * @return the script which to execute when this state become the current state
      */
     public Script getOnEnterEvent() {
+        this.touchOnEnterEvent();
         return onEnterEvent;
+    }
+
+    private void touchOnEnterEvent() {
+        if (this.onEnterEvent != null) {
+            this.onEnterEvent.setParent(this, "impact");
+        }
     }
 
     /**
@@ -189,16 +204,7 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
      */
     public void setOnEnterEvent(Script onEnterEvent) {
         this.onEnterEvent = onEnterEvent;
-    }
-
-    @Override
-    public List<Script> getScripts() {
-        List<Script> ret = new ArrayList<>();
-        ret.add(this.onEnterEvent);
-        for (Transition transition : this.getTransitions()) {
-            ret.addAll(transition.getScripts());
-        }
-        return ret;
+        this.touchOnEnterEvent();
     }
 
     /**
@@ -219,7 +225,9 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
 
     public Transition addTransition(Transition t) {
         List<Transition> ts = this.getTransitions();
-        ts.add(t);
+        if (!ts.contains(t)) {
+            ts.add(t);
+        }
         this.setTransitions(ts);
         return t;
     }
@@ -235,22 +243,13 @@ public class State extends AbstractEntity implements Searchable, Scripted, Broad
     }
 
     @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof State) {
-            State newState = (State) other;
-            this.setLabel(newState.getLabel());
-            this.setVersion(newState.getVersion());
-            this.setOnEnterEvent(newState.getOnEnterEvent());
-            this.setEditorPosition(newState.getEditorPosition());
-            this.setTransitions(ListUtils.mergeLists(this.getTransitions(), newState.getTransitions()));
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
-        }
+    public String toString() {
+        return "State{" + "id=" + id + ", v=" + version + ", label=" + label + ", onEnterEvent=" + onEnterEvent + ", transitions=" + transitions + '}';
     }
 
     @Override
-    public String toString() {
-        return "State{" + "id=" + id + ", v=" + version + ", label=" + label + ", onEnterEvent=" + onEnterEvent + ", transitions=" + transitions + '}';
+    public WithPermission getMergeableParent() {
+        return this.getStateMachine();
     }
 
     @Override

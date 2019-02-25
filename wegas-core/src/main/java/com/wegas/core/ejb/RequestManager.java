@@ -364,7 +364,7 @@ public class RequestManager implements RequestManagerI {
      * @param container entities destination
      */
     private void addEntities(Map<String, List<AbstractEntity>> entities,
-                             Map<String, List<AbstractEntity>> container) {
+            Map<String, List<AbstractEntity>> container) {
         if (entities != null) {
             for (Map.Entry<String, List<AbstractEntity>> entry : entities.entrySet()) {
                 this.addEntities(entry.getKey(), entry.getValue(), container);
@@ -380,7 +380,7 @@ public class RequestManager implements RequestManagerI {
      * @param container the container
      */
     private void addEntities(String audience, List<AbstractEntity> entities,
-                             Map<String, List<AbstractEntity>> container) {
+            Map<String, List<AbstractEntity>> container) {
         for (AbstractEntity entity : entities) {
             this.addEntity(audience, entity, container);
         }
@@ -391,10 +391,11 @@ public class RequestManager implements RequestManagerI {
      *
      * @param container the container to search in
      * @param entity    the needle
+     *
      * @return true if the entity has been found within the container
      */
     public boolean contains(Map<String, List<AbstractEntity>> container,
-                            AbstractEntity entity) {
+            AbstractEntity entity) {
         for (List<AbstractEntity> entities : container.values()) {
             if (entities.contains(entity)) {
                 return true;
@@ -689,6 +690,7 @@ public class RequestManager implements RequestManagerI {
 
     /**
      * @param bundle
+     *
      * @return the ResourceBundle
      */
     public ResourceBundle getBundle(String bundle) {
@@ -715,7 +717,9 @@ public class RequestManager implements RequestManagerI {
      * Based on target, return the audience (i.e. websocket channel) to lock
      *
      * @param target instanceOwner to get the audience from
+     *
      * @return the audience to lock
+     *
      * @throws WegasErrorMessage if currentUser don't have the right to lock the target
      */
     private String getAudienceToLock(InstanceOwner target) {
@@ -734,6 +738,7 @@ public class RequestManager implements RequestManagerI {
      * audien is null or empty
      *
      * @param audience audience
+     *
      * @return audience or "internal" if audience is null
      */
     private String getEffectiveAudience(String audience) {
@@ -842,6 +847,7 @@ public class RequestManager implements RequestManagerI {
      * get all token locked for all audiences in the list
      *
      * @param audiences list of audiences
+     *
      * @return all tokens locked for all audiences
      */
     public Collection<String> getTokensByAudiences(List<String> audiences) {
@@ -1029,6 +1035,7 @@ public class RequestManager implements RequestManagerI {
 
     /**
      * @param millis
+     *
      * @throws java.lang.InterruptedException
      */
     @Override
@@ -1043,7 +1050,6 @@ public class RequestManager implements RequestManagerI {
      | Security
      ---------------------------------------------------------------------------
      */
-
     /**
      * Clear all granted wegas permissions and clear effective roles/DBPermissions
      */
@@ -1133,6 +1139,7 @@ public class RequestManager implements RequestManagerI {
      * This method is much faster than shiro one...
      *
      * @param permission
+     *
      * @return
      */
     public boolean isPermitted(String permission) {
@@ -1160,6 +1167,7 @@ public class RequestManager implements RequestManagerI {
      * Has Current user Shiro Edit permission on gameModel ?
      *
      * @param gameModel the gameModel to check permission against
+     *
      * @return true if the user has edit permission on the gameModel
      */
     private boolean hasDirectGameModelEditPermission(GameModel gameModel) {
@@ -1170,6 +1178,7 @@ public class RequestManager implements RequestManagerI {
      * Has Current user Shiro Edit permission on game ?
      *
      * @param game the game to check permission against
+     *
      * @return true if the user has edit permission on the game
      */
     private boolean hasDirectGameEditPermission(Game game) {
@@ -1194,6 +1203,7 @@ public class RequestManager implements RequestManagerI {
      *
      * @param game            the game to check permission against
      * @param superPermission true means scenarist/trainer right
+     *
      * @return true if permitted
      */
     private boolean hasGamePermission(Game game, boolean superPermission) {
@@ -1208,8 +1218,8 @@ public class RequestManager implements RequestManagerI {
                     || (!superPermission
                     && ( // OR if no super permission is required. either: 
                     game.getAccess().equals(Game.GameAccess.OPEN) // the game is open and hence, must be readable to everyone
-                            || playerFacade.isInGame(game.getId(), this.getCurrentUser().getId()) // current user owns one player in the game
-            ));
+                    || playerFacade.isInGame(game.getId(), this.getCurrentUser().getId()) // current user owns one player in the game
+                    ));
         }
     }
 
@@ -1230,13 +1240,14 @@ public class RequestManager implements RequestManagerI {
      *
      * @param gameModel       the gameModel to check permission against
      * @param superPermission true means trainer/scenarist right
+     *
      * @return true if permitted
      */
     private boolean hasGameModelPermission(GameModel gameModel, boolean superPermission) {
         // not yet persisted means the gameModel is being created right kown
         if (!(gameModel.isPersisted() || gameModelFacade.isPersisted(gameModel.getId())) || hasDirectGameModelEditPermission(gameModel)) {
             return true;
-        } else if (gameModel.getStatus().equals(GameModel.Status.PLAY)) {
+        } else if (gameModel.isPlay()) {
             /**
              * GameModel permission against a "PLAY" gameModel.
              */
@@ -1272,6 +1283,7 @@ public class RequestManager implements RequestManagerI {
      * @param type
      * @param id
      * @param currentPlayer
+     *
      * @return true if current user has access to
      */
     private boolean hasEntityPermission(WegasEntityPermission perm) {
@@ -1287,7 +1299,7 @@ public class RequestManager implements RequestManagerI {
                 Team team = teamFacade.find(perm.getId());
                 return team != null && ((currentUser != null && (playerFacade.isInTeam(team.getId(), currentUser.getId()) // Current logged User is linked to a player who's member of the team
                         || currentUser.equals(team.getCreatedBy()) // or current user is the team creator
-                )
+                        )
                         || this.hasGamePermission(team.getGame(), perm.getLevel() == WegasEntityPermission.Level.WRITE))); // or read (or write for superP) right one the game
             case PLAYER:
                 Player player = playerFacade.find(perm.getId());
@@ -1305,6 +1317,7 @@ public class RequestManager implements RequestManagerI {
      * Returns {@code true} if currentUser membership to underlying role
      *
      * @param perm membership permission to check
+     *
      * @return true if currentuser membership matches
      */
     private boolean isMemberOf(WegasMembership perm) {
@@ -1315,6 +1328,7 @@ public class RequestManager implements RequestManagerI {
      * Returns {@code true} if the currentUser owns the permission
      *
      * @param permission permission to check
+     *
      * @return true if the currentUser is permitted, false otherwise.
      */
     public boolean hasPermission(WegasPermission permission) {
@@ -1340,8 +1354,7 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
-    /* private */
-    public void grant(WegasPermission perm) {
+    /* private */ public void grant(WegasPermission perm) {
         this.grantedPermissions.add(perm);
     }
 
@@ -1349,6 +1362,7 @@ public class RequestManager implements RequestManagerI {
      * check if currentUser has at least one of the permission in permissions.
      *
      * @param permissions list of permissions, null means no permission required, empty list means forbidden
+     *
      * @return truc if at least one permission from the list is permitted
      */
     public boolean hasAnyPermission(Collection<WegasPermission> permissions) {
@@ -1375,6 +1389,7 @@ public class RequestManager implements RequestManagerI {
      * @param permissions list of permissions, null means no permission required, empty list means forbidden
      * @param type        some string for logging purpose
      * @param entity      entity permissions are relatred to (logging purpose only)
+     *
      * @throws WegasAccessDenied permissions is not null and no permission in permissions is permitted
      */
     private void assertUserHasPermission(Collection<WegasPermission> permissions, String type, AbstractEntity entity) throws WegasAccessDenied {
@@ -1393,6 +1408,7 @@ public class RequestManager implements RequestManagerI {
      * Assert the current user has the required "Create" permission on an entity
      *
      * @param entity the entity to check the permission against
+     *
      * @throws WegasAccessDenied currentUser do NOT have the permission
      */
     public void assertCreateRight(AbstractEntity entity) {
@@ -1403,6 +1419,7 @@ public class RequestManager implements RequestManagerI {
      * Assert the current user has the required "read" permission on an entity
      *
      * @param entity the entity to check the permission against
+     *
      * @throws WegasAccessDenied currentUser do NOT have the permission
      */
     public void assertReadRight(AbstractEntity entity) {
@@ -1413,6 +1430,7 @@ public class RequestManager implements RequestManagerI {
      * Assert the current user has the required "update" permission on an entity
      *
      * @param entity the entity to check the permission against
+     *
      * @throws WegasAccessDenied currentUser do NOT have the permission
      */
     public void assertUpdateRight(AbstractEntity entity) {
@@ -1423,6 +1441,7 @@ public class RequestManager implements RequestManagerI {
      * Assert the current user has the required "delete" permission on an entity
      *
      * @param entity the entity to check the permission against
+     *
      * @throws WegasAccessDenied currentUser do NOT have the permission
      */
     public void assertDeleteRight(AbstractEntity entity) {
@@ -1432,7 +1451,6 @@ public class RequestManager implements RequestManagerI {
     /*
      * Security Sugars
      */
-
     /**
      * Is the current user an administrator ?
      *
@@ -1446,6 +1464,7 @@ public class RequestManager implements RequestManagerI {
      * Can the currentUser read the given game ?
      *
      * @param game the game the currentUser want to read
+     *
      * @return whether or not the currentUser can read the game
      */
     public boolean hasGameReadRight(final Game game) {
@@ -1464,6 +1483,7 @@ public class RequestManager implements RequestManagerI {
      * Can the currentUser read the given gameModel ?
      *
      * @param gameModel the gameModel the currentUser want to read
+     *
      * @return whether or not the currentUser can read the gameModel
      */
     public boolean hasGameModelReadRight(final GameModel gameModel) {
@@ -1482,6 +1502,7 @@ public class RequestManager implements RequestManagerI {
      * Can the currentUser acts as a member of the given team
      *
      * @param team the team the currentUser want to use
+     *
      * @return whether or not the currentUser can act as a player from the team
      */
     public boolean hasTeamRight(final Team team) {
@@ -1492,6 +1513,7 @@ public class RequestManager implements RequestManagerI {
      * Can the currentUser acts as the given player ?
      *
      * @param player the player the currentUser want to use
+     *
      * @return whether or not the currentUser can act as the player
      */
     public boolean hasPlayerRight(final Player player) {
@@ -1502,6 +1524,7 @@ public class RequestManager implements RequestManagerI {
      * has the currentUser the right to restore the given gameModel from the bin
      *
      * @param gameModel the game model to restore
+     *
      * @return whether or not the user can move gameModel from the bin
      */
     public boolean canRestoreGameModel(final GameModel gameModel) {
@@ -1513,14 +1536,33 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * has the currentUser the right to restore the given gameModel from the bin
+     * has the currentUser the right to instantiate the given gameModel
      *
-     * @param gameModel the game model to restore
-     * @return whether or not the user can move gameModel from the bin
+     * @param gameModel the game model to instantiate
+     *
+     * @return whether or not the user can instantiate the gameModel
+     */
+    public boolean canInstantiateGameModel(final GameModel gameModel) {
+        GameModel theOne;
+        if (gameModel.isPlay() && gameModel.getBasedOnId() != null) {
+            theOne = gameModel.getBasedOn();
+        } else {
+            theOne = gameModel;
+        }
+        String id = "gm" + theOne.getId();
+        return this.isPermitted("GameModel:Instantiate:" + id);
+    }
+
+    /**
+     * has the currentUser the right to duplicate the given gameModel
+     *
+     * @param gameModel the game model to duplicate
+     *
+     * @return whether or not the user can duplicate gameModel
      */
     public boolean canDuplicateGameModel(final GameModel gameModel) {
         GameModel theOne;
-        if (gameModel.getStatus().equals(GameModel.Status.PLAY) && gameModel.getBasedOn() != null) {
+        if (gameModel.isPlay() && gameModel.getBasedOnId() != null) {
             theOne = gameModel.getBasedOn();
         } else {
             theOne = gameModel;
@@ -1533,6 +1575,7 @@ public class RequestManager implements RequestManagerI {
      * has the currentUser the right to delete (ie move to BIN, empty from the bin) the given gameModel
      *
      * @param gameModel the gameModel the user want to move to the bin
+     *
      * @return whether or not the user can move gameModel to the bin
      */
     public boolean canDeleteGameModel(final GameModel gameModel) {
@@ -1544,6 +1587,7 @@ public class RequestManager implements RequestManagerI {
      * Has the currentUser the right to listen to a channel
      *
      * @param channel the channel the user want to listen to
+     *
      * @return true if the currentUser can listen to the channel
      */
     public boolean hasChannelPermission(String channel) {
@@ -1583,11 +1627,23 @@ public class RequestManager implements RequestManagerI {
      * Assert the current user have read right on the game model
      *
      * @param gameModel gameModel to check right against
+     *
      * @throw WegasAccessDenied
      */
     public void assertCanReadGameModel(final GameModel gameModel) {
         if (!hasGameModelReadRight(gameModel)) {
             throw new WegasAccessDenied(gameModel, "Read", gameModel.getRequieredReadPermission().toString(), this.getCurrentUser());
+        }
+    }
+
+    /**
+     * Assert currentUser has the right to instantiate gameModel
+     *
+     * @param gameModel the GameModel to check right against
+     */
+    public void assertCanInstantiateGameModel(final GameModel gameModel) {
+        if (!canInstantiateGameModel(gameModel)) {
+            throw new WegasAccessDenied(gameModel, "Duplicate", "Not allowed to duplicate the scenario", this.getCurrentUser());
         }
     }
 
@@ -1615,6 +1671,7 @@ public class RequestManager implements RequestManagerI {
      * Log-in with a different account
      *
      * @param accountId account id to login as
+     *
      * @return new currentUser
      */
     public User su(Long accountId) {

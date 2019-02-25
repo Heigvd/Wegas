@@ -10,11 +10,9 @@ package com.wegas.mcq.persistence;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -22,7 +20,9 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -55,7 +55,8 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      */
     @OneToOne(cascade = CascadeType.ALL)
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
+    @WegasEntityProperty
     private TranslatableContent description;
 
     /**
@@ -63,19 +64,23 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * radio/checkbox
      */
     @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty
     private Boolean cbx = FALSE;
     /**
      * Determines if choices are presented horizontally in a tabular fashion
      */
     @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty
     private Boolean tabular = FALSE;
     /**
      * Total number of replies allowed. No default value.
      */
+    @WegasEntityProperty
     private Integer maxReplies = null;
     /**
      * Minimal number of replies required. Makes sense only with CBX-type questions. No default value.
      */
+    @WegasEntityProperty
     private Integer minReplies = null;
     /**
      *
@@ -84,6 +89,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     //@BatchFetch(BatchFetchType.IN)
     @JsonManagedReference
     @OrderColumn(name = "qd_items_order")
+    @WegasEntityProperty(includeByDefault = false)
     private List<ChoiceDescriptor> items = new ArrayList<>();
     /**
      *
@@ -91,29 +97,10 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @ElementCollection
     //@JsonView(Views.ExtendedI.class)
     //@JsonView(Views.EditorI.class)
-    private List<String> pictures = new ArrayList<>();
+    @WegasEntityProperty
+    private Set<String> pictures = new HashSet<>();
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof QuestionDescriptor) {
-            super.merge(a);
-            QuestionDescriptor other = (QuestionDescriptor) a;
-            this.setDescription(TranslatableContent.merger(this.getDescription(), other.getDescription()));
-            this.setMinReplies(other.getMinReplies());
-            this.setMaxReplies(other.getMaxReplies());
-            this.setCbx(other.getCbx());
-            this.setTabular(other.getTabular());
-            this.setPictures(other.getPictures());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
-    }
 // ~~~ Sugar for scripts ~~~
-
     /**
      *
      * @param p
@@ -166,10 +153,11 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * One can no longer answer such a validated question.
      *
      * @param p
+     *
      * @return
      */
     public boolean getValidated(Player p) {
-        return this.getInstance(p).getValidated();
+        return this.getInstance(p).isValidated();
     }
 
     /**
@@ -259,14 +247,14 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     /**
      * @return the pictures
      */
-    public List<String> getPictures() {
+    public Set<String> getPictures() {
         return pictures;
     }
 
     /**
      * @param pictures the pictures to set
      */
-    public void setPictures(List<String> pictures) {
+    public void setPictures(Set<String> pictures) {
         this.pictures = pictures;
     }
 
@@ -279,32 +267,6 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     }
 
     /**
-     *
-     * @param p
-     *
-     * @return true if the player has already answers this question
-     */
-    public boolean isReplied(Player p) {
-        QuestionInstance instance = this.getInstance(p);
-        if (this.getCbx()) {
-            return instance.getValidated();
-        } else {
-            return !instance.getReplies(p).isEmpty();
-        }
-    }
-
-    /**
-     * {@link #isReplied ...}
-     *
-     * @param p
-     *
-     * @return true if the player has not yet answers this question
-     */
-    public boolean isNotReplied(Player p) {
-        return !this.isReplied(p);
-    }
-
-    /**
      * @return the variableDescriptors
      */
     @Override
@@ -313,15 +275,9 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         return items;
     }
 
-    /**
-     * @param items
-     */
     @Override
-    public void setItems(List<ChoiceDescriptor> items) {
+    public void resetItemsField() {
         this.items = new ArrayList<>();
-        for (ChoiceDescriptor cd : items) {                                     //@todo: due to duplication, fix this
-            this.addItem(cd);
-        }
     }
 
     /**
@@ -333,19 +289,63 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         item.setQuestion(this);
     }
 
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(getDescription(), criterias)
-                || super.containsAll(criterias);
-    }
-
     // This method seems to be unused:
     public int getUnreadCount(Player player) {
         QuestionInstance instance = this.getInstance(player);
         if (this.getCbx()) {
-            return instance.getActive() && !instance.getValidated() ? 1 : 0;
+            return instance.getActive() && !instance.isValidated() ? 1 : 0;
         } else {
-            return instance.getActive() && !instance.getValidated() && instance.getReplies(player).isEmpty() ? 1 : 0;
+            return instance.getActive() && !instance.isValidated() && instance.getReplies(player, true).isEmpty() ? 1 : 0;
         }
+    }
+
+    /**
+     *
+     * @param p
+     *
+     * @return true if the player has already answers this question
+     */
+    public boolean isReplied(Player p) {
+        return !this.isNotReplied(p);
+    }
+
+    /**
+     * {@link #isReplied ...}
+     *
+     * @param p
+     *
+     * @return true if the player has not yet answers this question
+     */
+    public boolean isNotReplied(Player p) {
+        QuestionInstance instance = this.getInstance(p);
+        // no validated replies at all
+        return instance.getReplies(p, true).isEmpty();
+    }
+
+    /**
+     * Is the
+     *
+     * @param p the player
+     *
+     * @return
+     */
+    public boolean isStillAnswerabled(Player p) {
+        if (this.getMaxReplies() != null) {
+            QuestionInstance qi = this.getInstance(p);
+            // there is maximum number of choice at the question level
+            int countNotIgnored = 0;
+            for (Reply r : qi.getReplies(p, true)) {
+                if (!r.getIgnored()) {
+                    countNotIgnored++;
+                }
+            }
+            // is number of not ignored and validated  > max ?
+            if (countNotIgnored >= this.getMaxReplies()) {
+                // max has been reached
+                return false;
+            }
+        }
+
+        return true;
     }
 }

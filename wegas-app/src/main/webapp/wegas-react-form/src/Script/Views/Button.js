@@ -9,6 +9,7 @@ const removeStatement = css({
 });
 const trashcan = css({
     color: 'white',
+    transform: "translate(0, 6px)"
 });
 const container = css({ display: 'inline-block' });
 
@@ -16,13 +17,15 @@ export function RemoveStatementButton(props) {
     return (
         <IconButton
             {...props}
-            icon={`fa fa-trash ${trashcan}`}
+            icon={[
+                'fa fa-circle fa-stack-2x',
+                `fa fa-trash ${trashcan} fa-stack-1x`
+            ]}
             tooltip="Delete this item"
             className={classNames(
                 removeStatement.toString(),
                 container.toString()
             )}
-            stackedOnIcon="fa fa-circle"
         />
     );
 }

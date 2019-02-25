@@ -195,7 +195,7 @@ YUI.add('wegas-datasource', function(Y) {
                         var eName = eventName;
                         if (events.hasOwnProperty(eventName) && events[eventName].length > 0) {
                             for (i in events[eventName]) {
-                                if (eventName === "updatedInstance"){
+                                if (eventName === "updatedInstance") {
                                     eName = events[eventName][i].entity.get("id") + ":" + eventName;
                                 }
                                 ds.fire(eName, events[eventName][i]);
@@ -642,10 +642,13 @@ YUI.add('wegas-datasource', function(Y) {
                     onFindFn(found, val);
                 }
             } else {
-                found = this.doFind(key, val, onFindFn, this.getCache());
+                found = this.doFind(key, val, onFindFn);
             }
 
             return found;
+        },
+        findByFn: function(fn) {
+            return this.doFind(null, null, null, fn);
         },
         /**
          * Retrieves an entity from the cache
@@ -681,9 +684,9 @@ YUI.add('wegas-datasource', function(Y) {
          *  @param {function(Object, any):void} onFindFn callback function with found entity and needle
          *  @return {Object} Found entity if any
          */
-        doFind: function doFind(key, needle, onFindFn) {
+        doFind: function doFind(key, needle, onFindFn, testFunction) {
             var ret,
-                testFn = this.get("testFn"),
+                testFn = testFunction || this.get("testFn"),
                 walkEntity = this.walkEntity.bind(this),
                 findFn = function findFn(stack) {
                     Y.Array.find(stack, function find(item) { // @fixme speedup
@@ -982,7 +985,7 @@ YUI.add('wegas-datasource', function(Y) {
                         failure: Y.bind(function(entity, parentEntity) {
                             Y.log("Error moving item", "error");
                             // Rollback move since TV was too optimistic
-                            if (parentEntity.get("@class") === "GameModel" || entity.getParent().get("@class") === "GameModel") {
+                            if (!parentEntity || parentEntity.get("@class") === "GameModel" || entity.getParent().get("@class") === "GameModel") {
                                 this.get(HOST).fire("rootUpdate");
                             } else {
                                 this.get(HOST).fire("updatedDescriptor", {entity: parentEntity});
@@ -1441,18 +1444,30 @@ YUI.add('wegas-datasource', function(Y) {
          * @private
          */
         initializer: function() {
-            var endsWith = function(str, suffix) {
-                return str.indexOf(suffix, str.length - suffix.length) !== -1;
-            };
             this.get(HOST).data = {};
             this.index = null;
-            this.editable = endsWith(this.get(HOST).get("source"), "/");
+            this.editable = undefined;//endsWith(this.get(HOST).get("source"), "/");
             this.pageQuery = {};
             this.doBefore("_defResponseFn", this.beforeResponse, this);
             /* Publishing */
             this.publish("pageUpdated");
             this.publish("forcePageUpdate");
             this.publish("forceIndexUpdate");
+        },
+        arePagesHardcoded: function() {
+            var endsWith = function(str, suffix) {
+                return str.indexOf(suffix, str.length - suffix.length) !== -1;
+            };
+
+            return !endsWith(this.get(HOST).get("source"), "/");
+        },
+        isEditable: function() {
+            if (this.editable === undefined) {
+                var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
+                // neither static pages nor the ones which come from a model are editable
+                this.editable = !this.arePagesHardcoded() && !gm.dependsOnModel();
+            }
+            return this.editable;
         },
         /**
          * Server requests methods
@@ -1689,12 +1704,14 @@ YUI.add('wegas-datasource', function(Y) {
             }, this));
         },
         forceUpdate: function(pageId) {
-            this.get(HOST).data["" + pageId] = undefined;
-            this.getPage(pageId, Y.bind(function() {
-                this.fire("forcePageUpdate", {
-                    pageId: pageId
-                });
-            }, this));
+            Y.later(1000, this, function() {
+                this.get(HOST).data["" + pageId] = undefined;
+                this.getPage(pageId, Y.bind(function() {
+                    this.fire("forcePageUpdate", {
+                        pageId: pageId
+                    });
+                }, this));
+            });
         },
         /**
          *
@@ -1704,7 +1721,7 @@ YUI.add('wegas-datasource', function(Y) {
          */
         getPage: function(pageId, callback) {
             var page = null;
-            if (pageId === "default" && !this.editable) {
+            if (pageId === "default" && this.arePagesHardcoded()) {
                 pageId = 1;
             }
             if (this.getCache(pageId)) {

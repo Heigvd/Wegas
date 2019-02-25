@@ -11,15 +11,14 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
+import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.WithPermission;
-import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
@@ -56,7 +55,7 @@ import javax.persistence.*;
     @JsonSubTypes.Type(value = GradeDescriptor.class)
 })
 public abstract class EvaluationDescriptor<T extends EvaluationInstance>
-        extends AbstractEntity implements LabelledEntity, Searchable {
+        extends AbstractEntity implements LabelledEntity {
 
     @OneToMany(mappedBy = "evaluationDescriptor", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<EvaluationInstance> evaluationInstances;
@@ -73,25 +72,29 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
     /**
      * to sort evaluation descriptor and instance
      */
+    @WegasEntityProperty
     private Integer index;
 
     /**
      * Evaluation internal identifier
      */
+    @WegasEntityProperty(searchable = true)
     private String name;
 
     /**
      * Evaluation label as displayed to players
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
+    @WegasEntityProperty
     private TranslatableContent label;
 
     /**
      * Textual descriptor to be displayed to players
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
+    @WegasEntityProperty
     private TranslatableContent description;
 
     /**
@@ -122,19 +125,6 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
 
     public void setIndex(int index) {
         this.index = index;
-    }
-
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof EvaluationDescriptor) {
-            EvaluationDescriptor o = (EvaluationDescriptor) a;
-            this.setName(o.getName());
-            this.setLabel(TranslatableContent.merger(this.getLabel(), o.getLabel()));
-            this.setDescription(TranslatableContent.merger(this.getDescription(), o.getDescription()));
-            this.setIndex(o.getIndex());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
     }
 
     @Override
@@ -206,6 +196,26 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
      */
     public void setContainer(EvaluationDescriptorContainer container) {
         this.container = container;
+        if (this.container != null){
+            // revive translatable content link
+            this.setLabel(label);
+            this.setDescription(description);
+        }
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    @JsonView(Views.IndexI.class)
+    public Long getParentDescriptorId() {
+        if (this.getContainer() != null) {
+            return this.getContainer().getParentDescriptorId();
+        }
+        return null;
+    }
+
+    public void setParentDescriptorId(Long id){
     }
 
     @JsonIgnore
@@ -241,24 +251,18 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
         this.evaluationInstances.remove(instance);
     }
 
-    private WithPermission getEffectiveContainer() {
-        return this.getContainer();
+    @Override
+    public WithPermission getMergeableParent(){
+        return getContainer();
     }
 
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getEffectiveContainer().getRequieredUpdatePermission();
+        return this.getMergeableParent().getRequieredUpdatePermission();
     }
 
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getEffectiveContainer().getRequieredReadPermission();
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return  Helper.insensitiveContainsAll(getName(), criterias)
-                || Helper.insensitiveContainsAll(getLabel(), criterias)
-                || Helper.insensitiveContainsAll(getDescription(), criterias);
+        return this.getMergeableParent().getRequieredReadPermission();
     }
 }

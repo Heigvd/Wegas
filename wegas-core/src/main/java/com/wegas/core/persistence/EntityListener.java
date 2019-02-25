@@ -11,11 +11,15 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.jcr.jta.JCRClient;
+import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
@@ -43,6 +47,9 @@ public class EntityListener {
 
     @Inject
     private RequestManager requestManager;
+
+    @Inject
+    private JCRConnectorProvider jcrProvider;
 
     @Inject
     private VariableInstanceFacade variableInstanceFacade;
@@ -74,12 +81,22 @@ public class EntityListener {
 
     @PrePersist
     void onPrePersist(Object o) {
-        //Do not remove this empty method nor its @PrePersist annotation !!!!
-        // Remove this method  makes CDI injection fails ...
+        if (o instanceof JCRClient) {
+            this.injectJTABean((JCRClient) o);
+        }
     }
 
     @PostPersist
     void onPostPersist(Object o) {
+
+        if (o instanceof Mergeable) {
+            Mergeable m = (Mergeable) o;
+            // new entities in a protected gameModel and an INTERNAL visibility scope is prohibited
+            if (m.belongsToProtectedGameModel() && m.getInheritedVisibility() == ModelScoped.Visibility.INTERNAL) {
+                throw WegasErrorMessage.error("Not authorized to create " + o);
+            }
+        }
+
         if (o instanceof AbstractEntity) {
             logger.debug("PostPersist {}", o);
             if (requestManager != null) {
@@ -138,6 +155,7 @@ public class EntityListener {
             Broadcastable b = (Broadcastable) o;
             Map<String, List<AbstractEntity>> entities = b.getEntities();
             if (entities != null) {
+                logger.debug("PreRemove {}", o);
                 if (b instanceof VariableDescriptor || b instanceof VariableInstance || b instanceof Game || b instanceof GameModel) {
                     logger.debug("PropagateDestroy (#: {}): {} :: {}", entities.size(), b.getClass().getSimpleName(), ((AbstractEntity) b).getId());
                     requestManager.addDestroyedEntities(entities);
@@ -172,5 +190,13 @@ public class EntityListener {
                 logger.error("PostLOAD NO SECURITY FACADE");
             }
         }
+
+        if (o instanceof JCRClient) {
+            this.injectJTABean((JCRClient) o);
+        }
+    }
+
+    private void injectJTABean(JCRClient o) {
+        o.inject(jcrProvider);
     }
 }

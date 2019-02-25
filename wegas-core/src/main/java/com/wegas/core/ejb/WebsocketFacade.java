@@ -7,7 +7,6 @@
  */
 package com.wegas.core.ejb;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.hazelcast.core.HazelcastInstance;
@@ -22,6 +21,7 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.JacksonMapperProvider;
@@ -314,7 +314,7 @@ public class WebsocketFacade {
                      * only id and class name are propagated
                      */
                     for (AbstractEntity ae : toPropagate) {
-                        refreshed.add(new DestroyedEntity(ae.getId(), ae.getJSONClassName()));
+                        refreshed.add(new DestroyedEntity(ae));
                     }
                     event = eventClass.getDeclaredConstructor(List.class).newInstance(refreshed);
                 } else {
@@ -426,7 +426,7 @@ public class WebsocketFacade {
                 }
 
             } else {
-                logger.error("413 MESSAGE TOO BIG");
+                logger.error("413 MESSAGE TOO BIG (Detected)");
                 this.fallback(clientEvent, audience, socketId);
             }
             //}
@@ -446,6 +446,12 @@ public class WebsocketFacade {
         if (pusher != null) {
             GameModel gameModel = gameModelFacade.find(gameModelId);
             pusher.trigger(gameModel.getChannel(), "PageUpdate", pageId, socketId);
+        }
+    }
+
+    public void gameModelContentUpdate(GameModelContent content, String socketId) {
+        if (pusher != null) {
+            pusher.trigger(content.getGameModel().getChannel(), "LibraryUpdate-" + content.getLibraryType(), content.getContentKey(), socketId);
         }
     }
 

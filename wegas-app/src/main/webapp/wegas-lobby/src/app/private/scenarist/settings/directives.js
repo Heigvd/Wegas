@@ -54,7 +54,8 @@ angular.module('private.scenarist.settings.directives', [
         ctrl.tabs = initTabs();
 
         ctrl.updateScenario = function() {
-            ScenariosModel.getScenario("LIVE", $stateParams.scenarioId, true).then(function(response) {
+
+            ScenariosModel.getScenario("LIVE", $stateParams.scenarioId).then(function(response) {
                 ctrl.scenario = response.data || {};
                 if (response.isErroneous()) {
                     response.flash();

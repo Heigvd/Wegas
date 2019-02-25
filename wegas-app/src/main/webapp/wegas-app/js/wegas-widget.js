@@ -174,35 +174,37 @@ YUI.add('wegas-widget', function(Y) {
         /**
          *  Defines edition menu to be used in editor
          */
-        EDITMENU: [
-            {
-                type: BUTTON,
-                label: 'Edit',
-                plugins: [
-                    {
-                        fn: 'EditWidgetAction'
-                    }
-                ]
+        EDITMENU: {
+            editBtn: {
+                index: -1,
+                cfg: {
+                    type: BUTTON,
+                    label: "Edit",
+                    plugins: [{
+                            fn: "EditWidgetAction"
+                        }]
+                }
             },
-            {
-                type: BUTTON,
-                label: 'Duplicate',
-                plugins: [
-                    {
-                        fn: 'DuplicateWidgetAction'
-                    }
-                ]
-            },
-            {
-                type: BUTTON,
-                label: 'Delete',
-                plugins: [
-                    {
-                        fn: 'DeleteWidgetAction'
-                    }
-                ]
+            copyBtn: {
+                index: 20,
+                cfg: {
+                    type: BUTTON,
+                    label: "Duplicate",
+                    plugins: [{
+                            fn: "DuplicateWidgetAction"
+                        }]
+                }
+            }, deleteBtn: {
+                index: 30,
+                cfg: {
+                    type: BUTTON,
+                    label: "Delete",
+                    plugins: [{
+                            fn: "DeleteWidgetAction"
+                        }]
+                }
             }
-        ],
+        },
         /**
          * @field
          * @static
@@ -285,8 +287,7 @@ YUI.add('wegas-widget', function(Y) {
                 optional: true,
                 index: 4,
                 view: {
-                    label: 'CSS class',
-                    className: 'wegas-advanced-feature'
+                    label: 'CSS class'
                 },
                 getter: Wegas.Editable.removeNullValue
             },
@@ -480,8 +481,16 @@ YUI.add('wegas-widget', function(Y) {
                                     value: {fn: 'OpenUrlAction'}
                                 },
                                 {
+                                    label: 'Open file',
+                                    value: {fn: 'OpenFileAction'}
+                                },
+                                {
                                     label: 'Impact variables',
                                     value: {fn: 'ExecuteScriptAction'}
+                                },
+                                {
+                                    label: 'Confirm Click',
+                                    value: {fn: 'ConfirmClick'}
                                 },
                                 {
                                     label: 'Local ScriptEval',
@@ -533,6 +542,10 @@ YUI.add('wegas-widget', function(Y) {
                                     value: {fn: 'CSSText'}
                                 },
                                 {
+                                    label: 'Resize Observer',
+                                    value: {fn: 'ResizeListener'}
+                                },
+                                {
                                     label: 'Other styles',
                                     value: {fn: 'CSSStyles'}
                                 }
@@ -555,8 +568,13 @@ YUI.add('wegas-widget', function(Y) {
                             label: 'Variables',
                             children: [
                                 {
+                                    label: 'Conditional display',
+                                    value: {fn: 'ConditionalDisplay'}
+                                },
+                                {
                                     label: 'Conditional disable',
-                                    value: {fn: 'ConditionalDisable'}
+                                    value: {fn: 'ConditionalDisable'},
+                                    className: "wegas-advanced-feature"
                                 },
                                 {
                                     label: 'Unread count',
@@ -683,7 +701,8 @@ YUI.add('wegas-widget', function(Y) {
             return val;
         },
         _buildCfg: {
-            aggregates: ['EDITMENU']
+            aggregates: ["EDITMENU"]
+                /*statics: ["EDITMENU"]*/
         }
     });
     Wegas.Widget = Widget;
@@ -758,7 +777,7 @@ YUI.add('wegas-widget', function(Y) {
             this.get(BOUNDING_BOX).setHTML(
                 "<div class='wegas-widget-errored'><i>Failed to render<br>" +
                 e.message +
-                '</i></div>'
+                '</i><span class="wegas-advanced-feature">' + e.stack + '</span></div>'
                 );
 
             Y.log(

@@ -135,6 +135,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     },
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
+                    refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                     descriptorId: IDATTRDEF,
                     reviewState: {
                         type: STRING,
@@ -155,25 +156,6 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 index: 3
             }
         },
-        EDITMENU: [{
-                type: "EditEntityButton"
-            }, {
-                type: BUTTON,
-                label: "Duplicate",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
-            }, {
-                type: BUTTON,
-                label: 'Search for usages',
-                plugins: [
-                    {
-                        fn: 'SearchEntityAction'
-                    }
-                ]
-            }],
         /**
          * WYSIWYG editor
          */
@@ -315,6 +297,9 @@ YUI.add('wegas-reviewing-entities', function(Y) {
      * EvaluationDescriptor
      */
     persistence.EvaluationDescriptorContainer = Y.Base.create("EvaluationDescriptorContainer", persistence.Entity, [], {
+        getParentDescriptor: function() {
+            return Wegas.Facade.Variable.cache.findById(this.get("parentDescriptorId"));
+        }
     }, {
         EDITORNAME: "Evaluations",
         ATTRS: {
@@ -331,52 +316,79 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 view: {
                     type: HIDDEN
                 }
+            },
+            parentDescriptorId: {
+                type: NUMBER,
+                optional: true,
+                view: {
+                    type: HIDDEN
+                }
             }
         },
-        EDITMENU: [{
-                type: "EditEntityButton"
-            }, {
-                type: BUTTON,
-                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Grade",
-                plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            targetClass: "GradeDescriptor",
-                            method: "POST",
-                            attributeKey: "evaluations",
-                            showEditionAfterRequest: true
+        EDITMENU: {
+            editBtn: {
+                index: 0,
+                cfg:{
+                    type: 'EditEntityButton'
+                }
+            },
+            addGradeBtn: {
+                index: 1,
+                cfg: {
+                    type: BUTTON,
+                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Grade",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                targetClass: "GradeDescriptor",
+                                method: "POST",
+                                attributeKey: "evaluations",
+                                showEditionAfterRequest: true
+                            }
+                        }]
+                }
+            }, addTextBtn: {
+                index: 2,
+                cfg: {
+                    type: BUTTON,
+                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Text",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                targetClass: "TextEvaluationDescriptor",
+                                method: "POST",
+                                attributeKey: "evaluations",
+                                showEditionAfterRequest: true
+                            }
+                        }]
+                }
+            },
+            addCategBtn: {
+                index: 3,
+                cfg: {
+                    type: BUTTON,
+                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Categorization",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                targetClass: "CategorizedEvaluationDescriptor",
+                                method: "POST",
+                                attributeKey: "evaluations",
+                                showEditionAfterRequest: true
+                            }
                         }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Text",
-                plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            targetClass: "TextEvaluationDescriptor",
-                            method: "POST",
-                            attributeKey: "evaluations",
-                            showEditionAfterRequest: true
-                        }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add Categorization",
-                plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            targetClass: "CategorizedEvaluationDescriptor",
-                            method: "POST",
-                            attributeKey: "evaluations",
-                            showEditionAfterRequest: true
-                        }
-                    }]
-            }]
+                    ]
+                }
+            }
+        }
     });
     /**
      * EvaluationDescriptor
      */
     persistence.EvaluationDescriptor = Y.Base.create("EvaluationDescriptor", persistence.Entity, [], {
+        getParentDescriptor: function() {
+            return Wegas.Facade.Variable.cache.findById(this.get("parentDescriptorId"));
+        },
         getEditorLabel: function() {
             return I18n.t(this.get("label"));
         }
@@ -406,39 +418,75 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             description: Y.Wegas.Helper.getTranslationAttr({
                 label: "Description",
                 type: HTML
-            })
+            }),
+            description: {
+                type: NULLSTRING,
+                optional: true,
+                view: {
+                    type: HTML,
+                    label: "Description",
+                    height: '50px'
+                }
+            },
+            parentDescriptorId: {
+                type: NUMBER,
+                optional: true,
+                view: {
+                    type: HIDDEN
+                }
+            }
+            /*,
+             container: {
+             type: "EvaluationDescriptorContainer",
+             optional: true,
+             _inputex: {
+             _type: HIDDEN
+             }
+             }*/
         },
-        EDITMENU: [{
-                type: BUTTON,
-                label: "Edit",
-                plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            attributeKey: "evaluations"
-                        }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Duplicate",
-                plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            method: "copy",
-                            attributeKey: "evaluations"
-                        }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Delete",
-                plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            method: "delete",
-                            attributeKey: "evaluations"
-                        }
-                    }]
-            }]
-
+        EDITMENU: {
+            editBtn: {
+                index: -1,
+                cfg: {
+                    type: BUTTON,
+                    label: "Edit",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                attributeKey: "evaluations"
+                            }
+                        }]
+                }
+            },
+            copyBtn: {
+                index: 10,
+                cfg: {
+                    type: BUTTON,
+                    label: "Duplicate",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                method: "copy",
+                                attributeKey: "evaluations"
+                            }
+                        }]
+                }
+            },
+            deleteBtn: {
+                index: 30,
+                cfg: {
+                    type: BUTTON,
+                    label: "Delete",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                method: "delete",
+                                attributeKey: "evaluations"
+                            }
+                        }]
+                }
+            }
+        }
     });
     /**
      * TextEvaluationDescriptor

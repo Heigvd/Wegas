@@ -10,6 +10,13 @@ package com.wegas.core.persistence.game;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.security.util.WegasPermission;
+import java.util.Collection;
 import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
 import java.util.Objects;
@@ -20,7 +27,6 @@ import javax.persistence.*;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @Table(indexes = {
     @Index(columnList = "clientscriptlibrary_gamemodel_id"),
@@ -28,11 +34,11 @@ import javax.persistence.*;
     @Index(columnList = "csslibrary_gamemodel_id"),
     @Index(columnList = "csslibrary_gamemodel_id, scriptlibrary_gamemodel_id, clientscriptlibrary_gamemodel_id, contentKey", unique = true)
 })
-public class GameModelContent implements Serializable {
+public class GameModelContent extends AbstractEntity implements Serializable, ModelScoped, NamedEntity {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
 
@@ -48,11 +54,13 @@ public class GameModelContent implements Serializable {
     @JsonIgnore
     private GameModel clientscriptlibrary_GameModel;
 
+    @WegasEntityProperty
     private String contentKey;
 
     /**
      *
      */
+    @WegasEntityProperty
     private String contentType;
     /**
      *
@@ -61,7 +69,13 @@ public class GameModelContent implements Serializable {
     @Basic(optional = false, fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     //@Column(columnDefinition = "text")
     //@JsonView({Views.Export.class})
+    @WegasEntityProperty
     private String content = "";
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL)
+    private Visibility visibility = Visibility.PRIVATE;
 
     /**
      *
@@ -184,6 +198,29 @@ public class GameModelContent implements Serializable {
     }
 
     @JsonIgnore
+    public String getLibraryType() {
+        if (this.clientscriptlibrary_GameModel != null) {
+            return "ClientScript";
+        } else if (this.scriptlibrary_GameModel != null) {
+            return "ServerScript";
+        } else {
+            return "CSS";
+        }
+    }
+
+    @Override
+    @JsonIgnore
+    public String getName() {
+        return this.getContentKey();
+    }
+
+    @Override
+    @JsonIgnore
+    public void setName(String name) {
+        // no implementation
+    }
+
+    @JsonIgnore
     public GameModel getScriptlibrary_GameModel() {
         return scriptlibrary_GameModel;
     }
@@ -193,8 +230,18 @@ public class GameModelContent implements Serializable {
         this.scriptlibrary_GameModel = scriptlibrary_GameModel;
     }
 
+    @Override
+    public Visibility getVisibility() {
+        return this.visibility;
+    }
+
+    @Override
+    public void setVisibility(Visibility visibility) {
+        this.visibility = visibility;
+    }
+
     @JsonIgnore
-    private GameModel getGameModel() {
+    public GameModel getGameModel() {
         if (this.clientscriptlibrary_GameModel != null) {
             return clientscriptlibrary_GameModel;
         } else if (this.scriptlibrary_GameModel != null) {
@@ -215,4 +262,18 @@ public class GameModelContent implements Serializable {
         return hash;
     }
 
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getGameModel().getRequieredReadPermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getGameModel().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return this.getGameModel();
+    }
 }

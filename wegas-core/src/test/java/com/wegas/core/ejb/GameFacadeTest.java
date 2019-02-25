@@ -12,7 +12,6 @@ import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
 import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.rest.GameController;
 import com.wegas.test.arquillian.AbstractArquillianTest;
-import java.io.IOException;
 import javax.ejb.EJB;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -70,7 +69,7 @@ public class GameFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
-    public void testGameCreation() throws IOException {
+    public void testGameCreation() throws CloneNotSupportedException {
         //Update the gameModel
         login(scenarist);
         Game newGame = new Game("newGame");
@@ -92,7 +91,7 @@ public class GameFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
-    public void testGameCreationThroughController() throws IOException {
+    public void testGameCreationThroughController() throws CloneNotSupportedException {
         Game newGame = new Game("newGame");
         newGame.setAccess(Game.GameAccess.OPEN);
         newGame.setGameModel(gameModel);

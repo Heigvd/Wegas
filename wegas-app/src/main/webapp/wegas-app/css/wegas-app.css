@@ -108,6 +108,28 @@ font {
 }
 
 
+/*
+ * The Wegas Font
+ */
+@font-face {
+    font-family: "wegas-icons-font";
+    src: url(../../assets/fonts/wegas-icons-font/wegas-icons-font.eot?v=28042016);
+    src: url(../../assets/fonts/wegas-icons-font/wegas-icons-font.eot?#iefix&v=28042016) format("embedded-opentype"),url(../../assets/fonts/wegas-icons-font/wegas-icons-font.woff2?v=28042016) format("woff2"),url(../../assets/fonts/wegas-icons-font/wegas-icons-font.woff?v=28042016) format("woff"),url(../../asserts/fonts/wegas-icons-font/wegas-icons-font.ttf?v=28042016) format("truetype"),url(../../assets/fonts/wegas-icons-font/wegas-icons-font.svg#wegas-icons-font?v=28042016) format("svg");
+    font-weight: 400;
+    font-style: normal
+}
+
+.wegas-font:before {
+    font-family: "wegas-icons-font";
+    font-style: normal
+}
+
+.wegas-font.wegas-teacher:before {
+    content: "m";
+}
+
+
+
 /* App loading */
 
 .wegas-loading-app {
@@ -252,10 +274,13 @@ font {
 
 /** Hide all advanced feature while in std mode */
 .wegas-forbidden-feature,
-.wegas-stdmode .wegas-advanced-feature {
+body:not(.wegas-internalmode) .wegas-internal-feature,
+.wegas-stdmode .wegas-advanced-feature,
+body:not(.wegas-modeler-mode) .wegas-model-feature {
     display: none !important;
 }
 
+.wegas-internal-feature,
 .wegas-advanced-feature {
     font-style: italic;
 }
@@ -543,6 +568,25 @@ font {
     height: 100px;
 }
 
+.wegas-line-origin {
+    transform: scale(1); /* hack to reset the origin */
+}
+
+
+.wegas-line {
+    stroke: black;
+    stroke-width: 1px;
+    fill: none;
+}
+
+.wegas-line svg{
+    overflow: visible;
+}
+
+svg #triangleEnd,
+svg #triangleStart{
+    fill: black;
+}
 
 /* Chat widget */
 
@@ -686,6 +730,20 @@ font {
     border: none;
 }
 
+/*
+ * Wegas skin for menu
+ */
+.yui3-menu {
+    box-shadow: none;
+}
+
+.yui3-menu .yui3-button {
+    font-size: 13px;
+}
+
+.yui3-menu .yui3-button:hover {
+    background: #A7CEF6;
+}
 
 /* Onclick pointer style */
 
@@ -831,7 +889,8 @@ font {
 
 /* I18N */
 
-.wegas-translation .tools{
+.wegas-translation .tools,
+.wegas-translation .tools > span{
     display:none;
 }
 
@@ -862,6 +921,11 @@ font {
     font-weight:600;
 }
 
+.question-history .replies {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
 .question-history .replies .replyDiv {
     border-top: solid 1px #bbb;
     color: #bbb;
@@ -884,7 +948,7 @@ font {
     padding-left: 24px;
 }
 
-.question-history .replies .replyDiv:first-child {
+.question-history .replies .replyDiv:last-child {
     border-top: none;
     color: black;
 }

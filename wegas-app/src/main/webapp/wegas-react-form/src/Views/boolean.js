@@ -44,6 +44,7 @@ class BooleanView extends React.Component {
                 id={id}
                 checked={Boolean(value)}
                 type="checkbox"
+                disabled={this.props.view.readOnly}
                 className={checkboxStyle}
                 onChange={this.onChange}
             />

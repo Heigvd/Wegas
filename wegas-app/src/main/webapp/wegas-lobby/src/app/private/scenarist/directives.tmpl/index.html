@@ -1,16 +1,16 @@
 <div class="view view--new-session view--bottom"
-     scenarios="scenaristIndexCtrl.scenarios"
-     create="scenaristIndexCtrl.createScenario"
-     scenariomenu="scenaristIndexCtrl.scenariomenu"
-     expandable>
+        scenarios="scenaristIndexCtrl.scenarios"
+        create="scenaristIndexCtrl.createScenario"
+        scenariomenu="scenaristIndexCtrl.scenariomenu"
+        expandable>
     <scenarist-scenario-create></scenarist-scenario-create>
 </div>
 <div id="scenarist-scenarios-list" class="view view--scenarios-list view--middle">
     <div class="view__header">
         <h3>{{'SCENARIST-INDEX-LIST-TITLE'| translate}}</h3>
-        <a class="button button--small button--success-reverse non-collapsible-expander-button" expander>
+    <a class="button button--small button--success-reverse non-collapsible-expander-button" expander>
             <span class="button__label"><i class="fa fa-plus-circle same-color-larger">&nbsp;</i>{{'SCENARIST-INDEX-ADD-TITLE'| translate}}</span>
-        </a>
+    </a>
 
         <div ng-if="(!scenaristIndexCtrl.loading && scenaristIndexCtrl.rawScenarios.length)">
             <div id="searchField" class="view__tools">
@@ -27,47 +27,49 @@
             </div>
         </div>
 
-        <div ng-if="user.isAdmin" class="view__options"
+    <div ng-if="user.isAdmin" class="view__options"
              title="{{'SCENARIST-INDEX-ME-FIRST-TOOLTIP'| translate}}"
-             ng-click="scenaristIndexCtrl.toggleMeFirst();"
-             ng-init="scenaristIndexCtrl.initMeFirst();"
-             >
-            <span class="checkbox" id="mefirst">
-            </span>
+         ng-click="scenaristIndexCtrl.toggleMeFirst();"
+         ng-init="scenaristIndexCtrl.initMeFirst();"
+    >
+        <span class="checkbox" id="mefirst">
+        </span>
             {{'SCENARIST-INDEX-ME-FIRST-TITLE'| translate}}
-        </div>
+    </div>
     </div>
 
-    <div
-        ng-if="(!scenaristIndexCtrl.loading && scenaristIndexCtrl.scenarios.length)"
+	<div
+		ng-if="(!scenaristIndexCtrl.loading && scenaristIndexCtrl.scenarios.length)"
         id = "scenarist-scenarios-list-container"
-        class="view__list"
+		class="view__list"
         style="padding-bottom: 10px;"
         search="scenaristIndexCtrl.search"
-        scenarios="scenaristIndexCtrl.scenarios"
-        archive="scenaristIndexCtrl.archiveScenario"
+		scenarios="scenaristIndexCtrl.scenarios"
+		archive="scenaristIndexCtrl.archiveScenario"
         duplicate="scenaristIndexCtrl.duplicate"
         duplicating="scenaristIndexCtrl.duplicating"
         user="scenaristIndexCtrl.user"
+        modelname="scenaristIndexCtrl.getModelName"
+        modelloading="scenaristIndexCtrl.modelLoading"
         username="scenaristIndexCtrl.username"
-        scenarist-scenarios-list
+		scenarist-scenarios-list
         repeat-auto-load >
-    </div>
+	</div>
     <div ng-if="(scenaristIndexCtrl.search.length != 0) && (scenaristIndexCtrl.scenarios.length == 0)"
          class="view__list">
         {{'SCENARIST-INDEX-LIST-NO-SCENARIO'| translate}} "{{scenaristIndexCtrl.search}}"
     </div>
 
     <div class="view__footer">
-        <div ng-if="(!scenaristIndexCtrl.loading) && (scenaristIndexCtrl.nbArchives > 0)" class="view__archives">
-            <a class="button button--small button--default button--archive" ui-sref=".archives">
+    <div ng-if="(!scenaristIndexCtrl.loading) && (scenaristIndexCtrl.nbArchives > 0)" class="view__archives">
+		<a class="button button--small button--default button--archive" ui-sref=".archives">
                 <span ng-if="scenaristIndexCtrl.nbArchives == 1" class="button__label">{{scenaristIndexCtrl.nbArchives}} {{'SCENARIST-INDEX-ARCHIVE-BTN'| translate}}</span>
                 <span ng-if="scenaristIndexCtrl.nbArchives > 1" class="button__label">{{scenaristIndexCtrl.nbArchives}} {{'SCENARIST-INDEX-ARCHIVES-BTN'| translate}}</span>
-            </a>
-        </div>
+                </a>
+	</div>
     </div>
-    <div ng-if="scenaristIndexCtrl.loading"
-         class="view__list view__list--loading"
+        <div ng-if="scenaristIndexCtrl.loading"
+		class="view__list view__list--loading"
          content-loading="{{'COMMONS-SCENARIOS-LOADING'| translate}}">
-    </div>
+	</div>
 </div>

@@ -38,6 +38,11 @@
     margin: 0 30px;
 }
 
+.yui3-skin-sam .dashboard-v3 table tr:first-child th {
+    font-weight: bold;
+    padding-bottom: 5px;
+}
+
 .yui3-skin-sam .dashboard-v3 table{
     border: none;
     margin-right: auto;
@@ -53,6 +58,11 @@
 }
 .yui3-skin-sam .dashboard-v3 .yui3-datatable-data tr.team-opened td {
     border-bottom : none;
+}
+
+.yui3-skin-sam .dashboard-v3 .yui3-datatable-data .dashboard-internal-table tr td {
+    border-bottom: none;
+    padding: 2px 8px 0;
 }
 
 .yui3-skin-sam .dashboard-v3 .yui3-datatable-cell,
@@ -190,7 +200,7 @@
     display: none;
 }
 
-.yui3-skin-sam .dashboard-v3 td:first-child {
+.yui3-skin-sam .dashboard-v3 .yui3-datatable-col-team-name {
     min-width: 300px;
     max-width: 400px;
     padding: 0;
@@ -337,7 +347,7 @@
     background-color: #41D2FA;
 }
 
-.yui3-skin-sam .dashboard-v3 .info-view:hover {
+.yui3-skin-sam .dashboard-v3 .dashboard-action.enabled.info-view:hover {
     background-color: #06b7e8;
 }
 

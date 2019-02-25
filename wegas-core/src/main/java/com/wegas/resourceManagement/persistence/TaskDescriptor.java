@@ -9,20 +9,21 @@ package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -56,20 +57,23 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     /**
      *
      */
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty
     private TranslatableContent description;
 
     /**
      *
      */
     @Column(length = 24)
+    @WegasEntityProperty
     private String index;
     /**
      *
      */
     @ElementCollection
     @JsonIgnore
+    @WegasEntityProperty
     private List<VariableProperty> properties = new ArrayList<>();
     /**
      *
@@ -92,7 +96,8 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      */
     @Transient
-    private List<String> predecessorNames/*
+    @WegasEntityProperty
+    private Set<String> predecessorNames/*
              * = new ArrayList<>()
              */;
 
@@ -100,26 +105,6 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     @Override
     public List<VariableProperty> getInternalProperties() {
         return this.properties;
-    }
-
-    /**
-     *
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof TaskDescriptor) {
-            super.merge(a);
-            TaskDescriptor other = (TaskDescriptor) a;
-            this.setDescription(TranslatableContent.merger(this.getDescription(), other.getDescription()));
-            this.setIndex(other.getIndex());
-            this.setPredecessorNames(other.getImportedPredecessorNames());
-            // this.setPredecessors(ListUtils.updateList(this.getPredecessors(), other.getPredecessors()));
-            this.setProperties(other.getProperties());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
     }
 
     /**
@@ -165,6 +150,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      */
     public void setPredecessors(List<TaskDescriptor> predecessors) {
         this.predecessors = predecessors;
+        this.predecessorNames = null;
     }
 
     /**
@@ -182,6 +168,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      */
     public void setPredecessor(Integer index, TaskDescriptor taskDescriptor) {
         this.predecessors.set(index, taskDescriptor);
+        this.predecessorNames = null;
     }
 
     /**
@@ -190,6 +177,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     public void addPredecessor(final TaskDescriptor taskDescriptor) {
         this.predecessors.add(taskDescriptor);
         taskDescriptor.dependencies.add(this);
+        this.predecessorNames = null;
     }
 
     /**
@@ -197,6 +185,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      */
     public void removePredecessor(final TaskDescriptor taskDescriptor) {
         this.predecessors.remove(taskDescriptor);
+        this.predecessorNames = null;
     }
 
     public List<TaskDescriptor> getDependencies() {
@@ -385,12 +374,16 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     /**
      * @return the exportedPredecessors
      */
-    public List<String> getPredecessorNames() {
-        List<String> names = new ArrayList<>();
-        for (TaskDescriptor t : this.getPredecessors()) {
-            names.add(t.getName());
+    public Set<String> getPredecessorNames() {
+        if (predecessorNames == null){
+            Set<String> names = new HashSet<>();
+            for (TaskDescriptor t : this.getPredecessors()) {
+                names.add(t.getName());
+            }
+            return names;
+        } else {
+            return predecessorNames;
         }
-        return names;
     }
 
     /**
@@ -399,21 +392,15 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      * @return names of predecessors, as imported from such a JSON
      */
     @JsonIgnore
-    public List<String> getImportedPredecessorNames() {
+    public Set<String> getImportedPredecessorNames() {
         return this.predecessorNames;
     }
 
     /**
      * @param exportedPredecessors the exportedPredecessors to set
      */
-    public void setPredecessorNames(List<String> exportedPredecessors) {
+    public void setPredecessorNames(Set<String> exportedPredecessors) {
         this.predecessorNames = exportedPredecessors;
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(getDescription(), criterias)
-                || super.containsAll(criterias);
     }
 
     @Override
@@ -441,8 +428,8 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     }
 
     @Override
-    public void revive(Beanjection beans) {
-        super.revive(beans);
+    public void revive(GameModel gameModel, Beanjection beans) {
+        super.revive(gameModel, beans);
         beans.getResourceFacade().reviveTaskDescriptor(this);
     }
 

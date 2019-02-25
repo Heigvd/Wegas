@@ -10,12 +10,15 @@ package com.wegas.core.persistence.variable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.primitive.*;
 import com.wegas.core.persistence.variable.scope.*;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
@@ -117,6 +120,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
+    @WegasEntityProperty(sameEntityOnly = true)
+    @JsonView(Views.IndexI.class)
     private Long version;
 
     public Long getVersion() {
@@ -181,8 +186,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     private Team team;
 
     @Override
-    public VariableInstance clone() {
-        return (VariableInstance) super.clone();
+    public VariableInstance duplicate() throws CloneNotSupportedException {
+        return (VariableInstance) super.duplicate();
     }
 
     /**
@@ -480,11 +485,27 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         this.gameModelScope = gameModelScope;
     }
 
+
     @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof VariableInstance) {
-            VariableInstance instance = (VariableInstance) other;
-            this.setVersion(instance.getVersion());
+    public WithPermission getMergeableParent() {
+        if (this.isDefaultInstance() && this.getDefaultDescriptor() != null) {
+            return this.getDefaultDescriptor();
+        } else {
+            return this.getScope();
+        }
+    }
+
+    @Override
+    public boolean belongsToProtectedGameModel() {
+        return this.isDefaultInstance() && this.getDefaultDescriptor() != null && this.getDefaultDescriptor().belongsToProtectedGameModel();
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        if (this.isDefaultInstance() && this.getDefaultDescriptor() != null) {
+            return this.getDefaultDescriptor().getVisibility();
+        } else {
+            return Visibility.INHERITED;
         }
     }
 

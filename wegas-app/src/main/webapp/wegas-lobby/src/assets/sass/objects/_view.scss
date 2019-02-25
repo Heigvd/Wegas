@@ -3,14 +3,14 @@
     position: relative;
     overflow-x: visible;
     overflow-y: auto;
-    
+
     // Styles de positionnements
     &.view--main {
         width: 100%;
         height: 100%;
         @include make-row(0px);
     }
-    
+
     &.view--menu {
         @include make-row(0px);
         width: 100%;
@@ -18,7 +18,7 @@
         z-index: 4;
         overflow: visible;
     }
-    
+
     &.view--workspace {
         @include make-row(0px);
         width: 100%;
@@ -26,31 +26,31 @@
         min-height: 320px;
         z-index: 3;
     }
-    
+
     &.view--public-index {
         height: calc(100% - 45px);
         background-color: $background-default-secondary !important;
         overflow: auto;
-        
+
         @include make-sm-column(12);
         @include make-xs-column(12);
-        
+
         .link--simple-primary {
             text-decoration:none;
             margin:20px auto 0;
             display:block;
-            
+
             #create-account {
                 margin:0 auto;
                 display:block;
                 font-weight: normal;
             }
         }
-        
+
         .link--simple-primary:hover {
             text-decoration: none;
         }
-        
+
     }
     .public-footer {
         text-align: center;
@@ -58,12 +58,12 @@
         overflow: visible;
         position: static;
         color: #808080;
-        
+
         a {
             color: inherit;
         }
     }
-    
+
     &.view--public-forms {
         height: 100%;
         @include make-sm-column(4);
@@ -72,7 +72,7 @@
             height: auto;
         }
     }
-    
+
     &.view--trainer-tools {
         @include make-xs-column(12);
         @include make-sm-column(4);
@@ -116,7 +116,7 @@
             }
         }
     }
-    
+
     &.view--history-download {
         p {
             @include make-xs-column(6);
@@ -126,7 +126,7 @@
             }
         }
     }
-    
+
     &.view--admin-menu {
         @include make-xs-column(12, 96px);
         @include make-md-column(3, 96px);
@@ -139,7 +139,7 @@
             padding: 0px;
         }
     }
-    
+
     &.view--new-session,
     &.view--join-session,
     &.view--create-scenario,
@@ -149,7 +149,7 @@
         overflow-y: hidden;
         /* @include make-xs-column(12, 96px); */
         /* @include make-md-column(3, 96px); */
-        
+
         h3 {
             font-weight: normal;
             float: left;
@@ -158,49 +158,58 @@
         .form {
             margin: 0px;
             padding: 0px;
-            
+
             .combobox {
                 background-color: white;
                 border:1px solid #dfdfdf;
-                
+
                 .tool.tool--search{
                     border-radius:0;
                 }
-                
+
                 .combobox__choices {
                     margin-top: 5px;
                     padding: 0 5px;
                     max-height: 300px;
                     overflow-y : auto;
-                    
+
                     input {
                         display: none;
                     }
-                    
+
                     .combobox__choice{
                         &:hover {
                             background-color: #f0f0f0;
                         }
-                        
+
                         &.selected {
                             background-color: #c1c1c1;
                         }
                     }
                 }
-                
+
                 label {
                     cursor: pointer;
                     display: inline-block;
                     width: 100%;
                 }
-                
+
+                &.combobox-multiselect {
+                    input {
+                        display:inline-block;
+                    }
+                    label {
+                        width: calc(100% - 15px)
+                    }
+                }
+
             }
         }
         .view__login-form {
             padding: 10px;
             min-width: 275px;
         }
-        
+
         @media screen /* and (max-width: $screen-md) */ {
             display: block;
             position: absolute;
@@ -211,19 +220,34 @@
             padding: 0px 128px;
             z-index: 2;
             transition: .3s;
-            
+
             &.view--expanded {
                 height: 100%;
                 transition: .3s;
             }
         }
-        
+
         @media screen and (max-width: 660px) {
             padding: 0px 48px;
         }
-        
+
     }
-    
+
+    &.view--admin-content{
+        .admin-tools {
+            h4 {
+                font-weight: bolder;
+            }
+            > div {
+                margin-bottom: 40px;
+            }
+
+            .admin-actions li:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+
     &.view--admin-content,
     &.view--played-sessions-list,
     &.view--managed-sessions-list,
@@ -232,37 +256,37 @@
         @include make-xs-column(12, 96px);
         /*@include make-md-column(9, 96px); */ /* hack to occupy 100% width */
         height: 100%;
-        
+
         h3 {
             @include make-xs-column(12);
             /* @include make-md-column(6); */
             box-sizing: border-box;
             padding: 0px;
             font-weight: normal;
-            
+
             i {
                 padding-right: 8px;
             }
-            
+
             @media screen /* and (max-width: $screen-md)*/ {
                 width: auto;
                 float: left;
             }
-            
+
             @media screen and (max-width: 819px) {
                 i + span {
                     display: none;
                 }
             }
         }
-        
+
         .view__tools {
             margin: 28px 0 8px 0;
             padding: 0px;
             float: right;
             width: 50%;
             max-width: 320px;
-            
+
             @media screen and (max-width: 800px) {
                 clear: both;
                 width: 100%;
@@ -270,7 +294,7 @@
                 margin: 4px 0 12px 0px;
             }
         }
-        
+
         .view__options {
             padding:40px 15px 15px 0;
             float:right;
@@ -278,26 +302,26 @@
             font-size: 12px;
             cursor: pointer;
             color: #888;
-            
+
             &:hover {
                 color: #000;
-                
+
                 .checkbox:before {
                     color: #000;
                 }
             }
-            
+
             .checkbox:before {
                 content:"\f096";
                 font-family: FontAwesome;
                 color: #888;
                 padding-right: 3px;
             }
-            
+
             .checkbox.selected:before {
                 content:"\f046";
             }
-            
+
             @media screen and (max-width: 880px) {
                 clear: both;
                 width: 100%;
@@ -305,7 +329,7 @@
                 padding-top: 15px;
             }
         }
-        
+
         .view__list {
             @include make-xs-column(12);
             height: calc(100% - 90px);
@@ -313,29 +337,29 @@
             box-sizing: border-box;
             overflow-x: hidden;
             overflow-y: auto;
-            
+
             &.ng-enter,
             &.ng-leave {
                 transition: .3s;
             }
-            
+
             &.ng-enter.ng-enter-active,
             &.ng-leave {
                 visibility: visible;
                 opacity: 1;
-                
+
             }
-            
+
             &.ng-leave.ng-leave-active,
             &.ng-enter {
                 visibility: hidden;
                 opacity: 0;
             }
-            
+
             &.ng-enter {
                 transition-delay: .3s;
             }
-            
+
             &.view__list--no-content {
                 padding: 16px 0px 32px 0px;
                 font-style: italic;
@@ -348,7 +372,7 @@
             &.view__list--with-archive {
                 height: calc(100% - 160px);
             }
-            
+
             .group-title {
                 font-weight:bold;
                 font-size: 16px;
@@ -363,7 +387,7 @@
             overflow-x: hidden;
             overflow-y: auto;
         }
-        
+
         .view__archives {
             @include make-xs-column(12);
             height: 80px;
@@ -373,7 +397,7 @@
             .button {
                 float: right;
             }
-            
+
             &.view--admin-content,
             &.view--played-sessions-list,
             &.view--managed-sessions-list,
@@ -382,37 +406,37 @@
                 @include make-xs-column(12, 96px);
                 /*@include make-md-column(9, 96px); */ /* hack to occupy 100% width */
                 height: 100%;
-                
+
                 h3 {
                     @include make-xs-column(12);
                     /* @include make-md-column(6); */
                     box-sizing: border-box;
                     padding: 0px;
                     font-weight: normal;
-                    
+
                     i {
                         padding-right: 8px;
                     }
-                    
+
                     @media screen /* and (max-width: $screen-md)*/ {
                         width: auto;
                         float: left;
                     }
-                    
+
                     @media screen and (max-width: 819px) {
                         i + span {
                             display: none;
                         }
                     }
                 }
-                
+
                 .view__tools {
                     margin: 28px 0 8px 0;
                     padding: 0px;
                     float: right;
                     width: 50%;
                     max-width: 320px;
-                    
+
                     @media screen and (max-width: 750px) {
                         clear: both;
                         width: 100%;
@@ -420,22 +444,22 @@
                         margin: 4px 0 12px 0px;
                     }
                 }
-                
+
                 .view__options {
                     padding: 40px 15px 15px 0;
                     float: right;
                     text-transform: uppercase;
                     font-size: 12px;
                     cursor: pointer;
-                    
+
                     label {
                         color: #999;
                     }
-                    
+
                     label:hover {
                         color: #333;
                     }
-                    
+
                     @media screen and (max-width: 980px) {
                         clear: both;
                         width: 100%;
@@ -443,7 +467,7 @@
                         padding-top: 15px;
                     }
                 }
-                
+
                 .view__list {
                     @include make-xs-column(12);
                     height: calc(100% - 90px);
@@ -451,29 +475,29 @@
                     box-sizing: border-box;
                     overflow-x: hidden;
                     overflow-y: auto;
-                    
+
                     &.ng-enter,
                     &.ng-leave {
                         transition: .3s;
                     }
-                    
+
                     &.ng-enter.ng-enter-active,
                     &.ng-leave {
                         visibility: visible;
                         opacity: 1;
-                        
+
                     }
-                    
+
                     &.ng-leave.ng-leave-active,
                     &.ng-enter {
                         visibility: hidden;
                         opacity: 0;
                     }
-                    
+
                     &.ng-enter {
                         transition-delay: .3s;
                     }
-                    
+
                     &.view__list--no-content {
                         padding: 16px 0px 32px 0px;
                         font-style: italic;
@@ -494,7 +518,7 @@
                     overflow-x: hidden;
                     overflow-y: auto;
                 }
-                
+
                 .view__archives {
                     @include make-xs-column(12);
                     height: 80px;
@@ -505,10 +529,10 @@
                         float: right;
                     }
                 }
-            }    
+            }
         }
     }
-    
+
     &.view--managed-sessions-list,
     &.view--scenarios-list {
         display: flex;
@@ -522,7 +546,7 @@
             overflow-x: hidden;
         }
     }
-    
+
     &.view--sessions-users-new {
         @include make-xs-column(12);
         @include make-sm-column(4);
@@ -542,9 +566,9 @@
                 padding: 64px 16px 16px 16px;
             }
         }
-        
+
     }
-    
+
     &.view--sessions-users-list {
         @include make-xs-column(12);
         @include make-sm-column(8);
@@ -555,11 +579,11 @@
             padding: 64px 16px 16px 16px;
         }
     }
-    
+
     &.view__users-individual {
         padding: 0px;
     }
-    
+
     &.view__users-teams {
         & .view__users-team {
             padding-bottom: 16px;
@@ -580,13 +604,13 @@
             }
         }
     }
-    
+
     // Styles de décorations
     @each $level in $backgrounds-levels {
         $level-name: nth($level, 1);
         $level-color: nth($level, 2);
         $level-color-reverse: nth($level, 3);
-        
+
         .view--reverse-#{$level-name} {
             background-color: $level-color-reverse;
             color: $white;
@@ -595,13 +619,13 @@
             background-color: $level-color;
         }
     }
-    
+
     .view--separate-primary {
         background-color: $background-default-secondary;
         border-top: none; /* solid 4px $background-default-secondary; */
         border-bottom: solid 2px #fff;
     }
-    
+
     @each $position in $positions {
         .view--separate-#{$position} {
             border-#{$position}: solid 1px $border;
@@ -610,11 +634,11 @@
             border-#{$position}: solid 1px $border-reverse;
         }
     }
-    
+
     .view--separate-shadow {
         @include material-shadow(1);
     }
-    
+
     // Elements
     .view__first-header {
         display: block;
@@ -629,7 +653,7 @@
         background-size: 64px;
         color: $white;
     }
-    
+
     .view__first-subtitle {
         display: block;
         position: relative;
@@ -639,16 +663,16 @@
         padding: 8px 20px 0px 20px;
         font-size: 16px;
         /*color: $white;*/
-        
+
         &.subtitle--center {
             text-align: center;
         }
-        
+
         &.subtitle--medium {
             padding: 32px 20px;
         }
     }
-    
+
     .view__public-nav {
         display: block;
         position: relative;
@@ -657,7 +681,7 @@
         padding: 0px 32px;
         text-align: right;
     }
-    
+
     .view__login-form {
         margin: auto;
         width: 100%;
@@ -671,14 +695,14 @@
             margin: 0px;
         }
     }
-    
+
     .view__signup-form {
         width: 100%;
         top: 40%;
         padding: 0px 64px;
         margin-top: -136px;
     }
-    
+
     .view__aai-login {
         background-image: URL('../images/switch_aai.png');
         background-repeat: no-repeat;
@@ -696,16 +720,16 @@
         padding: 0 6px 3px 24px;
         border: 2px outset #e7e7e7;
     }
-    
+
     .view__aai-login:hover {
         background-color: #ccc !important;
         color: black !important;
     }
-    
+
     .view__aai-login:focus {
         outline: none;
     }
-    
+
     .view__form--choose-team {
         @include make-sm-column(6);
         @include make-sm-column-offset(3);
@@ -713,7 +737,7 @@
         @include make-md-column-offset(4);
         margin-top: 128px;
     }
-    
+
     .view__menu-workspaces {
         display: block;
         position: relative;
@@ -721,7 +745,7 @@
         height: 48px; /* was 100% */
         float: left;
         overflow: visible;
-        
+
         .view__sub-menu {
             padding: 0px;
             float: right;
@@ -741,7 +765,7 @@
         color: black;
         cursor: pointer;
     }
-    
+
     .view__menu-secondary {
         display: block;
         position: relative;
@@ -750,7 +774,7 @@
         float: right;
         text-align: right;
     }
-    
+
     .view__button-archives {
         display: block;
         position: absolute !important;
@@ -762,7 +786,7 @@
             left: auto;
         }
     }
-    
+
     .view--albasim {
         display: block;
         position: relative;
@@ -789,7 +813,7 @@
             text-align: center;
         }
     }
-    
+
     &.view--menu {
         .view__headding-workspace {
             @media screen and (max-width: $screen-xs) {
@@ -798,13 +822,13 @@
                 overflow: hidden;
             }
         }
-        
+
         .view__headding-workspace--label {
             @media screen and (max-width: $screen-xs) {
                 display: none;
             }
         }
-        
+
         .view__sub-menu {
             .button--user {
                 @media screen and (max-width: $screen-sm) {
@@ -815,7 +839,7 @@
                 }
             }
         }
-        
+
         .action {
             &.action--language {
                 .subactions {
@@ -830,12 +854,12 @@
                         padding-top: 4px;
                         background: white;
                         @include material-shadow(1);
-                        
+
                         .subaction {
                             width: 100%;
                             padding: 0px;
                             margin: 0px;
-                            
+
                             .button {
                                 width: 100%;
                                 height: 32px;
@@ -872,7 +896,7 @@
             right: 32px;
         }
     }
-    
+
 }
 
 .centered-page {
@@ -912,6 +936,20 @@
     }
 }
 
+
+.modeler {
+    @extend .centered-page;
+    min-height: 50%;
+    .view {
+        &.view--menu {
+            border-color: $modeler-color;
+            transition: .3s;
+        }
+    }
+}
+
+
+
 .admin {
     @extend .centered-page;
     .view {
@@ -932,7 +970,7 @@
         background-color: inherit;
         margin-top: 40px;
     }
-    
+
     .view.view--played-sessions-list {
         #player-sessions-title {
             display: none;
@@ -944,17 +982,17 @@
             background-color: $success-color;
         }
     }
-    
+
     .view.view--join-session {
         height: 0;
-        
+
         /* NB: everything below should be removed when this layout becomes definitive */
-        
+
         /*
             position: relative;
             height: auto;
             transition: none;
-            
+
             .view__first-subtitle {
             max-width: 200%;
             width: 200%;
@@ -971,7 +1009,7 @@
             display: block;
             margin: 20px auto 30px !important;
             text-decoration: none;
-            
+
             #create-account {
             display: block;
             margin: 0 auto;

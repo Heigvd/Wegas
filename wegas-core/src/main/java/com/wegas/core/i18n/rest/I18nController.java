@@ -7,12 +7,16 @@
  */
 package com.wegas.core.i18n.rest;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.wegas.core.i18n.deepl.Deepl;
+import com.wegas.core.i18n.deepl.DeeplTranslations;
+import com.wegas.core.i18n.deepl.DeeplTranslations.DeeplTranslation;
+import com.wegas.core.i18n.deepl.DeeplUsage;
 import com.wegas.core.i18n.ejb.I18nFacade;
-import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.ejb.I18nFacade.UpdateType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -20,6 +24,7 @@ import javax.inject.Inject;
 import javax.script.ScriptException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -27,6 +32,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,10 +77,17 @@ public class I18nController {
         List<GameModelLanguage> updated = new ArrayList<>();
 
         for (GameModelLanguage language : languages) {
-             updated.add(i18nfacade.updateLanguage(language));
+            updated.add(i18nfacade.updateLanguage(language));
         }
 
         return updated;
+    }
+
+    @DELETE
+    @Path("Lang/{lang : [^\\/]*}")
+    public GameModel removeLanguage(@PathParam("gameModelId") Long gameModelId, @PathParam("lang") String lang) {
+        logger.trace("DELETE new language {} for gameModel #{}", lang, gameModelId);
+        return null;
     }
 
     @PUT
@@ -85,41 +98,132 @@ public class I18nController {
     }
 
     @GET
-    @Path("Tr/{refName : [^\\/]*}/{trId: [1-9][0-9]*}")
-    public String getTranslation(@PathParam("refName") String refName, @PathParam("trId") Long trId) {
-        logger.trace("UPDATE #{} / {}", trId, refName);
-        return i18nfacade.getTranslatedString(trId, refName);
+    @Path("Tr/{code : [^\\/]*}/{trId: [1-9][0-9]*}")
+    public String getTranslation(@PathParam("code") String code, @PathParam("trId") Long trId) {
+        logger.trace("UPDATE #{} / {}", trId, code);
+        return i18nfacade.getTranslatedString(trId, code);
     }
 
     @PUT
-    @Path("Tr/{refName : [^\\/]*}/{trId: [1-9][0-9]*}")
-    public TranslatableContent updateTranslation(@PathParam("refName") String refName, @PathParam("trId") Long trId, String newValue) {
-        logger.trace("UPDATE #{} / {}", trId, refName);
-        return i18nfacade.updateTranslation(trId, refName, newValue);
+    @Path("Tr/{mode : [A-Z_]+}")
+    public AbstractEntity update(@PathParam("mode") UpdateType mode, I18nUpdate i18nUpdate)
+            throws ScriptException {
+        return i18nfacade.update(i18nUpdate, mode);
     }
 
     @PUT
-    @Path("ScriptTr")
-    public AbstractEntity updateInScript(ScriptUpdate scriptUpdate) throws ScriptException {
-        return i18nfacade.updateInScriptTranslation(scriptUpdate);
+    @Path("BatchUpdate")
+    public List<AbstractEntity> batchUpdate(List<I18nUpdate> i18nUpdates) throws ScriptException {
+        return i18nfacade.batchUpdate(i18nUpdates, UpdateType.MINOR);
+    }
+
+    /*
+     * DeppL mock
+     */
+    @POST
+    @Path("deepl/translate")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public DeeplTranslations deepLMockTranslate(@FormParam("text") List<String> texts,
+            @FormParam("source_lang") Deepl.Language sourceLang,
+            @FormParam("target_lang") Deepl.Language targetLang,
+            @FormParam("tag_handling") String tagHandling,
+            @FormParam("non_splitting_tags") String nonSplittingTags,
+            @FormParam("ignore_tags") String ignoreTags,
+            @FormParam("split_sentences") String splitSentences,
+            @FormParam("preserve_formatting") String preserveFormatting,
+            @FormParam("auth_key") String auth_key) {
+
+        DeeplTranslations deeplTranslations = new DeeplTranslations();
+        List<DeeplTranslations.DeeplTranslation> translations = new ArrayList<>();
+
+        String source;
+        if (sourceLang != null) {
+            source = sourceLang.name();
+        } else {
+            source = "autodetected";
+        }
+
+        for (String text : texts) {
+            DeeplTranslations.DeeplTranslation deeplTranslation = new DeeplTranslations.DeeplTranslation();
+
+            deeplTranslation.setLang(source);
+            deeplTranslation.setText("translate \"" + text + "\" from " + source + " to " + targetLang);
+
+            translations.add(deeplTranslation);
+        }
+
+        deeplTranslations.setTranslations(translations);
+
+        return deeplTranslations;
+    }
+
+
+    /*
+     * DeppL mock
+     */
+    @POST
+    @Path("deepl/usage")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public DeeplUsage deepLMockUsage(@FormParam("auth_key") String auth_key) {
+        DeeplUsage usage = new DeeplUsage();
+
+        usage.setCharacterCount(500000l);
+        usage.setCharacterLimit(1000000l);
+
+        return usage;
     }
 
     @PUT
-    @Path("ScriptTrBatchUpdate")
-    public List<AbstractEntity> batchUpdateInScript(List<ScriptUpdate> scriptUpdates) throws ScriptException {
-        return i18nfacade.batchUpdateInScriptTranslation(scriptUpdates);
+    @Path("InitLanguage/{source: [a-zA-Z]+}/{target: [a-zA-Z]+}")
+    @RequiresRoles("Administrator")
+    public GameModel initLanguageTranslations(@PathParam("gameModelId") Long gameModelId,
+            @PathParam("target") String targetLangCode,
+            @PathParam("source") String sourceLangCode) throws ScriptException {
+
+        return i18nfacade.initLanguage(gameModelId, sourceLangCode, targetLangCode);
     }
 
     @PUT
-    @Path("ScriptBatchUpdate")
-    public List<AbstractEntity> batchScriptUpdate(List<ScriptUpdate> updates) {
-        return i18nfacade.batchScriptUpdate(updates);
+    @Path("Translate/{source: [a-zA-Z]+}/{target: [a-zA-Z]+}")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public DeeplTranslation translate(@PathParam("target") String targetLangCode,
+            @PathParam("source") String sourceLangCode, String text) throws UnsupportedEncodingException {
+
+        return i18nfacade.translate(sourceLangCode, targetLangCode, text).getTranslations().get(0);
     }
 
-    @DELETE
-    @Path("Tr/{lang : [^\\/]*}")
-    public GameModel removeLanguage(@PathParam("gameModelId") Long gameModelId, @PathParam("lang") String lang) {
-        logger.trace("DELETE new language {} for gameModel #{}", lang, gameModelId);
-        return null;
+    /**
+     *
+     * @param targetLangCode
+     * @param sourceLangCode
+     * @param text
+     *
+     * @return
+     */
+    @GET
+    @Path("Usage")
+    public DeeplUsage usage(@PathParam("target") String targetLangCode,
+            @PathParam("source") String sourceLangCode, String text) {
+        return i18nfacade.usage();
+    }
+
+    @GET
+    @Path("AvailableLanguages")
+    public List<String> getAvailableLanguages() {
+        List<String> list = new ArrayList<>();
+
+        if (i18nfacade.isTranslationServiceAvailable()) {
+            for (Deepl.Language lang : Deepl.Language.values()) {
+                list.add(lang.name());
+            }
+        }
+
+        return list;
+    }
+
+    @GET
+    @Path("Print")
+    public void print(@PathParam("gameModelId") Long gameModelId) {
+        i18nfacade.printAllTranslations(gameModelId);
     }
 }

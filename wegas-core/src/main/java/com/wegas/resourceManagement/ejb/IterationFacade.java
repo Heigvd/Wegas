@@ -116,7 +116,7 @@ public class IterationFacade extends BaseFacade<Iteration> implements IterationF
         GameModel gameModel = burndownDescriptor.getGameModel();
 
         for (Iteration iteration : burndownInstance.getIterations()) {
-            if (iteration.getDeserialisedNames() != null) {
+            if (iteration.getDeserialisedTaskNames() != null) {
 
                 /**
                  * remove old references
@@ -126,7 +126,7 @@ public class IterationFacade extends BaseFacade<Iteration> implements IterationF
                 }
 
                 List<TaskInstance> tasks = new ArrayList<>();
-                for (String taskName : iteration.getDeserialisedNames()) {
+                for (String taskName : iteration.getDeserialisedTaskNames()) {
                     try {
                         VariableDescriptor find = variableDescriptorFacade.find(gameModel, taskName);
                         if (find instanceof TaskDescriptor) {

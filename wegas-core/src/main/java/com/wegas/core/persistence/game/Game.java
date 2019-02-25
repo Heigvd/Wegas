@@ -12,11 +12,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
@@ -65,6 +68,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @Basic(optional = false)
     @Pattern(regexp = "^.*\\S+.*$", message = "Game name cannot be empty")// must at least contains one non-whitespace character
+    @WegasEntityProperty
     private String name;
 
     /**
@@ -74,6 +78,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     @Basic(optional = false)
 
     @Pattern(regexp = "^([a-zA-Z0-9_-]|\\.(?!\\.))*$", message = "Token shall only contains alphanumeric characters, numbers, dots, underscores or hyphens")
+    @WegasEntityProperty
     private String token;
 
     /**
@@ -115,6 +120,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      *
      */
     @Enumerated
+    @WegasEntityProperty
     private GameAccess access = GameAccess.OPEN;
 
     /**
@@ -164,14 +170,6 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     @PreUpdate
     public void preUpdate() {
         this.setUpdatedTime(new Date());
-    }
-
-    @Override
-    public void merge(AbstractEntity a) {
-        Game other = (Game) a;
-        this.setName(other.getName());
-        this.setAccess(other.getAccess());
-        this.setToken(other.getToken());
     }
 
     public GameTeams getGameTeams() {
@@ -529,5 +527,20 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     @Override
     public WegasPermission getAssociatedWritePermission() {
         return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAME);
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return this.getGameModel();
+    }
+
+    @Override
+    public boolean belongsToProtectedGameModel() {
+        return false;
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return Visibility.INHERITED;
     }
 }

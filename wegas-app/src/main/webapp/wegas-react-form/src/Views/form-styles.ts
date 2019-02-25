@@ -1,4 +1,4 @@
-import { css } from 'glamor';
+import {css} from 'glamor';
 
 // tslint:disable-next-line:no-namespace
 export namespace FormStyles {
@@ -20,6 +20,13 @@ export namespace FormStyles {
     export const biggerLabelStyle = css(FormStyles.labelStyle, {
         fontSize: '115%',
         marginBottom: '3px',
+    });
+
+    export const disabled = css(FormStyles.unselectable, {
+        color: "darkslategrey",
+        backgroundColor: "lightgrey",
+        border: "1px solid #BFBFBF",
+        padding: "4px"
     });
 }
 

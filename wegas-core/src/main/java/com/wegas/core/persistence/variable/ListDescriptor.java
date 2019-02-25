@@ -8,13 +8,18 @@
 package com.wegas.core.persistence.variable;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.merge.annotations.WegasEntity;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +31,7 @@ import org.slf4j.LoggerFactory;
 @Entity
 @NamedQuery(name = "ListDescriptor.findDistinctChildrenLabels",
         query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentList.id = :containerId")
+@WegasEntity(callback = ListDescriptor.ValidateAllowedItemsCallback.class)
 public class ListDescriptor extends VariableDescriptor<VariableInstance> implements DescriptorListI<VariableDescriptor> {
 
     private static final long serialVersionUID = 1L;
@@ -36,14 +42,20 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     //@BatchFetch(BatchFetchType.IN)
     @OneToMany(mappedBy = "parentList", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @OrderColumn(name = "ld_items_order")
+    @WegasEntityProperty(includeByDefault = false)
     private List<VariableDescriptor> items = new ArrayList<>();
 
     /**
      * List of allowed children types
      */
     @ElementCollection
-    private List<String> allowedTypes = new ArrayList<>();
+    @WegasEntityProperty
+    private Set<String> allowedTypes = new HashSet<>();
 
+    /**
+     * shortcut to show within (+) treeview button, must match allowedTypes
+     */
+    @WegasEntityProperty
     private String addShortcut = "";
 
     /**
@@ -95,15 +107,9 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         return this.items;
     }
 
-    /**
-     * @param items
-     */
     @Override
-    public void setItems(List<VariableDescriptor> items) {
+    public void resetItemsField() {
         this.items = new ArrayList<>();
-        for (VariableDescriptor vd : items) {
-            this.addItem(vd);
-        }
     }
 
     @Override
@@ -111,7 +117,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         if (isAuthorized(child)) {
             child.setParentList(this);
         } else {
-            throw WegasErrorMessage.error(child.getClass().getSimpleName() + " not allowed in this folder");
+            throw WegasErrorMessage.error(child.getClass().getSimpleName() + " not allowed in the folder " + this);
         }
     }
 
@@ -136,16 +142,16 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      *
      * @return allowed types
      */
-    public List<String> getAllowedTypes() {
+    public Set<String> getAllowedTypes() {
         return this.allowedTypes;
     }
 
     /**
-     * set the list of allowed types
+     * set the Set of allowed types
      *
      * @param types allowed types
      */
-    public void setAllowedTypes(List<String> types) {
+    public void setAllowedTypes(Set<String> types) {
         this.allowedTypes = types;
     }
 
@@ -169,21 +175,30 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         return acc;
     }
 
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof ListDescriptor) {
-            super.merge(a);
-            ListDescriptor o = (ListDescriptor) a;
-            this.setAllowedTypes(new ArrayList<>());
-            this.getAllowedTypes().addAll(o.getAllowedTypes());
-            if (o.getAddShortcut() == null || o.getAddShortcut().isEmpty() || isAuthorized(o.getAddShortcut())) {
-                this.setAddShortcut(o.getAddShortcut());
-            } else {
-                throw WegasErrorMessage.error(o.getAddShortcut() + " not allowed in this folder");
+    /*@PrePersist
+    public void prePersist_cleanDefaultInstance() {
+        VariableInstance defaultInstance = this.getDefaultInstance();
+        if (defaultInstance instanceof NumberInstance) {
+            this.setDefaultInstance(new ListInstance());
+        }
+    }*/
+    public static class ValidateAllowedItemsCallback implements WegasCallback {
+
+        @Override
+        public void postUpdate(Mergeable entity, Object ref, Object identifier) {
+            if (entity instanceof ListDescriptor) {
+                ListDescriptor listDescriptor = (ListDescriptor) entity;
+                String shortcut = listDescriptor.getAddShortcut();
+                if (!Helper.isNullOrEmpty(shortcut) && !listDescriptor.isAuthorized(shortcut)) {
+                    throw WegasErrorMessage.error(shortcut + " not allowed in this folder");
+                }
+
+                for (VariableDescriptor child : listDescriptor.getItems()) {
+                    if (!listDescriptor.isAuthorized(child)) {
+                        throw WegasErrorMessage.error(child + " not allowed in this folder");
+                    }
+                }
             }
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
         }
     }
-
 }

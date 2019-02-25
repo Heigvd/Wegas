@@ -7,6 +7,7 @@
  */
 package com.wegas.core.i18n.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.ListUtils;
 import java.io.Serializable;
 import java.util.Objects;
@@ -27,7 +28,7 @@ public class Translation implements Serializable {
 
     private static final long serialVersionUID = 1647739633795326491L;
 
-
+    @JsonIgnore
     private String lang;
 
     @Lob
@@ -35,12 +36,19 @@ public class Translation implements Serializable {
     @Column(name = "tr")
     private String translation;
 
+    private String status;
+
     public Translation() {
     }
 
     public Translation(String lang, String translation) {
+        this(lang, translation, null);
+    }
+
+    public Translation(String lang, String translation, String status) {
         this.lang = lang;
         this.translation = translation;
+        this.status = status;
     }
 
     @Override
@@ -54,17 +62,22 @@ public class Translation implements Serializable {
     public boolean equals(Object obj) {
         if (obj != null && obj instanceof Translation) {
             Translation other = (Translation) obj;
-            return this.lang.equals(other.getLang());
+            return this.getLang().equals(other.getLang())
+                    && Objects.equals(this.getTranslation(), other.getTranslation());
         }
         return false;
     }
 
     public String getLang() {
-        return lang;
+        return lang != null ? lang.toUpperCase() : null;
     }
 
     public void setLang(String lang) {
-        this.lang = lang;
+        if (lang != null) {
+            this.lang = lang.toUpperCase();
+        } else {
+            this.lang = null;
+        }
     }
 
     public String getTranslation() {
@@ -75,19 +88,18 @@ public class Translation implements Serializable {
         this.translation = translation;
     }
 
-    public static class Extractor implements ListUtils.EntryExtractor<String, String, Translation> {
-
-        @Override
-        public String getKey(Translation item) {
-            return item.getLang();
-        }
-
-        @Override
-        public String getValue(Translation item) {
-            return item.getTranslation();
-        }
+    public String getStatus() {
+        return status;
     }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "Translation [" + lang + "] " + translation;
+    }
 
     public static class Mapper implements ListUtils.EntryExtractor<String, Translation, Translation> {
 

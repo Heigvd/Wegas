@@ -98,6 +98,7 @@ export default function commonView<E>(
                     [`${extraShortStyle}`]: layout === 'extraShort',
                     [`${extraShortInline}`]: layout === 'extraShortInline',
                     [`${borderTopStyle}`]: view.borderTop,
+                    'hasBorderTop': view.borderTop,
                     [`${indentStyle}`]: view.indent,
                 })}
                 style={view.style}

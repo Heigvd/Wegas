@@ -21,6 +21,12 @@ div#loading-bar .bar {
     }
 }
 
+.modeler{
+    div#loading-bar .bar {
+        background: $modeler-color;
+    }
+}
+
 .admin{
     div#loading-bar .bar {
         background: $admin-color;
@@ -32,8 +38,8 @@ div#loading-bar .bar {
   transition: border 0.3s ease;
   &.view--loading {
     display: none;
-    border-top: solid 4px #F9F9F9;
-    border-bottom: solid 2px #F9F9F9;
+    border-top: solid 4px $background-default-secondary;
+    border-bottom: solid 2px $background-default-secondary;
   }
 }
 

@@ -9,7 +9,10 @@ package com.wegas.core.persistence.variable.primitive;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.merge.annotations.WegasEntity;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Column;
@@ -23,6 +26,7 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
+@WegasEntity(callback = NumberDescriptor.ValdateDefaultValue.class)
 public class NumberDescriptor extends VariableDescriptor<NumberInstance> implements PrimitiveDescriptorI<Double>{
 
     private static final long serialVersionUID = 1L;
@@ -30,16 +34,19 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
     /**
      *
      */
+    @WegasEntityProperty(order = -1) // update bound before the default instance
     private Double minValue;
     /**
      *
      */
+    @WegasEntityProperty(order = -1) // update bound before the default instance
     private Double maxValue;
 
     /**
      *
      */
     @Column(columnDefinition = "integer default 20")
+    @WegasEntityProperty
     private Integer historySize = 20;
 
     /**
@@ -59,23 +66,15 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
 
     /**
      *
-     * @param a
+     * @param name
+     * @param defaultInstance
      */
-    @Override
-    public void merge(AbstractEntity a) {
-        NumberDescriptor other = (NumberDescriptor) a;
-        this.setMinValue(other.getMinValue());
-        this.setMaxValue(other.getMaxValue());
-        this.setHistorySize(other.getHistorySize());
-
-        super.merge(a);
-        if (!this.isValueValid(this.getDefaultValue())) {
-            throw new WegasOutOfBoundException(this.getMinValue(),
-                    this.getMaxValue(), this.getDefaultValue(), this.getName(), this.getLabel().translateOrEmpty(this.getGameModel()));
-        }
+    public NumberDescriptor(String name, NumberInstance defaultInstance) {
+        super(name, defaultInstance);
     }
 
     /**
+     *
      * @return the minValue
      */
     public Double getMinValue() {
@@ -168,6 +167,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      *
      * @param value
      */
+    @Deprecated
     public void setDefaultValue(double value) {
         // only used to explicitely ignore while serializing
     }
@@ -203,6 +203,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
     /**
      *
      * @param p
+     *
      * @return value of player p instance
      */
     public Double getValue(Player p) {
@@ -211,5 +212,22 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
 
     public boolean isValueValid(double value) {
         return !(this.getMaxValue() != null && value > this.getMaxValueD() || (this.getMinValue() != null && value < this.getMinValueD()));
+    }
+
+    public static class ValdateDefaultValue implements WegasCallback {
+
+        @Override
+        public void postUpdate(Mergeable entity, Object ref, Object identifier) {
+            if (entity instanceof NumberDescriptor) {
+                NumberDescriptor nd = (NumberDescriptor) entity;
+                NumberInstance ni = nd.getDefaultInstance();
+                double value = ni.getValue();
+
+                if (!nd.isValueValid(value)) {
+                    throw new WegasOutOfBoundException(nd.getMinValue(),
+                            nd.getMaxValue(), value, nd.getName(), nd.getLabel().translateOrEmpty(nd.getGameModel()));
+                }
+            }
+        }
     }
 }

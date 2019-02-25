@@ -20,10 +20,8 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -120,10 +118,11 @@ public class GameFacade extends BaseFacade<Game> {
      * @param gameModelId id of the gameModel to create a new game for
      * @param game        the game to persist
      *
-     * @throws IOException
+     * @throws java.lang.CloneNotSupportedException
+     *
      */
-    public void publishAndCreate(final Long gameModelId, final Game game) throws IOException {
-        GameModel gm = gameModelFacade.createGameGameModel(gameModelId);
+    public void publishAndCreate(final Long gameModelId, final Game game) throws CloneNotSupportedException {
+        GameModel gm = gameModelFacade.createPlayGameModel(gameModelId);
         this.create(gm, game);
 
         // Since Permission on gameModel is provided through game induced permission, revoke initial permission on gamemodel:
@@ -156,6 +155,8 @@ public class GameFacade extends BaseFacade<Game> {
      * @param game      the game to persist within the gameModel
      */
     private void create(final GameModel gameModel, final Game game) {
+        requestManager.assertCanInstantiateGameModel(gameModel);
+
         final User currentUser = userFacade.getCurrentUser();
 
         if (game.getToken() == null) {
@@ -202,7 +203,12 @@ public class GameFacade extends BaseFacade<Game> {
             debugTeam.setGame(game);
             Player testPlayer = debugTeam.getPlayers().get(0);
             testPlayer.setStatus(Status.LIVE);
-            testPlayer.setRefName("def");
+
+            List<GameModelLanguage> languages = game.getGameModel().getLanguages();
+            if (languages !=null && !languages.isEmpty()){
+                testPlayer.setLang(languages.get(0).getCode());
+            }
+
             teamFacade.create(debugTeam);
             //Player get = debugTeam.getPlayers().get(0);
             //requestFacade.commit(get, false);
@@ -384,8 +390,8 @@ public class GameFacade extends BaseFacade<Game> {
 
         String userQuery = "SELECT p FROM Permission p WHERE p.user.id = :userId";
 
-        gameModelFacade.processQuery(userQuery, gmMatrix, gMatrix, GameModel.Status.PLAY, status);
-        gameModelFacade.processQuery(roleQuery, gmMatrix, gMatrix, GameModel.Status.PLAY, status);
+        gameModelFacade.processQuery(userQuery, gmMatrix, gMatrix, GameModel.GmType.PLAY, GameModel.Status.LIVE, status);
+        gameModelFacade.processQuery(roleQuery, gmMatrix, gMatrix, GameModel.GmType.PLAY, GameModel.Status.LIVE, status);
 
         for (Map.Entry<Long, List<String>> entry : gMatrix.entrySet()) {
             Long id = entry.getKey();
@@ -532,7 +538,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @param gameId
      * @param t
      *
-     * @return id of the brand new team
+     *
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Long createAndCommit(Long gameId, Team t) {

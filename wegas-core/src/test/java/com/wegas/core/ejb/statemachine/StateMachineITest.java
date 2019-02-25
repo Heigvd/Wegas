@@ -253,14 +253,14 @@ public class StateMachineITest extends AbstractArquillianTest {
     }
 
     @Test
-    public void duplicate() throws NamingException, IOException, WegasNoResultException {
+    public void duplicate() throws NamingException, WegasNoResultException, CloneNotSupportedException {
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setName("trigger");
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("Event.fired('testEvent')"));
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, param);"));
         variableDescriptorFacade.create(scenario.getId(), trigger);
-        GameModel duplicateGm = gameModelFacade.duplicateWithDebugGame(scenario.getId());
+        GameModel duplicateGm = gameModelFacade.createScenarioWithDebugGame(scenario.getId());
         TriggerDescriptor find = (TriggerDescriptor) variableDescriptorFacade.find(duplicateGm, "trigger");
         Assert.assertEquals(find.getStates().size(), trigger.getStates().size());
     }
@@ -289,6 +289,5 @@ public class StateMachineITest extends AbstractArquillianTest {
         testInstance.setValue(0);
         variableInstanceFacade.update(testInstance.getId(), testInstance);
         Assert.assertEquals(0, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), player.getId())).getValue(), 0.001);
-
     }
 }

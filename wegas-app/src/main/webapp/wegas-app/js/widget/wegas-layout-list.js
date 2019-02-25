@@ -69,17 +69,21 @@ YUI.add('wegas-layout-list', function(Y) {
          * </ul>
          */
         ATTRS: {
+            name: {
+                value: "List",
+                type: "string",
+                view: {
+                    label: "Name"
+                }
+            },
             direction: {
                 value: 'vertical',
                 type: "string",
                 view: {
+                    label: "Direction",
                     type: 'select',
                     choices: ['vertical', 'horizontal']
                 }
-            },
-            name: {
-                value: "folder",
-                type: "string"
             }
 
             /**
@@ -107,6 +111,31 @@ YUI.add('wegas-layout-list', function(Y) {
                 cb.removeClass(this.getClassName('vertical'));
             }
 
+        }
+    }, {
+        EDITORNAME: "Flex layout",
+        // Redefine visibility and default value of some inherited attributes:
+        ATTRS: {
+            name: {
+                value: "Flex List",
+                type: "string",
+                view: {
+                    label: "Layout name",
+                    // Hide in case this is a page:
+                    className: "wegas-advanced-feature"
+                }
+            },
+            direction: {
+                value: 'vertical',
+                type: "string",
+                view: {
+                    label: "Direction",
+                    type: 'select',
+                    choices: ['vertical', 'horizontal'],
+                    // Hide in case this is a page:
+                    className: "wegas-advanced-feature"
+                }
+            }
         }
     });
     Y.Wegas.FlexList = FlexList;

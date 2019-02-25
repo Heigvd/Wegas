@@ -21,6 +21,7 @@ import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.log.xapi.*;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
@@ -40,6 +41,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.charset.StandardCharsets;
@@ -161,6 +163,9 @@ public class ScriptFacade extends WegasAbstractFacade {
     @Inject
     private RequestManager requestManager;
 
+    @Inject
+    private Xapi xapi;
+
     @Resource(lookup = "timeoutExecutorService")
     private ManagedExecutorService timeoutExecutorService;
 
@@ -209,6 +214,7 @@ public class ScriptFacade extends WegasAbstractFacade {
         putBinding(bindings, "RequestManager", RequestManagerI.class, requestManager);
         putBinding(bindings, "Event", ScriptEventFacadeI.class, event);
         putBinding(bindings, "DelayedEvent", DelayedScriptEventFacadeI.class, delayedEvent);
+        putBinding(bindings, "xapi", XapiI.class, xapi);
 
         bindings.put("ErrorManager", new WegasErrorMessageManager());    // Inject the MessageErrorManager
 
@@ -256,8 +262,10 @@ public class ScriptFacade extends WegasAbstractFacade {
      * @return
      * @throws ScriptException
      */
-    public Object nakedEval(String script, Map<String, Object> args) throws ScriptException {
-        ScriptContext ctx = new SimpleScriptContext();
+    public Object nakedEval(String script, Map<String, Object> args, ScriptContext ctx) throws ScriptException {
+        if (ctx == null) {
+            ctx = new SimpleScriptContext();
+        }
         if (args != null) {
             for (Entry<String, Object> arg : args.entrySet()) {
                 if (arg.getValue() != null) {
@@ -267,6 +275,21 @@ public class ScriptFacade extends WegasAbstractFacade {
         }
 
         return engine.eval(script, ctx);
+    }
+
+    public Object nakedEval(CompiledScript script, Map<String, Object> args, ScriptContext ctx) throws ScriptException {
+        if (ctx == null) {
+            ctx = new SimpleScriptContext();
+        }
+        if (args != null) {
+            for (Entry<String, Object> arg : args.entrySet()) {
+                if (arg.getValue() != null) {
+                    ctx.getBindings(ScriptContext.ENGINE_SCOPE).put(arg.getKey(), arg.getValue());
+                }
+            }
+        }
+
+        return script.eval(ctx);
     }
 
     /**
@@ -304,7 +327,7 @@ public class ScriptFacade extends WegasAbstractFacade {
                 try (
                         java.io.FileInputStream fis = new FileInputStream(f);
                         java.io.InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8)) {
-                    staticCache.putIfAbsent(cacheFileName, ((Compilable) engine).compile(isr));
+                    staticCache.putIfAbsent(cacheFileName, this.compile(isr));
                 } catch (IOException e) {
                     logger.warn("File {} was not found", f.getPath());
                 } catch (ScriptException ex) {
@@ -321,6 +344,10 @@ public class ScriptFacade extends WegasAbstractFacade {
                 throw new WegasScriptException(scriptURI, ex.getMessage());
             }
         }
+    }
+
+    public CompiledScript compile(Reader script) throws ScriptException {
+        return ((Compilable) engine).compile(script);
     }
 
     public void clearCache() {

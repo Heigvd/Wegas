@@ -12,6 +12,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wegas.core.Helper;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.patch.WegasEntityPatch;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -20,12 +23,13 @@ import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
-import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
 import javax.persistence.Transient;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 @MappedSuperclass
 //@Cache(coordinationType = CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS)
-public abstract class AbstractEntity implements Serializable, Cloneable, WithPermission {
+public abstract class AbstractEntity implements Serializable, Mergeable, WithPermission {
 
     private static final long serialVersionUID = -2538440276749623728L;
 
@@ -64,12 +68,120 @@ public abstract class AbstractEntity implements Serializable, Cloneable, WithPer
      */
     abstract public Long getId();
 
+    @WegasEntityProperty(initOnly = true)
+    //@JsonView(Views.InternalI.class)
+    private String refId;
+
     /**
-     * Merge other into this
+     * Get entity cross-gamemodel identifier
      *
-     * @param other the entity to copy values from
+     * @return
      */
-    public abstract void merge(AbstractEntity other);
+    @Override
+    public String getRefId() {
+        return refId;
+    }
+
+    @PrePersist
+    public void assertRefId() {
+        if (Helper.isNullOrEmpty(refId)) {
+            if (this.getId() == null) {
+                logger.error("ID SHOULD NOT BE NULL");
+            } else {
+                this.setRefId(this.getClass().getSimpleName() + ":" + this.getId() + ":" + Helper.genToken(6));
+            }
+        }
+    }
+
+    @Override
+    public void setRefId(String refId) {
+        if (Helper.isNullOrEmpty(this.refId)) {
+            this.refId = refId;
+        }
+    }
+
+    public void forceRefId(String refId) {
+        logger.trace("ForceRefId {} => {}", this, refId);
+        this.refId = refId;
+    }
+
+    /**
+     * Default Merge. "shallow" and follow visibilities.
+     * <ul>
+     * <li>Only include default properties (includeByDefault = true)</li>
+     * <li>Ignore visibilities restrictions (eg. copy PRIVATE)</li>
+     * </ul>
+     *
+     * @param other
+     */
+    public final void merge(AbstractEntity other) {
+        WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, false);// no deep
+        logger.debug("Merge", wegasEntityPatch);
+        if (this instanceof GameModel) {
+            wegasEntityPatch.apply((GameModel) this, this); //no force
+        } else {
+            wegasEntityPatch.apply(null, this); // no force
+        }
+    }
+
+    /**
+     * Merge without forcing recursion but forcing visibilities.
+     * <ul>
+     * <li>Only include default properties (includeByDefault = true)</li>
+     * <li>Force visibilities restrictions (eg. cross-merge PRIVATE)</li>
+     * </ul>
+     *
+     * @param other
+     */
+    public final void mergeForce(AbstractEntity other) {
+        WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, false); //no deep
+        logger.debug("MergeForce", wegasEntityPatch);
+        if (this instanceof GameModel) {
+            wegasEntityPatch.applyForce((GameModel) this, this); // force
+        } else {
+            wegasEntityPatch.applyForce(null, this); // force
+        }
+    }
+
+    /**
+     * Merge including all properties and following visibilities restriction
+     * <ul>
+     * <li>Include all properties (even includeByDefault = false)</li>
+     * <li>Follow visibilities restrictions (eg. do not cross-merge PRIVATE)</li>
+     * </ul>
+     *
+     * @param other
+     */
+    public final void deepMerge(AbstractEntity other) {
+        WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, true); // deep
+        logger.debug("DeepMerge {}", wegasEntityPatch);
+
+        if (this instanceof GameModel) {
+            wegasEntityPatch.apply((GameModel) this, this);  //no force
+        } else {
+            wegasEntityPatch.apply(null, this); // no force
+        }
+    }
+
+    /**
+     * Merge including all properties and ignoring visibilities restriction
+     * <ul>
+     * <li>Include all properties (even includeByDefault = false)</li>
+     * <li>Force visibilities restrictions (eg. cross-merge PRIVATE)</li>
+     * </ul>
+     *
+     * @param other
+     */
+    public final void deepMergeForce(AbstractEntity other) {
+        WegasEntityPatch wegasEntityPatch = new WegasEntityPatch(this, other, true); // deep
+        logger.debug("DeepMerge {}", wegasEntityPatch);
+
+        if (this instanceof GameModel) {
+            wegasEntityPatch.applyForce((GameModel) this, this); // force
+        } else {
+            wegasEntityPatch.applyForce(null, this); // force
+        }
+    }
 
     @Transient
     @JsonIgnore
@@ -84,7 +196,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable, WithPer
     @Override
     public int hashCode() {
         int hash = 17;
-        hash = 31 * hash + (getId() != null ? getId().hashCode() : 0);
+        hash = 31 * hash + (getId() != null ? getId().hashCode() : super.hashCode());
         hash = 31 * hash + getClass().hashCode();
         return hash;
     }
@@ -109,61 +221,44 @@ public abstract class AbstractEntity implements Serializable, Cloneable, WithPer
 
         if (this.getClass() != object.getClass()) {                             // First, the two object shall be instances of the same class
             return false;
-        }
-
-        if (object instanceof AbstractEntity) {                                 // Then, object shall be an AbstractEntity
+        } else {
             AbstractEntity other = (AbstractEntity) object;
             return this.getId() != null && this.getId().equals(other.getId());
         }
-        return false;
     }
 
     /**
-     * Make a copy of this entity
+     * clone but skip includeByDefault=false properties
      *
-     * @return the new copied entity
+     * @return
+     *
+     * @throws java.lang.CloneNotSupportedException
      */
-    @Override
-    public AbstractEntity clone() {
-        AbstractEntity ae = null;
+    public AbstractEntity shallowClone() throws CloneNotSupportedException {
         try {
-            ae = this.getClass().newInstance();
-            ae.merge(this);
-        } catch (InstantiationException | IllegalAccessException ex) {
-            logger.error("Error during clone", ex);
+            AbstractEntity clone = this.getClass().getDeclaredConstructor().newInstance();
+            clone.mergeForce(this);
+            return clone;
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
+            throw new CloneNotSupportedException(ex.getLocalizedMessage());
         }
-        return ae;
     }
 
     /**
-     * Duplicate an entity by using Jackson Mapper and provided view
+     * clone and include skip includeByDefault=false properties
      *
-     * @param view
+     * @return
      *
-     * @return copy of this
-     *
-     * @throws IOException
+     * @throws java.lang.CloneNotSupportedException
      */
-    public AbstractEntity duplicate(Class view) throws IOException {
-        //AnonymousEntity ae = (AnonymousEntity)super.clone();
-        //AbstractEntity ae = (AbstractEntity) SerializationUtils.clone(this);
-        //ae.setId(null);
-        ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
-        String serialized = mapper.writerWithView(view).
-                writeValueAsString(this);                                       // Serialize the entity
-
-        return mapper.readValue(serialized, AbstractEntity.class);              // and deserialize it
-    }
-
-    /**
-     * Same as duplicate(Views.Export)
-     *
-     * @return copy of this
-     *
-     * @throws IOException
-     */
-    public AbstractEntity duplicate() throws IOException {
-        return this.duplicate(Views.Export.class);
+    public AbstractEntity duplicate() throws CloneNotSupportedException {
+        try {
+            AbstractEntity clone = this.getClass().getDeclaredConstructor().newInstance();
+            clone.deepMergeForce(this);
+            return clone;
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
+            throw new CloneNotSupportedException(ex.getLocalizedMessage());
+        }
     }
 
     /**

@@ -9,8 +9,10 @@ package com.wegas.core.security.persistence;
 
 import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.facebook.FacebookAccount;
@@ -35,8 +37,11 @@ import javax.persistence.*;
  })*/
 @NamedQueries({
     @NamedQuery(name = "AbstractAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND a.username = :username"),
+
     @NamedQuery(name = "AbstractAccount.findByEmail", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.email) LIKE LOWER(:email)"),
+
     @NamedQuery(name = "AbstractAccount.findByFullName", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.firstname) LIKE LOWER(:firstname) AND LOWER(a.lastname) LIKE LOWER(:lastname)"),
+
     @NamedQuery(name = "AbstractAccount.findAllNonGuests", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount")
 })
 @JsonSubTypes(value = {
@@ -73,21 +78,25 @@ public abstract class AbstractAccount extends AbstractEntity {
     //@Basic(optional = false)
     @Column(length = 100)
     //@Pattern(regexp = "^\\w+$")
+    @WegasEntityProperty
     private String username = "";
 
     /**
      *
      */
+    @WegasEntityProperty
     private String firstname;
 
     /**
      *
      */
+    @WegasEntityProperty
     private String lastname;
 
     /**
      *
      */
+    @WegasEntityProperty
     private String email = "";
 
     /**
@@ -103,14 +112,21 @@ public abstract class AbstractAccount extends AbstractEntity {
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
+    @WegasEntityProperty(ignoreNull = true)
     private Date agreedTime = null;
+
+    /**
+     * Optional remarks only visible to admins
+     */
+    @WegasEntityProperty(ignoreNull = true)
+    private String comment = "";
 
     /**
      *
      */
     @JsonView(Views.ExtendedI.class)
     @Transient
-    private Collection<Role> roles = new ArrayList<>();
+    private Collection<Role> roles = new HashSet<>();
 
     /**
      * @return the id
@@ -125,23 +141,6 @@ public abstract class AbstractAccount extends AbstractEntity {
      */
     public void setId(Long id) {
         this.id = id;
-    }
-
-    @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof AbstractAccount) {
-            AbstractAccount a = (AbstractAccount) other;
-            this.setFirstname(a.getFirstname());
-            this.setLastname(a.getLastname());
-            this.setUsername(a.getUsername());
-            this.setEmail(a.getEmail());
-            if (a.getAgreedTime() != null) {
-                // Never reset this attribute:
-                this.setAgreedTime(a.getAgreedTime());
-            }
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
-        }
     }
 
     /**
@@ -223,6 +222,20 @@ public abstract class AbstractAccount extends AbstractEntity {
     }
 
     /**
+     * @return the comment
+     */
+    public String getComment() {
+        return comment;
+    }
+
+    /**
+     * @param comment the comment to set
+     */
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    /**
      * @return the roles
      */
     public Collection<Role> getRoles() {
@@ -250,7 +263,7 @@ public abstract class AbstractAccount extends AbstractEntity {
      */
     public List<Permission> getPermissions() {
         if (this.user != null) {
-            return this.getUser().getPermissions();
+            return this.user.getPermissions();
         } else {
             return null;
         }
@@ -328,4 +341,18 @@ public abstract class AbstractAccount extends AbstractEntity {
         this.agreedTime = agreedTime != null ? new Date(agreedTime.getTime()) : null;
     }
 
+    @Override
+    public WithPermission getMergeableParent() {
+        return null;
+    }
+
+    @Override
+    public boolean belongsToProtectedGameModel() {
+        return false;
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return Visibility.INHERITED;
+    }
 }

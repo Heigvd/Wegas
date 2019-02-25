@@ -2,12 +2,12 @@ import React from 'react';
 import classnames from 'classnames';
 import TreeSelect from '../../Components/tree/TreeSelect';
 import Searchable from '../../Components/tree/searchable';
-import { getY } from '../../index';
-import { WidgetProps } from 'jsoninput/typings/types';
-import { css } from 'glamor';
-import { inputStyle } from '../string';
+import {getY} from '../../index';
+import {WidgetProps} from 'jsoninput/typings/types';
+import {css} from 'glamor';
+import {inputStyle} from '../string';
 
-const separatorCss = css({ borderTop: 'solid 1px' });
+const separatorCss = css({borderTop: 'solid 1px'});
 
 const containerCss = css({
     color: '#6A95B6',
@@ -58,6 +58,8 @@ interface ITreeSelectProps extends WidgetProps.BaseProps {
         selectable?: (item: Y.BaseCore) => boolean;
         additional: Item[];
         classFilter?: string | string[];
+        readOnly?: boolean;
+        openIfEmpty?: boolean;
         // maxLevel?: number;
         // root?: string;
         // selectableLevels?: number[];
@@ -139,11 +141,11 @@ function genVarItems(
     return items
         .map(mapItem)
         .filter(
-            i =>
-                !(
-                    i.value === undefined &&
-                    (i.items === undefined || i.items.length === 0)
-                )
+        i =>
+            !(
+                i.value === undefined &&
+                (i.items === undefined || i.items.length === 0)
+            )
         );
 }
 /**
@@ -167,11 +169,11 @@ function genItems(props: ITreeSelectProps) {
     const path = buildNamedPath(props.value);
     const add = Array.isArray(props.view.additional)
         ? props.view.additional.map((i, index) => ({
-              ...i,
-              className: classnames(i.className, {
-                  [separatorCss.toString()]: index === 0,
-              }),
-          }))
+            ...i,
+            className: classnames(i.className, {
+                [separatorCss.toString()]: index === 0,
+            }),
+        }))
         : [];
     const items = genVarItems(
         GameModelDS.getCurrentGameModel()
@@ -185,8 +187,8 @@ function genItems(props: ITreeSelectProps) {
 }
 class TreeVariableSelect extends React.Component<
     ITreeSelectProps,
-    { search: string; searching: boolean }
-> {
+    {search: string; searching: boolean}
+    > {
     public static defaultProps = {
         value: '',
     };
@@ -196,7 +198,7 @@ class TreeVariableSelect extends React.Component<
         super(props);
         this.state = {
             search: '',
-            searching: !props.value,
+            searching: Boolean(props.view.openIfEmpty) && !props.value,
         };
         this.handleOnSelect = this.handleOnSelect.bind(this);
         this.items = genItems(props);
@@ -231,86 +233,135 @@ class TreeVariableSelect extends React.Component<
         return <span className={`${iconCss} fa fa-globe `} />;
     }
     render() {
-        return (
-            <div
-                className={`${containerCss}`}
-                onBlur={ev => {
-                    const me = ev.currentTarget;
-                    setTimeout(() => {
-                        if (!me.contains(document.activeElement)) {
-                            this.setState({ searching: false });
-                        }
-                    }, 20);
-                }}
-            >
+        if (this.props.view.readOnly) {
+            return (
                 <div
-                    className={`${pathCss}`}
-                    title="Folder containing this variable"
+                    className={`${containerCss}`}
+                    onBlur={ev => {
+                        const me = ev.currentTarget;
+                        setTimeout(() => {
+                            if (!me.contains(document.activeElement)) {
+                                this.setState({searching: false});
+                            }
+                        }, 20);
+                    }}
                 >
-                    {buildLabelPath(this.props.value)}
-                </div>
-                {labelIconForVariable(this.props.value) ||
-                    this.labelIconForAdditional(this.props.value)}
-                <div style={{ display: 'inline-block', position: 'relative' }}>
-                    <input
-                        {...inputStyle}
-                        style={{
-                            // Make input long enought.
-                            minWidth:
+                    <div
+                        className={`${pathCss}`}
+                        title="Folder containing this variable"
+                    >
+                        {buildLabelPath(this.props.value)}
+                    </div>
+                    {labelIconForVariable(this.props.value) ||
+                        this.labelIconForAdditional(this.props.value)}
+                    <div style={{display: 'inline-block', position: 'relative'}}>
+                        <input
+                            {...inputStyle}
+                            style={{
+                                // Make input long enought.
+                                minWidth:
                                 (
                                     labelForVariable(this.props.value) ||
                                     this.labelForAdditional(this.props.value)
                                 ).length /
-                                    2 +
+                                2 +
                                 'rem',
-                        }}
-                        value={
-                            this.state.searching
-                                ? this.state.search
-                                : labelForVariable(this.props.value) ||
-                                  this.labelForAdditional(this.props.value)
-                        }
-                        placeholder="Please select ..."
-                        type="text"
-                        onFocus={() => this.setState({ searching: true })}
-                        onChange={ev =>
-                            this.setState({
-                                search: ev.target.value,
-                            })
-                        }
-                        onKeyDown={e => {
-                            if (e.key === 'ArrowDown') {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                if (this.tree != null) {
-                                    this.tree.focus();
-                                }
+                            }}
+                            value={
+                                this.state.searching
+                                    ? this.state.search
+                                    : labelForVariable(this.props.value) ||
+                                    this.labelForAdditional(this.props.value)
                             }
-                        }}
-                    />
-
-                    {this.state.searching ? (
-                        <div className={`${treeCss}`}>
-                            <Searchable
-                                match={match}
-                                search={this.state.search}
-                                items={this.items}
-                                render={({ items }) => (
-                                    <TreeSelect
-                                        ref={n => (this.tree = n)}
-                                        match={match}
-                                        selected={this.props.value}
-                                        items={items}
-                                        search={this.state.search}
-                                        onSelect={this.handleOnSelect}
-                                    />
-                                )}
-                            />
-                        </div>
-                    ) : null}
+                            placeholder="Please select ..."
+                            type="text"
+                            readOnly
+                        />
+                    </div>
                 </div>
-            </div>
-        );
+            );
+        } else {
+            return (
+                <div
+                    className={`${containerCss}`}
+                    onBlur={ev => {
+                        const me = ev.currentTarget;
+                        setTimeout(() => {
+                            if (!me.contains(document.activeElement)) {
+                                this.setState({searching: false});
+                            }
+                        }, 20);
+                    }}
+                >
+                    <div
+                        className={`${pathCss}`}
+                        title="Folder containing this variable"
+                    >
+                        {buildLabelPath(this.props.value)}
+                    </div>
+                    {labelIconForVariable(this.props.value) ||
+                        this.labelIconForAdditional(this.props.value)}
+                    <div style={{display: 'inline-block', position: 'relative'}}>
+                        <input
+                            {...inputStyle}
+                            style={{
+                                // Make input long enought.
+                                minWidth:
+                                (
+                                    labelForVariable(this.props.value) ||
+                                    this.labelForAdditional(this.props.value)
+                                ).length /
+                                2 +
+                                'rem',
+                            }}
+                            value={
+                                this.state.searching
+                                    ? this.state.search
+                                    : labelForVariable(this.props.value) ||
+                                    this.labelForAdditional(this.props.value)
+                            }
+                            placeholder="Please select ..."
+                            type="text"
+                            onFocus={() => this.setState({searching: true})}
+                            onChange={ev =>
+                                this.setState({
+                                    search: ev.target.value,
+                                })
+                            }
+                            onKeyDown={e => {
+                                if (e.key === 'ArrowDown') {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    if (this.tree != null) {
+                                        this.tree.focus();
+                                    }
+                                }
+                            }}
+                        />
+
+                        {this.state.searching ? (
+                            <div className={`${treeCss}`}>
+                                <Searchable
+                                    match={match}
+                                    search={this.state.search}
+                                    items={this.items}
+                                    render={({items}) => (
+                                        <TreeSelect
+                                            ref={n => (this.tree = n)}
+                                            match={match}
+                                            selected={this.props.value}
+                                            items={items}
+                                            search={this.state.search}
+                                            onSelect={this.handleOnSelect}
+                                        />
+                                    )}
+                                />
+                            </div>
+                        ) : null}
+                    </div>
+                </div>
+            );
+        }
     }
 }
 export default TreeVariableSelect;

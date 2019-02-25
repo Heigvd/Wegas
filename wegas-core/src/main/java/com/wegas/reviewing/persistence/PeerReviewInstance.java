@@ -7,11 +7,9 @@
  */
 package com.wegas.reviewing.persistence;
 
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.AcceptInjection;
-import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.util.WegasPermission;
@@ -48,18 +46,21 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
      * Current review state
      */
     @Enumerated(value = EnumType.STRING)
+    @WegasEntityProperty
     private PeerReviewDescriptor.ReviewingState reviewState = PeerReviewDescriptor.ReviewingState.NOT_STARTED;
 
     /**
      * List of review that contains feedback written by player owning this
      */
     @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty
     private List<Review> toReview = new ArrayList<>();
 
     /**
      * List of review that contains others feedback
      */
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty
     private List<Review> reviewed = new ArrayList<>();
 
     /**
@@ -96,6 +97,9 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
      */
     public void setToReview(List<Review> toReview) {
         this.toReview = toReview;
+        for (Review review : toReview){
+            review.setReviewer(this);
+        }
     }
 
     /**
@@ -122,26 +126,15 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
      */
     public void setReviewed(List<Review> reviewed) {
         this.reviewed = reviewed;
+
+        for (Review review : reviewed){
+            review.setAuthor(this);
+        }
     }
 
     public void addToReviewed(Review r) {
         this.getReviewed().add(r);
         r.setAuthor(this);
-    }
-
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a != null) {
-            if (a instanceof PeerReviewInstance) {
-                PeerReviewInstance o = (PeerReviewInstance) a;
-                super.merge(a);
-                this.setReviewState(o.getReviewState());
-                this.setReviewed(ListUtils.mergeLists(this.reviewed, o.reviewed));
-                this.setToReview(ListUtils.mergeLists(this.toReview, o.toReview));
-            } else {
-                throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-            }
-        }
     }
 
     @Override

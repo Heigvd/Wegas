@@ -7,11 +7,9 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.primitive.Enumeration;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.primitive.EnumItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +38,7 @@ public class CategorizedEvaluationDescriptor
      */
     @OneToMany(mappedBy = "parentEvaluation", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonDeserialize(using = EnumItem.ListDeserializer.class)
+    @WegasEntityProperty
     private List<EnumItem> categories = new ArrayList<>();
 
     /**
@@ -73,26 +72,19 @@ public class CategorizedEvaluationDescriptor
     }
 
     @Override
-    public void registerItem(EnumItem item) {
-        item.setParentEvaluation(this);
-    }
-
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof CategorizedEvaluationDescriptor) {
-            super.merge(a);
-            CategorizedEvaluationDescriptor o = (CategorizedEvaluationDescriptor) a;
-            // make sure to use getCategories to sort them
-            this.setCategories(ListUtils.mergeLists(this.getCategories(), o.getCategories()));
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
+    public void setContainer(EvaluationDescriptorContainer container) {
+        super.setContainer(container);
+        if (container !=null){
+            this.setCategories(categories);
         }
     }
 
     @Override
-    public Boolean containsAll(List<String> criterias) {
-        return super.containsAll(criterias)
-                || this.itemsContainsAll(criterias);
+    public void registerItem(EnumItem item) {
+        if (item.getLabel() != null && this.getContainer() != null){
+            item.getLabel().setParentDescriptor(this.getContainer().getParent());
+        }
+        item.setParentEvaluation(this);
     }
 
     @Override

@@ -9,18 +9,18 @@ package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -45,6 +45,7 @@ public class TaskInstance extends VariableInstance implements Propertable {
     /**
      *
      */
+    @WegasEntityProperty
     private boolean active = true;
     /**
      *
@@ -55,7 +56,8 @@ public class TaskInstance extends VariableInstance implements Propertable {
      *
      */
     @ElementCollection
-    private List<Integer> plannification = new ArrayList<>();
+    @WegasEntityProperty
+    private Set<Integer> plannification = new HashSet<>();
 
     @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonIgnore
@@ -75,11 +77,14 @@ public class TaskInstance extends VariableInstance implements Propertable {
      */
     @ElementCollection
     @JsonIgnore
+    @WegasEntityProperty
     private List<VariableProperty> properties = new ArrayList<>();
     /**
      *
      */
     @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    //@JoinColumn(referencedColumnName = "variableinstance_id")
+    @WegasEntityProperty
     private List<WRequirement> requirements = new ArrayList<>();
 
     /**
@@ -125,16 +130,16 @@ public class TaskInstance extends VariableInstance implements Propertable {
     }
 
     /**
-     * @return the plannification
+     * @return the planning
      */
-    public List<Integer> getPlannification() {
+    public Set<Integer> getPlannification() {
         return plannification;
     }
 
     /**
-     * @param plannification the plannification to set
+     * @param plannification the planning to set
      */
-    public void setPlannification(List<Integer> plannification) {
+    public void setPlannification(Set<Integer> plannification) {
         this.plannification = plannification;
     }
 
@@ -284,53 +289,6 @@ public class TaskInstance extends VariableInstance implements Propertable {
         req.setTaskInstance(this);
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof TaskInstance) {
-            super.merge(a);
-            TaskInstance other = (TaskInstance) a;
-            this.setActive(other.getActive());
-            //this.setDuration(other.getDuration());
-            this.setProperties(other.getProperties());
-            ListUtils.KeyExtractorI<Object, WRequirement> converter;
-            converter = new WRequirementToNameConverter();
-
-            this.setRequirements(ListUtils.mergeLists(this.getRequirements(), other.getRequirements(), converter));
-
-            /*
-            Map<String, WRequirement> reqMap = ListUtils.listAsMap(requirements, converter);
-            this.setRequirements(new ArrayList<>());
-            for (WRequirement req : other.getRequirements()) {
-                WRequirement r;
-                if (reqMap.containsKey(req.getName()) && req.getId() != null) {
-                    r = reqMap.get(req.getName());
-                    r.merge(req);
-                    this.getRequirements().add(r);
-                } else {
-                    r = new WRequirement();
-                    r.merge(req);
-                    r.setTaskInstance(this);
-                    this.getRequirements().add(r);
-                }
-            }*/
-            this.setPlannification(new ArrayList<>());
-            this.getPlannification().addAll(other.getPlannification());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
-    }
-
-    private static class WRequirementToNameConverter implements ListUtils.KeyExtractorI<Object, WRequirement> {
-
-        @Override
-        public String getKey(WRequirement item) {
-            return item.getName();
-        }
-    }
 
     @Override
     public void updateCacheOnDelete(Beanjection beans) {

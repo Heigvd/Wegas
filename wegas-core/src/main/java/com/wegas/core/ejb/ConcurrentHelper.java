@@ -9,12 +9,12 @@ package com.wegas.core.ejb;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
+import com.wegas.core.Helper;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import javax.annotation.PreDestroy;
 import javax.cache.Cache;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -238,7 +238,7 @@ public class ConcurrentHelper {
         logger.info("MyLock unlock:" +  effectiveToken);
         myLocks.remove(effectiveToken);
         if (lock.counter == 0) {
-            if (audience != null && !audience.equals("internal")) {
+            if (!Helper.isNullOrEmpty(audience) && !audience.equals("internal")) {
                 websocketFacade.sendUnLock(audience, token);
             }
             this.getLock(lock).destroy();
@@ -340,16 +340,16 @@ public class ConcurrentHelper {
      * Release all locks locked by this cluster instance
      */
     public void releaseLocalLocks() {
-        logger.error("RELEASE ALL LOCKS");
+        logger.info("RELEASE ALL LOCKS");
         this.mainLock();
         try {
             // avoid concurrent modification exception
             ArrayList<String> effectiveTokens = new ArrayList<>(myLocks);
             for (String eToken : effectiveTokens) {
-                logger.error(" * " + eToken);
+                logger.info(" * " + eToken);
                 RefCounterLock lock = locks.get(eToken);
                 if (lock != null) {
-                    logger.error("   * " + lock);
+                    logger.info("   * " + lock);
                     this.unlock(lock.token, lock.audience, true);
                 }
             }
@@ -357,7 +357,7 @@ public class ConcurrentHelper {
         } finally {
             this.mainUnlock();
         }
-        logger.error("ALL LOCKS UNLOCKED");
+        logger.info("ALL LOCKS UNLOCKED");
     }
 
     public List<String> getMyLocks() {

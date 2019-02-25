@@ -26,7 +26,6 @@ import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.test.arquillian.AbstractArquillianTest;
-import java.io.IOException;
 import javax.ejb.EJB;
 import javax.naming.NamingException;
 import org.junit.Assert;
@@ -92,10 +91,11 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         QuestionDescriptor question = createQuestion(scenario.getId(), "question", null);
 
-        ChoiceDescriptor choice = createChoice(question, "choice", null, "result",
-                new Result("result",
-                        new Script("Variable.find(gameModel, \"mynumber\").setValue(self, 10);"))
-        );
+        Result r = wegasFactory.createResult("result");
+
+        r.setImpact(new Script("Variable.find(gameModel, \"mynumber\").setValue(self, 10);"));
+
+        ChoiceDescriptor choice = createChoice(question, "choice", null, "result",r);
 
         questionDescriptorFacade.selectAndValidateChoice(choice.getId(), player.getId());            // Do reply
         assertEquals(10.0, ((NumberInstance) variableInstanceFacade.find(myNumber.getId(), player.getId())).getValue(), 0.1);
@@ -147,16 +147,14 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         QuestionDescriptor question = createQuestion(scenario.getId(), "question",
                 null);
 
+        Result r1 = wegasFactory.createResult("result");
+        r1.setImpact(new Script("Variable.find(gameModel, \"x\").add(self, 1);"));
         // but each choice is only selectable once
-        ChoiceDescriptor choice1 = createChoice(question, "choice1", 1, "result",
-                new Result("result",
-                        new Script("Variable.find(gameModel, \"x\").add(self, 1);"))
-        );
+        ChoiceDescriptor choice1 = createChoice(question, "choice1", 1, "result",r1);
 
-        ChoiceDescriptor choice2 = createChoice(question, "choice2", 1, "result",
-                new Result("result",
-                        new Script("Variable.find(gameModel, \"x\").add(self, 1);"))
-        );
+        Result r2 = wegasFactory.createResult("result");
+        r2.setImpact(new Script("Variable.find(gameModel, \"x\").add(self, 1);"));
+        ChoiceDescriptor choice2 = createChoice(question, "choice2", 1, "result", r2);
 
         assertQuestion(question.getId(), player, false);
         assertChoice(choice1.getId(), player, false, false);
@@ -205,15 +203,14 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         QuestionDescriptor question = createQuestion(scenario.getId(), "question", 2);
 
         // but choices are unlimited
-        ChoiceDescriptor choice1 = createChoice(question, "choice1", null, "result",
-                new Result("result",
-                        new Script("Variable.find(gameModel, \"x\").add(self, 1);"))
-        );
 
-        ChoiceDescriptor choice2 = createChoice(question, "choice2", null, "result",
-                new Result("result",
-                        new Script("Variable.find(gameModel, \"x\").add(self, 1);"))
-        );
+        Result r1 = wegasFactory.createResult("result");
+        r1.setImpact(new Script("Variable.find(gameModel, \"x\").add(self, 1);"));
+        ChoiceDescriptor choice1 = createChoice(question, "choice1", null, "result",r1);
+
+        Result r2 = wegasFactory.createResult("result");
+        r1.setImpact(new Script("Variable.find(gameModel, \"x\").add(self, 1);"));
+        ChoiceDescriptor choice2 = createChoice(question, "choice2", null, "result", r2);
 
         assertQuestion(question.getId(), player, false);
         assertChoice(choice1.getId(), player, false, false);
@@ -257,7 +254,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
      * of type "checkbox" with ignoration impact on one choice.
      */
     @Test
-    public void testSelectAndValidateCBX() throws IOException {
+    public void testSelectAndValidateCBX() throws Exception {
         final NumberDescriptor myNumber1 = new NumberDescriptor();              // Create a number descriptor
         myNumber1.setName("mynumber1");
         myNumber1.setDefaultInstance(new NumberInstance(0));
@@ -270,11 +267,13 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         QuestionDescriptor question = createCbxQuestion(scenario.getId(), "cbxQuestion", null, null);
 
-        ChoiceDescriptor choice1 = createChoice(question, "testChoice1", null, "result1",
-                new Result("result1", new Script("Variable.find(gameModel, \"mynumber1\").setValue(self, 10);")));
+        Result r1 = wegasFactory.createResult("result1");
+        r1.setImpact(new Script("Variable.find(gameModel, \"mynumber1\").setValue(self, 10);"));
+        ChoiceDescriptor choice1 = createChoice(question, "testChoice1", null, "result1", r1);
 
-        ChoiceDescriptor choice2 = createChoice(question, "testChoice2", null, "result1",
-                new Result("result1", null, new Script("Variable.find(gameModel, \"mynumber2\").setValue(self, 50);")));
+        Result r2 = wegasFactory.createResult("result1");
+        r2.setIgnorationImpact(new Script("Variable.find(gameModel, \"mynumber2\").setValue(self, 50);"));
+        ChoiceDescriptor choice2 = createChoice(question, "testChoice2", null, "result1", r2);
 
         login(user);
         questionDescriptorFacade.selectChoice(choice1.getId(), player.getId());
@@ -297,9 +296,9 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
     public void testRadioChocie() throws Exception {
         QuestionDescriptor question = createCbxQuestion(scenario.getId(), "question", 1, 1);
 
-        ChoiceDescriptor choice1 = createChoice(question, "choice1", null, "result", new Result("result"));
-        ChoiceDescriptor choice2 = createChoice(question, "choice2", null, "result", new Result("result", TranslatableContent.build("def", "label")));
-        ChoiceDescriptor choice3 = createChoice(question, "choice3", null, "result", new Result("result"));
+        ChoiceDescriptor choice1 = createChoice(question, "choice1", null, "result", wegasFactory.createResult("result"));
+        ChoiceDescriptor choice2 = createChoice(question, "choice2", null, "result", wegasFactory.createResult("result", TranslatableContent.build("en", "label")));
+        ChoiceDescriptor choice3 = createChoice(question, "choice3", null, "result", wegasFactory.createResult("result"));
 
         login(user);
 
@@ -347,10 +346,10 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
     public void testSelectAndValidateCBXLimit() throws Exception {
         QuestionDescriptor question = createCbxQuestion(scenario.getId(), "question", 2, 3);
 
-        ChoiceDescriptor choice1 = createChoice(question, "choice1", null, "result", new Result("result"));
-        ChoiceDescriptor choice2 = createChoice(question, "choice2", null, "result", new Result("result", TranslatableContent.build("def", "label")));
-        ChoiceDescriptor choice3 = createChoice(question, "choice3", null, "result", new Result("result"));
-        ChoiceDescriptor choice4 = createChoice(question, "choice4", null, "result", new Result("result"));
+        ChoiceDescriptor choice1 = createChoice(question, "choice1", null, "result", wegasFactory.createResult("result"));
+        ChoiceDescriptor choice2 = createChoice(question, "choice2", null, "result", wegasFactory.createResult("result", TranslatableContent.build("en", "label")));
+        ChoiceDescriptor choice3 = createChoice(question, "choice3", null, "result", wegasFactory.createResult("result"));
+        ChoiceDescriptor choice4 = createChoice(question, "choice4", null, "result", wegasFactory.createResult("result"));
 
         login(user);
 
@@ -404,8 +403,9 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         QuestionDescriptor question = createQuestion(scenario.getId(), "question", null);
 
-        ChoiceDescriptor choice = createChoice(question, "testChoice", null, "result",
-                new Result("result", new Script("Variable.find(gameModel, \"mynumber\").setValue(self, 10);")));
+        Result r =wegasFactory.createResult("result");
+        r.setImpact(new Script("Variable.find(gameModel, \"mynumber\").setValue(self, 10);"));
+        ChoiceDescriptor choice = createChoice(question, "testChoice", null, "result", r);
 
         this.wipeEmCache();
 
@@ -426,7 +426,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         ChoiceDescriptor choice = new ChoiceDescriptor();
         question.addItem(choice);
         choice.setDefaultInstance(new ChoiceInstance());
-        Result r = new Result("result");
+        Result r = wegasFactory.createResult("result");
         choice.addResult(r);
 
         choice.changeCurrentResult(choice.getDefaultInstance(), r);
@@ -447,8 +447,8 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         // Add a choice descriptor w/ 2 results
         ChoiceDescriptor choice = this.createChoice(question, "choice", null, "result",
-                new Result("result"),
-                new Result("result_2"));
+                wegasFactory.createResult("result"),
+                wegasFactory.createResult("result_2"));
 
         // And the default reply is the second
         choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
@@ -489,8 +489,8 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         QuestionDescriptor question = this.createQuestion(scenario.getId(), "question", null);
 
         ChoiceDescriptor choice = this.createChoice(question, "choice", null, "result",
-                new Result("result"),
-                new Result("result"));
+                wegasFactory.createResult("result"),
+                wegasFactory.createResult("result"));
 
         choice.getResults().remove(0);
         variableDescriptorFacade.update(choice.getId(), choice);
@@ -504,9 +504,9 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         QuestionDescriptor question = this.createQuestion(scenario.getId(), "question", null);
 
         ChoiceDescriptor choice = this.createChoice(question, "choice", null, "result1",
-                new Result("result1"),
-                new Result("result2"),
-                new Result("result3"));
+                wegasFactory.createResult("result1"),
+                wegasFactory.createResult("result2"),
+                wegasFactory.createResult("result3"));
 
         Result r2 = choice.getResultByName("result2");
 
@@ -532,9 +532,9 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         // Add a choice descriptor and 3 results
         ChoiceDescriptor choice = this.createChoice(question, "choice", null, "result_1",
-                new Result("result_1"),
-                new Result("result_2"),
-                new Result("result_3"));
+                wegasFactory.createResult("result_1"),
+                wegasFactory.createResult("result_2"),
+                wegasFactory.createResult("result_3"));
 
         choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
         ChoiceInstance instance20 = choice.getInstance(player21);
@@ -583,7 +583,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         // Add a choice descriptor and 3 results
         ChoiceDescriptor choice = this.createChoice(question, "choice", null, "result_1",
-                new Result("result_1"));
+                wegasFactory.createResult("result_1"));
 
         choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
         Assert.assertEquals(question, (QuestionDescriptor) choice.getParent());

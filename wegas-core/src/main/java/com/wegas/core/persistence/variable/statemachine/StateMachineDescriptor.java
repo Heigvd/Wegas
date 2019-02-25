@@ -7,14 +7,13 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.Scripted;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import java.util.*;
@@ -37,7 +36,7 @@ import javax.persistence.*;
                 query = "SELECT DISTINCT sm FROM StateMachineDescriptor sm WHERE sm.gameModel.id = :gameModelId"
         )
 )
-public class StateMachineDescriptor extends VariableDescriptor<StateMachineInstance> implements Scripted {
+public class StateMachineDescriptor extends VariableDescriptor<StateMachineInstance> {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -46,7 +45,8 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     @OneToMany(mappedBy = "stateMachine", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @MapKeyColumn(name = "fsm_statekey")
     @JsonView(Views.ExtendedI.class)
-    private Map<Long, State> states = new HashMap<>();
+    @WegasEntityProperty(ignoreNull = true, protectionLevel = ProtectionLevel.INHERITED)
+    private Set<State> states = new HashSet<>();
 
     /**
      *
@@ -54,35 +54,48 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     public StateMachineDescriptor() {
     }
 
-    @Override
-    public List<Script> getScripts() {
-        List<Script> ret = new ArrayList<>();
-        for (State state : this.getStates().values()) {
-            ret.addAll(state.getScripts());
-        }
-        return ret;
-    }
-
     /**
      * @return all stated mapped by index numbers
      */
-    public Map<Long, State> getStates() {
+    @JsonIgnore
+    public Set<State> getStates() {
         return states;
     }
 
+    @JsonIgnore
+    public void setStates(Set<State> states) {
+        this.states = states;
+        for (State state : states) {
+            state.setStateMachine(this);
+        }
+    }
+
+    @JsonProperty(value = "states")
+    @JsonView(Views.ExtendedI.class)
+    public Map<Long, State> getStatesAsMap() {
+        Map<Long, State> map = new HashMap<>();
+        for (State state : this.states) {
+            map.put(state.getIndex(), state);
+        }
+        return map;
+    }
+
     public State addState(Long index, State state) {
-        this.getStates().put(index, state);
+        state.setIndex(index);
         state.setStateMachine(this);
+        this.getStates().add(state);
         return state;
     }
 
     /**
      * @param states
      */
-    public void setStates(Map<Long, State> states) {
-        this.states = states;
-        for (State state : states.values()) {
-            state.setStateMachine(this);
+    @JsonProperty("states")
+    public void setStatesFromMap(Map<Long, State> states) {
+        this.states.clear();
+
+        for (Entry<Long, State> entry : states.entrySet()) {
+            this.addState(entry.getKey(), entry.getValue());
         }
     }
 
@@ -91,19 +104,6 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
         return "StateMachineDescriptor{id=" + this.getId() + ", states=" + states + '}';
     }
 
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof StateMachineDescriptor) {
-            StateMachineDescriptor smDescriptor = (StateMachineDescriptor) a;
-            if (smDescriptor instanceof TriggerDescriptor == false) {
-                // do not merge states for trigger since it has its own mechanism
-                this.mergeStates(smDescriptor.getStates());
-            }
-            super.merge(smDescriptor);
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
-    }
 
     /*
      * script methods
@@ -140,36 +140,33 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
         return !this.getInstance(p).getEnabled();
     }
 
-    private void mergeStates(Map<Long, State> newStates) {
-        for (Iterator<Entry<Long, State>> it = this.states.entrySet().iterator(); it.hasNext();) {
-            Entry<Long, State> oldState = it.next();
-            Long oldKeys = oldState.getKey();
-            if (newStates.get(oldKeys) == null) {
-                it.remove();
-            } else {
-                oldState.getValue().merge(newStates.get(oldKeys));
+    private Transition getTransitionById(Long id) {
+        for (State state : this.getStates()) {
+            for (Transition transition : state.getTransitions()) {
+                if (transition != null && transition.getId().equals(id)) {
+                    return transition;
+                }
             }
         }
-        for (Iterator<Entry<Long, State>> it = newStates.entrySet().iterator(); it.hasNext();) {
-            Entry<Long, State> newStateEntry = it.next();
-            Long newKey = newStateEntry.getKey();
-            State newState = newStateEntry.getValue();
-            // link the new state to correct (managed) stateMachine
-            newState.setStateMachine(this);
-            this.getStates().putIfAbsent(newKey, newState);
-        }
+        return null;
     }
 
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        if (super.containsAll(criterias)) {
-            return true;
-        }
-        for (State s : this.getStates().values()) {
-            if (s.containsAll(criterias)) {
+    public boolean wentThroughState(Player p, Long stateKey) {
+        List<Long> transitionHistory = this.getInstance(p).getTransitionHistory();
+
+        for (Long tId : transitionHistory) {
+            Transition t = this.getTransitionById(tId);
+            if (t.getNextStateId().equals(stateKey)) {
                 return true;
             }
         }
+
         return false;
     }
+
+
+    public boolean notWentThroughState(Player p, Long stateKey) {
+        return ! this.wentThroughState(p, stateKey);
+    }
+
 }

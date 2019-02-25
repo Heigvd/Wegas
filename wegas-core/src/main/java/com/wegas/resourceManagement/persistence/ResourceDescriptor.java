@@ -8,19 +8,17 @@
 package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.Iterator;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
+import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -44,36 +42,22 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
     /**
      *
      */
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty
     private TranslatableContent description;
     /**
      *
      */
     @ElementCollection
     @JsonIgnore
+    @WegasEntityProperty
     private List<VariableProperty> properties = new ArrayList<>();
 
     @JsonIgnore
     @Override
     public List<VariableProperty> getInternalProperties() {
         return properties;
-    }
-
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof ResourceDescriptor) {
-            super.merge(a);
-            ResourceDescriptor other = (ResourceDescriptor) a;
-            this.setDescription(TranslatableContent.merger(this.getDescription(), other.getDescription()));
-            this.setProperties(other.getProperties());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
     }
 
     /**
@@ -219,7 +203,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      * @param editable
      * @param description
      */
-    public void addOccupation(Player p, double time, Boolean editable, String description) {
+    public void addOccupation(Player p, int time, Boolean editable, String description) {
         ResourceInstance instance = this.getInstance(p);
         Occupation occupation = new Occupation();
         occupation.setDescription(description);
@@ -363,11 +347,5 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      */
     public void desactivate(Player p) {
         this.setActive(p, false);
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(getDescription(), criterias)
-                || super.containsAll(criterias);
     }
 }

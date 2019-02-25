@@ -11,10 +11,12 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wegas.core.Helper;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.aai.AaiAccount;
@@ -28,7 +30,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import javax.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +72,8 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      * RefName of player preferred language
      */
     @Column(length = 16, columnDefinition = "character varying(16) default ''::character varying")
-    private String refName;
+    @WegasEntityProperty
+    private String lang;
 
     @JsonIgnore
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
@@ -88,6 +90,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     /**
      *
      */
+    @WegasEntityProperty
     private String name;
     /**
      *
@@ -181,13 +184,6 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     }
 
     @Override
-    public void merge(AbstractEntity a) {
-        Player p = (Player) a;
-        this.setName(p.getName());
-        this.setRefName(p.getRefName());
-    }
-
-    @Override
     public Long getId() {
         return id;
     }
@@ -208,12 +204,12 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
         this.user = user;
     }
 
-    public String getRefName() {
-        return refName;
+    public String getLang() {
+        return lang != null ? lang.toUpperCase() : null;
     }
 
-    public void setRefName(String refName) {
-        this.refName = refName;
+    public void setLang(String langCode) {
+        this.lang = langCode != null ? langCode.toUpperCase() : null;
     }
 
     /**
@@ -423,24 +419,6 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     }
 
     @Override
-    public boolean equals(Object player) {
-        return super.equals(player) && this.hashCode() == player.hashCode();
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 83 * hash + Objects.hashCode(this.id);
-        //hash = 83 * hash + Objects.hashCode(this.user);
-        //hash = 83 * hash + Objects.hashCode(this.userId);
-        hash = 83 * hash + Objects.hashCode(this.name);
-        hash = 83 * hash + Objects.hashCode(this.joinTime);
-        //hash = 83 * hash + Objects.hashCode(this.team);
-        //hash = 83 * hash + Objects.hashCode(this.teamId);
-        return hash;
-    }
-
-    @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         return this.getTeam().getEntities();
     }
@@ -503,5 +481,10 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     @Override
     public WegasPermission getAssociatedWritePermission() {
         return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.PLAYER);
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return this.getTeam();
     }
 }

@@ -11,16 +11,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.Scripted;
-import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import javax.persistence.*;
 
 /**
@@ -38,7 +35,7 @@ import javax.persistence.*;
             @Index(columnList = "actiontext_id")
         }
 )
-public class Transition extends AbstractEntity implements Searchable, Scripted {
+public class Transition extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -52,6 +49,7 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
+    @WegasEntityProperty(sameEntityOnly = true)
     private Long version;
 
     public Long getVersion() {
@@ -66,11 +64,13 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
      *
      */
     @JsonView(Views.EditorI.class)
+    @WegasEntityProperty
     private Integer index = 0;
 
     /**
      *
      */
+    @WegasEntityProperty
     private Long nextStateId;
 
     @JsonIgnore
@@ -84,25 +84,19 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
     @AttributeOverrides({
         @AttributeOverride(name = "content", column
                 = @Column(name = "onTransition_content")),
-        @AttributeOverride(name = "lang", column
+        @AttributeOverride(name = "language", column
                 = @Column(name = "onTransition_language"))
     })
     @JsonView(Views.EditorI.class)
+    @WegasEntityProperty
     private Script preStateImpact;
 
     /**
      *
      */
     @Embedded
+    @WegasEntityProperty
     private Script triggerCondition;
-
-    @Override
-    public Boolean containsAll(final List<String> criterias) {
-        if (this.getPreStateImpact() != null && this.getPreStateImpact().containsAll(criterias)) {
-            return true;
-        }
-        return this.getTriggerCondition() != null && this.getTriggerCondition().containsAll(criterias);
-    }
 
     @Override
     public Long getId() {
@@ -131,17 +125,21 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
         this.state = state;
     }
 
+    @JsonView(Views.IndexI.class)
     public Long getStateId() {
         return this.getState().getId();
     }
 
+    @JsonView(Views.IndexI.class)
     public void setStateId(Long id) {
     }
 
+    @JsonView(Views.IndexI.class)
     public Long getStateMachineId() {
         return this.getState().getStateMachineId();
     }
 
+    @JsonView(Views.IndexI.class)
     public void setStateMachineId(Long id) {
     }
 
@@ -159,10 +157,17 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
         this.nextStateId = nextStateId;
     }
 
+
+    private void touchPreStateImpact(){
+        if (this.preStateImpact !=null){
+            this.preStateImpact.setParent(this, "impact");
+        }
+    }
     /**
      * @return script to execute on transition
      */
     public Script getPreStateImpact() {
+        this.touchPreStateImpact();
         return preStateImpact;
     }
 
@@ -171,20 +176,20 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
      */
     public void setPreStateImpact(Script preStateImpact) {
         this.preStateImpact = preStateImpact;
+        this.touchPreStateImpact();
     }
 
-    @Override
-    public List<Script> getScripts() {
-        List<Script> ret = new ArrayList<>();
-        ret.add(this.triggerCondition);
-        ret.add(this.preStateImpact);
-        return ret;
+    private void touchTriggerCondition(){
+        if (this.triggerCondition !=null){
+            this.triggerCondition.setParent(this, "condition");
+        }
     }
 
     /**
      * @return script to execute to know if the transition is walkable
      */
     public Script getTriggerCondition() {
+        this.touchTriggerCondition();
         return triggerCondition;
     }
 
@@ -193,25 +198,18 @@ public class Transition extends AbstractEntity implements Searchable, Scripted {
      */
     public void setTriggerCondition(Script triggerCondition) {
         this.triggerCondition = triggerCondition;
+        this.touchTriggerCondition();
     }
 
-    @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof Transition) {
-            Transition newTranstion = (Transition) other;
-            this.setVersion(newTranstion.getVersion());
-            this.setNextStateId(newTranstion.getNextStateId());
-            this.setPreStateImpact(newTranstion.getPreStateImpact());
-            this.setTriggerCondition(newTranstion.getTriggerCondition());
-            this.setIndex(newTranstion.getIndex());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
-        }
-    }
 
     @Override
     public String toString() {
         return "Transition{" + "triggerCondition=" + triggerCondition + ", nextStateId=" + nextStateId + '}';
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return this.getState();
     }
 
     @Override

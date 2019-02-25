@@ -1,110 +1,113 @@
  .form{
-    display:block;
-    position:relative;
-    @include container-fixed(32px);
-    .form__title{
-        @include make-xs-column(12, 56px);
-        margin:32px 0px 16px 0px;
-    }
-    &.form__create-scenario {
-        .ng-hide-remove {
-            animation: fadeIn .6s;
-        }
-        .ng-hide {
-            animation: fadeOut .6s;
-        }
-    }
-    .form__row{
-        display:block;
-        position:relative;
-        @include make-row();
-        margin:12px 0px;
+     display:block;
+     position:relative;
+     @include container-fixed(32px);
+     .form__title{
+         @include make-xs-column(12, 56px);
+         margin:32px 0px 16px 0px;
+     }
+     &.form__create-scenario,
+     &.form__create-model,
+     &.form__extract-model{
+         .ng-hide-remove {
+             animation: fadeIn .6s;
+         }
+         .ng-hide {
+             animation: fadeOut .6s;
+         }
+     }
 
-        &.form__row--left{
-            float:left;
-            width:auto;
-        }
-        &.form__row--right{
-            float:right;
-            width:auto;
-        }
+     .form__row{
+         display:block;
+         position:relative;
+         @include make-row();
+         margin:12px 0px;
 
-        &.form__row--with-info {
-            .form__row__info {
-                display: block;
-                padding: 0px 0px;
-                margin: 0px 0px 8px -1px;
-                color: #777777;
-                font-weight: bold;
-            }
+         &.form__row--left{
+             float:left;
+             width:auto;
+         }
+         &.form__row--right{
+             float:right;
+             width:auto;
+         }
 
-            .form__row__entry.input {
-                height: 32px;
-                line-height: 32px;
-            }
+         &.form__row--with-info {
+             .form__row__info {
+                 display: block;
+                 padding: 0px 0px;
+                 margin: 0px 0px 8px -1px;
+                 color: #777777;
+                 font-weight: bold;
+             }
 
-        }
+             .form__row__entry.input {
+                 height: 32px;
+                 line-height: 32px;
+             }
 
-        .link-same-color {
-            text-decoration:underline;
-            color:inherit;
-            font-weight: inherit;
-        }
+         }
 
-        .form__row__label{
-            display:none;
-        }
+         .link-same-color {
+             text-decoration:underline;
+             color:inherit;
+             font-weight: inherit;
+         }
 
-        .form__row__entry{
-            display:block;
-            position:relative;
-            @include make-xs-column(12);
-        }
-        .form__row__description{
-            display:block;
-            position:relative;
-            text-align:right;
-            color:$default-color-light;
-            @include make-xs-column(12);
-        }
+         .form__row__label{
+             display:none;
+         }
 
-        .form__row__btn{
-            display:block;
-            float:right;
-        }
-        .form__row__select {
-            width: 100%;
-        }
+         .form__row__entry{
+             display:block;
+             position:relative;
+             @include make-xs-column(12);
+         }
+         .form__row__description{
+             display:block;
+             position:relative;
+             text-align:right;
+             color:$default-color-light;
+             @include make-xs-column(12);
+         }
 
-        &.form__row--with-label{
-            .form__row__label{
-                display:block;
-                text-align:right;
-                @include make-xs-column(12);
-                @include make-md-column(4);
+         .form__row__btn{
+             display:block;
+             float:right;
+         }
+         .form__row__select {
+             width: 100%;
+         }
 
-                @each $size in $sizes {
-                    $size-name: nth($size, 1);
-                    $size-value: nth($size, 2);
-                    &.form__row__label--#{$size-name}{
-                        height: $size-value;
-                        padding:$size-value/3 $size-value/2;
-                        font-size: $size-value / 3;
-                        line-height: $size-value/3;
-                        border-radius: $size-value/8;
-                    }
-                }
+         &.form__row--with-label{
+             .form__row__label{
+                 display:block;
+                 text-align:right;
+                 @include make-xs-column(12);
+                 @include make-md-column(4);
 
-                &.form__row__label--reverse{
-                    color:$white;
-                }
-            }
-            .form__row__entry{
-                display:block;
-                position:relative;
-                @include make-xs-column(12);
-                @include make-md-column(8);
-            }
-        }
-    }
-}
+                 @each $size in $sizes {
+                     $size-name: nth($size, 1);
+                     $size-value: nth($size, 2);
+                     &.form__row__label--#{$size-name}{
+                         height: $size-value;
+                         padding:$size-value/3 $size-value/2;
+                         font-size: $size-value / 3;
+                         line-height: $size-value/3;
+                         border-radius: $size-value/8;
+                     }
+                 }
+
+                 &.form__row__label--reverse{
+                     color:$white;
+                 }
+             }
+             .form__row__entry{
+                 display:block;
+                 position:relative;
+                 @include make-xs-column(12);
+                 @include make-md-column(8);
+             }
+         }
+     }
+ }

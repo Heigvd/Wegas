@@ -1,5 +1,5 @@
 <div class="card__illustration illustration illustration--icon" illustration="{{team.gameIcon}}"></div>
-<div class="card__description card__description--{{ team.gameFreeForAll ? 'one-line' : 'two-lines'}}" >
+<div class="card__description" >
     <div class="line line--primary">{{team.gameName}}</div>
     <div ng-if="!team.gameFreeForAll" class="line line--secondary">{{'PLAYER-CARD-TEAM-TITLE'| translate}} "{{team.name}}"</div>
 </div>
@@ -35,6 +35,15 @@
             ng-disabled="true">
         <span class="button__label">{{'COMMONS-TEAMS-JOIN-INDIVIDUALLY-FLASH-ERROR'| translate}}</span>
     </button>
+
+    <a id="retry-{{team.id}}"
+            class="button button--small button--round button--default-reverse button--label-off button--repeat"
+            title="{{'COMMONS-TEAMS-JOIN-RETRY'| translate}}"
+            ng-click="retry(team.id)"
+            ng-disabled="true">
+        <span class="button__label">{{'COMMONS-TEAMS-JOIN-RETRY'| translate}}</span>
+    </a>
+
     <!-- leave button -->
     <a id="leave-{{team.id}}"
        class="button button--small button--round button--default-reverse button--label-off button--trash"

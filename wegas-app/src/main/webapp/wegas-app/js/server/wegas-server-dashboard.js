@@ -59,9 +59,11 @@ var WegasDashboard = (function() {
             varName: varName,
             itemType: 'variable',
             formatter: cfg.formatter,
+            transformer: cfg.transformer,
             label: cfg.label,
             index: cfg.index || Object.keys(section).length,
             sortable: cfg.sortable,
+            sortFn: cfg.sortFn,
             mapFn: cfg.mapFn,
             mapFnExtraArgs: cfg.mapFnExtraArgs
         };
@@ -166,7 +168,9 @@ var WegasDashboard = (function() {
 
                             item.label = itemCfg.label || variables[varName].descriptor.getLabel().translateOrEmpty(self);
                             item.formatter = itemCfg.formatter;
+                            item.transformer = itemCfg.transformer;
                             item.sortable = itemCfg.sortable;
+                            item.sortFn = itemCfg.sortFn;
                             item.kind = variables[varName].descriptor.getClass().getSimpleName().replaceAll("Descriptor", "").toLowerCase();
                             break;
                         default:
@@ -212,6 +216,8 @@ var WegasDashboard = (function() {
                                     teamData[id] = WegasHelper.getInboxInstanceContent(variable.instances[teamId], item.item.label, teamName);
                                 } else if (item.item.kind === "text") {
                                     teamData[id] = WegasHelper.getTextInstanceContent(variable.instances[teamId], item.item.label, teamName);
+                                } else if (item.item.kind === "object") {
+                                    teamData[id] = WegasHelper.getObjectInstanceContent(variable.instances[teamId], item.item.label, teamName)
                                 } else {
                                     teamData[id] = variable.instances[teamId].getValue();
                                 }
@@ -229,6 +235,12 @@ var WegasDashboard = (function() {
                     if (item.formatter) {
                         item.formatter = item.formatter + "";
                     }
+                    if (item.transformer) {
+                        item.transformer = item.transformer + "";
+                    }
+                    if (item.sortFn) {
+                        item.sortFn = item.sortFn + "";
+                    }
                     if (item.do) {
                         item.do = item.do + "";
                     }
@@ -242,16 +254,16 @@ var WegasDashboard = (function() {
 
     return {
         /**
-         * 
+         *
          * @param {type} varName
-         * @param {type} cfg {section = 'monitoring', dashboard = 'overview', label =varLabel, formatter, index, sortable, mapFn = function(teamId, instance, ...extraInstances), mapFnExtraArgs = [vdNanem, vdName2, ...]}
+         * @param {type} cfg {section = 'monitoring', dashboard = 'overview', label =varLabel, formatter, transformer, index, sortable, sortFn, mapFn = function(teamId, instance, ...extraInstances), mapFnExtraArgs = [vdNanem, vdName2, ...]}
          * @returns {undefined}
          */
         registerVariable: function(varName, cfg) {
             return registerVariable(varName, cfg);
         },
         /**
-         * 
+         *
          * @param {type} id
          * @param {type} cfg
          * @returns {undefined}

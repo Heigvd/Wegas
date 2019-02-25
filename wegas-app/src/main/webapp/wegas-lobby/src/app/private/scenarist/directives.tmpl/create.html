@@ -25,7 +25,7 @@
             <div class="combobox__choices">
                 <div ng-repeat="scenario in scenariomenu" class="combobox__choice" ng-class="newScenario.templateId === scenario.id ? 'selected' : ''">
                     <input type="radio" id="{{'scenario' + scenario.id}}" ng-model="newScenario.templateId" ng-value="{{scenario.id}}">
-                    <label for="{{'scenario' + scenario.id}}">{{scenario.name}}</label>
+                    <label for="{{'scenario' + scenario.id}}">{{( scenario.type === 'MODEL' ? "[Model] ": "")}} {{scenario.name}}</label>
                 </div>
             </div>
         </div>
@@ -34,7 +34,7 @@
         <div ng-if="rawscenariomenu.length <= 20">
             <select class="form__row__entry input input--small" ng-model="newScenario.templateId">
                 <option value="0" disabled>{{'SCENARIST-INDEX-ADD-SCENARIO-INPUT'| translate}}</option>
-                <option ng-repeat="scenario in scenariomenu" value="{{scenario.id}}">{{scenario.name}}</option>
+                <option ng-repeat="scenario in scenariomenu" value="{{scenario.id}}">{{( scenario.type === 'MODEL' ? "[Model] ": "")}} {{scenario.name}}</option>
             </select>
         </div>
         <div class="form__row form__row--right">

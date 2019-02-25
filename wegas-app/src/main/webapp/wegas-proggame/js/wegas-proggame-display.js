@@ -20,7 +20,53 @@ YUI.add('wegas-proggame-display', function(Y) {
         MARGIN_X = 3,
         MARGIN_Y = 2,
         TILE_DELTA = 10,
-        Wegas = Y.Wegas, ProgGameDisplay;
+        Wegas = Y.Wegas,
+        ProgGameDisplay,
+        Promise = Y.Promise,
+        ready;
+
+    /*
+     * Crafty sprites
+     */
+    ready = new Promise(function(resolve, reject) {
+        Crafty.load(
+            (function() {
+                var assets = {
+                    sprites: {},
+                };
+                assets.sprites[
+                    Wegas.app.get('base') +
+                        '/wegas-proggame/images/proggame-sprite-anim.png'
+                ] = {
+                    tile: TILESIZE,
+                    tileh: TILESIZE,
+                    map: {
+                        CharacterSprite: [0, 0],
+                        TrapSprite: [0, 9],
+                        DoorSprite: [0, 10],
+                        DoorSprite2: [0, 14],
+                        VerticalDoor: [0, 16],
+                        HorizontalDoor: [0, 18],
+                        ControllerSprite: [0, 12],
+                        PanelSprite: [5, 10],
+                        StoneSprite: [6, 10],
+                    },
+                };
+                assets.sprites[
+                    Wegas.app.get('base') +
+                        '/wegas-proggame/images/proggame-sprite-tiles_iso.png'
+                ] = {
+                    tile: 41,
+                    tileh: TILESIZE,
+                    map: { TileSprite: [0, 0] },
+                };
+                return assets;
+            })(),
+            resolve,
+            undefined,
+            reject
+        );
+    });
 
     /**
      * Level display, should handle canvas, for now renders the level as a
@@ -52,26 +98,27 @@ YUI.add('wegas-proggame-display', function(Y) {
                 marginTop: "12px",
                 marginLeft: (Math.floor(900 - pos.x) / 2) + "px"
             });
-
-            Crafty.init(pos.x, posy.y + TILE_DELTA); // Init crafty
-
-            for (i = -MARGIN_Y; i < gridH + MARGIN_Y; i += 1) { // Render tiles
-                for (j = -MARGIN_X; j < gridW + MARGIN_X; j += 1) {
-                    pos = this.getRealXYPos({x: j, y: i});
-                    pos.y = pos.y + TILE_DELTA;
-                    Crafty.e((map[i] && map[i][j] && map[i][j].y) ? "PathTile" : "EmptyTile").attr(pos);
+            ready.then(function(){
+                Crafty.init(pos.x, posy.y + TILE_DELTA); // Init crafty
+                
+                for (i = -MARGIN_Y; i < gridH + MARGIN_Y; i += 1) { // Render tiles
+                    for (j = -MARGIN_X; j < gridW + MARGIN_X; j += 1) {
+                        pos = this.getRealXYPos({x: j, y: i});
+                        pos.y = pos.y + TILE_DELTA;
+                        Crafty.e((map[i] && map[i][j] && map[i][j].y) ? "PathTile" : "EmptyTile").attr(pos);
+                    }
                 }
-            }
-
-            Y.Object.each(objects, function(cfg) { // Render objects (PC, traps, etc.)
-                pos = this.getRealXYPos(cfg); // Place it on the map
-                entity = Crafty.e(cfg.components) // Instantiate an entity
+                
+                Y.Object.each(objects, function(cfg) { // Render objects (PC, traps, etc.)
+                    pos = this.getRealXYPos(cfg); // Place it on the map
+                    entity = Crafty.e(cfg.components) // Instantiate an entity
                     .attr(Y.mix(pos, cfg.attrs));
-                if (entity.execMove) { // Allows to turn the player to the right direction
-                    entity.execMove(cfg.direction, pos);
-                }
-                this.entities[cfg.id] = entity; // Save a reference so we can look up for instances
-            }, this);
+                    if (entity.execMove) { // Allows to turn the player to the right direction
+                        entity.execMove(cfg.direction, pos);
+                    }
+                    this.entities[cfg.id] = entity; // Save a reference so we can look up for instances
+                }, this);
+            }.bind(this));
         },
         bindUI: function() {
             Y.Wegas.Facade.Variable.on("WegasScriptException", function(e) {
@@ -95,42 +142,43 @@ YUI.add('wegas-proggame-display', function(Y) {
         execute: function(command) {
             var entity, pos;
             this.allowNextCommand = true;
+            ready.then(function(){
+                switch (command.type) {
+                    case "resetLevel":
+                        Y.Object.each(command.objects, function(object) {
+                            pos = this.getRealXYPos(object);
+                            pos.h = 32;
+                            entity = this.getEntity(object.id);
+                            entity.attr(pos);
+                            if (entity.execMove) {
+                                entity.execMove(object.direction, pos);
+                            }
+                            if (typeof entity.reset === "function") {
+                                entity.reset(object.attr);
+                            }
+                        }, this);
+                        break;
 
-            switch (command.type) {
-                case "resetLevel":
-                    Y.Object.each(command.objects, function(object) {
-                        pos = this.getRealXYPos(object);
-                        pos.h = 32;
-                        entity = this.getEntity(object.id);
-                        entity.attr(pos);
-                        if (entity.execMove) {
-                            entity.execMove(object.direction, pos);
+                    case "move":
+                        entity = this.getEntity(command.id);
+                        if (entity && entity.execMove) {
+                            entity.execMove(command.dir, this.getRealXYPos(command), true);
+                            return;
                         }
-                        if (typeof entity.reset === "function") {
-                            entity.reset(object.attr);
+                        break;
+
+                    default:
+                        entity = this.getEntity(command.id);
+                        if (entity && typeof entity[command.type] === "function") {
+                            entity[command.type](command);
+                            return;
+                        } else {
+                            Y.log("No action defined for '" + command.type + "'", "warn", "Wegas.ProggameDisplay");
+                            return;
                         }
-                    }, this);
-                    break;
-
-                case "move":
-                    entity = this.getEntity(command.id);
-                    if (entity && entity.execMove) {
-                        entity.execMove(command.dir, this.getRealXYPos(command), true);
-                        return;
-                    }
-                    break;
-
-                default:
-                    entity = this.getEntity(command.id);
-                    if (entity && typeof entity[command.type] === "function") {
-                        entity[command.type](command);
-                        return;
-                    } else {
-                        Y.log("No action defined for '" + command.type + "'", "warn", "Wegas.ProggameDisplay");
-                        return;
-                    }
-            }
-            this.fire(COMMANDEXECUTED);
+                }
+                this.fire(COMMANDEXECUTED);
+            }.bind(this));
         },
         getRealXYPos: function(pos) {
             if (!pos || typeof pos.x !== "number" || typeof pos.y !== "number") {
@@ -170,25 +218,6 @@ YUI.add('wegas-proggame-display', function(Y) {
         }
     });
     Wegas.ProgGameDisplay = ProgGameDisplay;
-
-    /*
-     * Crafty sprites
-     */
-    Crafty.sprite(TILESIZE, TILESIZE, Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-anim.png', {
-        CharacterSprite: [0, 0],
-        TrapSprite: [0, 9],
-        DoorSprite: [0, 10],
-        DoorSprite2: [0, 14],
-        VerticalDoor: [0, 16],
-        HorizontalDoor: [0, 18],
-        ControllerSprite: [0, 12],
-        PanelSprite: [5, 10],
-        StoneSprite: [6, 10]
-    });
-    Crafty.sprite(41, TILESIZE, Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-tiles_iso.png', {
-        TileSprite: [0, 0]
-    });
-
     /*
      * Crafty Components
      */
@@ -603,7 +632,7 @@ YUI.add('wegas-proggame-display', function(Y) {
     });
     /**
      * TintSprite component. Should be included before the actual sprite.
-     * Browser should support Canvas.
+     * Browser must support Canvas.
      * 
      * Should extract that function in an external file.
      */
@@ -611,10 +640,11 @@ YUI.add('wegas-proggame-display', function(Y) {
     Crafty.c("TintSprite", {
         _color: "rgba(255,255,255,1)",
         init: function() {
-            this.bind("Draw", this.draw)
+            this.requires("Sprite");
+            this.bind("Draw", this.__tint)
                 .bind("RemoveComponent", function(e) {
                     if (e === "TintSprite") {
-                        this.unbind("Draw", this.draw);
+                        this.unbind("Draw", this.__tint);
                     }
                 });
         },
@@ -626,10 +656,10 @@ YUI.add('wegas-proggame-display', function(Y) {
             }
             this.__newColor = true;
             this._color = "rgba(" + col._red + "," + col._green + "," + col._blue + "," + opacity + ")";
-            this.draw();
+            this.__tint();
             return this;
         },
-        draw: function() {
+        __tint: function() {
             if (!this.__newColor) {
                 return;
             }
@@ -648,9 +678,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 ctx.save();
                 ctx.globalCompositeOperation = 'source-in';
                 ctx.fillStyle = this._color;
-                ctx.beginPath();
                 ctx.fillRect(0, 0, this.__oldImg.width, this.__oldImg.height);
-                ctx.closePath();
                 ctx.restore();
                 img.src = tmp_canvas.toDataURL();
                 this.img = img;

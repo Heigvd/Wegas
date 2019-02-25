@@ -1,22 +1,22 @@
 
 <!-- Modal header -->
 <div class="modal__header">
-	<div class="modal__illustration illustration illustration--medium illustration--icon" illustration="ICON_{{settingsIndexCtrl.infos.color}}_{{settingsIndexCtrl.infos.icon.key}}_{{settingsIndexCtrl.infos.icon.library}}"></div>
-	<h5 class="modal__title">{{settingsIndexCtrl.scenario.name}}</h5>
-	<a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="close()">
-   		<span class="button__label">{{'MODALE-CLOSE' | translate}}</span>
-	</a>
+    <div class="modal__illustration illustration illustration--medium illustration--icon" illustration="ICON_{{settingsIndexCtrl.infos.color}}_{{settingsIndexCtrl.infos.icon.key}}_{{settingsIndexCtrl.infos.icon.library}}"></div>
+    <h5 class="modal__title">{{settingsIndexCtrl.scenario.name}}</h5>
+    <a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="close()">
+           <span class="button__label">{{'MODALE-CLOSE' | translate}}</span>
+    </a>
 </div>
 
 <!-- Modal tabs -->
-<div class="modal__nav modal__nav--3tab">
-   	<a 	class="modal__nav__tab modal__nav__tab--left"
-   		ng-class="{'modal__nav__tab--active': settingsIndexCtrl.tabs.infos}"
-   		ng-click="settingsIndexCtrl.activeTab('infos')">{{'PRIVATE-MODALE-TABS-INFOS' | translate}}</a>
-   	<a 	class="modal__nav__tab modal__nav__tab--middle"
-   		ng-class="{'modal__nav__tab--active': settingsIndexCtrl.tabs.display}"
-   		ng-click="settingsIndexCtrl.activeTab('display')">{{'PRIVATE-MODALE-TABS-CUSTOMIZE' | translate}}</a>
-    <a  class="modal__nav__tab modal__nav__tab--right"
+<div class="modal__nav">
+       <a     class="modal__nav__tab"
+           ng-class="{'modal__nav__tab--active': settingsIndexCtrl.tabs.infos}"
+           ng-click="settingsIndexCtrl.activeTab('infos')">{{'PRIVATE-MODALE-TABS-INFOS' | translate}}</a>
+       <a     class="modal__nav__tab"
+           ng-class="{'modal__nav__tab--active': settingsIndexCtrl.tabs.display}"
+           ng-click="settingsIndexCtrl.activeTab('display')">{{'PRIVATE-MODALE-TABS-CUSTOMIZE' | translate}}</a>
+    <a  class="modal__nav__tab"
         ng-class="{'modal__nav__tab--active': settingsIndexCtrl.tabs.advanced}"
         ng-click="settingsIndexCtrl.activeTab('advanced')">{{'PRIVATE-MODALE-TABS-ADVANCED' | translate}}</a>
 </div>
@@ -24,26 +24,26 @@
 
 <!-- Modal content -->
     <!-- Basic informations -->
-    <div 	ng-if="settingsIndexCtrl.tabs.infos"
-    		class="modal__content"
-    		active-infos="settingsIndexCtrl.infos"
-    		check-change="settingsIndexCtrl.checkChanges"
-    		scenarist-customize-infos>
+    <div     ng-if="settingsIndexCtrl.tabs.infos"
+            class="modal__content"
+            active-infos="settingsIndexCtrl.infos"
+            check-change="settingsIndexCtrl.checkChanges"
+            scenarist-customize-infos>
     </div>
     <!-- Icon & Color -->
-    <div 	ng-if="settingsIndexCtrl.tabs.display" class="modal__content">
-    	<div
-    		class="modal__content__colors"
-    		active-color="settingsIndexCtrl.infos.color"
-    		change="settingsIndexCtrl.changeColor"
-    		scenarist-customize-colors>
-    	</div>
-    	<div
-    		class="modal__content__icons"
-    		active-icon="settingsIndexCtrl.infos.icon"
-    		change="settingsIndexCtrl.changeIcon"
-    		scenarist-customize-icons >
-    	</div>
+    <div     ng-if="settingsIndexCtrl.tabs.display" class="modal__content">
+        <div
+            class="modal__content__colors"
+            active-color="settingsIndexCtrl.infos.color"
+            change="settingsIndexCtrl.changeColor"
+            scenarist-customize-colors>
+        </div>
+        <div
+            class="modal__content__icons"
+            active-icon="settingsIndexCtrl.infos.icon"
+            change="settingsIndexCtrl.changeIcon"
+            scenarist-customize-icons >
+        </div>
     </div>
     <!-- Advanced -->
     <div    ng-if="settingsIndexCtrl.tabs.advanced"
@@ -56,11 +56,11 @@
 
 <!-- Modal tools -->
 <div class="modal__tools">
-	<p ng-if="settingsIndexCtrl.hasChanges.all" class="modal__tools__message"><i class="fa fa-warning"></i> {{'PRIVATE-MODALE-SETTINGS-NOT-SAVED-WARNING' | translate}}</p>
-	<a class="modal__tools__button button button--small button--success" ng-click="settingsIndexCtrl.save()">
-   		<span class="button__label">{{'PRIVATE-MODALE-SETTINGS-SAVE-BTN' | translate}}</span>
-	</a>
-	<a class="modal__tools__button button button--small button--default" ng-click="settingsIndexCtrl.cancel()">
-   		<span class="button__label">{{'PRIVATE-MODALE-SETTINGS-CANCEL-BTN' | translate}}</span>
-	</a>
+    <p ng-if="settingsIndexCtrl.hasChanges.all" class="modal__tools__message"><i class="fa fa-warning"></i> {{'PRIVATE-MODALE-SETTINGS-NOT-SAVED-WARNING' | translate}}</p>
+    <a class="modal__tools__button button button--small button--success" ng-click="settingsIndexCtrl.save()">
+           <span class="button__label">{{'PRIVATE-MODALE-SETTINGS-SAVE-BTN' | translate}}</span>
+    </a>
+    <a class="modal__tools__button button button--small button--default" ng-click="settingsIndexCtrl.cancel()">
+           <span class="button__label">{{'PRIVATE-MODALE-SETTINGS-CANCEL-BTN' | translate}}</span>
+    </a>
 </div>

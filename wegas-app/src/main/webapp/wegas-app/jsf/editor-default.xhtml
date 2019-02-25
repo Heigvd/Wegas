@@ -45,7 +45,7 @@
 
             <script type="text/javascript">
                 YUI().use("wegas-app", "wegas-scripteval", "wegas-websocketlistener", function(Y) {
-                    Y.namespace("Wegas.Config").ExtraTabs = [/*Tab(s) cfg {label:"label", children:[]}*/]
+                    Y.namespace("Wegas.Config").ExtraTabs = [/*Tab(s) cfg {label:"label", children:[]}*/];
 
                     var app = new Y.Wegas.App({
                         dataSources: {
@@ -179,6 +179,7 @@
                         var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(),
                             loadedPlayers = [Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id")];
                         Y.all(".wegas-title").setContent(gm.get("name"));       // Update the title
+
                         // Handle player change event
                         Y.Wegas.Facade.Game.cache.after('currentPlayerIdChange', function(e) {// Whenever the current player id changes
                             var player = Y.Wegas.Facade.Game.cache.getCurrentPlayer(),

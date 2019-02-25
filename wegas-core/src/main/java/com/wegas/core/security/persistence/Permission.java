@@ -10,10 +10,12 @@ package com.wegas.core.security.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
@@ -60,6 +62,7 @@ public class Permission extends AbstractEntity {
      */
     @Basic
     @Column(name = "permissions")
+    @WegasEntityProperty
     private String value;
     /**
      *
@@ -94,17 +97,6 @@ public class Permission extends AbstractEntity {
      */
     public Permission(String value) {
         this.value = value;
-    }
-
-    @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof Permission) {
-            Permission o = (Permission) other;
-            this.setValue(o.getValue());
-            //this.setInducedPermission(o.getInducedPermission());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
-        }
     }
 
     /**
@@ -206,5 +198,20 @@ public class Permission extends AbstractEntity {
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         return null;
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return null;
+    }
+
+    @Override
+    public boolean belongsToProtectedGameModel() {
+        return false;
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return Visibility.INHERITED;
     }
 }

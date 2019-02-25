@@ -76,6 +76,14 @@ YUI.add('wegas-button', function(Y) {
         renderUI: function() {
             Button.superclass.renderUI.apply(this, arguments);
             this.get(BOUNDINGBOX).addClass('wegas-button');
+            /**
+             * @hack backward compatibility hack
+             * 
+             * use the getter to convert untranslated / I18nV1 translation to I18nv2 translations
+             * and use the setter to set the inner html
+             * 
+             */
+            this.set("label", this.get("label"));
         },
         _getLabel: function(value) {
             return value;
@@ -186,8 +194,12 @@ YUI.add('wegas-button', function(Y) {
                     if (descriptor.get('cbx')) {
                         resolve(instance.get('active') && !instance.get('validated') ? 1 : 0); // only count if it is active
                     } else {
-                        if (instance.get('replies')) {
-                            resolve(instance.get('replies').length === 0 && !instance.get('validated') && instance.get('active') ? 1 : 0); // only count if it is active
+                        var replies = Y.Array.filter(instance.get('replies'), function(reply) {
+                            return reply.get("validated");
+                        });
+
+                        if (replies) {
+                            resolve(replies.length === 0 && !instance.get('validated') && instance.get('active') ? 1 : 0); // only count if it is active
                         } else {
                             resolve(0);
                         }
@@ -233,11 +245,7 @@ YUI.add('wegas-button', function(Y) {
          * When plugin's host is render, do sync.
          */
         bindUI: function() {
-            this.handlers.update = Wegas.Facade.Variable.after(
-                'update',
-                this.syncUI,
-                this
-                );
+            this.handlers.update = Wegas.Facade.Variable.after('update', this.syncUI, this);
             this.afterHostEvent('render', this.syncUI, this);
         },
         /**
@@ -251,11 +259,11 @@ YUI.add('wegas-button', function(Y) {
         },
         setCounterValue: function(unreadCount) {
             var bb = this.get('host').get(BOUNDINGBOX);
-                //target = bb.one('> .wegas-unreadcount');
+            //target = bb.one('> .wegas-unreadcount');
 
             if (!this.target) {
                 // If the counter span has not been rendered, do it
-                this.target = bb.appendChild('<span class="wegas-unreadcount"></span>');
+                this.target = bb.appendChild('<span class="wegas-unreadcount wegas-unreadcounter wegas-unreadcount-' + this.constructor.NS + '"></span>');
             }
 
             if (unreadCount > 0) {
@@ -264,16 +272,29 @@ YUI.add('wegas-button', function(Y) {
                     oldval = span && span.getData("value");
                 oldval = oldval ? +oldval : -1;
                 if (oldval !== unreadCount) {
-                    this.target.setContent(
-                        "<span class='value' data-value='" + unreadCount + "'>" +
+                    this.target.setContent("<span class='value' data-value='" + unreadCount + "'>" +
                         (this.get('displayValue') ? unreadCount : '') +
-                        '</span>'
-                    );
-                    bb.addClass('wegas-unreadcount');
+                        '</span>');
+                    bb.addClass('wegas-unreadcount wegas-unreadcount-' + this.constructor.NS);
+
+                    if (!this.toggled) {
+                        var nbCounter = +bb.getAttribute("data-nb-counter") || 0;
+                        bb.setAttribute("data-nb-counter", nbCounter + 1); // inform others unreadCounterss
+                        this.toggled = true;
+                    }
                 }
             } else {
                 this.target.setContent('');
-                bb.removeClass('wegas-unreadcount');
+                var nbCounter = +bb.getAttribute("data-nb-counter");
+                bb.removeClass('wegas-unreadcount-' + this.constructor.NS);
+                if (nbCounter === 1) {
+                    // was the last couter
+                    bb.removeClass('wegas-unreadcount');
+                    bb.setAttribute("data-nb-counter", 0);
+                    this.toggled = false;
+                } else if (nbCounter > 1) {
+                    bb.setAttribute("data-nb-counter", nbCounter - 1);
+                }
             }
         },
         /**
@@ -286,7 +307,6 @@ YUI.add('wegas-button', function(Y) {
                 this.handlers[k].detach();
             }
         },
-        // *** Private methods *** //
         /**
          * @function
          * @private
@@ -295,54 +315,78 @@ YUI.add('wegas-button', function(Y) {
          */
         updateCounter: function() {
             var i,
-                instance,
                 /*messages,*/ items,
                 count = 0,
                 klass,
-                list = this.get('variable.evaluated'),
+                branches = this.get('variable.evaluated'),
                 descriptor,
                 context = this,
+                branchPromises = [],
                 promises = [];
 
-            if (!list) {
+            if (!branches) {
                 return 0;
             }
 
-            if (!Y.Lang.isArray(list)) {
-                list = [list];
+            if (branches && branches.get && branches.get("@class") === "ListDescriptor") {
+                branches = branches.get("items");
             }
 
-            descriptor = list.pop();
-            while (descriptor) {
-                klass = descriptor.get('@class');
-                if (klass === 'ListDescriptor') {
-                    items = descriptor.flatten();
-                    for (i = 0; i < items.length; i = i + 1) {
-                        list.push(items[i]);
-                    }
-                } else {
-                    if (this._counters[klass]) {
-                        promises.push(
-                            new Y.Promise(function(resolve, reject) {
-                                var fcn;
-                                if (context._counters[klass] instanceof Function) {
-                                    fcn = context._counters[klass];
-                                } else {
-                                    fcn = eval('(' + context._counters[klass] + ')');
-                                }
+            if (!Y.Lang.isArray(branches)) {
+                branches = [branches];
+            }
 
-                                fcn.call(context, descriptor, descriptor.getInstance(),
-                                    function(count) {
-                                        resolve(count);
+            for (var branch in branches) {
+                var list = branches[branch];
+                if (!Y.Lang.isArray(list)) {
+                    list = [list];
+                }
+                branchPromises.push([]);
+                descriptor = list.pop();
+                while (descriptor) {
+                    klass = descriptor.get('@class');
+                    if (klass === 'ListDescriptor') {
+                        items = descriptor.flatten();
+                        for (i = 0; i < items.length; i = i + 1) {
+                            list.push(items[i]);
+                        }
+                    } else {
+                        if (this._counters[klass]) {
+                            branchPromises[branch].push(
+                                new Y.Promise(function(resolve, reject) {
+                                    var fcn;
+                                    if (context._counters[klass] instanceof Function) {
+                                        fcn = context._counters[klass];
+                                    } else {
+                                        fcn = eval('(' + context._counters[klass] + ')');
                                     }
-                                );
-                            }));
+
+                                    fcn.call(context, descriptor, descriptor.getInstance(),
+                                        function(count) {
+                                            resolve(count);
+                                        }
+                                    );
+                                }));
+                        }
                     }
+
+                    descriptor = list.pop();
                 }
 
-                descriptor = list.pop();
+                promises.push(new Y.Promise(Y.bind(function(resolve, reject) {
+                    Y.Promise.all(branchPromises[branch]).then(Y.bind(function(allCounts) {
+                        var total = 0, i;
+                        for (i = 0; i < allCounts.length; i += 1) {
+                            total += allCounts[i];
+                        }
+                        if (this.get("onePerBranch")) {
+                            resolve(total > 0 ? 1 : 0);
+                        } else {
+                            resolve(total);
+                        }
+                    }, this));
+                }, this)));
             }
-
             Y.Promise.all(promises).then(function(allCounts) {
                 var total = 0, i;
                 for (i = 0; i < allCounts.length; i += 1) {
@@ -395,6 +439,14 @@ YUI.add('wegas-button', function(Y) {
                 optional: true,
                 view: {
                     type: 'hidden'
+                }
+            },
+            onePerBranch: {
+                type: "boolean",
+                value: false,
+                view: {
+                    label: "Per subfolder",
+                    description: "Count a maximum of one for each subfolder"
                 }
             }
         }

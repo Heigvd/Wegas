@@ -10,10 +10,9 @@ package com.wegas.reviewing.persistence.evaluation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.ListUtils;
-import com.wegas.core.persistence.variable.Searchable;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
@@ -33,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @see PeerReviewDescriptor
  */
 @Entity
-public class EvaluationDescriptorContainer extends AbstractEntity implements Searchable {
+public class EvaluationDescriptorContainer extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -44,22 +43,23 @@ public class EvaluationDescriptorContainer extends AbstractEntity implements Sea
     @JsonView(Views.IndexI.class)
     private Long id;
 
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "feedback")
+    private PeerReviewDescriptor feedbacked;
+
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "fbComments")
+    private PeerReviewDescriptor commented;
+
     /**
      * List of evaluations
      */
     @OneToMany(mappedBy = "container", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
+    @WegasEntityProperty
     @NotNull
     private List<EvaluationDescriptor> evaluations = new ArrayList<>();
-
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "feedback")
-    @JsonIgnore
-    private PeerReviewDescriptor fbPeerReviewDescriptor;
-
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "fbComments")
-    @JsonIgnore
-    private PeerReviewDescriptor commentsPeerReviewDescriptor;
 
     /**
      * Empty constructor
@@ -68,28 +68,47 @@ public class EvaluationDescriptorContainer extends AbstractEntity implements Sea
         super();
     }
 
-    public PeerReviewDescriptor getFbPeerReviewDescriptor() {
-        return fbPeerReviewDescriptor;
+    public PeerReviewDescriptor getFeedbacked() {
+        return feedbacked;
     }
 
-    public void setFbPeerReviewDescriptor(PeerReviewDescriptor fbPeerReviewDescriptor) {
-        this.fbPeerReviewDescriptor = fbPeerReviewDescriptor;
+    public void setFeedbacked(PeerReviewDescriptor feedbacked) {
+        this.feedbacked = feedbacked;
+        if (this.feedbacked != null) {
+            this.setEvaluations(evaluations);
+        }
     }
 
-    public PeerReviewDescriptor getCommentsPeerReviewDescriptor() {
-        return commentsPeerReviewDescriptor;
+    public PeerReviewDescriptor getCommented() {
+        return commented;
     }
 
-    public void setCommentsPeerReviewDescriptor(PeerReviewDescriptor commentsPeerReviewDescriptor) {
-        this.commentsPeerReviewDescriptor = commentsPeerReviewDescriptor;
+    public void setCommented(PeerReviewDescriptor commented) {
+        this.commented = commented;
+        if (this.commented!= null){
+            this.setEvaluations(evaluations);
+        }
+    }
+
+    @JsonView(Views.IndexI.class)
+    public Long getParentDescriptorId() {
+        if (feedbacked != null) {
+            return feedbacked.getId();
+        } else if (commented != null) {
+            return commented.getId();
+        }
+        return null;
+    }
+
+    public void setParentDescriptorId(Long id) {
     }
 
     @JsonIgnore
-    public PeerReviewDescriptor getParent(){
-        if (this.fbPeerReviewDescriptor !=null){
-            return fbPeerReviewDescriptor;
+    public PeerReviewDescriptor getParent() {
+        if (this.feedbacked != null) {
+            return feedbacked;
         } else {
-            return commentsPeerReviewDescriptor;
+            return commented;
         }
     }
 
@@ -119,27 +138,22 @@ public class EvaluationDescriptorContainer extends AbstractEntity implements Sea
         return id;
     }
 
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof EvaluationDescriptorContainer) {
-            EvaluationDescriptorContainer other = (EvaluationDescriptorContainer) a;
-            this.setEvaluations(ListUtils.mergeLists(this.getEvaluations(), other.getEvaluations()));
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
-    }
-
     /**
      * back reference to PeerReviewDescriptor through FbPRD or CommentsPRD
      *
      * @return
      */
     private PeerReviewDescriptor getEffectiveDescriptor() {
-        if (this.getFbPeerReviewDescriptor() != null) {
-            return this.getFbPeerReviewDescriptor();
+        if (this.getFeedbacked() != null) {
+            return this.getFeedbacked();
         } else {
-            return this.getCommentsPeerReviewDescriptor();
+            return this.getCommented();
         }
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return this.getEffectiveDescriptor();
     }
 
     @Override
@@ -150,15 +164,5 @@ public class EvaluationDescriptorContainer extends AbstractEntity implements Sea
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getEffectiveDescriptor().getRequieredReadPermission();
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        for (EvaluationDescriptor ed : getEvaluations()){
-            if (ed.containsAll(criterias)){
-                return true;
-            }
-        }
-        return false;
     }
 }

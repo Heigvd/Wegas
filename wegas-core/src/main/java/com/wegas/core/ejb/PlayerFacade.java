@@ -30,7 +30,6 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import javax.ejb.EJB;
@@ -84,6 +83,9 @@ public class PlayerFacade extends BaseFacade<Player> {
     @Inject
     private RequestManager requestManager;
 
+    @Inject
+    private WebsocketFacade websocketFacade;
+
     /**
      * Create a player linked to the user identified by userId(may be null) and join the team
      * identified by teamId.
@@ -121,27 +123,31 @@ public class PlayerFacade extends BaseFacade<Player> {
         GameModel gameModel = team.getGame().getGameModel();
         List<GameModelLanguage> gmLanguages = gameModel.getLanguages();
 
-        String preferredRefName = null;
+        String preferredLang = null;
         if (languages != null && gmLanguages != null) {
             for (Locale locale : languages) {
-                GameModelLanguage lang = i18nFacade.findLanguageByCode(gameModel, locale.toLanguageTag());
+                GameModelLanguage lang = gameModel.getLanguageByCode(locale.toLanguageTag());
                 if (lang != null && lang.isActive()) {
-                    preferredRefName = lang.getRefName();
+                    preferredLang = lang.getCode();
                     break;
                 } else {
-                    lang = i18nFacade.findLanguageByCode(gameModel, locale.getLanguage());
+                    lang = gameModel.getLanguageByCode(locale.getLanguage());
                     if (lang != null && lang.isActive()) {
-                        preferredRefName = lang.getRefName();
+                        preferredLang = lang.getCode();
                         break;
                     }
                 }
             }
         }
 
-        if (Helper.isNullOrEmpty(preferredRefName)) {
-            preferredRefName = "def";
+        if (Helper.isNullOrEmpty(preferredLang)) {
+            if (gmLanguages != null && !gmLanguages.isEmpty()) {
+                preferredLang = gmLanguages.get(0).getCode();
+            } else {
+                throw new WegasErrorMessage("error", "No language");
+            }
         }
-        player.setRefName(preferredRefName);
+        player.setLang(preferredLang);
 
         if (userId != null) {
             User user = userFacade.find(userId);
@@ -590,6 +596,19 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public PlayerFacade() {
         super(Player.class);
+    }
+
+    public Player retry(Long playerId) {
+        Player p = this.find(playerId);
+        if (p.getStatus() == Status.FAILED) {
+            gameModelFacade.createAndRevivePrivateInstance(p.getGame().getGameModel(), p);
+            p.setStatus(Status.LIVE);
+
+            this.flush();
+            stateMachineFacade.runStateMachines(p);
+            websocketFacade.propagateNewPlayer(p);
+        }
+        return p;
     }
 
     /**

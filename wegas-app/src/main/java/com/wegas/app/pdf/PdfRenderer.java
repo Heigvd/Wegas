@@ -14,7 +14,6 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -48,7 +47,6 @@ import javax.ws.rs.POST;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
@@ -145,6 +143,7 @@ public class PdfRenderer implements Filter {
                 HttpServletResponse resp = (HttpServletResponse) response;
 
                 String renderType = req.getParameter("outputType");
+                String cleanHtml = req.getParameter("cleanHtml");
                 String title = req.getParameter("title");
                 String content;
 
@@ -169,15 +168,16 @@ public class PdfRenderer implements Filter {
                     content = capContent.getContent();
                 }
 
+                Tidy tidy = new Tidy();
+                tidy.setXmlOut(true);
+                tidy.setTrimEmptyElements(false);
+
+                OutputStream os = new ByteArrayOutputStream();
+
+                InputStream iStream = new StringInputStream(content);
+                tidy.parse(iStream, os);
+
                 if (renderType != null && renderType.equals("pdf")) {
-                    Tidy tidy = new Tidy();
-                    tidy.setXmlOut(true);
-
-                    OutputStream os = new ByteArrayOutputStream();
-
-                    InputStream iStream = new StringInputStream(content);
-                    tidy.parse(iStream, os);
-
                     /**
                      * Since injecting correct url within print.xhtml.h:doctype.system leads to nothing good, let's hack
                      */
@@ -234,9 +234,12 @@ public class PdfRenderer implements Filter {
                     renderer.finishPDF();
                 } else {
                     // no specific type ? -> normal processing
-
                     log("PdfRenderer:Normal output", null);
-                    resp.getOutputStream().write(content.getBytes(StandardCharsets.UTF_8));
+                    if ("true".equals(cleanHtml)) {
+                        resp.getOutputStream().write(os.toString().getBytes(StandardCharsets.UTF_8));
+                    } else {
+                        resp.getOutputStream().write(content.getBytes(StandardCharsets.UTF_8));
+                    }
                 }
             } else {
                 throw new ServletException("Not an HTTP request");
@@ -261,13 +264,13 @@ public class PdfRenderer implements Filter {
      */
     private String createHtmlDoc(String title, String body) {
         return "" //"<?xml version=\"1.0\" encoding=\"UTF-8\" ?> "
-                + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://wegas.albasim.ch/wegas-app/DTD/xhtml1-transitional.dtd\"> "
+                + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"__DTD_URL__\"> "
                 + "<html><head><meta charset=\"UTF-8\" /><meta http-equiv=\"Content-Type\" content=\"text/html\" /><title>"
                 + title
                 + "</title>"
                 + "<link rel=\"stylesheet\" type=\"text/css\" href=\"wegas-app/css/wegas-pdf-print.css\" media=\"all\" />"
                 + "<link rel=\"stylesheet\" type=\"text/css\" href=\"wegas-app/css/wegas-pdf-print-page.css\" media=\"print\" />"
-                + "</head><body style=\"font-family:Helvetica, Arial; font-size:12px\">"
+                + "</head><body class='wegas-pdf-content' style=\"font-family:Helvetica, Arial; font-size:12px\">"
                 + body
                 + "</body></html>";
     }

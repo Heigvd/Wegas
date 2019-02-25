@@ -27,8 +27,9 @@
 .yui3-menu .wegas-text {
     font-size: 11px;
     color: #6D6D6D;
-    padding: 3px 10px 3px 6px;
+    padding: 3px 10px;
     width: 100%;
+    box-sizing: border-box;
 }
 .yui3-menu .yui3-button {
     border: none;
@@ -39,12 +40,17 @@
     -webkit-box-shadow: none;
     box-shadow: none;
 
-    padding: 3px 10px 3px 10px;
+    padding: 3px 10px;
     width:100%;
     background: none;
     text-align: left;
     display: block;
 }
+
+.yui3-menu .yui3-button[class*="-hidden"] {
+    display: none;
+}
+
 .yui3-menu-content:empty::before{
     content: "Empty";
     font-style: italic;
@@ -66,23 +72,14 @@
 .yui3-skin-sam .wegas-widgetmenu-hassubmenu{
     position: relative;
 }
-.yui3-skin-sam .wegas-widgetmenu-hassubmenu.yui3-button {
-    position: relative;
-    padding-right: 20px;
-}
 .yui3-skin-sam .yui3-button.wegas-widgetmenu-hassubmenu:after {
-    display: block;
-    position: absolute;
-    right: 0px;
-    top: 12px;
-    width: 15px;
-    height: 8px;
-    content: "";
-    background: url("../../wegas-app/images/wegas-icon-toggle.png");
+    content: " \25BE";
 }
 .yui3-skin-sam .wegas-widgetmenu-hassubmenu.wegas-widgetmenu-hassubmenuright:after{
-    top: 9px;
-    background: url("../../wegas-app/images/wegas-icon-toggle.png") 0 -20px;
+    position: absolute;
+    right: 6px;
+    top: 3px;
+    content:" \25B8";
 }
 
 .yui3-menu .wegas-editor-menu-separator-above {

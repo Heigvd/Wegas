@@ -1,12 +1,12 @@
-import React from 'react';
-import { css } from 'glamor';
+import * as React from 'react';
+import {css} from 'glamor';
 import FormStyles from './form-styles';
 import commonView from '../HOC/commonView';
 import IconButton from '../Components/IconButton';
-import { AddOptionButton } from '../Script/Views/Button';
+import {AddOptionButton} from '../Script/Views/Button';
 import Menu from '../Components/Menu';
-import { WidgetProps } from 'jsoninput/typings/types';
-import { Cover } from '../Components/Cover';
+import {WidgetProps} from 'jsoninput/typings/types';
+import {Cover} from '../Components/Cover';
 import {
     SortableContainer,
     SortableElement,
@@ -18,6 +18,7 @@ const arrayStyle = css({
 });
 
 const binStyle = css({
+    // alignSelf: 'center'
     // opacity: 0,
     // transition: 'opacity .3s 100ms',
     // 'div:hover > &': {
@@ -70,6 +71,7 @@ interface IArrayView {
     tooltip?: string;
     label?: string | boolean;
     disabled?: boolean;
+    readOnly?: boolean;
     /**
      * Enable array sorting (DnD)
      */
@@ -90,7 +92,7 @@ const dragHandleStyle = css({
 });
 interface IArrayProps extends WidgetProps.ArrayProps<IArrayView> {}
 
-class Adder extends React.Component<IArrayProps, { open: boolean }> {
+class Adder extends React.Component<IArrayProps, {open: boolean}> {
     constructor(props: IArrayProps) {
         super(props);
         this.state = {
@@ -101,7 +103,7 @@ class Adder extends React.Component<IArrayProps, { open: boolean }> {
         if (Array.isArray(this.props.view.choices)) {
             return this.state.open ? (
                 <Cover
-                    onClick={() => this.setState({ open: false })}
+                    onClick={() => this.setState({open: false})}
                     zIndex={100}
                 >
                     <Menu
@@ -116,15 +118,15 @@ class Adder extends React.Component<IArrayProps, { open: boolean }> {
                     />
                 </Cover>
             ) : (
-                <AddOptionButton
-                    className={`${inlinePlusStyle}`}
-                    icon="fa fa-plus-circle"
-                    onClick={() => this.setState({ open: true })}
-                    tooltip={this.props.view.tooltip}
-                    label={this.props.view.label}
-                    labelClassName={`${optionLabelStyle}`}
-                />
-            );
+                    <AddOptionButton
+                        className={`${inlinePlusStyle}`}
+                        icon="fa fa-plus-circle"
+                        onClick={() => this.setState({open: true})}
+                        tooltip={this.props.view.tooltip}
+                        label={this.props.view.label}
+                        labelClassName={`${optionLabelStyle}`}
+                    />
+                );
         }
         const label =
             this.props.view.label === true
@@ -147,15 +149,15 @@ const DragHandle = SortableHandle(() => (
     <span className={`fa fa-bars ${dragHandleStyle}`} />
 ));
 const ChildItem = SortableElement(
-    (props: IArrayProps & { child: React.ReactNode; updateIndex: number }) => {
+    (props: IArrayProps & {child: React.ReactNode; updateIndex: number}) => {
         const valueLength = Array.isArray(props.value) ? props.value.length : 0;
-        const { minItems = 0 } = props.schema;
-        const disabled = props.view.disabled;
+        const {minItems = 0} = props.schema;
+        const disabled = props.view.disabled || props.view.readOnly;
         return (
             <div
                 className={`${
                     props.view.highlight ? highlight : ''
-                } ${listElementContainerStyle}`}
+                    } ${listElementContainerStyle}`}
             >
                 {!disabled && props.view.sortable && <DragHandle />}
                 <span className={listElementStyle.toString()}>
@@ -179,12 +181,12 @@ const ChildItem = SortableElement(
 );
 
 const SortContainer = SortableContainer(
-    ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+    ({children}: {children: React.ReactNode}) => <div>{children}</div>
 );
 function ArrayWidget(props: IArrayProps) {
     const valueLength = Array.isArray(props.value) ? props.value.length : 0;
-    const { maxItems = Infinity } = props.schema;
-    const disabled = props.view.disabled;
+    const {maxItems = Infinity} = props.schema;
+    const disabled = props.view.disabled || props.view.readOnly;
     function renderChild(child: React.ReactChild, index: number) {
         return (
             <ChildItem
@@ -203,15 +205,15 @@ function ArrayWidget(props: IArrayProps) {
         <div
             className={`${arrayStyle} ${
                 props.view.horizontal ? horizontal : ''
-            }`}
+                }`}
         >
             {maxItems > valueLength && !disabled ? (
                 <Adder {...props} />
             ) : (
-                <label className={FormStyles.biggerLabelStyle.toString()}>
-                    {label}
-                </label>
-            )}
+                    <label className={FormStyles.biggerLabelStyle.toString()}>
+                        {label}
+                    </label>
+                )}
             <SortContainer
                 useDragHandle
                 axis={props.view.horizontal ? 'xy' : 'y'}

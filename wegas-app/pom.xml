@@ -17,6 +17,7 @@
     <properties>
         <skip.yarn>${skipYarn}</skip.yarn>
         <skip.surefire.tests>${skipTests}</skip.surefire.tests>
+        <skip.yarn>${skipYarn}</skip.yarn>
         <netbeans.hint.license>license</netbeans.hint.license>
     </properties>
 
@@ -249,6 +250,7 @@
         <dependency>
             <groupId>net.sf.jtidy</groupId>
             <artifactId>jtidy</artifactId>
+            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>

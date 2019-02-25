@@ -20,6 +20,7 @@ import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Result;
+import com.wegas.test.WegasFactory;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.Arrays;
 import javax.ejb.EJB;
@@ -41,11 +42,11 @@ public class VariableDescriptorControllerTest extends AbstractArquillianTest {
         login(scenarist);
         TextDescriptor text = new TextDescriptor();
         text.setName("testText");
-        text.setLabel(TranslatableContent.build("def", "testLabel"));
+        text.setLabel(TranslatableContent.build("en", "testLabel"));
         text.setTitle("testTitle");
         text.setComments("testComments");
         TextInstance textInstance = new TextInstance();
-        textInstance.setTrValue(TranslatableContent.build("def", "instance value"));
+        textInstance.setTrValue(TranslatableContent.build("en", "instance value"));
         text.setDefaultInstance(textInstance);
         variableDescriptorFacade.create(gameModel.getId(), text);
         Assert.assertTrue(variableDescriptorController.idsContains(gameModel.getId(), "testTex").contains(text.getId()));
@@ -89,10 +90,10 @@ public class VariableDescriptorControllerTest extends AbstractArquillianTest {
 
         ChoiceDescriptor choice = new ChoiceDescriptor();
         choice.setDefaultInstance(new ChoiceInstance());
-        choice.setDescription(TranslatableContent.build("def", "Find me"));
-        Result r = new Result("Reply 1");
+        choice.setDescription(TranslatableContent.build("en", "Find me"));
+        Result r = wegasFactory.createResult("Reply 1");
         choice.addResult(r);
-        Result r2 = new Result("Reply 2");
+        Result r2 = wegasFactory.createResult("Reply 2");
         r2.setImpact(new Script("var imascript"));
         choice.addResult(r2);
         variableDescriptorFacade.createChild(question.getId(), choice);

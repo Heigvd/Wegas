@@ -15,14 +15,14 @@
 }
 
 @media print {
-    body {
+    .wegas-pdf-content {
         font-size: 10pt;
         font-family: "DejaVu Sans" ;
     }
 }
 
 @media screen {
-    body {   
+    .wegas-pdf-content {
         font-size: 10pt;
         font-family: "DejaVu Sans" ;
     }
@@ -74,7 +74,7 @@
     padding-top: 20px;
 }
 
-.header {
+.wegas-pdf-content .header {
     font-size : 0.8em;
     font-style: initial;
     color: rgb(75, 75, 75);
@@ -82,41 +82,41 @@
     font-family: "DejaVu Sans";
 }
 
-.header .scenario {
+.wegas-pdf-content .header .scenario {
     float: left;
 }
 
-.header .team {
+.wegas-pdf-content .header .team {
     float: right;
 }
 
-.header .title {
+.wegas-pdf-content .header .title {
 
 }
 
-.header .value {
+.wegas-pdf-content .header .value {
 
 }
 
-table {
+.wegas-pdf-content table {
     margin-right:auto
 }
 
-th {
+.wegas-pdf-content th {
     text-align: left;
 }
 
-td,
-th {
+.wegas-pdf-content td,
+.wegas-pdf-content th {
     padding : 0 10px;
 }
 
-th.wegas-pdf-variable-title {
+.wegas-pdf-content th.wegas-pdf-variable-title {
     padding-top:35px;
     font-size: 1.5em;
 }
 
-div.wegas-pdf-text-container span.wegas-pdf-code{
+.wegas-pdf-content div.wegas-pdf-text-container span.wegas-pdf-code{
     font-family: "DejaVu Sans Mono";
 }
 
@@ -126,7 +126,7 @@ div.wegas-pdf-content {
     position: relative; 
 }
 
-div#floatingMenuContainer {
+.wegas-pdf-content div#floatingMenuContainer {
     border: 1px dashed lightgray;
     position: fixed;
     right:10px;
@@ -134,60 +134,60 @@ div#floatingMenuContainer {
     padding: 5px;
 }
 
-div#gotoTop {
+.wegas-pdf-content div#gotoTop {
     right:0;
 }
 
-div#gotoTop img {
+.wegas-pdf-content div#gotoTop img {
     background : none;
     border: none;
     width: 24px;
 }
 
-div#floatingMenuContainer a{
+.wegas-pdf-content div#floatingMenuContainer a{
     display: block;
     text-align: right;
     font-size: 1.2em;
 }
 
 
-.mode_player div.wegas-pdf-menu {
+.wegas-pdf-content .mode_player div.wegas-pdf-menu {
     display: none;
 }
 
-div.wegas-pdf-menu a{
+.wegas-pdf-content div.wegas-pdf-menu a{
     margin-left: 4px;
 }
 
-div.wegas-pdf-columns{
+.wegas-pdf-content div.wegas-pdf-columns{
     float: left;
     width: 100%;
 }
 
-div.wegas-pdf-column{
+.wegas-pdf-content div.wegas-pdf-column{
     float: left;
 }
 
-div.wegas-pdf-pictures-collection {
+.wegas-pdf-content div.wegas-pdf-pictures-collection {
     display: flex;
 }
 
-div.wegas-pdf-picture {
+.wegas-pdf-content div.wegas-pdf-picture {
     display: block;   
 }
 
-div.wegas-pdf-picture img{
+.wegas-pdf-content div.wegas-pdf-picture img{
     margin: 4px;
     max-width: 150px;
     max-height: 200px;
 }
 
-span.wegas-pdf-message-from{
+.wegas-pdf-content div.wegas-pdf-message-from{
     float: inherit;
     clear: both;
 }
 
-span.wegas-pdf-title-image {
+.wegas-pdf-content span.wegas-pdf-title-image {
     margin: 10px;
     margin-top: 41px;
     right: 10px;
@@ -195,12 +195,11 @@ span.wegas-pdf-title-image {
     position: absolute;
 }
 
-img {
+.wegas-pdf-content img {
     background : #ededed;
-    border : 1px solid lightgrey;
 }
 
-span.wegas-pdf-title {
+.wegas-pdf-content span.wegas-pdf-title {
     display: block;
     background-color: #ddd;
     border-bottom: 1px solid #999;
@@ -213,7 +212,7 @@ span.wegas-pdf-title {
     clear: both;
 }
 
-div.wegas-pdf-text-container {
+.wegas-pdf-content div.wegas-pdf-text-container {
     /* background-color: #e9eaee; */
     display : table;
     /* border : 1px solid #353B41; */
@@ -223,31 +222,31 @@ div.wegas-pdf-text-container {
     margin: 0px 0px 4px 0px;
 }
 
-div.wegas-pdf-text-container div{
+.wegas-pdf-content div.wegas-pdf-text-container div{
     display : block;
     padding: 0px 10px;
     /* background: #fafafc; */
     /* border : 1px solid #353B41; */    
 }
 
-.wegas-pdf-WhQuestionDescriptor  .wegas-pdf-variable-container .wegas-pdf-variable-title,
-.wegas-pdf-QuestionDescriptor  .wegas-pdf-variable-container .wegas-pdf-variable-title {
+.wegas-pdf-content .wegas-pdf-WhQuestionDescriptor  .wegas-pdf-variable-container .wegas-pdf-variable-title,
+.wegas-pdf-content .wegas-pdf-QuestionDescriptor  .wegas-pdf-variable-container .wegas-pdf-variable-title {
     font-size: 1.1em;
     padding-left: 9px;
 }
 
-.wegas-pdf-WhQuestionDescriptor  .wegas-pdf-variable-container  .wegas-pdf-property-key {
+.wegas-pdf-content .wegas-pdf-WhQuestionDescriptor  .wegas-pdf-variable-container  .wegas-pdf-property-key {
     display: none;
 }
-.wegas-pdf-WhQuestionDescriptor  .wegas-pdf-variable-container  .wegas-pdf-property-value {
+.wegas-pdf-content .wegas-pdf-WhQuestionDescriptor  .wegas-pdf-variable-container  .wegas-pdf-property-value {
     padding-left: 24px;
 }
 
-.wegas-pdf-QuestionDescriptor  .wegas-pdf-variable-container  .wegas-pdf-property {
+.wegas-pdf-content .wegas-pdf-QuestionDescriptor  .wegas-pdf-variable-container  .wegas-pdf-property {
     /* padding-left: 12px; */
 }
 
-span.wegas-pdf-variable-title {
+.wegas-pdf-content span.wegas-pdf-variable-title {
     font-size: 1.2em;
     display : block;
     padding-bottom: 0px;
@@ -255,29 +254,29 @@ span.wegas-pdf-variable-title {
     color: rgb(75, 75, 75);
 }
 
-span.wegas-pdf-listdescriptor {
+.wegas-pdf-content span.wegas-pdf-listdescriptor {
     color: rgb(58, 58, 58);
 }
 
-span.wegas-pdf-variable-subtitle {
+.wegas-pdf-content span.wegas-pdf-variable-subtitle {
     font-size : 1.2em;
     display : block;
     /* padding-bottom: 10px; */
     /* padding-top: 10px; */
 }
 
-div.wegas-pdf-text-container span.wegas-pdf-code{
+.wegas-pdf-content div.wegas-pdf-text-container span.wegas-pdf-code{
     font-size: 0.8em;
     display: block;
 }
 
-div.wegas-pdf-indent-code {
+.wegas-pdf-content div.wegas-pdf-indent-code {
     padding: 13px;
     border-left: 3px dashed lightgrey;
     margin: 2px;
 }
 
-div.wegas-pdf-property {
+.wegas-pdf-content div.wegas-pdf-property {
     font-size : 1em;
     display : block;
     padding-top: 0px;
@@ -285,20 +284,20 @@ div.wegas-pdf-property {
 }
 
 
-.mode_player .wegas-pdf-QuestionDescriptor span.wegas-pdf-property-key {
+.wegas-pdf-content .mode_player .wegas-pdf-QuestionDescriptor span.wegas-pdf-property-key {
     display : none;
 }
 
 
-span.wegas-pdf-property-key {
+.wegas-pdf-content span.wegas-pdf-property-key {
     font-weight: bold;
 }
 
-.wegas-pdf-property-value-textarea p {
+.wegas-pdf-content .wegas-pdf-property-value-textarea p {
     margin : 0px
 }
 
-.wegas-pdf-property-value-textarea {
+.wegas-pdf-content .wegas-pdf-property-value-textarea {
 
     -ms-word-break: break-all;
     word-break: break-all;
@@ -312,21 +311,21 @@ span.wegas-pdf-property-key {
 }
 
 
-span.wegas-pdf-property-value-na {
+.wegas-pdf-content span.wegas-pdf-property-value-na {
     font-style : italic;
     color: #7A7A7A;
     padding: 2px;
 }
 
-.wegas-pdf-property-value {
+.wegas-pdf-content .wegas-pdf-property-value {
     font-style : italic;
 }
 
-div.wegas-pdf-folder:last-of-type {
+.wegas-pdf-content div.wegas-pdf-folder:last-of-type {
     border-bottom : none;
 }
 
-div.wegas-pdf-folder {
+.wegas-pdf-content div.wegas-pdf-folder {
     margin-left: 20px;
     display : block;
     /* border-left: 1px dashed rgb(129, 129, 129); */
@@ -336,91 +335,123 @@ div.wegas-pdf-folder {
     border-bottom: 1px dashed rgb(129, 129, 129);
 }
 
-div.wegas-pdf-message-container {
+.wegas-pdf-content div.wegas-pdf-message-container {
     padding-top: 5px;
 }
 
-div.wegas-pdf-message-container > .wegas-pdf-property,
-div.wegas-pdf-message-container .wegas-pdf-message-header{
+.wegas-pdf-content div.wegas-pdf-message-container > .wegas-pdf-property,
+.wegas-pdf-content div.wegas-pdf-message-container .wegas-pdf-message-header{
     border :1px solid grey;
     box-sizing: border-box;
     margin-left:10px;
 }
 
-div.wegas-pdf-message-container .wegas-pdf-message-header{
+.wegas-pdf-content div.wegas-pdf-message-container .wegas-pdf-message-header{
     border-bottom: none;
 }
 
-.wegas-variable-history div.wegas-pdf-message-container > .wegas-pdf-property,
-.wegas-variable-history div.wegas-pdf-message-container .wegas-pdf-message-header{
+.wegas-pdf-content .wegas-variable-history div.wegas-pdf-message-container > .wegas-pdf-property,
+.wegas-pdf-content .wegas-variable-history div.wegas-pdf-message-container .wegas-pdf-message-header{
     border: none;
 }
 
-div.wegas-pdf-message-container .wegas-pdf-message-container-title,
-div.wegas-pdf-message-container div.wegas-pdf-message-firstline {
+.wegas-pdf-content div.wegas-pdf-message-container .wegas-pdf-message-container-title,
+.wegas-pdf-content div.wegas-pdf-message-container div.wegas-pdf-message-firstline {
     padding: 0px;
 }
 
 
-div.wegas-pdf-variable-container{
+.wegas-pdf-content div.wegas-pdf-variable-container{
     padding-top: 5px;
     margin: 0px 5px 0px 5px;
 }
 
-.wegas-pdf-message-container .wegas-pdf-message-from{
+.wegas-pdf-content .wegas-pdf-message-container .wegas-pdf-message-from{
     clear:both;
     float:left;
 } 
 
-.wegas-pdf-message-container .wegas-pdf-message-header > div {
+.wegas-pdf-content .wegas-pdf-message-container .wegas-pdf-message-header > div {
     clear: both;
 }
 
-span.wegas-pdf-property-value {
+.wegas-pdf-content span.wegas-pdf-property-value {
     font-size: 1.1em;
     font-style: normal;
 }
 
-.wegas-variable-history .wegas-pdf-message-container .wegas-pdf-message-header .wegas-pdf-message-firstline .wegas-pdf-message-date {
+.wegas-pdf-content .wegas-variable-history .wegas-pdf-message-container .wegas-pdf-message-header .wegas-pdf-message-firstline .wegas-pdf-message-date {
     float:left !important;
     font-size: 1.1em;
     font-weight: 700;
 }
-
-.wegas-variable-history .wegas-pdf-message-container-title,
-.wegas-variable-history .wegas-pdf-variable-title.wegas-pdf-inboxdescriptor,
-.wegas-variable-history .wegas-pdf-message-date .wegas-pdf-property-key,
-.wegas-variable-history .wegas-pdf-message-subject,
-.wegas-variable-history .wegas-pdf-message-from {
+.wegas-pdf-content .wegas-variable-history .wegas-pdf-message-container-title,
+.wegas-pdf-content .wegas-variable-history .wegas-pdf-variable-title.wegas-pdf-inboxdescriptor,
+.wegas-pdf-content .wegas-variable-history .wegas-pdf-message-date .wegas-pdf-property-key,
+.wegas-pdf-content .wegas-variable-history .wegas-pdf-message-subject,
+.wegas-pdf-content .wegas-variable-history .wegas-pdf-message-from {
     display: none;
 }
 
-.wegas-pdf-message-container .wegas-pdf-message-header .wegas-pdf-message-subject {
+.wegas-pdf-content .wegas-pdf-message-container .wegas-pdf-message-header .wegas-pdf-message-subject {
     font-weight: bold;
 }
 
-.wegas-pdf-message-container .wegas-pdf-message-header  .wegas-pdf-message-firstline span {
+.wegas-pdf-content .wegas-pdf-message-container .wegas-pdf-message-header  .wegas-pdf-message-firstline .wegas-pdf-inline-div {
     float: left;
 }
 
-div.wegas-pdf-message-container .wegas-pdf-message-date {
+.wegas-pdf-content .wegas-pdf-message-container .wegas-pdf-message-date {
     float: right !important;
 }
 
-div.wegas-pdf-message-container div {
+.wegas-pdf-content .wegas-pdf-message-container > div {
     display: block;;
     clear: both;
 }
 
-div.wegas-pdf-variable-container {
+.wegas-pdf-content .wegas-pdf-variable-container {
     /* border-left: 1px dashed rgb(129, 129, 129); */
     /* border-bottom: 1px dashed rgb(129, 129, 129); */
 }
-div.wegas-pdf-variable-container:last-of-type {
+.wegas-pdf-content div.wegas-pdf-variable-container:last-of-type {
     border-bottom: none;
 }
 
-span.wegas-pdf-error {
+.wegas-pdf-content span.wegas-pdf-error {
     color: #f00;
     font-style: italic;
+}
+
+.wegas-pdf-content h1 {
+    page-break-before: always;
+}
+
+/* do not start with a blank page */
+body > .wegas-prettyprinted-text-directory > .wegas-prettyprinted-text:first-child > h1:first-child,
+body > .wegas-prettyprinted-text h1:first-child {
+    page-break-before: avoid;
+}
+
+.wegas-pdf-content img {
+    page-break-inside: avoid;
+}
+
+.wegas-prettyprinted-text table p {
+    padding: 0px;
+    margin: 0px;
+}
+
+.wegas-prettyprinted-text table ol,
+.wegas-prettyprinted-text table ul {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.wegas-prettyprinted-text {
+    position:relative;
+}
+
+@page{
+    margin: 45px;
 }

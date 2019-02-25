@@ -12,25 +12,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.Searchable;
+import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
+import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.io.IOException;
-import java.util.List;
 import javax.persistence.CascadeType;
-import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import jdk.nashorn.api.scripting.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.persistence.Entity;
+import java.util.List;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -39,7 +38,7 @@ import org.slf4j.LoggerFactory;
     @Index(columnList = "trvalue_id")
 })
 @Entity
-public class StringInstance extends VariableInstance implements Searchable {
+public class StringInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
 
@@ -49,28 +48,9 @@ public class StringInstance extends VariableInstance implements Searchable {
      *
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @JsonDeserialize(using = TranslationContentDeserializer.class)
+    @WegasEntityProperty
     private TranslatableContent trValue;
-
-    /**
-     *
-     */
-    public StringInstance() {
-    }
-
-    /**
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof StringInstance) {
-            StringInstance vi = (StringInstance) a;
-            super.merge(a);
-            this.setTrValue(TranslatableContent.merger(this.getTrValue(), vi.getTrValue()));
-        } else {
-            throw new WegasIncompatibleType(a + " is not instanceof StringInstance");
-        }
-    }
 
     /**
      * @return the value
@@ -116,11 +96,40 @@ public class StringInstance extends VariableInstance implements Searchable {
      * If the StringDescriptor defines some allowed values, the as-is value or
      * each string in the array must equal one of the allowed values. Otherwise,
      * a WegasErrorMessage is therown.
+     * <p>
+     * since no language is given, the first one defined in the game model will be used.
+     * This will erase all other translations.
      *
      * @param value the value to set
      */
     @JsonProperty
     public void setValue(String value) {
+        // guess lang code
+        VariableDescriptor desc = this.findDescriptor();
+        String lang = "en";
+        if (desc != null && desc.getGameModel() != null) {
+            List<GameModelLanguage> languages = desc.getGameModel().getRawLanguages();
+            if (languages != null && !languages.isEmpty()) {
+                lang = languages.get(0).getCode();
+            }
+        }
+
+        this.setValue(value, lang);
+    }
+
+    /**
+     * Value can be a string "as-is", or JSON array of string.
+     * <p>
+     * If the StringDescriptor defines some allowed values, the as-is value or
+     * each string in the array must equal one of the allowed values. Otherwise,
+     * a WegasErrorMessage is therown.
+     * <p>
+     * This will set the value for the given language. All other translations will be erased.
+     *
+     * @param value    the value to set
+     * @param langCode the language of the value
+     */
+    public void setValue(String value, String langCode) {
         VariableDescriptor vd = this.findDescriptor();
         if (vd instanceof StringDescriptor && value != null) {
             StringDescriptor sd = (StringDescriptor) vd;
@@ -132,7 +141,7 @@ public class StringInstance extends VariableInstance implements Searchable {
             }
         }
 
-        this.setTrValue(TranslatableContent.merger(this.getTrValue(), TranslatableContent.build("def", value)));
+        this.setTrValue(TranslatableContent.merger(this.getTrValue(), TranslatableContent.build(langCode, value)));
     }
 
     /**
@@ -154,10 +163,5 @@ public class StringInstance extends VariableInstance implements Searchable {
             values[0] = strValue;
         }
         return values;
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(getTrValue(), criterias);
     }
 }

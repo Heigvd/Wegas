@@ -7,8 +7,7 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.primitive.EnumItem;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,6 +26,7 @@ public class CategorizedEvaluationInstance extends EvaluationInstance {
      * the chosen category (null means un-chosen)
      */
     @Column(name = "evaluationvalue")
+    @WegasEntityProperty
     private String value;
 
     /**
@@ -54,14 +54,4 @@ public class CategorizedEvaluationInstance extends EvaluationInstance {
         }
     }
 
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof CategorizedEvaluationInstance) {
-            CategorizedEvaluationInstance o = (CategorizedEvaluationInstance) a;
-            super.merge(a);
-            this.setValue(o.getValue());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
-    }
 }

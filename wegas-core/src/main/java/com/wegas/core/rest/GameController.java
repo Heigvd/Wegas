@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -32,7 +30,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 
@@ -100,13 +97,11 @@ public class GameController {
      *
      * @return the new game with its debug team filtered out
      *
-     * @throws IOException
+     * @throws java.lang.CloneNotSupportedException
+     *
      */
     @POST
-    public Game create(@PathParam("gameModelId") Long gameModelId, Game game) throws IOException {
-        // Special instantiate permission is not handled by automatic permission system
-        SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
-
+    public Game create(@PathParam("gameModelId") Long gameModelId, Game game) throws CloneNotSupportedException {
         gameFacade.publishAndCreate(gameModelId, game);
         //@Dirty: those lines exist to get a new game pointer. Cache is messing with it
         // removing debug team will stay in cache as this game pointer is new. work around
@@ -131,9 +126,6 @@ public class GameController {
     @Path("ShadowCreate")
     @Deprecated
     public Game shadowCreate(@PathParam("gameModelId") Long gameModelId, Game entity) throws IOException {
-        // Special instantiate permission is not handled by automatic permission system
-        SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
-
         gameFacade.create(gameModelId, entity);
         return gameFacade.getGameWithoutDebugTeam(entity);
     }
@@ -146,11 +138,12 @@ public class GameController {
      *
      * @return the new game with its debug team
      *
-     * @throws IOException
+     * @throws java.lang.CloneNotSupportedException
+     *
      */
     @POST
     @Path("{gmId : [1-9][0-9]*}")
-    public Game createBis(@PathParam("gmId") Long gameModelId, Game entity) throws IOException {
+    public Game createBis(@PathParam("gmId") Long gameModelId, Game entity) throws CloneNotSupportedException {
         return this.create(gameModelId, entity);
     }
 

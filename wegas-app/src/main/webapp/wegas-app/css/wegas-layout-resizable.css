@@ -33,7 +33,7 @@
     overflow: hidden;
 }
 .yui3-skin-sam .wegas-layout-right > .yui3-widget{
-     /* margin-left:8px; */
+    /* margin-left:8px; */
 }
 .yui3-skin-sam .wegas-layout-left > .yui3-widget,
 .yui3-skin-sam .wegas-layout-center > .yui3-widget,
@@ -57,4 +57,72 @@
     background: #6AACF1;
     margin-top: 38px; /* Hide vertical bar in the tab bar */
     width: 4px;
+}
+
+.yui3-skin-sam .wegas-layout-left.minimized.hasFocus {
+    z-index: 40;
+}
+
+/* fake resze handle*/
+.yui3-skin-sam .wegas-layout-left.minimized .yui3-resize-handles-wrapper {
+    display: none;
+}
+
+.yui3-skin-sam .wegas-layout-left.minimized .yui3-tab-panel{
+    border-right: 4px solid #6AACF1 !important;
+}
+
+.yui3-skin-sam .wegas-layout-left.minimized:not(.hasFocus) .yui3-tabview-list {
+    border-right: 4px solid #6AACF1;
+    box-sizing : border-box;
+}
+
+
+.yui3-skin-sam .wegas-layout-left.minimized.hasFocus .yui3-tabview-list {
+    background-color: #efefef;
+}
+
+.yui3-skin-sam .wegas-layout-left.minimized:not(.hasFocus) {
+    width: 36px !important;/* override inline width !!! */
+}
+
+.yui3-skin-sam .wegas-layout-left.minimized:not(.hasFocus) .yui3-tabview-list {
+    position: absolute;
+    top: 36px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.yui3-skin-sam .wegas-layout-left.minimized:not(.hasFocus) .yui3-tabview-list li {
+    width: 25px !important;
+    padding-bottom: 2px;
+}
+
+.yui3-skin-sam .wegas-layout-left.minimized:not(.hasFocus) .yui3-tabview-list .wegas-minimize-tab {
+    width: 24px;
+    margin-left: 8px;
+}
+
+.yui3-skin-sam .wegas-layout-left.minimized:not(.hasFocus) .yui3-tabview-list li > * {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    padding-right: 8px !important;
+    background-color: #A7CEF6 !important;
+}
+
+.yui3-skin-sam .wegas-layout-left.minimized:not(.hasFocus) .yui3-tabview-list li:hover > * {
+    background-color: #86BDF6 !important;
+}
+
+.yui3-skin-sam .wegas-layout-left.minimized:not(.hasFocus) .yui3-tabview-panel {
+    display: none;
+}
+
+.yui3-skin-sam .wegas-layout-left.minimized.hasFocus .yui3-tabview-list .wegas-minimize-tab i:before{
+    content: "\f08d"; /* fa-pin */
+    /*content: f2d0"; /*fa-window-maximize*/
+}
+.yui3-skin-sam .wegas-layout-left.minimized:not(.hasFocus) .yui3-tabview-list .wegas-minimize-tab {
+    display:none;
 }
