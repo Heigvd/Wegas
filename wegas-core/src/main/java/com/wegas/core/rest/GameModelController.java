@@ -15,6 +15,8 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -272,13 +274,14 @@ public class GameModelController {
      */
     @GET
     @Path("{gameModelId : [1-9][0-9]*}.wgz")
-    public Response exportZIP(@PathParam("gameModelId") Long gameModelId) throws RepositoryException {
+    public Response exportZIP(@PathParam("gameModelId") Long gameModelId) throws RepositoryException, UnsupportedEncodingException {
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
 
         StreamingOutput output = gameModelFacade.zip(gameModelId);
-        String filename = gameModelFacade.find(gameModelId).getName().replaceAll("\\" + "s+", "_") + ".wgz";
+        String filename = URLEncoder.encode(gameModelFacade.find(gameModelId).getName().replaceAll("\\" + "s+", "_") + ".wgz", StandardCharsets.UTF_8.displayName());
+
         return Response.ok(output, "application/zip").
                 header("content-disposition",
                         "attachment; filename="
@@ -301,9 +304,9 @@ public class GameModelController {
     @GET
     @Produces(MediaType.APPLICATION_JSON + "; charset=utf-8") // @hack force utf-8 charset
     @Path("{entityId : [1-9][0-9]*}/{filename: .*\\.json}")
-    public Response downloadJSON(@PathParam("entityId") Long entityId, @PathParam("filename") String filename) {
+    public Response downloadJSON(@PathParam("entityId") Long entityId, @PathParam("filename") String filename) throws UnsupportedEncodingException {
         return Response.ok(this.get(entityId))
-                .header("Content-Disposition", "attachment; filename=" + filename).build();
+                .header("Content-Disposition", "attachment; filename=" + URLEncoder.encode(filename,  StandardCharsets.UTF_8.displayName())).build();
     }
 
     /**
@@ -486,4 +489,12 @@ public class GameModelController {
     public void deleteForceAll() {
         gameModelFacade.removeGameModels();
     }
+
+    @POST
+    @Path("{gameModelId: [1-9][0-9]*}/FindAndReplace")
+    public String findAndReplace(@PathParam("gameModelId") Long gameModelId,
+            FindAndReplacePayload payload) {
+        return gameModelFacade.findAndReplace(gameModelId, payload);
+    }
+
 }

@@ -101,7 +101,6 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     private Set<String> pictures = new HashSet<>();
 
 // ~~~ Sugar for scripts ~~~
-
     /**
      *
      * @param p
@@ -154,6 +153,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * One can no longer answer such a validated question.
      *
      * @param p
+     *
      * @return
      */
     public boolean getValidated(Player p) {
@@ -267,32 +267,6 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     }
 
     /**
-     *
-     * @param p
-     *
-     * @return true if the player has already answers this question
-     */
-    public boolean isReplied(Player p) {
-        QuestionInstance instance = this.getInstance(p);
-        if (this.getCbx()) {
-            return instance.isValidated();
-        } else {
-            return !instance.getReplies(p).isEmpty();
-        }
-    }
-
-    /**
-     * {@link #isReplied ...}
-     *
-     * @param p
-     *
-     * @return true if the player has not yet answers this question
-     */
-    public boolean isNotReplied(Player p) {
-        return !this.isReplied(p);
-    }
-
-    /**
      * @return the variableDescriptors
      */
     @Override
@@ -321,7 +295,57 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         if (this.getCbx()) {
             return instance.getActive() && !instance.isValidated() ? 1 : 0;
         } else {
-            return instance.getActive() && !instance.isValidated() && instance.getReplies(player).isEmpty() ? 1 : 0;
+            return instance.getActive() && !instance.isValidated() && instance.getReplies(player, true).isEmpty() ? 1 : 0;
         }
+    }
+
+    /**
+     *
+     * @param p
+     *
+     * @return true if the player has already answers this question
+     */
+    public boolean isReplied(Player p) {
+        return !this.isNotReplied(p);
+    }
+
+    /**
+     * {@link #isReplied ...}
+     *
+     * @param p
+     *
+     * @return true if the player has not yet answers this question
+     */
+    public boolean isNotReplied(Player p) {
+        QuestionInstance instance = this.getInstance(p);
+        // no validated replies at all
+        return instance.getReplies(p, true).isEmpty();
+    }
+
+    /**
+     * Is the
+     *
+     * @param p the player
+     *
+     * @return
+     */
+    public boolean isStillAnswerabled(Player p) {
+        if (this.getMaxReplies() != null) {
+            QuestionInstance qi = this.getInstance(p);
+            // there is maximum number of choice at the question level
+            int countNotIgnored = 0;
+            for (Reply r : qi.getReplies(p, true)) {
+                if (!r.getIgnored()) {
+                    countNotIgnored++;
+                }
+            }
+            // is number of not ignored and validated  > max ?
+            if (countNotIgnored >= this.getMaxReplies()) {
+                // max has been reached
+                return false;
+            }
+        }
+
+        return true;
     }
 }

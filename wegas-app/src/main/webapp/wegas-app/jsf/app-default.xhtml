@@ -9,6 +9,7 @@
         <ui:define name="page">
             <ui:insert name="app-init">
                 <c:set var="extraBodyClass" value=""/>
+                <c:set var="wegasMode" value="UNSET"/>
             </ui:insert>
 
             <h:body class="yui3-skin-sam wegas-app-default #{cookie['customstyle'].value} wegas-stdmode #{requestController.currentRoles} #{extraBodyClass}">
@@ -78,7 +79,8 @@
                         Wegas: {
                             base: "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
                             comboBase: "#{request.contextPath}/rest/combo/?v=#{wegasConfig.timestamp}&amp;",
-                            scheme: "#{request.scheme}"
+                            scheme: "#{request.scheme}",
+                            mode: "#{wegasMode}"
                         }
                     };
                 </script>

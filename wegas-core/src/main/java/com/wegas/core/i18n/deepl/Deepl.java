@@ -176,12 +176,13 @@ public class Deepl {
      * @param texts      list of texts to translate
      *
      * @return
+     * @throws java.io.UnsupportedEncodingException
      */
     public DeeplTranslations translate(Language sourceLang, Language targetLang, String... texts) throws UnsupportedEncodingException {
 
         StringBuilder sb = new StringBuilder();
         sb.append("auth_key=").append(this.key);
-        sb.append("&tag_handling=xml").append(this.key);
+        sb.append("&tag_handling=xml");
         if (sourceLang != null) {
             sb.append("&source_lang=").append(sourceLang);
         }

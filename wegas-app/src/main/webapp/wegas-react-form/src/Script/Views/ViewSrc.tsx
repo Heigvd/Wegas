@@ -27,7 +27,10 @@ class ViewSrc extends React.Component<
 > {
     constructor(props: IViewSrcProps) {
         super(props);
-        this.state = { src: false, evaluating: false };
+        this.state = {
+            src: getY().Wegas.Config.ShowImpactAsSource, // shameless hack
+            evaluating: false
+        };
         this.toggleState = this.toggleState.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.runCode = this.runCode.bind(this);

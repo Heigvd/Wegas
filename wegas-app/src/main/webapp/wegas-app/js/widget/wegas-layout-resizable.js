@@ -98,10 +98,13 @@ YUI.add('wegas-layout-resizable', function(Y) {
                 // windows is resized
                 Y.once('domready', this.selectPreview, this);
             },
-            selectPreview:function(){
+            selectPreview: function() {
                 this.syncUI();
                 var previewTab = Y.Wegas.TabView.getTab(Y.Wegas.TabView.getPreviewTabLabel());
-                previewTab && previewTab.set("selected", 2);
+                if (previewTab) {
+                    previewTab.deselectAll();
+                    previewTab.set("selected", 2);
+                }
             },
             /**
              * @function

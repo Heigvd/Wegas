@@ -8,6 +8,7 @@
 package com.wegas.core.security.jparealm;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.security.persistence.AbstractAccount;
 import javax.persistence.*;
@@ -50,7 +51,6 @@ public class JpaAccount extends AbstractAccount {
     @JsonIgnore
     private String salt;
 
-
     /**
      *
      */
@@ -90,6 +90,9 @@ public class JpaAccount extends AbstractAccount {
      */
     public void setPassword(String password) {
         this.password = password;
+        if (!Helper.isNullOrEmpty(password)) {
+            this.setPasswordHex(null); //force JPA update (password is JPA transient)
+        }
     }
 
     /**
@@ -119,5 +122,4 @@ public class JpaAccount extends AbstractAccount {
     public void setSalt(String salt) {
         this.salt = salt;
     }
-
 }

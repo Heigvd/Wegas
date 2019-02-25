@@ -28,10 +28,22 @@
     margin: 5px 20% 15px 5px;
 }
 
+.wegas-simpledialogue .talk:empty,
+.wegas-historydialog .talk:empty,
+.wegas-mcq-selector .talk:empty {
+    display: none;
+}
+
 .wegas-simpledialogue .response,
 .wegas-historydialog .response,
 .wegas-mcq-selector .response {
     text-align: right;
+}
+
+.wegas-simpledialogue .response:empty,
+.wegas-historydialog .response:empty,
+.wegas-mcq-selector .response:empty {
+    display: none;
 }
 
 .wegas-simpledialogue .dialogue .response li,

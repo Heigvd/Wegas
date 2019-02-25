@@ -27,6 +27,18 @@
             </div>
         </div>
 
+
+        <div class="admin-status">
+            <h4>
+                {{'ADMIN-INDEX-STATUS-TITLE'| translate}}
+            </h4>
+            <div ng-if="adminCtrl.i18nUsage">
+                <span class="admin-status-title">{{'ADMIN-INDEX-STATUS-I18N-USAGE'| translate}}</span>
+                <span class="admin-status-value">{{adminCtrl.i18nUsage.character_count}} / {{adminCtrl.i18nUsage.character_limit}}</span>
+            </div>
+        </div>
+
+
         <div class="admin-actions">
             <h4>
                 {{'ADMIN-INDEX-ACTIONS-TITLE'| translate}}

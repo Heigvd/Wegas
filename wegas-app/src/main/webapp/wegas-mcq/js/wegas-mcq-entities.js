@@ -59,7 +59,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     // not active or manually validated
                     return false;
                 } else {
-                    var qReplies = qInstance.get('replies');
+                    var qReplies = qInstance.getValidatedReplies();
 
                     if (qReplies) {
                         if (this.get('maxReplies')) {
@@ -79,7 +79,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             choiceI = choice.getInstance();
                             if (choiceI.get("active")) {
                                 if (choice.get("maxReplies")) {
-                                    if (choiceI.get("replies").length < choice.get("maxReplies")) {
+                                    if (choiceI.getValidatedReplies().length < choice.get("maxReplies")) {
                                         // found an answerable choice !
                                         return true;
                                     }
@@ -323,6 +323,11 @@ YUI.add('wegas-mcq-entities', function(Y) {
      * QuestionInstance mapper
      */
     Wegas.persistence.QuestionInstance = Y.Base.create("QuestionInstance", Wegas.persistence.VariableInstance, [], {
+        getValidatedReplies: function() {
+            return Y.Array.filter(this.get('replies'), function(reply) {
+                return reply.get("validated");
+            });
+        },
         getRepliesByStartTime: function(startTime) {
             var i,
                 ret = [],
@@ -335,14 +340,20 @@ YUI.add('wegas-mcq-entities', function(Y) {
             return ret;
         },
         isUnread: function() {
-            var choices, i, ci,
-                qDesc;
-            qDesc = this.getDescriptor();
-            choices = qDesc.get("items");
-            for (i in choices) {
-                ci = choices[i].getInstance();
-                if (ci.get("active") && ci.get("unread")) {
+            if (this.get("active")) {
+                if (this.get("unread")) {
                     return true;
+                } else {
+                    var choices, i, ci,
+                        qDesc;
+                    qDesc = this.getDescriptor();
+                    choices = qDesc.get("items");
+                    for (i in choices) {
+                        ci = choices[i].getInstance();
+                        if (ci.get("active") && ci.get("unread")) {
+                            return true;
+                        }
+                    }
                 }
             }
             return false;
@@ -543,7 +554,8 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 setCurrentResult: {
                     label: "set current result",
                     arguments: [
-                        SELFARG, {
+                        SELFARG,
+                        {
                             type: STRING,
                             view: {
                                 type: "entityarrayfieldselect",
@@ -983,7 +995,13 @@ YUI.add('wegas-mcq-entities', function(Y) {
     /**
      * MCQ ChoiceInstance mapper
      */
-    persistence.ChoiceInstance = Y.Base.create("ChoiceInstance", persistence.VariableInstance, [], {}, {
+    persistence.ChoiceInstance = Y.Base.create("ChoiceInstance", persistence.VariableInstance, [], {
+        getValidatedReplies: function() {
+            return Y.Array.filter(this.get('replies'), function(reply) {
+                return reply.get("validated");
+            });
+        }
+    }, {
         ATTRS: {
             "@class": {
                 value: "ChoiceInstance"
@@ -1079,6 +1097,12 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     label: 'Is ignored'
                 }
             },
+            validated: {
+                type: BOOLEAN,
+                view: {
+                    label: 'is validated'
+                }
+            },
             resultName: {
                 type: STRING,
                 view: {
@@ -1093,18 +1117,21 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             answer: {
                 type: OBJECT,
+                "transient": true,
                 view: {
                     type: HIDDEN
                 }
             },
             ignorationAnswer: {
                 type: OBJECT,
+                "transient": true,
                 view: {
                     type: HIDDEN
                 }
             },
             files: {
                 type: ARRAY,
+                "transient": true,
                 view: {
                     type: HIDDEN
                 }

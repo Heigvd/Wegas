@@ -186,7 +186,7 @@ public class Neo4jPlayerReply {
         object.put("choice", choiceDescriptor.getName());
         object.put("question", questionDescriptor.getName());
         object.put("result", reply.getResult().getName());
-        object.put("times", questionDescriptor.getInstance(player).getReplies(player).size());
+        object.put("times", questionDescriptor.getInstance(player).getReplies(player, true).size());
         if (reply.getResult().getImpact() != null) {
             object.put("impact", StringEscapeUtils.escapeEcmaScript(reply.getResult().getImpact().getContent()));
         } else {

@@ -65,12 +65,10 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     @JsonIgnore
     public void setStates(Set<State> states) {
         this.states = states;
-        for (State state : states){
+        for (State state : states) {
             state.setStateMachine(this);
         }
     }
-
-
 
     @JsonProperty(value = "states")
     @JsonView(Views.ExtendedI.class)
@@ -140,6 +138,35 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
      */
     public boolean isDisabled(Player p) {
         return !this.getInstance(p).getEnabled();
+    }
+
+    private Transition getTransitionById(Long id) {
+        for (State state : this.getStates()) {
+            for (Transition transition : state.getTransitions()) {
+                if (transition != null && transition.getId().equals(id)) {
+                    return transition;
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean wentThroughState(Player p, Long stateKey) {
+        List<Long> transitionHistory = this.getInstance(p).getTransitionHistory();
+
+        for (Long tId : transitionHistory) {
+            Transition t = this.getTransitionById(tId);
+            if (t.getNextStateId().equals(stateKey)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    public boolean notWentThroughState(Player p, Long stateKey) {
+        return ! this.wentThroughState(p, stateKey);
     }
 
 }

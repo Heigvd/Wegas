@@ -203,15 +203,13 @@ YUI.add('wegas-presence', function(Y) {
         onMessage: function(data) {
             var sender = ((pagePresence.members.me.id === data.sender) ? "me" : pagePresence.members.get(data.sender).info.name);
             data.data = Y.Escape.html(data.data);
-            if (this.lastNode && this.lastNode.one(".sender") &&
-                this.lastNode.one(".sender").get("text") === sender) {
-                this.lastNode.append('<div class="content">' + data.data + '</div>');
-                this.addToChat(this.lastNode);
-            } else {
-                this.addToChat('<div class="msg ' + (sender === "me" ? "me" : "") +
-                    '"><div class="sender">' + sender + '</div>' +
-                    '<div class="content">' + data.data + '</div></div>');
+            if (sender !== "me") {
+                Y.Wegas.Alerts.showNotification(sender + " sent a message in the chat room", {timeout: 2000});
             }
+            this.addToChat('<div class="msg ' + (sender === "me" ? "me" : "") +
+                '"><div class="sender">' + sender + " (" + (new Date()).toLocaleTimeString() + ')</div>' +
+                '<div class="content">' + data.data + '</div></div>');
+            //}
             if (this.closed) {
                 this.get(CONTENTBOX).all(".u" + data.sender).addClass("new-message");
             }

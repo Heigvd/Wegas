@@ -194,8 +194,12 @@ YUI.add('wegas-button', function(Y) {
                     if (descriptor.get('cbx')) {
                         resolve(instance.get('active') && !instance.get('validated') ? 1 : 0); // only count if it is active
                     } else {
-                        if (instance.get('replies')) {
-                            resolve(instance.get('replies').length === 0 && !instance.get('validated') && instance.get('active') ? 1 : 0); // only count if it is active
+                        var replies = Y.Array.filter(instance.get('replies'), function(reply) {
+                            return reply.get("validated");
+                        });
+
+                        if (replies) {
+                            resolve(replies.length === 0 && !instance.get('validated') && instance.get('active') ? 1 : 0); // only count if it is active
                         } else {
                             resolve(0);
                         }
@@ -241,11 +245,7 @@ YUI.add('wegas-button', function(Y) {
          * When plugin's host is render, do sync.
          */
         bindUI: function() {
-            this.handlers.update = Wegas.Facade.Variable.after(
-                'update',
-                this.syncUI,
-                this
-                );
+            this.handlers.update = Wegas.Facade.Variable.after('update', this.syncUI, this);
             this.afterHostEvent('render', this.syncUI, this);
         },
         /**
@@ -263,7 +263,7 @@ YUI.add('wegas-button', function(Y) {
 
             if (!this.target) {
                 // If the counter span has not been rendered, do it
-                this.target = bb.appendChild('<span class="wegas-unreadcount"></span>');
+                this.target = bb.appendChild('<span class="wegas-unreadcount wegas-unreadcounter wegas-unreadcount-' + this.constructor.NS + '"></span>');
             }
 
             if (unreadCount > 0) {
@@ -272,16 +272,29 @@ YUI.add('wegas-button', function(Y) {
                     oldval = span && span.getData("value");
                 oldval = oldval ? +oldval : -1;
                 if (oldval !== unreadCount) {
-                    this.target.setContent(
-                        "<span class='value' data-value='" + unreadCount + "'>" +
+                    this.target.setContent("<span class='value' data-value='" + unreadCount + "'>" +
                         (this.get('displayValue') ? unreadCount : '') +
-                        '</span>'
-                        );
-                    bb.addClass('wegas-unreadcount');
+                        '</span>');
+                    bb.addClass('wegas-unreadcount wegas-unreadcount-' + this.constructor.NS);
+
+                    if (!this.toggled) {
+                        var nbCounter = +bb.getAttribute("data-nb-counter") || 0;
+                        bb.setAttribute("data-nb-counter", nbCounter + 1); // inform others unreadCounterss
+                        this.toggled = true;
+                    }
                 }
             } else {
                 this.target.setContent('');
-                bb.removeClass('wegas-unreadcount');
+                var nbCounter = +bb.getAttribute("data-nb-counter");
+                bb.removeClass('wegas-unreadcount-' + this.constructor.NS);
+                if (nbCounter === 1) {
+                    // was the last couter
+                    bb.removeClass('wegas-unreadcount');
+                    bb.setAttribute("data-nb-counter", 0);
+                    this.toggled = false;
+                } else if (nbCounter > 1) {
+                    bb.setAttribute("data-nb-counter", nbCounter - 1);
+                }
             }
         },
         /**

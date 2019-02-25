@@ -63,7 +63,9 @@ YUI.add("wegas-simpledialogue", function(Y) {
         },
         displayText: function(textParts) {
             textParts = (textParts === null || Y.Lang.isUndefined(textParts)) ? "" : textParts;
-            this.get(CONTENTBOX).one('.dialogue .talk').setHTML("<p>" + textParts + "</p>");
+            if (textParts) {
+                this.get(CONTENTBOX).one('.dialogue .talk').setHTML("<p>" + textParts + "</p>");
+            }
         },
         displayResponse: function(availableActions) {
             var i,
@@ -73,7 +75,7 @@ YUI.add("wegas-simpledialogue", function(Y) {
                 return;
             }
 
-            if (availableActions.length === 0){
+            if (availableActions.length === 0) {
                 this.get(CONTENTBOX).one('.dialogue .response').addClass("empty");
             } else {
                 this.get(CONTENTBOX).one('.dialogue .response').removeClass("empty");

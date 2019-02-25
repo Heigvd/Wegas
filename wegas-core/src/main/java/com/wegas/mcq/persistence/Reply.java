@@ -72,6 +72,13 @@ public class Reply extends AbstractEntity implements DatedEntity {
     @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty
     private Boolean ignored = false;
+
+    /**
+     *
+     */
+    @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty
+    private Boolean validated = false;
     /**
      *
      */
@@ -106,6 +113,26 @@ public class Reply extends AbstractEntity implements DatedEntity {
      */
     public void setIgnored(Boolean ignored) {
         this.ignored = ignored;
+    }
+
+    /**
+     * Is the reply validated.
+     *
+     * impact (or ignoreationImapct in ignored rely case) of a validated reply has been applied
+     *
+     * @return
+     */
+    public Boolean isValidated() {
+        return validated;
+    }
+
+    /**
+     * Set validated
+     *
+     * @param validated
+     */
+    public void setValidated(Boolean validated) {
+        this.validated = validated;
     }
 
     @Override
@@ -219,31 +246,31 @@ public class Reply extends AbstractEntity implements DatedEntity {
     }
 
     public TranslatableContent getAnswer() {
-        if (result != null) {
+        if (result != null && this.isValidated()) {
             return result.getAnswer();
         } else {
             return null;
         }
     }
 
-    public void setAnswer(String answer) {
+    public void setAnswer(Object answer) {
         // Make Jackson happy
     }
 
     public TranslatableContent getIgnorationAnswer() {
-        if (result != null) {
+        if (result != null && this.isValidated()) {
             return result.getIgnorationAnswer();
         } else {
             return null;
         }
     }
 
-    public void setIgnorationAnswer(String answer) {
+    public void setIgnorationAnswer(Object answer) {
         // Make Jackson happy
     }
 
     public Set<String> getFiles() {
-        if (result != null) {
+        if (result != null && this.isValidated()) {
             return result.getFiles();
         } else {
             return new HashSet<>();

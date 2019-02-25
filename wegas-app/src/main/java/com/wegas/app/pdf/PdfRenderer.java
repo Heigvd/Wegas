@@ -264,7 +264,7 @@ public class PdfRenderer implements Filter {
      */
     private String createHtmlDoc(String title, String body) {
         return "" //"<?xml version=\"1.0\" encoding=\"UTF-8\" ?> "
-                + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://wegas.albasim.ch/wegas-app/DTD/xhtml1-transitional.dtd\"> "
+                + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"__DTD_URL__\"> "
                 + "<html><head><meta charset=\"UTF-8\" /><meta http-equiv=\"Content-Type\" content=\"text/html\" /><title>"
                 + title
                 + "</title>"

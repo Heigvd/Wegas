@@ -79,7 +79,7 @@ YUI.add('wegas-pageeditor', function(Y) {
 
                 /** New button **/
                 this.addButton = host.toolbar.add({
-                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                    label: "<span class=\"fa fa-plus-circle\"></span> Add",
                     visible: false
                 }).item(0);
                 this.addButton.plug(Y.Plugin.WidgetMenu);

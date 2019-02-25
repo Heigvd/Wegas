@@ -10,16 +10,16 @@ package com.wegas.mcq.persistence.wh;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.mcq.persistence.QuestionInstanceI;
 import static java.lang.Boolean.FALSE;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import com.wegas.mcq.persistence.ReadableInstance;
 
 /**
  * @author Maxence
  */
 @Entity
-public class WhQuestionInstance extends VariableInstance implements QuestionInstanceI {
+public class WhQuestionInstance extends VariableInstance implements ReadableInstance {
 
     private static final long serialVersionUID = 1L;
     //private static final Logger logger = LoggerFactory.getLogger(QuestionInstance.class);
@@ -62,7 +62,6 @@ public class WhQuestionInstance extends VariableInstance implements QuestionInst
     /**
      * @param validated the validation status to set
      */
-    @Override
     public void setValidated(Boolean validated) {
         this.validated = validated;
     }
@@ -70,7 +69,6 @@ public class WhQuestionInstance extends VariableInstance implements QuestionInst
     /**
      * @return The validation status of the question
      */
-    @Override
     public Boolean isValidated() {
         return this.validated;
     }

@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -85,7 +86,6 @@ public class State extends AbstractEntity implements Broadcastable {
      *
      */
     @Column(name = "fsm_statekey")
-    @JsonIgnore
     @WegasEntityProperty
     private Long index;
 
@@ -158,10 +158,12 @@ public class State extends AbstractEntity implements Broadcastable {
         return id;
     }
 
+    @JsonProperty
     public Long getIndex() {
         return index;
     }
 
+    @JsonIgnore
     public void setIndex(Long index) {
         this.index = index;
     }

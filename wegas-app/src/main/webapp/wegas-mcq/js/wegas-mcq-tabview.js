@@ -36,7 +36,8 @@ YUI.add('wegas-mcq-tabview', function(Y) {
 
             return  '<div class="index-mcq '
                 + (questionInstance.get("unread") ? "unread " : "")
-                + (this.get("highlightUnanswered") && !questionInstance.get("validated") ? "unanswered" : "") + '">'
+                + (!questionInstance.get("validated") ? "answerable " : "")
+                + (this.get("highlightUnanswered") && !questionInstance.get("validated") ? "unanswered " : "") + '">'
                 + '<div class="index-unread">' + unreadLabel + '</div>'
                 + '<div class="index-label">'
                 + (I18n.t(question.get("label"))) + "</div>"
@@ -49,7 +50,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 choiceDescriptor,
                 label = null, cbxType = question.get("cbx"),
                 validatedCbx = (cbxType ? questionInstance.get('validated') : false),
-                nbReplies = questionInstance.get("replies").length,
+                nbReplies = questionInstance.getValidatedReplies().length,
                 highlightUnanswered = (this.get("highlightUnanswered") && (cbxType ? !validatedCbx : (nbReplies === 0)));
 
             /*
@@ -133,13 +134,15 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     variable: {
                         "name": entity.get("name")
                     },
+                    submitVar: this.get("submitVar"),
                     displayResult: this.get("displayResult")
                 });
             } else if (entity instanceof Wegas.persistence.WhQuestionDescriptor) {
                 return new Y.Wegas.WhView({
                     variable: {
                         "name": entity.get("name")
-                    }
+                    },
+                    submitVar: this.get("submitVar")
                 });
             }
         },
@@ -206,6 +209,8 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                         }, {
                             value: 'inline'
                         }, {
+                            value: 'dialogue'
+                        }, {
                             value: 'no'
                         }
                     ],
@@ -213,6 +218,19 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     label: "Template"
                 }
 
+            },
+            submitVar: {
+                type: "object",
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                view: {
+                    type: 'variableselect',
+                    label: 'Submit button text',
+                    className: 'wegas-advanced-feature',
+                    classFilter: [
+                        "TextDescriptor", "StringDescriptor", // use the value
+                        "ListDescriptor" // use the label
+                    ]
+                }
             }
         }
     });

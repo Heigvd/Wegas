@@ -1789,6 +1789,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Welcome to admin console",
                             'fr': "Bienvenue dans la console d'admin"
                         },
+                        'ADMIN-INDEX-STATUS-TITLE': {
+                            'en': "Status",
+                            'fr': "Status"
+                        },
+                        'ADMIN-INDEX-STATUS-I18N-USAGE': {
+                            'en': "Translation service usage:",
+                            'fr': "Utilisation du service de traduction :"
+                        },
                         'ADMIN-INDEX-ACTIONS-TITLE': {
                             'en': "Perform an action:",
                             'fr': "Effectuer une action:"

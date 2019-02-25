@@ -114,7 +114,7 @@ public class I18nController {
     @PUT
     @Path("BatchUpdate")
     public List<AbstractEntity> batchUpdate(List<I18nUpdate> i18nUpdates) throws ScriptException {
-        return i18nfacade.batchUpdate(i18nUpdates);
+        return i18nfacade.batchUpdate(i18nUpdates, UpdateType.MINOR);
     }
 
     /*

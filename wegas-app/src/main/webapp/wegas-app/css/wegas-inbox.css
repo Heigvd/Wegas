@@ -32,7 +32,7 @@
 }
 
 .wegas-inbox .yui3-tabview-list .unread {
-    font-weight: bolder;
+    font-weight: bold;
 }
 
 .wegas-inbox .msg-subject {
@@ -169,6 +169,10 @@
     bottom: 0px;
 }
 
+.wegas-inbox-list .wegas-message__expanded .wegas-message-header{
+    cursor:pointer;
+}
+
 .wegas-inbox-list .wegas-message__collapsed:hover {
     cursor:pointer;
     background: #f0f0f0;
@@ -204,6 +208,9 @@
     content:"\f003"; /*fa-envelope-o*/
 }
 
+.wegas-inbox-list .wegas-message .unread {
+    font-weight: bold;
+}
 
 .wegas-inbox-list .wegas-inbox-list--clean .wegas-message-content > div {
     margin-left: 65px;
@@ -219,4 +226,31 @@
 
 .wegas-inbox-list .wegas-inbox-list--clean .wegas-message:last-child {
     border: none;
+}
+
+
+/**
+ * Collapsed 
+ */
+.wegas-inbox-list .wegas-inbox-list--collapsed .wegas-message__collapsed .wegas-message-body,
+.wegas-inbox-list .wegas-inbox-list--collapsed .wegas-message__collapsed .wegas-message-attachments {
+    display: none;
+}
+
+.wegas-inbox-list .wegas-inbox-list--collapsed .wegas-message__collapsed .wegas-message-content:after {
+    content: "";
+}
+
+.wegas-inbox-list .wegas-inbox-list--collapsed .wegas-message__expanded .wegas-message-body {
+    border-top : 1px solid #e5e5e5;
+}
+
+.wegas-inbox-list .wegas-inbox-list--collapsed .wegas-message .wegas-message-attachments {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.wegas-message .wegas-message-attachments:empty {
+    display :none;
 }

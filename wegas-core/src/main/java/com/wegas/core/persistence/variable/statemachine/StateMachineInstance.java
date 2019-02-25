@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.EntityComparators;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,8 @@ public class StateMachineInstance extends VariableInstance {
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "transitionHistory")
     @JsonIgnore
-    @WegasEntityProperty(sameEntityOnly = true) // history refers to ids of travelled transitions
+    @WegasEntityProperty
+    // history refers to ids of travelled transitions
     private List<TransitionHistoryEntry> transitionHistory = new ArrayList<>();
 
     /**

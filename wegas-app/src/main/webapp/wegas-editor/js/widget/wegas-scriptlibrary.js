@@ -153,12 +153,14 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                     cb = this.get(CONTENTBOX),
                     libraries = this.scripts ? this.scripts.get('val') : {};
                 delete libraries['@class'];
-                for (i in libraries) {
+                var keys = Object.keys(libraries).sort();
+
+                for (i in keys) {
                     if (!this.currentScriptName) {
-                        this.currentScriptName = i;
+                        this.currentScriptName = keys[i];
                     }
                     this.selectField.addChoice({
-                        value: i
+                        value: keys[i]
                     });
                     isEmpty = false;
                 }
@@ -204,7 +206,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
 
                 if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "REFERENCE" ||
                     (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO"
-                        && (visibility === "INTERNAL" || visibility === "PROTECTED") )) {
+                        && (visibility === "INTERNAL" || visibility === "PROTECTED"))) {
                     this.get("contentBox").addClass("readonly");
                     this.aceField.disable();
                 } else {
@@ -272,21 +274,21 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                 });
 
                 this.visibilityField = new Y.inputEx.SelectField({
-                            choices: [{
-                                value: "INTERNAL",
-                                label: "Model"
-                            }, {
-                                value: "PROTECTED",
-                                label: "Protected"
-                            }, {
-                                value: "INHERITED",
-                                label: "Inherited"
-                            }, {
-                                value: "PRIVATE",
-                                label: "Private"
-                            }],
-                        parentEl: toolbarNode
-                    }
+                    choices: [{
+                            value: "INTERNAL",
+                            label: "Model"
+                        }, {
+                            value: "PROTECTED",
+                            label: "Protected"
+                        }, {
+                            value: "INHERITED",
+                            label: "Inherited"
+                        }, {
+                            value: "PRIVATE",
+                            label: "Private"
+                        }],
+                    parentEl: toolbarNode
+                }
                 );
 
 
@@ -360,7 +362,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                             '@class': 'GameModelContent',
                             content: this.aceField.getValue(),
                             visibility: this.visibilityField.getValue(),
-                        },
+                        }
                     },
                     on: Wegas.superbind({
                         success: function() {

@@ -16,6 +16,7 @@ YUI.add('pact-display', function(Y) {
 
     var COMMANDEXECUTED = 'commandExecuted',
         RENDERMETHOD = Crafty.support.canvas ? 'Canvas' : 'DOM',
+        SCALE = 1.2,
         TILESIZE = 32,
         MARGIN_X = 3,
         MARGIN_Y = 2,
@@ -23,7 +24,17 @@ YUI.add('pact-display', function(Y) {
         Wegas = Y.Wegas,
         ProgGameDisplay,
         Promise = Y.Promise,
-        ready;
+        ready,
+        HIT_BOX = new Crafty.polygon([
+            0 + 15,
+            0 + TILE_DELTA + 5,
+            0,
+            28 + TILE_DELTA,
+            25,
+            28 + TILE_DELTA,
+            25 + 15,
+            0 + TILE_DELTA + 5,
+        ]);
 
     /*
      * Crafty sprites
@@ -36,12 +47,12 @@ YUI.add('pact-display', function(Y) {
                 };
                 assets.sprites[
                     Wegas.app.get('base') +
-                        '/wegas-proggame/images/proggame-sprite-anim.png'
+                        '/wegas-pact/images/proggame-sprite-anim.png'
                 ] = {
                     tile: TILESIZE,
                     tileh: TILESIZE,
                     map: {
-                        CharacterSprite: [0, 0],
+                        // CharacterSprite: [0, 0],
                         TrapSprite: [0, 9],
                         DoorSprite: [0, 10],
                         DoorSprite2: [0, 14],
@@ -54,11 +65,45 @@ YUI.add('pact-display', function(Y) {
                 };
                 assets.sprites[
                     Wegas.app.get('base') +
-                        '/wegas-proggame/images/proggame-sprite-tiles_iso.png'
+                        '/wegas-pact/images/proggame-sprite-tiles_iso_v4.png'
                 ] = {
                     tile: 41,
                     tileh: TILESIZE,
-                    map: { TileSprite: [0, 0] },
+                    map: {
+                        EmptyT: [0, 2],
+                        PathT: [0, 0],
+                        TrapT: [0, 1],
+                    },
+                };
+                assets.sprites[
+                    Wegas.app.get('base') +
+                        '/wegas-pact/images/sprite_sheet_girl.png'
+                ] = {
+                    tile: TILESIZE,
+                    tileh: TILESIZE,
+                    map: {
+                        CharacterSprite: [0, 0],
+                    },
+                };
+                assets.sprites[
+                    Wegas.app.get('base') +
+                        '/wegas-pact/images/sprite_sheet_girl_blond.png'
+                ] = {
+                    tile: TILESIZE,
+                    tileh: TILESIZE,
+                    map: {
+                        BlondSprite: [0, 0],
+                    },
+                };
+                assets.sprites[
+                    Wegas.app.get('base') +
+                        '/wegas-pact/images/sprite_sheet_monstre.png'
+                ] = {
+                    tile: TILESIZE,
+                    tileh: TILESIZE,
+                    map: {
+                        MonsterSprite: [0, 0],
+                    },
                 };
                 return assets;
             })(),
@@ -104,18 +149,25 @@ YUI.add('pact-display', function(Y) {
                 });
                 ready.then(
                     function() {
-                        Crafty.init(pos.x, posy.y + TILE_DELTA); // Init crafty
-
+                        Crafty.init(
+                            pos.x * SCALE,
+                            (posy.y + TILE_DELTA) * SCALE
+                        ); // Init crafty
+                        Crafty.viewport.scale(SCALE);
                         for (i = -MARGIN_Y; i < gridH + MARGIN_Y; i += 1) {
                             // Render tiles
                             for (j = -MARGIN_X; j < gridW + MARGIN_X; j += 1) {
                                 pos = this.getRealXYPos({ x: j, y: i });
                                 pos.y = pos.y + TILE_DELTA;
+                                pos.x = pos.x - 3;
+                                pos.z = 0;
+                                // if (map[i] && map[i][j] && map[i][j].y) {
                                 Crafty.e(
                                     map[i] && map[i][j] && map[i][j].y
                                         ? 'PathTile'
                                         : 'EmptyTile'
                                 ).attr(pos);
+                                // }
                             }
                         }
 
@@ -125,7 +177,7 @@ YUI.add('pact-display', function(Y) {
                                 // Render objects (PC, traps, etc.)
                                 pos = this.getRealXYPos(cfg); // Place it on the map
                                 entity = Crafty.e(cfg.components) // Instantiate an entity
-                                    .attr(Y.mix(pos, cfg.attrs));
+                                    .attr(Y.mix(pos, { z: 1 }, cfg.attrs));
                                 if (entity.execMove) {
                                     // Allows to turn the player to the right direction
                                     entity.execMove(cfg.direction, pos);
@@ -203,6 +255,11 @@ YUI.add('pact-display', function(Y) {
                                 }
                                 break;
 
+                            case 'gameWon':
+                            case 'gameLost':
+                            case 'log':
+                                break;
+
                             default:
                                 entity = this.getEntity(command.id);
                                 if (
@@ -219,7 +276,6 @@ YUI.add('pact-display', function(Y) {
                                         'warn',
                                         'Wegas.ProggameDisplay'
                                     );
-                                    return;
                                 }
                         }
                         this.fire(COMMANDEXECUTED);
@@ -259,12 +315,6 @@ YUI.add('pact-display', function(Y) {
                 FIRE: 5,
                 TRAP: 2,
             },
-            SPRITESHEETS: {
-                TileSprite: {
-                    width: 1,
-                    height: 4,
-                },
-            },
             speedToFrame: function(speed, x, y, toX, toY) {
                 speed = speed > 0 ? speed : 1;
                 var dist = Math.sqrt(
@@ -300,7 +350,11 @@ YUI.add('pact-display', function(Y) {
         },
         execMove: function(direction, target, minDuration) {
             var animDir = this.dir2anim[direction];
-
+            if (direction === 4) {
+                this.flip('X');
+            } else {
+                this.unflip('X');
+            }
             if (!this.isPlaying(animDir)) {
                 this.doDelay = minDuration && this.reel() !== animDir;
                 this.pauseAnimation();
@@ -318,9 +372,9 @@ YUI.add('pact-display', function(Y) {
             );
         },
         dir2anim: {
-            1: 'moveUp',
+            1: 'moveDown',
             2: 'moveRight',
-            3: 'moveDown',
+            3: 'moveUp',
             4: 'moveLeft',
         },
     });
@@ -345,40 +399,30 @@ YUI.add('pact-display', function(Y) {
                 {
                     alpha: 0,
                 },
-                50
+                500
             );
         },
     });
     Crafty.c('Character', {
         init: function() {
-            var moveSpeed = 500;
+            var moveSpeed = 1000;
             this.requires(
                 '2D,' +
                     RENDERMETHOD +
                     ', CharacterSprite, SpriteAnimation, move4Direction, Speaker, Collision'
             )
-                .reel('moveUp', moveSpeed, 0, 2, 7)
+                .reel('moveUp', moveSpeed, 0, 2, 4)
                 .reel('moveRight', moveSpeed, 0, 0, 7)
-                .reel('moveDown', moveSpeed, 0, 2, 7)
-                .reel('moveLeft', moveSpeed, 0, 1, 7)
+                .reel('moveDown', moveSpeed, 0, 1, 4)
+                .reel('moveLeft', moveSpeed, 0, 0, 7)
                 .reel('handsUp', moveSpeed, 0, 6, 7)
-                .reel('gzRight', 2000, 0, 20, 7)
-                .reel('gzLeft', 2000, 0, 21, 7)
-                .collision(
-                    new Crafty.polygon([
-                        0 + 17,
-                        0 + TILE_DELTA + 5,
-                        0,
-                        28 + TILE_DELTA,
-                        25,
-                        28 + TILE_DELTA,
-                        25 + 17,
-                        0 + TILE_DELTA + 5,
-                    ])
-                )
-                .onHit('Collide', function() {
-                    this.h -= 1;
-                    this.y += 1;
+                .reel('fall', 1000, 0, 4, 9)
+                .reel('endAnim', 500, 0, 3, 7)
+                .collision(HIT_BOX)
+                .onHit('Collide', function(_data, first) {
+                    if (first) {
+                        this.pauseAnimation().animate('fall');
+                    }
                 })
                 .bind('TweenEnd', function() {
                     var col = this.hit('Character');
@@ -402,10 +446,19 @@ YUI.add('pact-display', function(Y) {
                     }
                 });
         },
+        outside: function() {
+            this.pauseAnimation()
+                .one('AnimationEnd', function() {
+                    if (this._currentReelId === 'fall') {
+                        Crafty.trigger(COMMANDEXECUTED);
+                    }
+                })
+                .animate('fall');
+        },
         wave: function(times) {
             var pos = Y.clone(this.__coord);
             this.pauseAnimation()
-                .bind('AnimationEnd', function() {
+                .one('AnimationEnd', function() {
                     if (this._currentReelId === 'handsUp') {
                         this.sprite(pos[0] / pos[2], pos[1] / pos[3]);
                     }
@@ -422,7 +475,7 @@ YUI.add('pact-display', function(Y) {
                 text = text.text;
             }
 
-            var pos = [this._x, this._y],
+            var pos = [this._x * SCALE, this._y * SCALE],
                 textE = Crafty.e('2D, DOM, Text')
                     .text(text)
                     .attr({
@@ -430,71 +483,32 @@ YUI.add('pact-display', function(Y) {
                         visible: false,
                     })
                     .css({
-                        'background-color': 'rgb(50, 50, 40)',
-                        border: '7px solid #FFFFFF',
-                        '-moz-border-image':
-                            'url(' +
-                            Wegas.app.get('base') +
-                            '/wegas-proggame/images/dialog.png' +
-                            ') 7 stretch',
-                        '-webkit-border-image':
-                            'url(' +
-                            Wegas.app.get('base') +
-                            '/wegas-proggame/images/dialog.png' +
-                            ') 7 stretch',
-                        '-o-border-image':
-                            'url(' +
-                            Wegas.app.get('base') +
-                            '/wegas-proggame/images/dialog.png' +
-                            ') 7 stretch',
+                        'background-color': 'rgba(9, 93, 89, 0.8)',
+                        border: '4px solid transparent',
                         'border-image':
                             'url(' +
                             Wegas.app.get('base') +
-                            '/wegas-proggame/images/dialog.png' +
-                            ') 7 stretch',
-                        // "font-family": "KG Ways to Say Goodbye",
-                        'line-height': '1.1em',
-                        // "font-size": "1.6em",
-                        'max-width': '400px',
-                        color: 'white',
-                        padding: '4px 4px 2px',
-                    }),
-                connector = Crafty.e('2D, DOM')
-                    .css({
-                        background:
-                            'url(' +
-                            Wegas.app.get('base') +
-                            '/wegas-proggame/images/dialogConnector.png) 0 ' +
-                            (think ? 0 : -32 + 'px'),
-                    })
-                    .attr({
-                        z: 402,
-                        visible: false,
+                            '/wegas-pact/images/blackboard_LEFT_cadre.png) 4 stretch',
+                        'border-image-width': '2px',
+                        'font-size': '1em',
+                        width: 'auto',
+                        margin: '2px',
                     });
-
-            textE.bind('Draw', function() {
-                this.unbind('Draw');
+            textE._element.classList.add('pact-display-say');
+            textE.one('Draw', function() {
                 this.css({
                     width: 'initial',
                     height: 'initial',
                 });
-                this._renderTimer = Y.later(300, this, function() {
-                    // Attach a little later so the font file has enough time to be loaded
-                    this.attach(connector).attr({
-                        x: pos[0] - this._element.offsetWidth / 2 + 14,
-                        y: pos[1] - this._element.offsetHeight - 32,
+                this._renderTimer = Y.later(10, this, function() {
+                    this.attr({
+                        x:
+                            pos[0] -
+                            this._element.offsetWidth / 2 +
+                            (TILESIZE * SCALE) / 2,
+                        y: pos[1] - this._element.offsetHeight - 8, // 8 = arrow height.
                     });
                     this.visible = true;
-                    connector
-                        .shift(
-                            this._element.offsetWidth / 2 - 16,
-                            this._element.offsetHeight - 7
-                        )
-                        .css({
-                            width: '32px',
-                            height: '32px',
-                        });
-                    connector.visible = true;
                 });
             });
             textE.bind('Remove', function() {
@@ -510,14 +524,73 @@ YUI.add('pact-display', function(Y) {
             });
         },
     });
+    Crafty.c('Monster', {
+        init: function() {
+            var moveSpeed = 500;
+            this.requires(
+                '2D,' +
+                    RENDERMETHOD +
+                    ', MonsterSprite, SpriteAnimation, move4Direction, Speaker, Collision'
+            )
+                .reel('moveUp', moveSpeed, 0, 2, 5)
+                .reel('moveRight', moveSpeed, 0, 2, 5)
+                .reel('moveDown', moveSpeed, 0, 2, 5)
+                .reel('moveLeft', moveSpeed, 0, 2, 5)
+                .reel('endAnim', 500, 0, 1, 4)
+                .reel('say', 200, 0, 4, 8)
+                .collision(HIT_BOX);
+        },
+        sayAnimation: function(times) {
+            var pos = Y.clone(this.__coord);
+            this.pauseAnimation()
+                .one('AnimationEnd', function() {
+                    if (this._currentReelId === 'say') {
+                        this.sprite(pos[0] / pos[2], pos[1] / pos[3]);
+                    }
+                })
+                .animate('say', times || 1);
+        },
+    });
+    Crafty.c('Blond', {
+        init: function() {
+            this.requires(
+                '2D,' +
+                    RENDERMETHOD +
+                    ', BlondSprite, SpriteAnimation, Speaker, Collision'
+            )
+                .reel('say', 200, 0, 2, 3)
+                .reel('endAnim', 500, 0, 0, 8)
+                .collision(HIT_BOX);
+        },
+        sayAnimation: function(times) {
+            var pos = Y.clone(this.__coord);
+            this.pauseAnimation()
+                .one('AnimationEnd', function() {
+                    if (this._currentReelId === 'say') {
+                        this.sprite(pos[0] / pos[2], pos[1] / pos[3]);
+                    }
+                })
+                .animate('say', times || 1);
+        },
+    });
     Crafty.c('PC', {
         init: function() {
             this.requires('Character');
+            this.onHit('NPC', function(_data, first) {
+                if (first && this.getReel('endAnim') !== undefined) {
+                    this.pauseAnimation().animate('endAnim');
+                }
+            });
         },
     });
     Crafty.c('NPC', {
         init: function() {
-            this.requires('TintSprite, Character').tintSprite('#D6D600', 1);
+            this.requires('Blond');
+            this.onHit('PC', function(_data, first) {
+                if (first && this.getReel('endAnim') !== undefined) {
+                    this.pauseAnimation().animate('endAnim');
+                }
+            });
         },
     });
     Crafty.c('Tile', {
@@ -527,44 +600,36 @@ YUI.add('pact-display', function(Y) {
     });
     Crafty.c('EmptyTile', {
         init: function() {
-            this.requires('Tile, TileSprite')
-                .sprite(0, 0)
-                .attr('collides', true);
+            this.requires('Tile, EmptyT').attr('collides', true);
         },
     });
     Crafty.c('PathTile', {
         init: function() {
-            this.requires('Tile, TileSprite')
-                .sprite(0, 1)
-                .attr('collides', false);
-            //this.requires("Tile, TileSprite").sprite(0, Math.round(Math.random() * 3) + 1).attr("collides", false);
+            this.requires('Tile, PathT');
         },
     });
     Crafty.c('Trap', {
         init: function() {
             this.requires(
                 'Tile, TrapSprite, SpriteAnimation, Tween, Collision, GridOffset'
-            ).collision([10, 13], [3, 24], [10, 27], [25, 25], [28, 13]);
+            ).collision(
+                new Crafty.polygon([10, 13, 3, 24, 10, 27, 25, 25, 28, 13])
+            );
             //.collision([10, 13 + TILE_DELTA], [3, 24 + TILE_DELTA], [10, 27 + TILE_DELTA], [25, 25 + TILE_DELTA], [28, 13 + TILE_DELTA]);
             var c = this.__coord;
             this.reset();
             this.reel('trap', 100, c[0] / c[2], c[1] / c[3], 5);
             this._offset = {
-                x: 0,
+                x: -3,
                 y: TILE_DELTA,
             };
             this._delayTile = Y.later(1, this, function() {
                 // Add a tile to show where the trap is
-                Crafty.e('Tile, TileSprite')
-                    .sprite(0, 5)
-                    .attr({
-                        x: this._x,
-                        y: this._y,
-                    });
+                Crafty.e('Tile, TrapT').attr({ x: this._x, y: this._y });
             });
             this.bind('TweenEnd', function() {
                 this.pauseAnimation().visible = false;
-                this._roche = Crafty.e('Tile, StoneSprite, Collision').attr({
+                this._roche = Crafty.e('Tile, StoneSprite').attr({
                     x: this._x,
                     y: this._y,
                 });
@@ -586,7 +651,7 @@ YUI.add('pact-display', function(Y) {
             this.tween(
                 {
                     x: this._x,
-                    y: this._y + 60,
+                    y: this._y + 64,
                 },
                 frameTime
             );
@@ -936,4 +1001,81 @@ YUI.add('pact-display', function(Y) {
             this._lights.splice(id, 1);
         },
     });
+    Crafty.defaultShader(
+        'Sprite',
+        new Crafty.WebGLShader(
+            'attribute vec2 aPosition;\n' +
+                'attribute vec3 aOrientation;\n' +
+                'attribute vec4 aColor;\n' +
+                'attribute vec2 aLayer;\n' +
+                'attribute vec2 aTextureCoord;\n' +
+                '\n' +
+                '\n' +
+                'varying mediump vec3 vTextureCoord;\n' +
+                'varying lowp vec4 vColor;\n' +
+                '\n' +
+                'uniform vec4 uViewport;\n' +
+                'uniform mediump vec2 uTextureDimensions;\n' +
+                '\n' +
+                'mat4 viewportScale = mat4(2.0 / uViewport.z, 0, 0, 0,    0, -2.0 / uViewport.w, 0,0,    0, 0,1,0,    -1,+1,0,1);\n' +
+                'vec4 viewportTranslation = vec4(uViewport.xy, 0, 0);\n' +
+                '\n' +
+                'void main() {\n' +
+                '  vec2 pos = aPosition;\n' +
+                '  vec2 entityOrigin = aOrientation.xy;\n' +
+                '  mat2 entityRotationMatrix = mat2(cos(aOrientation.z), sin(aOrientation.z), -sin(aOrientation.z), cos(aOrientation.z));\n' +
+                '  \n' +
+                '  pos = entityRotationMatrix * (pos - entityOrigin) + entityOrigin ;\n' +
+                '  gl_Position = viewportScale * (viewportTranslation + vec4(pos, 1.0/(1.0+exp(aLayer.x) ), 1) );\n' +
+                '  vTextureCoord = vec3(aTextureCoord, aLayer.y);\n' +
+                '  vColor = aColor;\n' +
+                '}\n',
+            'precision mediump float;\n' +
+                'varying mediump vec3 vTextureCoord;\n' +
+                'varying lowp vec4 vColor;\n' +
+                '\n' +
+                'uniform sampler2D uSampler;\n' +
+                'uniform mediump vec2 uTextureDimensions;\n' +
+                '\n' +
+                'void main(void) {\n' +
+                '  highp vec2 coord =   vTextureCoord.xy / uTextureDimensions;\n' +
+                '  mediump vec4 base_color = texture2D(uSampler, coord); \n' +
+                '  lowp vec4 tinted_color = vec4( base_color.r * (1.0 - vColor.a) + vColor.r * vColor.a, base_color.g * (1.0 - vColor.a) + vColor.g * vColor.a, base_color.b * (1.0 - vColor.a) + vColor.b * vColor.a, base_color.a);\n' +
+                '  gl_FragColor = vec4(tinted_color.rgb*tinted_color.a*vTextureCoord.z, tinted_color.a*vTextureCoord.z);\n' +
+                '}\n',
+            [
+                { name: 'aColor', width: 4 },
+                { name: 'aPosition', width: 2 },
+                { name: 'aOrientation', width: 3 },
+                { name: 'aLayer', width: 2 },
+                { name: 'aTextureCoord', width: 2 },
+            ],
+            function(e, _entity) {
+                var co = e.co;
+                // Write texture coordinates
+                e.program.writeVector(
+                    'aTextureCoord',
+                    co.x,
+                    co.y,
+                    co.x,
+                    co.y + co.h,
+                    co.x + co.w,
+                    co.y,
+                    co.x + co.w,
+                    co.y + co.h
+                );
+                if (_entity._color) {
+                    var col = {};
+                    Crafty.assignColor(_entity._color, col);
+                    e.program.writeVector(
+                        'aColor',
+                        col._red / 255,
+                        col._green / 255,
+                        col._blue / 255,
+                        col._strength
+                    );
+                }
+            }
+        )
+    );
 });

@@ -9,6 +9,7 @@
 
         <ui:define name="app-init">
             <c:set var="extraBodyClass" value="wegas-editmode"/>
+            <c:set var="wegasMode" value="EDIT"/>
         </ui:define>
 
         <script>//<ui:define name = "editorFooter"><![CDATA[
@@ -16,21 +17,19 @@
                 var gameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
 
 
-                    if (Y.Array.find(Y.Wegas.Facade.User.cache.get("currentUser").get("roles"),
-                        function(role) {
-                            return role.get("name") === "Administrator";
-                        })) {
-                        Y.use("wegas-button", function() {
-                            var editButton = new Y.Wegas.Button({
-                                "label": "<i class=\"fa fa-eye\" title=\"View as test player\"></i>",
-                                cssClass: "open-as-test-player"
-                            }).render(".wegas-button-toolbar .wegas-flexlist-content");
+                /*
+                 * Shortcut to open current debug player in its own tab
+                 */
+                Y.use("wegas-button", function() {
+                    var editButton = new Y.Wegas.Button({
+                        "label": "<i class=\"fa fa-eye\" title=\"View as test player\"></i>",
+                        cssClass: "open-as-test-player"
+                    }).render(".wegas-button-toolbar .wegas-flexlist-content");
 
-                            editButton.on("click", function() {
-                                window.open("game-play.html?gameModelId=" + Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id"), "_blank");
-                            }, this);
-                        });
-                    }
+                    editButton.on("click", function() {
+                        window.open("game-play.html?gameModelId=" + Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id"), "_blank");
+                    }, this);
+                });
 
                 if (gameModel.dependsOnModel()) {
                     if (Y.Array.find(Y.Wegas.Facade.User.cache.get("currentUser").get("roles"),

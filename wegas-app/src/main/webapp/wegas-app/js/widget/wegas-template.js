@@ -100,9 +100,10 @@ YUI.add('wegas-template', function(Y) {
                         data.value = undefined;
                     }
 
-                    if (desc instanceof Wegas.persistence.ListDescriptor && desc.get("currentItem")) {       // If the widget is a list,
-                        desc = desc.get("currentItem"); // display it with the current list and the current element
-                    }
+                    /*This behaviour is not even possible since years...
+                     * if (desc instanceof Wegas.persistence.ListDescriptor && desc.get("currentItem")) {       // If the widget is a list,
+                     desc = desc.get("currentItem"); // display it with the current list and the current element
+                     }*/
 
                     //  data.label = this.undefinedToEmpty(desc.getLabel());
                     if (initialData.label) {
@@ -410,35 +411,28 @@ YUI.add('wegas-template', function(Y) {
             }
         }
     );
-    Wegas.TextTemplate = Y.Base.create(
-        'wegas-template',
-        AbstractTemplate,
-        [],
-        {
-            TEMPLATE: Micro.compile('<div><%== this.value %></div>')
-        },
-        {
-            ATTRS: {
-                /**
-                 * The target variable, returned either based on the variableName attribute,
-                 * and if absent by evaluating the expr attribute.
-                 */
-                variable: {
-                    type: 'object',
-                    getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                    view: {
-                        type: 'variableselect',
-                        label: 'Variable',
-                        classFilter: ['TextDescriptor', 'StringDescriptor']
-                    }
-                },
-                data: {
-                    type: 'object',
-                    properties: {
-                    },
-                    view: {}
+    Wegas.TextTemplate = Y.Base.create('wegas-template', AbstractTemplate, [], {
+        TEMPLATE: Micro.compile('<div><%== (this.variable instanceof Y.Wegas.persistence.ListDescriptor ? this.variable.getLabel() : this.value) %></div>')
+    }, {
+        ATTRS: {
+            /**
+             * The target variable, returned either based on the variableName attribute,
+             * and if absent by evaluating the expr attribute.
+             */
+            variable: {
+                type: 'object',
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                view: {
+                    type: 'variableselect',
+                    label: 'Variable',
+                    classFilter: ['TextDescriptor', 'StringDescriptor', 'ListDescriptor']
                 }
+            },
+            data: {
+                type: 'object',
+                properties: {},
+                view: {}
             }
         }
-    );
+    });
 });

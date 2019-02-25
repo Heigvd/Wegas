@@ -49,13 +49,108 @@
                         "children": [
                             {
                                 "type": "Button",
-                                "label": "Advanced",
+                                "label": "Edit",
+                                "cssClass": "wegas-advanced-feature",
+                                "plugins": [
+                                    {
+                                        "fn": "WidgetMenu",
+                                        "cfg": {
+                                            "children": [
+                                                {
+                                                    "type": "Button",
+                                                    "label": "Find & Replace",
+                                                    "plugins": [
+                                                        {
+                                                            "fn": "FindAndReplaceAction"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Button",
+                                "label": "View",
+                                "cssClass": "wegas-advanced-feature",
+                                "plugins": [
+                                    {
+                                        "fn": "WidgetMenu",
+                                        "cfg": {
+                                            "children": [
+                                                {
+                                                    "type": "Button",
+                                                    "label": "[FORM] Show WYSIWYG Script",
+                                                    "cssClass": "wegas-toggle-scriptsource-mode-button",
+                                                    "plugins": [
+                                                        {
+                                                            "fn": "ExecuteLocalScriptAction",
+                                                            "cfg": {
+                                                                "targetEvent": "click",
+                                                                "onClick": "Y.Wegas.Config.ShowImpactAsSource = false;Y.all('.wegas-toggle-scriptsource-mode-button').each(function(button){Y.Widget.getByNode(button).ConditionalDisable.conditionEval();});return;"
+                                                            }
+                                                        }, {
+                                                            "fn": "ConditionalDisable",
+                                                            "cfg": {
+                                                                "condition": {
+                                                                    "@class": "Script",
+                                                                    "content": "!Y.Wegas.Config.ShowImpactAsSource"
+                                                                },
+                                                                "attribute": "cssClass",
+                                                                "value": "button-hidden"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Button",
+                                                    "label": "[FORM] Show Script Source",
+                                                    "cssClass": "wegas-toggle-scriptsource-mode-button",
+                                                    "plugins": [
+                                                        {
+                                                            "fn": "ExecuteLocalScriptAction",
+                                                            "cfg": {
+                                                                "targetEvent": "click",
+                                                                "onClick": "Y.Wegas.Config.ShowImpactAsSource = true;Y.all('.wegas-toggle-scriptsource-mode-button').each(function(button){Y.Widget.getByNode(button).ConditionalDisable.conditionEval();});return;"
+                                                            }
+                                                        }, {
+                                                            "fn": "ConditionalDisable",
+                                                            "cfg": {
+                                                                "condition": {
+                                                                    "@class": "Script",
+                                                                    "content": "Y.Wegas.Config.ShowImpactAsSource;"
+                                                                },
+                                                                "attribute": "cssClass",
+                                                                "value": "button-hidden"
+                                                            }
+                                                        }
+                                                    ]
+                                                }, {
+                                                    "type": "Button",
+                                                    "label": "Advanced Tabs",
+                                                    "plugins": [
+                                                        {
+                                                            "fn": "ToggleAdvancedTabsMode"
+                                                        }
+                                                    ]
+                                                }
+
+                                            ]
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Button",
+                                "label": "Advanced Tools",
                                 "cssClass": "editor-scenarist-button editor-scenarist-advanced-button wegas-advanced-feature",
                                 "plugins": [
                                     {
                                         "fn": "WidgetMenu",
                                         "cfg": {
                                             "children": [
+
                                                 {
                                                     "type": "Button",
                                                     "label": "EXPERIMENTAL: Create a new scenario from player state",
@@ -99,16 +194,7 @@
                                                             }
                                                         }
                                                     ]
-                                                }, {
-                                                    "type": "Button",
-                                                    "label": "Advanced Tabs",
-                                                    "plugins": [
-                                                        {
-                                                            "fn": "ToggleAdvancedTabsMode"
-                                                        }
-                                                    ]
-                                                }
-                                            ]
+                                                }]
                                         }
                                     }
                                 ]
@@ -350,6 +436,15 @@
                                                 }
                                             ]
                                         }, {
+                                            "type": "OpenTabButton",
+                                            "cssClass": "wegas-advanced-feature",
+                                            "label": "Find & Replace",
+                                            "wchildren": [
+                                                {
+                                                    "type": "FindAndReplaceWidget"
+                                                }
+                                            ]
+                                        }, {
                                             "type": "Button",
                                             "cssClass": "wegas-advanced-feature",
                                             "label": "Scenario properties",
@@ -572,9 +667,20 @@
                                         }, {
                                             "type": "OpenTabButton",
                                             "label": "Translations",
+                                            "tabSelector": "#rightTabView",
                                             "wchildren": [
                                                 {
                                                     "type": "LanguagesManager"
+                                                }
+                                            ]
+                                        }, {
+                                            "type": "OpenTabButton",
+                                            "cssClass": "wegas-advanced-feature",
+                                            "label": "Find & Replace",
+                                            "tabSelector": "#rightTabView",
+                                            "wchildren": [
+                                                {
+                                                    "type": "FindAndReplaceWidget"
                                                 }
                                             ]
                                         }, {

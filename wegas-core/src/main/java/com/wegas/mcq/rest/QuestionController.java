@@ -11,13 +11,13 @@ import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.QuestionInstance;
-import com.wegas.mcq.persistence.QuestionInstanceI;
 import com.wegas.mcq.persistence.Reply;
 import javax.inject.Inject;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import com.wegas.mcq.persistence.ReadableInstance;
 
 /**
  *
@@ -51,7 +51,7 @@ public class QuestionController {
      */
     @POST
     @Path("/SelectAndValidateChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
-    public Response selectChoice(
+    public Response selectAnValidateChoice(
             @PathParam("playerId") Long playerId,
             @PathParam("choiceId") Long choiceId) throws WegasScriptException {
 
@@ -72,7 +72,7 @@ public class QuestionController {
      */
     @POST
     @Path("/ValidateQuestion/{questionInstanceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
-    public Response ValidateQuestion(
+    public Response validateQuestion(
             @PathParam("questionInstanceId") Long questionInstanceId,
             @PathParam("playerId") Long playerId) throws WegasScriptException {
 
@@ -92,6 +92,25 @@ public class QuestionController {
      *         the canceled one anymore)
      */
     @GET
+    @Path("/ValidateReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
+    public QuestionInstance validateReply(
+            @PathParam("playerId") Long playerId,
+            @PathParam("replyId") Long replyId) {
+
+        Reply reply = questionDescriptorFacade.validateReply(playerId, replyId);
+        requestFacade.commit(playerId);
+        return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
+    }
+
+    /**
+     *
+     * @param playerId
+     * @param replyId
+     *
+     * @return questionInstance with up to date replies list (not containing)
+     *         the cancelled one anymore)
+     */
+    @GET
     @Path("/CancelReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public QuestionInstance cancelReply(
             @PathParam("playerId") Long playerId,
@@ -99,6 +118,27 @@ public class QuestionController {
 
         Reply reply = questionDescriptorFacade.cancelReply(playerId, replyId);
         requestFacade.commit(playerId);
+        return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
+    }
+
+    /**
+     *
+     * Same as CancelReply, but skip state machine check and do not send any events
+     *
+     * @param playerId
+     * @param replyId
+     *
+     * @return questionInstance with up to date replies list (not containing)
+     *         the cancelled one anymore)
+     */
+    @GET
+    @Path("/QuietCancelReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
+    public QuestionInstance quietCancelReply(
+            @PathParam("playerId") Long playerId,
+            @PathParam("replyId") Long replyId) {
+
+        Reply reply = questionDescriptorFacade.quietCancelReply(playerId, replyId);
+
         return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
     }
 
@@ -126,6 +166,28 @@ public class QuestionController {
 
     /**
      *
+     * @param playerId
+     * @param choiceId
+     * @param startTime
+     *
+     * @return p
+     */
+    @GET
+
+    @Path("/DeselectOthersAndSelectChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [0-9]*}")
+    public QuestionInstance deselectOthersAndselectChoice(
+            @PathParam("playerId") Long playerId,
+            @PathParam("choiceId") Long choiceId,
+            @PathParam("startTime") Long startTime) {
+
+        Reply reply = questionDescriptorFacade.deselectOthersAndSelectChoice(choiceId, playerId, startTime);
+
+        //requestFacade.commit(playerId);
+        return questionDescriptorFacade.getQuestionInstanceFromReply(reply);
+    }
+
+    /**
+     *
      * @param replyId
      * @param reply
      *
@@ -139,10 +201,17 @@ public class QuestionController {
         return questionDescriptorFacade.updateReply(replyId, reply);
     }
 
-
+    /**
+     * Mark a question, openQuestion or choice instance as read
+     *
+     * @param playerId the reader
+     * @param id       id of the descriptor
+     *
+     * @return
+     */
     @PUT
     @Path("Read/{playerId : [1-9][0-9]*}/{descId: [1-9][0-9]*}")
-    public QuestionInstanceI readQuestion(
+    public ReadableInstance readQuestion(
             @PathParam("playerId") Long playerId,
             @PathParam("descId") Long id) {
         return questionDescriptorFacade.readQuestion(playerId, id);

@@ -94,6 +94,7 @@ YUI().use(function(Y) {
             },
             "wegas-websocketlistener": {
                 path: "js/persistence/wegas-websocketlistener-min.js",
+                requires: "wegas-cssloader",
                 ws_provides: "WebSocketListener"
             },
             "wegas-pusher-connector": {
@@ -175,6 +176,14 @@ YUI().use(function(Y) {
                 requires: "wegas-parent",
                 ws_provides: ["List", "FlexList"]
             },
+            "wegas-layout-menu": {
+                path: "js/widget/wegas-layout-menu-min.js",
+                requires: ["wegas-parent", "wegas-layout-menucss"],
+                ws_provides: ["LayoutMenu", "I18nMenu"]
+            },
+            "wegas-layout-menucss": {
+                type: CSS
+            },
             "wegas-layout-absolute": {
                 path: "js/widget/wegas-layout-absolute-min.js",
                 requires: ["wegas-plugin", "wegas-layout-absolutecss", "wegas-cssstyles-extra", "wegas-parent"],
@@ -225,7 +234,7 @@ YUI().use(function(Y) {
             "wegas-loginbutton": {
                 path: "js/widget/wegas-loginbutton-min.js",
                 requires: ["wegas-widgetmenu", "wegas-i18n-global"],
-                ws_provides: ["LoginButton", "UserLoginButton", "RestartButton"]
+                ws_provides: ["LoginButton", "UserLoginButton", "RestartButton", "LanguageSelectionMenu"]
             },
             "wegas-chat": {
                 path: "js/widget/wegas-chat-min.js",
@@ -249,7 +258,7 @@ YUI().use(function(Y) {
             },
             "wegas-text-input": {
                 path: "js/widget/wegas-text-input-min.js",
-                ws_provides: ["TextInput", "StringInput"],
+                ws_provides: ["TextInput", "StringInput", "SaveStatusAggregator"],
                 requires: ["wegas-text-inputcss", "wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button", "event-valuechange"]
             },
             "wegas-number-inputcss": {
@@ -265,7 +274,7 @@ YUI().use(function(Y) {
             },
             "wegas-prettyprinter": {
                 path: "js/widget/wegas-prettyprinter-min.js",
-                ws_provides: ["AbstractPrettyPrinter"],
+                ws_provides: ["AbstractPrettyPrinter", "TextPrettyPrinter"],
                 requires: ["wegas-widget", "wegas-pdf-print-css"]
             },
             "wegas-text": {
@@ -279,7 +288,7 @@ YUI().use(function(Y) {
             },
             "wegas-box": {
                 path: "js/widget/wegas-box-min.js",
-                ws_provides: "Box",
+                ws_provides: ["Box", "Line"],
                 requires: "wegas-widget"
             },
             "wegas-tabview": {
@@ -793,6 +802,11 @@ YUI().use(function(Y) {
                 requires: ["wegas-modal", "wegas-plugin"],
                 ws_provides: ["ModelPropagator", "WegasPropagatorModel", "WegasPropagatorAction"]
             },
+            "wegas-find-and-replace": {
+                path: "js/widget/wegas-find-and-replace-min.js",
+                requires: ["wegas-modal", "wegas-plugin"],
+                ws_provides: ["FindAndReplace", "FindAndReplaceWidget", "FindAndReplaceModal", "FindAndReplaceAction"]
+            },
             "wegas-statemachineviewer": {
                 path: "js/widget/wegas-statemachineviewer-min.js",
                 requires: ["wegas-statemachineviewercss", "wegas-inputex-wysiwygscript", "wegas-statemachine-entities",
@@ -1150,7 +1164,7 @@ YUI().use(function(Y) {
             },
             ace: {
                 async: false,
-                path: "ace/src-min/ace.js"
+                path: "ace/src-min-noconflict/ace.js"
             },
             pusher: {
                 fullpath: "//js.pusher.com/4.3.1/pusher.min.js"

@@ -27,6 +27,10 @@ import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
+import com.wegas.core.persistence.variable.primitive.StringDescriptor;
+import com.wegas.core.persistence.variable.primitive.StringInstance;
+import com.wegas.core.persistence.variable.primitive.TextDescriptor;
+import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
@@ -257,11 +261,10 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             reviewingFacade.revivePeerReviewDescriptor((PeerReviewDescriptor) vd);
         } else if (vd instanceof TaskDescriptor) {
             resourceFacade.reviveTaskDescriptor((TaskDescriptor) vd);
-        } else if (vd instanceof DialogueDescriptor){
+        } else if (vd instanceof DialogueDescriptor) {
             this.reviveDialogue(gm, (DialogueDescriptor) vd);
         }
     }
-
 
     public void reviveDialogue(GameModel gameModel, DialogueDescriptor dialogueDescriptor) {
         for (State s : dialogueDescriptor.getStates()) {
@@ -459,6 +462,85 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
     public VariableDescriptor resetVisibility(final Long vdId, Visibility visibility) {
         return this.resetVisibility(this.find(vdId), visibility);
+    }
+
+    private AbstractScope getNewScopeFromClassName(String scopeType) {
+        AbstractScope scope;
+
+        switch (scopeType) {
+            case "TeamScope":
+                scope = new TeamScope();
+                scope.setBroadcastScope(scopeType);
+                break;
+            case "PlayerScope":
+                scope = new PlayerScope();
+                scope.setBroadcastScope(scopeType);
+                break;
+            case "GameModelScope":
+            default:
+                scope = new GameModelScope();
+                scope.setBroadcastScope("GameScope");
+                break;
+        }
+
+        return scope;
+    }
+
+    private VariableDescriptor changeScopeRecursively(VariableDescriptor vd, String newScopeType) {
+        if (!vd.getScope().getClass().getSimpleName().equals(newScopeType)) {
+            this.updateScope(vd, getNewScopeFromClassName(newScopeType));
+        }
+
+        if (vd instanceof DescriptorListI) {
+            for (VariableDescriptor child : (List<? extends VariableDescriptor>) ((DescriptorListI) vd).getItems()) {
+                this.changeScopeRecursively(child, newScopeType);
+            }
+        }
+        return vd;
+    }
+
+    public VariableDescriptor changeScopeRecursively(Long vdId, String newScopeType) {
+        return this.changeScopeRecursively(this.find(vdId), newScopeType);
+    }
+
+    public VariableDescriptor convertToList(VariableDescriptor vd) {
+
+        TranslatableContent label = null;
+        if (vd instanceof TextDescriptor) {
+            TextInstance ti = (TextInstance) vd.getDefaultInstance();
+            label = ti.getTrValue();
+            ti.setTrValue(null);
+        } else if (vd instanceof StringDescriptor) {
+            StringInstance si = (StringInstance) vd.getDefaultInstance();
+            label = si.getTrValue();
+            si.setTrValue(null);
+        }
+
+        if (label != null) {
+            ListDescriptor ld = new ListDescriptor();
+            ld.setDefaultInstance(new ListInstance());
+            ld.setEditorTag(vd.getEditorTag());
+            String vdName = vd.getName();
+            ld.setScope(new GameModelScope());
+            ld.getScope().setBroadcastScope("GameScope");
+
+            ld.setLabel(label);
+
+            DescriptorListI parent = vd.getParent();
+            GameModel gameModel = vd.getGameModel();
+
+            this.remove(vd);
+
+            this.createChild(gameModel, parent, ld);
+
+            ld.setName(vdName);
+        }
+
+        return vd;
+    }
+
+    public VariableDescriptor convertToList(Long vdId) {
+        return this.convertToList(this.find(vdId));
     }
 
     @Override

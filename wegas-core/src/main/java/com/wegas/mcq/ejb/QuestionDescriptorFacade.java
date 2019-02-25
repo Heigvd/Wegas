@@ -162,9 +162,10 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         }
     }
 
-    public QuestionInstanceI readQuestion(Long playerId, Long qdId) {
+    public ReadableInstance readQuestion(Long playerId, Long qdId) {
         VariableDescriptor desc = variableDescriptorFacade.find(qdId);
-        QuestionInstanceI instance = (QuestionInstanceI) variableDescriptorFacade.getInstance(desc, playerFacade.find(playerId));
+
+        ReadableInstance instance = (ReadableInstance) variableDescriptorFacade.getInstance(desc, playerFacade.find(playerId));
 
         instance.setUnread(false);
 
@@ -283,7 +284,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @param playerId id of player who wants to cancel the reply
      * @param replyId  id of reply to cancel
      *
-     * @return reply being canceled
+     * @return reply being cancelled
      */
     private Reply internalCancelReply(Long replyId) {
         final Reply reply = this.getEntityManager().find(Reply.class, replyId);
@@ -293,8 +294,12 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
     }
 
     private Reply internalCancelReply(Reply reply) {
-        this.getEntityManager().remove(reply);
-        return reply;
+        if (!reply.isValidated()) {
+            this.getEntityManager().remove(reply);
+            return reply;
+        } else {
+            throw WegasErrorMessage.error("Cannot cancel a validated reply");
+        }
     }
 
     /**
@@ -325,16 +330,22 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
     }
 
     /**
-     * create a reply for given player based on given choice
+     * create a reply for given player based on given choice.
+     * <p>
+     * Pre existing not validated reply will be cancelled if the question accept one reply only.
      *
      * @param choiceId  selected choice
      * @param player    player who select the choice
      * @param startTime time the player select the choice
+     * @param quiet     a quiet selectChoice do not send any lock to others users and do not fire any replySelect event
      *
      * @return the new reply
+     *
+     * @throws WegasErrorMessage if the question is fully validated or the maximum number of replies has been reached
      */
     @Override
-    public Reply selectChoice(Long choiceId, Player player, Long startTime) {
+    public Reply selectChoice(Long choiceId, Player player, Long startTime, boolean quiet)
+            throws WegasErrorMessage {
         ChoiceDescriptor choice = getEntityManager().find(ChoiceDescriptor.class, choiceId);
         QuestionDescriptor questionDescriptor = choice.getQuestion();
         QuestionInstance questionInstance = questionDescriptor.getInstance(player);
@@ -343,7 +354,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             throw WegasErrorMessage.error("This question has already been validated/discarded");
         }
 
-        requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getEffectiveOwner());
+        if (!quiet) {
+            requestFacade.getRequestManager().lock("MCQ-" + questionInstance.getId(), questionInstance.getEffectiveOwner());
+        }
 
         Integer maxQ = questionDescriptor.getMaxReplies();
         Integer maxC;
@@ -362,9 +375,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                 toCancel.add(r);
             }
 
-            /*
-             * Two steps deletion avoids concurrent modification exception
-             */
+            /* Two steps deletion avoids concurrent modification exception */
             for (Reply r : toCancel) {
                 this.cancelReply(player.getId(), r.getId());
             }
@@ -387,11 +398,14 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         }
 
         Reply reply = this.createReply(choiceId, player, startTime, false);
-        try {
-            scriptEvent.fire(player, "replySelect", new ReplyValidate(reply));
-        } catch (WegasScriptException e) {
-            // GOTCHA no eventManager is instantiated
-            logger.error("EventListener error (\"replySelect\")", e);
+
+        if (!quiet) {
+            try {
+                scriptEvent.fire(player, "replySelect", new ReplyValidate(reply));
+            } catch (WegasScriptException e) {
+                // GOTCHA no eventManager is instantiated
+                logger.error("EventListener error (\"replySelect\")", e);
+            }
         }
 
         return reply;
@@ -407,8 +421,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @return the new reply
      */
     @Override
-    public Reply selectChoice(Long choiceId, Long playerId) {
-        return this.selectChoice(choiceId, playerFacade.find(playerId), (long) 0);
+    public Reply selectChoice(Long choiceId, Long playerId
+    ) {
+        return this.selectChoice(choiceId, playerFacade.find(playerId), 0l, false);
     }
 
     /**
@@ -419,8 +434,47 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @return the new reply
      */
     @Override
-    public Reply selectChoice(Long choiceId, Long playerId, Long startTime) {
-        return this.selectChoice(choiceId, playerFacade.find(playerId), startTime);
+    public Reply selectChoice(Long choiceId, Long playerId,
+            Long startTime
+    ) {
+        return this.selectChoice(choiceId, playerFacade.find(playerId), startTime, false);
+    }
+
+    /**
+     * {@link #selectChoice(java.lang.Long, java.lang.Long, java.lang.Long) selectChoice}
+     * with startTime = 0
+     *
+     * @param choiceId
+     * @param player
+     * @param startTime
+     *
+     * @return the new reply
+     */
+    @Override
+    public Reply deselectOthersAndSelectChoice(Long choiceId, Player player, Long startTime) {
+        ChoiceDescriptor choice = getEntityManager().find(ChoiceDescriptor.class, choiceId);
+        QuestionDescriptor questionDescriptor = choice.getQuestion();
+        QuestionInstance questionInstance = questionDescriptor.getInstance(player);
+
+        List<Reply> pendingReplies = questionInstance.getReplies(player, Boolean.FALSE);
+        for (Reply r : pendingReplies) {
+            this.internalCancelReply(r);
+            //this.cancelReplyTransactional(player, r);
+        }
+
+        return this.selectChoice(choiceId, player, startTime, true);
+    }
+
+    /**
+     * @param choiceId  selected choice id
+     * @param playerId  id of player who select the choice
+     * @param startTime
+     *
+     * @return the new reply
+     */
+    @Override
+    public Reply deselectOthersAndSelectChoice(Long choiceId, Long playerId, Long startTime) {
+        return this.deselectOthersAndSelectChoice(choiceId, playerFacade.find(playerId), startTime);
     }
 
     /**
@@ -436,7 +490,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
     @Override
     public Reply selectAndValidateChoice(Long choiceId, Long playerId) {
         Player player = playerFacade.find(playerId);
-        Reply reply = this.selectChoice(choiceId, player, (long) 0);
+        Reply reply = this.selectChoice(choiceId, player, 0l, false);
         //try {
         //this.validateReply(player, reply.getId());
         this.validateReply(player, reply);
@@ -459,7 +513,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @param player player who wants to cancel the reply
      * @param reply  the reply to cancel
      *
-     * @return reply being canceled
+     * @return reply being cancelled
      */
     public Reply cancelReplyTransactional(Player player, Reply reply) {
         Reply r = this.internalCancelReply(reply);
@@ -476,7 +530,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @param player  player who wants to cancel the reply
      * @param replyId id of reply to cancel
      *
-     * @return reply being canceled
+     * @return reply being cancelled
      */
     public Reply cancelReplyTransactional(Player player, Long replyId) {
         Reply reply = this.internalCancelReply(replyId);
@@ -493,7 +547,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @param playerId id of player who wants to cancel the reply
      * @param replyId  id of reply to cancel
      *
-     * @return reply being canceled
+     * @return reply being cancelled
      */
     public Reply cancelReplyTransactional(Long playerId, Long replyId) {
         Player player = playerFacade.find(playerId);
@@ -504,46 +558,66 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @param playerId id of player who wants to cancel the reply
      * @param replyId  id of reply to cancel
      *
-     * @return reply being canceled
+     * @return reply being cancelled
      */
     @Override
     public Reply cancelReply(Long playerId, Long replyId) {
         return this.cancelReplyTransactional(playerId, replyId);
     }
 
+
+    /**
+     * @param playerId id of player who wants to cancel the reply
+     * @param replyId  id of reply to cancel
+     *
+     * @return reply being cancelled
+     */
+    public Reply quietCancelReply(Long playerId, Long replyId) {
+        return this.internalCancelReply(replyId);
+    }
+
+
+
     /**
      * @param player
-     * @param validateReply
+     * @param reply
      *
-     * @throws com.wegas.core.exception.client.WegasRuntimeException
+     * @throws WegasRuntimeException
      */
     @Override
-    public void validateReply(final Player player, final Reply validateReply) throws WegasRuntimeException {
-        final ChoiceDescriptor choiceDescriptor = validateReply.getResult().getChoiceDescriptor();
-        validateReply.setResult(choiceDescriptor.getInstance(player).getResult());// Refresh the current result
+    public Reply validateReply(final Player player, final Reply reply) throws WegasRuntimeException {
+        if (!reply.isValidated()) {
+            reply.setValidated(true);
 
-        if (validateReply.getIgnored()) {
-            scriptManager.eval(player, validateReply.getResult().getIgnorationImpact(), choiceDescriptor);
-        } else {
-            scriptManager.eval(player, validateReply.getResult().getImpact(), choiceDescriptor);
-        }
-        ChoiceInstance choiceInstance = validateReply.getChoiceInstance();
+            final ChoiceDescriptor choiceDescriptor = reply.getResult().getChoiceDescriptor();
+            reply.setResult(choiceDescriptor.getInstance(player).getResult());// Refresh the current result
 
-        final ReplyValidate replyV = new ReplyValidate(validateReply, choiceInstance,
-                (QuestionInstance) choiceDescriptor.getQuestion().getInstance(player),
-                player);
-        try {
-            requestManager.addUpdatedEntities(choiceDescriptor.getEntities());
-            if (validateReply.getIgnored()) {
-                scriptEvent.fire(player, "replyIgnore", replyV);
+            if (reply.getIgnored()) {
+                scriptManager.eval(player, reply.getResult().getIgnorationImpact(), choiceDescriptor);
             } else {
-                scriptEvent.fire(player, "replyValidate", replyV);
+                scriptManager.eval(player, reply.getResult().getImpact(), choiceDescriptor);
             }
-        } catch (WegasRuntimeException e) {
-            logger.error("EventListener error (\"replyValidate\")", e);
-            // GOTCHA no eventManager is instantiated
+            ChoiceInstance choiceInstance = reply.getChoiceInstance();
+
+            final ReplyValidate replyV = new ReplyValidate(reply, choiceInstance,
+                    (QuestionInstance) choiceDescriptor.getQuestion().getInstance(player),
+                    player);
+            try {
+                requestManager.addUpdatedEntities(choiceDescriptor.getEntities());
+                if (reply.getIgnored()) {
+                    scriptEvent.fire(player, "replyIgnore", replyV);
+                } else {
+                    scriptEvent.fire(player, "replyValidate", replyV);
+                }
+            } catch (WegasRuntimeException e) {
+                logger.error("EventListener error (\"replyValidate\")", e);
+                // GOTCHA no eventManager is instantiated
+            }
+            this.replyValidate.fire(replyV);
+            return reply;
+        } else {
+            throw WegasErrorMessage.error("This reply has already been validated");
         }
-        this.replyValidate.fire(replyV);
     }
 
     /**
@@ -551,8 +625,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @param replyVariableInstanceId
      */
     @Override
-    public void validateReply(Player player, Long replyVariableInstanceId) {
-        this.validateReply(player, getEntityManager().find(Reply.class, replyVariableInstanceId));
+    public Reply validateReply(Player player, Long replyVariableInstanceId) {
+        return this.validateReply(player, getEntityManager().find(Reply.class, replyVariableInstanceId));
     }
 
     /**
@@ -560,8 +634,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @param replyVariableInstanceId
      */
     @Override
-    public void validateReply(Long playerId, Long replyVariableInstanceId) {
-        this.validateReply(playerFacade.find(playerId), replyVariableInstanceId);
+    public Reply validateReply(Long playerId, Long replyVariableInstanceId) {
+        return this.validateReply(playerFacade.find(playerId), replyVariableInstanceId);
     }
 
     public void validateQuestion(final VariableInstance question, final Player player) throws WegasRuntimeException {
@@ -671,6 +745,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @param questionInstanceId
      * @param playerId
      */
+    @Override
     public void validateQuestion(Long questionInstanceId, Long playerId) {
         this.validateQuestion(questionInstanceId, playerFacade.find(playerId));
     }
@@ -856,7 +931,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                 }
 
                 if (showReplies) {
-                    List<Reply> replies = qi.getReplies(self);
+                    List<Reply> replies = qi.getSortedReplies(self);
                     String title;
                     if (replies.size() > 1) {
                         title = (String) translate.call(i18n, "question.results", null, code);

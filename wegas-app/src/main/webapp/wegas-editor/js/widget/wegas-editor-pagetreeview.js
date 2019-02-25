@@ -37,23 +37,11 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                             parentNode: "yui3-treeview"
                         }]
                 });
-                this.toolbar.add({
-                    label: "<span class=\"fa fa-plus-circle\"></span> New",
-                    on: {
-                        click: Y.bind(function() {
-                            DATASOURCE.createPage(PageTreeview.DEFAULT_NEWPAGE, Y.bind(function(page, id) {
-                                this.changePage(id, Y.bind(function(id) {
-                                    this.treeView.some(function() {
-                                        if (+this.get("data.page") === +id) {
-                                            this.fire("click");
-                                            return true;
-                                        }
-                                    });
-                                }, this, id), true);
-                            }, this));
-                        }, this)
-                    }
-                });
+
+                var header = this.toolbar.get("header");
+                this.btnNew = new Y.Button({
+                    label: "<span class=\"fa fa-plus-circle\"></span> New page"
+                }).render(header);
             }
             this.getIndex();
         },
@@ -123,7 +111,13 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
 
             this.handlers.push(DATASOURCE.after("pageUpdated", function(e) {
                 //this.showOverlay();
-                this.getIndex();
+                if (e.page) {
+                    // useless to update the tree view  now as the page as not been updated yet
+                    // one should wait for the *:addChild event
+                    //this.updatePageIndex(e.page);
+                } else {
+                    this.getIndex();
+                }
             }, this));
 
             //if (this.get("pageLoader")) {
@@ -136,7 +130,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             }));
             this.handlers.push(Y.after("edit-entity:edit", function(e) {
                 var cur = this.treeView.find(function(item) {
-                    if (item.get("data.page") !== undefined && e.entity["@pageId"] && item.get("data.page") === e.entity["@pageId"]){
+                    if (item.get("data.page") !== undefined && e.entity["@pageId"] && item.get("data.page") === e.entity["@pageId"]) {
                         return true;
                     }
                     return item.get("data.widget") ?
@@ -153,6 +147,50 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             this.handlers.push(Y.after("edit-entity:cancel", function(e) {
                 this.currentSelection = -1;
                 this.treeView.set("selected", 0);
+            }, this));
+
+            // Initialize the 'New page' button menu :
+            var menu = [];
+            menu.push({
+                type: "Button",
+                label: "Standard (Flex layout)",
+                on: {
+                    click: Y.bind(
+                        function(e) {
+                            this.newPage({
+                                type: "FlexList"
+                            })
+                        }, this)
+                }
+            });
+            menu.push({
+                type: "Button",
+                label: "Beginner (Absolute layout)",
+                on: {
+                    click: Y.bind(
+                        function(e) {
+                            this.newPage({
+                                type: "AbsoluteLayout"
+                            })
+                        }, this)
+                }
+            });
+
+            this.btnNew.plug(Plugin.WidgetMenu, {
+                children: menu
+            });
+
+        },
+        newPage: function(pageType) {
+            DATASOURCE.createPage(pageType, Y.bind(function(page, id) {
+                this.changePage(id, Y.bind(function(id) {
+                    this.treeView.some(function() {
+                        if (+this.get("data.page") === +id) {
+                            this.fire("click");
+                            return true;
+                        }
+                    });
+                }, this, id), true);
             }, this));
         },
         getIndex: function() {
@@ -207,28 +245,75 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             }
             node.add(treeNode);
         },
+        updateWidget: function(e) {
+            var updatedWidget = e.target || e.currentTarget; // currentTarget is the page, target the widget
+            var currentNode;
+
+            var isPage = !!updatedWidget["@pageId"];
+
+            // fetch the node whom the updated child belongs
+            currentNode = this.treeView.find(function(item) {
+                if (isPage) {
+                    return item.get("data.page") === updatedWidget["@pageId"];
+                } else {
+                    if (item.get("data.widget")) {
+                        return item.get("data.widget") === updatedWidget;
+                    }
+                }
+            });
+
+            if (currentNode) {
+                var state = this.treeView.saveState();
+                var scrollTop = this.get("contentBox").getDOMNode().scrollTop;
+                currentNode.destroyAll();
+
+                if (isPage) {
+                    // rebuild the while page tree
+                    this.buildSub(currentNode, updatedWidget);
+                } else {
+                    /*
+                     * after a widget.rebuild(), update references.
+                     */
+                    e.currentTarget.detach("*:addChild", this.updateWidget, this);
+                    e.currentTarget.onceAfter("*:addChild", this.updateWidget, this);
+
+                    updatedWidget.each(function(item) {
+                        this.buildSubTree(currentNode, item);
+                    }, this);
+
+                }
+                this.treeView.applyState(state);
+
+                // transitoin duration definee in treeview.css: 150ms
+                Y.later(155, this, function() {
+                    this.get("contentBox").getDOMNode().scrollTop = scrollTop;
+                });
+            } else {
+                // node not found:  update whole treeview
+                this.getIndex();
+            }
+        },
+        buildSub: function(node, widget) {
+            this.buildSubTree(node, widget);
+            if (node.item(0) && node.item(0).expand) {
+                node.item(0).expand(false);
+            }
+            /*
+             * after a widget.rebuild(), update references.
+             */
+            if (node.item(0)) {
+                node.item(0).get("data.widget").detach("*:addChild", this.updateWidget, this);
+                node.item(0).get("data.widget").onceAfter("*:addChild", this.updateWidget, this);
+            }
+        },
         buildIndex: function(index) {
             var i, node,
                 page = -1,
                 twState, tmpPageId,
                 pageWidget,
                 isDefaultPage = true,
-                pageFound = false,
-                buildSub = function(node, widget) {
-                    this.buildSubTree(node, widget);
-                    if (node.item(0) && node.item(0).expand) {
-                        node.item(0).expand(false);
-                    }
-                    this.treeView.applyState(twState);
-                    this.hideOverlay();
-                    /*
-                     * after a widget.rebuild(), update references.
-                     */
-                    if (node.item(0)) {
-                        node.item(0).get("data.widget").detach("*:addChild", this.getIndex, this);
-                        node.item(0).get("data.widget").onceAfter("*:addChild", this.getIndex, this);
-                    }
-                };
+                pageFound = false;
+
             if (this.get("pageLoader")) {
                 page = this.get("pageLoader")._pageId;
                 pageWidget = this.get("pageLoader").get("widget");
@@ -264,7 +349,9 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                         pageFound = true;
 
                         node.get(BOUNDING_BOX).addClass("current-page");
-                        buildSub.call(this, node, pageWidget);
+                        this.buildSub(node, pageWidget);
+                        this.hideOverlay();
+                        this.treeView.applyState(twState);
                     }
                     node.set("collapsed", (tmpPageId !== "" + page));
                 }
@@ -367,9 +454,6 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
         }
     }, {
         CSS_PREFIX: "wegas-page-editor",
-        DEFAULT_NEWPAGE: {
-            type: "AbsoluteLayout"
-        },
         ATTRS: {
             pageLoader: {
                 value: "previewPageLoader",

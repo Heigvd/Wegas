@@ -14,7 +14,7 @@ var I18nHelper = (function() {
         return ps;
     }
 
-    function fetchTranslations(node, code, path) {
+    function fetchTranslations(node, code, path, sensitiveCaseCode) {
         var key, child, keys, i, j, results = [], result;
 
         path = path || "";
@@ -37,7 +37,8 @@ var I18nHelper = (function() {
                         // only extract i18nV2 translation
                         for (i in properties.translations.properties) {
                             p = properties.translations.properties[i];
-                            if (p.key.value.toUpperCase() === code) {
+                            if ((sensitiveCaseCode && p.key.value === code) || (
+                                !sensitiveCaseCode && p.key.value.toUpperCase() === code)) {
                                 var trProps = mapProperties(p.value);
 
                                 // needle found
@@ -73,14 +74,14 @@ var I18nHelper = (function() {
                 if (Array.isArray(child)) {
                     // process all items in arry
                     for (j = 0; j < child.length; j++) {
-                        result = fetchTranslations(child[j], code, path + "/" + key + "[" + j + "]");
+                        result = fetchTranslations(child[j], code, path + "/" + key + "[" + j + "]", sensitiveCaseCode);
                         if (result && result.length > 0) {
                             results = results.concat(result);
                         }
                     }
                 } else if (child instanceof Object && typeof child.type === "string") {
                     // the child is an object which contains a type property
-                    result = fetchTranslations(child, code, path + "/" + key);
+                    result = fetchTranslations(child, code, path + "/" + key, sensitiveCaseCode);
                     if (result && result.length > 0) {
                         results = results.concat(result);
                     }
@@ -149,7 +150,7 @@ var I18nHelper = (function() {
         // parse impact and expose node location
         ast = parse(impact, "impact", true);
 
-        results = fetchTranslations(ast, code);
+        results = fetchTranslations(ast, code, undefined, true);
         if (results && results.length > index) {
             loc = results[index];
         } else {

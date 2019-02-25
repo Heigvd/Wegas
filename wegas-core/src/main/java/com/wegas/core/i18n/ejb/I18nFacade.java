@@ -8,11 +8,14 @@
 package com.wegas.core.i18n.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.api.I18nFacadeI;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.ScriptFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.WegasAbstractFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.i18n.deepl.Deepl;
 import com.wegas.core.i18n.deepl.DeeplTranslations;
 import com.wegas.core.i18n.deepl.DeeplUsage;
@@ -24,12 +27,15 @@ import com.wegas.core.i18n.rest.ScriptUpdate;
 import com.wegas.core.i18n.rest.TranslationUpdate;
 import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.merge.utils.MergeHelper.MergeableVisitor;
+import com.wegas.core.merge.utils.WegasEntitiesHelper;
+import com.wegas.core.merge.utils.WegasEntityFields;
 import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
@@ -55,10 +61,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.naming.NamingException;
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
@@ -73,7 +82,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class I18nFacade extends WegasAbstractFacade {
+public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
 
     private static final Logger logger = LoggerFactory.getLogger(I18nFacade.class);
 
@@ -82,6 +91,9 @@ public class I18nFacade extends WegasAbstractFacade {
 
     @Inject
     private ScriptFacade scriptFacade;
+
+    @Inject
+    private VariableDescriptorFacade variableDescriptorFacade;
 
     public static enum UpdateType {
         /**
@@ -297,7 +309,7 @@ public class I18nFacade extends WegasAbstractFacade {
         Map<String, Object> args = new HashMap<>();
         args.put("impact", impact);
         args.put("index", index);
-        args.put("code", code.toUpperCase());
+        args.put("code", code);
         args.put("newValue", newValue);
 
         ScriptContext ctx = new SimpleScriptContext();
@@ -456,7 +468,30 @@ public class I18nFacade extends WegasAbstractFacade {
     }
 
     public String updateScriptWithNewTranslation(String impact, int index, String code, String newValue, String newTrStatus) throws ScriptException {
-        JSObject result = (JSObject) fishTranslationLocation(impact, index, code, newValue);
+
+        JSObject result;
+
+        if (code.equals(code.toUpperCase())) {
+            result = (JSObject) fishTranslationLocation(impact, index, code, newValue);
+        } else {
+            JSObject lowerCaseResult = (JSObject) fishTranslationLocation(impact, index, code, newValue);
+
+            String lowerStatus = (String) lowerCaseResult.getMember("status");
+
+            if (lowerStatus.equals("found")) {
+                result = lowerCaseResult;
+            } else {
+                JSObject upperCaseResult = (JSObject) fishTranslationLocation(impact, index, code.toUpperCase(), newValue);
+                String upperStatus = (String) upperCaseResult.getMember("status");
+
+                if (upperStatus.equals("found") || upperStatus.equals("missingCode")) {
+                    // no lower case, but a upper case one
+                    result = upperCaseResult;
+                } else {
+                    result = lowerCaseResult;
+                }
+            }
+        }
 
         if (result != null) {
 
@@ -503,7 +538,7 @@ public class I18nFacade extends WegasAbstractFacade {
                         Integer endIndex = indexes[1];
                         StringBuilder sb = new StringBuilder(impact);
                         // insert new code property right after opening bracket
-                        sb.replace(startIndex + 1, startIndex + 1, "\"" + code + "\": " + translation + ", ");
+                        sb.replace(startIndex + 1, startIndex + 1, "\"" + code.toUpperCase() + "\": " + translation + ", ");
                         return sb.toString();
                     }
                 default:
@@ -557,11 +592,11 @@ public class I18nFacade extends WegasAbstractFacade {
         return null;
     }
 
-    public List<AbstractEntity> batchUpdate(List<I18nUpdate> i18nUpdates) throws ScriptException {
+    public List<AbstractEntity> batchUpdate(List<I18nUpdate> i18nUpdates, UpdateType updateType) throws ScriptException {
         List<AbstractEntity> updatedEntities = new ArrayList<>();
 
         for (I18nUpdate update : i18nUpdates) {
-            AbstractEntity r = this.update(update, UpdateType.MINOR);
+            AbstractEntity r = this.update(update, updateType);
 
             if (r != null) {
                 updatedEntities.add(r);
@@ -739,12 +774,16 @@ public class I18nFacade extends WegasAbstractFacade {
     }
 
     public AbstractEntity update(I18nUpdate update, UpdateType type) throws ScriptException {
+        UpdateType eType = type;
+        if (eType == null) {
+            eType = UpdateType.MINOR;
+        }
         if (update instanceof TranslationUpdate) {
-            return this.trUpdate((TranslationUpdate) update, type);
+            return this.trUpdate((TranslationUpdate) update, eType);
         } else if (update instanceof InScriptUpdate) {
-            return this.inScriptUpdate((InScriptUpdate) update, type);
+            return this.inScriptUpdate((InScriptUpdate) update, eType);
         } else if (update instanceof ScriptUpdate) {
-            return this.scriptUpdate((ScriptUpdate) update, type);
+            return this.scriptUpdate((ScriptUpdate) update, eType);
         } else {
             throw WegasErrorMessage.error("Unknown Update Type: " + update);
         }
@@ -951,7 +990,7 @@ public class I18nFacade extends WegasAbstractFacade {
                     if (gameModel.getLanguageByCode(targetLangCode) != null) {
 
                         try {
-                            translateGameModel(gameModel, sourceLang.name(), targetLang.name());
+                            translateGameModel(gameModel, sourceLang.name(), targetLang.name(), true);
                         } catch (UnsupportedEncodingException ex) {
                             throw WegasErrorMessage.error("Unsupported encoding exception " + ex);
                         }
@@ -1003,20 +1042,6 @@ public class I18nFacade extends WegasAbstractFacade {
     }
 
     /**
-     * Is target protected ?
-     * to be protected, the target must belongs to a protectedGameModel (i.e. a scenario which depends on a model)
-     * and must stand in a protected scope according to the current protection level and its inherited visiility
-     *
-     * @param target
-     * @param protectionLevel
-     *
-     * @return
-     */
-    private boolean isProtected(Mergeable target, ProtectionLevel protectionLevel) {
-        return target.belongsToProtectedGameModel() && Helper.isProtected(protectionLevel, target.getInheritedVisibility());
-    }
-
-    /**
      * Automatic translation.
      * For each encountered translatable content, auto-translate targetLangCode tr from sourceLangCode on.
      */
@@ -1025,16 +1050,30 @@ public class I18nFacade extends WegasAbstractFacade {
         private final I18nFacade i18nFacade;
 
         private final String langCode;
+        private final String refCode;
 
         private List<I18nUpdate> patchList = new LinkedList<>();
 
-        public TranslationExtractor(String langCode, I18nFacade facade) {
+        public TranslationExtractor(String langCode, I18nFacade facade, String refCode) {
             this.langCode = langCode;
             this.i18nFacade = facade;
+            this.refCode = refCode;
         }
 
         public List<I18nUpdate> getPatches() {
             return patchList;
+        }
+
+        private String getTranslation(JSObject inScript, String key) {
+            if (inScript != null) {
+                if (key != null) {
+                    JSObject tr = (JSObject) inScript.getMember(key);
+                    if (tr.getMember("status").equals("found")) {
+                        return (String) tr.getMember("trValue");
+                    }
+                }
+            }
+            return null;
         }
 
         @Override
@@ -1044,32 +1083,38 @@ public class I18nFacade extends WegasAbstractFacade {
                 Translation source = trTarget.getTranslation(langCode);
 
                 if (source != null && !Helper.isNullOrEmpty(source.getTranslation())) {
-                    if (!i18nFacade.isProtected(trTarget, protectionLevel)) {
-                        TranslationUpdate trUpdate = new TranslationUpdate();
-                        trUpdate.setTrId(trTarget.getId());
-                        trUpdate.setCode(langCode);
-                        trUpdate.setValue(source.getTranslation());
-                        patchList.add(trUpdate);
+                    if (!this.isProtected(trTarget, protectionLevel)) {
+                        if (Helper.isNullOrEmpty(refCode) // re required empty translation
+                                || trTarget.getTranslation(refCode) == null // requiered empty is null
+                                || Helper.isNullOrEmpty(trTarget.getTranslation(refCode).getTranslation())) { // exists but is empty
+                            TranslationUpdate trUpdate = new TranslationUpdate();
+                            trUpdate.setTrId(trTarget.getId());
+                            trUpdate.setCode(langCode);
+                            trUpdate.setValue(source.getTranslation());
+                            patchList.add(trUpdate);
+                        }
                     }
                 }
             }
 
             if (target instanceof Script) {
-                if (!i18nFacade.isProtected(target, protectionLevel)) {
+                if (!this.isProtected(target, protectionLevel)) {
                     Script script = (Script) target;
 
                     Mergeable parent = ancestors.getFirst();
                     if (parent instanceof AbstractEntity) {
                         try {
                             JSObject inscript = (JSObject) i18nFacade.fishTranslationsByCode(script.getContent(), langCode);
+                            JSObject targetInScript = null;
+                            if (!Helper.isNullOrEmpty(refCode)) {
+                                targetInScript = (JSObject) i18nFacade.fishTranslationsByCode(script.getContent(), refCode);
+                            }
 
                             if (inscript != null) {
                                 int index = 0;
                                 for (String key : inscript.keySet()) {
-                                    JSObject tr = (JSObject) inscript.getMember(key);
-
-                                    if (tr.getMember("status").equals("found")) {
-                                        String translation = (String) tr.getMember("trValue");
+                                    String translation = getTranslation(inscript, key);
+                                    if (!Helper.isNullOrEmpty(translation) && Helper.isNullOrEmpty(getTranslation(targetInScript, key))) {
                                         InScriptUpdate patch = new InScriptUpdate();
                                         patch.setParentClass(parent.getClass().getSimpleName());
                                         patch.setParentId(((AbstractEntity) parent).getId());
@@ -1103,11 +1148,12 @@ public class I18nFacade extends WegasAbstractFacade {
      * @param target         entity to translate
      * @param sourceLangCode translation sources language
      * @param targetLangCode target languages
+     * @param initOnly       do not override existing texts
      *
      * @throws ScriptException
      */
-    private void translateGameModel(Mergeable target, String sourceLangCode, String targetLangCode) throws ScriptException, UnsupportedEncodingException {
-        TranslationExtractor extractor = new TranslationExtractor(sourceLangCode, this);
+    private void translateGameModel(Mergeable target, String sourceLangCode, String targetLangCode, boolean initOnly) throws ScriptException, UnsupportedEncodingException {
+        TranslationExtractor extractor = new TranslationExtractor(sourceLangCode, this, initOnly ? targetLangCode : null);
         MergeHelper.visitMergeable(target, Boolean.TRUE, extractor);
         List<I18nUpdate> patches = extractor.getPatches();
 
@@ -1165,7 +1211,7 @@ public class I18nFacade extends WegasAbstractFacade {
             }
         }
 
-        this.batchUpdate(patches);
+        this.batchUpdate(patches, UpdateType.OUTDATE);
     }
 
     /**
@@ -1386,5 +1432,89 @@ public class I18nFacade extends WegasAbstractFacade {
 
     public void importTranslations(Mergeable target, Mergeable source, Mergeable sourceRef, String languageCode) {
         MergeHelper.visitMergeable(target, Boolean.TRUE, new TranslationsImporter(languageCode, this), source, sourceRef);
+    }
+
+    @Override
+    public String interpolate(String str, Player player) {
+        try {
+            GameModel gameModel = player.getGameModel();
+
+            String p = "\\{\\{([\\w _\\.\\(\\)]*)\\}\\}";
+            Pattern pattern = Pattern.compile(p);
+            Matcher matcher = pattern.matcher(str);
+
+            while (matcher.find()) {
+                String value = matcher.group(1);
+                String[] params = value.split("\\.");
+                String param = params[0];
+                Object entity = null;
+
+                Matcher m2 = Pattern.compile("Variable\\((.*)\\)").matcher(param);
+                if (m2.find()) {
+                    entity = variableDescriptorFacade.find(gameModel, m2.group(1));
+                } else {
+                    m2 = Pattern.compile("VariableInstance\\((.*)\\)").matcher(param);
+                    if (m2.find()) {
+                        entity = variableDescriptorFacade.find(gameModel, m2.group(1)).getInstance(player);
+                    } else if ("Player".equals(param)) {
+                        entity = player;
+                    } else if ("Team".equals(param)) {
+                        entity = player.getTeam();
+                    } else if ("Game".equals(param)) {
+                        entity = player.getGame();
+                    } else if ("GameModel".equals(param)) {
+                        entity = gameModel;
+                    }
+                }
+
+                if (entity != null) {
+                    for (int i = 1; i < params.length; i++) {
+                        param = params[i];
+                        if (entity instanceof Mergeable) {
+                            Mergeable m = (Mergeable) entity;
+                            WegasEntityFields fields = WegasEntitiesHelper.getEntityIterator(m.getClass());
+                            WegasFieldProperties field = fields.getField(param);
+                            entity = field.getPropertyDescriptor().getReadMethod().invoke(entity);
+                        } else if (entity instanceof List) {
+                            List l = (List) entity;
+                            entity = l.get(Integer.parseInt(param, 10));
+                        } else if (entity instanceof Map) {
+                            Map map = (Map) entity;
+                            entity = map.get(param);
+                        }
+                    }
+
+                    if (entity != null) {
+                        String newValue;
+                        if (entity instanceof TranslatableContent) {
+                            newValue = interpolate(((TranslatableContent) entity).translateOrEmpty(player), player);
+                        } else {
+                            newValue = entity.toString();
+                        }
+
+                        str = matcher.replaceFirst(newValue);
+                        matcher.reset(str);
+                    }
+
+                }
+            }
+
+            return str;
+
+        } catch (WegasNoResultException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            throw WegasErrorMessage.error("Something went wrong: " + ex);
+        }
+    }
+
+    /**
+     * @return Looked-up EJB
+     */
+    public static I18nFacade lookup() {
+        try {
+            return Helper.lookupBy(I18nFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving var desc facade", ex);
+            return null;
+        }
     }
 }

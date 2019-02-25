@@ -315,10 +315,10 @@ YUI.add('wegas-app', function(Y) {
          * @public
          */
         destructor: function() {
+            this.widget.destroy();
             Y.Object.each(this.dataSources, function(i) {
                 i.destroy();
             });
-            this.widget.destroy();
         },
         // ** Private methods ** //
         /**

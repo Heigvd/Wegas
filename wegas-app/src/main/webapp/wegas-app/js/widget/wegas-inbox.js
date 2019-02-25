@@ -36,25 +36,45 @@ YUI.add('wegas-inbox', function(Y) {
         initializer: function() {
             this.handlers = {};
         },
-        syncUI: function() {
-            var cb = this.get("contentBox"),
-                messages = this.get("variable.evaluated").getInstance().get("messages"),
-                messageId = this.get("messageId"),
-                message;
-
-            message = Y.Array.find(messages, function(item) {
+        getMessage: function() {
+            var messages = this.get("variable.evaluated").getInstance().get("messages"),
+                messageId = this.get("messageId");
+            return Y.Array.find(messages, function(item) {
                 return item.get("id") === messageId;
             });
+        },
+        updateContent: function(selector, newValue){
+            var node = this.get("contentBox").one(selector);
+            // @hack injector: Place both href and src so it works for a and img tags
+            var v = newValue.replace(
+                new RegExp('data-file="([^"]*)"', 'gi'),
+                "src=\"" + Y.Wegas.Facade.File.getPath() + "$1\""
+                + " href=\"" + Y.Wegas.Facade.File.getPath() + "$1\"");
+
+            if (node.getContent() !== v){
+                node.setContent(v);
+            }
+        },
+        syncUI: function() {
+            var cb = this.get("contentBox"),
+                message = this.getMessage();
             if (message) {
                 cb.toggleClass("unread", message.get("unread"));
-                cb.one(".wegas-message-header__subject")
+
+                this.updateContent(".wegas-message-header__subject", I18n.t(message.get("subject")));
+                this.updateContent(".wegas-message-header__date", I18n.t(message.get("date")));
+                this.updateContent(".wegas-message-header__from", I18n.t(message.get("from")));
+                this.updateContent(".wegas-message-body", I18n.t(message.get("body")));
+                
+ 
+                /*cb.one(".wegas-message-header__subject")
                     .setContent(I18n.t(message.get("subject")));
                 cb.one(".wegas-message-header__date")
                     .setContent(I18n.t(message.get("date")));
                 cb.one(".wegas-message-header__from")
                     .setContent(I18n.t(message.get("from")));
                 cb.one(".wegas-message-body")
-                    .setContent(I18n.t(message.get("body")));
+                    .setContent(I18n.t(message.get("body")));*/
                 var attsNode = cb.one(".wegas-message-attachments");
                 attsNode.setContent();
                 var atts = message.get("attachments");

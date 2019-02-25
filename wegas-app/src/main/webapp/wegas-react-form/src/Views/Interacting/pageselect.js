@@ -9,7 +9,7 @@ const choices = () =>
             resolve(
                 index.map(page => ({
                     value: page.id,
-                    label: page.name || `Unnamed (${page.id})`
+                    label: page.name || `Unnamed (${page.id})`,
                 }))
             )
         );
@@ -19,6 +19,6 @@ function PageSelect(props) {
     return <Select {...props} view={{ ...props.view, choices }} />;
 }
 PageSelect.propTypes = {
-    view: PropTypes.object
+    view: PropTypes.object,
 };
 export default PageSelect;

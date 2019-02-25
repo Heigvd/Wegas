@@ -21,6 +21,7 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.JacksonMapperProvider;
@@ -445,6 +446,12 @@ public class WebsocketFacade {
         if (pusher != null) {
             GameModel gameModel = gameModelFacade.find(gameModelId);
             pusher.trigger(gameModel.getChannel(), "PageUpdate", pageId, socketId);
+        }
+    }
+
+    public void gameModelContentUpdate(GameModelContent content, String socketId) {
+        if (pusher != null) {
+            pusher.trigger(content.getGameModel().getChannel(), "LibraryUpdate-" + content.getLibraryType(), content.getContentKey(), socketId);
         }
     }
 

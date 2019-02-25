@@ -458,7 +458,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
                         String tr = (String) ((ScriptObjectMirror) member).getMember("translation");
                         String status = (String) ((ScriptObjectMirror) member).getMember("status");
                         trContent.updateTranslation(code, tr, status);
-                    } else {
+                    } else if (member != null) {
                         throw WegasErrorMessage.error("Unhandled Translatable Content Type: " + member);
                     }
                 }

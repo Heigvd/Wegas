@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 @NamedQueries({
     @NamedQuery(name = "ChoiceInstance.findByResultId", query = "SELECT ci FROM ChoiceInstance ci WHERE ci.currentResult.id = :resultId")
 })
-public class ChoiceInstance extends VariableInstance {
+public class ChoiceInstance extends VariableInstance implements ReadableInstance {
 
     private static final long serialVersionUID = 1L;
 
@@ -176,6 +176,7 @@ public class ChoiceInstance extends VariableInstance {
     /**
      * @return the active
      */
+    @Override
     public Boolean getActive() {
         return active;
     }
@@ -183,6 +184,7 @@ public class ChoiceInstance extends VariableInstance {
     /**
      * @param active the active to set
      */
+    @Override
     public void setActive(Boolean active) {
         this.active = active;
     }
@@ -190,13 +192,15 @@ public class ChoiceInstance extends VariableInstance {
     /**
      * @return the unread
      */
-    public Boolean getUnread() {
+    @Override
+    public Boolean isUnread() {
         return unread;
     }
 
     /**
      * @param unread the unread to set
      */
+    @Override
     public void setUnread(Boolean unread) {
         this.unread = unread;
     }
@@ -207,6 +211,21 @@ public class ChoiceInstance extends VariableInstance {
     @JsonManagedReference
     public List<Reply> getReplies() {
         return replies;
+    }
+
+    public List<Reply> getReplies(Boolean validatedFilter) {
+        List<Reply> subReplies = new ArrayList<>();
+
+        if (validatedFilter != null) {
+            for (Reply r : replies) {
+                if (validatedFilter.equals(r.isValidated())){
+                    subReplies.add(r);
+                }
+            }
+        } else {
+            subReplies.addAll(replies);
+        }
+        return subReplies;
     }
 
     /**

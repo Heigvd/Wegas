@@ -1,0 +1,347 @@
+/*
+ * Actions
+ */
+.benefits-actions__thumbnails .wegas-benefits-action {
+    cursor: pointer;
+}
+
+
+.benefits-actions__expanded .benefits-action__sidepanel__close {
+    cursor: pointer;
+}
+
+.wegas-benefits-actions {
+    position: relative;
+}
+
+.wegas-benefits-action {
+    position: relative;
+}
+
+.wegas-benefits-actions .benefits-actions__title {
+    font-weight: bold;
+}
+
+.benefits-actions__subtitle_line {
+    font-weight: normal;
+    line-height: 1em;
+    margin-bottom: 10px;
+}
+
+.benefits-actions__subtitle_line > div {
+    align-items: baseline;
+}
+
+.wegas-benefits-actions .benefits-actions__subtitle,
+.wegas-benefits-actions .benefits-actions__placeholder {
+    display: none;
+}
+
+.wegas-benefits-actions .has-active-actions .benefits-actions__subtitle {
+    display: block;
+}
+
+.wegas-benefits-actions > div:not(.has-active-actions) .benefits-actions__placeholder {
+    display: block;
+}
+
+.wegas-benefits-action .wegas-benefits-action-content,
+.wegas-benefits-action .benefits-action__main-layout,
+.wegas-benefits-action .benefits-action__main-layout > div,
+.wegas-benefits-action .benefits-action__layout > div {
+    height:100%;
+}
+
+.benefits-action__actions .wegas-unreadcount .benefits-action__action {
+    color: #05a8e3;
+}
+
+.benefits-action__actions .wegas-unreadcount .value {
+    display:none;
+}
+
+.benefits-action__actions .wegas-unreadcount .benefits-action__action.selected,
+.benefits-action__actions .wegas-unreadcount .benefits-action__action:hover {
+    color: #05a8e3;
+}
+
+.benefits-action__actions .benefits-action__action.selected {
+    /*border-width: 2px;*/
+}
+
+
+.benefits-action__mcqtabview {
+    flex-grow: 1;
+    position: relative;
+}
+.benefits-action__mcqtabview > div { 
+    position:absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.benefits-action__sidepanel__close{
+    cursor: pointer;
+}
+
+.benefits-actions__thumbnails .wegas-benefits-action .benefits-action__sidepanel {
+    display: none;
+}
+
+.wegas-benefits-action.inactive {
+    display:none;
+}
+
+/*
+ Thumbnails
+*/
+
+.wegas-benefits-actions .benefits-actions__thumbnails {
+    background-color: white;
+    box-shadow: 0px 2px 10px #ccc;
+    /*padding-bottom: 5px;*/
+}
+
+.wegas-benefits-actions .wegas-benefits-action {
+    background-color: white;
+}
+
+.wegas-benefits-actions .benefits-actions__thumbnails .wegas-benefits-action {
+    margin: 10px;
+    font-size: 1em;
+    margin: 5px 4px 0;
+    cursor: pointer;
+    padding: 2px;
+    border-bottom: 5px solid white;
+}
+
+.wegas-benefits-actions .benefits-actions__thumbnails .wegas-benefits-action:hover {
+    border-bottom: 5px solid lightblue;
+}
+/* Highlight selection */
+.wegas-benefits-actions .benefits-actions__thumbnails .wegas-benefits-action.selected {
+    border-bottom: 5px solid #05a8e3;
+    cursor: default !important;
+}
+
+.wegas-benefits-actions > .expanded .benefits-actions__thumbnails .wegas-benefits-action:not(.selected) {
+    opacity: 0.5;
+}
+
+.wegas-benefits-actions > .expanded .benefits-actions__thumbnails .wegas-benefits-action:not(.selected):hover {
+    opacity: 1;
+}
+
+.wegas-benefits-actions .benefits-actions__thumbnails .benefits-action__title {
+    font-size: 0.8em;
+}
+
+.wegas-benefits-actions .benefits-actions__expanded {
+    flex-grow: 1;
+    box-sizing: border-box;
+    margin-top : 10px;
+}
+
+.wegas-benefits-actions .benefits-actions__expanded .benefits-action__layout {
+    display: none;
+}
+
+
+.wegas-benefits-actions .benefits-actions__main-layout {
+    flex-grow: 1;
+}
+
+.benefits-actions__expanded,
+.wegas-benefits-actions .benefits-actions__main-layout,
+.wegas-benefits-action .benefits-action__sidepanel__panel,
+.wegas-benefits-action .benefits-action__sidepanel {
+    position: relative;
+    text-align: left;
+}
+
+.benefits-actions__expanded > div,
+.wegas-benefits-action .benefits-action__sidepanel__panel > div,
+.wegas-benefits-actions .benefits-actions__main-layout > div,
+.wegas-benefits-action .benefits-action__sidepanel > div {
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.wegas-benefits-action .benefits-action__sidepanel__panel,
+.wegas-benefits-action .benefits-action__sidepanel__title {
+    flex-grow: 1;
+}
+
+.wegas-benefits-action .benefits-action__sidepanel__title {
+    font-size: 1.3em;
+    flex-shrink: 1;
+}
+
+.wegas-benefits-action .benefits-action__sidepanel__close{
+    padding-bottom: 10px;
+    display:none;
+}
+
+
+.wegas-benefits-action .benefits-action__description {
+    display: none;
+    text-align: left;
+}
+
+.benefits-action__name {
+    font-weight: bold;
+    margin-top: 0.5em;
+}
+
+.wegas-benefits-actions .benefits-actions__expanded > .wegas-unreadcount {
+    display: none;
+}
+
+.wegas-benefits-actions .benefits-actions__thumbnails .benefits-action__sympathy {
+    display: none;
+}
+
+.wegas-benefits-actions .benefits-actions__thumbnails .sympathyVisible .benefits-action__sympathy {
+    display: block;
+}
+
+.wegas-benefits-actions .benefits-actions__thumbnails .benefits-action__name,
+.wegas-benefits-actions .benefits-actions__thumbnails .benefits-action__title,
+.wegas-benefits-actions .benefits-actions__thumbnails .benefits-action__sympathy {
+    width: min-content;
+    text-align: center;
+    margin: auto;
+    font-size: 12px;
+}
+
+.benefits-action__title {
+    font-weight: normal;
+    max-width: 170px;
+    margin: 0 auto;
+}
+
+.actorPage .benefits-action__title {
+    width: 95px;
+}
+
+.wegas-benefits-actions .wegas-benefits-action:not(.expanded) .benefits-action__title {
+    flex-grow: 1;
+}
+
+.benefits-action__actions {
+    height: 50px;
+}
+
+.benefits-action__actions .benefits-action__action {
+    margin: 0 5px;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    font-size: 36px;
+    color: #ccc;
+    display: none;
+}
+
+
+.benefits-action__actions .wegas-unreadcount .benefits-action__action {
+    color: #05a8e3;
+    display:block ;
+}
+
+.benefits-action__actions .benefits-action__action.inactive {
+    display: none;
+}
+
+.benefits-action__actions .benefits-action__action.selected{
+    /*border: 2px solid #C8E6C9;*/
+}
+.benefits-action__actions .benefits-action__action:hover {
+    /*border: 1px solid #C8E6C9;*/
+}
+
+.benefits-action__actions {
+    height: 10px !important;
+}
+
+.wegas-benefits-actions .wegas-benefits-action.expanded .benefits-action__actions {
+    /*display: none;*/
+}
+
+
+
+
+/*
+    Vertical
+*/
+.wegas-benefits-actions .wegas-benefits-actions__vertical .benefits-actions__main-layout > div {
+    flex-direction: row;
+}
+
+.wegas-benefits-actions .wegas-benefits-actions__vertical .benefits-actions__thumbnails > div {
+    flex-direction: column;
+    border-bottom: none;
+}
+
+.wegas-benefits-actions .wegas-benefits-actions__vertical .benefits-actions__thumbnails .wegas-benefits-action {
+    border-bottom: none;
+    border-right: 5px solid white;
+}
+
+.wegas-benefits-actions .wegas-benefits-actions__vertical .benefits-actions__thumbnails .wegas-benefits-action.selected {
+    border-right: 5px solid #05a8e3;
+}
+
+.wegas-benefits-actions .wegas-benefits-actions__vertical .benefits-actions__thumbnails .wegas-benefits-action:not(.selected):hover {
+    border-right: 5px solid gray;;
+}
+
+
+.wegas-benefits-actions .wegas-benefits-actions__vertical .benefits-actions__thumbnails .wegas-benefits-action .benefits-action__layout > div {
+    flex-direction: row;
+}
+
+.wegas-benefits-actions .wegas-benefits-actions__vertical .benefits-actions__expanded {
+    margin-left : 10px;
+}
+
+
+.wegas-benefits-actions .wegas-benefits-actions__vertical .benefits-actions__thumbnails .benefits-action__name,
+.wegas-benefits-actions .wegas-benefits-actions__vertical .benefits-actions__thumbnails .benefits-action__title,
+.wegas-benefits-actions .wegas-benefits-actions__vertical .benefits-actions__thumbnails .benefits-action__sympathy {
+    margin-left: 5px;
+    text-align:left;
+    width: 135px
+}
+
+.wegas-benefits-actions .benefits-actions__main-layout .benefits-nothing-selected {
+    display: none;
+}
+
+.wegas-benefits-actions .benefits-actions__toggler {
+    display: none;
+    font-size: 0.7em;
+    padding-left: 10px
+}
+
+.wegas-benefits-actions__show-toggler.expanded .benefits-actions__toggler {
+    display: block;
+}
+
+.benefits-actions__toggler .show,
+.benefits-actions__toggler .show-onclick--targets_visible .hide {
+    display: block;
+}
+
+.benefits-actions__toggler .show-onclick--targets_visible .show,
+.benefits-actions__toggler .hide {
+    display: none;
+}
+
+.benefits-actions__thumbnails.wegas-flexlist-hidden {
+    display:none;
+}

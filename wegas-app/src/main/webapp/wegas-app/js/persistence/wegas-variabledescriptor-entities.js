@@ -742,6 +742,21 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             }
         },
         {
+            EDITMENU: {
+                convertToListBtn: {
+                    index: 21,
+                    maxVisibility: "PRIVATE", // only visible for private variables
+                    cfg: {
+                        label: "Convert To List",
+                        type: "Button",
+                        cssClass: "wegas-advanced-feature",
+                        plugins: [{
+                                fn: "ConvertToListAction"
+                            }
+                        ]
+                    }
+                }
+            },
             ATTRS: {
                 '@class': {
                     value: 'StringDescriptor'
@@ -826,6 +841,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     }
                 },
                 isValueSelected: {
+                    label: "selected value is",
                     returns: BOOLEAN,
                     arguments: [SELFARG, {
                             type: STRING,
@@ -847,6 +863,18 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                          }
                          return v === value;
                          }*/
+                },
+                isNotSelectedValue: {
+                    label: "selected value is not",
+                    returns: BOOLEAN,
+                    arguments: [SELFARG, {
+                        type: STRING,
+                        view: {
+                            type: "entityarrayfieldselect",
+                            field: "allowedValues",
+                            returnAttr: "name"
+                        }
+                    }]
                 }
             }
         }
@@ -901,6 +929,21 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             }
         },
         {
+            EDITMENU: {
+                convertToListBtn: {
+                    index: 21,
+                    maxVisibility: "PRIVATE", // only visible for private variables
+                    cfg: {
+                        label: "Convert To List",
+                        type: "Button",
+                        cssClass: "wegas-advanced-feature",
+                        plugins: [{
+                                fn: "ConvertToListAction"
+                            }
+                        ]
+                    }
+                }
+            },
             ATTRS: {
                 '@class': {
                     value: 'TextDescriptor'

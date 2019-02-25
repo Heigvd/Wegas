@@ -568,6 +568,25 @@ body:not(.wegas-modeler-mode) .wegas-model-feature {
     height: 100px;
 }
 
+.wegas-line-origin {
+    transform: scale(1); /* hack to reset the origin */
+}
+
+
+.wegas-line {
+    stroke: black;
+    stroke-width: 1px;
+    fill: none;
+}
+
+.wegas-line svg{
+    overflow: visible;
+}
+
+svg #triangleEnd,
+svg #triangleStart{
+    fill: black;
+}
 
 /* Chat widget */
 
@@ -711,6 +730,20 @@ body:not(.wegas-modeler-mode) .wegas-model-feature {
     border: none;
 }
 
+/*
+ * Wegas skin for menu
+ */
+.yui3-menu {
+    box-shadow: none;
+}
+
+.yui3-menu .yui3-button {
+    font-size: 13px;
+}
+
+.yui3-menu .yui3-button:hover {
+    background: #A7CEF6;
+}
 
 /* Onclick pointer style */
 
@@ -888,6 +921,11 @@ body:not(.wegas-modeler-mode) .wegas-model-feature {
     font-weight:600;
 }
 
+.question-history .replies {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
 .question-history .replies .replyDiv {
     border-top: solid 1px #bbb;
     color: #bbb;
@@ -910,7 +948,7 @@ body:not(.wegas-modeler-mode) .wegas-model-feature {
     padding-left: 24px;
 }
 
-.question-history .replies .replyDiv:first-child {
+.question-history .replies .replyDiv:last-child {
     border-top: none;
     color: black;
 }

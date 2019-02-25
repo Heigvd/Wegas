@@ -24,7 +24,7 @@ import javax.persistence.Entity;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-public class QuestionInstance extends VariableInstance implements QuestionInstanceI {
+public class QuestionInstance extends VariableInstance implements ReadableInstance {
 
     private static final long serialVersionUID = 1L;
     //private static final Logger logger = LoggerFactory.getLogger(QuestionInstance.class);
@@ -46,7 +46,6 @@ public class QuestionInstance extends VariableInstance implements QuestionInstan
     @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty
     private Boolean validated = FALSE;
-
 
     /**
      * @return the active
@@ -77,19 +76,31 @@ public class QuestionInstance extends VariableInstance implements QuestionInstan
         return Helper.copyAndSort(this.getReplies(p), new EntityComparators.CreateTimeComparator<>());
     }
 
-    public List<Reply> getReplies(Player p) {
+    /**
+     * get all, only validated or only not validated replies
+     *
+     * @param p
+     * @param validatedFilter true : only validated, false: only not validated; null:both
+     *
+     * @return
+     */
+    public List<Reply> getReplies(Player p, Boolean validatedFilter) {
         List<Reply> replies = new ArrayList<>();
         QuestionDescriptor qD = (QuestionDescriptor) this.findDescriptor();
 
         for (ChoiceDescriptor cd : qD.getItems()) {
             if (this.isDefaultInstance()) {
-                replies.addAll(cd.getDefaultInstance().getReplies());
+                replies.addAll(cd.getDefaultInstance().getReplies(validatedFilter));
             } else {
-                replies.addAll(cd.getInstance(p).getReplies());
+                replies.addAll(cd.getInstance(p).getReplies(validatedFilter));
             }
         }
 
         return replies;
+    }
+
+    public List<Reply> getReplies(Player p) {
+        return this.getReplies(p, null);
     }
 
     @JsonIgnore
@@ -142,7 +153,6 @@ public class QuestionInstance extends VariableInstance implements QuestionInstan
     /**
      * @param validated the validation status to set
      */
-    @Override
     public void setValidated(Boolean validated) {
         this.validated = validated;
     }
@@ -150,7 +160,6 @@ public class QuestionInstance extends VariableInstance implements QuestionInstan
     /**
      * @return The validation status of the question
      */
-    @Override
     public Boolean isValidated() {
         return this.validated;
     }

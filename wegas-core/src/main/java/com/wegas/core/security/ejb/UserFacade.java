@@ -631,7 +631,6 @@ public class UserFacade extends BaseFacade<User> {
             String from = "noreply@" + Helper.getWegasProperty("mail.default_domain");
             if (acc != null) {
                 acc.setPassword(newPassword);
-                acc.setPasswordHex(null);                                           //force JPA update
                 emailFacade.send(acc.getEmail(), from, null, subject, body, Message.RecipientType.TO, "text/plain; charset=utf-8", true);
             }
             this.flush();

@@ -18,9 +18,11 @@ import com.wegas.core.exception.WegasErrorMessageManager;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.log.xapi.*;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
@@ -143,6 +145,9 @@ public class ScriptFacade extends WegasAbstractFacade {
     @Inject
     private ReviewingFacade reviewingFacade;
 
+    @Inject
+    private I18nFacade i18nFacade;
+
     /**
      *
      */
@@ -160,6 +165,9 @@ public class ScriptFacade extends WegasAbstractFacade {
      */
     @Inject
     private RequestManager requestManager;
+
+    @Inject
+    private Xapi xapi;
 
     @Resource(lookup = "timeoutExecutorService")
     private ManagedExecutorService timeoutExecutorService;
@@ -193,6 +201,7 @@ public class ScriptFacade extends WegasAbstractFacade {
         bindings.put("gameModel", player.getGameModel());       // Inject current gameModel
 
         putBinding(bindings, "GameModelFacade", GameModelFacadeI.class, gameModelFacade);
+        putBinding(bindings, "I18nFacade", I18nFacadeI.class, i18nFacade);
 
         putBinding(bindings, "Variable", VariableDescriptorFacadeI.class, variableDescriptorFacade);
         putBinding(bindings, "VariableDescriptorFacade", VariableDescriptorFacadeI.class, variableDescriptorFacade);
@@ -209,6 +218,7 @@ public class ScriptFacade extends WegasAbstractFacade {
         putBinding(bindings, "RequestManager", RequestManagerI.class, requestManager);
         putBinding(bindings, "Event", ScriptEventFacadeI.class, event);
         putBinding(bindings, "DelayedEvent", DelayedScriptEventFacadeI.class, delayedEvent);
+        putBinding(bindings, "xapi", XapiI.class, xapi);
 
         bindings.put("ErrorManager", new WegasErrorMessageManager());    // Inject the MessageErrorManager
 
