@@ -1,8 +1,8 @@
 import React from 'react';
 import labeled from '../HOC/labeled';
-import asyncComp from '../HOC/async';
+import { useAsync } from '../Hooks/async';
 import commonView from '../HOC/commonView';
-import {css} from 'glamor';
+import { css } from 'glamor';
 
 interface Choice {
     value: {};
@@ -15,16 +15,8 @@ interface Choice {
     children?: Choice[];
 }
 type Choices = (string | Choice)[];
-interface ISelectProps {
-    id: string;
-    value?: {};
-    onChange: (value: string) => void;
-    view: {
-        choices: (string | Choice)[];
-        readOnly?: boolean;
-    };
-}
-interface IAsyncSelectProps {
+
+interface SelectProps {
     id: string;
     value?: {};
     onChange: (value: string) => void;
@@ -39,7 +31,6 @@ const selectStyle = css({
     border: '1px solid lightgray',
     maxWidth: '100%',
 });
-
 function genItems(o: string | Choice, i: number) {
     if (typeof o !== 'object') {
         return (
@@ -48,7 +39,7 @@ function genItems(o: string | Choice, i: number) {
             </option>
         );
     }
-    const {label = o.value, value, disabled} = o;
+    const { label = o.value, value, disabled } = o;
     return (
         <option
             key={`k-${value}`}
@@ -66,18 +57,33 @@ const title: Choice = {
     selected: true,
     disabled: true,
 };
-
-function SelectView(props: ISelectProps) {
+function choiceResolve(choices: (() => Promise<Choices>) | Choices = []) {
+    if (typeof choices === 'function') {
+        return Promise.resolve(choices());
+    }
+    return Promise.resolve(choices);
+}
+function SelectView(props: SelectProps) {
+    const result = useAsync(choiceResolve(props.view.choices), [
+        props.view.choices,
+    ]);
+    if (result.status === 'pending') {
+        return null;
+    }
+    if (result.status === 'rejected') {
+        throw result.error;
+    }
+    const { data } = result;
     const onChange = function onChange(
-        event: React.ChangeEvent<{value: string}>
+        event: React.ChangeEvent<{ value: string }>
     ) {
         props.onChange(JSON.parse(event.target.value));
     };
     const choices: (Choice | string)[] = ([title] as (
         | Choice
-        | string)[]).concat(props.view.choices || []);
+        | string)[]).concat(data);
     const menuItems = choices.map(genItems);
-    
+
     let value = JSON.stringify(props.value);
 
     if (!menuItems.find(item => item.props.value === value)) {
@@ -97,19 +103,4 @@ function SelectView(props: ISelectProps) {
     );
 }
 
-function Sel(props: IAsyncSelectProps): Promise<ISelectProps> {
-    const {
-        view: {choices},
-        view,
-    } = props;
-    if (typeof choices === 'function') {
-        return Promise.resolve(choices()).then(ch => ({
-            ...props,
-            view: {...view, choices: ch},
-        }));
-    }
-    return Promise.resolve(props as ISelectProps);
-}
-export default commonView(
-    asyncComp<IAsyncSelectProps, ISelectProps>(labeled(SelectView))(Sel)
-);
+export default commonView(labeled(SelectView));
