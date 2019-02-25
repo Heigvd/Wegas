@@ -56,7 +56,7 @@ public class EjbTimerExecutor extends WegasAbstractFacade implements Serializabl
     /**
      * clean game model once a month
      */
-    @Schedule(hour = "4", dayOfMonth = "Last Sat")
+    //@Schedule(hour = "4", dayOfMonth = "Last Sat")
     public void removeGameModels() {
         ejbTimerFacade.removeGameModels();
     }
