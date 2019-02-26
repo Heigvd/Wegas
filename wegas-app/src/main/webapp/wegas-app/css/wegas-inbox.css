@@ -149,9 +149,11 @@
     overflow: hidden;
 }
 
+/*
 .wegas-inbox-list .wegas-message-header__subject {
     font-weight: bolder;
 }
+*/
 
 .wegas-inbox-list .wegas-message__expanded .wegas-message-body{
     max-height: unset;
@@ -208,7 +210,7 @@
     content:"\f003"; /*fa-envelope-o*/
 }
 
-.wegas-inbox-list .wegas-message .unread {
+.wegas-inbox-list .wegas-message .unread .wegas-message-header{
     font-weight: bold;
 }
 
