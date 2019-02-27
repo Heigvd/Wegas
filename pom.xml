@@ -124,8 +124,10 @@
         <oak.version>1.6.5</oak.version>
         <prometheus.version>0.5.0</prometheus.version>
 
+        <!--
         <jackson.scope>provided</jackson.scope>
         <jackson.version>2.9.6</jackson.version>
+        -->
 
         <netbeans.hint.j2eeVersion>8</netbeans.hint.j2eeVersion>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
@@ -168,7 +170,7 @@
                 <artifactId>commons-collections</artifactId>
                 <version>3.2.2</version>
             </dependency>
-            <dependency>
+            <!--<dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>eclipselink</artifactId>
                 <version>${eclipselink.version}</version>
@@ -177,7 +179,7 @@
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.extension</artifactId>
                 <version>${eclipselink.version}</version>
-            </dependency>
+            </dependency>-->
             <!-- slf4j -->
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -245,6 +247,7 @@
                 <version>${liquibase.version}</version>
             </dependency>
 
+<!--
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
@@ -288,6 +291,7 @@
                 <version>${jackson.version}</version>
                 <scope>${jackson.scope}</scope>
             </dependency>
+            -->
 
 
             <!-- Java Content Repository -->
@@ -316,11 +320,11 @@
                 <scope>compile</scope>
             </dependency>
 
-            <dependency>
+            <!--<dependency>
                 <groupId>com.github.fge</groupId>
                 <artifactId>json-patch</artifactId>
                 <version>1.9</version>
-            </dependency>
+            </dependency>-->
             <!-- PDF Generation -->
             <dependency>
                 <groupId>com.itextpdf</groupId>

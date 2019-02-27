@@ -84,7 +84,7 @@
             <artifactId>jcr</artifactId>
             <!--            <scope>compile</scope>-->
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.github.fge</groupId>
             <artifactId>json-patch</artifactId>
             <exclusions>
@@ -93,7 +93,7 @@
                     <artifactId>guava</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency>-->
 
         <!-- Liquibase -->
         <dependency>
@@ -176,7 +176,7 @@
             <artifactId>payara-embedded-all</artifactId>
             <type>jar</type>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>eclipselink</artifactId>
             <scope>test</scope>
@@ -184,12 +184,12 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.extension</artifactId>
-        </dependency>
-        <dependency>
+        </dependency>-->
+        <!--<dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>RELEASE</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>fish.payara.api</groupId>
             <artifactId>payara-api</artifactId>
