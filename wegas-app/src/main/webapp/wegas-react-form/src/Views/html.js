@@ -302,7 +302,6 @@ class HTMLView extends React.Component {
     onChangeHandler(content) {
         const oldContent = this.state.sent;
         const newContent = toInjectorStyle(content);
-        console.log("CHANGE");
         if (oldContent !== newContent) {
             this.setState({content, sent: newContent}, () => {
                 this.props.onChange(newContent);

@@ -130,12 +130,12 @@ YUI.add("wegas-i18n", function(Y) {
                     }
                 }
 
-                if (value) {
-                    if (value instanceof Y.Wegas.persistence.TranslatableContent) {
-                        return I18n.t(value);
-                    } else {
-                        return value;
-                    }
+                if (typeof value === "string") {
+                    return value;
+                } else if (value instanceof Y.Wegas.persistence.TranslatableContent) {
+                    return I18n.t(value);
+                } else if (value){
+                    return value;
                 }
             }
 
