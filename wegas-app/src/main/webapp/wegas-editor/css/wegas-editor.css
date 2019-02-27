@@ -1372,3 +1372,17 @@
     font-size: 16px;
 }
 
+/* Hidden characters */
+.wegas-advancedmode.wegas-editmode .mce-content-body p:after {
+    color: #6AACF1;
+    content: "¶";
+}
+
+.wegas-advancedmode.wegas-editmode .mce-content-body p br {
+    content: "\A";
+}
+
+.wegas-advancedmode.wegas-editmode .mce-content-body p br:after {
+    content : "↲";
+    color: #6AACF1;
+}
