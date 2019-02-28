@@ -365,7 +365,7 @@ public class ContentConnector extends JTARepositoryConnector {
      */
     protected Long getBytesSize(String absolutePath) throws RepositoryException {
         Property p = this.getProperty(absolutePath, WFSConfig.WFS_DATA);
-        if (p != null){
+        if (p != null) {
             return p.getBinary().getSize();
         } else {
             return 0l;
@@ -515,5 +515,14 @@ public class ContentConnector extends JTARepositoryConnector {
     public void rollback() {
         this.runRollbackCallbacks();
         SessionManager.closeSession(session);
+    }
+
+    public WorkspaceType getWorkspaceType() {
+        return workspaceType;
+    }
+
+    @Override
+    public String toString() {
+        return "Content" + this.workspaceType + "(" + this.getWorkspaceRoot() + ")";
     }
 }
