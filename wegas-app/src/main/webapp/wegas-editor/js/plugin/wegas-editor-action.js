@@ -139,8 +139,7 @@ YUI.add('wegas-editor-action', function(Y) {
                 }
                 Wegas.TabView.setDefaultEditorTabView(targetTabView);
             }
-
-            newTab.set("selected", 2);
+            newTab.set("selected", 1);
         }
     }, {
         /** @lends Y.Plugin.OpenTabAction */
