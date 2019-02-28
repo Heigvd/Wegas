@@ -24,7 +24,9 @@ interface IGameModelLanguage extends IWegasEntity {
 }
 interface ITranslatableContent extends IWegasEntity {
   '@class': 'TranslatableContent';
-  translations: { [refName: string]: string };
+  translations: {
+    [refName: string]: { translation: string; status: string | null };
+  };
 }
 interface IGameModelProperties {
   freeForAll: boolean;
@@ -81,14 +83,13 @@ interface IUser extends IWegasEntity {
   accounts: IAbstractAccount[];
   players: IPlayer[];
 }
-interface IPlayer extends IWegasEntity {
+interface IPlayer extends IWegasEntity, IVersionable {
   queueSize: number;
   name: string;
   joinTime: number;
   verifiedId: boolean;
   homeOrg: string;
   status: string;
-  version: number;
   teamId: number;
   createdTime: number;
   userId: string;

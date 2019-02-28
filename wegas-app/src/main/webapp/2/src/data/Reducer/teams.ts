@@ -9,7 +9,7 @@ export interface TeamState {
 /**
  * Reducer for Teams
  */
-const teams: Reducer<Readonly<TeamState>> = u<TeamState>(
+const teams: Reducer<Readonly<TeamState>> = u<TeamState, [StateActions]>(
   (state: TeamState, action: StateActions) => {
     switch (action.type) {
       case ActionType.MANAGED_MODE:

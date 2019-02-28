@@ -78,7 +78,7 @@ export interface GlobalState {
  * @param {StateActions} action
  * @returns {Readonly<GlobalState>}
  */
-const global = u<GlobalState>(
+const global = u<GlobalState, [StateActions]>(
   (state: GlobalState, action: StateActions) => {
     switch (action.type) {
       case ActionType.VARIABLE_EDIT:

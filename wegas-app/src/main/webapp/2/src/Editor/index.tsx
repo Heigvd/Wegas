@@ -11,7 +11,7 @@ function mount() {
   render(
     <StoreProvider>
       <LangHandler
-        lang="def"
+        lang="DEF"
         availableLang={GameModel.selectCurrent().languages.map(l => ({
           refName: l.refName,
           code: l.code,

@@ -9,24 +9,28 @@ import { ReplaceOperation } from 'fast-json-patch/lib/core';
 export interface PageState {
   [id: string]: Readonly<Page>;
 }
-const pageState = u<PageState>((state: PageState, action: StateActions) => {
-  switch (action.type) {
-    case ActionType.PAGE_FETCH:
-      return { ...state, ...action.payload.pages };
-    case ActionType.PAGE_INDEX:
-      return action.payload.reduce(
-        (all, curr) => {
-          let page = state[curr.id];
-          if (page != null) {
-            page = { ...page, '@name': curr.name, '@index': curr.index };
-          }
-          all[curr.id] = page;
-          return all;
-        },
-        {} as PageState,
-      );
-  }
-}, {});
+
+const pageState = u<PageState, [StateActions]>(
+  (state: PageState, action: StateActions) => {
+    switch (action.type) {
+      case ActionType.PAGE_FETCH:
+        return { ...state, ...action.payload.pages };
+      case ActionType.PAGE_INDEX:
+        return action.payload.reduce(
+          (all, curr) => {
+            let page = state[curr.id];
+            if (page != null) {
+              page = { ...page, '@name': curr.name, '@index': curr.index };
+            }
+            all[curr.id] = page;
+            return all;
+          },
+          {} as PageState,
+        );
+    }
+  },
+  {},
+);
 export default pageState;
 
 // Actions
@@ -39,7 +43,9 @@ export function getDefault(): ThunkResult<Promise<StateActions<'PAGE_FETCH'>>> {
     );
   };
 }
-export function get(id?: string): ThunkResult<Promise<StateActions<'PAGE_FETCH'>>> {
+export function get(
+  id?: string,
+): ThunkResult<Promise<StateActions<'PAGE_FETCH'>>> {
   return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     return PageAPI.get(gameModelId, id).then(pages =>

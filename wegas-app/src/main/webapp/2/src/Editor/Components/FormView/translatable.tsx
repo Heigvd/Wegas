@@ -28,15 +28,15 @@ export default function translatable<P extends EndProps>(
         {({ lang, availableLang }) => {
           // Updade label
           const curCode = (
-            availableLang.find(l => l.refName === lang) || {
-              code: '',
+            availableLang.find(l => l.code === lang) || {
+              label: '',
             }
-          ).code;
+          ).label;
           const view = {
             ...props.view,
             label: (
               <span>
-                {(props.view || {}).label} <span>[{curCode}]</span>
+                {props.view.label} <span>[{curCode}]</span>
               </span>
             ),
           };
@@ -44,17 +44,25 @@ export default function translatable<P extends EndProps>(
             props.value == null
               ? { '@class': 'TranslatableContent', translations: {} }
               : props.value;
+          const currTranslation = pvalue.translations[lang];
           return (
             <Comp
               {...props as any} // https://github.com/Microsoft/TypeScript/issues/28748
-              value={pvalue.translations[lang]}
+              value={
+                currTranslation != null
+                  ? currTranslation.translation
+                  : undefined
+              }
               view={view}
               onChange={value => {
                 const v: ITranslatableContent = {
                   ...pvalue,
                   translations: {
                     ...pvalue.translations,
-                    [lang]: value,
+                    [lang]: {
+                      ...pvalue.translations[lang],
+                      translation: value,
+                    },
                   },
                 };
                 props.onChange(v);

@@ -4,10 +4,10 @@ export const TranslatableContent = {
    * @param content translatable content
    * @param refName language ref
    */
-  toString(content: ITranslatableContent | null, refName = 'def') {
-    if (content == null) {
+  toString(content: ITranslatableContent | null, refName = 'DEF') {
+    if (content == null || content.translations[refName] == null) {
       return '';
     }
-    return content.translations[refName];
+    return content.translations[refName].translation;
   },
 };
