@@ -19,8 +19,10 @@ interface EndProps {
  */
 export default function translatable<P extends EndProps>(
   Comp: React.ComponentType<P>,
-): React.SFC<TranslatableProps & P> {
-  function Translated(props: TranslatableProps) {
+) {
+  function Translated(
+    props: TranslatableProps & Omit<P, 'value' | 'onChange'>,
+  ) {
     return (
       <LangConsumer>
         {({ lang, availableLang }) => {
@@ -44,7 +46,7 @@ export default function translatable<P extends EndProps>(
               : props.value;
           return (
             <Comp
-              {...props}
+              {...props as any} // https://github.com/Microsoft/TypeScript/issues/28748
               value={pvalue.translations[lang]}
               view={view}
               onChange={value => {
