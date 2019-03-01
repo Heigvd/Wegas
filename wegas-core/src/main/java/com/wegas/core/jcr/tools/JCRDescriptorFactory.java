@@ -29,7 +29,7 @@ public class JCRDescriptorFactory implements WegasFactory {
             Constructor<? extends AbstractContentDescriptor> constructor = ori.getClass().getDeclaredConstructor(String.class, String.class, ContentConnector.class);
 
             try {
-                AbstractContentDescriptor newInstance = constructor.newInstance(ori.getName(), ori.getPath(), gameModel.getFilesConnector());
+                AbstractContentDescriptor newInstance = constructor.newInstance(ori.getName(), ori.getPath(), gameModel.getConnector(ori.getWorkspaceType()));
                 newInstance.saveToRepository();
 
                 return (T) newInstance;

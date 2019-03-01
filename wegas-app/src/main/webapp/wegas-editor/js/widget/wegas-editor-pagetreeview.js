@@ -277,6 +277,9 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                     e.currentTarget.detach("*:addChild", this.updateWidget, this);
                     e.currentTarget.onceAfter("*:addChild", this.updateWidget, this);
 
+                    e.currentTarget.detach("*:removeChild", this.updateWidget, this);
+                    e.currentTarget.onceAfter("*:removeChild", this.updateWidget, this);
+
                     updatedWidget.each(function(item) {
                         this.buildSubTree(currentNode, item);
                     }, this);
@@ -304,6 +307,11 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             if (node.item(0)) {
                 node.item(0).get("data.widget").detach("*:addChild", this.updateWidget, this);
                 node.item(0).get("data.widget").onceAfter("*:addChild", this.updateWidget, this);
+            }
+
+            if (node.item(0)) {
+                node.item(0).get("data.widget").detach("*:removeChild", this.updateWidget, this);
+                node.item(0).get("data.widget").onceAfter("*:removeChild", this.updateWidget, this);
             }
         },
         buildIndex: function(index) {
