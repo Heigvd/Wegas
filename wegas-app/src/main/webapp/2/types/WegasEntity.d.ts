@@ -20,7 +20,6 @@ interface IGameModelLanguage extends IWegasEntity {
   code: string;
   indexOrder: number;
   lang: string;
-  refName: string;
 }
 interface ITranslatableContent extends IWegasEntity {
   '@class': 'TranslatableContent';

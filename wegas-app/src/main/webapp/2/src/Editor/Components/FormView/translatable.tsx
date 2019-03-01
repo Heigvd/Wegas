@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Schema } from 'jsoninput';
-import { LangConsumer } from '../../../Components/LangContext';
+import { LangContext } from '../../../Components/LangContext';
 
 interface TranslatableProps {
   value?: ITranslatableContent;
@@ -23,54 +23,48 @@ export default function translatable<P extends EndProps>(
   function Translated(
     props: TranslatableProps & Omit<P, 'value' | 'onChange'>,
   ) {
+    const { lang, availableLang } = React.useContext(LangContext);
+
+    // Updade label
+    const curCode = (
+      availableLang.find(l => l.code === lang) || {
+        label: '',
+      }
+    ).label;
+    const view = {
+      ...props.view,
+      label: (
+        <span>
+          {props.view.label} <span>[{curCode}]</span>
+        </span>
+      ),
+    };
+    const pvalue: ITranslatableContent =
+      props.value == null
+        ? { '@class': 'TranslatableContent', translations: {} }
+        : props.value;
+    const currTranslation = pvalue.translations[lang];
     return (
-      <LangConsumer>
-        {({ lang, availableLang }) => {
-          // Updade label
-          const curCode = (
-            availableLang.find(l => l.code === lang) || {
-              label: '',
-            }
-          ).label;
-          const view = {
-            ...props.view,
-            label: (
-              <span>
-                {props.view.label} <span>[{curCode}]</span>
-              </span>
-            ),
+      <Comp
+        {...props as any} // https://github.com/Microsoft/TypeScript/issues/28748
+        value={
+          currTranslation != null ? currTranslation.translation : undefined
+        }
+        view={view}
+        onChange={value => {
+          const v: ITranslatableContent = {
+            ...pvalue,
+            translations: {
+              ...pvalue.translations,
+              [lang]: {
+                ...pvalue.translations[lang],
+                translation: value,
+              },
+            },
           };
-          const pvalue: ITranslatableContent =
-            props.value == null
-              ? { '@class': 'TranslatableContent', translations: {} }
-              : props.value;
-          const currTranslation = pvalue.translations[lang];
-          return (
-            <Comp
-              {...props as any} // https://github.com/Microsoft/TypeScript/issues/28748
-              value={
-                currTranslation != null
-                  ? currTranslation.translation
-                  : undefined
-              }
-              view={view}
-              onChange={value => {
-                const v: ITranslatableContent = {
-                  ...pvalue,
-                  translations: {
-                    ...pvalue.translations,
-                    [lang]: {
-                      ...pvalue.translations[lang],
-                      translation: value,
-                    },
-                  },
-                };
-                props.onChange(v);
-              }}
-            />
-          );
+          props.onChange(v);
         }}
-      </LangConsumer>
+      />
     );
   }
   return Translated;

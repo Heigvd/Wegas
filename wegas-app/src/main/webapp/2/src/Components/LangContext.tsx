@@ -1,59 +1,51 @@
 import * as React from 'react';
 
-interface Context {
+interface LangProviderProps {
+  lang?: string;
+  children?: React.ReactNode;
+  availableLang: { code: string; label: string; active: boolean }[];
+}
+interface Context extends LangProviderProps {
   lang: string;
   toggleLang: (lang: string) => void;
-  availableLang: { refName: string; code: string; label: string }[];
 }
-const LangContext = React.createContext<Context>({
+export const LangContext = React.createContext<Context>({
   lang: 'DEF',
   toggleLang: () => {},
   availableLang: [],
 });
-export const LangConsumer = LangContext.Consumer;
 
-interface LangProviderProps {
-  lang: string;
-  availableLang: { refName: string; code: string; label: string }[];
-}
-export class LangHandler extends React.Component<LangProviderProps, Context> {
-  static getDerivedStateFromProps(props: LangProviderProps, state: Context) {
-    if (props.availableLang !== state.availableLang) {
-      return { availableLang: props.availableLang };
-    }
-    return null;
+function LangHandler({
+  availableLang,
+  lang,
+  children,
+}: Readonly<LangProviderProps>) {
+  const [currentLang, setCurrentLang] = React.useState(lang || 'DEF');
+  function toggleLang(lang: string) {
+    setCurrentLang(lang);
   }
-
-  toggleLang = (lang: string) => {
-    this.setState(() => ({ lang }));
-  };
-  readonly state: Readonly<Context> = {
-    lang: this.props.lang,
-    toggleLang: this.toggleLang,
-    availableLang: this.props.availableLang,
-  };
-
-  render() {
-    return (
-      <LangContext.Provider value={this.state}>
-        {this.props.children}
-      </LangContext.Provider>
-    );
-  }
+  return (
+    <LangContext.Provider
+      value={{ availableLang, lang: currentLang, toggleLang }}
+    >
+      {children}
+    </LangContext.Provider>
+  );
 }
+/**
+ * Provider for LangContext Handles stores language change
+ */
+export const LangProvider = React.memo(LangHandler);
 
 export function LangToggler() {
+  const { lang, toggleLang, availableLang } = React.useContext(LangContext);
   return (
-    <LangContext.Consumer>
-      {({ lang, toggleLang, availableLang }) => (
-        <select value={lang} onChange={ev => toggleLang(ev.target.value)}>
-          {availableLang.map(l => (
-            <option key={l.refName} value={l.refName}>
-              {`[${l.code}] ${l.label}`}
-            </option>
-          ))}
-        </select>
-      )}
-    </LangContext.Consumer>
+    <select value={lang} onChange={ev => toggleLang(ev.target.value)}>
+      {availableLang.map(l => (
+        <option key={l.code} value={l.code}>
+          {`[${l.code}] ${l.label}`}
+        </option>
+      ))}
+    </select>
   );
 }
