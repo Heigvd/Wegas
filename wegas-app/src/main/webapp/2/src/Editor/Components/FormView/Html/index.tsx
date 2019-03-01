@@ -78,9 +78,12 @@ export default class Html extends React.Component<HtmlProps, HtmlState> {
   };
   onChange = ({ value }: { value: Value }) => {
     if (this.state.value.document !== value.document) {
-      this.setState({ rawValue: html.serialize(value), value }, () =>
-        this.props.onChange(this.state.rawValue),
-      );
+      const oldVal = this.state.rawValue;
+      this.setState({ rawValue: html.serialize(value), value }, () => {
+        if (oldVal !== this.state.rawValue) {
+          this.props.onChange(this.state.rawValue);
+        }
+      });
     } else {
       this.setState({ value });
     }
