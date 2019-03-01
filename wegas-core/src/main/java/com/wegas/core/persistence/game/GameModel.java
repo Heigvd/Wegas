@@ -104,7 +104,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     private String name;
 
     @Basic(optional = false)
-    private Integer UIVersion = 1;
+    @WegasEntityProperty(initOnly = true)
+    private Integer UIVersion;
 
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @WegasEntityProperty(includeByDefault = false)
@@ -354,6 +355,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @PrePersist
     public void prePersist() {
+        if (this.getUIVersion() == null) {
+            this.setUIVersion(1);
+        }
         this.setCreatedTime(new Date());
     }
 
@@ -475,7 +479,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @JsonIgnore
     public void setStatus(Status status) {
-        if (status == Status.DELETE){
+        if (status == Status.DELETE) {
             logger.error("SET GM {} STATUS TO DELETE", this);
             Helper.printWegasStackTrace(WegasErrorMessage.error("Setting gm status to DELETE"));
         }
