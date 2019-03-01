@@ -40,10 +40,10 @@
         <ui:fragment rendered="#{wegasConfig.useYUICDN}">
                 <!-- CDN  -->
                 <ui:fragment rendered="#{request.scheme == 'http'}">
-                    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.17.2/build/cssreset/cssreset-min.css&amp;3.17.2/build/cssgrids/cssgrids-min.css" />
+                    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.18.1/build/cssreset/cssreset-min.css&amp;3.18.1/build/cssgrids/cssgrids-min.css" />
                 </ui:fragment>
                 <ui:fragment rendered="#{request.scheme == 'https'}">
-                    <link rel="stylesheet" type="text/css" href="https://yui-s.yahooapis.com/combo?3.17.2/build/cssreset/cssreset-min.css&amp;3.17.2/build/cssgrids/cssgrids-min.css" />
+                    <link rel="stylesheet" type="text/css" href="https://yui-s.yahooapis.com/combo?3.18.1/build/cssreset/cssreset-min.css&amp;3.18.1/build/cssgrids/cssgrids-min.css" />
                 </ui:fragment>
             </ui:fragment>
         <ui:fragment rendered="#{!wegasConfig.useYUICDN}">

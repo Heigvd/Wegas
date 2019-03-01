@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -12,7 +12,7 @@ YUI.add('swf', function (Y, NAME) {
  * via External Interface.
  * @module swf
  * @deprecated The swf module is deprecated and will not be replaced. YUI has
- * no plans for providing a utility for embedding Flash into HTML pages. 
+ * no plans for providing a utility for embedding Flash into HTML pages.
  */
 
     var Event = Y.Event,
@@ -208,4 +208,4 @@ Y.augment(SWF, Y.EventTarget);
 Y.SWF = SWF;
 
 
-}, '3.17.2', {"requires": ["event-custom", "node", "swfdetect", "escape"]});
+}, '3.18.1', {"requires": ["event-custom", "node", "swfdetect", "escape"]});
