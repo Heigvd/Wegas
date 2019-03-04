@@ -968,8 +968,13 @@ public class RequestManager implements RequestManagerI {
                 + (currentPlayer != null ? currentPlayer.getId() : "n/a") + "::"
                 + (currentTeam != null ? currentTeam.getId() : "n/a") + "]";
 
-        RequestManager.logger.info("Request [{}] \"{} {}\" for {} processed in {} ms ( processing: {}; management: {}, propagation: {}, serialisation: {}) => {}",
-                this.requestId, this.getMethod(), this.getPath(), info, totalDuration, processingDuration, managementDuration, propagationDuration, serialisationDuration, this.status);
+        if (this.status.getStatusCode() >= 400) {
+            RequestManager.logger.error("Request [{}] \"{} {}\" for {} processed in {} ms ( processing: {}; management: {}, propagation: {}, serialisation: {}) => {}",
+                    this.requestId, this.getMethod(), this.getPath(), info, totalDuration, processingDuration, managementDuration, propagationDuration, serialisationDuration, this.status);
+        } else {
+            RequestManager.logger.info("Request [{}] \"{} {}\" for {} processed in {} ms ( processing: {}; management: {}, propagation: {}, serialisation: {}) => {}",
+                    this.requestId, this.getMethod(), this.getPath(), info, totalDuration, processingDuration, managementDuration, propagationDuration, serialisationDuration, this.status);
+        }
     }
 
     /**
