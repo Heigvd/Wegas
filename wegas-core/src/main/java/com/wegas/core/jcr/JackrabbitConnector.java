@@ -8,30 +8,21 @@
 package com.wegas.core.jcr;
 
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ILock;
-import com.mongodb.DB;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.ReadConcern;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestManager;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.concurrent.TimeUnit;
 import javax.annotation.PreDestroy;
-import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.inject.Inject;
 import javax.jcr.Repository;
 import org.apache.jackrabbit.oak.Oak;
 import org.apache.jackrabbit.oak.jcr.Jcr;
-import org.apache.jackrabbit.oak.plugins.blob.MarkSweepGarbageCollector;
-import org.apache.jackrabbit.oak.plugins.document.DocumentMK;
 import org.apache.jackrabbit.oak.plugins.document.DocumentNodeStore;
-import org.apache.jackrabbit.oak.plugins.document.VersionGarbageCollector;
+import static org.apache.jackrabbit.oak.plugins.document.mongo.MongoDocumentNodeStoreBuilder.newMongoDocumentNodeStoreBuilder;
 import org.apache.jackrabbit.oak.segment.SegmentNodeStore;
 import org.apache.jackrabbit.oak.segment.SegmentNodeStoreBuilders;
 import org.apache.jackrabbit.oak.segment.file.FileStore;
@@ -76,15 +67,12 @@ public class JackrabbitConnector {
                         hostPort += ":" + uri.getPort();
                     }
                     String dbName = uri.getPath().replaceFirst("/", "");
-                    final DB db = new MongoClient(hostPort, MongoClientOptions.builder()
-                            .readConcern(ReadConcern.MAJORITY)
-                            .build())
-                            .getDB(dbName);
-                    nodeStore = new DocumentMK.Builder()
+                    nodeStore = newMongoDocumentNodeStoreBuilder()
                             .setLeaseCheck(false)
-                            .setMongoDB(db)
-                            .getNodeStore();
+                            .setMongoDB("mongodb://" + hostPort + "/?readConcernLevel=majority", dbName, 0)
+                            .build();
                     JackrabbitConnector.repo = new Jcr(new Oak(nodeStore)).createRepository();
+
                 } else if (uri.getScheme().equals("file")) {
                     // Local
                     try {
@@ -130,8 +118,7 @@ public class JackrabbitConnector {
      * clean old revisions
      * <p>
      * OAK 1.8 will schedule this deletion automatically !!!
-     */
-    @Schedule(hour = "*", minute = "0")
+    //@Schedule(hour = "*", minute = "0")
     public void revisionGC() {
         ILock lock = hzInstance.getLock("JackRabbit.Schedule");
         logger.info("revisionGC(): OAK GarbageCollection");
@@ -141,7 +128,7 @@ public class JackrabbitConnector {
                 requestManager.su();
                 if (repo == null) {
                     init();
-                }
+}
                 if (nodeStore != null) {
                     VersionGarbageCollector versionGc = nodeStore.getVersionGarbageCollector();
                     logger.info("revisionGC(): start VersionGC");
@@ -162,10 +149,10 @@ public class JackrabbitConnector {
             logger.info("Somebody else got the lock");
         }
     }
+     */
 
     /**
      * HAZARADOUS BEHAVIOUR: do not use unless ykwyd
-     */
     public void blobsGC() {
         ILock lock = hzInstance.getLock("JackRabbit.Schedule");
         logger.info("revisionGC(): OAK GarbageCollection");
@@ -214,4 +201,5 @@ public class JackrabbitConnector {
             logger.info("Somebody else got the lock");
         }
     }
+     */
 }
