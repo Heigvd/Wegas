@@ -31,14 +31,17 @@ export default function translatable<P extends EndProps>(
         label: '',
       }
     ).label;
-    const view = {
-      ...props.view,
-      label: (
-        <span>
-          {props.view.label} <span>[{curCode}]</span>
-        </span>
-      ),
-    };
+    const view = React.useMemo(
+      () => ({
+        ...props.view,
+        label: (
+          <span>
+            {props.view.label} <span>[{curCode}]</span>
+          </span>
+        ),
+      }),
+      [props.view, curCode],
+    );
     const pvalue: ITranslatableContent =
       props.value == null
         ? { '@class': 'TranslatableContent', translations: {} }
