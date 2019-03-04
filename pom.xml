@@ -88,15 +88,10 @@
         <wegas.debug>true</wegas.debug>
         <wegas.build>${maven.build.timestamp}</wegas.build>
 
-        <wegas.deploy.path>sftp://dev.albasim.ch/home/drop</wegas.deploy.path>
-        <wegas.deploy.server>dev-site</wegas.deploy.server>
-        <wegas.deploy.name>Wegas.war</wegas.deploy.name>
         <wegas.clientErrorLogging>false</wegas.clientErrorLogging>
         <wegas.useYUICDN>false</wegas.useYUICDN>
 
         <shiro.version>1.4.0</shiro.version>
-        <atmosphere.version>0.9-SNAPSHOT</atmosphere.version>
-        <!--<jersey.version>2.27</jersey.version>-->
         <jdk.version>1.8</jdk.version>
         <payara.version>5.184</payara.version>
         <payara-api.version>5.184</payara-api.version>
@@ -111,9 +106,6 @@
 
         <profile.dependent.scope>compile</profile.dependent.scope>
 
-        <!--<slf4j.version>1.7.7</slf4j.version>
-        <logback.version>1.0.9</logback.version>-->
-
         <slf4j.version>1.7.25</slf4j.version>
         <logback.version>1.2.3</logback.version>
 
@@ -121,13 +113,7 @@
         <liquibase.version>2.0.5</liquibase.version>
         <eclipselink.version>2.7.3</eclipselink.version>
         <jcr.version>2.0</jcr.version>
-        <oak.version>1.6.5</oak.version>
-        <prometheus.version>0.5.0</prometheus.version>
-
-        <!--
-        <jackson.scope>provided</jackson.scope>
-        <jackson.version>2.9.6</jackson.version>
-        -->
+        <oak.version>1.8.11</oak.version>
 
         <netbeans.hint.j2eeVersion>8</netbeans.hint.j2eeVersion>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
@@ -147,14 +133,6 @@
                 <profile.dependent.scope>compile</profile.dependent.scope>
             </properties>
         </profile>
-        <profile>
-            <id>prod-profile</id>
-            <properties>
-                <wegas.deploy.path>sftp://wegas.albasim.ch/home/drop/builds</wegas.deploy.path>
-                <wegas.deploy.server>prod-site</wegas.deploy.server>
-                <wegas.deploy.name>Wegas_${wegas.build}.war</wegas.deploy.name>
-            </properties>
-        </profile>
     </profiles>
 
     <dependencyManagement>
@@ -170,16 +148,6 @@
                 <artifactId>commons-collections</artifactId>
                 <version>3.2.2</version>
             </dependency>
-            <!--<dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>eclipselink</artifactId>
-                <version>${eclipselink.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.extension</artifactId>
-                <version>${eclipselink.version}</version>
-            </dependency>-->
             <!-- slf4j -->
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -233,66 +201,12 @@
                 <type>jar</type>
             </dependency>
 
-            <!--<dependency>
-                <groupId>javax.enterprise</groupId>
-                <artifactId>cdi-api</artifactId>
-                <version>1.2</version>
-                <scope>provided</scope>
-            </dependency>-->
-
             <!-- Liquibase -->
             <dependency>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-core</artifactId>
                 <version>${liquibase.version}</version>
             </dependency>
-
-<!--
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-core</artifactId>
-                <version>${jackson.version}</version>
-                <scope>${jackson.scope}</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
-                <scope>${jackson.scope}</scope>
-            </dependency>
-
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
-                <scope>${jackson.scope}</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.jaxrs</groupId>
-                <artifactId>jackson-jaxrs-base</artifactId>
-                <version>${jackson.version}</version>
-                <scope>${jackson.scope}</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.jaxrs</groupId>
-                <artifactId>jackson-jaxrs-json-provider</artifactId>
-                <version>${jackson.version}</version>
-                <scope>${jackson.scope}</scope>
-            </dependency>
-
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.module</groupId>
-                <artifactId>jackson-module-jaxb-annotations</artifactId>
-                <version>${jackson.version}</version>
-                <scope>${jackson.scope}</scope>
-            </dependency>
-            -->
-
 
             <!-- Java Content Repository -->
             <dependency>
@@ -320,11 +234,6 @@
                 <scope>compile</scope>
             </dependency>
 
-            <!--<dependency>
-                <groupId>com.github.fge</groupId>
-                <artifactId>json-patch</artifactId>
-                <version>1.9</version>
-            </dependency>-->
             <!-- PDF Generation -->
             <dependency>
                 <groupId>com.itextpdf</groupId>
@@ -422,13 +331,6 @@
                 <artifactId>reflections</artifactId>
                 <version>0.9.11</version>
             </dependency>
-
-            <!--<dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-all</artifactId>
-                <version>1.9.5</version>
-                <scope>test</scope>
-            </dependency>-->
         
             <dependency>
                 <groupId>net.sourceforge.htmlunit</groupId>
@@ -461,12 +363,13 @@
                 <scope>provided</scope>
             </dependency>
 
-            <!--<dependency>
-                <groupId>fish.payara.extras</groupId>
-                <artifactId>payara-micro</artifactId>
-                <version>${payara.version}</version>
+            <dependency>
+                <groupId>org.eclipse.microprofile</groupId>
+                <artifactId>microprofile</artifactId>
+                <version>2.0.1</version>
+                <type>pom</type>
                 <scope>provided</scope>
-            </dependency>-->
+            </dependency>
 
             <dependency>
                 <groupId>fish.payara.extras</groupId>
@@ -481,25 +384,6 @@
                 <artifactId>neo4j-java-driver</artifactId>
                 <version>1.2.1</version>
             </dependency>
-
-        <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient</artifactId>
-            <version>${prometheus.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient_servlet</artifactId>
-            <version>${prometheus.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient_hotspot</artifactId>
-            <version>${prometheus.version}</version>
-        </dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -747,67 +631,11 @@
                 </executions>
                 <configuration>
                     <serverId>github</serverId>
-
-                    <!--<dryRun>true</dryRun>-->
-                    <!--<tryUpdate>true</tryUpdate>-->
                     <content>${project.build.directory}/staging</content>
                     <scmBranch>gh-pages</scmBranch>
                 </configuration>
             </plugin>
-            <!--             Site deployment on github
-            <plugin>
-                <groupId>com.github.github</groupId>
-                <artifactId>site-maven-plugin</artifactId>
-                <version>0.12</version>
-                <inherited>false</inherited>
-                <configuration>
-                    <repositoryName>Wegas</repositoryName>
-                    <repositoryOwner>Heigvd</repositoryOwner>
-                    <server>github</server>
-                    <dryRun>true</dryRun>
-                    <outputDirectory>${project.build.directory}/staging</outputDirectory>
-                    <message>${project.version} Site (${maven.build.timestamp})</message>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>gitSite</id>
-                        <goals>
-                            <goal>site</goal>
-                        </goals>
-                        <phase>site-deploy</phase>
-                    </execution>
-                </executions>
-            </plugin>-->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>wagon-maven-plugin</artifactId>
-                <version>1.0</version>
-                <inherited>false</inherited>
-                <configuration>
-                    <serverId>${wegas.deploy.server}</serverId>
-                    <fromFile>wegas-app/target/Wegas.war</fromFile>
-                    <url>${wegas.deploy.path}</url>
-                    <toFile>${wegas.deploy.name}</toFile>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>upload-war</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>upload-single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
         </plugins>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh</artifactId>
-                <version>2.9</version>
-            </extension>
-        </extensions>
     </build>
 
     <reporting>

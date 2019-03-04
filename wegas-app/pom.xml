@@ -23,31 +23,6 @@
 
     <profiles>
         <profile>
-            <id>light-profile</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-war-plugin</artifactId>
-                        <configuration>
-                            <warName>Wegas</warName>
-                            <failOnMissingWebXml>false</failOnMissingWebXml>
-                            <archive>
-                                <!--<manifest>
-                                    <addClasspath>true</addClasspath>
-                                    <classpathPrefix>lib</classpathPrefix>
-                                </manifest>-->
-                                <!--<manifestEntries>
-                                    <Class-Path>file:/${basedir}/../wegas-core/target/wegas-core.jar</Class-Path>
-                                </manifestEntries>-->
-                            </archive>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
             <id>release-profile</id>
             <build>
                 <plugins>
@@ -57,20 +32,9 @@
                         <configuration>
                             <!--remove not min js-->
                             <!--<packagingExcludes>%regex[(?!.*min).*\.js]</packagingExcludes>-->
-                            <overlays>
-                                <overlay>
-                                    <id>wegaslibs</id>
-                                    <groupId>com.wegas</groupId>
-                                    <artifactId>wegas-resources</artifactId>
-                                    <type>war</type>
-                                    <includes>
-                                        <include>lib/**</include>
-                                    </includes>
-                                    <excludes>
-                                        <exclude>lib/yui3/**</exclude>
-                                    </excludes>
-                                </overlay>
-                            </overlays>
+                            <packagingExcludes>
+                                lib/yui3/**
+                            </packagingExcludes>
                         </configuration>
                     </plugin>
                 </plugins>
