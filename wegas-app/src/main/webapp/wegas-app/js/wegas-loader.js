@@ -946,7 +946,7 @@ YUI().use(function(Y) {
             },
             "wegas-react-form": {
                 path: "dist/bundle.js",
-                requires: ["roboto-font", "tinymce", "wegas-panel-fileselect"],
+                requires: ["roboto-font", "tinymce", "wegas-react-form-binding", "wegas-panel-fileselect"],
                 ws_provides: "RForm"
             },
             // "wegas-react-manifest": {
