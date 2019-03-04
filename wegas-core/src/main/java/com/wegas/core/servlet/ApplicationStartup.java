@@ -11,8 +11,8 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.Member;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
+import com.wegas.core.ejb.MetricsFacade;
 import com.wegas.core.ejb.WebsocketFacade;
-import io.prometheus.client.hotspot.DefaultExports;
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -46,15 +46,21 @@ public class ApplicationStartup extends HttpServlet {
     @Inject
     private HazelcastInstance hzInstance;
 
+    @Inject
+    private MetricsFacade metricsFacade;
+
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         logger.info("Servlet Startup");
 
-        websocketFacade.getOnlineUsers();
-        websocketFacade.updateOnlineUserMetric();
+        // read metrics once to register them
+        metricsFacade.getOnlineUserCounter();
+        metricsFacade.getHzSize();
+        metricsFacade.getHzSize();
 
-        DefaultExports.initialize();
+        websocketFacade.getOnlineUsers();
 
         /*
          * init member list

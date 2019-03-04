@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.security.ejb.UserFacade;
-import io.prometheus.client.Counter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,6 +22,8 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
+import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.cfg.EndpointConfigBase;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.cfg.ObjectWriterInjector;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.cfg.ObjectWriterModifier;
@@ -52,8 +53,9 @@ public class ViewRequestFilter implements ContainerRequestFilter {
     @Inject
     RequestFacade requestFacade;
 
-    private static final Counter requests = Counter.build()
-            .name("requests_total").help("Total requests.").register();
+    @Inject
+    @Metric(name = "requests_total", description = "Total requests", absolute = true)
+    Counter requests;
 
     private final static Logger logger = LoggerFactory.getLogger(ViewRequestFilter.class);
 
