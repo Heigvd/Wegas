@@ -3,7 +3,7 @@ import { findDOMNode } from 'react-dom';
 import {
   DropTarget,
   ConnectDropTarget,
-  ClientOffset,
+  XYCoord,
   DropTargetMonitor,
 } from 'react-dnd';
 
@@ -23,7 +23,7 @@ export interface Outcome {
     index: number;
   };
 }
-function pos(position: ClientOffset, target: Element): DropLocation {
+function pos(position: XYCoord, target: Element): DropLocation {
   const rect = target.getBoundingClientRect();
   const middle = rect.height / 2;
   const relTop = position.y - rect.top;
@@ -36,7 +36,7 @@ function outcome(
   props: DropZoneProps,
   item: ItemDescription,
   monitor: DropTargetMonitor,
-  component: React.Component<DropZoneProps>,
+  component: DropZoneContainer, //React.Component<DropZoneProps>,
 ): Outcome {
   let index;
   switch (props.where) {
@@ -63,9 +63,8 @@ function outcome(
         {
           ...props,
           where: pos(
-            monitor!.getClientOffset(),
-            // @ts-ignore
-            component.separator || findDOMNode(component!),
+            monitor!.getClientOffset()!,
+            component.separator || (findDOMNode(component) as Element),
           ),
         },
         item,
@@ -87,14 +86,12 @@ interface DropZoneProps {
   id?: {};
   where: DropLocation;
   index: number;
-  children: (
-    passProps: {
-      isOver: boolean;
-      where: DropLocation;
-      boundingRect?: DOMRect | ClientRect;
-      separator: (sep: React.ReactElement<any>) => JSX.Element;
-    },
-  ) => React.ReactElement<any>;
+  children: (passProps: {
+    isOver: boolean;
+    where: DropLocation;
+    boundingRect?: DOMRect | ClientRect;
+    separator: (sep: React.ReactElement<any>) => JSX.Element;
+  }) => React.ReactElement<any>;
 }
 interface ConDropZoneProps extends DropZoneProps {
   isOver: boolean;
