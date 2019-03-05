@@ -5,7 +5,7 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-/* global I18n */
+/* global I18n, Promise */
 
 /**
  * @fileoverview
@@ -547,8 +547,16 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 "sm-dialoguestate" : "sm-state");
         },
         syncUI: function() {
+            if (!this.globals) {
+                // global not known yet, request them and, then, resync 
+                var globals = [Y.Wegas.RForm.Script.getGlobals('getter'), Y.Wegas.RForm.Script.getGlobals('condition')];
+                Promise.all(globals).then(Y.bind(function(globalsP) {
+                    this.globals = Y.mix(Y.mix({}, globalsP[0]), globalsP[1]);
+                    this.syncUI();
+                }, this));
+            }
             var label, entity = this.get(ENTITY), x, y,
-                impact = Y.inputEx.WysiwygScript.formatScript(entity.get("onEnterEvent"));
+                impact = Y.inputEx.WysiwygScript.formatScript(entity.get("onEnterEvent"), this.globals);
 
             if (entity instanceof Wegas.persistence.DialogueState) {
                 label = I18n.t(entity.get("text"));
@@ -597,7 +605,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 cfg = entity.getFormCfg(undefined, stateMachine);
                 form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this), undefined, cfg);
 
-                if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO" && 
+                if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO" &&
                     stateMachine.get("visibility") !== "PRIVATE") {
                     Y.log("Edition forbidden");
                 } else {
@@ -861,7 +869,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 cfg = transition.getFormCfg(undefined, stateMachine);
                 form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this), undefined, cfg);
 
-                if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO" && 
+                if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO" &&
                     stateMachine.get("visibility") !== "PRIVATE") {
                     Y.log("Edition forbidden");
                 } else {
@@ -933,7 +941,15 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             // "display:none;"); };
         },
         syncUI: function() {
-            this.updateLabel();
+            if (this.globals) {
+                this.updateLabel();
+            } else {
+                var globals = [Y.Wegas.RForm.Script.getGlobals('getter'), Y.Wegas.RForm.Script.getGlobals('condition')];
+                Promise.all(globals).then(Y.bind(function(globalsP) {
+                    this.globals = Y.mix(Y.mix({}, globalsP[0]), globalsP[1]);
+                    this.updateLabel();
+                }, this));
+            }
         },
         disconnect: function(noSave) {
             var target = this.getTargetState(),
@@ -981,8 +997,8 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         },
         updateLabel: function() {
             var entity = this.get(ENTITY),
-                condition = Y.inputEx.WysiwygScript.formatScript(entity.get("triggerCondition")),
-                impact = Y.inputEx.WysiwygScript.formatScript(entity.get("preStateImpact")),
+                condition = Y.inputEx.WysiwygScript.formatScript(entity.get("triggerCondition"), this.globals),
+                impact = Y.inputEx.WysiwygScript.formatScript(entity.get("preStateImpact"), this.globals),
                 label;
 
             if (entity instanceof Wegas.persistence.DialogueTransition) {
