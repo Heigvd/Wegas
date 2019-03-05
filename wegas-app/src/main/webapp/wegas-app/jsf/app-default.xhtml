@@ -78,19 +78,16 @@
                         //loadOptional: true,
                         Wegas: {
                             base: "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
-                            comboBase: "#{request.contextPath}/rest/combo/?v=#{wegasConfig.timestamp}&amp;",
                             scheme: "#{request.scheme}",
                             mode: "#{wegasMode}"
                         }
                     };
                 </script>
 
-                <!-- Force use of combo if using self hosted yui -->
                 <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
                     <script type="text/javascript">
-                        YUI_config.comboBase = YUI_config.Wegas.comboBase;      // Force use of self hosted yui3
                         YUI_config.filter = "min";
-                        YUI_config.combine = true;
+                        YUI_config.combine = false;
                         YUI_config.root = "/lib/yui3/build/";
                     </script>
                 </ui:fragment>
@@ -104,7 +101,8 @@
                     <script type="text/javascript" src="#{request.contextPath}/wegas-app/js/wegas-loader.js"></script>
                 </ui:fragment>
                 <ui:fragment rendered="#{!requestController.debugMode()}">
-                    <script type="text/javascript" src="#{request.contextPath}/rest/combo/?/lib/inputex/src/loader-min.js&amp;/wegas-app/js/wegas-loader-min.js"></script>
+                    <script type="text/javascript" src="#{request.contextPath}/lib/inputex/src/loader-min.js"></script>
+                    <script type="text/javascript" src="#{request.contextPath}/wegas-app/js/wegas-loader-min.js"></script>
                 </ui:fragment>
 
                 <!-- Set up inputex path -->
@@ -112,8 +110,7 @@
                         var ix = YUI_config.groups.inputex;
                         ix.base = YUI_config.Wegas.base + "/lib/inputex/src/";
                         ix.root = "/lib/inputex/src/";
-                        ix.comboBase = YUI_config.Wegas.comboBase;
-                        ix.combine = #{!requestController.debugMode()};
+                        ix.combine = false;
 
                         YUI_config.groups.gallery = {
                             base: 'https://cdn.rawgit.com/yui/yui3-gallery/gallery-2014.07.31-18-26/build/',

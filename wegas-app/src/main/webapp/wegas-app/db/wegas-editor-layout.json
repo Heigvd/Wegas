@@ -171,19 +171,6 @@
                                                 },
                                                 {
                                                     "type": "Button",
-                                                    "label": "Clear Combo Cache",
-                                                    "plugins": [
-                                                        {
-                                                            "fn": "FireAndForgetRequestAction",
-                                                            "cfg": {
-                                                                "url": "rest/combo",
-                                                                "method": "DELETE"
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "Button",
                                                     "label": "Clear EM level2 Cache",
                                                     "plugins": [
                                                         {
