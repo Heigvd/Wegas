@@ -542,9 +542,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             // init root level
             goIn(key, cfg && cfg.view && cfg.view.label);
 
-            Y.inputEx.WysiwygScript.visitAST(script, {
+            Y.Wegas.ScriptHelper.visitAST(script, {
                 onEnterFn: Y.bind(function(node, args) {
-                    var method = Y.inputEx.WysiwygScript.parseMethod(node, this.globals);
+                    var method = Y.Wegas.ScriptHelper.parseMethod(node, this.globals);
                     if (method && method.method) {
                         goIn(method.methodName, method.methodName);
                     }
@@ -617,7 +617,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     return true;
                 }, this),
                 onExitFn: Y.bind(function(node) {
-                    var method = Y.inputEx.WysiwygScript.parseMethod(node, this.globals);
+                    var method = Y.Wegas.ScriptHelper.parseMethod(node, this.globals);
                     if (method && method.method) {
                         goOut();
                     }
@@ -1844,7 +1844,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 payload = [],
                 content = attr.get("content"),
                 i, node, newContent, before, after;
-            Y.inputEx.WysiwygScript.visitAST(content, {
+            Y.Wegas.ScriptHelper.visitAST(content, {
                 onEnterFn: Y.bind(function(node, args) {
                     // expected arg type is a Translatable content
                     if (args && args.properties && args.properties["@class"]

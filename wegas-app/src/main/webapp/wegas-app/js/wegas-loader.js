@@ -486,6 +486,9 @@ YUI().use(function(Y) {
         root: "/wegas-util/",
         modules: {
             "wegas-helper": {},
+            "wegas-script-helper": {
+                requires : ["esprima"]
+            },
             "datatable-csv": {
                 ws_provides: "DatatableCSV"
             },
@@ -788,7 +791,7 @@ YUI().use(function(Y) {
             },
             "wegas-gamemodel-i18n": {
                 path: "js/widget/wegas-gamemodel-i18n-min.js",
-                requires: ["wegas-layout-list", "wegas-inputex-wysiwygscript"],
+                requires: ["wegas-layout-list", "wegas-script-helper"],
                 ws_provides: ["LanguagesManager", "TranslationEditor"]
             },
             "wegas-gamemodel-extractor": {
@@ -808,9 +811,9 @@ YUI().use(function(Y) {
             },
             "wegas-statemachineviewer": {
                 path: "js/widget/wegas-statemachineviewer-min.js",
-                requires: ["wegas-statemachineviewercss", "wegas-inputex-wysiwygscript", "wegas-statemachine-entities",
+                requires: ["wegas-statemachineviewercss", "wegas-script-helper", "wegas-statemachine-entities",
                     "dd-constrain", "jsplumb-dom", "button", "event-mousewheel",
-                    "slider", "wegas-panel-node", "wegas-inputex-wysiwygscript"],
+                    "slider", "wegas-panel-node"],
                 ws_provides: "StateMachineViewer"
             },
             "wegas-statemachineviewercss": {
