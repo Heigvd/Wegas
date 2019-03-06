@@ -103,7 +103,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                 var previewTab = Y.Wegas.TabView.getTab(Y.Wegas.TabView.getPreviewTabLabel());
                 if (previewTab) {
                     previewTab.deselectAll();
-                    previewTab.set("selected", 2);
+                    previewTab.set("selected", 1);
                 }
             },
             /**
@@ -203,7 +203,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                 }
                 // For the initial view, hide the + menu of the Attributes tabView
                 TabView.showPlusMenu(TabView.getOppositeTabView(preferredEditorTabView));
-                editorTab.set("selected", 2);
+                editorTab.set("selected", 1);
                 //TabView.getTab(TabView.getPreviewTabLabel()).set("selected", 2);
             },
             // Return as an object a safe set of "left" attributes for the three columns

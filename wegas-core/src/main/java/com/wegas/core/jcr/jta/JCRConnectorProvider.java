@@ -94,11 +94,12 @@ public class JCRConnectorProvider implements Serializable {
     private JTARepositoryConnector getConnector(GameModel gameModel, RepositoryType type) throws RepositoryException {
         try {
             JTARepositoryConnector connector = txBean.getConnector(gameModel, type);
-            logger.info("JCRConnector: open JTA connector");
+            logger.info("JCRConnector: open JTA connector {}", connector);
             return connector;
         } catch (ContextNotActiveException | TransactionRequiredLocalException ex) {
-            logger.info("JCRConnector: Open Detached connector (NO JTA SUPPORT)");
-            return JCRConnectorProviderTx.getDetachedConnector(gameModel, type);
+            JTARepositoryConnector connector = JCRConnectorProviderTx.getDetachedConnector(gameModel, type);
+            logger.info("JCRConnector: Open Detached connector (NO JTA SUPPORT) {}", connector);
+            return connector;
         }
     }
 

@@ -121,7 +121,7 @@
         <liquibase.version>2.0.5</liquibase.version>
         <eclipselink.version>2.6.4</eclipselink.version>
         <jcr.version>2.0</jcr.version>
-        <oak.version>1.6.5</oak.version>
+        <oak.version>1.10.1</oak.version>
         <prometheus.version>0.5.0</prometheus.version>
 
         <jackson.scope>provided</jackson.scope>
@@ -298,9 +298,15 @@
                 <scope>compile</scope>
             </dependency>
             <dependency>
+                <groupId>org.apache.jackrabbit</groupId>
+                <artifactId>oak-store-document</artifactId>
+                <version>${oak.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.mongodb</groupId>
-                <artifactId>mongo-java-driver</artifactId>
-                <version>3.4.3</version>
+                <artifactId>mongodb-driver-legacy</artifactId>
+                <version>3.10.1</version>
             </dependency>
 
             <dependency>

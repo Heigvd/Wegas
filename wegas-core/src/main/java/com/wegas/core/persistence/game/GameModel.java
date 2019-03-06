@@ -1266,9 +1266,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     @JsonIgnore
-    public ContentConnector getFilesConnector() throws RepositoryException {
+    public ContentConnector getConnector(ContentConnector.WorkspaceType wType) throws RepositoryException {
         if (jcrProvider != null) {
-            return jcrProvider.getContentConnector(this, ContentConnector.WorkspaceType.FILES);
+            return jcrProvider.getContentConnector(this, wType);
         }
         return null;
     }

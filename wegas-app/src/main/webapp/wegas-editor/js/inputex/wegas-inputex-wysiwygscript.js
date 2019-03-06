@@ -387,7 +387,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             }
             parse(tree);
         },
-        formatScript: function(script, i18nConfig) {
+        formatScript: function(script, globals) {
             // todo promise !
             if (script && script.get) {
                 script = script.get("content");
@@ -398,9 +398,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 return "";
             }
             try {
-                var globals = Y.mix(Y.mix({}, Y.Wegas.RForm.Script.getGlobals('getter')),
-                    Y.Wegas.RForm.Script.getGlobals('condition')),
-                    findLabel = function(a, n) {
+                var findLabel = function(a, n) {
                         var l = Y.Array.find(a, function(i) {
                             return i.value === n;
                         });
@@ -414,7 +412,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                         if (arg.type === "ObjectExpression") {
                             var obj = JSON.parse(src);
                             if (obj["@class"] === "TranslatableContent") {
-                                return I18n.t(obj, i18nConfig);
+                                return I18n.t(obj);
                             }
                         }
                         return src;
@@ -437,11 +435,19 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                         || i.callee.object.callee.object.name === "VariableDescriptorFacade") // @backwardcompatibility
                                     && i.callee.object.callee.property && i.callee.object.callee.property.name === "find") {
                                     var vd = Wegas.Facade.Variable.cache.find("name",
-                                        i.callee.object.arguments[1].value), methodName = i.callee.property.name, method = vd.getMethodCfgs()[methodName];
+                                        i.callee.object.arguments[1].value), methodName = i.callee.property.name,
+                                        method = vd.getMethodCfgs()[methodName];
 
-                                    return I18n.t(vd.get("label"), i18nConfig) +
-                                        " " + (i.callee.property.name !== "getValue" ? "<em>" +
-                                            (method.label ? method.label.toLowerCase() : methodName) + "</em> " : "") +
+
+                                    //" " + (i.callee.property.name !== "getValue" ? "<em>" + (method.label ? method.label.toLowerCase() : methodName) + "</em> " : "") +
+
+                                    var mName = "";
+                                    if (method.label) {
+                                        mName = "<em>" + method.label.toLowerCase() + "</em>";
+                                    } else if (i.callee.property.name !== "getValue") {
+                                        mName = "<em>" + methodName + "</em>";
+                                    }
+                                    return vd.getEditorLabel() + " " + mName +
                                         formatArgs(i.arguments.slice(1),
                                             method.arguments.slice(1));
                                 } else {

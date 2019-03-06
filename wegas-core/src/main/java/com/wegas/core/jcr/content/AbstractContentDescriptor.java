@@ -144,6 +144,12 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
         this.mimeType = mimeType;
     }
 
+
+    @JsonIgnore
+    public ContentConnector.WorkspaceType getWorkspaceType() throws RepositoryException {
+        return this.getConnector().getWorkspaceType();
+    }
+
     @JsonIgnore
     protected ContentConnector getConnector() throws RepositoryException {
         if (this.connector != null) {

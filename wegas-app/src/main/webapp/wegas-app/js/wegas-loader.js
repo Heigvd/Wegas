@@ -34,10 +34,9 @@ YUI().use(function(Y) {
      */
     YUI.addGroup = function(name, group) {
         YUI_config.groups[name] = group;
-        group.combine = !YUI_config.debug;
+        group.combine = false;
         group.filter = YUI_config.debug ? "raw" : "min"; // Select raw files
         group.base = YUI_config.Wegas.base + group.root; // Set up path
-        group.comboBase = YUI_config.Wegas.comboBase; // Set up combo path
         loadModules(group);
         //YUI.applyConfig(YUI_config);
     };

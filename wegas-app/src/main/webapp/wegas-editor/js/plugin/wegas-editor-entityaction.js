@@ -369,7 +369,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             }
             tab.setAttrs({
                 label: Wegas.TabView.getEditorTabLabel(),
-                selected: 2
+                selected: 1
             });                                                                 // Update tab attrs
             tab.form.setAttrs({
                 values: entity.toObject(),

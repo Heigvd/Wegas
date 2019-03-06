@@ -125,11 +125,11 @@ public class HistoryController {
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
 
-        if (!name.matches("^.*\\.json$")) {
+        if (!name.endsWith(".json")) {
             name = name + ".json";
         }
 
-        jcrFacade.createFile(gameModel, ContentConnector.WorkspaceType.HISTORY, name + ".json", "/",
+        jcrFacade.createFile(gameModel, ContentConnector.WorkspaceType.HISTORY, name, "/",
                 "application/octet-stream", null, null,
                 new ByteArrayInputStream(gameModelFacade.find(gameModelId).toJson(Views.Export.class).getBytes("UTF-8")), false);
     }
