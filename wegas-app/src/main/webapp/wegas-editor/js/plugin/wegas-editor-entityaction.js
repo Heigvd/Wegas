@@ -292,7 +292,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                         if (sizeIndex === -1) {
                             return true;
                         }
-                        var size = currProp[sizeIndex].cfg.styles;
+                        var size = currProp[sizeIndex] && currProp[sizeIndex].cfg && currProp[sizeIndex].cfg.styles;
                         // If new, this object should be empty:
                         if (Object.keys(size).length === 0) {
                             otherProp[sizeIndex] = currProp[sizeIndex];

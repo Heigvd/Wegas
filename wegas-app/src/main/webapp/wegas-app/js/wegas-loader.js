@@ -59,7 +59,7 @@ YUI().use(function(Y) {
                 type: CSS
             },
             "wegas-editable": {
-                requires: "inputex-jsonschema"
+                // requires: "inputex-jsonschema"
             },
             "wegas-i18n-global-fr": {
                 path: 'js/i18n/i18n-global-fr-min.js'
@@ -237,7 +237,7 @@ YUI().use(function(Y) {
             },
             "wegas-chat": {
                 path: "js/widget/wegas-chat-min.js",
-                requires: ["inputex-textarea", "button"],
+                requires: ["button"],
                 ws_provides: "Chat"
             },
             "wegas-chart-css": {
@@ -689,7 +689,7 @@ YUI().use(function(Y) {
             },
             "wegas-editor-action": {
                 path: "js/plugin/wegas-editor-action-min.js",
-                requires: ["wegas-button", "wegas-plugin", "event-key", "inputex-string"],
+                requires: ["wegas-button", "wegas-plugin", "event-key"],
                 ws_provides: ["OpenTabAction", "OpenTabButton", "Linkwidget", "OnDeleteListener", "ToggleAdvancedTabsMode"]
             },
             "wegas-editor-entityaction": {

@@ -403,13 +403,12 @@ YUI.add('wegas-editor-action', function(Y) {
      * @name Y.Wegas.Linkwidget
      * @extends Y.Widget
      * @class  Allows to display the player link in a menu.
-     * the link is in a textField. For this field inputEx is used.
      * @constructor
      * @param Object Will be used to fill attributes field
      */
     Linkwidget = Y.Base.create("wegas-playerlink-buttons", Y.Widget, [Wegas.Widget, Wegas.Editable, Y.WidgetChild], {
         /** @lends Y.Wegas.Linkwidget# */
-        CONTENT_TEMPLATE: '<div><div class="playerlink-label"><p>Link</p><div></div>',
+        CONTENT_TEMPLATE: '<div><div class="playerlink-label"><p>Link</p></div><div class="input-wrapper"><input></div></div>',
         /**
          * 1) Add a <div class="playerlink-label"><p>Player link</p><div> node fordisplay a label in the menu
          * 2) Add the inputeExStringField
@@ -419,12 +418,9 @@ YUI.add('wegas-editor-action', function(Y) {
          */
         renderUI: function() {
             var cb = this.get(CONTENTBOX);
-            this.textField = new Y.inputEx.StringField({
-                parentEl: cb
-            });
             cb.on("click", function(e) {
                 e.halt(true);
-                this.textField.el.select();
+                this.get("contentBox").one("input").select();
             }, this);
         },
         /**
@@ -434,8 +430,9 @@ YUI.add('wegas-editor-action', function(Y) {
          */
         syncUI: function() {
             var game = this.get("entity") || Wegas.Facade.Game.cache.getCurrentGame(),
-                url = Wegas.app.get("base") + "game.html?token=" + game.get("token");
-            this.textField.setValue(url);
+                url = Wegas.app.get("base") + "game.html?token=" + game.get("token"),
+                input = this.get(CONTENTBOX).one("input").getDOMNode();
+            input.value = url;
         },
         destructor: function() {
             this.textField.destroy();
