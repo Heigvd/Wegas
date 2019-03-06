@@ -77,7 +77,6 @@ export const schema = optView => ({
     required: 'true',
     view: Object.assign({}, optView, {
         type: 'treevariableselect',
-        openIfEmpty: true,
     }),
 });
 /**
