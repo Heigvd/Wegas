@@ -29,23 +29,27 @@ const legendStyle = css({
 function ObjectView(props) {
     const label = props.view.label === true ? props.editKey : props.view.label;
     return (
-        <fieldset
-            className={classNames(
+        <div>
+            <fieldset
+                className={classNames(
                 `${rootStyle}`,
                 { [`${borderTopStyle}`]: props.view.label },
                 props.view.className
-            )}
-        >
+                )}
+            >
             <legend className={legendStyle} align="center">
                 {label}
             </legend>
-            {props.children}
+            <div>
+                {props.children}
+            </div>
             {props.errorMessage.map(message => (
                 <div key={message} className={errorStyle}>
                     {message}
                 </div>
-            ))}
-        </fieldset>
+                ))}
+            </fieldset>
+        </div>
     );
 }
 

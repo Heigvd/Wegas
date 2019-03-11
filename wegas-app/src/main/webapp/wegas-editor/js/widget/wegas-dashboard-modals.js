@@ -36,7 +36,7 @@ YUI.add('wegas-dashboard-modals', function(Y) {
                         }
                     }
                 }
-                ;
+
                 return gamePlayers;
             }
 

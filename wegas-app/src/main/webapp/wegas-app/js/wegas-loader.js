@@ -59,7 +59,6 @@ YUI().use(function(Y) {
                 type: CSS
             },
             "wegas-editable": {
-                // requires: "inputex-jsonschema"
             },
             "wegas-i18n-global-fr": {
                 path: 'js/i18n/i18n-global-fr-min.js'
@@ -697,10 +696,6 @@ YUI().use(function(Y) {
                 requires: ["wegas-plugin", "wegas-form", "wegas-react-form", "wegas-panel", "wegas-tabview"],
                 ws_provides: ["NewEntityAction", "EditEntityAction", "NewEntityButton"]
             },
-            "wegas-editor-form": {
-                path: "js/widget/wegas-editor-form-min.js",
-                ws_provides: ["EditEntityForm", "EditParentGameModelForm"]
-            },
             "wegas-editor-widgetaction": {
                 path: "js/plugin/wegas-editor-widgetaction-min.js",
                 requires: "wegas-editor-entityaction",
@@ -742,14 +737,9 @@ YUI().use(function(Y) {
                 requires: "event-resize",
                 ws_provides: "FullWidthTab"
             },
-            "wegas-console": {
-                path: "js/widget/wegas-console-min.js",
-                requires: "wegas-inputex-ace",
-                ws_provides: "Console"
-            },
             "wegas-console-wysiwyg": {
                 path: "js/widget/wegas-console-wysiwyg-min.js",
-                requires: ["wegas-console", "wegas-inputex-wysiwygscript", "inputex-hidden", "wegas-widgettoolbar", "wegas-qrcode-scanner"],
+                requires: ["wegas-widgettoolbar", "wegas-qrcode-scanner", "wegas-react-form"],
                 ws_provides: "WysiwygConsole"
             },
             "wegas-console-custom": {

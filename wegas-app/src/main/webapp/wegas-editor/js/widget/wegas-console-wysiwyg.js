@@ -21,7 +21,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
     var CONTENTBOX = 'contentBox',
         WysiwygConsole, Wegas = Y.Wegas, Plugin = Y.Plugin;
 
-    WysiwygConsole = Y.Base.create("wegas-console-wysiwyg", Wegas.Console, [Y.WidgetChild, Wegas.Widget], {
+    WysiwygConsole = Y.Base.create("wegas-console-wysiwyg", Y.Widget, [Y.WidgetChild, Wegas.Widget], {
         /**
          * @lends Y.Wegas.WysiwygConsole#
          */
@@ -35,10 +35,13 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
         initializer: function() {
             this.handlers = [];
         },
+        destructor: function() {
+            this.srcField.destroy();
+        },
         /**
          * @function
          * @private
-         * @description create and render the Y.inputEx.WysiwygScript.
+         * @description create and render the Y.Wegas.RFomr.Script.
          */
         renderUI: function() {
             var cb = this.get(CONTENTBOX);
@@ -74,6 +77,98 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
 
 
             this.renderClearButton();
+        },
+        executeScript: function(scriptEntity, player) {
+            this.showOverlay();
+            Y.Wegas.Facade.Variable.script.run(scriptEntity, {
+                on: {
+                    success: Y.bind(function(e) {
+                        this.hideOverlay();
+                        this.get(CONTENTBOX).one(".results").prepend('<div class="result">Script executed. Returned value: ' +
+                            Y.JSON.stringify(e.response.entities[0]) +
+                            "</div>");
+                    }, this),
+                    failure: Y.bind(function(e) {
+                        this.hideOverlay();
+                        this.get(CONTENTBOX).one(".results").prepend('<div class="result error">Error executing script: ' +
+                            e.response.results.message + "</div>");
+                    }, this)
+                }
+            }, player);
+        },
+        multiExecuteScript: function(multiPlayerScript) {
+            this.showOverlay();
+            Y.Wegas.Facade.Variable.sendRequest({
+                request: "/Script/Multirun",
+                cfg: {
+                    method: "POST",
+                    data: multiPlayerScript
+                },
+                on: {
+                    success: Y.bind(function(e) {
+                        this.hideOverlay();
+                        this.showMessage("success", "The impact has been successfully completed", 4000);
+                        this.get(CONTENTBOX).one(".results").prepend('<div class="result">Script executed. Returned value: ' +
+                            Y.JSON.stringify(e.response.entities[0]) +
+                            "</div>");
+                        if (!this.get("boundingBox").hasClass("wegas-editor-console")) {
+                            this.srcField.setValue();
+                            this.srcField.addButton.getNode().simulate("click");
+                        }
+                    }, this),
+                    failure: Y.bind(function(e) {
+                        this.hideOverlay();
+                        var res = e.response && e.response.results;
+                        if (res && res.exception === "com.wegas.core.exception.ScriptException") {
+                            this.showMessage("error", res.message, 4000);
+                        } else {
+                            this.showMessage("error", "An error has occurred, please retry again", 4000);
+                        }
+                        this.get(CONTENTBOX).one(".results").prepend('<div class="result error">Error executing script: ' +
+                            res.message + "</div>");
+                    }, this)
+                }
+            });
+        },
+        /**
+         * @function
+         * @private
+         * @description Create and render the button for run the script.
+         */
+        renderRunButton: function() {
+            this.toolbar.add(new Y.Wegas.Button({
+                label: "<span class=\"wegas-icon wegas-icon-play\"></span>Run",
+                on: {
+                    click: Y.bind(function() {
+                        if (!this.srcField.validate()) {
+                            this.showMessage("error", "Some fields are invalid", 1000);
+                            return;
+                        }
+                        var playerList = this.getPlayerList(),
+                            multiPlayerScript = {
+                                playerIdList: playerList,
+                                script: {
+                                    "@class": "Script",
+                                    language: "JavaScript",
+                                    content: this.srcField.getValue().content
+                                }
+                            };
+                        if (playerList.length === 0) {
+                            return;
+                        }
+
+                        this.multiExecuteScript(multiPlayerScript);
+
+                        // Single user version
+                        //this.executeScript({
+                        //    "@class": "Script",
+                        //    language: "JavaScript",
+                        //    content: this.srcField.getValue()
+                        //});
+
+                    }, this)
+                }
+            }));
         },
         updateQrCode: function(newValue) {
             var script = newValue || this.srcField.getValue();

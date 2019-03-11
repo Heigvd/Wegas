@@ -7,6 +7,7 @@
  */
 package com.wegas.core.rest.util;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wegas.core.persistence.game.Player;
 
@@ -15,6 +16,7 @@ import com.wegas.core.persistence.game.Player;
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+@JsonIgnoreProperties(value = {"dummy"})
 public class Email {
 
     private String subject;

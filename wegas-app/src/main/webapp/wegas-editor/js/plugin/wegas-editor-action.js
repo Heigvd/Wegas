@@ -433,9 +433,6 @@ YUI.add('wegas-editor-action', function(Y) {
                 url = Wegas.app.get("base") + "game.html?token=" + game.get("token"),
                 input = this.get(CONTENTBOX).one("input").getDOMNode();
             input.value = url;
-        },
-        destructor: function() {
-            this.textField.destroy();
         }
     }, {
         /** @lends Y.Wegas.Linkwidget */

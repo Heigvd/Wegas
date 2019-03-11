@@ -37,9 +37,7 @@
     };
 
     var varLabel = function(name) {
-        return I18n.t(
-            Y.Wegas.Facade.Variable.cache.find('name', name).get('label')
-        );
+        return Y.Wegas.Facade.Variable.cache.find('name', name).getEditorLabel();
     };
 
     // NB: This is a server-side function !
@@ -59,9 +57,9 @@
                 'var adjustLevel=' +
                     adjustLevel +
                     ';' +
-                    'Variable.find(gameModel, "levelLimit").setValue(self, adjustLevel(${"type":"number", "label":"' +
+                    'Variable.find(gameModel, "levelLimit").setValue(self, adjustLevel(${"type":"number", "view": {"label":"' +
                     varLabel('levelLimit') +
-                    '", "description":"Entrer une valeur numérique entre &thinsp;1&thinsp;<b>.</b>1&thinsp; et &thinsp;99&thinsp;<b>.</b>9 (écran final)"}));',
+                    '", "description":"Entrer une valeur numérique entre 1.1 et 99.9 (écran final)"}}));',
             ],
         ];
     };
