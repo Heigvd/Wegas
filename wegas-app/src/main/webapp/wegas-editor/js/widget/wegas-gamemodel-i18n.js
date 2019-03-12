@@ -2097,7 +2097,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                                     var lang = node.properties[i].value.properties[j].key.value;
                                                     if (ghosts.indexOf(lang) >= 0) {
                                                         var tr = mapASTObjectProperties(node.properties[i].value.properties[j].value);
-                                                        if (!tr["translation"].value) {
+                                                        if (!tr["translation"].value || tr["translation"].value === "<p></p>") {
                                                             // ghost is empty
                                                             delete newTranslations[lang];
                                                             toProcess = true;
