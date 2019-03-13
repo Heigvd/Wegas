@@ -2103,7 +2103,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                                             toProcess = true;
                                                         } else {
                                                             var LANG = lang.toUpperCase();
-                                                            if (!newTranslations[LANG] || !newTranslations[LANG].translation  || !newTranslations[LANG].translation
+                                                            if (!newTranslations[LANG] || !newTranslations[LANG].translation  || newTranslations[LANG].translation
  === "<p></p>") {
                                                                 // ghost is not empty but there is no uppercase version
                                                                 newTranslations[LANG] = newTranslations[lang];
