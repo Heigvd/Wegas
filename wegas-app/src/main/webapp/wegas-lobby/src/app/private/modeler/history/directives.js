@@ -22,7 +22,13 @@ angular
                         } else {
                             response.data.forEach(function(version) {
                                 version.date = new Date(version.dataLastModified);
-                                version.author = version.name.split("by ")[1].split(".")[0];
+                                var splitted = version.name.split("by ");
+
+                                if (splitted.length > 1) {
+                                    version.author = splitted[1].split(".")[0];
+                                } else {
+                                    version.author = "anonymous";
+                                }
                             });
                             ctrl.versions = response.data;
                         }
