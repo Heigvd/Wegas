@@ -33,9 +33,7 @@ import org.slf4j.LoggerFactory;
 @Table(indexes = {
     @Index(columnList = "currentresult_id")
 })
-@NamedQueries({
-    @NamedQuery(name = "ChoiceInstance.findByResultId", query = "SELECT ci FROM ChoiceInstance ci WHERE ci.currentResult.id = :resultId")
-})
+@NamedQuery(name = "ChoiceInstance.findByResultId", query = "SELECT ci FROM ChoiceInstance ci WHERE ci.currentResult.id = :resultId")
 public class ChoiceInstance extends VariableInstance implements ReadableInstance {
 
     private static final long serialVersionUID = 1L;

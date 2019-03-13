@@ -30,11 +30,9 @@ import javax.persistence.*;
     @JsonSubTypes.Type(name = "TriggerDescriptor", value = TriggerDescriptor.class),
     @JsonSubTypes.Type(name = "DialogueDescriptor", value = DialogueDescriptor.class)
 })
-@NamedQueries(
-        @NamedQuery(
-                name = "StateMachineDescriptor.findAllForGameModelId",
-                query = "SELECT DISTINCT sm FROM StateMachineDescriptor sm WHERE sm.gameModel.id = :gameModelId"
-        )
+@NamedQuery(
+        name = "StateMachineDescriptor.findAllForGameModelId",
+        query = "SELECT DISTINCT sm FROM StateMachineDescriptor sm WHERE sm.gameModel.id = :gameModelId"
 )
 public class StateMachineDescriptor extends VariableDescriptor<StateMachineInstance> {
 
@@ -164,9 +162,8 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
         return false;
     }
 
-
     public boolean notWentThroughState(Player p, Long stateKey) {
-        return ! this.wentThroughState(p, stateKey);
+        return !this.wentThroughState(p, stateKey);
     }
 
 }

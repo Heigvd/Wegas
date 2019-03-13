@@ -21,10 +21,8 @@ import javax.persistence.*;
  * Licensed under the MIT License
  * Created by jarle.hulaas@heig-vd.ch on 07.03.2017.
  */
-@NamedQueries({
-    @NamedQuery(name = "AaiAccount.findByPersistentId", query = "SELECT a FROM AaiAccount a WHERE TYPE(a) = AaiAccount AND a.persistentId = :persistentId"),
-    @NamedQuery(name = "AaiAccount.findExactClass", query = "SELECT a FROM AaiAccount a WHERE TYPE(a) = AaiAccount")
-})
+@NamedQuery(name = "AaiAccount.findByPersistentId", query = "SELECT a FROM AaiAccount a WHERE TYPE(a) = AaiAccount AND a.persistentId = :persistentId")
+@NamedQuery(name = "AaiAccount.findExactClass", query = "SELECT a FROM AaiAccount a WHERE TYPE(a) = AaiAccount")
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class AaiAccount extends AbstractAccount {

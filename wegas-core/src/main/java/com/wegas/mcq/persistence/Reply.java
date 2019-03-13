@@ -37,9 +37,7 @@ import javax.persistence.*;
     @Index(columnList = "choiceinstance_id"),
     @Index(columnList = "result_id")
 })
-@NamedQueries({
-    @NamedQuery(name = "Reply.findByResultId", query = "SELECT r FROM Reply r WHERE r.result.id = :resultId")
-})
+@NamedQuery(name = "Reply.findByResultId", query = "SELECT r FROM Reply r WHERE r.result.id = :resultId")
 public class Reply extends AbstractEntity implements DatedEntity {
 
     private static final long serialVersionUID = 1L;

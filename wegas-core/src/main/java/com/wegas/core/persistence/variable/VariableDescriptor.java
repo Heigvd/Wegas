@@ -85,16 +85,15 @@ import org.slf4j.LoggerFactory;
     @Index(columnList = "scope_id"),
     @Index(columnList = "label_id")
 })
-@NamedQueries({
-    @NamedQuery(
-            name = "VariableDescriptor.findAllNamesInModelAndItsScenarios",
-            query = "SELECT DISTINCT(vd.name)"
-            + "FROM GameModel model "
-            + "LEFT JOIN GameModel scen ON (model = scen.basedOn AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
-            + "JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
-            + "WHERE model.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
-    ),
-    /*@NamedQuery(
+@NamedQuery(
+        name = "VariableDescriptor.findAllNamesInModelAndItsScenarios",
+        query = "SELECT DISTINCT(vd.name)"
+        + "FROM GameModel model "
+        + "LEFT JOIN GameModel scen ON (model = scen.basedOn AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
+        + "JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
+        + "WHERE model.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
+)
+/*@NamedQuery(
             name = "VariableDescriptor.findAllNamesInScenarioAndItsModelCluster",
             query = "SELECT DISTINCT(vd.name)"
             + " FROM GameModel scen "
@@ -104,28 +103,26 @@ import org.slf4j.LoggerFactory;
             + "                               AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
             + " JOIN VariableDescriptor vd ON (vd.gameModel = other OR vd.gameModel = model)"
             + " WHERE scen.id = :gameModelId"
-    ),*/
-    @NamedQuery(
-            name = "VariableDescriptor.findAllNamesInScenarioAndItsModel",
-            query = "SELECT DISTINCT(vd.name)"
-            + " FROM GameModel scen "
-            + " LEFT JOIN GameModel model ON (model = scen.basedOn AND model.type = com.wegas.core.persistence.game.GameModel.GmType.MODEL)"
-            + " JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
-            + " WHERE scen.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
-    ),
-    @NamedQuery(
-            name = "VariableDescriptor.findByRootGameModelId",
-            query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
-    ),
-    @NamedQuery(
-            name = "VariableDescriptor.findByGameModelIdAndName",
-            query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.name LIKE :name",
-            hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
-                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)}
-    )
-
-})
+    )*/
+@NamedQuery(
+        name = "VariableDescriptor.findAllNamesInScenarioAndItsModel",
+        query = "SELECT DISTINCT(vd.name)"
+        + " FROM GameModel scen "
+        + " LEFT JOIN GameModel model ON (model = scen.basedOn AND model.type = com.wegas.core.persistence.game.GameModel.GmType.MODEL)"
+        + " JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
+        + " WHERE scen.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
+)
+@NamedQuery(
+        name = "VariableDescriptor.findByRootGameModelId",
+        query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
+)
+@NamedQuery(
+        name = "VariableDescriptor.findByGameModelIdAndName",
+        query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.name LIKE :name",
+        hints = {
+            @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+            @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)}
+)
 @CacheIndexes(value = {
     @CacheIndex(columnNames = {"GAMEMODEL_ID", "NAME"}) // bug uppercase: https://bugs.eclipse.org/bugs/show_bug.cgi?id=407834
 })
