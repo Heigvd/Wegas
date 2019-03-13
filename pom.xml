@@ -93,17 +93,12 @@
 
         <shiro.version>1.4.0</shiro.version>
         <jdk.version>1.8</jdk.version>
-        <payara.version>5.184</payara.version>
-        <payara-api.version>5.184</payara-api.version>
+        <payara.version>5.191</payara.version>
+        <payara-api.version>5.191</payara-api.version>
         <junit.version>4.12</junit.version>
         <arquillian.version>1.4.1.Final</arquillian.version>
         <exec.plugin.version>1.2</exec.plugin.version>
-        <jar.plugin.version>2.3.1</jar.plugin.version>
-        <war.plugin.version>3.2.0</war.plugin.version>
         
-        <maven.javadoc.plugin.version>3.0.0-M1</maven.javadoc.plugin.version>
-        <maven.surefire.plugin.version>2.20.1</maven.surefire.plugin.version>
-
         <profile.dependent.scope>compile</profile.dependent.scope>
 
         <slf4j.version>1.7.25</slf4j.version>
@@ -111,7 +106,6 @@
 
         <httpcomponents.version>4.5.6</httpcomponents.version>
         <liquibase.version>2.0.5</liquibase.version>
-        <eclipselink.version>2.7.3</eclipselink.version>
         <jcr.version>2.0</jcr.version>
         <oak.version>1.10.1</oak.version>
 
@@ -140,7 +134,7 @@
             <dependency>
                 <groupId>javax</groupId>
                 <artifactId>javaee-api</artifactId>
-                <version>8.0</version>
+                <version>8.0.1-b5</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -221,8 +215,8 @@
                 <version>${oak.version}</version>
                 <scope>compile</scope>
             </dependency>
+            <!-- https://issues.apache.org/jira/browse/OAK-6542-->
             <dependency>
-                <!-- https://issues.apache.org/jira/browse/OAK-6542 :: check against payara 191 !!! -->
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-core</artifactId>
                 <version>3.2.3</version>
@@ -378,7 +372,7 @@
             <dependency>
                 <groupId>org.eclipse.microprofile</groupId>
                 <artifactId>microprofile</artifactId>
-                <version>2.0.1</version>
+                <version>2.1</version>
                 <type>pom</type>
                 <scope>provided</scope>
             </dependency>
@@ -408,7 +402,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.7.0</version>
+                    <version>3.8.0</version>
                     <configuration>
                         <optimize>${build.optimize}</optimize>
                         <source>${jdk.version}</source>
@@ -441,7 +435,7 @@
                         <dependency>
                             <groupId>org.eclipse.persistence</groupId>
                             <artifactId>org.eclipse.persistence.jpa</artifactId>
-                            <version>${eclipselink.version}</version>
+                            <version>2.7.4</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -449,7 +443,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>3.1.1</version>
                     <configuration>
                         <archive>
                             <manifest>
@@ -464,7 +458,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
-                    <version>${war.plugin.version}</version>
+                    <version>3.2.2</version>
                     <configuration>
                         <failOnMissingWebXml>false</failOnMissingWebXml>
                     </configuration>
@@ -474,13 +468,13 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>3.1.1</version>
                 </plugin>
 
                 <!-- Reource attachment -->
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>3.1.0</version>
                 </plugin>
 
                 <plugin>
@@ -491,12 +485,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-project-info-reports-plugin</artifactId>
-                    <version>2.9</version>
+                    <version>3.0.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>${maven.javadoc.plugin.version}</version>
+                    <version>3.1.0</version>
                 </plugin>
 
                 <!-- YUI JS Compression Plugin -->
@@ -517,7 +511,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${maven.surefire.plugin.version}</version>
+                    <version>3.0.0-M3</version>
                     <configuration>
                         <!-- There is an issue with cobertura and jdk7,
                         that forces us to run  in compatiblity mode.-->
@@ -537,7 +531,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.6</version>
+                    <version>3.7.1</version>
                 </plugin>
 
                 <!--                <plugin>
@@ -632,7 +626,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-scm-publish-plugin</artifactId>
-                <version>1.1</version>
+                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <phase>none</phase>
@@ -655,7 +649,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.9</version>
+                <version>3.0.0</version>
                 <configuration>
                     <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
                     <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
@@ -680,13 +674,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>${maven.javadoc.plugin.version}</version>
+                <version>3.1.0</version>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.5</version>
+                <version>3.0.0</version>
             </plugin>
 
             <plugin>
@@ -725,7 +719,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.17</version>
+                <version>3.0.0</version>
                 <configuration>
                     <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
                     <configLocation>sun_checks.xml</configLocation>
@@ -735,13 +729,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>${maven.surefire.plugin.version}</version>
+                <version>3.0.0-M3</version>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.8</version>
+                <version>3.11.0</version>
                 <configuration>
                     <rulesets>http://pmd.sourceforge.net/rules/index.html
                         <ruleset>/rulesets/java/braces.xml</ruleset>
