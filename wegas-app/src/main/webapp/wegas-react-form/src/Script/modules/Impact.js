@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Form from 'jsoninput';
-import { isEqualWith, cloneDeep  } from 'lodash-es';
+import { isEqualWith, cloneDeep } from 'lodash-es';
 import { print, parse, types } from 'recast';
 import { css } from 'glamor';
 // import classNames from 'classnames';
@@ -15,11 +15,11 @@ import {
     methodDescriptor,
     handleArgs,
 } from './method';
-import { 
-    updateArgSchema, 
-    matchSchema, 
+import {
+    updateArgSchema,
+    matchSchema,
     valueToAST,
-    getReadOnlySchema
+    getReadOnlySchema,
 } from './args';
 import {
     genChoices as genGlobalChoices,
@@ -44,6 +44,7 @@ const upgradeSchema = (varSchema, impactView, methodType = 'getter') => {
     };
     ret.view = {
         ...ret.view,
+        openIfEmpty: true,
         selectable: function selectable(item) {
             return genChoices(item, methodType).length;
         },
@@ -152,10 +153,8 @@ class Impact extends React.Component {
             (prevState.method !== this.state.method ||
                 prevState.variable !== this.state.variable ||
                 prevState.member !== this.state.member ||
-                !isEqualWith(
-                    prevState.args,
-                    this.state.args,
-                    (val, oth, key) => (key === 'loc' ? true : undefined)
+                !isEqualWith(prevState.args, this.state.args, (val, oth, key) =>
+                    (key === 'loc' ? true : undefined)
                 ))
         ) {
             this.props.onChange(buildMethod(this.state, this.props.type));
@@ -231,7 +230,11 @@ class Impact extends React.Component {
         let child = [
             <div key="variable" className={containerStyle}>
                 <Form
-                    schema={upgradeSchema(variableSchema(view.variable), view, type)}
+                    schema={upgradeSchema(
+                        variableSchema(view.variable),
+                        view,
+                        type
+                    )}
                     value={
                         this.state.global
                             ? `${this.state.member}.${this.state.method}`
@@ -244,7 +247,7 @@ class Impact extends React.Component {
         if (this.state.variable) {
             let schema = this.state.methodSchem;
             if (schema) {
-                if (view.readOnly){
+                if (view.readOnly) {
                     schema = cloneDeep(schema);
                     schema.view.readOnly = true;
                 }
@@ -271,9 +274,9 @@ class Impact extends React.Component {
             // const methodDesc = methodDescriptor(variable, method);
             // const argsDescr = (methodDesc && methodDesc.arguments) || [];
             let c = handleArgs(variable, method, args, v => {
-                    this.setState(() => ({ args: v }));
-                });
-            if (view.readOnly){
+                this.setState(() => ({ args: v }));
+            });
+            if (view.readOnly) {
                 c = getReadOnlySchema(c);
             }
             child = child.concat(c);
@@ -281,9 +284,9 @@ class Impact extends React.Component {
         if (this.state.member && this.state.method) {
             const { member, method, args } = this.state;
             let c = globalHandleArgs(member, method, args, v =>
-                    this.setState(() => ({ args: v }))
-                );
-            if (view.readOnly){
+                this.setState(() => ({ args: v }))
+            );
+            if (view.readOnly) {
                 c = getReadOnlySchema(c);
             }
             child = child.concat(c);

@@ -34,10 +34,9 @@ YUI().use(function(Y) {
      */
     YUI.addGroup = function(name, group) {
         YUI_config.groups[name] = group;
-        group.combine = !YUI_config.debug;
+        group.combine = false;
         group.filter = YUI_config.debug ? "raw" : "min"; // Select raw files
         group.base = YUI_config.Wegas.base + group.root; // Set up path
-        group.comboBase = YUI_config.Wegas.comboBase; // Set up combo path
         loadModules(group);
         //YUI.applyConfig(YUI_config);
     };
@@ -60,7 +59,6 @@ YUI().use(function(Y) {
                 type: CSS
             },
             "wegas-editable": {
-                requires: "inputex-jsonschema"
             },
             "wegas-i18n-global-fr": {
                 path: 'js/i18n/i18n-global-fr-min.js'
@@ -238,7 +236,7 @@ YUI().use(function(Y) {
             },
             "wegas-chat": {
                 path: "js/widget/wegas-chat-min.js",
-                requires: ["inputex-textarea", "button"],
+                requires: ["button"],
                 ws_provides: "Chat"
             },
             "wegas-chart-css": {
@@ -487,6 +485,9 @@ YUI().use(function(Y) {
         root: "/wegas-util/",
         modules: {
             "wegas-helper": {},
+            "wegas-script-helper": {
+                requires : ["esprima"]
+            },
             "datatable-csv": {
                 ws_provides: "DatatableCSV"
             },
@@ -687,17 +688,13 @@ YUI().use(function(Y) {
             },
             "wegas-editor-action": {
                 path: "js/plugin/wegas-editor-action-min.js",
-                requires: ["wegas-button", "wegas-plugin", "event-key", "inputex-string"],
+                requires: ["wegas-button", "wegas-plugin", "event-key"],
                 ws_provides: ["OpenTabAction", "OpenTabButton", "Linkwidget", "OnDeleteListener", "ToggleAdvancedTabsMode"]
             },
             "wegas-editor-entityaction": {
                 path: "js/plugin/wegas-editor-entityaction-min.js",
                 requires: ["wegas-plugin", "wegas-form", "wegas-react-form", "wegas-panel", "wegas-tabview"],
                 ws_provides: ["NewEntityAction", "EditEntityAction", "NewEntityButton"]
-            },
-            "wegas-editor-form": {
-                path: "js/widget/wegas-editor-form-min.js",
-                ws_provides: ["EditEntityForm", "EditParentGameModelForm"]
             },
             "wegas-editor-widgetaction": {
                 path: "js/plugin/wegas-editor-widgetaction-min.js",
@@ -740,14 +737,9 @@ YUI().use(function(Y) {
                 requires: "event-resize",
                 ws_provides: "FullWidthTab"
             },
-            "wegas-console": {
-                path: "js/widget/wegas-console-min.js",
-                requires: "wegas-inputex-ace",
-                ws_provides: "Console"
-            },
             "wegas-console-wysiwyg": {
                 path: "js/widget/wegas-console-wysiwyg-min.js",
-                requires: ["wegas-console", "wegas-inputex-wysiwygscript", "inputex-hidden", "wegas-widgettoolbar", "wegas-qrcode-scanner"],
+                requires: ["wegas-widgettoolbar", "wegas-qrcode-scanner", "wegas-react-form"],
                 ws_provides: "WysiwygConsole"
             },
             "wegas-console-custom": {
@@ -789,7 +781,7 @@ YUI().use(function(Y) {
             },
             "wegas-gamemodel-i18n": {
                 path: "js/widget/wegas-gamemodel-i18n-min.js",
-                requires: ["wegas-layout-list", "wegas-inputex-wysiwygscript"],
+                requires: ["wegas-layout-list", "wegas-script-helper"],
                 ws_provides: ["LanguagesManager", "TranslationEditor"]
             },
             "wegas-gamemodel-extractor": {
@@ -809,9 +801,9 @@ YUI().use(function(Y) {
             },
             "wegas-statemachineviewer": {
                 path: "js/widget/wegas-statemachineviewer-min.js",
-                requires: ["wegas-statemachineviewercss", "wegas-inputex-wysiwygscript", "wegas-statemachine-entities",
+                requires: ["wegas-statemachineviewercss", "wegas-script-helper", "wegas-statemachine-entities",
                     "dd-constrain", "jsplumb-dom", "button", "event-mousewheel",
-                    "slider", "wegas-panel-node", "wegas-inputex-wysiwygscript"],
+                    "slider", "wegas-panel-node"],
                 ws_provides: "StateMachineViewer"
             },
             "wegas-statemachineviewercss": {

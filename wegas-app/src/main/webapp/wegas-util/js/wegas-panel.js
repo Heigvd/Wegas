@@ -19,6 +19,12 @@ YUI.add('wegas-panel', function(Y) {
     Wegas.Panel = Y.Base.create("wegas-panel", Y.Widget,
         [Y.WidgetParent, Y.WidgetPosition, Y.WidgetStdMod, Y.WidgetButtons,
             Y.WidgetModality, Y.WidgetPositionAlign, Y.WidgetStack], {
+        initializer: function(cfg) {
+            Wegas.Panel.superclass.initializer.apply(this, arguments);
+            if (typeof cfg.cssClass === "string") {
+                this.get("contentBox").addClass(cfg.cssClass);
+            }
+        },
         renderUI: function() {
             this._childrenContainer = this.getStdModNode(Y.WidgetStdMod.BODY, true);
             this._stdModParsed = {
@@ -150,6 +156,8 @@ YUI.add('wegas-panel', function(Y) {
                 }
             }).render();
             //bodyNode = panel.getStdModNode("body", true);
+            // For client-side customization:
+            return panel;
         },
         confirmPlayerAction: function(cb) {
             if (!Y.fire("playerAction", {})) {
@@ -182,6 +190,8 @@ YUI.add('wegas-panel', function(Y) {
                         }]
                 }
             }).render();
+            // For client-side customization:
+            return panel;
         },
         alert: function(msg, okCb) {
             var panel = new Wegas.Panel({
@@ -198,6 +208,8 @@ YUI.add('wegas-panel', function(Y) {
                         }]
                 }
             }).render();
+            // For client-side customization:
+            return panel;
         },
         /**
          *

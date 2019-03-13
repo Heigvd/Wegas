@@ -17,7 +17,8 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
     "use strict";
     var LanguagesManager,
         TranslationEditor,
-        GameModelScriptUpgrader;
+        GameModelScriptUpgrader,
+        GameModelGhostCleaner;
 
 
     function _getCfgFromNode(node) {
@@ -44,6 +45,21 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 key: code + "-" + trId
             };
         }
+    }
+
+    function mapASTObjectProperties(node) {
+        if (node && node.type && node.type === "ObjectExpression") {
+            var i, p, properties = {};
+
+            if (node.properties) {
+                for (i in node.properties) {
+                    p = node.properties[i];
+                    properties[p.key.value] = p.value;
+                }
+            }
+            return properties;
+        }
+        return null;
     }
 
     LanguagesManager = Y.Base.create("wegas-i18n-manager", Y.Widget,
@@ -481,29 +497,31 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
 
             if (Object.keys(this.ghostLanguages).length) {
                 this.showMessage("warn", "Ghost Translations summary: " + JSON.stringify(this.ghostLanguages));
+
+                if (!this.ghostCleaner) {
+                    this.ghostCleaner = new Y.Wegas.GameModelGhostCleaner({
+                        ghosts: Object.keys(this.ghostLanguages)
+                    });
+
+                    this.handlers.onGhostCleaned = this.ghostCleaner.on("upgraded", Y.bind(this.rebuildEditor, this));
+                    this.add(this.ghostCleaner, 1);
+                }
+
                 Y.log("GHOSTS: " + JSON.stringify(this.ghostLanguages));
                 for (var ghost in this.ghostLanguages) {
                     languagesToEdit.push(ghost);
+                }
+            } else {
+                if (this.ghostCleaner) {
+                    this.handlers.onGhostCleaned && this.handlers.onGhostCleaned.detach();
+                    this.ghostCleaner.remove(true);
+                    this.ghostCleaner = null;
                 }
             }
 
             this.editor.set("content", this.genEditorMarkup(this.tree, languagesToEdit));
             this.editor.syncUI();
 
-        },
-        mapASTObjectProperties: function(node) {
-            if (node && node.type && node.type === "ObjectExpression") {
-                var i, p, properties = {};
-
-                if (node.properties) {
-                    for (i in node.properties) {
-                        p = node.properties[i];
-                        properties[p.key.value] = p.value;
-                    }
-                }
-                return properties;
-            }
-            return null;
         },
         extractTranslatableContents: function(script, key, entity, cfg, mode) {
             var stack = [],
@@ -542,9 +560,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             // init root level
             goIn(key, cfg && cfg.view && cfg.view.label);
 
-            Y.inputEx.WysiwygScript.visitAST(script, {
+            Y.Wegas.ScriptHelper.visitAST(script, {
                 onEnterFn: Y.bind(function(node, args) {
-                    var method = Y.inputEx.WysiwygScript.parseMethod(node, this.globals);
+                    var method = Y.Wegas.ScriptHelper.parseMethod(node, this.globals);
                     if (method && method.method) {
                         goIn(method.methodName, method.methodName);
                     }
@@ -552,7 +570,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     if (args && args.properties && args.properties["@class"]
                         && args.properties["@class"].value === "TranslatableContent") {
                         // expecting TranslatableContent
-                        properties = this.mapASTObjectProperties(node);
+                        properties = mapASTObjectProperties(node);
                         if (!properties || !properties["@class"] || properties["@class"].value !== "TranslatableContent") {
                             // but no TranslatableContent found
                             sub.containsOutdated = true;
@@ -562,7 +580,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     if (args && args.properties && args.properties["@class"]
                         && args.properties["@class"].value === "Attachment") {
                         // expecting attachment
-                        properties = this.mapASTObjectProperties(node);
+                        properties = mapASTObjectProperties(node);
                         if (!properties || !properties["@class"] || properties["@class"].value !== "Attachment") {
                             // but no Attachement found
                             sub.containsOutdated = true;
@@ -570,7 +588,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     }
 
                     if (node && node.type && node.type === "ObjectExpression") {
-                        properties = this.mapASTObjectProperties(node);
+                        properties = mapASTObjectProperties(node);
                         if (properties) {
                             if (properties["@class"] && properties["@class"].value === "TranslatableContent") {
 
@@ -597,7 +615,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                     index++;
 
                                     properties["translations"].properties.forEach(function(p) {
-                                        var trProps = this.mapASTObjectProperties(p.value);
+                                        var trProps = mapASTObjectProperties(p.value);
                                         content.value.translations[p.key.value] = {
                                             translation: trProps.translation.value,
                                             status: trProps.status.value
@@ -617,7 +635,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     return true;
                 }, this),
                 onExitFn: Y.bind(function(node) {
-                    var method = Y.inputEx.WysiwygScript.parseMethod(node, this.globals);
+                    var method = Y.Wegas.ScriptHelper.parseMethod(node, this.globals);
                     if (method && method.method) {
                         goOut();
                     }
@@ -694,7 +712,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                         trSpan.ancestor().one(".translation-status").setContent(newStatus);
                         trSpan.toggleClass("outdated", newStatus);
                     } else {
-                        Y.log("a cell exists for a translation, but transtion is not here... what should we do ?");
+                        Y.log("a cell exists for a translation, but translation is not here... what should we do ?");
                     }
                 } else {
                     if (tr) {
@@ -1844,7 +1862,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 payload = [],
                 content = attr.get("content"),
                 i, node, newContent, before, after;
-            Y.inputEx.WysiwygScript.visitAST(content, {
+            Y.Wegas.ScriptHelper.visitAST(content, {
                 onEnterFn: Y.bind(function(node, args) {
                     // expected arg type is a Translatable content
                     if (args && args.properties && args.properties["@class"]
@@ -2028,4 +2046,207 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         ATTRS: {}
     });
     Y.Wegas.GameModelScriptUpgrader = GameModelScriptUpgrader;
+
+
+    /**
+     * Clear empty ghosts
+     */
+    GameModelGhostCleaner = Y.Base.create("wegas-i18n-ghost-cleaner", Y.Widget,
+        [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Parent], {
+        initializer: function() {
+            this.handlers = {};
+            this.publish('upgraded', {
+                emitFacade: true
+            });
+        },
+        renderUI: function() {
+            this.text = new Y.Wegas.Text({
+                content: "GameModel contains empty ghosts translations in impacts! Click to clean them all !"
+            });
+            this.add(this.text);
+            this.cleanBtn = new Y.Button({
+                label: "<i class=\"fa fa-3x fa-eraser\"></i>"
+            });
+            this.add(this.cleanBtn);
+        },
+        bindUI: function() {
+            this.handlers.onUpgrade = this.cleanBtn.on("click", this.execute, this);
+        },
+        processScript: function(entity, attrName, attr, globals) {
+            var toUpgrade = [],
+                payload = [],
+                content = attr.get("content"),
+                ghosts = this.get("ghosts"),
+                i, node, newContent, before, after;
+            Y.Wegas.ScriptHelper.visitAST(content, {
+                onEnterFn: Y.bind(function(node, args) {
+                    // expected arg type is a Translatable content
+                    if (args && args.properties && args.properties["@class"]
+                        && args.properties["@class"].value === "TranslatableContent") {
+
+                        if (node && node.type) {
+                            if (node.type === "ObjectExpression") {
+                                for (var i in node.properties) {
+                                    if (node.properties[i].key.value === "translations") {
+                                        var newTranslations = JSON.parse(content.substring(node.properties[i].value.range[0], node.properties[i].value.range[1]));
+                                        var toProcess = false;
+
+                                        if (node.properties[i].value.properties && node.properties[i].value.properties.length) {
+                                            for (var j = 0; j < node.properties[i].value.properties.length; j++) {
+                                                if (node.properties[i].value.properties[j].value.type === "ObjectExpression") {
+                                                    var lang = node.properties[i].value.properties[j].key.value;
+                                                    if (ghosts.indexOf(lang) >= 0) {
+                                                        var tr = mapASTObjectProperties(node.properties[i].value.properties[j].value);
+                                                        if (!tr["translation"].value || tr["translation"].value === "<p></p>") {
+                                                            // ghost is empty
+                                                            delete newTranslations[lang];
+                                                            toProcess = true;
+                                                        } else {
+                                                            var LANG = lang.toUpperCase();
+                                                            if (!newTranslations[LANG]) {
+                                                                // ghost is not empty but there is no uppercase version
+                                                                newTranslations[LANG] = newTranslations[lang];
+                                                                delete newTranslations[lang];
+                                                                toProcess = true;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            if (toProcess) {
+                                                toUpgrade.unshift({
+                                                    node: node.properties[i].value,
+                                                    translations: newTranslations
+                                                });
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return true;
+                }, this),
+                globals: globals
+            });
+
+            if (toUpgrade.length) {
+                Y.log("Entity: " + entity.get("@class") + "#" + entity.get("id") + "::" + attrName + ": ");
+                Y.log("CONTENT:" + content);
+                // sort by range, last first to not alter first ranges location
+                toUpgrade.sort(function(a, b) {
+                    if (a && a.node && a.node.range &&
+                        b && b.node && b.node.range) {
+                        return b.node.range[0] - a.node.range[0];
+                    }
+                    return 0;
+                });
+                for (i in toUpgrade) {
+                    node = toUpgrade[i].node;
+                    newContent = toUpgrade[i].translations;
+
+                    // script before argument
+                    before = content.substring(0, node.range[0]);
+                    // script after argument
+                    after = content.substring(node.range[1]);
+                    // combine before, newArg and after
+                    content = before + JSON.stringify(newContent) + after;
+                }
+
+                Y.log("NEW CONTENT:" + content);
+                // all args processed
+                payload.push({
+                    "@class": "ScriptUpdate",
+                    "parentClass": entity.get("@class"),
+                    "parentId": entity.get("id"),
+                    "fieldName": attrName,
+                    "value": content
+                });
+            }
+            return payload;
+        },
+        saveScripts: function(payload) {
+            if (payload.length) {
+                Y.Wegas.Facade.GameModel.sendRequest({
+                    request: '/' + Y.Wegas.Facade.GameModel.get('currentGameModelId') + "/I18n/BatchUpdate",
+                    cfg: {
+                        method: "PUT",
+                        data: payload
+                    },
+                    on: {
+                        success: Y.bind(this.batchSuccess, this),
+                        failure: Y.bind(this.batchFailure, this)
+                    }
+                });
+            }
+        },
+        batchSuccess: function(e) {
+            this.fire("upgraded");
+        },
+        batchFailure: function(e) {
+            alert("SOMETHING WENT WRONG");
+        },
+        execute: function() {
+            var globals = [Y.Wegas.RForm.Script.getGlobals('getter'),
+                Y.Wegas.RForm.Script.getGlobals('condition')];
+            this.defaultCode = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages")[0].get("code");
+            Promise.all(globals).then(Y.bind(function(globals) {
+                var scriptToUpdate = this.extractScripts(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(),
+                    Y.mix(Y.mix({}, globals[0]), globals[1]));
+                this.saveScripts(scriptToUpdate);
+            }, this));
+        },
+        extractScripts: function(entity, globals) {
+            var attrs, key, attr, sub, i, child, children,
+                results = [];
+            if (entity instanceof Y.Wegas.persistence.Entity) {
+                attrs = entity.getAttrs();
+                for (key in attrs) {
+                    if (attrs.hasOwnProperty(key)) {
+                        attr = attrs[key];
+                        if (attr) {
+                            sub = null;
+                            var cfg = entity.getAttrCfgs()[key];
+                            if ((!cfg["transient"] || key === "items") // transient "items" args is allowed
+                                && (!cfg.visible || cfg.visible(attr, attrs))) { // check attre against visible method if any
+                                if (Array.isArray(attr) ||
+                                    // attr is an object but is not a wegasEntity -> process as a collection
+                                        (Y.Lang.isObject(attr) && !(attr instanceof Y.Wegas.persistence.Entity))) {
+                                    for (i in attr) {
+                                        child = attr[i];
+                                        results = results.concat(this.extractScripts(child, globals));
+                                    }
+                                    sub = children;
+                                } else if (attr instanceof Y.Wegas.persistence.Script) {
+                                    results = results.concat(this.processScript(entity, key, attr, globals));
+                                    // 
+                                } else {
+                                    results = results.concat(this.extractScripts(attr, globals));
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+            return results;
+        },
+        destructor: function() {
+            var k;
+            for (k in this.handlers) {
+                if (this.handlers.hasOwnProperty(k)) {
+                    this.handlers[k].detach();
+                }
+            }
+        }
+    }, {
+        EDITORNAME: "GameModelGhostCleanr",
+        ATTRS: {
+            ghosts: {
+                type: "array"
+            }
+        }
+    });
+    Y.Wegas.GameModelGhostCleaner = GameModelGhostCleaner;
 });

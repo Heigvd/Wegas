@@ -13,7 +13,7 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
     'use strict';
     var Wegas = Y.Wegas,
         CONTENTBOX = "contentBox",
-        inputEx = Y.inputEx, GmExtractor, GmExtractorAction, GmExtractorModal, GmDefaulterAction;
+        GmExtractor, GmExtractorAction, GmExtractorModal, GmDefaulterAction;
 
     GmExtractor = Y.Base.create("wegas-gm-extractor", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         BOUNDING_TEMPLATE: '<div class="wegas-form"></div>',
@@ -21,17 +21,22 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
             var cb = this.get(CONTENTBOX),
                 game = this.get("game"),
                 freeForAll = game.get("properties.freeForAll"),
-                options = [{label: "-select-", value: "-1"}], spacer = "";
+                options = [{
+                        label: "-select-",
+                        value: "-1",
+                        disabled: true
+                    }], spacer = "";
 
             if (!freeForAll) {
-                spacer = "&nbsp;&nbsp;";
+                spacer = " ";
             }
 
             Y.Array.each(game.get("teams"), function(t) {
                 if (!freeForAll) {
                     options.push({
                         label: t.get("name"),
-                        value: -1
+                        disabled: true,
+                        value: t.get("id")
                     });
                 }
                 Y.Array.each(t.get("players"), function(p) {
@@ -44,26 +49,29 @@ YUI.add('wegas-gamemodel-extractor', function(Y) {
             }, this);
 
             this.cfg = {
-                type: "group",
-                parentEl: cb,
-                fields: [{
-                        name: "playerId",
-                        type: "select",
-                        label: "Based on",
-                        choices: options
-                    }]
+                type: "object",
+                properties: {
+                    "playerId": {
+                        type: "number",
+                        view: {
+                            label: "Based on",
+                            type: "select",
+                            choices: options
+                        }
+                    }
+                }
             };
 
-            inputEx.use(this.cfg, Y.bind(function() {
-                this._form = new inputEx(this.cfg);
-            }, this));
+
+            this._form = new Y.Wegas.RForm({
+                values: {},
+                cfg: this.cfg
+            });
+            this._form.render(cb);
 
             cb.append('<div><div class="results wegas-advanced-feature"></div><div class="status"></div></div>');
         },
         syncUI: function() {
-            inputEx.use(this.cfg, Y.bind(function() {
-                this.get("contentBox").one("select").all("option[value='-1']").setAttribute("disabled", true);
-            }, this));
         },
         setStatus: function(status) {
             this.get("contentBox").one(".status").set("text", status);

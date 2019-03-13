@@ -91,6 +91,10 @@
     background-image: url(../../wegas-app/images/wegas-icon-warning-48.png)
 }
 
+.wegas-panel-content .yui3-widget-bd .icon-question {
+    background-image: url(../../wegas-app/images/wegas-icon-question-48.png)
+}
+
 .wegas-panel-hidden {
     display: none;
 }

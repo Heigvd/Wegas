@@ -75,8 +75,17 @@
             <artifactId>oak-segment-tar</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>oak-store-document</artifactId>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
+            <artifactId>mongodb-driver-legacy</artifactId>
         </dependency>
 
         <dependency>
@@ -193,7 +202,6 @@
         </dependency>
 
     </dependencies>
-
     <build>
         <finalName>wegas-core_${project.version}</finalName>
 

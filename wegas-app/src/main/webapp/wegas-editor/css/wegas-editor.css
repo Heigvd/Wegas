@@ -1215,6 +1215,7 @@
     min-height: 28px;
     background-image: url("../images/tiny-toolbar.png");
     background-repeat: no-repeat;
+    width: 260px;
 }
 
 
@@ -1385,4 +1386,8 @@
 .wegas-advancedmode.wegas-editmode .mce-content-body p br:after {
     content : "↲";
     color: #6AACF1;
+}
+
+.wegas-gm-extractor .wegas-react-form .wegas-toolbar {
+    display: none;
 }

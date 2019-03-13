@@ -7,10 +7,6 @@
  */
 package com.wegas.core.jcr;
 
-import com.mongodb.DB;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.ReadConcern;
 import com.wegas.core.Helper;
 import java.io.File;
 import java.io.IOException;
@@ -24,10 +20,9 @@ import javax.ejb.Startup;
 import javax.jcr.Repository;
 import org.apache.jackrabbit.oak.Oak;
 import org.apache.jackrabbit.oak.jcr.Jcr;
-import org.apache.jackrabbit.oak.plugins.blob.MarkSweepGarbageCollector;
-import org.apache.jackrabbit.oak.plugins.document.DocumentMK;
 import org.apache.jackrabbit.oak.plugins.document.DocumentNodeStore;
 import org.apache.jackrabbit.oak.plugins.document.VersionGarbageCollector;
+import static org.apache.jackrabbit.oak.plugins.document.mongo.MongoDocumentNodeStoreBuilder.newMongoDocumentNodeStoreBuilder;
 import org.apache.jackrabbit.oak.segment.SegmentNodeStore;
 import org.apache.jackrabbit.oak.segment.SegmentNodeStoreBuilders;
 import org.apache.jackrabbit.oak.segment.file.FileStore;
@@ -68,15 +63,12 @@ public class JackrabbitConnector implements Serializable {
                         hostPort += ":" + uri.getPort();
                     }
                     String dbName = uri.getPath().replaceFirst("/", "");
-                    final DB db = new MongoClient(hostPort, MongoClientOptions.builder()
-                            .readConcern(ReadConcern.MAJORITY)
-                            .build())
-                            .getDB(dbName);
-                    nodeStore = new DocumentMK.Builder()
+                    nodeStore = newMongoDocumentNodeStoreBuilder()
                             .setLeaseCheck(false)
-                            .setMongoDB(db)
-                            .getNodeStore();
+                            .setMongoDB("mongodb://" + hostPort + "/?readConcernLevel=majority", dbName, 0)
+                            .build();
                     JackrabbitConnector.repo = new Jcr(new Oak(nodeStore)).createRepository();
+
                 } else if (uri.getScheme().equals("file")) {
                     // Local
                     try {
@@ -143,7 +135,6 @@ public class JackrabbitConnector implements Serializable {
 
     /**
      * HAZARADOUS BEHAVIOUR: do not use unless ykwyd
-     */
     public void blobsGC() {
         //ILock lock = hzInstance.getLock("JackRabbit.Schedule");
         logger.info("revisionGC(): OAK GarbageCollection");
@@ -192,4 +183,5 @@ public class JackrabbitConnector implements Serializable {
         //logger.info("Somebody else got the lock");
         //}
     }
+     */
 }

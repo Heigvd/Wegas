@@ -614,13 +614,13 @@ svg #triangleStart{
     padding-top: 30px;
 }
 
-.wegas-chat .inputEx-fieldWrapper {
+.wegas-chat .input-wrapper {
     position: absolute;
     bottom: 0px;
     left: 5px;
 }
 
-.wegas-chat div.inputEx-Field input {
+.wegas-chat .input-wrapper input {
     padding: 3px !important;
 }
 

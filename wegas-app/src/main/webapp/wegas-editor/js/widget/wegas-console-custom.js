@@ -14,44 +14,101 @@ YUI.add('wegas-console-custom', function(Y) {
     var Wegas = Y.Wegas,
         running = false,
         CONTENTBOX = "contentBox",
-        inputEx = Y.inputEx,
         PARSER = {
-            regExp: /\$(\{[^}]*})/g,
+            regExp: /dsdfsd/,
             genConfig: function(txt) {
-                var ret = [], regexp = PARSER.regExp,
-                    match = regexp.exec(txt);
-                while (match !== null) {
-                    ret.push(Y.JSON.parse(match[1]));
-                    match = regexp.exec(txt);
+                var cfgs = PARSER.extractFields(txt);
+                var properties = {};
+                for (var i in cfgs) {
+                    var param = cfgs[i];
+                    properties["_" + i] = JSON.parse(txt.substring(param.start, param.end + 1));
                 }
-                return ret;
-
+                return properties;
             },
-            genResult: function(txt, val) {
-                var i = 0, cfg = PARSER.genConfig(txt);
-                return txt.replace(PARSER.regExp, function() {
-                    i += 1;
-                    if (cfg[i - 1].type === "string" || cfg[i - 1].type === "html" || cfg[i - 1].type === "flatvariableselect") {
-                        return Y.JSON.stringify(val[i - 1]);
-                    } else if (cfg[i - 1].type === "number") {
-                        if (Y.Lang.isNumber(val[i - 1])) {
-                            return +val[i - 1];
-                        } else {
-                            return undefined;
+            extractFields: function(txt) {
+                var stack = [];
+                var params = [];
+                var i;
+                var curChar, previousChar = txt[0];
+                var curGroup;
+
+                for (i = 1; i < txt.length; i++) {
+                    curChar = txt[i];
+                    curGroup = stack[0] && stack[0].char;
+                    if (curGroup === "\"" || curGroup === "\'") {
+                        // is parsing a quoted text
+                        if (previousChar !== "\\" && curChar === curGroup) {
+                            //end of quoted text
+                            stack.shift();
                         }
                     } else {
-                        return val[i - 1];
+                        if (curGroup === "{") {
+                            if (curChar === "}") {
+                                //end of block
+                                var block = stack.shift();
+                                if (stack.length === 0 && block.absolute) {
+                                    params.push({
+                                        start: block.start,
+                                        end: i
+                                    });
+                                }
+                            }
+                        } else if (curGroup === "[") {
+                            if (curChar === "]") {
+                                //end of array
+                                stack.shift();
+                            }
+                        }
+
+                        if (curChar === "{" || curChar === "[" || curChar === "\"" || curChar === "\'") {
+                            var block = {char: curChar, start: i};
+                            if (curChar === "{" && previousChar === "$") {
+                                block.absolute = true;
+                            }
+                            stack.unshift(block);
+                        }
                     }
-                });
+                    previousChar = curChar;
+                }
+                return params;
+            },
+            genResult: function(txt, val) {
+                var params = PARSER.extractFields(txt);
+                for (var i = params.length - 1; i >= 0; i--) {
+                    var k = "_" + i;
+                    var param = params[i];
+                    var cfg = JSON.parse(txt.substring(param.start, param.end + 1));
+                    var value;
+                    if (val) {
+                        switch (cfg.type) {
+                            case "string":
+                            case "html":
+                            case "flatvariableselect":
+                                value = JSON.stringify(val[k]);
+                                break;
+                            case "number":
+                                if (Y.Lang.isNumber(val[k])) {
+                                    value = +val[k];
+                                } else {
+                                    return undefined;
+                                }
+                                break;
+                            default:
+                                value = val[k];
+                        }
+                    } else {
+                        val = undefined;
+                    }
+
+
+                    txt = txt.substring(0, param.start - 1) + value + txt.substring(param.end + 1, txt.length);
+                }
+                return txt;
             }
-        },
-        validateItem = function(item) {
-            return Y.Array.indexOf(["", undefined, null], item) === -1;
         },
         Console = Y.Base.create("wegas-console-custom",
             Y.Widget,
             [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
-            BOUNDING_TEMPLATE: '<div class="wegas-form"></div>',
             renderUI: function() {
                 var cb = this.get(CONTENTBOX), menu, contents, contentBasics, contentAdvanced, cfg;
                 if (this.get("customImpacts").length > 0) {
@@ -69,29 +126,35 @@ YUI.add('wegas-console-custom', function(Y) {
                     contentBasics = cb.one(".modal--content-basics");
                     contentAdvanced = cb.one(".modal--content-advanced .content-advanced-script");
 
-                    // _inputex: to be destroyed
                     cfg = {
-                        type: "group",
-                        parentEl: contentBasics,
-                        fields: Y.Array.map(this.get("customImpacts"), function(item) {
-                            return {
-                                type: "group",
-                                legend: item[0],
-                                fields: PARSER.genConfig(item[1])
-                            };
-                        })
+                        type: "object",
+                        view: {
+                        },
+                        properties: {}
                     };
-                    inputEx.use(cfg, Y.bind(function() {
-                        this._form = new inputEx(cfg);
-                    }, this));
+                    var impacts = this.get("customImpacts");
+                    for (var i in impacts) {
+                        var item = impacts[i];
+                        cfg.properties[i] = {
+                            type: "object",
+                            view: {
+                                className: "wegas-custom-impact-group",
+                                label: item[0]
+                            },
+                            properties: PARSER.genConfig(item[1])
+                        };
+                    }
+
+                    this._form = new Y.Wegas.RForm({
+                        values: {},
+                        cfg: cfg
+                    });
+                    this._form.render(contentBasics);
                 } else {
                     cb.addClass("modal--content-advanced modal--without-menu");
                     cb.append("<div class='content-advanced-script'></div>");
                     contentAdvanced = cb.one(".content-advanced-script");
                 }
-                // this.srcField = new Y.inputEx.WysiwygScript({
-                //     parentEl: contentAdvanced
-                // });
                 Y.Wegas.RForm.Script.MultiVariableMethod({}, contentAdvanced.getDOMNode()).then(function(o) {
                     this.srcField = o;
                 }.bind(this));
@@ -138,19 +201,6 @@ YUI.add('wegas-console-custom', function(Y) {
                         this.get(CONTENTBOX).one("#advanced-impacts-btn").addClass("modal--tab-btn-selected");
                     }
                 }, "#advanced-impacts-btn", this);
-                // this.get(CONTENTBOX).delegate("click", function(e) {
-                //     var impacts = this.get(CONTENTBOX).all(".wegas-inputex-variabledescriptorselect-group");
-
-                //     if (impacts.size() < 5) {
-                //         this.add();
-                //     }
-                //     if (impacts.size() === 0) {
-                //         this.get(CONTENTBOX).one(".content-advanced-script-add").addClass("secondary");
-                //     }
-                //     if (impacts.size() === 4) {
-                //         e.currentTarget.remove();
-                //     }
-                // }, ".content-advanced-script-add", this);
                 this.get(CONTENTBOX).delegate("keyup", function(e) {
                     if (this.get("value").length > 0) {
                         if (!this.hasClass("selected")) {
@@ -173,11 +223,25 @@ YUI.add('wegas-console-custom', function(Y) {
                 this.get(CONTENTBOX).one(".wegas-status-bar .status").set("text", status);
             },
             getBasicsImpactsScript: function() {
-                if (!this.validate()) {
+                if (this._form.validate().length) {
                     this.showMessage("error", "Some fields are invalid", 1000);
                     return false;
                 }
                 return this.extractForm();
+            },
+            extractForm: function() {
+                var value = this._form.getValue(),
+                    out = [];
+
+                var impacts = this.get("customImpacts").map(function(cImpact) {
+                    return cImpact[1];
+                });
+
+                for (var i in impacts) {
+                    out.push(PARSER.genResult(impacts[i], value[i]));
+                }
+
+                return out.join(";\n");
             },
             getAdvancedImpactsScript: function() {
                 if (this.srcField.validate().length) {
@@ -273,31 +337,11 @@ YUI.add('wegas-console-custom', function(Y) {
                     }
                 }
             },
-            extractForm: function() {
-                var inputs = this._form.inputs, i, out = [];
-                for (i = 0; i < inputs.length; i += 1) {
-                    if (Y.Array.some(inputs[i].getArray(), validateItem)) {
-                        out.push(PARSER.genResult(this.get("customImpacts")[i][1], inputs[i].getArray()));
-                    }
-                }
-                return out.join(";\n");
-            },
-            validate: function() {
-                var inputs = this._form.inputs, i, valid = true;
-                for (i = 0; i < inputs.length; i += 1) {
-                    if (Y.Array.some(inputs[i].getArray(), validateItem)) {
-                        valid = valid && inputs[i].validate();
-                    } else {
-                        inputs[i].setClassFromState("valid");
-                    }
-                }
-                return valid;
-            },
             destructor: function() {
-                this.srcField.destroy();
+                this.srcField && this.srcField.destroy();
                 this.srcField = null;
                 if (this.get("customImpacts").length > 0) {
-                    this._form.destroy();
+                    this._form && this._form.destroy();
                     this._form = null;
                 }
             }
@@ -318,7 +362,7 @@ YUI.add('wegas-console-custom', function(Y) {
                      * Array of impacts. An impact is an Array [Legend, script template] or a script template.
                      * A script template is a string where `${"type":TYPE, "label":LABEL}` will be replaced by given
                      * value.
-                     * ${...} delimiter will be processed as a JSON Object. Properties are inputex field configuration
+                     * ${...} delimiter will be processed as a JSON Object. Properties are RForm field configuration
                      */
                     customImpacts: {
                         value: Y.namespace("Wegas.Config").CustomImpacts || [],
