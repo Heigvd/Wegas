@@ -589,10 +589,14 @@ YUI.add("wegas-i18n", function(Y) {
                     String.prototype.capitalize = config[lang].capitalize; // don't
                     String.prototype.colonize = config[lang].colonize; // don't
 
-                    var preview = Y.Widget.getByNode(Y.one(".wegas-playerview"));
-                    if (preview) {
-                        preview.reload();
-                    }
+
+                    Y.all("#centerTabView > div > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner > .wegas-pageloader," +
+                           "#rightTabView > div > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner > .wegas-pageloader").each(function(rootPageLoaderNode){
+                        var pageLoader = Y.Widget.getByNode(rootPageLoaderNode);
+                        if (pageLoader){
+                            pageLoader.reload();
+                        }
+                    });
                 });
             }
         }
