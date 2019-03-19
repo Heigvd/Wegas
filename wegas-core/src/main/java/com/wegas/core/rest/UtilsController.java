@@ -25,6 +25,7 @@ import fish.payara.micro.cdi.Outbound;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -536,4 +537,15 @@ public class UtilsController {
         concurrentHelper.unlock(token, audience, true);
         return "ok";
     }
+
+
+    /**
+     * Returns the current time according to the server.
+     */
+    @GET
+    @Path("ServerTime")
+    public static Date getServerTime() {
+        return new Date();
+    }
+
 }
