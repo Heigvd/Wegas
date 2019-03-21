@@ -73,10 +73,22 @@ public class ScriptFacade extends WegasAbstractFacade {
      * a variableDescriptor's scriptAlias. Must be included in each Bindings.
      */
     private static final CompiledScript noSuchProperty;
+
+    private static class CachedScript {
+
+        public CachedScript(CompiledScript script, String version) {
+            this.script = script;
+            this.version = version;
+        }
+        private CompiledScript script;
+
+        private String version;
+    }
+
     /**
      * Keep static scripts pre-compiled
      */
-    private static final Map<String, CompiledScript> staticCache = new Helper.LRUCache<>(100);
+    private static final Map<String, CachedScript> staticCache = new Helper.LRUCache<>(100);
 
     /*
      * Initialize noSuchProperty and other nashorn stuff
@@ -91,19 +103,19 @@ public class ScriptFacade extends WegasAbstractFacade {
         try {
             compile = ((Compilable) engine).compile(
                     "(function(global){"
-                            + "  var defaultNoSuchProperty = global.__noSuchProperty__;" // Store nashorn's implementation
-                            + "  Object.defineProperty(global, '__noSuchProperty__', {"
-                            + "    value: function(prop){"
-                            + "      try{"
-                            + "        var ret = Variable.find(gameModel, prop).getInstance(self);"
-                            + "        print('SCRIPT_ALIAS_CALL: [GM]' + gameModel.getId() + ' [alias]' + prop);" // log usage if var exists
-                            + "        return ret;" // Try to find a VariableDescriptor's instance for that given prop
-                            + "      }catch(e){"
-                            + "        return defaultNoSuchProperty.call(global, prop);" // Use default implementation if no VariableDescriptor
-                            + "    }}"
-                            + "  });"
-                            + "  if (!Math._random) { Math._random = Math.random; Math.random = function random(){if (RequestManager.isTestEnv()) {return 0} else {return Math._random()} }}"
-                            + "})(this);"); // Run on Bindings
+                    + "  var defaultNoSuchProperty = global.__noSuchProperty__;" // Store nashorn's implementation
+                    + "  Object.defineProperty(global, '__noSuchProperty__', {"
+                    + "    value: function(prop){"
+                    + "      try{"
+                    + "        var ret = Variable.find(gameModel, prop).getInstance(self);"
+                    + "        print('SCRIPT_ALIAS_CALL: [GM]' + gameModel.getId() + ' [alias]' + prop);" // log usage if var exists
+                    + "        return ret;" // Try to find a VariableDescriptor's instance for that given prop
+                    + "      }catch(e){"
+                    + "        return defaultNoSuchProperty.call(global, prop);" // Use default implementation if no VariableDescriptor
+                    + "    }}"
+                    + "  });"
+                    + "  if (!Math._random) { Math._random = Math.random; Math.random = function random(){if (RequestManager.isTestEnv()) {return 0} else {return Math._random()} }}"
+                    + "})(this);"); // Run on Bindings
         } catch (ScriptException e) {
             logger.error("noSuchProperty script compilation failed", e);
         }
@@ -248,8 +260,31 @@ public class ScriptFacade extends WegasAbstractFacade {
          */
         for (GameModelContent script : player.getGameModel().getScriptLibraryList()) {
             ctx.setAttribute(ScriptEngine.FILENAME, "Server script " + script.getContentKey(), ScriptContext.ENGINE_SCOPE);
+
+            String cacheFileName = "soft:" + player.getGameModel().getId() + ":" + script.getContentKey();
+            String version = script.getVersion().toString();
+
+            CachedScript cached = staticCache.get(cacheFileName);
+
+            if (cached == null) {
+                staticCache.put(cacheFileName, new CachedScript(null, version));
+                cached = staticCache.get(cacheFileName);
+            }
+
+            if (!cached.version.equals(version) || cached.script == null) {
+
+                CompiledScript compile;
+                try {
+                    compile = ((Compilable) engine).compile(script.getContent());
+                } catch (ScriptException ex) {
+                    throw new WegasScriptException(script.getContentKey(), ex.getLineNumber(), ex.getMessage());
+                }
+                cached.script = compile;
+                cached.version = version;
+            }
+
             try {
-                engine.eval(script.getContent(), ctx);
+                cached.script.eval(ctx);
             } catch (ScriptException ex) { // script exception (Java -> JS -> throw)
                 throw new WegasScriptException("Server script " + script.getContentKey(), ex.getLineNumber(), ex.getMessage());
             } catch (Exception ex) { // Java exception (Java -> JS -> Java -> throw)
@@ -264,7 +299,9 @@ public class ScriptFacade extends WegasAbstractFacade {
      *
      * @param script
      * @param args
+     *
      * @return
+     *
      * @throws ScriptException
      */
     public Object nakedEval(String script, Map<String, Object> args, ScriptContext ctx) throws ScriptException {
@@ -325,23 +362,34 @@ public class ScriptFacade extends WegasAbstractFacade {
             root = currentPath.substring(0, index);
         }
         String cacheFileName;
-        for (File f : getJavaScriptsRecursively(root, scriptURI.split(";"))) {
-            cacheFileName = f.getPath() + f.lastModified();
-            if (staticCache.get(cacheFileName) == null) {
+        String version;
 
-                try (
-                        java.io.FileInputStream fis = new FileInputStream(f);
-                        java.io.InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8)) {
-                    staticCache.putIfAbsent(cacheFileName, this.compile(isr));
+        for (File f : getJavaScriptsRecursively(root, scriptURI.split(";"))) {
+            cacheFileName = "hard:" + f.getPath();
+            version = "" + f.lastModified();
+
+            CachedScript cached = staticCache.get(cacheFileName);
+
+            if (cached == null) {
+                staticCache.put(cacheFileName, new CachedScript(null, version));
+                cached = staticCache.get(cacheFileName);
+            }
+
+            if (!cached.version.equals(version) || cached.script == null) {
+                try (FileInputStream fis = new FileInputStream(f);
+                        InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8)) {
+                    cached.script = this.compile(isr);
+                    cached.version = version;
                 } catch (IOException e) {
                     logger.warn("File {} was not found", f.getPath());
                 } catch (ScriptException ex) {
                     throw new WegasScriptException(f.getPath(), ex.getLineNumber(), ex.getMessage());
                 }
             }
+
             try {
                 ctx.setAttribute(ScriptEngine.FILENAME, "Static Scripts " + f.getPath(), ScriptContext.ENGINE_SCOPE);
-                staticCache.get(cacheFileName).eval(ctx);
+                cached.script.eval(ctx);
                 logger.info("File {} successfully injected", f);
             } catch (ScriptException ex) { // script exception (Java -> JS -> throw)
                 throw new WegasScriptException(scriptURI, ex.getLineNumber(), ex.getMessage());
@@ -364,6 +412,7 @@ public class ScriptFacade extends WegasAbstractFacade {
      *
      * @param script
      * @param arguments
+     *
      * @return whatever the script has returned
      */
     private Object eval(Script script, Map<String, AbstractEntity> arguments) throws WegasScriptException {
@@ -414,6 +463,7 @@ public class ScriptFacade extends WegasAbstractFacade {
      *
      * @param root
      * @param files
+     *
      * @return javascript file collection
      */
     private Collection<File> getJavaScriptsRecursively(String root, String[] files) {
@@ -457,6 +507,7 @@ public class ScriptFacade extends WegasAbstractFacade {
      * check if the given file is a minified version of an existing one
      *
      * @param file
+     *
      * @return true if this file is a minified version of an existing script
      */
     private boolean isMinifedDuplicata(File file) {
@@ -478,7 +529,9 @@ public class ScriptFacade extends WegasAbstractFacade {
      *
      * @param playerId player to run script as
      * @param script   script
+     *
      * @return script result
+     *
      * @throws WegasScriptException when an error occurred
      * @see #eval(Script, Map)
      */
@@ -510,6 +563,7 @@ public class ScriptFacade extends WegasAbstractFacade {
      *
      * @param scripts
      * @param arguments
+     *
      * @return eval result
      */
     private Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws WegasScriptException {
@@ -541,6 +595,7 @@ public class ScriptFacade extends WegasAbstractFacade {
      * @param p
      * @param s
      * @param context
+     *
      * @return eval result
      */
     public Object eval(Player p, Script s, VariableDescriptor context) throws WegasScriptException {
@@ -553,6 +608,7 @@ public class ScriptFacade extends WegasAbstractFacade {
      * @param player
      * @param s
      * @param arguments
+     *
      * @return eval result
      */
     private Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws WegasScriptException {
@@ -564,7 +620,9 @@ public class ScriptFacade extends WegasAbstractFacade {
      * @param playerId
      * @param s
      * @param context
+     *
      * @return eval result
+     *
      * @throws WegasScriptException
      */
     public Object eval(Long playerId, Script s, VariableDescriptor context) throws WegasScriptException { // ICI CONTEXT
