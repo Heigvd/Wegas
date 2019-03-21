@@ -1631,7 +1631,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         //i18nFacade.printTranslations(gameModel3.getId(), "en", "fr");
 
         logger.info("Create Model");
-        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
+        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios); // ici
 
         Assert.assertNotNull("French is missing in model", model.getLanguageByCode("fr"));
         Assert.assertNotNull("English is missing in model", model.getLanguageByCode("en"));
@@ -1873,7 +1873,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         logger.info("Create Model");
         GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
 
-        model = modelFacade.propagateModel(model.getId());
+        model = modelFacade.propagateModel(model.getId());   //  dkjdfjfd
 
         StateMachineDescriptor modelFsm = (StateMachineDescriptor) variableDescriptorFacade.find(model, "fsm");
 

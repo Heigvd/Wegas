@@ -10,7 +10,6 @@ package com.wegas.unit.pmg;
 import com.wegas.core.Helper;
 import com.wegas.utils.AbstractTest;
 import java.io.IOException;
-import java.nio.file.Paths;
 import org.glassfish.embeddable.GlassFishException;
 import org.junit.After;
 import org.junit.Before;
@@ -56,8 +55,9 @@ abstract public class PMGameAbstractTest extends AbstractTest {
             //SCRIPTROOT + "server-scripts/wegas-pmg-server-helper.js",
             //SCRIPTROOT + "server-scripts/wegas-pmg-server-simulation.js",
             //SCRIPTROOT + "server-scripts/wegas-pmg-server-util.js",
-            SCRIPTROOT + "test-scripts/wegas-pmg-server-test-util.js",
-            SCRIPTROOT + getScriptTestPath()};
+            //SCRIPTROOT + "test-scripts/wegas-pmg-server-test-util.js",
+            //SCRIPTROOT + getScriptTestPath()
+        };
 
         //guestLogin();
         this.createGameModelFromFileWithScript(this.getGameModelPath(), scripts);

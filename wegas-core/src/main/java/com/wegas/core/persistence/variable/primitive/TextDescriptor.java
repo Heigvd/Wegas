@@ -11,7 +11,7 @@ import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
-import jdk.nashorn.api.scripting.JSObject;
+import org.graalvm.polyglot.Value;
 
 /**
  *
@@ -47,7 +47,7 @@ public class TextDescriptor extends VariableDescriptor<TextInstance>
      * @param p
      * @param value
      */
-    public void setValue(Player p, JSObject value) {
+    public void setValue(Player p, Value value) {
         this.getInstance(p).setValue(value);
     }
 

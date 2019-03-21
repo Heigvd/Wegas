@@ -29,8 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.persistence.*;
-import jdk.nashorn.api.scripting.JSObject;
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.graalvm.polyglot.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -442,21 +441,25 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         return target;
     }
 
-    public static TranslatableContent readFromNashorn(JSObject jsTr) {
+
+    public static TranslatableContent readFromPolyglot(Value jsTr) {
         if (jsTr != null) {
-            Object theClass = jsTr.getMember("@class");
+            Value theClass = jsTr.getMember("@class");
             TranslatableContent trContent = new TranslatableContent();
 
-            if (theClass != null && theClass.equals("TranslatableContent")) {
-                ScriptObjectMirror trs = (ScriptObjectMirror) jsTr.getMember("translations");
-                String[] langs = trs.getOwnKeys(true);
-                for (String code : langs) {
-                    Object member = trs.getMember(code);
-                    if (member instanceof String) {
-                        trContent.updateTranslation(code, (String) trs.getMember(code));
-                    } else if (member instanceof ScriptObjectMirror) {
-                        String tr = (String) ((ScriptObjectMirror) member).getMember("translation");
-                        String status = (String) ((ScriptObjectMirror) member).getMember("status");
+            if (theClass != null && "TranslatableContent".equals(theClass.asString())){
+                Value trs = jsTr.getMember("translations");
+                for (String code : trs.getMemberKeys()) {
+                    Value member = trs.getMember(code);
+                    if (member.isString()) {
+                        // read I18n v1
+                        trContent.updateTranslation(code, member.asString());
+                    } else if (member.hasMembers()) {
+                        Value vTr = member.getMember("translation");
+                        Value vStatus = member.getMember("status");
+                        String tr = vTr.isString() ? vTr.asString() : "";
+                        String status = vStatus.isString() ? vStatus.asString() : "";
+
                         trContent.updateTranslation(code, tr, status);
                     } else if (member != null) {
                         throw WegasErrorMessage.error("Unhandled Translatable Content Type: " + member);

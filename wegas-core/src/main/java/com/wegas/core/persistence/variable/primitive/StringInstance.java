@@ -24,12 +24,12 @@ import javax.persistence.CascadeType;
 import javax.persistence.Index;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import jdk.nashorn.api.scripting.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.Entity;
 import java.util.List;
+import org.graalvm.polyglot.Value;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -79,14 +79,14 @@ public class StringInstance extends VariableInstance {
     }
 
     /**
-     * Setter used by nashorn
+     * Setter used by graal vm
      *
      * @param value
      */
-    public void setValue(JSObject value) {
-        TranslatableContent readFromNashorn = TranslatableContent.readFromNashorn(value);
-        if (readFromNashorn != null && this.getTrValue() != null) {
-            this.getTrValue().merge(readFromNashorn);
+    public void setValue(Value value) {
+        TranslatableContent trc = TranslatableContent.readFromPolyglot(value);
+        if (trc != null && this.getTrValue() != null) {
+            this.getTrValue().merge(trc);
         }
     }
 

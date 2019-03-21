@@ -23,7 +23,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
-import jdk.nashorn.api.scripting.JSObject;
+import org.graalvm.polyglot.Value;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -226,22 +226,22 @@ public class InboxInstance extends VariableInstance {
         return msg;
     }
 
-    public Message sendMessage(final JSObject from, final JSObject subject,
-            final JSObject body, final JSObject date,
-            String token, final List<JSObject> attachments) {
+    public Message sendMessage(final Value from, final Value subject,
+            final Value body, final Value date,
+            String token, final List<Value> attachments) {
 
         List<Attachment> atts = new ArrayList<>();
         if (attachments != null && !attachments.isEmpty()) {
-            for (JSObject a : attachments) {
-                atts.add(Attachment.readFromNashorn(a));
+            for (Value a : attachments) {
+                atts.add(Attachment.readFromPolyglot(a));
             }
         }
 
         return this.sendMessage(
-                TranslatableContent.readFromNashorn(from),
-                TranslatableContent.readFromNashorn(subject),
-                TranslatableContent.readFromNashorn(body),
-                TranslatableContent.readFromNashorn(date),
+                TranslatableContent.readFromPolyglot(from),
+                TranslatableContent.readFromPolyglot(subject),
+                TranslatableContent.readFromPolyglot(body),
+                TranslatableContent.readFromPolyglot(date),
                 token, atts);
     }
 

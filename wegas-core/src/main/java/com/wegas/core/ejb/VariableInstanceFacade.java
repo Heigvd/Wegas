@@ -126,7 +126,8 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
                     "VariableInstance.findTeamInstance", VariableInstance.class);
             query.setParameter("scopeId", scope.getId());
             query.setParameter("teamId", team.getId());
-            return query.getSingleResult();
+            VariableInstance singleResult = query.getSingleResult();
+            return singleResult;
         } catch (NoResultException ex) {
             return null;
         }
@@ -161,6 +162,20 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
 
     public Map<Long, VariableInstance> getAllInstancesById(VariableDescriptor vd) {
         return this.mapInstances(this.getAllInstances(vd));
+    }
+
+
+    private Map<String, VariableInstance> mapInstancesString(Map<? extends InstanceOwner, VariableInstance> instances) {
+        Map<String, VariableInstance> mappedInstances = new HashMap<>();
+        for (Entry<? extends InstanceOwner, VariableInstance> entry : instances.entrySet()) {
+            // GameModelScope Hack (null key means id=0...)
+            mappedInstances.put((entry.getKey() != null ? entry.getKey().getId().toString() : "0"), entry.getValue());
+        }
+        return mappedInstances;
+    }
+
+    public Map<String, VariableInstance> getAllInstancesByStringId(VariableDescriptor vd) {
+        return this.mapInstancesString(this.getAllInstances(vd));
     }
 
     /**

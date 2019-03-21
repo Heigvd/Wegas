@@ -67,8 +67,10 @@ import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.resourceManagement.persistence.WRequirement;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -447,17 +449,17 @@ public class SerializationTest {
 
     @Test
     public void testJpaAccount() throws JsonProcessingException, IOException {
-        JpaAccount ja = new JpaAccount();
-        ja.setFirstname("Alan");
-        ja.setLastname("Smithee");
-        ja.setEmail("alan@local");
-        ja.setUsername("alan@local");
+            JpaAccount ja = new JpaAccount();
+            ja.setFirstname("Alan");
+            ja.setLastname("Smithee");
+            ja.setEmail("alan@local");
+            ja.setUsername("alan@local");
 
-        String strJa = mapper.writeValueAsString(ja);
+            String strJa = mapper.writeValueAsString(ja);
 
-        mapper.readValue(strJa, AbstractAccount.class);
+            mapper.readValue(strJa, AbstractAccount.class);
 
-        // 
+        //
     }
 
 }

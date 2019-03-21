@@ -152,6 +152,10 @@ public interface VariableDescriptorFacadeI {
      */
     Map<Long, VariableInstance> getInstancesByKeyId(VariableDescriptor vd);
 
+
+    Map<String, VariableInstance> getInstancesByKeyStringId(VariableDescriptor vd);
+
+
     /**
      * is the given name in use within the gameModel ?
      *

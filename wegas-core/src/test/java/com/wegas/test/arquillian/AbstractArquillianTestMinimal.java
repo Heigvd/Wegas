@@ -177,6 +177,8 @@ public abstract class AbstractArquillianTestMinimal {
      */
     @Before
     public void init() {
+        logger.info("TEST {} starts", testName.getMethodName());
+
         this.startTime = System.currentTimeMillis();
         SecurityUtils.setSecurityManager(new IniSecurityManagerFactory("classpath:shiro.ini").getInstance());
         TestHelper.emptyDBTables();
@@ -237,7 +239,6 @@ public abstract class AbstractArquillianTestMinimal {
                     + "CREATE INDEX IF NOT EXISTS index_iteration_replannedworkloads_iteration on iteration_replannedworkloads (iteration_id);"
                     + "CREATE INDEX IF NOT EXISTS index_iteration_taskinstance_iteration_id on iteration_taskinstance (iteration_id);"
                     + "CREATE INDEX IF NOT EXISTS index_iteration_taskinstance_id on iteration_taskinstance (taskinstance_id);"
-
                     + "CREATE INDEX IF NOT EXISTS index_mcqresult_name_choicedescriptor_id on mcqresult (name,choicedescriptor_id);"
                     + "CREATE INDEX IF NOT EXISTS index_questiondescriptor_pictures_questiondescriptor_id on questiondescriptor_pictures (questiondescriptor_id);"
                     + "CREATE INDEX IF NOT EXISTS index_result_files_result_id on result_files (result_id);"

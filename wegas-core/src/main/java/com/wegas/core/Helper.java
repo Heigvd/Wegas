@@ -28,6 +28,10 @@ import com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescripto
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -175,6 +179,12 @@ public class Helper {
      */
     public static boolean isNullOrEmpty(final String t) {
         return t == null || t.isEmpty();
+    }
+
+    public static String readFile(String path) throws IOException {
+        byte[] buffer;
+        buffer = Files.readAllBytes(Paths.get(path));
+        return Charset.defaultCharset().decode(ByteBuffer.wrap(buffer)).toString();
     }
 
     /**

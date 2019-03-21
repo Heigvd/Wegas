@@ -19,7 +19,7 @@ var WegasDashboard = (function() {
     var Long = Java.type("java.lang.Long");
 
     function getInstances(name) {
-        return Variable.getInstancesByKeyId(Variable.find(gameModel, name));
+        return Variable.getInstancesByKeyStringId(Variable.find(gameModel, name));
     }
 
     function getOrCreateDashboard(dashboardName) {
@@ -171,7 +171,7 @@ var WegasDashboard = (function() {
                             item.transformer = itemCfg.transformer;
                             item.sortable = itemCfg.sortable;
                             item.sortFn = itemCfg.sortFn;
-                            item.kind = variables[varName].descriptor.getClass().getSimpleName().replaceAll("Descriptor", "").toLowerCase();
+                            item.kind = variables[varName].descriptor.getClass().getSimpleName().replace("Descriptor", "").toLowerCase();
                             break;
                         default:
                     }
@@ -199,27 +199,26 @@ var WegasDashboard = (function() {
                             var variable = variables[item.varName];
 
                             if (item.mapFn) {
-                                var args = [teamId, variable.instances[teamId]];
-                                for (var i in item.mapFnExtraArgs) {
-                                    var extraVarName = item.mapFnExtraArgs[i];
+                                var args = [teamId, variable.instances.get("" + teamId)];
+                                for (var extraVarName of item.mapFnExtraArgs) {
                                     if (!variables[extraVarName]) {
                                         variables[extraVarName] = {
                                             descriptor: Variable.find(gameModel, extraVarName),
                                             instances: getInstances(extraVarName)
                                         };
                                     }
-                                    args.push(variables[extraVarName].instances[teamId]);
+                                    args.push(variables[extraVarName].instances.get("" + teamId));
                                 }
                                 teamData[id] = item.mapFn.apply(this, args);
                             } else {
                                 if (item.item.kind === "inbox") {
-                                    teamData[id] = WegasHelper.getInboxInstanceContent(variable.instances[teamId], item.item.label, teamName);
+                                    teamData[id] = WegasHelper.getInboxInstanceContent(variable.instances.get("" + teamId), item.item.label, teamName);
                                 } else if (item.item.kind === "text") {
-                                    teamData[id] = WegasHelper.getTextInstanceContent(variable.instances[teamId], item.item.label, teamName);
+                                    teamData[id] = WegasHelper.getTextInstanceContent(variable.instances.get("" + teamId), item.item.label, teamName);
                                 } else if (item.item.kind === "object") {
-                                    teamData[id] = WegasHelper.getObjectInstanceContent(variable.instances[teamId], item.item.label, teamName)
+                                    teamData[id] = WegasHelper.getObjectInstanceContent(variable.instances.get("" + teamId), item.item.label, teamName)
                                 } else {
-                                    teamData[id] = variable.instances[teamId].getValue();
+                                    teamData[id] = variable.instances.get("" + teamId).getValue();
                                 }
                             }
                         }

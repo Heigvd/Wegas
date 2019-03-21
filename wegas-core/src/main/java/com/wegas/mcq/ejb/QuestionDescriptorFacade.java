@@ -39,8 +39,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.persistence.TypedQuery;
-import jdk.nashorn.api.scripting.JSObject;
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.graalvm.polyglot.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -773,7 +772,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @return
      */
     @Override
-    public Message buildWhValidateMessage(Player self, WhValidate whValidate, JSObject i18n) {
+    public Message buildWhValidateMessage(Player self, WhValidate whValidate, Value i18n) {
         Message history = new Message();
 
         TranslatableContent from = new TranslatableContent();
@@ -849,9 +848,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         }
     }
 
-    private Object getConfig(JSObject config, String key, Object defaultValue) {
-        Object value = config.getMember(key);
-        if (value == null || ScriptObjectMirror.isUndefined(value)) {
+    private Object getConfig(Value config, String key, Object defaultValue) {
+        Value value = config.getMember(key);
+        if (value == null || value.isNull()) {
             return defaultValue;
         }
         return value;
@@ -884,7 +883,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
      * @return
      */
     @Override
-    public Message buildReplyValidateMessage(Player self, ReplyValidate replyValidate, JSObject i18n, JSObject config) {
+    public Message buildReplyValidateMessage(Player self, ReplyValidate replyValidate, Value i18n, Value config) {
         QuestionInstance qi = replyValidate.question;
         QuestionDescriptor qd = (QuestionDescriptor) qi.getDescriptor();
         ChoiceInstance ci = replyValidate.choice;
@@ -900,7 +899,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         }
 
         Message history = new Message();
-        JSObject translate = (JSObject) i18n.getMember("t");
 
         Boolean showQuestion = (Boolean) this.getConfig(config, "showQuestion", true);
         Boolean showReplies = (Boolean) this.getConfig(config, "showReplies", true);
@@ -935,9 +933,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                     List<Reply> replies = qi.getSortedReplies(self);
                     String title;
                     if (replies.size() > 1) {
-                        title = (String) translate.call(i18n, "question.results", null, code);
+                        title = i18n.invokeMember("t", "question.results", null, code).asString();
                     } else {
-                        title = (String) translate.call(i18n, "question.result", null, code);
+                        title = i18n.invokeMember("t", "question.result", null, code).asString();
                     }
                     bd.append("<div class=\"replies-label\">").append(title).append("</div>");
                     bd.append("<div class=\"replies\">");
@@ -952,9 +950,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                 List<Reply> replies = qi.getReplies(self);
                 String title;
                 if (replies.size() > 1) {
-                    title = (String) translate.call(i18n, "question.results", null, code);
+                    title = i18n.invokeMember("t", "question.results", null, code).asString();
                 } else {
-                    title = (String) translate.call(i18n, "question.result", null, code);
+                    title = i18n.invokeMember("t", "question.result", null, code).asString();
                 }
                 bd.append("<div class=\"replies-label\">").append(title).append("</div>");
                 bd.append("<div class=\"cbx-replies\">");

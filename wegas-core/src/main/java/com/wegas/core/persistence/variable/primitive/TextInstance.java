@@ -10,7 +10,6 @@ package com.wegas.core.persistence.variable.primitive;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
@@ -26,7 +25,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Index;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import jdk.nashorn.api.scripting.JSObject;
+import org.graalvm.polyglot.Value;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -82,14 +81,14 @@ public class TextInstance extends VariableInstance {
     }
 
     /**
-     * Setter used by nashorn
+     * Setter used by graalVm polyglot
      *
      * @param value
      */
-    public void setValue(JSObject value) {
-        TranslatableContent readFromNashorn = TranslatableContent.readFromNashorn(value);
-        if (readFromNashorn != null && this.getTrValue() != null) {
-            this.getTrValue().merge(readFromNashorn);
+    public void setValue(Value value) {
+        TranslatableContent trc = TranslatableContent.readFromPolyglot(value);
+        if (trc != null && this.getTrValue() != null) {
+            this.getTrValue().merge(trc);
         }
     }
 

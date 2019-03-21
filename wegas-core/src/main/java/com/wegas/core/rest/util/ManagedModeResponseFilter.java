@@ -26,7 +26,6 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,9 +131,6 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                         entities.add(o);
                     }
                     //entities = (List<Object>) response.getEntity();
-                } else if (response.getEntity() instanceof ScriptObjectMirror
-                        && ((ScriptObjectMirror) response.getEntity()).isArray()) {
-                    entities = new LinkedList(((ScriptObjectMirror) response.getEntity()).values());
                 } else if (response.getEntity() != null) {
                     entities = new LinkedList<>();
                     entities.add(response.getEntity());

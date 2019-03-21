@@ -15,7 +15,9 @@ import javax.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import javax.ws.rs.ext.ContextResolver;
+import org.graalvm.polyglot.Value;
 
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +53,12 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
         /*AnnotationIntrospector primary = new JacksonAnnotationIntrospector();   // Create a new annotation inspector that combines jaxb and jackson
         AnnotationIntrospector secondary = new JaxbAnnotationIntrospector(mapper.getTypeFactory());
         AnnotationIntrospector pair = AnnotationIntrospector.pair(primary, secondary);
-
         mapper.setAnnotationIntrospector(pair);*/
+
+        SimpleModule polyglotModule = new SimpleModule();
+        polyglotModule.addSerializer(Value.class, new PolyglotValueSerialiser());
+
+        mapper.registerModule(polyglotModule);
 
         AnnotationIntrospector jackson = new JacksonAnnotationIntrospector();
         mapper.setAnnotationIntrospector(jackson);

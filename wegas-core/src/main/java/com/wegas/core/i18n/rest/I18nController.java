@@ -16,6 +16,7 @@ import com.wegas.core.i18n.ejb.I18nFacade.UpdateType;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -107,13 +108,13 @@ public class I18nController {
     @PUT
     @Path("Tr/{mode : [A-Z_]+}")
     public AbstractEntity update(@PathParam("mode") UpdateType mode, I18nUpdate i18nUpdate)
-            throws ScriptException {
+            throws ScriptException, IOException {
         return i18nfacade.update(i18nUpdate, mode);
     }
 
     @PUT
     @Path("BatchUpdate")
-    public List<AbstractEntity> batchUpdate(List<I18nUpdate> i18nUpdates) throws ScriptException {
+    public List<AbstractEntity> batchUpdate(List<I18nUpdate> i18nUpdates) throws ScriptException, IOException {
         return i18nfacade.batchUpdate(i18nUpdates, UpdateType.MINOR);
     }
 
@@ -178,7 +179,7 @@ public class I18nController {
     @RequiresRoles("Administrator")
     public GameModel initLanguageTranslations(@PathParam("gameModelId") Long gameModelId,
             @PathParam("target") String targetLangCode,
-            @PathParam("source") String sourceLangCode) throws ScriptException {
+            @PathParam("source") String sourceLangCode) throws ScriptException, IOException {
 
         return i18nfacade.initLanguage(gameModelId, sourceLangCode, targetLangCode);
     }

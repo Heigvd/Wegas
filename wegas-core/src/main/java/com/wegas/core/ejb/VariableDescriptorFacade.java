@@ -785,6 +785,14 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * {@inheritDoc}
      */
     @Override
+    public Map<String, VariableInstance> getInstancesByKeyStringId(VariableDescriptor vd) {
+        return variableInstanceFacade.getAllInstancesByStringId(vd);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public VariableInstance getInstance(VariableDescriptor vd, Player player) {
         AbstractScope scope = vd.getScope();
         if (scope instanceof TeamScope) {

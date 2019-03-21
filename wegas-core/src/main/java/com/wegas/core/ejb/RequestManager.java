@@ -32,8 +32,6 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
-import jdk.nashorn.api.scripting.ScriptUtils;
-import jdk.nashorn.internal.runtime.ScriptObject;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.UnavailableSecurityManagerException;
 import org.apache.shiro.mgt.DefaultSecurityManager;
@@ -52,13 +50,13 @@ import javax.inject.Named;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.script.ScriptContext;
 import javax.ws.rs.core.Response;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.graalvm.polyglot.Context;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -281,9 +279,9 @@ public class RequestManager implements RequestManagerI {
     private Locale locale;
 
     /**
-     * the Nashorn script context to use during the request
+     * the GraalVM script context to use during the request
      */
-    private ScriptContext currentScriptContext = null;
+    private Context currentScriptContext = null;
 
     /**
      * Internal value to pretty print logs
@@ -292,7 +290,7 @@ public class RequestManager implements RequestManagerI {
 
     /**
      * Internal method to pretty print logs. Call logger.trace(msg), but add
-     * whitespaces at the begining of the line, according to current logLevel
+     * white-spaces at the beginning of the line, according to current logLevel
      *
      * @param msg  message to display
      * @param args message arguments
@@ -524,6 +522,9 @@ public class RequestManager implements RequestManagerI {
      */
     public void setPlayer(Player currentPlayer) {
         if (this.currentPlayer == null || !this.currentPlayer.equals(currentPlayer)) {
+            if (currentScriptContext != null){
+                this.currentScriptContext.close();
+            }
             this.setCurrentScriptContext(null);
         }
         this.currentPlayer = currentPlayer != null ? (currentPlayer.getId() != null ? playerFacade.find(currentPlayer.getId()) : currentPlayer) : null;
@@ -541,14 +542,14 @@ public class RequestManager implements RequestManagerI {
     /**
      * @return the currentScriptContext
      */
-    public ScriptContext getCurrentScriptContext() {
+    public Context getCurrentScriptContext() {
         return currentScriptContext;
     }
 
     /**
      * @param currentScriptContext the currentScriptContext to set
      */
-    public void setCurrentScriptContext(ScriptContext currentScriptContext) {
+    public void setCurrentScriptContext(Context currentScriptContext) {
         this.currentScriptContext = currentScriptContext;
     }
 
@@ -638,11 +639,11 @@ public class RequestManager implements RequestManagerI {
     @Override
     public void sendCustomEvent(String type, Object payload) {
         // @hack check payload type against "jdk.nashorn.internal"
-        if (payload.getClass().getName().startsWith("jdk.nashorn.internal")) {
-            this.addEvent(new CustomEvent(type, ScriptUtils.wrap((ScriptObject) payload)));
-        } else {
+        //if (payload.getClass().getName().startsWith("jdk.nashorn.internal")) {
+        //    this.addEvent(new CustomEvent(type, ScriptUtils.wrap((ScriptObject) payload)));
+        //} else {
             this.addEvent(new CustomEvent(type, payload));
-        }
+        //}
     }
 
     @Override
@@ -1007,7 +1008,7 @@ public class RequestManager implements RequestManagerI {
         }
 
         if (this.currentScriptContext != null) {
-            this.currentScriptContext.getBindings(ScriptContext.ENGINE_SCOPE).clear();
+            this.currentScriptContext.close();
             this.currentScriptContext = null;
         }
 
@@ -1051,7 +1052,7 @@ public class RequestManager implements RequestManagerI {
      ---------------------------------------------------------------------------
      */
     /**
-     * Clear all granted wegas permissions and clear effective roles/DBPermissions
+     * Clear all granted wegas permissions and clear effective roles/DBPermission;
      */
     public void clearPermissions() {
         log("CLEAR PERMISSIONS");

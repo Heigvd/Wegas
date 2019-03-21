@@ -69,9 +69,9 @@
 
     <distributionManagement>
         <!--        <site>
-                    <id>localhost</id>
-                    <url>file://./site</url>
-                </site>-->
+            <id>localhost</id>
+            <url>file://./site</url>
+        </site>-->
         <site>
             <id>github</id>
             <url>scm:git:https://github.com/Heigvd/Wegas.git</url>
@@ -204,6 +204,13 @@
                 <version>${logback.version}</version>
                 <!--<scope>runtime</scope>-->
             </dependency>
+
+            <dependency>
+                <groupId>org.graalvm.js</groupId>
+                <artifactId>js</artifactId>
+                <version>1.0.0-rc13</version>
+            </dependency>
+
 
             <!-- Apache Shiro Dependencies -->
             <dependency>
@@ -387,7 +394,7 @@
                 <artifactId>arquillian-payara-server-4-embedded</artifactId>
                 <version>1.0.Beta2</version>
                 <scope>test</scope>
-             </dependency>
+            </dependency>
 
 
             <dependency>
@@ -484,23 +491,23 @@
                 <version>1.2.1</version>
             </dependency>
 
-        <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient</artifactId>
-            <version>${prometheus.version}</version>
-        </dependency>
+            <dependency>
+                <groupId>io.prometheus</groupId>
+                <artifactId>simpleclient</artifactId>
+                <version>${prometheus.version}</version>
+            </dependency>
 
-        <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient_servlet</artifactId>
-            <version>${prometheus.version}</version>
-        </dependency>
+            <dependency>
+                <groupId>io.prometheus</groupId>
+                <artifactId>simpleclient_servlet</artifactId>
+                <version>${prometheus.version}</version>
+            </dependency>
 
-        <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient_hotspot</artifactId>
-            <version>${prometheus.version}</version>
-        </dependency>
+            <dependency>
+                <groupId>io.prometheus</groupId>
+                <artifactId>simpleclient_hotspot</artifactId>
+                <version>${prometheus.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
