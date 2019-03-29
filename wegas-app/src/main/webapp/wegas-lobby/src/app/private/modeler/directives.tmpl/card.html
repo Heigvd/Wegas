@@ -8,7 +8,7 @@
     </div>
     <div ng-if="!((model.comments == null) || (model.comments == ''))" class="line line--optional">{{model.comments}}</div>
 </div>
-<div class="card__actions">
+<div class="card__actions" ng-if="editable(scenario)">
   <a class="button button--small button--round button--default-reverse button--label-off button--settings" title="{{'SCENARIST-CARD-SETTINGS-BTN' | translate}}" ui-sref=".settings({modelId: model.id})">
     <span class="button__label">{{'SCENARIST-CARD-SETTINGS-BTN' | translate}}</span>
   </a>
@@ -34,3 +34,9 @@
     <span class="button__label">{{'MODELER-CARD-EDIT-BTN' | translate}}</span>
   </a>
 </div>
+<div class="card__actions" ng-if="!editable(scenario)">
+  <a class="button button--small button--round button--default button--label-off button--translate action--button" title="{{'MODELER-CARD-TRANSLATE-BTN' | translate}}" href="{{ServiceURL}}translate.html?gameModelId={{scenario.id}}" target="_blank">
+    <span class="button__label">{{'MODELER-CARD-TRANSLATE-BTN' | translate}}</span>
+  </a>
+</div>
+

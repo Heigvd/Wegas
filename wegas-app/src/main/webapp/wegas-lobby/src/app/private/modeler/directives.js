@@ -134,7 +134,7 @@ angular.module('private.modeler.directives', [
         /*
          ** Filters rawModels according to the given search string and puts the result in ctrl.models.
          ** Hypotheses on input array rawModels :
-         ** 1. It contains only models with attribute 'canEdit' = true.
+         ** 1. It contains only editable models (ie EDIT or TRANSLATE permission)
          ** 2. It's already ordered according to the 'createdTime' attribute,
          **    so that the output automatically follows the same ordering.
          */
@@ -171,8 +171,10 @@ angular.module('private.modeler.directives', [
             }
             ctrl.models = rawModels = [];
             ctrl.loading = true;
-            ScenariosModel.getModels('LIVE').then(function(response) {
-                rawModels = $filter('filter')(response.data, {canEdit: true}) || [];
+
+            ScenariosModel.getGameModelsByStatusTypeAndPermission("MODEL", "LIVE", ["EDIT", "TRANSLATE"]).then(function(gameModels) {
+                rawModels = gameModels.data;
+
                 if (ctrl.mefirst && ctrl.username.length > 0) {
                     // Prepare a list where "my" models appear first (ordered by creation date, like the rest):
                     var myModels = $filter('filter')(rawModels, {createdByName: ctrl.username}) || [],
@@ -215,6 +217,10 @@ angular.module('private.modeler.directives', [
                     $('#archive-' + model.id).removeClass('busy-button').addClass('button--archive');
                 }, 500);
             });
+        };
+
+        ctrl.hasEditPermission = function(gameModel) {
+            return ScenariosModel.hasAnyPermissions(gameModel, "EDIT");
         };
 
         ctrl.duplicate = function(model) {
@@ -349,12 +355,10 @@ angular.module('private.modeler.directives', [
                 var loadScenarios = function() {
                     // Reload list from cache each time the window is opened:
                     scope.loadingScenarios = true;
-                    ScenariosModel.getScenarios("LIVE").then(function(response) {
+                    ScenariosModel.getGameModelsByStatusTypeAndPermission("SCENARIO", "LIVE", ["EDIT"]).then(function(response){
                         if (!response.isErroneous()) {
                             scope.loadingScenarios = false;
-                            var expression = {canDuplicate: true},
-                                filtered = $filter('filter')(response.data, expression) || [];
-                            scope.rawscenariomenu = $filter('orderBy')(filtered, 'name');
+                            scope.rawscenariomenu = $filter('orderBy')(response.data, 'name');
                             updateDisplay(scope.rawscenariomenu);
                         }
                     });
@@ -377,7 +381,7 @@ angular.module('private.modeler.directives', [
 
                 scope.filterScenarios = function(search) {
                     if (search && search.length > 0) {
-                        var needle =search.toLowerCase();
+                        var needle = search.toLowerCase();
                         var filtered = [];
                         for (var i in scope.rawscenariomenu) {
                             var scen = scope.rawscenariomenu[i];
@@ -447,12 +451,11 @@ angular.module('private.modeler.directives', [
                 var loadModels = function() {
                     // Reload list from cache each time the window is opened:
                     scope.loadingModels = true;
-                    ScenariosModel.getModels("LIVE").then(function(response) {
+
+                    ScenariosModel.getGameModelsByStatusTypeAndPermission("MODEL", "LIVE", "DUPLICATE").then(function(response) {
                         if (!response.isErroneous()) {
                             scope.loadingModels = false;
-                            var expression = {canDuplicate: true},
-                                filtered = $filter('filter')(response.data, expression) || [];
-                            scope.rawmodelsmenu = $filter('orderBy')(filtered, 'name');
+                            scope.rawmodelsmenu = $filter('orderBy')(response.data, 'name');
                             updateDisplay(scope.rawmodelsmenu);
                         }
                     });

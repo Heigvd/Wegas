@@ -11,7 +11,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-/*global YUI_config:true*/
+/*global YUI_config, YUI:true*/
 YUI().use(function(Y) {
     "use strict";
     var CSS = "css";
@@ -486,7 +486,7 @@ YUI().use(function(Y) {
         modules: {
             "wegas-helper": {},
             "wegas-script-helper": {
-                requires : ["esprima"]
+                requires: ["esprima"]
             },
             "datatable-csv": {
                 ws_provides: "DatatableCSV"
@@ -781,7 +781,7 @@ YUI().use(function(Y) {
             },
             "wegas-gamemodel-i18n": {
                 path: "js/widget/wegas-gamemodel-i18n-min.js",
-                requires: ["wegas-layout-list", "wegas-script-helper"],
+                requires: ["wegas-layout-list", "wegas-script-helper", "wegas-tutorial"],
                 ws_provides: ["LanguagesManager", "TranslationEditor"]
             },
             "wegas-gamemodel-extractor": {
@@ -950,7 +950,7 @@ YUI().use(function(Y) {
             "open-sans": {// Used in the react-based scenarist mode
                 type: CSS,
                 fullpath: "//fonts.googleapis.com/css?family=Open+Sans"
-            },
+            }
         }
     });
     /**
@@ -1118,8 +1118,8 @@ YUI().use(function(Y) {
                 path: "qrcode/adapter.min.js"
             },
             instascan: {
-                path: "qrcode/instascan.min.js",
-                //requires: "adapter"
+                path: "qrcode/instascan.min.js"
+                    //requires: "adapter"
             },
             //https://github.com/davidshimjs/qrcodejs, Apache 2
             "qr-encoder": {

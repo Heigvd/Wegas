@@ -19,7 +19,9 @@ import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -68,6 +70,7 @@ public class EditorGameController extends AbstractGameController {
      */
     @PostConstruct
     public void init() {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 
         if (this.playerId != null) {                                            // If a playerId is provided, we use it
             currentPlayer = playerFacade.find(this.getPlayerId());
@@ -103,7 +106,8 @@ public class EditorGameController extends AbstractGameController {
         }
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
             errorController.dispatch("Empty Team", "Team " + teamFacade.find(this.teamId).getName() + " has no player.");
-        } else if (!requestManager.hasGameWriteRight(currentPlayer.getGame())) {
+        } else if (!requestManager.hasGameWriteRight(currentPlayer.getGame())
+                && !requestManager.hasGameModelTranslateRight(currentPlayer.getGameModel())) {
             errorController.accessDenied();
         }
 

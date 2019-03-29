@@ -174,14 +174,6 @@ public class GameFacade extends BaseFacade<Game> {
          */
         userFacade.addTrainerToGame(currentUser.getId(), game.getId());
 
-        /*
-         * HACK: erk
-         */
-        gameModel.setCanView(true);
-        gameModel.setCanEdit(true);
-        gameModel.setCanDuplicate(false);
-        gameModel.setCanInstantiate(false);
-
         gameModelFacade.propagateAndReviveDefaultInstances(gameModel, game, true); // at this step the game is empty (no teams; no players), hence, only Game[Model]Scoped are propagated
 
         this.addDebugTeam(game);
@@ -400,19 +392,6 @@ public class GameFacade extends BaseFacade<Game> {
                 List<String> perm = entry.getValue();
                 if (perm.contains("Edit") || perm.contains("*")) {
                     Game dg = this.getGameWithoutDebugTeam(g);
-                    GameModel dgm = dg.getGameModel();
-                    List<String> gmPerm = gmMatrix.get(dgm.getId());
-                    if (gmPerm != null) {
-                        dgm.setCanView(gmPerm.contains("View") || gmPerm.contains("*"));
-                        dgm.setCanEdit(gmPerm.contains("Edit") || gmPerm.contains("*"));
-                        dgm.setCanDuplicate(gmPerm.contains("Duplicate") || gmPerm.contains("*"));
-                        dgm.setCanInstantiate(gmPerm.contains("Instantiate") || gmPerm.contains("*"));
-                    } else {
-                        dgm.setCanView(Boolean.TRUE);
-                        dgm.setCanEdit(Boolean.TRUE);
-                        dgm.setCanDuplicate(Boolean.FALSE);
-                        dgm.setCanInstantiate(Boolean.FALSE);
-                    }
                     games.add(dg);
                 }
             }

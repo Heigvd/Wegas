@@ -1,4 +1,4 @@
-<ul>
+<ul style="columns: {{ nbColumns }}">
   <li>
     <input ng-change="updatePermissions()" type="checkbox" ng-model="canEdit" /> {{'MODELER-MODALE-USERS-EDIT-CHECKBOX' | translate}}
   </li>
@@ -7,5 +7,8 @@
   </li>
   <li>
     <input ng-change="updatePermissions()" type="checkbox" ng-model="canCreate" ng-disabled="canEdit" /> {{'SCENARIST-MODALE-USERS-CREATE-CHECKBOX' | translate}}
+  </li>
+  <li ng-repeat="lang in languages">
+    <input ng-change="updatePermissions()" type="checkbox" ng-model="canTranslate[lang]" ng-disabled="canEdit" /> {{'SCENARIST-MODALE-USERS-TRANSLATE-CHECKBOX' | translate}} {{lang}}
   </li>
 </ul>

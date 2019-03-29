@@ -37,7 +37,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         CONTENT_TEMPLATE: "<div class=\"wegas-editor-variabletreeview\"></div>",
         // ** Lifecycle methods ** //
         renderUI: function() {
-            var searchVal, searchRE, savedState, req, checkReq;
+            //var searchVal, searchRE, savedState, req, 
+            var checkReq;
             this._timer = new Y.Wegas.Timer({
                 duration: 300
             });
@@ -100,6 +101,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             }, this);
             this._validateBttn = new Y.ToggleButton({
                 render: this.toolbar.get("header"),
+                cssClass: "wegas-findbugs-button",
                 label: scriptCheckLabel,
                 on: {
                     pressedChange: Y.bind(function(e) {
@@ -191,6 +193,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     this.treeView.deselectAll();
                     if (cur) {
                         this.currentSelection = e.entity.get("id");
+                        cur.expandParents();
                         cur.set("selected", 2);
                     }
                 }, this));
@@ -250,17 +253,17 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         },
         updateDescriptor: function(e) {
             if (!this.get("bypassSyncEvents")) {
-            var oldElement, entity, parent, index, newElement;
-            entity = e.entity;
-            oldElement = this.findNode(entity);
-            if (oldElement) {
-                parent = oldElement.get("parent");
-                index = parent.indexOf(oldElement);
-                newElement = this.genTreeViewElement(entity);
-                oldElement.remove();
-                parent.add(newElement, index);
-            }
-            //oldElement.set("label", e.entity.getEditorLabel());
+                var oldElement, entity, parent, index, newElement;
+                entity = e.entity;
+                oldElement = this.findNode(entity);
+                if (oldElement) {
+                    parent = oldElement.get("parent");
+                    index = parent.indexOf(oldElement);
+                    newElement = this.genTreeViewElement(entity);
+                    oldElement.remove();
+                    parent.add(newElement, index);
+                }
+                //oldElement.set("label", e.entity.getEditorLabel());
             }
         },
         updateInstance: function(e) {
@@ -424,7 +427,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         var container = entity.get(category),
                             children = Y.Array.map(container.get("evaluations"), function(ev) {
                                 return {
-                                    label: ev.getEditorLabel() ,
+                                    label: ev.getEditorLabel(),
                                     selected: (ev.get(ID) === this.currentSelection) ? 2 : 0,
                                     data: {
                                         entity: ev,

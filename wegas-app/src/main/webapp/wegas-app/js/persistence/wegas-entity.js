@@ -717,18 +717,6 @@ YUI.add('wegas-entity', function(Y) {
                     label: 'Type'
                 }
             },
-            canView: {
-                transient: true
-            },
-            canEdit: {
-                transient: true
-            },
-            canDuplicate: {
-                transient: true
-            },
-            canInstantiate: {
-                transient: true
-            },
             createdTime: {
                 transient: true
             },

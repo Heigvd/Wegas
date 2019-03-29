@@ -8,14 +8,23 @@
 package com.wegas.core.i18n.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.ListUtils;
-import java.io.Serializable;
+import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.security.util.WegasPermission;
+import java.util.Collection;
 import java.util.Objects;
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Index;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  *
@@ -23,30 +32,86 @@ import javax.persistence.Lob;
  *
  * @author maxence
  */
-@Embeddable
-public class Translation implements Serializable {
+@Entity
+@Table(
+        name = "translatablecontent_translations",
+        indexes = {
+            @Index(columnList = "translatablecontent_id")
+        }
+)
+@IdClass(Translation.TranslationKey.class)
+public class Translation implements WithPermission {
 
-    private static final long serialVersionUID = 1647739633795326491L;
+    public static class TranslationKey {
+
+        private String lang;
+        private Long trId;
+
+        @Override
+        public int hashCode() {
+            int hash = 3;
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final TranslationKey other = (TranslationKey) obj;
+            if (!Objects.equals(this.lang, other.lang)) {
+                return false;
+            }
+            if (!Objects.equals(this.trId, other.trId)) {
+                return false;
+            }
+            return true;
+        }
+    }
 
     @JsonIgnore
+    @Id
+    @WegasEntityProperty
     private String lang;
+
+    @ManyToOne
+    @JsonIgnore
+    private TranslatableContent translatableContent;
+
+    @Id
+    @Column(name = "translatablecontent_id", insertable = false, updatable = false, columnDefinition = "bigint")
+    private Long trId;
 
     @Lob
     @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     @Column(name = "tr")
+    @WegasEntityProperty(searchable = true)
     private String translation;
 
+    @WegasEntityProperty
     private String status;
 
     public Translation() {
     }
 
     public Translation(String lang, String translation) {
-        this(lang, translation, null);
+        this(lang, translation, null, null);
     }
 
-    public Translation(String lang, String translation, String status) {
-        this.lang = lang;
+    public Translation(String lang, String translation, String status, TranslatableContent owner) {
+        if (lang != null) {
+            this.lang = lang.toUpperCase();
+        }
+        this.translatableContent = owner;
+        if (owner != null) {
+            this.trId = owner.getId();
+        }
         this.translation = translation;
         this.status = status;
     }
@@ -55,17 +120,29 @@ public class Translation implements Serializable {
     public int hashCode() {
         int hash = 3;
         hash = 79 * hash + Objects.hashCode(this.lang);
+        hash = 79 * hash + Objects.hashCode(this.trId);
         return hash;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj != null && obj instanceof Translation) {
-            Translation other = (Translation) obj;
-            return this.getLang().equals(other.getLang())
-                    && Objects.equals(this.getTranslation(), other.getTranslation());
+        if (this == obj) {
+            return true;
         }
-        return false;
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Translation other = (Translation) obj;
+        if (!Objects.equals(this.lang, other.lang)) {
+            return false;
+        }
+        if (!Objects.equals(this.trId, other.trId)) {
+            return false;
+        }
+        return true;
     }
 
     public String getLang() {
@@ -78,6 +155,27 @@ public class Translation implements Serializable {
         } else {
             this.lang = null;
         }
+    }
+
+    public TranslatableContent getTranslatableContent() {
+        return translatableContent;
+    }
+
+    public void setTranslatableContent(TranslatableContent translatableContent) {
+        if (translatableContent != null) {
+            this.trId = translatableContent.getId();
+        } else {
+            this.trId = null;
+        }
+        this.translatableContent = translatableContent;
+    }
+
+    public Long getTrId() {
+        return trId;
+    }
+
+    public void setTrId(Long trId) {
+        this.trId = trId;
     }
 
     public String getTranslation() {
@@ -113,4 +211,48 @@ public class Translation implements Serializable {
             return item;
         }
     }
+
+    @Override
+    public Collection<WegasPermission> getRequieredCreatePermission() {
+        return this.getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredDeletePermission() {
+        return getMergeableParent().getRequieredDeletePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return getMergeableParent().getRequieredReadPermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        Collection<WegasPermission> perms = this.getMergeableParent().getRequieredUpdatePermission();
+
+        GameModel gm = this.getParentGameModel();
+
+        WegasPermission anyLangPerm = gm.getAssociatedTranslatePermission("");
+        perms.remove(anyLangPerm);
+        perms.add(gm.getAssociatedTranslatePermission(this.getLang()));
+
+        return perms;
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return translatableContent;
+    }
+
+    @Override
+    public String getRefId() {
+        return this.getMergeableParent().getRefId() + "::" + this.getLang();
+    }
+
+    @Override
+    public void setRefId(String refId) {
+        // no-op
+    }
+
 }
