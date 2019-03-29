@@ -77,7 +77,7 @@ public class Translation implements WithPermission {
 
     @JsonIgnore
     @Id
-    @WegasEntityProperty
+    @WegasEntityProperty(initOnly = true)
     private String lang;
 
     @ManyToOne
