@@ -93,6 +93,10 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @WegasEntityProperty
     private String name;
 
+    @Basic(optional = false)
+    @WegasEntityProperty(initOnly = true)
+    private Integer UIVersion;
+
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @WegasEntityProperty(includeByDefault = false)
     private List<GameModelLanguage> languages = new ArrayList<>();
@@ -341,6 +345,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @PrePersist
     public void prePersist() {
+        if (this.getUIVersion() == null) {
+            this.setUIVersion(1);
+        }
         this.setCreatedTime(new Date());
     }
 
@@ -364,6 +371,14 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Override
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getUIVersion() {
+        return UIVersion;
+    }
+
+    public void setUIVersion(Integer UIVersion) {
+        this.UIVersion = UIVersion;
     }
 
     /**
@@ -838,7 +853,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
             try {
                 Pages pagesDAO = this.jcrProvider.getPages(this);
                 pagesDAO.delete();                                              // Remove existing pages
-                // Pay Attention: this.pages != this.getPages() !
+                // Pay Attention: this.pages != this.getPages() ! 
                 // this.pages contains deserialized pages, getPages() fetchs them from the jackrabbit repository
                 for (Entry<String, JsonNode> p : this.pages.entrySet()) {       // Add all pages
                     pagesDAO.store(new Page(p.getKey(), p.getValue()));
