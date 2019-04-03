@@ -15,7 +15,9 @@
                         "last 2 Firefox versions"
                     ]
                 },
-                "exclude": ["transform-regenerator"]
+                "exclude": [
+                    "transform-regenerator"
+                ]
             }
         ]
     ],
