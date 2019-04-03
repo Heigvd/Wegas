@@ -88,6 +88,9 @@ public class Helper {
                     return (T) context.lookup("java:global/embed-classes/" + service.getSimpleName() + "!" + type.getName());
                 } catch (NamingException ex1) {
                     try {
+                        // Why cobertura here ???
+                        logger.error("Cobertura lookup for {} ! {}", service.getSimpleName(), type.getName());
+                        Helper.printWegasStackTrace(new Exception());
                         return (T) context.lookup("java:global/cobertura/" + service.getSimpleName() + "!" + type.getName());
                     } catch (NamingException ex2) {
                         logger.error("Unable to retrieve to do jndi lookup on class: {}", type.getSimpleName());

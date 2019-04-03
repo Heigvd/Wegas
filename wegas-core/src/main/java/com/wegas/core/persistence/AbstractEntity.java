@@ -10,7 +10,6 @@ package com.wegas.core.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
@@ -317,17 +316,6 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
      * @param beans facade wrapper
      */
     public void updateCacheOnDelete(Beanjection beans) {
-    }
-
-    @JsonIgnore
-    public String getJSONClassName() {
-        JsonTypeName annotation = this.getClass().getAnnotation(JsonTypeName.class);
-
-        if (annotation != null) {
-            return annotation.value();
-        } else {
-            return this.getClass().getSimpleName();
-        }
     }
 
     /**

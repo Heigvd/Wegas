@@ -9,7 +9,7 @@
     <div ng-if="!modelloading && scenario.basedOnId" class="line">{{'SCENARIST-CARD-DETAILS-MODEL' | translate}}:&nbsp;{{modelname(scenario.basedOnId)}}</div>
     <div ng-if="(scenario.comments)" class="line line--optional">{{scenario.comments}}</div>
 </div>
-<div class="card__actions">
+<div class="card__actions" ng-if="editable(scenario)">
   <a class="button button--small button--round button--default-reverse button--label-off button--settings" title="{{'SCENARIST-CARD-SETTINGS-BTN' | translate}}" ui-sref=".settings({scenarioId: scenario.id})">
     <span class="button__label">{{'SCENARIST-CARD-SETTINGS-BTN' | translate}}</span>
   </a>
@@ -30,5 +30,11 @@
   </a>
   <a class="button button--small button--round button--default button--label-off button--scenarist action--button" title="{{'SCENARIST-CARD-EDIT-BTN' | translate}}" href="{{ServiceURL}}{{scenario.uiversion > 1 ? scenario.uiversion + '/': ''}}edit.html?gameModelId={{scenario.id}}" target="_blank">
     <span class="button__label">{{'SCENARIST-CARD-EDIT-BTN' | translate}}</span>
+  </a>
+</div>
+
+<div class="card__actions" ng-if="!editable(scenario)">
+  <a class="button button--small button--round button--default button--label-off button--translate action--button" title="{{'SCENARIST-CARD-TRANSLATE-BTN' | translate}}" href="{{ServiceURL}}translate.html?gameModelId={{scenario.id}}" target="_blank">
+    <span class="button__label">{{'SCENARIST-CARD-TRANSLATE-BTN' | translate}}</span>
   </a>
 </div>

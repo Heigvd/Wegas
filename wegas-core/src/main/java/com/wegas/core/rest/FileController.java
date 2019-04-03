@@ -19,11 +19,9 @@ import com.wegas.core.jcr.content.DescriptorFactory;
 import com.wegas.core.jcr.content.FileDescriptor;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.rest.util.annotations.CacheMaxAge;
 import java.io.*;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
@@ -155,7 +153,7 @@ public class FileController {
      */
     @GET
     @Path("read{absolutePath : .*?}")
-    @CacheMaxAge(time = 48, unit = TimeUnit.HOURS)
+    //@CacheAge(time = 48, unit = TimeUnit.HOURS)
     public Response read(@PathParam("gameModelId") Long gameModelId,
             @PathParam("absolutePath") String name,
             @Context Request request,
@@ -219,7 +217,9 @@ public class FileController {
                         response.header("Content-Type", fileDescriptor.getMimeType());
                         response.header("Description", fileDescriptor.getDescription());
                     }
-                    response.lastModified(((FileDescriptor) fileDescriptor).getDataLastModified().getTime());
+                    
+                    // set a default cacheControl prevent out CacheResponseFilter to set "no-cache, no-store"
+                    response.cacheControl(new CacheControl()).lastModified(fileD.getDataLastModified().getTime());
                 }
             }
         } catch (PathNotFoundException e) {

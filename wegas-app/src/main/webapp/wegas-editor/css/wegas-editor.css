@@ -830,7 +830,8 @@
     color : lightgrey;
 }
 .wegas-translation .tools .inline-editor-major-validate .fa-toggle-on {
-    color: #F57C00;
+    /*color: #F57C00;*/
+    color:lightgrey;
 }
 
 .wegas-i18n-manager .wegas-translation:hover .tools .inline-editor-major-validate,
@@ -902,15 +903,61 @@
 
 .wegas-i18n-manager .wegas-i18n-manager--header{
     flex-shrink: 0;
+    border-bottom: 1px solid lightgray;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--title {
-    font-size: 1.4em;
+    font-size: 2em;
     flex-shrink: 0;
-    flex-grow: 0;
+    flex-grow: 1;
 }
 
-.wegas-i18n-manager .wegas-i18n-manager--toolbar,
+.wegas-i18n-manager .wegas-i18n-manager--toolbar .button.settings-button {
+    color: #bbb;
+}
+
+.wegas-i18n-manager .hide-empty--button i {
+    color: #bbb;
+}
+
+.wegas-i18n-manager .hide-empty-translation .hide-empty--button i {
+    color: #666;
+}
+
+.wegas-i18n-manager-content:not(.superuser) .wegas-translation .tools .inline-editor-major-validate,
+.wegas-i18n-manager-content:not(.superuser) .settings-button,
+.wegas-i18n-manager-content:not(.superuser) .move-up,
+.wegas-i18n-manager-content:not(.show-settings) .wegas-i18n-manager--languages .language .form,
+.wegas-i18n-manager-content .wegas-i18n-manager--languages .language.readonly .save-all-container,
+.wegas-i18n-manager-content .wegas-i18n-manager--languages .language.readonly .form,
+.wegas-i18n-manager-content:not(.show-settings) .wegas-i18n-manager--languages .language .auto-translator,
+.wegas-i18n-manager-content .wegas-i18n-manager--languages .language.readonly .wegas-language-i18n-auto,
+.wegas-i18n-manager-content:not(.show-settings) .wegas-i18n-manager--toolbar .create-button {
+    display :none;
+}
+
+.wegas-i18n-manager .show-settings .wegas-i18n-manager--toolbar .button.settings-button {
+    color: #666;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--toolbar {
+    padding-right: 20px; /* editmode: room for the x-close button*/
+}
+
+.wegas-translatemode .wegas-i18n-manager .wegas-i18n-manager--toolbar {
+    padding-right: 5px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--toolbar .button {
+    cursor: pointer;
+    color: #666;
+    padding-left: 5px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--toolbar .button .fa:before{
+    font-size: 2em;
+}
+
 .wegas-i18n-manager .wegas-i18n-manager--languages-header,
 .wegas-i18n-manager .wegas-i18n-manager--languages {
     flex-shrink: 0;
@@ -918,7 +965,13 @@
     border-bottom: 1px solid lightgray;
 }
 
-.wegas-i18n-manager .wegas-i18n-manager--languages-header label,
+.wegas-i18n-manager .wegas-i18n-manager--languages-header label{
+    font-size:1.4em;
+}
+.wegas-i18n-manager .wegas-i18n-manager--languages-header label i {
+    font-color: #bbb;
+}
+
 .wegas-i18n-manager .wegas-i18n-manager--languages label {
     width: 45px;
     display: inline-block;
@@ -952,6 +1005,13 @@
     font-size: 30px;
 }
 
+.wegas-i18n-manager .wegas-i18n-manager--languages .language .language-title {
+    font-size: 1.4em;
+    padding-right: 5px;
+    display: inline-block;
+    vertical-align: super;
+}
+
 .wegas-i18n-manager .wegas-i18n-manager--languages .language:not(.has-unsaved) .save-all-container{
     color:lightgray;
 }
@@ -962,10 +1022,6 @@
 
 .wegas-i18n-manager .wegas-i18n-manager--languages-header .wegas-text {
     padding: 0 10px;
-}
-
-.wegas-i18n-manager .create-button {
-    cursor: pointer;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--languages {
@@ -1003,6 +1059,11 @@
     margin-top: 20px;
     user-select: none;
     position: relative; /* to place the expander caret on the right */
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--editor .node-name .reveal-in-treeview {
+    color: #666;
+    cursor: pointer;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--editor .node-name .expander:after {
@@ -1109,9 +1170,6 @@
     /*padding-left: 0.5em;*/
 }
 
-.wegas-i18n-manager .hide-empty-translation .hide-empty--button i:before {
-    content: "\f046";
-}
 
 .wegas-i18n-manager .wegas-translation .tools > * {
     display: block;
@@ -1186,7 +1244,7 @@
 
 .wegas-i18n-manager input[readonly],
 .wegas-i18n-manager .wegas-readonly-translation{
-    cursor: not-allowed;
+    cursor: text;
     width: calc(100% - 11px);
     color: #888bad;
 }
@@ -1215,6 +1273,7 @@
     min-height: 28px;
     background-image: url("../images/tiny-toolbar.png");
     background-repeat: no-repeat;
+    width: 260px;
 }
 
 
@@ -1385,4 +1444,14 @@
 .wegas-advancedmode.wegas-editmode .mce-content-body p br:after {
     content : "↲";
     color: #6AACF1;
+}
+
+.wegas-gm-extractor .wegas-react-form .wegas-toolbar {
+    display: none;
+}
+
+.wegas-translatemode .wegas-filter-input button,
+.wegas-translatemode .wegas-findbugs-button,
+.wegas-translatemode .wegas-editor-treeview-content .yui3-treeview > ul > li .content-header:hover .yui3-treenode-content-extra {
+    display: none;
 }

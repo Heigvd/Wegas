@@ -17,7 +17,7 @@ angular
 
 
                 ctrl.updateInstances = function() {
-                    ScenariosModel.getScenarios("LIVE").then(function(repsonse) {
+                    ScenariosModel.getGameModelsByStatusTypeAndPermission("SCENARIO", "LIVE", "VIEW").then(function(response){
                         ctrl.instances = repsonse.data.filter(function(s) {
                             return s.basedOnId === +ctrl.modelId;
                         });
@@ -95,7 +95,7 @@ angular
             var loadScenarios = function() {
                 // Reload list from cache each time the window is opened:
                 scope.loadingScenarios = true;
-                ScenariosModel.getScenarios("LIVE").then(function(response) {
+                ScenariosModel.getGameModelsByStatusTypeAndPermission("SCENARIO", "LIVE", "EDIT").then(function(response){
                     if (!response.isErroneous()) {
                         scope.loadingScenarios = false;
                         var expression = {basedOnId: null},

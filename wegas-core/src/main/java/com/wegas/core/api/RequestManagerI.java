@@ -61,6 +61,16 @@ public interface RequestManagerI {
     boolean hasGameModelWriteRight(final GameModel gameModel);
 
     /**
+     * Check if the currentUser can translate at least one language of the gameModel
+     *
+     * @param gameModel the gameModel to check rights against
+     *
+     * @return true if the current user can translate the gameModel
+     *
+     */
+    boolean hasGameModelTranslateRight(final GameModel gameModel);
+
+    /**
      * Check if the currentUser can write the game
      *
      * @param game the game to check rights against

@@ -27,6 +27,36 @@ angular.module('wegas.models.scenarios', [])
                     return deferred.promise;
                 }
             },
+            cachePermissions = function(status, type, cacheKey) {
+                var deferred = $q.defer(),
+                    path = ServiceURL + "rest/Lobby/GameModel/permissions/" + type + "/status/" + status;
+
+                if (scenarios.cache[cacheKey]) {
+                    $http.get(path, {
+                        "headers": {
+                            "managed-mode": "true"
+                        }
+                    }).success(function(data) {
+                        if (data.updatedEntities) {
+                            scenarios.cache[cacheKey].data = data.updatedEntities[0];
+                            deferred.resolve(true);
+                        } else {
+                            scenarios.cache[cacheKey].data = [];
+                            deferred.resolve(true);
+                        }
+                    }).error(function(data) {
+                        scenarios.cache[cacheKey].data = [];
+                        deferred.resolve(true);
+                    });
+                } else {
+                    scenarios.cache[cacheKey] = {
+                        data: [],
+                        loading: false
+                    };
+                    deferred.resolve(true);
+                }
+                return deferred.promise;
+            },
             /* Cache all scenarios in a list */
             cacheScenarios = function(status, type) {
                 var deferred = $q.defer(),
@@ -92,12 +122,19 @@ angular.module('wegas.models.scenarios', [])
                     for (var cacheName in scenarios.cache) {
                         scenario = scenarios.findScenario(cacheName, scenarioId);
                         if (scenario) {
+                            var permCacheName = "perm" + ":" + scenario.type + ":" + scenario.status;
+                            var perm = scenarios.cache[permCacheName].data[scenario.id];
+
                             // remove scenario from the previous cache
                             scenarios.cache[cacheName].data = uncacheScenario(cacheName, scenario);
                             var newCacheName = cacheName.split(":")[0] + ":" + status;
                             if (scenarios.cache[newCacheName]) {
                                 // add move it to the new cache
                                 scenarios.cache[newCacheName].data = cacheScenario(newCacheName, data);
+                                permCacheName = "perm" + ":" + scenario.type + ":" + status;
+                                if (scenarios.cache[permCacheName]) {
+                                    scenarios.cache[permCacheName].data[scenario.id] = perm;
+                                }
                             }
                             break;
                         }
@@ -177,6 +214,99 @@ angular.module('wegas.models.scenarios', [])
                 }
                 return deferred.promise;
             };
+
+        model.hasAnyPermissions = function(gameModel, argPermissions, pMatrix /*optionnal*/) {
+            var permissions;
+            if (typeof argPermissions === "string") {
+                permissions = [argPermissions];
+            } else if (Array.isArray(argPermissions)) {
+                permissions = argPermissions;
+            } else {
+                return false;
+            }
+
+            if (!pMatrix) {
+                var cacheName = "perm:" + gameModel.type + ":" + gameModel.status;
+                pMatrix = scenarios.cache[cacheName] && scenarios.cache[cacheName].data;
+            }
+
+            if (pMatrix) {
+                var perms = pMatrix[gameModel.id];
+                if (perms) {
+                    return permissions.filter(function(reqPerm) {
+                        return perms.filter(function(grantedPerm) {
+                            return grantedPerm === "*" || grantedPerm.toUpperCase().indexOf(reqPerm) >= 0;
+                        }).length > 0;
+                    }).length > 0;
+                }
+            }
+
+            return false;
+        };
+
+        model.getGameModelsByStatusTypeAndPermission = function(type, status, argPermissions) {
+            var deferred = $q.defer();
+
+            model.getPermissionsMatrix(status, type).then(function(permResponse) {
+                model.getScenarios(status, type).then(function(gameModelResponse) {
+                    var gameModels = gameModelResponse.data,
+                        pMatrix = permResponse.data;
+
+                    // filter gameModel against requested permisions
+                    var filtered = gameModels.filter(function(gameModel) {
+                        return model.hasAnyPermissions(gameModel, argPermissions, pMatrix);
+                    });
+
+                    $translate('COMMONS-SCENARIOS-FIND-FLASH-SUCCESS').then(function(message) {
+                        deferred.resolve(Responses.success(message, filtered));
+                    });
+                });
+            });
+
+            return deferred.promise;
+        };
+
+        /* Ask for all scenarios in a list */
+        model.getPermissionsMatrix = function(status, type) {
+            var deferred = $q.defer(),
+                eType = type || "SCENARIO",
+                cacheName = "perm:" + eType + ":" + status;
+            Auth.getAuthenticatedUser().then(function(user) {
+                if (user) {
+                    if (scenarios.cache[cacheName]) {
+                        if (scenarios.cache[cacheName].loading) {
+                            scenarios.wait(cacheName).then(function() {
+                                $translate('COMMONS-SCENARIOS-FIND-FLASH-SUCCESS').then(function(message) {
+                                    deferred.resolve(Responses.success(message, scenarios.cache[cacheName].data));
+                                });
+                            });
+                        } else {
+                            $translate('COMMONS-SCENARIOS-FIND-FLASH-SUCCESS').then(function(message) {
+                                deferred.resolve(Responses.success(message, scenarios.cache[cacheName].data));
+                            });
+                        }
+                    } else {
+                        scenarios.cache[cacheName] = {
+                            data: null,
+                            loading: true
+                        };
+                        cachePermissions(status, eType, cacheName).then(function() {
+                            scenarios.cache[cacheName].loading = false;
+                            $translate('COMMONS-SCENARIOS-FIND-FLASH-SUCCESS').then(function(message) {
+                                deferred.resolve(Responses.success(message, scenarios.cache[cacheName].data));
+                            });
+                        });
+                    }
+                } else {
+                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function(message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
+                }
+            });
+            return deferred.promise;
+        };
+
+
 
         model.getModels = function(status) {
             return model.getScenarios(status, "MODEL");
@@ -283,7 +413,13 @@ angular.module('wegas.models.scenarios', [])
                 return function success(data) {
                     var gameModel = _.find(data.updatedEntities, {'@class': 'GameModel'});
                     if (gameModel) {
-                        cacheScenario(gameModel.type + ':LIVE', gameModel);
+                        var cacheName = gameModel.type + ':' + gameModel.status;
+                        cacheScenario(cacheName, gameModel);
+                        var pCache = scenarios.cache["perm:" + cacheName];
+                        if (pCache){
+                            // grant all right
+                            pCache.data[gameModel.id] = ["*"];
+                        }
                         $translate('COMMONS-SCENARIOS-COPY-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, gameModel));
                         });
@@ -292,7 +428,7 @@ angular.module('wegas.models.scenarios', [])
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
-                }
+                };
             }
             // other return code
             function createError(deferred) {
@@ -412,15 +548,17 @@ angular.module('wegas.models.scenarios', [])
                 return deferred.promise;
             };
 
-            model.copyScenario = function(scenarioId) {
-                var deferred = $q.defer(),
-                    url = "rest/Lobby/GameModel/" + scenarioId + "/Duplicate";
-                if (scenarioId) {
+            model.copyScenario = function(scenario) {
+                var deferred = $q.defer();
+                if (scenario) {
+                    var url = "rest/Lobby/GameModel/" + scenario.id + "/Duplicate";
                     $http.post(ServiceURL + url, null, {
                         "headers": {
                             "managed-mode": "true"
                         }
-                    }).success(createSuccess(deferred)).error(createError(deferred));
+                    })
+                        .success(createSuccess(deferred))
+                        .error(createError(deferred));
                 } else {
                     $translate('COMMONS-SCENARIOS-NO-COPY-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));

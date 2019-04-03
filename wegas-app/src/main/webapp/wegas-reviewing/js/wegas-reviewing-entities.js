@@ -439,8 +439,6 @@ YUI.add('wegas-reviewing-entities', function(Y) {
              container: {
              type: "EvaluationDescriptorContainer",
              optional: true,
-             _inputex: {
-             _type: HIDDEN
              }
              }*/
         },

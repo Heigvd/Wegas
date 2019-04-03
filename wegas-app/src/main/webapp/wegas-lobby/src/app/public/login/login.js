@@ -107,8 +107,8 @@ angular.module('public.login', [])
                                 // Pre-load sessions and scenarios into local cache to speed up display:
                                 Auth.getAuthenticatedUser().then(function(user) {
                                     if (user.isAdmin || (user.isScenarist && user.isTrainer)) {
-                                        SessionsModel.getSessions("LIVE");
                                         ScenariosModel.getScenarios("LIVE");
+                                        ScenariosModel.getGameModelsByStatusTypeAndPermission("SCENARIO", "LIVE", "EDIT");
                                     }
                                 });
                                 $state.go('wegas');

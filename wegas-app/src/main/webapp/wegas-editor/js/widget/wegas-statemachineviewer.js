@@ -556,7 +556,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 }, this));
             }
             var label, entity = this.get(ENTITY), x, y,
-                impact = Y.inputEx.WysiwygScript.formatScript(entity.get("onEnterEvent"), this.globals);
+                impact = Y.Wegas.ScriptHelper.formatScript(entity.get("onEnterEvent"), this.globals);
 
             if (entity instanceof Wegas.persistence.DialogueState) {
                 label = I18n.t(entity.get("text"));
@@ -997,8 +997,8 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         },
         updateLabel: function() {
             var entity = this.get(ENTITY),
-                condition = Y.inputEx.WysiwygScript.formatScript(entity.get("triggerCondition"), this.globals),
-                impact = Y.inputEx.WysiwygScript.formatScript(entity.get("preStateImpact"), this.globals),
+                condition = Y.Wegas.ScriptHelper.formatScript(entity.get("triggerCondition"), this.globals),
+                impact = Y.Wegas.ScriptHelper.formatScript(entity.get("preStateImpact"), this.globals),
                 label;
 
             if (entity instanceof Wegas.persistence.DialogueTransition) {

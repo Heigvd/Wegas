@@ -147,7 +147,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
             String strA = null;
             String strB = null;
 
-            if (at != null){
+            if (at != null) {
                 strA = at.getTranslation();
             }
 
@@ -161,10 +161,20 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     }
 
     private void assertTranslation(TranslatableContent a, TranslatableContent b, String language, boolean equals) {
+        Translation ta = a.getTranslation(language);
+        Translation tb = b.getTranslation(language);
         if (equals) {
-            Assert.assertEquals(a.getTranslation(language), b.getTranslation(language));
+            if (ta != null && tb != null) {
+                Assert.assertEquals(a.getTranslation(language).getTranslation(), b.getTranslation(language).getTranslation());
+            } else {
+                Assert.assertEquals(ta, tb);
+            }
         } else {
-            Assert.assertNotEquals(a.getTranslation(language).getTranslation(), b.getTranslation(language).getTranslation());
+            if (ta != null && tb != null) {
+                Assert.assertNotEquals(a.getTranslation(language).getTranslation(), b.getTranslation(language).getTranslation());
+            } else {
+                Assert.assertNotEquals(ta, tb);
+            }
         }
     }
 

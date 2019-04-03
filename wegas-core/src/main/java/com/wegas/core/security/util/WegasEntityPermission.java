@@ -18,11 +18,20 @@ public class WegasEntityPermission extends WegasPermission {
     private final Long id;
     private final Level level;
     private final EntityType type;
+    private final Object payload;
 
     public WegasEntityPermission(Long id, Level level, EntityType type) {
         this.id = id;
         this.level = level;
         this.type = type;
+        this.payload = null;
+    }
+
+    public WegasEntityPermission(Long id, Level level, EntityType type, Object payload) {
+        this.id = id;
+        this.level = level;
+        this.type = type;
+        this.payload = payload;
     }
 
     public Long getId() {
@@ -37,6 +46,10 @@ public class WegasEntityPermission extends WegasPermission {
         return level;
     }
 
+    public Object getPayload() {
+        return payload;
+    }
+
     @Override
     public String toString() {
         return getType() + "-" + getLevel() + "-" + getId();
@@ -48,6 +61,7 @@ public class WegasEntityPermission extends WegasPermission {
         hash = 29 * hash + Objects.hashCode(this.id);
         hash = 29 * hash + Objects.hashCode(this.level);
         hash = 29 * hash + Objects.hashCode(this.type);
+        hash = 29 * hash + Objects.hashCode(this.payload);
         return hash;
     }
 
@@ -72,12 +86,16 @@ public class WegasEntityPermission extends WegasPermission {
         if (this.type != other.type) {
             return false;
         }
+        if (!Objects.equals(this.payload, other.payload)){
+            return false;
+        }
         return true;
     }
 
     public static enum Level {
         READ,
-        WRITE
+        WRITE,
+        TRANSLATE
     };
 
     public static enum EntityType {

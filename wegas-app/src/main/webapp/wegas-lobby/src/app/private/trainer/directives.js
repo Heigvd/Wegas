@@ -145,7 +145,7 @@ angular.module('private.trainer.directives', [
         /*
          ** Filters ctrl.rawSessions according to the given search string and puts the result in ctrl.sessions.
          ** Hypotheses on input array ctrl.rawSessions:
-         ** 1. It contains only scenarios with attribute canView = true (and implicitly where 'gameModel' is non-null).
+         ** 1. It contains games with a non-null 'gameModel'.
          ** 2. It's already ordered according to the 'createdTime' attribute,
          **    so that the output automatically follows the same ordering.
          */
@@ -184,8 +184,7 @@ angular.module('private.trainer.directives', [
             ctrl.rawSessions = [];
             ctrl.loading = true;
             SessionsModel.getSessions("LIVE").then(function(response) {
-
-                ctrl.rawSessions = $filter('filter')(response.data, {gameModel: {canView: true}}) || [];
+                ctrl.rawSessions = response.data;
                 if (ctrl.mefirst && ctrl.username.length > 0) {
                     // Prepare a list where "my" sessions appear first (ordered by creation date, like the rest):
                     var mySessions = $filter('filter')(ctrl.rawSessions, {createdByName: ctrl.username}) || [],
@@ -326,12 +325,11 @@ angular.module('private.trainer.directives', [
                 var loadScenarios = function() {
                     if (scope.rawscenariomenu.length === 0) {
                         scope.loadingScenarios = true;
-                        ScenariosModel.getScenarios("LIVE").then(function(response) {
+
+                        ScenariosModel.getGameModelsByStatusTypeAndPermission("SCENARIO", "LIVE", "INSTANTIATE").then(function(response){
                             if (!response.isErroneous()) {
                                 scope.loadingScenarios = false;
-                                var expression = {canInstantiate: true},
-                                    filtered = $filter('filter')(response.data, expression) || [];
-                                scope.rawscenariomenu = $filter('orderBy')(filtered, 'name');
+                                scope.rawscenariomenu = $filter('orderBy')(response.data, 'name');
                                 updateDisplay(scope.rawscenariomenu);
                             }
                         });

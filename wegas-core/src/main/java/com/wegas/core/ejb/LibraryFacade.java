@@ -69,7 +69,7 @@ public class LibraryFacade {
     /**
      *
      * @param gameModelId
-     * @param name library name
+     * @param name        library name
      *
      * @return get all content from the library identified by name
      */
@@ -105,10 +105,9 @@ public class LibraryFacade {
         } else {
             throw new WegasConflictException();
         }
-
     }
 
-    public void update(Long gameModelId, String library, String key, GameModelContent content) {
+    public GameModelContent update(Long gameModelId, String library, String key, GameModelContent content) {
         List<GameModelContent> lib = this.getLibrary(gameModelId, library);
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
@@ -116,10 +115,12 @@ public class LibraryFacade {
         GameModelContent gameModelContent = gameModel.getGameModelContent(lib, key);
         if (gameModelContent != null) {
             gameModelContent.setContent(content.getContent());
+            gameModelContent.setVersion(content.getVersion());
             websocketFacade.gameModelContentUpdate(gameModelContent, requestManager.getSocketId());
         } else {
             throw WegasErrorMessage.error("Library does not exists");
         }
+        return gameModelContent;
     }
 
     public void delete(Long gameModelId, String library, String key) {

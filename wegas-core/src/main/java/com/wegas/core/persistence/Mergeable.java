@@ -8,7 +8,10 @@
 package com.wegas.core.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasNotFoundException;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 
@@ -26,6 +29,35 @@ public interface Mergeable {
     String getRefId();
 
     void setRefId(String refId);
+
+    @JsonIgnore
+    default public String getJSONClassName() {
+        JsonTypeName annotation = this.getClass().getAnnotation(JsonTypeName.class);
+
+        if (annotation != null) {
+            return annotation.value();
+        } else {
+            return this.getClass().getSimpleName();
+        }
+    }
+
+    /**
+     *
+     * @return
+     */
+    @JsonIgnore
+    default GameModel getParentGameModel() {
+        if (this instanceof GameModel) {
+            return (GameModel) this;
+        } else {
+            Mergeable p = this.getMergeableParent();
+            if (p != null) {
+                return p.getParentGameModel();
+            } else {
+                throw new WegasNotFoundException("Game model not found");
+            }
+        }
+    }
 
     @JsonIgnore
     default boolean belongsToProtectedGameModel() {

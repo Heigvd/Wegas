@@ -38,7 +38,6 @@ import java.util.Map.Entry;
 import javax.jcr.RepositoryException;
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,15 +69,6 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     private static final Logger logger = LoggerFactory.getLogger(GameModel.class);
 
     private static final long serialVersionUID = 1L;
-
-    @Transient
-    private Boolean canView = null;
-    @Transient
-    private Boolean canEdit = null;
-    @Transient
-    private Boolean canInstantiate = null;
-    @Transient
-    private Boolean canDuplicate = null;
 
     @Transient
     private Boolean onGoingPropagation = false;
@@ -361,79 +351,6 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         this.setCreatedTime(new Date());
     }
 
-    /**
-     * For serialization
-     *
-     * @return true if current user has view permission on this
-     */
-    @JsonView(Views.LobbyI.class)
-    public Boolean getCanView() {
-        if (canView != null) {
-            return canView;
-        } else {
-            Helper.printWegasStackTrace(new Exception());
-            return true; // by design, non readable gameModel will throws an exception
-        }
-    }
-
-    /**
-     * @return true if current user has edit permission on this
-     */
-    @JsonView(Views.LobbyI.class)
-    public Boolean getCanEdit() {
-        if (canEdit != null) {
-            return canEdit;
-        } else {
-            // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
-            Helper.printWegasStackTrace(new Exception());
-            return SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + this.id);
-        }
-    }
-
-    /**
-     * @return true if current user has duplicate permission on this
-     */
-    @JsonView(Views.LobbyI.class)
-    public Boolean getCanDuplicate() {
-        if (canDuplicate != null) {
-            return canDuplicate;
-        } else {
-            // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
-            Helper.printWegasStackTrace(new Exception());
-            return SecurityUtils.getSubject().isPermitted("GameModel:Duplicate:gm" + this.id);
-        }
-    }
-
-    /**
-     * @return true if current user has instantiate permission on this
-     */
-    @JsonView(Views.LobbyI.class)
-    public Boolean getCanInstantiate() {
-        if (canInstantiate != null) {
-            return canInstantiate;
-        } else {
-            // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
-            Helper.printWegasStackTrace(new Exception());
-            return SecurityUtils.getSubject().isPermitted("GameModel:Instantiate:gm" + this.id);
-        }
-    }
-
-    public void setCanView(Boolean canView) {
-        this.canView = canView;
-    }
-
-    public void setCanEdit(Boolean canEdit) {
-        this.canEdit = canEdit;
-    }
-
-    public void setCanInstantiate(Boolean canInstantiate) {
-        this.canInstantiate = canInstantiate;
-    }
-
-    public void setCanDuplicate(Boolean canDuplicate) {
-        this.canDuplicate = canDuplicate;
-    }
-
     @Override
     public Long getId() {
         return id;
@@ -467,7 +384,6 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     /**
      * @return Current GameModel's status
      */
-    @JsonIgnore
     public Status getStatus() {
         return status;
     }
@@ -477,7 +393,6 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      *
      * @param status status to set
      */
-    @JsonIgnore
     public void setStatus(Status status) {
         if (status == Status.DELETE) {
             logger.error("SET GM {} STATUS TO DELETE", this);
@@ -1227,6 +1142,15 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Override
     public WegasPermission getAssociatedWritePermission() {
         return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAMEMODEL);
+    }
+
+    /**
+     * The permission which is required to translate a specific language within the game model
+     * @param lang the language to translate. no languages means "the permission to translate at least one language no matter which one"
+     * @return
+     */
+    public WegasPermission getAssociatedTranslatePermission(String lang) {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.TRANSLATE, WegasEntityPermission.EntityType.GAMEMODEL, lang);
     }
 
     /**

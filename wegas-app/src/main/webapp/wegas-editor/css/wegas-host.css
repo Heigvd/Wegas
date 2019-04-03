@@ -17,10 +17,10 @@
 }
 
 .wegas-hastoolbar>.wegas-toolbar-sibling {
-    position: absolute;
-    top: 10px;
-    left: 0;
-    padding:62px 0 0 0;
+    /*position: absolute;*/
+    /*top: 10px;*/
+    /*left: 0;*/
+    /*padding:62px 0 0 0;*/
     overflow: auto;
     height: 100% !important;
     width:100%;
@@ -622,6 +622,10 @@
 }
 
 
+.yui3-skin-sam.wegas-hostmode .yui3-widget-ft span:first-child, .modal--content-basics .wegas-toolbar,
+.yui3-skin-sam.wegas-hostmode .yui3-widget-ft span:first-child, .wegas-sendmail-content .wegas-toolbar{
+    display:none;
+}
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-ft span:first-child, .wegas-sendmail-content .status{
     display:block;

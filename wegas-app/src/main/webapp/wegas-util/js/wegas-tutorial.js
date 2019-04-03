@@ -5,15 +5,17 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+/* global YUI */
+
 YUI.add("wegas-tutorial", function(Y) {
     "use strict";
     var PANEL_TEMPLATE = "<div class='wegas-tutorial'><div class='container'>" +
-            "<div class='wegas-tutorial-content'></div>" +
-            "<div class='wegas-tutorial-footer'>" +
-            "<span class='wegas-tutorial-counter'></span>" +
-            "<span class='wegas-tutorial-button-skip wegas-tutorial-button'>{skip}</span>" +
-            "<span class='wegas-tutorial-button-next wegas-tutorial-button'>{next}</span>" +
-            "</div></div></div>",
+        "<div class='wegas-tutorial-content'></div>" +
+        "<div class='wegas-tutorial-footer'>" +
+        "<span class='wegas-tutorial-counter'></span>" +
+        "<span class='wegas-tutorial-button-skip wegas-tutorial-button'>{skip}</span>" +
+        "<span class='wegas-tutorial-button-next wegas-tutorial-button'>{next}</span>" +
+        "</div></div></div>",
         Promise = Y.Promise,
         POSITION = {
             left: "left",
@@ -40,10 +42,13 @@ YUI.add("wegas-tutorial", function(Y) {
      */
     function tutorial(elementList, config, index) {
         var panel = Y.Node.create(Y.Lang.sub(PANEL_TEMPLATE, Y.merge({
-                skip: "Skip tutorial",
-                next: "Next"
-            }, config || {}))),
-            count = elementList.length,
+            skip: "Skip tutorial",
+            next: "Next"
+        }, config || {}))),
+            validElements = elementList.filter(function(element){
+                return getNode(element.node);
+            }),
+            count = validElements.length,
             timer,
             toDetach = [],
             overlay1 = Y.Node.create("<div class='wegas-tutorial-overlay1'></div>"), //top left
@@ -53,11 +58,11 @@ YUI.add("wegas-tutorial", function(Y) {
 
         function show() {
             timer && timer.cancel();
-            showTutorial(panel, elementList[index], index, count);
-            highlight(elementList[index], overlay1, overlay2, overlay3, overlay4);
+            showTutorial(panel, validElements[index], index, count);
+            highlight(validElements[index], overlay1, overlay2, overlay3, overlay4);
             // timer = Y.later(1000, null, function() {
-            //     showTutorial(panel, elementList[index], index, count);
-            //     highlight(elementList[index], overlay1, overlay2, overlay3, overlay4);
+            //     showTutorial(panel, validElements[index], index, count);
+            //     highlight(validElements[index], overlay1, overlay2, overlay3, overlay4);
             // }, null, true);
         }
         index = Y.Lang.isNumber(index) ? index : 0;
@@ -92,9 +97,9 @@ YUI.add("wegas-tutorial", function(Y) {
                 return -1;
             })
             .then(function(index) {
-                timer && timer.cancel()
+                timer && timer.cancel();
                 Y.Array.each(toDetach, function(handle) {
-                    handle.detach()
+                    handle.detach();
                 });
                 overlay1.remove(true);
                 overlay2.remove(true);
@@ -104,17 +109,36 @@ YUI.add("wegas-tutorial", function(Y) {
                 return index;
             });
     }
+    /**
+     * @param {string} nodeSelector css selector
+     * @returns {Node} a visible node or undefined
+     */
+    function getNode(nodeSelector) {
+        var all = Y.all(nodeSelector),
+            result;
+
+        all.some(function(node) {
+            if (node.get("region").width > 0) {
+                result = node;
+                return true;
+            }
+        });
+
+        return result;
+    }
     function showTutorial(panel, element, index, count) {
-        var node = Y.one(element.node);
-        node.scrollIntoView();
-        panel.one(".wegas-tutorial-content").setHTML(element.html);
-        if (count > 1) {
-            panel.one(".wegas-tutorial-counter").set("text", (index + 1) + "  / " + count);
+        var node = getNode(element.node);
+        if (node) {
+            node.scrollIntoView();
+            panel.one(".wegas-tutorial-content").setHTML(element.html);
+            if (count > 1) {
+                panel.one(".wegas-tutorial-counter").set("text", (index + 1) + "  / " + count);
+            }
+            if (index + 1 === count) {
+                panel.one(".wegas-tutorial-button-skip").hide();
+            }
+            Y.later(10, null, setPos, [panel, node, element.pos]);
         }
-        if (index + 1 === count) {
-            panel.one(".wegas-tutorial-button-skip").hide();
-        }
-        Y.later(10, null, setPos, [panel, node, element.pos]);
     }
     /**
      * @param Node panel the panel
@@ -132,19 +156,19 @@ YUI.add("wegas-tutorial", function(Y) {
         switch (pos[0]) {
             case POSITION.top:
                 y = region.top - panelRegion.height;
-                x = region.left + (pos[1] === POSITION.left && panelRegion.width > region.width ? region.width - panelRegion.width : 0);
+                x = region.left + (pos[1] === POSITION.left && panelRegion.width > region.width ? region.width - panelRegion.width : 0) - 8;
                 break;
             case POSITION.bottom:
-                y = region.bottom;
+                y = region.bottom + 8;
                 x = region.left + (pos[1] === POSITION.left && panelRegion.width > region.width ? region.width - panelRegion.width : 0);
                 break;
             case POSITION.left:
                 y = region.top + (pos[1] === POSITION.top && panelRegion.height > region.height ? region.height - panelRegion.height : 0);
-                x = region.left - panelRegion.width;
+                x = region.left - panelRegion.width - 8;
                 break;
             case POSITION.right:
                 y = region.top + (pos[1] === POSITION.top && panelRegion.height > region.height ? region.height - panelRegion.height : 0);
-                x = region.right
+                x = region.right + 8;
                 break;
             default:
                 Y.log("Unknown position: " + pos[0]);
@@ -180,25 +204,27 @@ YUI.add("wegas-tutorial", function(Y) {
         return [horizPos, vertPos];
     }
     function highlight(element, overlay1, overlay2, overlay3, overlay4) {
-        var node = Y.one(element.node),
-            rect = node.get("region"),
-            viewport = node.get("viewportRegion");
-        overlay1.setStyles({
-            width: Math.max(rect.left + rect.width, 0),
-            height: Math.max(rect.top, 0)
-        });
-        overlay2.setStyles({
-            width: Math.max(viewport.width - rect.right, 0),
-            height: Math.max(rect.top + rect.height, 0)
-        });
-        overlay3.setStyles({
-            width: Math.max(viewport.width - rect.left, 0),
-            height: Math.max(viewport.height - rect.bottom, 0)
-        });
-        overlay4.setStyles({
-            width: Math.max(rect.left, 0),
-            height: Math.max(viewport.height - rect.top, 0)
-        });
+        var node = getNode(element.node);
+        if (node) {
+            var rect = node.get("region"),
+                viewport = node.get("viewportRegion");
+            overlay1.setStyles({
+                width: Math.max(rect.left + rect.width, 0),
+                height: Math.max(rect.top, 0)
+            });
+            overlay2.setStyles({
+                width: Math.max(viewport.width - rect.right, 0),
+                height: Math.max(rect.top + rect.height, 0)
+            });
+            overlay3.setStyles({
+                width: Math.max(viewport.width - rect.left, 0),
+                height: Math.max(viewport.height - rect.bottom, 0)
+            });
+            overlay4.setStyles({
+                width: Math.max(rect.left, 0),
+                height: Math.max(viewport.height - rect.top, 0)
+            });
+        }
     }
 
     Y.Wegas.Tutorial = tutorial;

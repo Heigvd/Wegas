@@ -1551,6 +1551,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Duplicate this " + keywords.model.singular.en,
                             'fr': "Dupliquer ce " + keywords.model.singular.fr
                         },
+                        'MODELER-CARD-TRANSLATE-BTN': {
+                            'en': "Translate " + keywords.model.singular.en,
+                            'fr': "Traduire le " + keywords.model.singular.fr
+                        },
                         'MODELER-CARD-EDIT-BTN': {
                             'en': "Edit " + keywords.model.singular.en,
                             'fr': "Modifier le " + keywords.model.singular.fr
@@ -1689,6 +1693,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Move to archives",
                             'fr': "Déplacer vers les archives"
                         },
+                        'SCENARIST-CARD-TRANSLATE-BTN': {
+                            'en': "Translate " + keywords.scenario.singular.en,
+                            'fr': "Traduire le " + keywords.scenario.singular.fr
+                        },
                         'SCENARIST-CARD-EDIT-BTN': {
                             'en': "Edit " + keywords.scenario.singular.en,
                             'fr': "Modifier le " + keywords.scenario.singular.fr
@@ -1725,6 +1733,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Create " + keywords.session.singular.en + " from " + keywords.scenario.singular.en,
                             'fr': "Créer une " + keywords.session.singular.fr + " depuis le " +
                                 keywords.scenario.singular.fr
+                        },
+                        'SCENARIST-MODALE-USERS-TRANSLATE-CHECKBOX': {
+                            'en': "Translate ",
+                            'fr': "Traduire "
                         },
                         'SCENARIST-MODALE-USERS-REMOVE-BTN': {
                             'en': "Remove access for this user",

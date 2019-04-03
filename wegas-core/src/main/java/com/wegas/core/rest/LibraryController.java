@@ -91,13 +91,11 @@ public class LibraryController {
      */
     @PUT
     @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
-    public GameModel edit(@PathParam("gameModelId") Long gameModelId,
+    public GameModelContent edit(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key, GameModelContent script) {
 
-        libraryFacade.update(gameModelId, library, key, script);
-
-        return gameModelFacade.find(gameModelId);
+        return libraryFacade.update(gameModelId, library, key, script);
     }
 
     /**

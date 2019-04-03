@@ -107,7 +107,7 @@ angular.module('private.scenarist.directives', [
             }
             isFiltering = false;
             ctrl.updateScenarios(updateDisplay);
-        }
+        };
 
         // Updates the listing when the user has clicked on the "My scenarios first" checkbox.
         ctrl.toggleMeFirst = function() {
@@ -115,7 +115,7 @@ angular.module('private.scenarist.directives', [
             var config = localStorage.getObject("wegas-config");
             config.commons.myScenariosFirst = ctrl.mefirst;
             localStorage.setObject("wegas-config", config);
-        }
+        };
 
         ctrl.initMeFirst = function() {
             if (ctrl.user) {
@@ -131,12 +131,12 @@ angular.module('private.scenarist.directives', [
                     ctrl.setMeFirst(false, true);
                 }
             }
-        }
+        };
 
         /*
          ** Filters ctrl.rawScenarios according to the given search string and puts the result in ctrl.scenarios.
          ** Hypotheses on input array ctrl.rawScenarios :
-         ** 1. It contains only scenarios with attribute 'canEdit' = true.
+         ** 1. It contains only editable scenarios (ie EDIT or TRANSLATE permission)
          ** 2. It's already ordered according to the 'createdTime' attribute,
          **    so that the output automatically follows the same ordering.
          */
@@ -185,9 +185,10 @@ angular.module('private.scenarist.directives', [
                     ctrl.modelLoading = false;
                 });
             });
+            
+            ScenariosModel.getGameModelsByStatusTypeAndPermission("SCENARIO", "LIVE", ["EDIT", "TRANSLATE"]).then(function(gameModels){
+                ctrl.rawScenarios = gameModels.data;
 
-            ScenariosModel.getScenarios('LIVE').then(function(response) {
-                ctrl.rawScenarios = $filter('filter')(response.data, {canEdit: true}) || [];
                 if (ctrl.mefirst && ctrl.username.length > 0) {
                     // Prepare a list where "my" scenarios appear first (ordered by creation date, like the rest):
                     var myScenarios = $filter('filter')(ctrl.rawScenarios, {createdByName: ctrl.username}) || [],
@@ -237,12 +238,16 @@ angular.module('private.scenarist.directives', [
             });
         };
 
+        ctrl.hasEditPermission = function(gameModel) {
+            return ScenariosModel.hasAnyPermissions(gameModel, "EDIT");
+        };
+
         ctrl.duplicate = function(scenario) {
             if (ctrl.duplicating)
                 return;
             ctrl.duplicating = true;
             $('#dupe-' + scenario.id).addClass('busy-button');
-            ScenariosModel.copyScenario(scenario.id).then(function(response) {
+            ScenariosModel.copyScenario(scenario).then(function(response) {
                 if (response.isErroneous()) {
                     response.flash();
                 } else {
@@ -354,15 +359,13 @@ angular.module('private.scenarist.directives', [
                 var loadScenarios = function() {
                     // Reload list from cache each time the window is opened:
                     scope.loadingScenarios = true;
-                    ScenariosModel.getScenarios("LIVE").then(function(response) {
+                    ScenariosModel.getGameModelsByStatusTypeAndPermission("SCENARIO", "LIVE", "DUPLICATE").then(function(response){
                         if (!response.isErroneous()) {
-                            var expression = {canDuplicate: true},
-                                filtered = $filter('filter')(response.data, expression) || [];
-                            ScenariosModel.getModels("LIVE").then(function(response) {
+                            var filtered = response.data;
+                            ScenariosModel.getGameModelsByStatusTypeAndPermission("MODEL", "LIVE", "INSTANTIATE").then(function(response){
                                 if (!response.isErroneous()) {
                                     scope.loadingScenarios = false;
-                                    var expr = {canInstantiate: true},
-                                        filtered2 = $filter("filter")(response.data, expr) || [];
+                                    var filtered2 = response.data;
                                     scope.rawscenariomenu = $filter('orderBy')(filtered.concat(filtered2), 'name');
                                     updateDisplay(scope.rawscenariomenu);
                                 }
@@ -451,6 +454,7 @@ angular.module('private.scenarist.directives', [
                 modelloading: '=',
                 search: '=',
                 duplicate: '=',
+                editable: "=",
                 duplicating: '=',
                 user: '=',
                 username: '=',
@@ -468,6 +472,7 @@ angular.module('private.scenarist.directives', [
                 modelname: '=',
                 modelloading: '=',
                 duplicate: '=',
+                editable: "=",
                 duplicating: '=',
                 user: '=',
                 username: '='

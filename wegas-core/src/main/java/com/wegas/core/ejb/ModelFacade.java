@@ -148,7 +148,7 @@ public class ModelFacade {
     private static class ClearModel implements MergeableVisitor {
 
         @Override
-        public void visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
+        public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
             if (target instanceof ResourceInstance) {
                 ResourceInstance ri = (ResourceInstance) target;
                 ri.setActivities(new ArrayList<>());
@@ -179,6 +179,7 @@ public class ModelFacade {
                 ChoiceInstance ci = (ChoiceInstance) target;
                 ci.setReplies(new ArrayList<>());
             }
+            return true;
         }
     }
 
@@ -194,7 +195,7 @@ public class ModelFacade {
     private static class PreIntegrateScenarioClear implements MergeableVisitor {
 
         @Override
-        public void visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable references[]) {
+        public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable references[]) {
             // be sure descriptor visibility is set to PRIVATE. The correct one will be set when applying the patch.
             if (target instanceof VariableDescriptor) {
                 ((VariableDescriptor) target).setVisibility(ModelScoped.Visibility.PRIVATE);
@@ -234,6 +235,7 @@ public class ModelFacade {
                     }
                 }
             }
+            return true;
         }
     }
 

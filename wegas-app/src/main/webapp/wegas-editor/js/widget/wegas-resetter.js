@@ -27,7 +27,6 @@ YUI.add('wegas-resetter', function(Y) {
          * @function
          * @private
          * @description All button and fields are created.
-         * For creating the field inputEx libary is used
          */
         renderUI: function() {
             Y.Widget.getByNode("#centerTabView").set("selection", Y.Widget.getByNode("#centerTabView").item(1));
