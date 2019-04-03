@@ -230,108 +230,108 @@ YUI.add('wegas-helper', function(Y) {
             // Polyfill for scrollIntoViewIfNeeded(), from https://gist.github.com/jocki84
             if (!Element.prototype.scrollIntoViewIfNeeded) {
                 Element.prototype.scrollIntoViewIfNeeded = function(centerIfNeeded) {
-                    function withinBounds(value, min, max, extent) {
-                        if (max - min > extent) {
-                            if (value > min) {
-                                // current scroll too far
-                                return min;
-                            }
-                            if (value + extent < max) {
-                                // current scroll too near
-                                return max - extent;
-                            }
-                            // partially visible, don't change anything
-                            return value;
-                        } else {
-                            // enough place to show the whole area
-                            if (value > min) {
-                                // current scroll too far
-                                if (centerIfNeeded) {
-                                    // center
-                                    return (min + max - extent) / 2;
-                                }
-                                // align bottom
-                                return max - extent;
-                            }
-                            if (value + extent < max) {
-                                // current scroll too near
-                                if (centerIfNeeded) {
-                                    // center
-                                    return (min + max - extent) / 2;
-                                }
-                                // align top
-                                return min;
-                            }
+            function withinBounds(value, min, max, extent) {
+                if (max - min > extent) {
+                    if (value > min) {
+                        // current scroll too far
+                        return min;
+                    }
+                    if (value + extent < max) {
+                        // current scroll too near
+                        return max - extent;
+                    }
+                    // partially visible, don't change anything
+                    return value;
+                } else {
+                    // enough place to show the whole area
+                    if (value > min) {
+                        // current scroll too far
+                        if (centerIfNeeded) {
+                            // center
+                            return (min + max - extent) / 2;
                         }
-                        return value;
+                        // align bottom
+                        return max - extent;
                     }
-
-                    function translate(area, x, y) {
-                        return makeArea(x + area.left, y + area.top, area.width, area.height);
+                    if (value + extent < max) {
+                        // current scroll too near
+                        if (centerIfNeeded) {
+                            // center
+                            return (min + max - extent) / 2;
+                        }
+                        // align top
+                        return min;
                     }
+                }
+                return value;
+            }
 
-                    function makeArea(left, top, width, height) {
-                        return  {
-                            "left": left, "top": top, "width": width, "height": height,
-                            "right": left + width, "bottom": top + height,
-                            "relativeFromTo": function(lhs, rhs) {
-                                var newLeft = left, newTop = top;
-                                lhs = lhs.offsetParent;
-                                rhs = rhs.offsetParent;
-                                if (lhs === rhs) {
-                                    return area;
-                                }
-                                for (; lhs; lhs = lhs.offsetParent) {
-                                    newLeft += lhs.offsetLeft + lhs.clientLeft;
-                                    newTop += lhs.offsetTop + lhs.clientTop;
-                                }
-                                for (; rhs; rhs = rhs.offsetParent) {
-                                    newLeft -= rhs.offsetLeft + rhs.clientLeft;
-                                    newTop -= rhs.offsetTop + rhs.clientTop;
-                                }
-                                return makeArea(newLeft, newTop, width, height);
-                            }
-                        };
+            function translate(area, x, y) {
+                return makeArea(x + area.left, y + area.top, area.width, area.height);
+            }
+
+            function makeArea(left, top, width, height) {
+                return  {
+                    "left": left, "top": top, "width": width, "height": height,
+                    "right": left + width, "bottom": top + height,
+                    "relativeFromTo": function(lhs, rhs) {
+                        var newLeft = left, newTop = top;
+                        lhs = lhs.offsetParent;
+                        rhs = rhs.offsetParent;
+                        if (lhs === rhs) {
+                            return area;
+                        }
+                        for (; lhs; lhs = lhs.offsetParent) {
+                            newLeft += lhs.offsetLeft + lhs.clientLeft;
+                            newTop += lhs.offsetTop + lhs.clientTop;
+                        }
+                        for (; rhs; rhs = rhs.offsetParent) {
+                            newLeft -= rhs.offsetLeft + rhs.clientLeft;
+                            newTop -= rhs.offsetTop + rhs.clientTop;
+                        }
+                        return makeArea(newLeft, newTop, width, height);
                     }
+                };
+            }
 
-                    var parent, elem = this, area = makeArea(
-                        this.offsetLeft, this.offsetTop,
-                        this.offsetWidth, this.offsetHeight);
+            var parent, elem = this, area = makeArea(
+                this.offsetLeft, this.offsetTop,
+                this.offsetWidth, this.offsetHeight);
 
-                    console.log("InitialArea: " + JSON.stringify(area));
-                    while ((parent = elem.parentNode) instanceof HTMLElement) {
-                        var clientLeft = parent.offsetLeft + parent.clientLeft;
-                        var clientTop = parent.offsetTop + parent.clientTop;
+            Y.log("InitialArea: " + JSON.stringify(area));
+            while ((parent = elem.parentNode) instanceof HTMLElement) {
+                var clientLeft = parent.offsetLeft + parent.clientLeft;
+                var clientTop = parent.offsetTop + parent.clientTop;
 
-                        // Make area relative to parent's client area.
-                        area = translate(area.relativeFromTo(elem, parent),
-                            -clientLeft, -clientTop);
-                        console.log(" - TrArea: " + JSON.stringify(area));
+                // Make area relative to parent's client area.
+                area = translate(area.relativeFromTo(elem, parent),
+                    -clientLeft, -clientTop);
+                Y.log(" - TrArea: " + JSON.stringify(area));
 
-                        console.log("Parent.scroll: " + parent.scrollLeft + " : " + parent.scrollTop);
-                        parent.scrollLeft = withinBounds(
-                            parent.scrollLeft,
-                            area.left, area.right,
-                            parent.clientWidth);
+                Y.log("Parent.scroll: " + parent.scrollLeft + " : " + parent.scrollTop);
+                parent.scrollLeft = withinBounds(
+                    parent.scrollLeft,
+                    area.left, area.right,
+                    parent.clientWidth);
 
-                        parent.scrollTop = withinBounds(
-                            parent.scrollTop,
-                            area.top, area.bottom,
-                            parent.clientHeight);
+                parent.scrollTop = withinBounds(
+                    parent.scrollTop,
+                    area.top, area.bottom,
+                    parent.clientHeight);
 
-                        console.log("Parent.scroll: " + parent.scrollLeft + " : " + parent.scrollTop);
-                        console.log(" - TrAreaPre: " + JSON.stringify(area));
+                Y.log("Parent.scroll: " + parent.scrollLeft + " : " + parent.scrollTop);
+                Y.log(" - TrAreaPre: " + JSON.stringify(area));
 
-                        area.width = Math.min(area.width, parent.clientWidth);
-                        area.height = Math.min(area.height, parent.clientHeight);
-                        console.log(" - TrAreaMid: " + JSON.stringify(area));
+                area.width = Math.min(area.width, parent.clientWidth);
+                area.height = Math.min(area.height, parent.clientHeight);
+                Y.log(" - TrAreaMid: " + JSON.stringify(area));
 
-                        // Determine actual scroll amount by reading back scroll properties.
-                        area = translate(area, clientLeft - parent.scrollLeft,
-                            clientTop - parent.scrollTop);
-                        console.log(" - TrAreapost: " + JSON.stringify(area));
-                        elem = parent;
-                    }
+                // Determine actual scroll amount by reading back scroll properties.
+                area = translate(area, clientLeft - parent.scrollLeft,
+                    clientTop - parent.scrollTop);
+                Y.log(" - TrAreapost: " + JSON.stringify(area));
+                elem = parent;
+            }
                 };
             }
 

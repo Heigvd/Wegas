@@ -56,6 +56,7 @@
 .yui3-skin-sam .wegas-layout-resizable .yui3-resize-handle {
     background: #6AACF1;
     margin-top: 38px; /* Hide vertical bar in the tab bar */
+    height: calc(100% - 38px);
     width: 4px;
 }
 
