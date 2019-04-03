@@ -2,7 +2,7 @@ angular.module('public.password.directives', [])
     .directive('publicPasswordIndex', function() {
         "use strict";
         return {
-        	scope: {
+            scope: {
                 close: "&"
             },
             templateUrl: 'app/public/password/directives.tmpl/index.html',

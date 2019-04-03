@@ -109,8 +109,8 @@ gulp.task('yarn install', function () {
             'package.json': 'yarn'
         },
         yarn: ['--frozen-lockfile', '--production=false']
-    }))
-})
+    }));
+});
 gulp.task('clear', function (done) {
     "use strict";
     return cache.clearAll(done);

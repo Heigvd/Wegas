@@ -37,6 +37,7 @@
     "gulp-minify-html": "~0.1.7",
     "gulp-newer": "^1.1.0",
     "gulp-ng-annotate": "~0.5.2",
+    "gulp-print": "~5.0.2",
     "gulp-protractor": "~0.0.11",
     "gulp-rename": "^1.2.0",
     "gulp-replace": "^0.5.4",
