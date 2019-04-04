@@ -110,7 +110,7 @@ import org.slf4j.LoggerFactory;
 
     @JsonSubTypes.Type(name = "BurndownInstance", value = BurndownInstance.class)
 })
-@OptimisticLocking(cascade = true)
+@OptimisticLocking(cascade = false)
 //@Cacheable(false)
 abstract public class VariableInstance extends AbstractEntity implements Broadcastable {
 
