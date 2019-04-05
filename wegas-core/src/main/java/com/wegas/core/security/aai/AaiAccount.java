@@ -80,4 +80,8 @@ public class AaiAccount extends AbstractAccount {
         this.homeOrg = homeOrg;
     }
 
+    @Override
+    public boolean isVerified() {
+        return true;
+    }
 }

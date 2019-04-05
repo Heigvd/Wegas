@@ -25,17 +25,19 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Francois-Xavier Aeberhard (fx at red-agent.com)
+ * Realm to authentication JPAAccount when the user is requesting a new password
+ *
+ * @author Maxence
  */
-public class JpaRealm extends AuthorizingRealm {
+public class JpaTokenRealm extends AuthorizingRealm {
 
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(JpaRealm.class);
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(JpaTokenRealm.class);
 
     /**
      *
      */
-    public JpaRealm() {
-        setName("JpaRealm");                                                    //This name must match the name in the User class's getPrincipals() method
+    public JpaTokenRealm() {
+        setName("JpaRealmResetToken"); //This name must match the name in the User class's getPrincipals() method
     }
 
     @Override
@@ -46,36 +48,22 @@ public class JpaRealm extends AuthorizingRealm {
             JpaAccount account = accountFacade.findJpaByEmail(token.getUsername());
 
             String resetToken = account.getToken();
-
             if (resetToken != null) {
                 String[] tokenElemeents = resetToken.split(":");
-                Long timestamp = Long.parseLong(tokenElemeents[0], 10);
+                Long expirationDate = Long.parseLong(tokenElemeents[0], 10);
                 String theToken = tokenElemeents[1];
 
                 Long now = (new Date()).getTime();
 
-                if (now - timestamp < 1000 * 60 * 60) {// 1 hour
+                if (now < expirationDate) {
                     SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), theToken, getName());
                     info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
+                    return info;
                 }
             }
-
-            SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
-            info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
-            return info;
-
-        } catch (WegasNoResultException e) {                                         // Could not find correponding mail,
-            try {
-                JpaAccount account = accountFacade.findJpaByUsername(token.getUsername());// try with the username
-                SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
-                info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
-                return info;
-
-            } catch (WegasNoResultException ex) {
-                logger.error("Unable to find token", ex);
-                return null;
-            }
+        } catch (WegasNoResultException e) {
         }
+        return null;
     }
 
     @Override

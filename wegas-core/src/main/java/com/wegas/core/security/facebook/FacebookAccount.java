@@ -23,4 +23,9 @@ public class FacebookAccount extends AbstractAccount {
     public String getEmail() {
         return null;
     }
+
+    @Override
+    public boolean isVerified() {
+        return false;
+    }
 }

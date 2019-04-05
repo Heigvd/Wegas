@@ -363,6 +363,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Error during password generation",
                             'fr': "Erreur durant la génération du mot de passe"
                         },
+                        'COMMONS-AUTH-EMAIL-VERIFY-FLASH-SUCCESS': {
+                            'en': "A validation request has been sent by e-mail.\nWe recommend that you check your spam/junk mail folder.\n ",
+                            'fr': "Une demande de validation a été envoyée par e-mail.\nVérifiez éventuellement dans vos messages indésirables (spam).\n "
+                        },
+                        'COMMONS-AUTH-EMAIL-VERIFY-FLASH-ERROR': {
+                            'en': "Error during email validation request",
+                            'fr': "Erreur durant la requête de vérification de l'adresse e-mail"
+                        },
                         'COMMONS-AUTH-CREATE-ACCOUNT-FLASH-SUCCESS': {
                             'en': "AlbaSim - Wegas",
                             'fr': "AlbaSim - Wegas"
@@ -985,6 +993,14 @@ angular.module('wegas.service.wegasTranslations', [])
                         'PRIVATE-WS-PROFILE-BTN': {
                             'en': "Edit profile",
                             'fr': "Editer mon profil"
+                        },
+                        'PRIVATE-WS-VERIFY-TOOLTIP': {
+                            'en': "Click to verify your e-mail address",
+                            'fr': "Cliquez pour vérifier votre adresse e-mail"
+                        },
+                        'PRIVATE-WS-VERIFY-BTN': {
+                            'en': "Unverified e-mail",
+                            'fr': "e-mail non-verifié"
                         },
                         'PRIVATE-WS-UNMODIFIABLE-PROFILE-BTN': {
                             'en': "Your user profile is not modifiable",
@@ -1892,6 +1908,14 @@ angular.module('wegas.service.wegasTranslations', [])
                         'ADMIN-USERS-CARD-TITLE': {
                             'en': "User ",
                             'fr': "Utilisateur "
+                        },
+                        'ADMIN-USERS-UNVERIFIED-ID': {
+                            'en': '✘ unverified identity',
+                            'fr': '✘ identité non-vérifiée',
+                        },
+                        'ADMIN-USERS-VERIFIED-ID': {
+                            'en': '✔ verified identity',
+                            'fr': '✔ identité vérifiée',
                         },
                         'ADMIN-USERS-CARD-EDIT-BTN': {
                             'en': "Edit user",

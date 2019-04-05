@@ -987,6 +987,10 @@ public class Helper {
         return ip;
     }
 
+    public static String getPublicBaseUrl(HttpServletRequest request) {
+        return request.getRequestURL().toString().replace(request.getRequestURI(), "") + request.getContextPath();
+    }
+
     /**
      * Check if current visibility imply read only access for scenarist under given protection level.
      *
@@ -1008,4 +1012,7 @@ public class Helper {
                 || (level == ProtectionLevel.INHERITED && (visibility == Visibility.PROTECTED || visibility == Visibility.INHERITED)));
     }
 
+    public static String anonymizeEmail(String email) {
+        return email.replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2");
+    }
 }
