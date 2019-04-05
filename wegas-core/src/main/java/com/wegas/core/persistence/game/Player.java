@@ -22,7 +22,6 @@ import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
@@ -332,7 +331,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      * @return true if the user's main account is verified
      */
     @JsonProperty
-    public boolean isVerifiedId() {
+    public Boolean isVerifiedId() {
         if (this.user != null) {
             return user.getMainAccount().isVerified();
         } else {
