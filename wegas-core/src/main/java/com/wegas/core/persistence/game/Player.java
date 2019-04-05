@@ -347,7 +347,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
             AbstractAccount account = user.getMainAccount();
             if (account instanceof AaiAccount) {
                 return "AAI " + ((AaiAccount) account).getHomeOrg();
-            } else if (account.isVerified()) {
+            } else if (Boolean.TRUE == account.isVerified()) { // avoid NPE!
                 return Helper.anonymizeEmail(account.getEmail());
             }
         }
