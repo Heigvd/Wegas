@@ -14,77 +14,33 @@ interface TreeSelectProps {
   selected?: string;
   onSelect: (item: string) => void;
 }
-export class TreeSelect extends React.Component<
-  TreeSelectProps,
-  { items: Item[]; selected?: string }
-> {
-  keyHandler: HandleUpDown | null = null;
-  constructor(props: TreeSelectProps) {
-    super(props);
-    this.state = {
-      items: props.items,
-      selected: props.selected,
-    };
-    this.onSelect = this.onSelect.bind(this);
-    this.onChildChange = this.onChildChange.bind(this);
-  }
-  componentWillReceiveProps(nextProps: TreeSelectProps) {
-    let state = {};
-    if (this.props.items !== nextProps.items) {
-      state = {
-        ...state,
-        items: nextProps.items,
-      };
-    }
-    if (this.props.selected !== nextProps.selected) {
-      state = {
-        ...state,
-        selected: nextProps.selected,
-      };
-    }
-    this.setState(state);
-  }
-  onSelect(v: string) {
-    this.setState(
-      {
-        selected: v,
-      },
-      () => this.props.onSelect(this.state.selected!),
-    );
-  }
-  onChildChange(i: number) {
+
+export function TreeSelect({ items, onSelect, selected }: TreeSelectProps) {
+  const [updatedItems, setUpdatedItems] = React.useState<Item[]>([]);
+  const onChildChange = React.useCallback((i: number) => {
     return (child: Item) =>
-      this.setState({
-        items: [
-          ...this.state.items.slice(0, i),
-          child,
-          ...this.state.items.slice(i + 1, this.state.items.length),
-        ],
-      });
-  }
-  focus() {
-    if (this.keyHandler != null) {
-      this.keyHandler.focus(1);
-    }
-  }
-  render() {
-    return (
-      <HandleUpDown
-        ref={n => (this.keyHandler = n)}
-        selector={'.' + treeHeadStyle}
-      >
-        {[
-          this.state.items.map((item, index) => (
-            <TreeNode
-              key={item.value}
-              {...item}
-              selected={this.state.selected}
-              onSelect={this.onSelect}
-              onChange={this.onChildChange(index)}
-            />
-          )),
-        ]}
-      </HandleUpDown>
-    );
-  }
+      setUpdatedItems(items => [
+        ...items.slice(0, i),
+        child,
+        ...items.slice(i + 1, items.length),
+      ]);
+  }, []);
+  React.useEffect(() => {
+    setUpdatedItems(items);
+  }, [items]);
+  return (
+    <HandleUpDown selector={'.' + treeHeadStyle}>
+      {[
+        updatedItems.map((item, index) => (
+          <TreeNode
+            key={item.value}
+            {...item}
+            selected={selected}
+            onSelect={onSelect}
+            onChange={onChildChange(index)}
+          />
+        )),
+      ]}
+    </HandleUpDown>
+  );
 }
