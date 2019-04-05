@@ -60,7 +60,7 @@ export async function WindowedEditor<T>({
     />
   );
 }
-const AsyncVariableForm = asyncSFC<EditorProps<IVariableDescriptor>>(
+const AsyncVariableForm = asyncSFC<EditorProps<{ '@class': string }>>(
   WindowedEditor,
   () => <div>load...</div>,
   ({ err }) => <span>{err.message}</span>,
@@ -83,7 +83,7 @@ export default function VariableForm(props: {
             ...editing,
             entity: {
               '@class': editing['@class'],
-            } as IVariableDescriptor,
+            },
           };
         }
         if (editing.type === 'Variable') {

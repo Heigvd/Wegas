@@ -53,7 +53,7 @@ class SearchPanel extends React.Component<
         return <div>Deep search in variables</div>;
       case 'ONGOING':
         return <div>Search in progress</div>;
-      case 'USAGE':
+      case 'USAGE': {
         const variable = VariableDescriptor.select(search.value);
         return (
           <div>
@@ -61,6 +61,7 @@ class SearchPanel extends React.Component<
             {variable === undefined ? 'undefined' : editorLabel(variable)}"
           </div>
         );
+      }
       case 'GLOBAL':
         return <div>Search result "{search.value}"</div>;
     }

@@ -9,7 +9,7 @@ import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { entityIsPersisted } from '../entities';
 
 type actionFn<T extends IWegasEntity> = (entity: T, path?: string[]) => void;
-export type EditorAction<T extends IWegasEntity> = {
+export interface EditorAction<T extends IWegasEntity> {
   save?: (entity: T) => void;
   more?: {
     [id: string]: {
@@ -17,7 +17,7 @@ export type EditorAction<T extends IWegasEntity> = {
       action: actionFn<T>;
     };
   };
-};
+}
 type Edition =
   | {
       type: 'Variable';
@@ -373,7 +373,7 @@ export function searchGlobal(value: string): ThunkResult {
 export function searchUsage(
   variable: IVariableDescriptor & { id: number },
 ): ThunkResult {
-  const search = `Variable\.find(gameModel, "${variable.name}")`;
+  const search = `Variable.find(gameModel, "${variable.name}")`;
   return function(dispatch, getState) {
     dispatch(ActionCreator.SEARCH_ONGOING());
     const gameModelId = getState().global.currentGameModelId;

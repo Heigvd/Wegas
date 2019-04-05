@@ -13,10 +13,9 @@ export function createReduxContext<S extends Store>(store: S) {
   }>({
     state: store.getState(),
   });
-  interface StoreProps {}
 
   class ReduxStore extends React.Component<
-    StoreProps,
+    {},
     { state: S; unsub: () => void }
   > {
     state = {
@@ -51,12 +50,7 @@ export function createReduxContext<S extends Store>(store: S) {
   class Indirection<R> extends React.Component<{
     state: R;
     shouldUpdate: (oldValue: R, newValue: R) => boolean;
-    children: (
-      store: {
-        state: R;
-        dispatch: Dispatch;
-      },
-    ) => React.ReactNode;
+    children: (store: { state: R; dispatch: Dispatch }) => React.ReactNode;
   }> {
     static defaultProps = {
       shouldUpdate: (a: unknown, b: unknown) => !shallowIs(a, b),
@@ -65,12 +59,7 @@ export function createReduxContext<S extends Store>(store: S) {
       state: R;
       shouldUpdate: (oldValue: R, newValue: R) => boolean;
       dispatch: Dispatch;
-      children: (
-        store: {
-          state: R;
-          dispatch: Dispatch;
-        },
-      ) => React.ReactNode;
+      children: (store: { state: R; dispatch: Dispatch }) => React.ReactNode;
     }) {
       return this.props.shouldUpdate(prevProps.state, this.props.state);
     }
@@ -83,17 +72,12 @@ export function createReduxContext<S extends Store>(store: S) {
   }
 
   function ReduxConsumer<R = State>(props: {
-    selector?: ((state: State) => R);
+    selector?: (state: State) => R;
     /**
      * defaults to shallow comparing selector
      */
     shouldUpdate?: (oldValue: R, newValue: R) => boolean;
-    children: (
-      store: {
-        state: R;
-        dispatch: Dispatch;
-      },
-    ) => React.ReactNode;
+    children: (store: { state: R; dispatch: Dispatch }) => React.ReactNode;
   }) {
     const {
       selector = id as (s: State) => State,
@@ -104,11 +88,9 @@ export function createReduxContext<S extends Store>(store: S) {
       <Consumer>
         {({ state }) => {
           return (
-            <Indirection
-              state={selector(state)}
-              shouldUpdate={shouldUpdate}
-              children={children}
-            />
+            <Indirection state={selector(state)} shouldUpdate={shouldUpdate}>
+              {children}
+            </Indirection>
           );
         }}
       </Consumer>

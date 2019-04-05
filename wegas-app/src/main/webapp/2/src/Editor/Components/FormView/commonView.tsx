@@ -26,10 +26,10 @@ const LAYOUTS = {
     verticalAlign: 'top',
   }),
 };
-export type CommonView = {
+export interface CommonView {
   borderTop?: boolean;
   layout?: keyof typeof LAYOUTS;
-};
+}
 interface CommonViewProps {
   children: React.ReactNode;
   errorMessage?: string[];

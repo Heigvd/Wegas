@@ -5,8 +5,7 @@ import { CommonView } from './commonView';
 import { LabeledView } from './labeled';
 
 function noop() {}
-interface UneditableProps
-  extends WidgetProps.BaseProps<CommonView & LabeledView> {}
+type UneditableProps = WidgetProps.BaseProps<CommonView & LabeledView>;
 export default function Uneditable(props: UneditableProps) {
   const { view, value } = props;
   return (

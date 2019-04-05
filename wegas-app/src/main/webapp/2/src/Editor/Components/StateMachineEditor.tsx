@@ -590,7 +590,9 @@ class Transition extends React.Component<{
       this.connection!.setParameter('transition', this.props.transition);
       this.connection!.setParameter('transitionIndex', this.props.position);
       this.connection!.setLabel(label);
-    } catch {}
+    } catch (e) {
+      console.error(e);
+    }
   };
   componentWillUnmount() {
     if (this.connection != null) {

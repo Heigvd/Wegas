@@ -13,10 +13,11 @@ export interface GameState {
 const games: Reducer<Readonly<GameState>> = u<GameState, [StateActions]>(
   (state: GameState, action: StateActions) => {
     switch (action.type) {
-      case ActionType.MANAGED_MODE:
+      case ActionType.MANAGED_MODE: {
         const games = action.payload.updatedEntities.games;
         const deletedKeys = Object.keys(action.payload.deletedEntities.games);
         return { ...omit(state, deletedKeys), ...games };
+      }
     }
     return state;
   },
