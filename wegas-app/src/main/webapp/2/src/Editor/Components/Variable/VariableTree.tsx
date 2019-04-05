@@ -195,9 +195,9 @@ function CTree(props: {
                   ) ? (
                     <AddMenuParent variable={variable} dispatch={dispatch} />
                   ) : entityIs<IChoiceDescriptor>(
-                    variable,
-                    'ChoiceDescriptor',
-                  ) ? (
+                      variable,
+                      'ChoiceDescriptor',
+                    ) ? (
                     <AddMenuChoice variable={variable} dispatch={dispatch} />
                   ) : null}
                 </span>
@@ -215,16 +215,16 @@ function CTree(props: {
                       />
                     ))
                   : entityIs<IChoiceDescriptor>(variable, 'ChoiceDescriptor')
-                    ? variable.results.map((r, index) => (
-                        <CTree
-                          nodeProps={nodeProps}
-                          key={r.id}
-                          search={props.search}
-                          variableId={r.choiceDescriptorId}
-                          subPath={['results', String(index)]}
-                        />
-                      ))
-                    : null
+                  ? variable.results.map((r, index) => (
+                      <CTree
+                        nodeProps={nodeProps}
+                        key={r.id}
+                        search={props.search}
+                        variableId={r.choiceDescriptorId}
+                        subPath={['results', String(index)]}
+                      />
+                    ))
+                  : null
               }
             </Node>
           );

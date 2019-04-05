@@ -84,12 +84,12 @@ export class Combobox<T> extends React.Component<ComboboxProps<T>> {
                   }).map((i, index) => {
                     return (
                       <div
+                        key={index}
                         {...getItemProps({
                           className: cx({
                             [highlighted]: highlightedIndex === index,
                           }),
                           item: i,
-                          key: index,
                         })}
                       >
                         {this.props.itemToMenuItem(i)}

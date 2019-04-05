@@ -17,7 +17,7 @@ const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
     action: StateActions,
   ) {
     switch (action.type) {
-      case ActionType.MANAGED_MODE:
+      case ActionType.MANAGED_MODE: {
         const updateList = action.payload.updatedEntities.variableInstances;
         const deletedIds = Object.keys(
           action.payload.deletedEntities.variableInstances,
@@ -34,6 +34,7 @@ const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
           delete state[id];
         });
         return;
+      }
     }
   },
   {},

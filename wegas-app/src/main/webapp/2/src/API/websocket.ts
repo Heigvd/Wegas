@@ -23,8 +23,8 @@ function Uint8ArrayToStr(array: Uint8Array) {
      * LastModified: Dec 25 1999
      * This library is free.  You can redistribute it and/or modify it.
      */
-  var out, i, len, c;
-  var char2, char3;
+  let out, i, len, c;
+  let char2, char3;
 
   out = '';
   len = array.length;

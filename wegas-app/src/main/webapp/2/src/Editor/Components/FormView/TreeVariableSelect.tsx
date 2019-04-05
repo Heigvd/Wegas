@@ -161,6 +161,7 @@ export class TreeVSelect extends React.Component<
                 }
                 onChange={this.handleSearch}
                 onFocus={this.inputFocus}
+                autoComplete="off"
               />
               {this.state.searching && (
                 <div className={treeCss}>

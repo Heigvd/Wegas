@@ -14,24 +14,32 @@ const generated = [
     mark: 'italic',
     buttonIcon: 'italic',
     htmlIsMark: el => el.tagName.toLowerCase() === 'i',
-    render: ({ children }) => <i>{children}</i>,
+    render: function italic({ children }) {
+      return <i>{children}</i>;
+    },
   }),
   genMark({
     mark: 'bold',
     buttonIcon: 'bold',
     htmlIsMark: el => el.tagName.toLowerCase() === 'b',
-    render: ({ children }) => <b>{children}</b>,
+    render: function bold({ children }) {
+      return <b>{children}</b>;
+    },
   }),
   genBlock({
     block: 'paragraph',
     buttonIcon: 'paragraph',
-    render: props => <p {...props} />,
+    render: function paragraph(props) {
+      return <p {...props} />;
+    },
     htmlIsBlock: el => el.tagName.toLowerCase() === 'p',
   }),
   genBlock({
     block: 'quote',
     buttonIcon: 'quote-right',
-    render: props => <blockquote {...props} />,
+    render: function quote(props) {
+      return <blockquote {...props} />;
+    },
     htmlIsBlock: el => el.tagName.toLowerCase() === 'blockquote',
   }),
   // genBlock({

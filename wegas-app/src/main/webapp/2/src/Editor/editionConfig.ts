@@ -5,7 +5,7 @@ import { Props } from '@fortawesome/react-fontawesome';
 
 export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 
-export type MethodConfig = {
+export interface MethodConfig {
   [method: string]: {
     label: string;
     arguments: {
@@ -20,7 +20,7 @@ export type MethodConfig = {
     }[];
     returns?: 'number' | 'string' | 'boolean';
   };
-};
+}
 
 export const SELFARG = {
   type: 'identifier' as 'identifier',
