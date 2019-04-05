@@ -34,7 +34,7 @@ public class GuestJpaAccount extends AbstractAccount {
     }
 
     @Override
-    public boolean isVerified() {
+    public Boolean isVerified() {
         return false;
     }
 }

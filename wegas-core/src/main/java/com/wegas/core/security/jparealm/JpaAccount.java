@@ -131,7 +131,7 @@ public class JpaAccount extends AbstractAccount {
     }
 
     @Override
-    public boolean isVerified() {
+    public Boolean isVerified() {
         return verified;
     }
 

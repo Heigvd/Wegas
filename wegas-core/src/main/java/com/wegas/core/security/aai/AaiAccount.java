@@ -81,7 +81,7 @@ public class AaiAccount extends AbstractAccount {
     }
 
     @Override
-    public boolean isVerified() {
+    public Boolean isVerified() {
         return true;
     }
 }

@@ -320,7 +320,7 @@ public abstract class AbstractAccount extends AbstractEntity {
         this.email = email;
     }
 
-    public abstract boolean isVerified();
+    public abstract Boolean isVerified();
 
     /**
      * @return md5 address hash
