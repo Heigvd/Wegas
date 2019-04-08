@@ -5,12 +5,13 @@ import { Page } from '../selectors';
 import { compare } from 'fast-json-patch';
 import { ThunkResult } from '../store';
 import { ReplaceOperation } from 'fast-json-patch/lib/core';
+import { Reducer } from 'redux';
 
 export interface PageState {
   [id: string]: Readonly<Page>;
 }
 
-const pageState = u<PageState, [StateActions]>(
+const pageState: Reducer<Readonly<PageState>> = u(
   (state: PageState, action: StateActions) => {
     switch (action.type) {
       case ActionType.PAGE_FETCH:

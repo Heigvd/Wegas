@@ -1,4 +1,3 @@
-// import { Reducer } from 'redux';
 import u from 'immer';
 import { Actions as ACTIONS, Actions } from '..';
 import { ActionCreator, ActionType, StateActions } from '../actions';
@@ -7,6 +6,7 @@ import { ThunkResult, store } from '../store';
 import { ConfigurationSchema } from '../../Editor/editionConfig';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { entityIsPersisted } from '../entities';
+import { Reducer } from 'redux';
 
 type actionFn<T extends IWegasEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IWegasEntity> {
@@ -78,7 +78,7 @@ export interface GlobalState {
  * @param {StateActions} action
  * @returns {Readonly<GlobalState>}
  */
-const global = u<GlobalState, [StateActions]>(
+const global: Reducer<Readonly<GlobalState>> = u(
   (state: GlobalState, action: StateActions) => {
     switch (action.type) {
       case ActionType.VARIABLE_EDIT:

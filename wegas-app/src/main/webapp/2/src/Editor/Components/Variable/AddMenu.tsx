@@ -4,7 +4,7 @@ import { Actions } from '../../../data';
 import { getIcon, getLabel, getChildren } from '../../editionConfig';
 import { StoreDispatch } from '../../../data/store';
 import { Menu } from '../../../Components/Menu';
-import { FontAwesome } from '../Views/FontAwesome';
+import { FontAwesome, withDefault } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 
 function buildMenuItems(variable: IWegasEntity) {
@@ -12,13 +12,13 @@ function buildMenuItems(variable: IWegasEntity) {
     return children.map(i => {
       const Label = asyncSFC(async () => {
         const entity = { '@class': i };
-        const [icon = 'question', label = ''] = await Promise.all([
+        const [icon, label = ''] = await Promise.all([
           getIcon(entity),
           getLabel(entity),
         ]);
         return (
           <>
-            <FontAwesome icon={icon} fixedWidth />
+            <FontAwesome icon={withDefault(icon, 'question')} fixedWidth />
             {label}
           </>
         );

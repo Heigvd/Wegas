@@ -8,7 +8,7 @@ import { VariableDescriptor } from '../../data/selectors';
 import { StoreConsumer, StoreDispatch } from '../../data/store';
 import { getEntityActions, getIcon } from '../editionConfig';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
-import { FontAwesome } from './Views/FontAwesome';
+import { FontAwesome, withDefault } from './Views/FontAwesome';
 import { css } from 'emotion';
 
 interface SearchPanelProps {
@@ -82,7 +82,7 @@ class SearchPanel extends React.Component<
       }
       const Title = asyncSFC(async () => {
         const icon = await getIcon(variable!);
-        return <FontAwesome icon={icon || 'question'} fixedWidth />;
+        return <FontAwesome icon={withDefault(icon, 'question')} fixedWidth />;
       });
       return (
         <li
