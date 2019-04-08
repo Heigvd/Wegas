@@ -3,6 +3,7 @@ import Downshift, { StateChangeOptions } from 'downshift';
 import { css } from 'emotion';
 import { IconButton } from './Button/IconButton';
 import { Props } from '@fortawesome/react-fontawesome';
+import { withDefault } from '../Editor/Components/Views/FontAwesome';
 
 interface Item<T> {
   label: React.ReactNode;
@@ -78,9 +79,7 @@ export class Menu<T extends Item<T>> extends React.Component<MenuProps<T>> {
             <div className={itemStyle} onClick={() => toggleMenu()}>
               {label}
               <IconButton
-                icon={
-                  icon != null ? icon : (`caret-${direction}` as Props['icon'])
-                }
+                icon={withDefault(icon, `caret-${direction}` as Props['icon'])}
                 onClick={ev => {
                   ev.stopPropagation();
                   toggleMenu();
