@@ -53,7 +53,7 @@ export function rest(
     if (res.ok) {
       return res;
     }
-    throw Error(res.statusText);
+    throw res;
   });
 }
 export function managedModeRequest(

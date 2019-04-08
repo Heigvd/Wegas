@@ -1,4 +1,4 @@
-import { rest } from './rest';
+import { rest, managedModeRequest, ManagedMode } from './rest';
 
 // GET	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/exportRawXML
 // GET	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/exportXML
@@ -29,14 +29,6 @@ export interface ApiFile{
 export type Files = ApiFile[];
 
 const FILE_BASE = (gameModelId: number) => `GameModel/${gameModelId}/File/`;
-// async function extractPage(res: Response): Promise<Pages> {
-//   const j = await res.json();
-//   const pageHeader = res.headers.get('page')!;
-//   if (pageHeader !== '*') {
-//     return { [pageHeader]: j };
-//   }
-//   return j;
-// }
 
 export type PageIndex = Array<{
   id: string;
@@ -66,74 +58,41 @@ export const FileAPI = {
       return await res.json();
     });
   },
-
-  // POST	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/{force: (force/)?}upload{directory : .*?}
-  async createFile(gameModelId: number, name: string, path?: string, file: string = 'null') {
+    /**
+   * List all pages in a directory
+   * @param gameModelId gameModelId to fetch files from
+   * @param absolutePath file to delete
+   * @param froce allows recursive delete on directories
+   */
+// DELETE	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/{force: (force/)?}delete{absolutePath : .*?}
+async deleteFile(gameModelId: number, absolutePath: string, force?: boolean): Promise<ApiFile> {
+    return rest(FILE_BASE(gameModelId) + (force ? 'force/' : '') + 'delete' + absolutePath,{
+      method: 'DELETE',
+    })
+    .then(async (res: Response) =>{
+      return await res.json();
+    }).catch(() => {
+      if (confirm(`Are you sure you want to delete ${absolutePath} with all files and subdirectories?`)) {
+          this.deleteFile(gameModelId, absolutePath, true);
+      }
+    });
+  },
+  /**
+   * List all pages in a directory
+   * @param gameModelId gameModelId to fetch files from
+   * @param name the name of the file to upload
+   * @param path the path where to save the file (if undefined, takes root (/))
+   * @param file the file to save (keep undefined for directory)
+   */
+  async createFile(gameModelId: number, name: string, path?: string, file?: File, force: boolean = false) {
 
     const data = new FormData();
     data.append('name', name);
-    data.append('file', file);
+    data.append('file', file as Blob);
 
-    return rest(FILE_BASE(gameModelId) + 'upload' + path, {
+    return await rest(FILE_BASE(gameModelId) + (force ? 'force/' : '') + 'upload' + path, {
       method: 'POST',
       body: data,
     });
   },
-  // /**
-  //  * Get page index
-  //  * @param gameModelId
-  //  */
-  // getIndex(gameModelId: number): Promise<PageIndex> {
-  //   return rest(PAGE_BASE(gameModelId) + 'index').then(res => res.json());
-  // },
-  // /**
-  //  * set a given page or create a new one.
-  //  * @param gameModelId
-  //  * @param page
-  //  * @param id optional id. Create a new page if omitted
-  //  */
-  // setPage(gameModelId: number, page: WegasComponent, id: string = '') {
-  //   return rest(PAGE_BASE(gameModelId) + id, {
-  //     method: 'PUT',
-  //     body: JSON.stringify(page),
-  //   }).then(extractPage);
-  // },
-  // /**
-  //  * Delete a page or all page
-  //  * @param gameModelId
-  //  * @param id optional id to delete. delete all page if omitted
-  //  */
-  // deletePage(gameModelId: number, id: string = ''): Promise<PageIndex> {
-  //   return rest(PAGE_BASE(gameModelId) + id, {
-  //     method: 'DELETE',
-  //   }).then(res => res.json());
-  // },
-  // /**
-  //  * Patch given page.
-  //  * @param gameModelId
-  //  * @param patch
-  //  * @param id page to patch
-  //  */
-  // patch(gameModelId: number, patch: string, id: string) {
-  //   return rest(
-  //     PAGE_BASE(gameModelId) + id,
-  //     {
-  //       method: 'PUT',
-  //       body: patch,
-  //     },
-  //     undefined,
-  //     'text/plain',
-  //   ).then(extractPage);
-  // },
-  // /**
-  //  * Move a page to a given index
-  //  * @param gameModelId 
-  //  * @param index position to put the page to
-  //  * @param id page to move
-  //  */
-  // move(gameModelId: number, index: number, id: string): Promise<PageIndex> {
-  //   return rest(PAGE_BASE(gameModelId) + id + '/move/' + index, {
-  //     method: 'PUT',
-  //   }).then(res => res.json());
-  // },
 };
