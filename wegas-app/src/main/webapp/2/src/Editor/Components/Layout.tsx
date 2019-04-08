@@ -6,6 +6,8 @@ import Editor from './EntityEditor';
 import PageDisplay from './Page/PageDisplay';
 import { TabLayout } from '../../Components/Tabs';
 import StateMachineEditor from './StateMachineEditor';
+import FileBrowser from './FileBrowser';
+import { ApiFile } from '../../API/files.api';
 
 const layout = css({
   display: 'grid',
@@ -40,9 +42,10 @@ export default class AppLayout extends React.Component<
           <TreeView />
         </div>
         <div>
-          <TabLayout tabs={['Page', 'StateMachine']}>
+          <TabLayout tabs={['Page', 'StateMachine','File browser']}>
             <PageDisplay />
             <StateMachineEditor />
+            <FileBrowser onClick={(file:ApiFile)=>{console.log(file)}} />
           </TabLayout>
         </div>
         <div>

@@ -1,16 +1,27 @@
 import { store } from '../data/store';
 
-type ContentType = 'application/json' | 'text/plain';
+type ContentType = 'application/json' | 'text/plain' ;
 
 function COMMON_CONFIG(
-  contentType: ContentType = 'application/json',
+  contentType?: ContentType,
   managed: boolean = false,
 ): RequestInit {
   const socket_id = store.getState().global.pusherStatus.socket_id;
-  const HEADERS = new Headers({
-    'Content-Type': contentType,
-    'Managed-Mode': String(managed),
-  });
+
+  let HEADERS;
+  if(contentType){
+    HEADERS = new Headers({
+      'Content-Type': contentType,
+      'Managed-Mode': String(managed),
+    });
+  }
+  else{
+    HEADERS = new Headers({
+      'Managed-Mode': String(managed),
+    });
+  }
+
+
   if (socket_id != null) {
     HEADERS.set('SocketId', socket_id);
   }
@@ -31,7 +42,7 @@ export function rest(
   url: string,
   options: RequestInit = {},
   view?: View,
-  contentType: ContentType = 'application/json',
+  contentType?: ContentType,
 ) {
   const v = view ? `${view}/` : '';
   const u = url.startsWith('/') ? url.substr(1) : url;
