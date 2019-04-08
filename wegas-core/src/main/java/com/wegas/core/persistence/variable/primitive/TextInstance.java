@@ -16,6 +16,8 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.security.util.WegasPermission;
+import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,4 +126,13 @@ public class TextInstance extends VariableInstance {
         VariableDescriptor desc = this.findDescriptor();
         this.setTrValue(TranslatableContent.merger(this.getTrValue(), TranslatableContent.build(lang, value)));
     }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        Collection<WegasPermission> perms = super.getRequieredUpdatePermission();
+        // see issue #1441 & #1446
+        perms.add(this.getParentGameModel().getAssociatedTranslatePermission(""));
+        return perms;
+    }
+
 }

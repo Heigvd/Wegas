@@ -19,7 +19,9 @@ import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.security.util.WegasPermission;
 import java.io.IOException;
+import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.Index;
 import javax.persistence.OneToOne;
@@ -163,5 +165,13 @@ public class StringInstance extends VariableInstance {
             values[0] = strValue;
         }
         return values;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        Collection<WegasPermission> perms = super.getRequieredUpdatePermission();
+        // see issue #1441 & #1446
+        perms.add(this.getParentGameModel().getAssociatedTranslatePermission(""));
+        return perms;
     }
 }
