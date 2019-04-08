@@ -16,6 +16,7 @@
         <module>wegas-app</module>
         <module>wegas-resources</module>
         <!--<module>wegas-mcq</module>-->
+        <module>wenerator-maven-plugin</module>
     </modules>
 
     <developers>
@@ -157,6 +158,11 @@
 
     <dependencyManagement>
         <dependencies>
+        <dependency>
+            <groupId>com.wegas</groupId>
+            <artifactId>wegas-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
             <dependency>
                 <groupId>commons-collections</groupId>
                 <artifactId>commons-collections</artifactId>
@@ -560,7 +566,7 @@
                         <archive>
                             <manifest>
                                 <addClasspath>true</addClasspath>
-                                <classpathPrefix></classpathPrefix>
+                                <classpathPrefix/>
                             </manifest>
                         </archive>
                     </configuration>

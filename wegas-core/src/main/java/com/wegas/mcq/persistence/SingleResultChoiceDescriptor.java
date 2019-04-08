@@ -11,13 +11,43 @@ import javax.persistence.Entity;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.wegas.editor.Schema;
+import com.wegas.editor.JSONSchema.JSONArray;
+
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Table(name = "MCQSingleResultChoiceDescriptor")
+@Schema(property = "results", value = SingleResultChoiceDescriptor.SingleResultProp.class)
 public class SingleResultChoiceDescriptor extends ChoiceDescriptor {
+    public static class SingleResultProp extends JSONArray {
+        @Override
+        public Integer getMinItems() {
+            return 1;
+        }
+
+        @Override
+        public Integer getMaxItems() {
+            return 1;
+        }
+
+        @Override
+        public JsonNode getValue() {
+            final ObjectMapper mapper = new ObjectMapper();
+            ArrayNode arrayNode = mapper.createArrayNode();
+            ObjectNode objectNode = mapper.createObjectNode();
+            objectNode.put("@class", "Result");
+            arrayNode.add(objectNode);
+            return arrayNode;
+        }
+
+    }
 
     private static final long serialVersionUID = 1L;
 
