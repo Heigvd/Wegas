@@ -90,7 +90,10 @@ function DropPreview({
     />
   );
 }
-export const Container = DragDropContext(HTML5Backend)<React.ComponentType<ContainerProps>>(
+
+export const defaultContextManager = DragDropContext(HTML5Backend);
+
+export const Container = defaultContextManager<React.ComponentType<ContainerProps>>(
   ContextContainer,
 );
 

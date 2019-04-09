@@ -11,6 +11,7 @@ import {
   AddFileRowProps
 } from "./FileBrowserRow";
 import { DropTargetMonitor } from "react-dnd";
+import { defaultContextManager } from "../Views/TreeView";
 
 export interface FileBrowserProps {
   onClick: (file: ApiFile) => void;
@@ -177,3 +178,7 @@ export function FileBrowser(props?: FileBrowserProps) {
     </div>
   );
 }
+
+export const DndFileBrowser = defaultContextManager<React.ComponentType<FileBrowserProps>>(
+  FileBrowser,
+);
