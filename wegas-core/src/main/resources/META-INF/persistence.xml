@@ -15,6 +15,7 @@
       <property name="eclipselink.weaving" value="static"/>
       <property name="eclipselink.flush-clear.cache" value="Merge"/>
       <property name="eclipselink.cache.type.default" value="Soft"/>
+      <property name="eclipselink.session.customizer" value="com.wegas.core.persistence.variable.primitive.utils.EclipselinkCustomizer" />
       <!--
       -->
       <!--

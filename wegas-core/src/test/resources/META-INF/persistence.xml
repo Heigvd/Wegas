@@ -19,6 +19,7 @@
             <property name="eclipselink.logging.level.cache" value="WARNING"/>
             <property name="eclipselink.logging.parameters" value="false"/>
             <property name="eclipselink.cache.type.default" value="Soft"/>
+            <property name="eclipselink.session.customizer" value="com.wegas.core.persistence.variable.primitive.utils.EclipselinkCustomizer" />
         </properties>
     </persistence-unit>
 </persistence>
