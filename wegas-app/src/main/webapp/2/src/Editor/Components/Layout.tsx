@@ -6,8 +6,10 @@ import Editor from './EntityEditor';
 import PageDisplay from './Page/PageDisplay';
 import { TabLayout } from '../../Components/Tabs';
 import StateMachineEditor from './StateMachineEditor';
-import FileBrowser from './FileBrowser';
+import { FileBrowser } from './FileBrowser/FileBrowser';
 import { ApiFile } from '../../API/files.api';
+import { DragDropContextProvider } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 
 const layout = css({
   display: 'grid',
@@ -39,13 +41,15 @@ export default class AppLayout extends React.Component<
           <Header />
         </div>
         <div>
-          <TreeView />
+          {/* <TreeView /> */}
         </div>
         <div>
           <TabLayout tabs={['Page', 'StateMachine','File browser']}>
             <PageDisplay />
             <StateMachineEditor />
-            <FileBrowser onClick={(file:ApiFile)=>{console.log(file)}} />
+            <DragDropContextProvider backend={HTML5Backend}>
+              <FileBrowser onClick={(file:ApiFile)=>{console.log(file)}} />
+            </DragDropContextProvider>
           </TabLayout>
         </div>
         <div>
