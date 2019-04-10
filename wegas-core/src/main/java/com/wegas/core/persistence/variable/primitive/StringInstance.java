@@ -19,6 +19,7 @@ import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.primitive.utils.StringInstanceCustomizer;
 import com.wegas.core.security.util.WegasPermission;
 import java.io.IOException;
 import java.util.Collection;
@@ -29,9 +30,9 @@ import javax.persistence.Table;
 import jdk.nashorn.api.scripting.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.persistence.Entity;
 import java.util.List;
+import org.eclipse.persistence.annotations.Customizer;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -40,6 +41,7 @@ import java.util.List;
     @Index(columnList = "trvalue_id")
 })
 @Entity
+@Customizer(StringInstanceCustomizer.class)
 public class StringInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
@@ -165,13 +167,5 @@ public class StringInstance extends VariableInstance {
             values[0] = strValue;
         }
         return values;
-    }
-
-    @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        Collection<WegasPermission> perms = super.getRequieredUpdatePermission();
-        // see issue #1441 & #1446
-        perms.add(this.getParentGameModel().getAssociatedTranslatePermission(""));
-        return perms;
     }
 }
