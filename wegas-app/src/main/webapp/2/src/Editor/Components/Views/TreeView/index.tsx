@@ -1,19 +1,19 @@
-import * as React from 'react';
-import HTML5Backend from 'react-dnd-html5-backend';
+import * as React from "react";
+import HTML5Backend from "react-dnd-html5-backend";
 import {
   DragSource,
   DragDropContext,
   DragElementWrapper,
-  DragSourceOptions,
-} from 'react-dnd';
-import { css, cx } from 'emotion';
+  DragSourceOptions
+} from "react-dnd";
+import { css, cx } from "emotion";
 import {
   DropZone,
   TREEVIEW_ITEM_TYPE,
   ItemDescription,
-  Outcome,
-} from './DropZone';
-import { FontAwesome } from '../FontAwesome';
+  Outcome
+} from "./DropZone";
+import { FontAwesome } from "../FontAwesome";
 
 function noop() {}
 
@@ -34,7 +34,7 @@ interface ContainerProps {
   children: (passProps: { nodeProps: () => any }) => React.ReactElement<any>;
 }
 const isOverPrevStyle = css({
-  border: '1px dashed',
+  border: "1px dashed"
 });
 const DropContext = React.createContext<{
   onDropResult: (result: DropResult) => void;
@@ -43,25 +43,25 @@ const DropContext = React.createContext<{
 class ContextContainer extends React.Component<
   ContainerProps,
   {
-    context: { onDropResult: NonNullable<ContainerProps['onDropResult']> };
+    context: { onDropResult: NonNullable<ContainerProps["onDropResult"]> };
     oldProps: ContainerProps;
   }
 > {
   static getDerivedStateFromProps(
     nextProps: ContainerProps,
-    { oldProps }: { oldProps: ContainerProps },
+    { oldProps }: { oldProps: ContainerProps }
   ) {
     if (oldProps === nextProps) {
       return null;
     }
     return {
       oldProps: nextProps,
-      context: { onDropResult: nextProps.onDropResult || noop },
+      context: { onDropResult: nextProps.onDropResult || noop }
     };
   }
   state = {
     context: { onDropResult: this.props.onDropResult || noop },
-    oldProps: this.props,
+    oldProps: this.props
   };
   render() {
     const { parent } = this.props;
@@ -77,7 +77,7 @@ class ContextContainer extends React.Component<
   }
 }
 function DropPreview({
-  boundingRect,
+  boundingRect
 }: {
   boundingRect?: DOMRect | ClientRect | undefined;
 }) {
@@ -85,7 +85,7 @@ function DropPreview({
     <div
       className={isOverPrevStyle}
       style={{
-        height: boundingRect ? boundingRect.height : undefined,
+        height: boundingRect ? boundingRect.height : undefined
       }}
     />
   );
@@ -93,9 +93,9 @@ function DropPreview({
 
 export const defaultContextManager = DragDropContext(HTML5Backend);
 
-export const Container = defaultContextManager<React.ComponentType<ContainerProps>>(
-  ContextContainer,
-);
+export const Container = defaultContextManager<
+  React.ComponentType<ContainerProps>
+>(ContextContainer);
 
 interface NodeProps {
   id: {};
@@ -108,21 +108,21 @@ interface NodeProps {
   children: (passProps: { nodeProps: () => any }) => React.ReactChild[] | null;
 }
 const childrenContainer = css({
-  marginLeft: '2em',
-  ':empty:after': {
+  marginLeft: "2em",
+  ":empty:after": {
     content: '"empty"',
     opacity: 0.5,
-    fontStyle: 'italic',
-  },
+    fontStyle: "italic"
+  }
 });
 const toggle = css({
-  padding: '0 0.3em',
-  width: '1em',
-  display: 'inline-block',
-  cursor: 'pointer',
+  padding: "0 0.3em",
+  width: "1em",
+  display: "inline-block",
+  cursor: "pointer"
 });
 const isDraggingStyle = css({
-  display: 'none',
+  display: "none"
 });
 
 interface ConnectedNodeProps extends NodeProps {
@@ -138,13 +138,13 @@ class TreeNode extends React.Component<
   constructor(props: ConnectedNodeProps) {
     super(props);
     this.state = {
-      expanded: Boolean(props.expanded),
+      expanded: Boolean(props.expanded)
     };
     this.toggleExpand = this.toggleExpand.bind(this);
   }
   toggleExpand() {
     this.setState({
-      expanded: !this.state.expanded,
+      expanded: !this.state.expanded
     });
   }
   render(): JSX.Element {
@@ -154,7 +154,7 @@ class TreeNode extends React.Component<
       id,
       parent,
       index,
-      header,
+      header
     } = this.props;
     const { expanded } = this.state;
     const children = this.props.children({
@@ -163,55 +163,52 @@ class TreeNode extends React.Component<
         return function nodeProps() {
           return { index: index++, parent: id };
         };
-      })(),
+      })()
     });
     const isNode = Array.isArray(children);
-    const cont = isNode &&
-      expanded && (
-        <DropZone id={id} where="INSIDE" index={0}>
-          {({ isOver, boundingRect }) => (
-            <div className={childrenContainer}>
-              {isOver && <DropPreview boundingRect={boundingRect} />}
-              {children}
-            </div>
-          )}
-        </DropZone>
-      );
+    const cont = isNode && expanded && (
+      <DropZone id={id} where="INSIDE" index={0}>
+        {({ isOver, boundingRect }) => (
+          <div className={childrenContainer}>
+            {isOver && <DropPreview boundingRect={boundingRect} />}
+            {children}
+          </div>
+        )}
+      </DropZone>
+    );
     return connectDragSource(
       <div
         ref={n => (this.root = n)}
         className={cx({
-          [isDraggingStyle]: isDragging,
+          [isDraggingStyle]: isDragging
         })}
       >
-        <DropZone id={parent} index={index!} where={'AUTO'}>
+        <DropZone id={parent} index={index!} where={"AUTO"}>
           {({ isOver, boundingRect, where, separator }) => (
             <div>
-              {isOver &&
-                where === 'BEFORE' && (
-                  <DropPreview boundingRect={boundingRect} />
-                )}
+              {isOver && where === "BEFORE" && (
+                <DropPreview boundingRect={boundingRect} />
+              )}
               {separator(
                 <div>
                   <span className={toggle} onClick={this.toggleExpand}>
                     {isNode && (
                       <FontAwesome
-                        icon={expanded ? 'caret-down' : 'caret-right'}
+                        icon={expanded ? "caret-down" : "caret-right"}
                       />
                     )}
                   </span>
                   {header}
-                </div>,
+                </div>
               )}
               {cont}
-              {isOver &&
-                where === 'AFTER' && (
-                  <DropPreview boundingRect={boundingRect} />
-                )}
+              {isOver && where === "AFTER" && (
+                <DropPreview boundingRect={boundingRect} />
+              )}
             </div>
           )}
         </DropZone>
-      </div>,
+      </div>
     );
   }
 }
@@ -226,7 +223,7 @@ const DSNode = DragSource<
         id: props.id,
         index: props.index!,
         parent: props.parent,
-        boundingRect: component.root!.getBoundingClientRect(),
+        boundingRect: component.root!.getBoundingClientRect()
       };
     },
     endDrag(props, monitor) {
@@ -236,20 +233,20 @@ const DSNode = DragSource<
           id: props.id,
           source: {
             parent: props.parent,
-            index: props.index!,
+            index: props.index!
           },
-          target: outcome,
+          target: outcome
         };
         props.onDropResult(result);
       }
-    },
+    }
   },
   function(connect, monitor) {
     return {
       connectDragSource: connect.dragSource(),
-      isDragging: monitor.isDragging(),
+      isDragging: monitor.isDragging()
     };
-  },
+  }
 )(TreeNode);
 
 export function Node(props: NodeProps) {

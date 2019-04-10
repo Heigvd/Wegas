@@ -1,5 +1,4 @@
 import { css } from "emotion";
-import { ApiFile, FileAPI } from "../../../API/files.api";
 import {
   DropTargetMonitor,
   ConnectDropTarget,
@@ -9,6 +8,8 @@ import {
 import * as React from "react";
 import { GameModel } from "../../../data/selectors";
 import { FontAwesome } from "../Views/FontAwesome";
+import { FileAPI } from "../../../API/files.api";
+import { IFile } from "../../../../types/IFile";
 
 const dndHover = css({
   borderWidth: "1pt",
@@ -47,9 +48,9 @@ interface DndTargetProps {
 }
 
 interface FileRowProps {
-  file: ApiFile;
-  onClick: (file: ApiFile) => void;
-  onSelect: (file: ApiFile, toggle: boolean) => void;
+  file: IFile;
+  onClick: (file: IFile) => void;
+  onSelect: (file: IFile, toggle: boolean) => void;
   callRefresh: () => void;
   selected: boolean;
 }
@@ -78,7 +79,7 @@ function FileRow(props: FileRowProps) {
   const watch = (e: React.MouseEvent) => {
     e.stopPropagation();
     const win = window.open(
-      `/Wegas/rest/GameModel/${
+      API_ENDPOINT + `GameModel/${
         GameModel.selectCurrent().id
       }/File/read${absoluteFileName}`,
       "_blank"
@@ -89,7 +90,7 @@ function FileRow(props: FileRowProps) {
   const del = (e: React.MouseEvent) => {
     e.stopPropagation();
     FileAPI.deleteFile(GameModel.selectCurrent().id!, absoluteFileName)
-      .then((res: ApiFile) => {
+      .then((res: IFile) => {
         console.log(res);
       })
       .then(() => {

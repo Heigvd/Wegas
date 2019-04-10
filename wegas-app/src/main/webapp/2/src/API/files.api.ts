@@ -1,4 +1,5 @@
 import { rest, managedModeRequest, ManagedMode } from './rest';
+import { IFiles, IFile } from '../../types/IFile';
 
 // GET	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/exportRawXML
 // GET	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/exportXML
@@ -13,21 +14,6 @@ import { rest, managedModeRequest, ManagedMode } from './rest';
 // DELETE	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/destruct
 
 
-
-export interface ApiFile{
-  bytes: number
-  description: string
-  directory: boolean
-  mimeType: string
-  name: string
-  note: string
-  path: string
-  refId: string
-  visibility: string
-}
-
-export type Files = ApiFile[];
-
 const FILE_BASE = (gameModelId: number) => `GameModel/${gameModelId}/File/`;
 
 export type PageIndex = Array<{
@@ -38,7 +24,7 @@ export type PageIndex = Array<{
 
 export const FileAPI = {
   /**
-   * Get all files as raw XML
+   * Get all IFiles as raw XML
    * @param gameModelId gameModels'id
    */
   async getFilesAsRawXML(gameModelId: number): Promise<String> {
@@ -49,10 +35,10 @@ export const FileAPI = {
   },
   /**
    * List all pages in a directory
-   * @param gameModelId gameModelId to fetch files from
-   * @param absoluteDirectoryPath optional directory from where to list files, will return the content of root directory if not set
+   * @param gameModelId gameModelId to fetch IFiles from
+   * @param absoluteDirectoryPath optional directory from where to list IFiles, will return the content of root directory if not set
    */
-  async getFileList(gameModelId: number, absoluteDirectoryPath: string = ''): Promise<Files> {
+  async getFileList(gameModelId: number, absoluteDirectoryPath: string = ''): Promise<IFiles> {
     return rest(FILE_BASE(gameModelId) + 'list' + absoluteDirectoryPath)
     .then(async (res: Response) =>{
       return await res.json();
@@ -60,26 +46,26 @@ export const FileAPI = {
   },
     /**
    * List all pages in a directory
-   * @param gameModelId gameModelId to fetch files from
+   * @param gameModelId gameModelId to fetch IFiles from
    * @param absolutePath file to delete
    * @param froce allows recursive delete on directories
    */
 // DELETE	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/{force: (force/)?}delete{absolutePath : .*?}
-async deleteFile(gameModelId: number, absolutePath: string, force?: boolean): Promise<ApiFile> {
+async deleteFile(gameModelId: number, absolutePath: string, force?: boolean): Promise<IFile> {
     return rest(FILE_BASE(gameModelId) + (force ? 'force/' : '') + 'delete' + absolutePath,{
       method: 'DELETE',
     })
     .then(async (res: Response) =>{
       return await res.json();
     }).catch(() => {
-      if (confirm(`Are you sure you want to delete ${absolutePath} with all files and subdirectories?`)) {
+      if (confirm(`Are you sure you want to delete ${absolutePath} with all IFiles and subdirectories?`)) {
           this.deleteFile(gameModelId, absolutePath, true);
       }
     });
   },
   /**
    * List all pages in a directory
-   * @param gameModelId gameModelId to fetch files from
+   * @param gameModelId gameModelId to fetch IFiles from
    * @param name the name of the file to upload
    * @param path the path where to save the file (if undefined, takes root (/))
    * @param file the file to save (keep undefined for directory)

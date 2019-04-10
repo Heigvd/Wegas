@@ -38,7 +38,9 @@ export default class AppLayout extends React.Component<
         <div className={fullWidth}>
           <Header />
         </div>
-        <div><TreeView /></div>
+        <div>
+          <TreeView />
+        </div>
         <div>
           <TabLayout tabs={["Page", "StateMachine", "File browser"]}>
             <PageDisplay />

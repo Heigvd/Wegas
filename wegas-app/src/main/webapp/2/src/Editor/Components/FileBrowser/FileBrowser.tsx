@@ -1,5 +1,5 @@
 import * as React from "react";
-import { FileAPI, Files, ApiFile } from "../../../API/files.api";
+import { FileAPI } from "../../../API/files.api";
 import { GameModel } from "../../../data/selectors";
 import { NativeTypes } from "react-dnd-html5-backend";
 import {
@@ -8,30 +8,30 @@ import {
   DropTargetAddFileRow,
   DndFileRowProps,
   DndAddFileRowProps,
-  AddFileRowProps
 } from "./FileBrowserRow";
 import { DropTargetMonitor } from "react-dnd";
 import { defaultContextManager } from "../Views/TreeView";
+import { IFile, IFiles } from "../../../../types/IFile";
 
 export interface FileBrowserProps {
-  onClick: (file: ApiFile) => void;
+  onClick: (file: IFile) => void;
 }
 
 export function FileBrowser(props?: FileBrowserProps) {
   const [currentPath, setCurrentPath] = React.useState("/");
-  const [files, setFiles] = React.useState(new Array());
+  const [IFiles, setFiles] = React.useState(new Array());
   const [selectedFiles, setSelectedFiles] = React.useState(new Array<string>());
   const [refreshToggle, setRefreshToggle] = React.useState(false);
 
-  const generateGoodPath = (file: ApiFile) => {
+  const generateGoodPath = (file: IFile) => {
     return file.path.replace(/(\/)$/, "") + "/" + file.name;
   };
 
-  const onSelect = (file: ApiFile, selected: boolean) => {
+  const onSelect = (file: IFile, selected: boolean) => {
     const key: string = file.path + file.name;
     const index: number = selectedFiles.indexOf(key);
     if (selected) {
-      setSelectedFiles([...selectedFiles, key]);
+      setSelectedFiles((selectedFiles)=>[...selectedFiles, key]);
     } else {
       const newSF = [...selectedFiles];
       newSF.splice(index, 1);
@@ -39,7 +39,7 @@ export function FileBrowser(props?: FileBrowserProps) {
     }
   };
 
-  const onClick = (file: ApiFile) => {
+  const onClick = (file: IFile) => {
     if (props) {
       props.onClick(file);
     }
@@ -56,7 +56,8 @@ export function FileBrowser(props?: FileBrowserProps) {
 
   const refreshFileList = () => {
     FileAPI.getFileList(GameModel.selectCurrent().id!, currentPath).then(
-      (res: Files) => {
+      (res: IFiles) => {
+        console.log(res);
         setFiles(res);
       }
     );
@@ -83,13 +84,13 @@ export function FileBrowser(props?: FileBrowserProps) {
     document.getElementById("newfile-upload")!.click();
   };
 
-  const uploadFiles = (files: FileList, path: string = currentPath) => {
-    for (let i = 0; i < files.length; i += 1) {
+  const uploadFiles = (IFiles: FileList, path: string = currentPath) => {
+    for (let i = 0; i < IFiles.length; i += 1) {
       FileAPI.createFile(
         GameModel.selectCurrent().id!,
-        files[i].name,
+        IFiles[i].name,
         path,
-        files[i]
+        IFiles[i]
       ).then(() => {
         refresh();
       });
@@ -97,8 +98,8 @@ export function FileBrowser(props?: FileBrowserProps) {
   };
 
   const uploadFilesFromEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files !== null) {
-      uploadFiles(event.target.files);
+    if (event.target.IFiles !== null) {
+      uploadFiles(event.target.IFiles);
     }
   };
 
@@ -116,10 +117,10 @@ export function FileBrowser(props?: FileBrowserProps) {
   ) => {
     if (monitor) {
       if (item.file && item.file.directory) {
-        uploadFiles(monitor.getItem().files, generateGoodPath(item.file));
+        uploadFiles(monitor.getItem().IFiles, generateGoodPath(item.file));
         onClick(item.file);
       } else {
-        uploadFiles(monitor.getItem().files);
+        uploadFiles(monitor.getItem().IFiles);
       }
     }
   };
@@ -128,7 +129,7 @@ export function FileBrowser(props?: FileBrowserProps) {
     monitor: DropTargetMonitor
   ) => {
     if (monitor) {
-      uploadFiles(monitor.getItem().files);
+      uploadFiles(monitor.getItem().IFiles);
     }
   };
   // Drag and drop management
@@ -157,7 +158,7 @@ export function FileBrowser(props?: FileBrowserProps) {
               onClick={clickNewFile}
             />
           }
-          {files.map((file: ApiFile) => {
+          {IFiles.map((file: IFile) => {
             const selected =
               selectedFiles.indexOf(file.path + file.name) !== -1;
             return (
@@ -179,6 +180,6 @@ export function FileBrowser(props?: FileBrowserProps) {
   );
 }
 
-export const DndFileBrowser = defaultContextManager<React.ComponentType<FileBrowserProps>>(
-  FileBrowser,
-);
+export const DndFileBrowser = defaultContextManager<
+  React.ComponentType<FileBrowserProps>
+>(FileBrowser);
