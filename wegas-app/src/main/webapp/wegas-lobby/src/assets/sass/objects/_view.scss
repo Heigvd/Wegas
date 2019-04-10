@@ -682,6 +682,51 @@
         text-align: right;
     }
 
+    .view__public-lang {
+        position: relative;
+        max-width: 380px;
+        margin: 0 auto;
+        text-align: right;
+        margin-top: -48px;
+
+        .action {
+            height: 48px;
+            .button {
+                margin: 0;
+            }
+        }
+
+        li {
+            float: right;
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+        .subactions {
+            display: none;
+            position: absolute;
+            top: 46px;
+            right: 0;
+            width: 120px;
+            padding: 0;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,.5);
+            z-index: 100;
+
+            &.subactions--show {
+                display: block;
+            }
+        }
+        .subaction .button {
+            width: 100%;
+            padding: 0 12px;
+            height: 32px;
+            line-height: 32px;
+            margin: 0;
+        }
+    }
+
     .view__login-form {
         margin: auto;
         width: 100%;

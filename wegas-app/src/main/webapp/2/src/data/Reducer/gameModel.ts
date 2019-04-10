@@ -9,10 +9,7 @@ export interface GameModelState {
 /**
  * Reducer for GameModels
  */
-const gameModels: Reducer<Readonly<GameModelState>> = u<
-  GameModelState,
-  [StateActions]
->(
+const gameModels: Reducer<Readonly<GameModelState>> = u(
   (state: GameModelState, action: StateActions) => {
     switch (action.type) {
       case ActionType.MANAGED_MODE: {

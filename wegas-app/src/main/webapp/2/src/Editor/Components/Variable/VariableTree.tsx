@@ -13,7 +13,7 @@ import { State } from '../../../data/Reducer/reducers';
 import { css, cx } from 'emotion';
 import { shallowIs } from '../../../Helper/shallowIs';
 import { Menu } from '../../../Components/Menu';
-import { FontAwesome } from '../Views/FontAwesome';
+import { FontAwesome, withDefault } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { AddMenuParent, AddMenuChoice } from './AddMenu';
 import { editorLabel } from '../../../data/methods/VariableDescriptor';
@@ -22,13 +22,13 @@ import { SearchTool } from '../SearchTool';
 const items = children.map(i => {
   const Label = asyncSFC(async () => {
     const entity = { '@class': i };
-    const [icon = 'question', label = ''] = await Promise.all([
+    const [icon, label = ''] = await Promise.all([
       getIcon(entity),
       getLabel(entity),
     ]);
     return (
       <>
-        <FontAwesome icon={icon} fixedWidth />
+        <FontAwesome icon={withDefault(icon, 'question')} fixedWidth />
         {label}
       </>
     );
@@ -164,7 +164,9 @@ function CTree(props: {
         if (variable) {
           const Title = asyncSFC(async () => {
             const icon = await getIcon(variable!);
-            return <FontAwesome icon={icon || 'question'} fixedWidth />;
+            return (
+              <FontAwesome icon={withDefault(icon, 'question')} fixedWidth />
+            );
           });
           if (!state.match) {
             return null;
