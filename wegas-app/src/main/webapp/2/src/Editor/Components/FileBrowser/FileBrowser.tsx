@@ -8,10 +8,12 @@ import {
   DropTargetAddFileRow,
   DndFileRowProps,
   DndAddFileRowProps,
+  getAbsoluteFileName,
 } from './FileBrowserRow';
 import { DropTargetMonitor } from 'react-dnd';
 import { IFile, IFiles } from '../../../../types/IFile';
 import { defaultContextManager } from '../../../Components/DragAndDrop';
+import { FontAwesome } from '../Views/FontAwesome';
 
 export interface FileBrowserProps {
   getSelectedPaths?: (files: string[]) => void;
@@ -44,7 +46,18 @@ export function FileBrowser(props: FileBrowserProps) {
 
   const onClick = (file: IFile) => {
     if (file.directory) {
+      // Open directory
       setCurrentPath(generateGoodPath(file));
+    } else {
+      // Open file content in a new tab
+      const win = window.open(
+        API_ENDPOINT +
+          `GameModel/${
+            GameModel.selectCurrent().id
+          }/File/read${getAbsoluteFileName(file)}`,
+        '_blank',
+      );
+      win!.focus();
     }
   };
 
@@ -140,8 +153,14 @@ export function FileBrowser(props: FileBrowserProps) {
   return (
     <div>
       <h2>{currentPath}</h2>
-      {currentPath !== '/' && <button onClick={onBack}>Back</button>}
-      <button onClick={addNewDirectory}>New directory</button>
+      {currentPath !== '/' && (
+        <button onClick={onBack}>
+          <FontAwesome icon="arrow-left" />
+        </button>
+      )}
+      <button onClick={addNewDirectory}>
+        <FontAwesome icon="folder-plus" />
+      </button>
       {/* <button onClick={clickNewFile}>Upload file(s)</button> */}
       <input
         id="newfile-upload"
