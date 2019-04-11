@@ -1,4 +1,4 @@
-export interface IFile {
+interface IFile {
   bytes: number;
   description: string;
   directory: boolean;
@@ -7,7 +7,5 @@ export interface IFile {
   note: string;
   path: string;
   refId: string;
-  visibility: string;
+  visibility: ModelVisibility;
 }
-
-export type IFiles = IFile[];

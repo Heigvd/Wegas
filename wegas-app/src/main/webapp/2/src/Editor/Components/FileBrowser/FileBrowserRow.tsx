@@ -9,25 +9,30 @@ import * as React from 'react';
 import { GameModel } from '../../../data/selectors';
 import { FontAwesome } from '../Views/FontAwesome';
 import { FileAPI } from '../../../API/files.api';
-import { IFile } from '../../../../types/IFile';
-import { NoEmitOnErrorsPlugin } from 'webpack';
+import { themeVar } from '../../../Components/Theme';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 
 const dndHover = css({
-  borderWidth: '1pt',
-  borderStyle: 'Solid',
-  borderColor: 'blue',
-  backgroundColor: 'lightblue',
+  color: themeVar.primaryLighterColor,
+  backgroundColor: themeVar.primaryLighterColor,
+});
+
+const uploadingStyle = css({
+  backgroundColor: themeVar.successColor,
 });
 
 const rowCell = css({
+  color: themeVar.primaryLighterColor,
+  borderColor: 'black',
   borderWidth: '1pt',
   borderStyle: 'Solid',
 });
 
 const uploadCell = css({
+  color: themeVar.primaryLighterColor,
   borderWidth: '2pt',
   borderStyle: 'Dashed',
-  borderColor: 'blue',
+  borderColor: themeVar.primaryLighterColor,
   textAlign: 'center',
 });
 
@@ -47,15 +52,20 @@ interface DndTargetProps {
 
 interface FileRowProps {
   file: IFile;
-  onSelect: (file: IFile, toggle: boolean) => void;
+  onSelect: (file: IFile, toggle?: boolean) => void;
+  onOpen: (file: IFile) => void;
   callRefresh: () => void;
-  selected: boolean;
+  selected?: boolean;
 }
+
 export interface DndFileRowProps extends FileRowProps, DndTargetProps {
-  onClick: (file: IFile) => void;
   onDrop: (props: DndFileRowProps, monitor: DropTargetMonitor) => void;
 }
 interface DndTargetFileRowProps extends DndFileRowProps, DndProps {}
+
+interface AddFileRowProps {
+  isUploading: boolean;
+}
 
 export interface DndAddFileRowProps extends AddFileRowProps, DndTargetProps {
   onClick: (event: React.MouseEvent) => void;
@@ -63,6 +73,20 @@ export interface DndAddFileRowProps extends AddFileRowProps, DndTargetProps {
 }
 
 interface DndTargetAddFileRowProps extends DndAddFileRowProps, DndProps {}
+
+const getIconForFileType = (fileType: string): IconProp => {
+  if (fileType.indexOf('directory') !== -1) {
+    return 'folder';
+  } else if (fileType.indexOf('audio/') !== -1) {
+    return 'file-audio';
+  } else if (fileType.indexOf('video/') !== -1) {
+    return 'file-video';
+  } else if (fileType.indexOf('image/') !== -1) {
+    return 'file-image';
+  } else {
+    return 'file';
+  }
+};
 
 export const getAbsoluteFileName = (file: IFile) => {
   let filePath = file.path;
@@ -74,25 +98,14 @@ export const getAbsoluteFileName = (file: IFile) => {
 };
 
 const FileRow = (props: FileRowProps) => {
-  const [selected, setSelected] = React.useState(props.selected);
-  const select = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSelected(!selected);
-    props.onSelect(props.file, !selected);
-  };
-
   const del = (e: React.MouseEvent) => {
     e.stopPropagation();
     FileAPI.deleteFile(
       GameModel.selectCurrent().id!,
       getAbsoluteFileName(props.file),
-    )
-      // .then((res: IFile) => {
-      //   console.log(res);
-      // })
-      .then(() => {
-        props.callRefresh();
-      });
+    ).then(() => {
+      props.callRefresh();
+    });
   };
 
   // https://stackoverflow.com/questions/8595389/programmatically-trigger-select-file-dialog-box
@@ -116,39 +129,37 @@ const FileRow = (props: FileRowProps) => {
     }
   };
 
-  React.useEffect(() => {
-    setSelected(props.selected);
-  }, [props]);
-
   return (
     <>
-      <td className={rowCell} onClick={select}>
-        <FontAwesome icon={selected ? 'check-square' : 'square'} />
-      </td>
       <td className={rowCell}>
-        <FontAwesome icon={props.file.directory ? 'folder' : 'file'} />
+        <FontAwesome icon={getIconForFileType(props.file.mimeType)} />
       </td>
       <td className={rowCell}>{props.file.name}</td>
-      <td className={rowCell}>{props.file.bytes}</td>
-      <td className={rowCell}>{props.file.mimeType}</td>
-      <td className={rowCell} onClick={del}>
-        <FontAwesome icon="trash" />
-      </td>
-      {!props.file.directory && (
-        <td className={rowCell} onClick={clickEdit}>
-          <FontAwesome icon="edit" />
-          <input
-            type="file"
-            onChange={edit}
-            className={hiddenFileBrowserStyle}
-          />
-        </td>
-      )}
-      {/* {!props.file.directory && (
-        <td className={rowCell} onClick={watch}>
+      {/* {showFields.size && <td className={rowCell}>{props.file.bytes}</td>}
+      {showFields.type && <td className={rowCell}>{props.file.mimeType}</td>} */}
+      <td className={rowCell}>
+        <span
+          onClick={(event: React.MouseEvent) => {
+            event.stopPropagation();
+            props.onOpen(props.file);
+          }}
+        >
           <FontAwesome icon="search" />
-        </td>
-      )} */}
+        </span>
+        {!props.file.directory && (
+          <span onClick={clickEdit}>
+            <FontAwesome icon="edit" />
+            <input
+              type="file"
+              onChange={edit}
+              className={hiddenFileBrowserStyle}
+            />
+          </span>
+        )}
+        <span onClick={del}>
+          <FontAwesome icon="trash" />
+        </span>
+      </td>
     </>
   );
 };
@@ -157,17 +168,22 @@ const DndFileRow: React.FC<DndTargetFileRowProps> = (
   props: DndTargetFileRowProps,
 ) => {
   const isActive: boolean = props.canDrop && props.isOver;
+  const [selected, setSelected] = React.useState(props.selected);
+  const select = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelected(!selected);
+    props.onSelect(props.file, !selected);
+  };
 
   return props.connectDropTarget(
     <tr
-      onClick={() => {
-        props.onClick(props.file);
-      }}
-      className={isActive ? dndHover : undefined}
+      onClick={select}
+      className={isActive || selected ? dndHover : undefined}
     >
       <FileRow
         file={props.file}
         onSelect={props.onSelect}
+        onOpen={props.onOpen}
         callRefresh={props.callRefresh}
         selected={props.selected}
       />
@@ -191,11 +207,12 @@ export const DropTargetFileRow = DropTarget(
   }),
 )(DndFileRow);
 
-export const AddFileRow = () => {
+export const AddFileRow = (props: AddFileRowProps) => {
   return (
     <td className={uploadCell} colSpan={Number.MAX_SAFE_INTEGER}>
-      {' '}
-      Drag file or click there to upload{' '}
+      {props.isUploading
+        ? "You're currently uploading files"
+        : 'Drag file or click there to upload'}
     </td>
   );
 };
@@ -203,11 +220,15 @@ export const AddFileRow = () => {
 const DndAddFileRow: React.FC<DndTargetAddFileRowProps> = (
   props: DndTargetAddFileRowProps,
 ) => {
-  console.log(props.accepts);
   const isActive: boolean = props.canDrop && props.isOver;
+  const className = props.isUploading
+    ? uploadingStyle
+    : isActive
+    ? dndHover
+    : undefined;
   return props.connectDropTarget(
-    <tr className={isActive ? dndHover : undefined} onClick={props.onClick}>
-      <AddFileRow />
+    <tr className={className} onClick={props.onClick}>
+      <AddFileRow isUploading={props.isUploading} />
     </tr>,
   );
 };

@@ -37,6 +37,7 @@ interface IGameModelProperties {
   clientScriptUri: string;
   imageUri: string;
   iconUri: string;
+  visibility: ModelVisibility;
 }
 interface IGameModel extends IWegasEntity, IParentDescriptor {
   '@class': 'GameModel';
@@ -107,3 +108,5 @@ interface ITeam extends IWegasEntity {
   gameId: number;
   waiting: boolean;
 }
+
+type ModelVisibility = 'INTERNAL' | 'PROTECTED' | 'INHERITED' | 'PRIVATE';

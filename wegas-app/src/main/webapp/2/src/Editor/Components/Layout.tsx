@@ -6,9 +6,7 @@ import Editor from './EntityEditor';
 import PageDisplay from './Page/PageDisplay';
 import { TabLayout } from '../../Components/Tabs';
 import StateMachineEditor from './StateMachineEditor';
-import { DndFileBrowser } from './FileBrowser/FileBrowser';
-import { ApiFile } from '../../API/files.api';
-import { IFiles } from '../../../types/IFile';
+import { DndFileBrowser, IFileMap } from './FileBrowser/FileBrowser';
 
 const layout = css({
   display: 'grid',
@@ -47,7 +45,7 @@ export default class AppLayout extends React.Component<
             <PageDisplay />
             <StateMachineEditor />
             <DndFileBrowser
-              getSelectedPaths={(files: string[]) => {
+              getSelectedFiles={(files: IFile[]) => {
                 console.log(files);
               }}
             />
