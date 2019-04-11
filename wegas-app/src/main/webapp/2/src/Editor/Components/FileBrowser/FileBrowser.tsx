@@ -1,30 +1,30 @@
-import * as React from "react";
-import { FileAPI } from "../../../API/files.api";
-import { GameModel } from "../../../data/selectors";
-import { NativeTypes } from "react-dnd-html5-backend";
+import * as React from 'react';
+import { FileAPI } from '../../../API/files.api';
+import { GameModel } from '../../../data/selectors';
+import { NativeTypes } from 'react-dnd-html5-backend';
 import {
   hiddenFileBrowserStyle,
   DropTargetFileRow,
   DropTargetAddFileRow,
   DndFileRowProps,
-  DndAddFileRowProps
-} from "./FileBrowserRow";
-import { DropTargetMonitor } from "react-dnd";
-import { defaultContextManager } from "../Views/TreeView";
-import { IFile, IFiles } from "../../../../types/IFile";
+  DndAddFileRowProps,
+} from './FileBrowserRow';
+import { DropTargetMonitor } from 'react-dnd';
+import { IFile, IFiles } from '../../../../types/IFile';
+import { defaultContextManager } from '../../../Components/DragAndDrop';
 
 export interface FileBrowserProps {
   getSelectedFiles?: (files: string[]) => void;
 }
 
 export function FileBrowser(props: FileBrowserProps) {
-  const [currentPath, setCurrentPath] = React.useState("/");
+  const [currentPath, setCurrentPath] = React.useState('/');
   const [files, setFiles] = React.useState<IFiles>([]);
   const [selectedFiles, setSelectedFiles] = React.useState<string[]>([]);
   const [refreshToggle, setRefreshToggle] = React.useState(false);
 
   const generateGoodPath = (file: IFile) => {
-    return file.path.replace(/(\/)$/, "") + "/" + file.name;
+    return file.path.replace(/(\/)$/, '') + '/' + file.name;
   };
 
   const onSelect = (file: IFile, selected: boolean) => {
@@ -49,8 +49,8 @@ export function FileBrowser(props: FileBrowserProps) {
 
   const onBack = () => {
     (currentPath: string) => {
-      let newPath = currentPath.replace(/\/(?:.(?!\/))+$/, "");
-      newPath = newPath === "" ? "/" : newPath;
+      let newPath = currentPath.replace(/\/(?:.(?!\/))+$/, '');
+      newPath = newPath === '' ? '/' : newPath;
       setCurrentPath(newPath);
     };
   };
@@ -59,7 +59,7 @@ export function FileBrowser(props: FileBrowserProps) {
     FileAPI.getFileList(GameModel.selectCurrent().id!, currentPath).then(
       (res: IFiles) => {
         setFiles(res);
-      }
+      },
     );
   };
 
@@ -68,12 +68,12 @@ export function FileBrowser(props: FileBrowserProps) {
   };
 
   const addNewDirectory = () => {
-    var newDirName = prompt("Please enter the name of the new directory", "");
+    const newDirName = prompt('Please enter the name of the new directory', '');
 
     FileAPI.createFile(
       GameModel.selectCurrent().id!,
       newDirName!,
-      currentPath
+      currentPath,
     ).then(() => {
       refresh();
     });
@@ -81,7 +81,7 @@ export function FileBrowser(props: FileBrowserProps) {
 
   const clickNewFile = (event: React.MouseEvent) => {
     event.stopPropagation();
-    document.getElementById("newfile-upload")!.click();
+    document.getElementById('newfile-upload')!.click();
   };
 
   const uploadFiles = (files: FileList, path: string = currentPath) => {
@@ -90,7 +90,7 @@ export function FileBrowser(props: FileBrowserProps) {
         GameModel.selectCurrent().id!,
         files[i].name,
         path,
-        files[i]
+        files[i],
       ).then(() => {
         refresh();
       });
@@ -113,7 +113,7 @@ export function FileBrowser(props: FileBrowserProps) {
   const accepts = React.useMemo(() => [FILE], []);
   const handleFileDrop = (
     item: DndFileRowProps,
-    monitor: DropTargetMonitor
+    monitor: DropTargetMonitor,
   ) => {
     if (monitor) {
       if (item.file && item.file.directory) {
@@ -126,7 +126,7 @@ export function FileBrowser(props: FileBrowserProps) {
   };
   const handleAddFileDrop = (
     item: DndAddFileRowProps,
-    monitor: DropTargetMonitor
+    monitor: DropTargetMonitor,
   ) => {
     if (monitor) {
       uploadFiles(monitor.getItem().files);
@@ -138,7 +138,7 @@ export function FileBrowser(props: FileBrowserProps) {
   return (
     <div>
       <h2>{currentPath}</h2>
-      {currentPath !== "/" && <button onClick={onBack}>Back</button>}
+      {currentPath !== '/' && <button onClick={onBack}>Back</button>}
       <button onClick={addNewDirectory}>New directory</button>
       {/* <button onClick={clickNewFile}>Upload file(s)</button> */}
       <input
