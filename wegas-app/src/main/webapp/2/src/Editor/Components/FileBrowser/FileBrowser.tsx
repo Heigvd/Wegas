@@ -65,7 +65,7 @@ export function FileBrowser(props: FileBrowserProps) {
   };
 
   const refresh = () => {
-    setRefreshToggle(!refreshToggle);
+    setRefreshToggle(refreshToggle => !refreshToggle);
   };
 
   const addNewDirectory = () => {
@@ -106,13 +106,13 @@ export function FileBrowser(props: FileBrowserProps) {
 
   React.useEffect(() => {
     refreshFileList();
-    console.log(currentPath);
   }, [props, currentPath, refreshToggle]);
 
   ///////////////////////////
   // Drag and drop management
+  // Make sure you always set accept variable to avoid catching other DnD draggable objects
   const { FILE } = NativeTypes;
-  const accepts = React.useMemo(() => [FILE], []);
+  const accepts = React.useMemo(() => [FILE], []); // Accept only files
   const handleFileDrop = (
     item: DndFileRowProps,
     monitor: DropTargetMonitor,

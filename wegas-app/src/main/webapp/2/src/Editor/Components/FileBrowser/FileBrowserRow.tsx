@@ -1,40 +1,40 @@
-import { css } from "emotion";
+import { css } from 'emotion';
 import {
   DropTargetMonitor,
   ConnectDropTarget,
   DropTarget,
-  DropTargetConnector
-} from "react-dnd";
-import * as React from "react";
-import { GameModel } from "../../../data/selectors";
-import { FontAwesome } from "../Views/FontAwesome";
-import { FileAPI } from "../../../API/files.api";
-import { IFile } from "../../../../types/IFile";
+  DropTargetConnector,
+} from 'react-dnd';
+import * as React from 'react';
+import { GameModel } from '../../../data/selectors';
+import { FontAwesome } from '../Views/FontAwesome';
+import { FileAPI } from '../../../API/files.api';
+import { IFile } from '../../../../types/IFile';
 
 const dndHover = css({
-  borderWidth: "1pt",
-  borderStyle: "Solid",
-  borderColor: "blue",
-  backgroundColor: "lightblue"
+  borderWidth: '1pt',
+  borderStyle: 'Solid',
+  borderColor: 'blue',
+  backgroundColor: 'lightblue',
 });
 
 const rowCell = css({
-  borderWidth: "1pt",
-  borderStyle: "Solid"
+  borderWidth: '1pt',
+  borderStyle: 'Solid',
 });
 
 const uploadCell = css({
-  borderWidth: "2pt",
-  borderStyle: "Dashed",
-  borderColor: "blue",
-  textAlign: "center"
+  borderWidth: '2pt',
+  borderStyle: 'Dashed',
+  borderColor: 'blue',
+  textAlign: 'center',
 });
 
 export const hiddenFileBrowserStyle = css({
-  visibility: "hidden",
+  visibility: 'hidden',
   width: 0,
   height: 0,
-  position: "absolute"
+  position: 'absolute',
 });
 
 interface DndProps {
@@ -70,7 +70,7 @@ interface DndTargetAddFileRowProps extends DndAddFileRowProps, DndProps {}
 
 function FileRow(props: FileRowProps) {
   const [selected, setSelected] = React.useState(props.selected);
-  const [absoluteFileName, setAbsoluteFileName] = React.useState("");
+  const [absoluteFileName, setAbsoluteFileName] = React.useState('');
   const select = (e: React.MouseEvent) => {
     e.stopPropagation();
     setSelected(!selected);
@@ -79,10 +79,11 @@ function FileRow(props: FileRowProps) {
   const watch = (e: React.MouseEvent) => {
     e.stopPropagation();
     const win = window.open(
-      API_ENDPOINT + `GameModel/${
-        GameModel.selectCurrent().id
-      }/File/read${absoluteFileName}`,
-      "_blank"
+      API_ENDPOINT +
+        `GameModel/${
+          GameModel.selectCurrent().id
+        }/File/read${absoluteFileName}`,
+      '_blank',
     );
     win!.focus();
   };
@@ -90,9 +91,9 @@ function FileRow(props: FileRowProps) {
   const del = (e: React.MouseEvent) => {
     e.stopPropagation();
     FileAPI.deleteFile(GameModel.selectCurrent().id!, absoluteFileName)
-      .then((res: IFile) => {
-        console.log(res);
-      })
+      // .then((res: IFile) => {
+      //   console.log(res);
+      // })
       .then(() => {
         props.callRefresh();
       });
@@ -101,7 +102,7 @@ function FileRow(props: FileRowProps) {
   // https://stackoverflow.com/questions/8595389/programmatically-trigger-select-file-dialog-box
   const clickEdit = (event: React.MouseEvent) => {
     event.stopPropagation();
-    event.currentTarget.getElementsByTagName("input")[0].click();
+    event.currentTarget.getElementsByTagName('input')[0].click();
   };
 
   const edit = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -112,7 +113,7 @@ function FileRow(props: FileRowProps) {
         props.file.name,
         props.file.path,
         event.target.files[0],
-        true
+        true,
       ).then(() => {
         props.callRefresh();
       });
@@ -122,20 +123,20 @@ function FileRow(props: FileRowProps) {
   React.useEffect(() => {
     setSelected(props.selected);
     let filePath = props.file.path;
-    if (filePath.substr(-1, 1) === "/") {
+    if (filePath.substr(-1, 1) === '/') {
       filePath = filePath.substr(0, filePath.length - 1);
     }
-    filePath += "/" + props.file.name;
+    filePath += '/' + props.file.name;
     setAbsoluteFileName(filePath);
   }, [props]);
 
   return (
     <>
       <td className={rowCell} onClick={select}>
-        <FontAwesome icon={selected ? "check-square" : "square"} />
+        <FontAwesome icon={selected ? 'check-square' : 'square'} />
       </td>
       <td className={rowCell}>
-        <FontAwesome icon={props.file.directory ? "folder" : "file"} />
+        <FontAwesome icon={props.file.directory ? 'folder' : 'file'} />
       </td>
       <td className={rowCell}>{props.file.name}</td>
       <td className={rowCell}>{props.file.bytes}</td>
@@ -163,7 +164,7 @@ function FileRow(props: FileRowProps) {
 }
 
 const DndFileRow: React.FC<DndTargetFileRowProps> = (
-  props: DndTargetFileRowProps
+  props: DndTargetFileRowProps,
 ) => {
   const isActive: boolean = props.canDrop && props.isOver;
   return props.connectDropTarget(
@@ -180,7 +181,7 @@ const DndFileRow: React.FC<DndTargetFileRowProps> = (
         callRefresh={props.callRefresh}
         selected={props.selected}
       />
-    </tr>
+    </tr>,
   );
 };
 
@@ -191,13 +192,13 @@ export const DropTargetFileRow = DropTarget(
       if (props.onDrop) {
         props.onDrop(props, monitor);
       }
-    }
+    },
   },
   (connect: DropTargetConnector, monitor: DropTargetMonitor) => ({
     connectDropTarget: connect.dropTarget(),
     isOver: monitor.isOver(),
-    canDrop: monitor.canDrop()
-  })
+    canDrop: monitor.canDrop(),
+  }),
 )(DndFileRow);
 
 export function AddFileRow(props: AddFileRowProps) {
@@ -207,20 +208,21 @@ export function AddFileRow(props: AddFileRowProps) {
       className={uploadCell}
       colSpan={Number.MAX_SAFE_INTEGER}
     >
-      {" "}
-      Drag file or click there to upload{" "}
+      {' '}
+      Drag file or click there to upload{' '}
     </td>
   );
 }
 
 const DndAddFileRow: React.FC<DndTargetAddFileRowProps> = (
-  props: DndTargetAddFileRowProps
+  props: DndTargetAddFileRowProps,
 ) => {
+  console.log(props.accepts);
   const isActive: boolean = props.canDrop && props.isOver;
   return props.connectDropTarget(
     <tr className={isActive ? dndHover : undefined}>
       <AddFileRow onClick={props.onClick} />
-    </tr>
+    </tr>,
   );
 };
 
@@ -231,11 +233,11 @@ export const DropTargetAddFileRow = DropTarget(
       if (props.onDrop) {
         props.onDrop(props, monitor);
       }
-    }
+    },
   },
   (connect: DropTargetConnector, monitor: DropTargetMonitor) => ({
     connectDropTarget: connect.dropTarget(),
     isOver: monitor.isOver(),
-    canDrop: monitor.canDrop()
-  })
+    canDrop: monitor.canDrop(),
+  }),
 )(DndAddFileRow);
