@@ -8,6 +8,7 @@ import { TabLayout } from "../../Components/Tabs";
 import StateMachineEditor from "./StateMachineEditor";
 import { DndFileBrowser } from "./FileBrowser/FileBrowser";
 import { ApiFile } from "../../API/files.api";
+import { IFiles } from "../../../types/IFile";
 
 const layout = css({
   display: "grid",
@@ -46,8 +47,8 @@ export default class AppLayout extends React.Component<
             <PageDisplay />
             <StateMachineEditor />
             <DndFileBrowser
-              onClick={(file: ApiFile) => {
-                console.log(file);
+              geSelectedFiles={(files: IFiles) => {
+                console.log(files);
               }}
             />
           </TabLayout>
