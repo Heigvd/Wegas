@@ -14,7 +14,7 @@ import { IFile, IFiles } from '../../../../types/IFile';
 import { defaultContextManager } from '../../../Components/DragAndDrop';
 
 export interface FileBrowserProps {
-  getSelectedFiles?: (files: string[]) => void;
+  getSelectedPaths?: (files: string[]) => void;
 }
 
 export function FileBrowser(props: FileBrowserProps) {
@@ -28,17 +28,18 @@ export function FileBrowser(props: FileBrowserProps) {
   };
 
   const onSelect = (file: IFile, selected: boolean) => {
-    (selectedFiles: string[]) => {
+    setSelectedFiles(selectedFiles => {
       const key: string = file.path + file.name;
       const index: number = selectedFiles.indexOf(key);
+      // If selected, push. If not, remove;
       const newSF = selected
         ? [...selectedFiles, key]
         : [...selectedFiles.slice(0, index), ...selectedFiles.slice(index + 1)];
-      setSelectedFiles(newSF);
-      if (props.getSelectedFiles) {
-        props.getSelectedFiles(selectedFiles);
+      if (props.getSelectedPaths) {
+        props.getSelectedPaths(newSF);
       }
-    };
+      return newSF;
+    });
   };
 
   const onClick = (file: IFile) => {
@@ -48,11 +49,11 @@ export function FileBrowser(props: FileBrowserProps) {
   };
 
   const onBack = () => {
-    (currentPath: string) => {
+    setCurrentPath(currentPath => {
       let newPath = currentPath.replace(/\/(?:.(?!\/))+$/, '');
       newPath = newPath === '' ? '/' : newPath;
-      setCurrentPath(newPath);
-    };
+      return newPath;
+    });
   };
 
   const refreshFileList = () => {
@@ -105,6 +106,7 @@ export function FileBrowser(props: FileBrowserProps) {
 
   React.useEffect(() => {
     refreshFileList();
+    console.log(currentPath);
   }, [props, currentPath, refreshToggle]);
 
   ///////////////////////////

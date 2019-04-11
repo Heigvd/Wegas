@@ -1,27 +1,27 @@
-import * as React from "react";
-import { css } from "emotion";
-import Header from "./Header";
-import TreeView from "./Variable/VariableTree";
-import Editor from "./EntityEditor";
-import PageDisplay from "./Page/PageDisplay";
-import { TabLayout } from "../../Components/Tabs";
-import StateMachineEditor from "./StateMachineEditor";
-import { DndFileBrowser } from "./FileBrowser/FileBrowser";
-import { ApiFile } from "../../API/files.api";
-import { IFiles } from "../../../types/IFile";
+import * as React from 'react';
+import { css } from 'emotion';
+import Header from './Header';
+import TreeView from './Variable/VariableTree';
+import Editor from './EntityEditor';
+import PageDisplay from './Page/PageDisplay';
+import { TabLayout } from '../../Components/Tabs';
+import StateMachineEditor from './StateMachineEditor';
+import { DndFileBrowser } from './FileBrowser/FileBrowser';
+import { ApiFile } from '../../API/files.api';
+import { IFiles } from '../../../types/IFile';
 
 const layout = css({
-  display: "grid",
-  gridTemplateRows: "auto 1fr",
-  height: "100%",
-  gridTemplateColumns: "auto 1fr auto",
-  "& > div": {
-    boxSizing: "border-box",
-    borderRight: "1px solid"
-  }
+  display: 'grid',
+  gridTemplateRows: 'auto 1fr',
+  height: '100%',
+  gridTemplateColumns: 'auto 1fr auto',
+  '& > div': {
+    boxSizing: 'border-box',
+    borderRight: '1px solid',
+  },
 });
 
-const fullWidth = css({ gridColumnEnd: "span 3" });
+const fullWidth = css({ gridColumnEnd: 'span 3' });
 
 export default class AppLayout extends React.Component<
   {},
@@ -30,7 +30,7 @@ export default class AppLayout extends React.Component<
   constructor(props: {}) {
     super(props);
     this.state = {
-      editable: false
+      editable: false,
     };
   }
   render() {
@@ -43,11 +43,11 @@ export default class AppLayout extends React.Component<
           <TreeView />
         </div>
         <div>
-          <TabLayout tabs={["Page", "StateMachine", "File browser"]}>
+          <TabLayout tabs={['Page', 'StateMachine', 'File browser']}>
             <PageDisplay />
             <StateMachineEditor />
             <DndFileBrowser
-              geSelectedFiles={(files: IFiles) => {
+              getSelectedPaths={(files: string[]) => {
                 console.log(files);
               }}
             />
