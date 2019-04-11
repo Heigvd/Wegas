@@ -67,7 +67,7 @@ YUI.add('wegas-dashboard', function(Y) {
                                 if (p) {
                                     window.open("game-lock.html?id=" + p.get("id"), "_blank");
                                 } else {
-                                    Y.Wegas.Alerts.showMessage("error", "No valid player in team")
+                                    Y.Wegas.Alerts.showMessage("error", "No valid player in team");
                                 }
                             }
                         }
@@ -148,23 +148,37 @@ YUI.add('wegas-dashboard', function(Y) {
             this.addButtons();
         },
         addButtons: function() {
-            var label = "Refresh",
-                game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
+            var game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
                 teams = game.get("teams");
 
+            this.toolbar = new Y.Wegas.FlexList({
+                direction: "horizontal",
+                cssClass: 'dashboard-toolbar'
+            });
+
+            this.add(this.toolbar);
+
             if (teams.length === 0 || teams.length === 1 && teams[0].get("@class") === "DebugTeam") {
-                label = "No players have joined yet";
+                this.toolbar.add(new Y.Wegas.Text({
+                    content: "No players have joined yet"
+                }));
             }
 
-            this.add(new Y.Wegas.Button({
-                label: '<span class="wegas-icon wegas-icon-refresh"></span> ' + label,
+            this.toolbar.add(new Y.Wegas.Text({
+                content: '<a title="Download list of players" href="rest/GameModel/Game/' + game.get("id") + '/ExportMembers" target="_blank"><span class="fa fa-2x fa-file-excel-o"></span></a>',
+                cssClass: 'download-members'
+            }));
+
+            this.toolbar.add(new Y.Wegas.Text({
+                content: '<i class="fa fa-2x fa-refresh"></i>',
                 cssClass: 'refreshButton',
                 on: {
-                    click: Y.bind(function(event) {
+                    click: Y.bind(function() {
                         this.syncUI();
                     }, this)
                 }
             }));
+
         },
         onGameUpdate: function() {
             this.get("contentBox").one(".refreshButton").addClass("please-refresh fa fa-asterisk");
@@ -186,9 +200,8 @@ YUI.add('wegas-dashboard', function(Y) {
             }, this), this.detailsOverlay);
         },
         syncUI: function() {
-            var BB = this.get("boundingBox");
             //BB.addClass("loading");
-            this.get("contentBox").one(".refreshButton span").addClass(" fa-pulse");
+            this.get("contentBox").one(".refreshButton i").addClass(" fa-pulse");
             this._loadRemoteData();
         },
         detailsClick: function(e) {
@@ -376,7 +389,7 @@ YUI.add('wegas-dashboard', function(Y) {
                         res = {};
                     try {
                         props = JSON.parse(strObj.body);
-                    } catch(e) {
+                    } catch (e) {
                         alert("SyncTyble: " + e);
                         return null;
                     }
@@ -466,9 +479,9 @@ YUI.add('wegas-dashboard', function(Y) {
                                     }
 
                                 } else if (def.kind === "inbox") {
-                                    o.cell.setHTML('<i class=\"bloc__text ' + (o.value.empty ? 'icon fa fa-comment-o"' : 'icon fa fa-commenting-o"') + ' title="Click to view"></i>');
+                                    o.cell.setHTML('<i class="bloc__text ' + (o.value.empty ? 'icon fa fa-comment-o"' : 'icon fa fa-commenting-o"') + ' title="Click to view"></i>');
                                 } else if (def.kind === "text") {
-                                    o.cell.setHTML('<i class=\"bloc__text ' + (o.value.empty ? 'icon fa fa-file-o"' : 'icon fa fa-file-text-o"') + ' title="Click to view"></i>');
+                                    o.cell.setHTML('<i class="bloc__text ' + (o.value.empty ? 'icon fa fa-file-o"' : 'icon fa fa-file-text-o"') + ' title="Click to view"></i>');
                                 } else {
                                     fallback = true;
                                     if (def.kind === "object") {

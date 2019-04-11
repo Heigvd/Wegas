@@ -14,11 +14,11 @@ async function extractPage(res: Response): Promise<Pages> {
   return j;
 }
 
-export type PageIndex = Array<{
+export type PageIndex = {
   id: string;
   index: number;
   name: string;
-}>;
+}[];
 
 export const PageAPI = {
   /**
@@ -85,7 +85,7 @@ export const PageAPI = {
   },
   /**
    * Move a page to a given index
-   * @param gameModelId 
+   * @param gameModelId
    * @param index position to put the page to
    * @param id page to move
    */

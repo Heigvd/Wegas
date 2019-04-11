@@ -49,13 +49,14 @@ function listToLogical(
   switch (expressions.length) {
     case 0:
       return;
-    case 1:
+    case 1: {
       const exp = expressions[0];
       if (isEmptyStatement(exp)) {
         return expressionStatement(booleanLiteral(true));
       }
       return exp;
-    default:
+    }
+    default: {
       let last = expressions.pop()!;
       if (isEmptyStatement(last)) {
         last = expressionStatement(booleanLiteral(true));
@@ -65,6 +66,7 @@ function listToLogical(
       return expressionStatement(
         logicalExpression('&&', left.expression, last.expression),
       );
+    }
   }
 }
 function scriptObject(script?: string | IScript | null) {
@@ -76,12 +78,10 @@ interface ScriptBodyProps {
   script?: IScript | string | null;
   onChange: (script: IScript) => void;
   mode: 'GET' | 'SET';
-  children: (
-    props: {
-      ast: Statement[];
-      onChange: (ast: Statement[]) => void;
-    },
-  ) => JSX.Element;
+  children: (props: {
+    ast: Statement[];
+    onChange: (ast: Statement[]) => void;
+  }) => JSX.Element;
 }
 function ScriptBody({ script, onChange, children, mode }: ScriptBodyProps) {
   const code = scriptObject(script);
@@ -124,8 +124,8 @@ function ScriptBody({ script, onChange, children, mode }: ScriptBodyProps) {
 
 interface ScriptProps
   extends WidgetProps.BaseProps<
-      LabeledView & CommonView & { mode?: 'SET' | 'GET' }
-    > {
+    LabeledView & CommonView & { mode?: 'SET' | 'GET' }
+  > {
   value?: string | IScript;
 
   onChange: (code: IScript) => void;

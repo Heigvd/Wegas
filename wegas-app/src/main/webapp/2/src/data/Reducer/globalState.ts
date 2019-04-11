@@ -1,4 +1,3 @@
-// import { Reducer } from 'redux';
 import u from 'immer';
 import { Actions as ACTIONS, Actions } from '..';
 import { ActionCreator, ActionType, StateActions } from '../actions';
@@ -7,9 +6,10 @@ import { ThunkResult, store } from '../store';
 import { ConfigurationSchema } from '../../Editor/editionConfig';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { entityIsPersisted } from '../entities';
+import { Reducer } from 'redux';
 
 type actionFn<T extends IWegasEntity> = (entity: T, path?: string[]) => void;
-export type EditorAction<T extends IWegasEntity> = {
+export interface EditorAction<T extends IWegasEntity> {
   save?: (entity: T) => void;
   more?: {
     [id: string]: {
@@ -17,7 +17,7 @@ export type EditorAction<T extends IWegasEntity> = {
       action: actionFn<T>;
     };
   };
-};
+}
 type Edition =
   | {
       type: 'Variable';
@@ -78,7 +78,7 @@ export interface GlobalState {
  * @param {StateActions} action
  * @returns {Readonly<GlobalState>}
  */
-const global = u<GlobalState, [StateActions]>(
+const global: Reducer<Readonly<GlobalState>> = u(
   (state: GlobalState, action: StateActions) => {
     switch (action.type) {
       case ActionType.VARIABLE_EDIT:
@@ -373,7 +373,7 @@ export function searchGlobal(value: string): ThunkResult {
 export function searchUsage(
   variable: IVariableDescriptor & { id: number },
 ): ThunkResult {
-  const search = `Variable\.find(gameModel, "${variable.name}")`;
+  const search = `Variable.find(gameModel, "${variable.name}")`;
   return function(dispatch, getState) {
     dispatch(ActionCreator.SEARCH_ONGOING());
     const gameModelId = getState().global.currentGameModelId;

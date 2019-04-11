@@ -2,11 +2,10 @@
 This files runs on node.
 */
 import * as ts from 'typescript';
-
-const globby = require('globby');
+import * as globby from 'globby';
 
 const DEBUG = false;
-function log(...t: any[]) {
+function log(...t: unknown[]) {
   if (DEBUG) {
     console.log(...t);
   }
@@ -51,7 +50,7 @@ interface Definition {
     anyOf: Definition[];
   };
   enum?: PrimitiveType[] | Definition[];
-  default?: PrimitiveType | Object;
+  default?: PrimitiveType | {};
   additionalProperties?: Definition | boolean;
   required?: string[];
   propertyOrder?: string[];

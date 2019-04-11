@@ -1,11 +1,11 @@
 import { Schema } from 'jsoninput';
 import { AvailableViews } from './Components/FormView';
 import { StateActions } from '../data/actions';
-import { Props } from '@fortawesome/react-fontawesome';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 
 export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 
-export type MethodConfig = {
+export interface MethodConfig {
   [method: string]: {
     label: string;
     arguments: {
@@ -20,7 +20,7 @@ export type MethodConfig = {
     }[];
     returns?: 'number' | 'string' | 'boolean';
   };
-};
+}
 
 export const SELFARG = {
   type: 'identifier' as 'identifier',
@@ -63,7 +63,7 @@ export async function getMethodConfig<T extends IWegasEntity>(
 
 export async function getIcon<T extends IWegasEntity>(
   entity: T,
-): Promise<Props['icon'] | undefined> {
+): Promise<IconProp | undefined> {
   return await import(/* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
     entity['@class']).then(({ icon }) => icon);
 }

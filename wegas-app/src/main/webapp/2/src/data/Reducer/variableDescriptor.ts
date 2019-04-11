@@ -11,12 +11,9 @@ export interface VariableDescriptorState {
 }
 
 const variableDescriptors: Reducer<Readonly<VariableDescriptorState>> = u(
-  function variableDescriptors(
-    state: VariableDescriptorState,
-    action: StateActions,
-  ) {
+  (state: VariableDescriptorState, action: StateActions) => {
     switch (action.type) {
-      case ActionType.MANAGED_MODE:
+      case ActionType.MANAGED_MODE: {
         const updateList = action.payload.updatedEntities.variableDescriptors;
         const deletedIds = Object.keys(
           action.payload.deletedEntities.variableDescriptors,
@@ -34,6 +31,7 @@ const variableDescriptors: Reducer<Readonly<VariableDescriptorState>> = u(
         });
 
         return;
+      }
     }
   },
   {},

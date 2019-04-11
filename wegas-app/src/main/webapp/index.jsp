@@ -9,19 +9,11 @@
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
         <link rel="stylesheet" href="assets/css/app-min.css">
-        <!-- IE11 detection: -->
-        <style>
-            .browsehappy { display: none; }
-            .browsehappy a { font-weight: bold; text-decoration: underline; }
-            _:-ms-fullscreen, :root .browsehappy { display:block; }
-        </style>
     </head>
     <body>
-        <!--[if lte IE 10]>
+        <!--[if lt IE 10]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-        <p class="browsehappy" id="browsehappy" style="text-align: center; font-size: 130%; font-weight: bold;">Your browser (Internet Explorer) is unfortunately not supported. Please <a href="http://browsehappy.com/">switch to another browser</a>.</p>
-
         <flash:messages></flash:messages>
         <div ui-view="main" class="view view--main view--background-default"></div>
 
@@ -36,16 +28,5 @@
         <script src="assets/js/vendor-min.js"></script>
 
         <script src="assets/js/app-min.js"></script>
-
-        <script type="application/javascript">
-            if (navigator.appName == 'Microsoft Internet Explorer' || !!(navigator.userAgent.match(/Trident/) || navigator.userAgent.match(/rv:11/)) || (typeof $ !== "undefined" && typeof $.browser !== "undefined" && $.browser.msie == 1)){
-                alert("Your browser (Internet Explorer) is unfortunately not supported. Please switch to another browser.");
-            } else {
-                var node = document.getElementById("browsehappy"), ptnode;
-                if (node && (ptnode = node.parentNode)) {
-                    ptnode.removeChild(node);
-                }
-            }
-        </script>
     </body>
 </html>

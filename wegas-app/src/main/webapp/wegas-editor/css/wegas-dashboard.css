@@ -9,13 +9,20 @@
 
 
 /* DASHBOARD */
-.dashboard-v3 .refreshButton {
-    position: relative;
-    left: 25px;
-    top : 42px;
-    z-index: 10;
+.dashboard-v3 .dashboard-toolbar > div {
+    justify-content: flex-end;
 }
 
+.dashboard-v3 .refreshButton,
+.dashboard-v3 .download-members {
+    cursor: pointer;
+    z-index: 10;
+    padding: 5px;
+    color: #878787;
+}
+.dashboard-v3 .download-members a{
+    color: #878787;
+}
 
 .dashboard-v3 .refreshButton.please-refresh:before {
     position: relative;

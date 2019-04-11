@@ -9,18 +9,16 @@ export interface GameModelState {
 /**
  * Reducer for GameModels
  */
-const gameModels: Reducer<Readonly<GameModelState>> = u<
-  GameModelState,
-  [StateActions]
->(
+const gameModels: Reducer<Readonly<GameModelState>> = u(
   (state: GameModelState, action: StateActions) => {
     switch (action.type) {
-      case ActionType.MANAGED_MODE:
+      case ActionType.MANAGED_MODE: {
         const gms = action.payload.updatedEntities.gameModels;
         const deletedKeys = Object.keys(
           action.payload.deletedEntities.gameModels,
         );
         return { ...omit(state, deletedKeys), ...gms };
+      }
     }
     return state;
   },

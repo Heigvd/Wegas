@@ -12,12 +12,9 @@ export interface VariableInstanceState {
 }
 
 const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
-  function variableInstances(
-    state: VariableInstanceState,
-    action: StateActions,
-  ) {
+  (state: VariableInstanceState, action: StateActions) => {
     switch (action.type) {
-      case ActionType.MANAGED_MODE:
+      case ActionType.MANAGED_MODE: {
         const updateList = action.payload.updatedEntities.variableInstances;
         const deletedIds = Object.keys(
           action.payload.deletedEntities.variableInstances,
@@ -34,6 +31,7 @@ const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
           delete state[id];
         });
         return;
+      }
     }
   },
   {},

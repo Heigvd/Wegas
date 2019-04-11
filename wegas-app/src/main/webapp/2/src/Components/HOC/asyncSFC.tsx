@@ -8,8 +8,8 @@ import * as React from 'react';
  */
 export function asyncSFC<T>(
   PComp: (props: T) => Promise<React.ReactNode>,
-  Loader: React.SFC<{}> = () => <span />,
-  Err: React.SFC<{ err: Error }> = () => <span />,
+  Loader: React.SFC<{}> = () => null,
+  Err: React.SFC<{ err: Error }> = () => null,
 ): React.ComponentClass<T> {
   class AsyncDeps extends React.PureComponent<
     T,

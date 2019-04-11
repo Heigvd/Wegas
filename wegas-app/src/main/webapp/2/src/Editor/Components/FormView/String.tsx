@@ -7,14 +7,14 @@ import { css } from 'emotion';
 
 export interface StringInputProps
   extends WidgetProps.BaseProps<
-      {
-        rows?: number;
-        disabled?: boolean;
-        readOnly?: boolean;
-        placeholder?: string;
-      } & CommonView &
-        LabeledView
-    > {
+    {
+      rows?: number;
+      disabled?: boolean;
+      readOnly?: boolean;
+      placeholder?: string;
+    } & CommonView &
+      LabeledView
+  > {
   value?: string | number;
 }
 
@@ -91,6 +91,7 @@ export default class StringInput extends React.Component<
                     onBlur={this.onChange}
                     disabled={view.disabled}
                     readOnly={view.readOnly}
+                    autoComplete="off"
                   />
                 </>
               );
@@ -108,6 +109,7 @@ export default class StringInput extends React.Component<
                   onBlur={this.onChange}
                   disabled={view.disabled}
                   readOnly={view.readOnly}
+                  autoComplete="off"
                 />
               </>
             );
