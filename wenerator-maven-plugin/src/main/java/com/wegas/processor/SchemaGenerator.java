@@ -1,5 +1,6 @@
 package com.wegas.processor;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
@@ -11,7 +12,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,10 +22,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.google.common.reflect.TypeToken;
 import com.wegas.core.merge.utils.WegasEntityFields;
+import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.editor.Schema;
 import com.wegas.editor.Schemas;
@@ -60,9 +60,41 @@ public class SchemaGenerator extends AbstractMojo {
     @Parameter(property = "schema.pkg", required = true)
     private String[] pkg;
 
+    public void processSchemaAnnotation(JSONObject o, Schema... schemas) {
+        if (schemas != null) {
+            for (Schema schema : schemas) {
+                System.out.println("HERE YOU GO !!   " + (schema.property()));
+                try {
+                    JSONSchema val = schema.value().newInstance();
+                    if (schema.merge()) {
+                        val = merge(o.getProperties().get(schema.property()), schema.value().newInstance());
+                    }
+                    o.setProperty(schema.property(), val);
+                } catch (InstantiationException | IllegalAccessException | IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public JSONString getJSONClassName(Class<? extends Mergeable> klass) {
+        JsonTypeName annotation = klass.getAnnotation(JsonTypeName.class);
+
+        JSONString atClass = new JSONString();
+
+        if (annotation != null) {
+            atClass.setConstant(new TextNode(annotation.value()));
+        } else {
+            atClass.setConstant(new TextNode(klass.getSimpleName()));
+        }
+
+        return atClass;
+    }
+
     public void execute() throws MojoExecutionException {
         if (outputDirectory.isFile()) {
-            throw new MojoExecutionException(outputDirectory.getAbsolutePath() + " is not not a directory");
+            throw new MojoExecutionException(outputDirectory.getAbsolutePath() + " is not a directory");
         }
         getLog().info("Writing to " + outputDirectory.getAbsolutePath());
         outputDirectory.mkdirs();
@@ -84,47 +116,22 @@ public class SchemaGenerator extends AbstractMojo {
             final JSONObject o = new JSONObject();
             // Fill Object
             o.setDescription(wEF.getTheClass().getName());
-            final JSONString atClass = new JSONString();
-            atClass.setConstant(new TextNode(wEF.getTheClass().getSimpleName()));
-            o.setProperty("@class", atClass);
-            wEF.getFields().forEach(field -> {
 
+            o.setProperty("@class", getJSONClassName(wEF.getTheClass()));
+
+            wEF.getFields().forEach(field -> {
                 Type returnType = field.getPropertyDescriptor().getReadMethod().getGenericReturnType();
                 Type reified = TypeResolver.reify(returnType, wEF.getTheClass());
                 o.setProperty(field.getPropertyDescriptor().getName(), javaToJSType(reified));
             });
+
             Schemas schemas = wEF.getTheClass().getAnnotation(Schemas.class);
             if (schemas != null) {
-                for (Schema schema : schemas.value()) {
-
-                    System.out.println("HERE YOU GO !!   " + (schema.property()));
-
-                    try {
-                        JSONSchema val = schema.value().newInstance();
-                        if (schema.merge()) {
-                            val = merge(o.getProperties().get(schema.property()), schema.value().newInstance());
-                        }
-                        o.setProperty(schema.property(), val);
-                    } catch (InstantiationException | IllegalAccessException | IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                }
+                this.processSchemaAnnotation(o, schemas.value());
             }
-            Schema schema = wEF.getTheClass().getAnnotation(Schema.class);
-            if (schema != null) {
 
-                try {
-                    JSONSchema val = schema.value().newInstance();
-                    if (schema.merge()) {
-                        val = merge(o.getProperties().get(schema.property()), schema.value().newInstance());
-                    }
-                    o.setProperty(schema.property(), val);
-                } catch (InstantiationException | IllegalAccessException | IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
+            this.processSchemaAnnotation(o, wEF.getTheClass().getAnnotation(Schema.class));
+
             // Write
             File f = new File(outputDirectory, fileName(wEF.getTheClass()));
             try (FileWriter fw = new FileWriter(f)) {
@@ -152,27 +159,27 @@ public class SchemaGenerator extends AbstractMojo {
 
     private JSONSchema javaToJSType(Type type) {
         switch (type.getTypeName()) {
-        case "int":
-        case "long":
-        case "java.lang.Long":
-        case "java.lang.Integer":
-            return new JSONNumber();
-        case "double":
-        case "float":
-        case "java.lang.Double":
-        case "java.lang.Float":
-        case "java.util.Date":
-        case "java.util.Calendar":
-            return new JSONNumber();
-        case "char":
-        case "java.lang.Character":
-        case "java.lang.String":
-            return new JSONString();
-        case "java.lang.Boolean":
-        case "boolean":
-            return new JSONBoolean();
-        default:
-            break;
+            case "int":
+            case "long":
+            case "java.lang.Long":
+            case "java.lang.Integer":
+                return new JSONNumber();
+            case "double":
+            case "float":
+            case "java.lang.Double":
+            case "java.lang.Float":
+            case "java.util.Date":
+            case "java.util.Calendar":
+                return new JSONNumber();
+            case "char":
+            case "java.lang.Character":
+            case "java.lang.String":
+                return new JSONString();
+            case "java.lang.Boolean":
+            case "boolean":
+                return new JSONBoolean();
+            default:
+                break;
         }
         TypeToken<Collection<?>> collection = new TypeToken<Collection<?>>() {
         };
