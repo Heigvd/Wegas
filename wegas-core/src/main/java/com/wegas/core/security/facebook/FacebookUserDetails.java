@@ -7,9 +7,6 @@
  */
 package com.wegas.core.security.facebook;
 
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
-
 /**
  * Simple class for holding data relating to a facebook user
  *
@@ -52,7 +49,7 @@ public class FacebookUserDetails {
      * @param fbResponse
      */
     public FacebookUserDetails(String fbResponse) {
-        jsonString = fbResponse;
+        /*jsonString = fbResponse;
         JSONObject respjson;
         try {
             respjson = new JSONObject(fbResponse);
@@ -64,7 +61,7 @@ public class FacebookUserDetails {
             System.out.println("fbResponse:" + fbResponse);
             e.printStackTrace();
             throw new RuntimeException(e);
-        }
+        }*/
 
     }
 
