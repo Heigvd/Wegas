@@ -1,5 +1,4 @@
 import { rest } from './rest';
-import { IFiles, IFile } from '../../types/IFile';
 
 // GET	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/exportRawXML
 // GET	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/exportXML
@@ -12,6 +11,8 @@ import { IFiles, IFile } from '../../types/IFile';
 // DELETE	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/{force: (force/)?}delete{absolutePath : .*?}
 // POST	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/{force: (force/)?}upload{directory : .*?}
 // DELETE	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/destruct
+
+type IFiles = IFile[];
 
 const FILE_BASE = (gameModelId: number) => `GameModel/${gameModelId}/File/`;
 
@@ -35,8 +36,8 @@ export const FileAPI = {
   },
   /**
    * List all pages in a directory
-   * @param gameModelId gameModelId to fetch IFiles from
-   * @param absoluteDirectoryPath optional directory from where to list IFiles, will return the content of root directory if not set
+   * @param gameModelId gameModelId to fetch files from
+   * @param absoluteDirectoryPath optional directory from where to list files, will return the content of root directory if not set
    */
   async getFileList(
     gameModelId: number,
@@ -50,7 +51,7 @@ export const FileAPI = {
   },
   /**
    * List all pages in a directory
-   * @param gameModelId gameModelId to fetch IFiles from
+   * @param gameModelId gameModelId to fetch files from
    * @param absolutePath file to delete
    * @param froce allows recursive delete on directories
    */
@@ -75,7 +76,7 @@ export const FileAPI = {
       .catch(() => {
         if (
           confirm(
-            `Are you sure you want to delete ${absolutePath} with all IFiles and subdirectories?`,
+            `Are you sure you want to delete ${absolutePath} with all files and subdirectories?`,
           )
         ) {
           this.deleteFile(gameModelId, absolutePath, true);
@@ -84,7 +85,7 @@ export const FileAPI = {
   },
   /**
    * List all pages in a directory
-   * @param gameModelId gameModelId to fetch IFiles from
+   * @param gameModelId gameModelId to fetch files from
    * @param name the name of the file to upload
    * @param path the path where to save the file (if undefined, takes root (/))
    * @param file the file to save (keep undefined for directory)
