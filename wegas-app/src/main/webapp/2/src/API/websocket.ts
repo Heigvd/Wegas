@@ -17,12 +17,12 @@ const CHANNEL_PREFIX = {
 function Uint8ArrayToStr(array: Uint8Array) {
   // http://www.onicos.com/staff/iz/amuse/javascript/expert/utf.txt
   /* utf.js - UTF-8 <=> UTF-16 convertion
-     *
-     * Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
-     * Version: 1.0
-     * LastModified: Dec 25 1999
-     * This library is free.  You can redistribute it and/or modify it.
-     */
+   *
+   * Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
+   * Version: 1.0
+   * LastModified: Dec 25 1999
+   * This library is free.  You can redistribute it and/or modify it.
+   */
   let out, i, len, c;
   let char2, char3;
 
@@ -140,6 +140,12 @@ export default class WebSocketListener {
         );
       case 'PageUpdate':
         store.dispatch(Actions.PageActions.get(data));
+        return;
+      case 'LibraryUpdate-CSS':
+      case 'LibraryUpdate-ClientScript':
+      case 'LibraryUpdate-ServerScript':
+        console.log(data);
+        // store.dispatch(Actions.PageActions.get(data));
         return;
       default:
         throw Error(`Event [${event}] unchecked`);

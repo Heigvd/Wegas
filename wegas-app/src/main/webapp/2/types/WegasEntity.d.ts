@@ -107,3 +107,4 @@ interface ITeam extends IWegasEntity {
   gameId: number;
   waiting: boolean;
 }
+type IVisibility = 'INTERNAL' | 'PROTECTED' | 'INHERITED' | 'PRIVATE';
