@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.google.common.reflect.TypeToken;
 import com.wegas.core.merge.utils.WegasEntityFields;
-import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.editor.Schema;
 import com.wegas.editor.Schemas;
@@ -130,7 +129,10 @@ public class SchemaGenerator extends AbstractMojo {
                 this.processSchemaAnnotation(o, schemas.value());
             }
 
-            this.processSchemaAnnotation(o, wEF.getTheClass().getAnnotation(Schema.class));
+            Schema schema = wEF.getTheClass().getAnnotation(Schema.class);
+            if (schema != null) {
+                this.processSchemaAnnotation(o, schema);
+            }
 
             // Write
             File f = new File(outputDirectory, fileName(wEF.getTheClass()));
