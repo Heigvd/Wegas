@@ -7,7 +7,6 @@
  */
 package com.wegas.app.jsf.controllers;
 
-import com.sun.faces.util.Util;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.LibraryFacade;
 import com.wegas.core.exception.internal.WegasForbiddenException;
@@ -23,7 +22,6 @@ import java.util.List;
 import java.util.Locale;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import org.apache.commons.io.IOUtils;
@@ -58,16 +56,16 @@ public class AbstractGameController implements Serializable {
      */
     protected Player currentPlayer = null;
 
-    public Locale calculateLocale(FacesContext context) {
-        Util.notNull("context", context);
-        Locale locale;
+//    public Locale calculateLocale(FacesContext context) {
+//        Util.notNull("context", context);
+//        Locale locale;
 
 //        if (context.getViewRoot() != null) {
-        locale = context.getViewRoot().getLocale();
+//        locale = context.getViewRoot().getLocale();
 //        }
 
 //        if (locale != null) {
-        return locale;
+//        return locale;
 //        }
 //        /**
 //         * *******************
@@ -92,7 +90,7 @@ public class AbstractGameController implements Serializable {
 //            }
 //        }
 //        return locale;
-    }
+//    }
 
     public String getCombinedFile(List<String> fileList, String mediaType) throws IOException, WegasForbiddenException {
         StringBuilder acc = new StringBuilder();

@@ -7,7 +7,6 @@
  */
 package com.wegas.core.security.util;
 
-import com.nimbusds.jose.util.StandardCharset;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import javax.servlet.DispatcherType;

@@ -74,7 +74,6 @@ import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 import jdk.nashorn.api.scripting.JSObject;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
-import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
