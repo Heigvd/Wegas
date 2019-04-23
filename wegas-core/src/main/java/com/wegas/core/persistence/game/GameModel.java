@@ -1075,6 +1075,13 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         return this.isProtected();
     }
 
+    /**
+     * Is this scenario protected ?
+     * A scenario is protected if it depends on a model (but the protection is disabled if the instances propagation
+     * is ongoing)
+     *
+     * @return
+     */
     public boolean isProtected() {
         // only scenarios which are based on a model are protected
         // but do no protect a gameModel when the propagation process is ongoing
@@ -1146,7 +1153,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     /**
      * The permission which is required to translate a specific language within the game model
+     *
      * @param lang the language to translate. no languages means "the permission to translate at least one language no matter which one"
+     *
      * @return
      */
     public WegasPermission getAssociatedTranslatePermission(String lang) {
