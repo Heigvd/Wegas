@@ -16,7 +16,7 @@ import { FontAwesome } from '../Views/FontAwesome';
 import { omit } from 'lodash-es';
 
 export interface FileBrowserProps {
-  getSelectedFiles?: (files: IFile[]) => void;
+  onSelectFile?: (files: IFile[]) => void;
 }
 
 export type IFileMap = { [key: string]: IFile };
@@ -42,8 +42,8 @@ export function FileBrowser(props: FileBrowserProps) {
       } else {
         newSF = omit(selectedFiles, key);
       }
-      if (props.getSelectedFiles) {
-        props.getSelectedFiles(Object.values(newSF));
+      if (props.onSelectFile) {
+        props.onSelectFile(Object.values(newSF));
       }
       return newSF;
     });

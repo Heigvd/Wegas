@@ -45,7 +45,7 @@ export default class AppLayout extends React.Component<
             <PageDisplay />
             <StateMachineEditor />
             <DndFileBrowser
-              getSelectedFiles={(files: IFile[]) => {
+              onSelectFile={(files: IFile[]) => {
                 console.log(files);
               }}
             />

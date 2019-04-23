@@ -12,8 +12,13 @@ import { FileAPI } from '../../../API/files.api';
 import { themeVar } from '../../../Components/Theme';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 
-const dndHover = css({
+const dndRow = css({
   color: themeVar.primaryLighterColor,
+  // backgroundColor: themeVar.primaryLighterColor,
+});
+
+const dndHover = css({
+  color: themeVar.primaryLighterTextColor,
   backgroundColor: themeVar.primaryLighterColor,
 });
 
@@ -22,7 +27,7 @@ const uploadingStyle = css({
 });
 
 const rowCell = css({
-  color: themeVar.primaryLighterColor,
+  // color: themeVar.primaryLighterColor,
   borderColor: 'black',
   borderWidth: '1pt',
   borderStyle: 'Solid',
@@ -176,10 +181,7 @@ const DndFileRow: React.FC<DndTargetFileRowProps> = (
   };
 
   return props.connectDropTarget(
-    <tr
-      onClick={select}
-      className={isActive || selected ? dndHover : undefined}
-    >
+    <tr onClick={select} className={isActive || selected ? dndHover : dndRow}>
       <FileRow
         file={props.file}
         onSelect={props.onSelect}
