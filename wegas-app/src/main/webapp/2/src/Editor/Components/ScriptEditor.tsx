@@ -6,6 +6,8 @@ import { LibraryApi, NewLibErrors, LibType } from '../../API/library.api';
 import { GameModel } from '../../data/selectors';
 import SrcEditor from './SrcEditor';
 
+type VisibilityMode = 'CREATE' | 'EDIT' | 'DELETE' | 'CONTENT';
+
 interface ScriptEditorProps {
   scriptType: LibType;
 }
@@ -37,6 +39,7 @@ interface ILibrariesState {
 
 function ScriptEditor(props: ScriptEditorProps) {
   const gameModelId = GameModel.selectCurrent().id!;
+  const gameModel = GameModel.selectCurrent();
   const librarySelectorId = 'library-selector';
   const visibilitySelectorId = 'visibility-selector';
 
@@ -108,12 +111,6 @@ function ScriptEditor(props: ScriptEditorProps) {
     });
   };
 
-  const setLibraryKey = (key: string) => {
-    setLibrariesState((oldState: ILibrariesState) => {
-      return { ...oldState, key: key };
-    });
-  };
-
   const loadLibraries = (select?: string) => {
     LibraryApi.getAllLibraries(gameModelId, props.scriptType)
       .then((libs: ILibraries) => {
@@ -172,7 +169,7 @@ function ScriptEditor(props: ScriptEditorProps) {
 
   const onNewLibrary = (name: string | null, library?: ILibrary) => {
     if (name !== null) {
-      LibraryApi.addLibrary(gameModelId, props.scriptType, name, library)
+      return LibraryApi.addLibrary(gameModelId, props.scriptType, name, library)
         .then((res: IGameModel) => {
           loadLibraries(name);
         })
@@ -194,14 +191,13 @@ function ScriptEditor(props: ScriptEditorProps) {
   const onSaveLibrary = () => {
     let libKey: string | null = librariesState.key;
     if (!libKey) {
-      do {
-        libKey = prompt('Please enter a script name');
-      } while (!libKey);
-      setLibraryKey(libKey);
-      onNewLibrary(libKey, {
-        content: librariesState.tempLibrary.content,
-        visibility: getVisibilitySelector().value as IVisibility,
-      });
+      libKey = prompt('Please enter a script name');
+      if (libKey) {
+        onNewLibrary(libKey, {
+          content: librariesState.tempLibrary.content,
+          visibility: getVisibilitySelector().value as IVisibility,
+        });
+      }
     } else {
       LibraryApi.saveLibrary(
         gameModelId,
@@ -220,13 +216,19 @@ function ScriptEditor(props: ScriptEditorProps) {
   };
 
   const onDeleteLibrary = () => {
-    LibraryApi.deleteLibrary(gameModelId, props.scriptType, librariesState.key)
-      .then(() => {
-        loadLibraries();
-      })
-      .catch(() => {
-        alert('Cannot delete the script');
-      });
+    if (confirm('Are you sure you want to delete this library?')) {
+      LibraryApi.deleteLibrary(
+        gameModelId,
+        props.scriptType,
+        librariesState.key,
+      )
+        .then(() => {
+          loadLibraries();
+        })
+        .catch(() => {
+          alert('Cannot delete the script');
+        });
+    }
   };
 
   const onEditorBlur = (content: string) => {
@@ -247,6 +249,9 @@ function ScriptEditor(props: ScriptEditorProps) {
           tempLibrary: {
             ...oldState.tempLibrary,
             content: content,
+          },
+          tempStatus: {
+            isEdited: oldState.tempLibrary.content !== content,
           },
         };
       }
@@ -270,9 +275,59 @@ function ScriptEditor(props: ScriptEditorProps) {
   };
 
   const getActualScriptVisibility = (): IVisibility => {
-    return librariesState.libraries[librariesState.key]
+    return librariesState.key
       ? librariesState.libraries[librariesState.key].library.visibility
-      : 'INTERNAL';
+      : librariesState.tempLibrary.visibility;
+  };
+
+  const isVisibilityAllowed = (visibility: IVisibility): boolean => {
+    const currentVisibility: IVisibility = librariesState.key
+      ? librariesState.libraries[librariesState.key].library.visibility
+      : 'PRIVATE';
+    let allowedVisibilities: IVisibility[] = [];
+
+    if (
+      gameModel.type === 'MODEL' ||
+      (gameModel.type === 'REFERENCE' && librariesState.key)
+    ) {
+      allowedVisibilities = ['INHERITED', 'INTERNAL', 'PRIVATE', 'PROTECTED'];
+    } else if (librariesState.key) {
+      allowedVisibilities.push(currentVisibility);
+    } else {
+      allowedVisibilities.push('PRIVATE');
+    }
+
+    return allowedVisibilities.indexOf(visibility) !== -1;
+  };
+
+  const isDeleteAllowed = (): boolean => {
+    if (!librariesState.key) {
+      return false;
+    } else if (
+      gameModel.type === 'SCENARIO' &&
+      librariesState.libraries[librariesState.key].library.visibility !==
+        'PRIVATE'
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  const isEditAllowed = (): boolean => {
+    if (!librariesState.key) {
+      return true;
+    } else if (
+      gameModel.type === 'SCENARIO' &&
+      librariesState.libraries[librariesState.key].library.visibility !==
+        'PRIVATE' &&
+      librariesState.libraries[librariesState.key].library.visibility !==
+        'INHERITED'
+    ) {
+      return false;
+    } else {
+      return true;
+    }
   };
 
   React.useEffect(() => {
@@ -285,7 +340,13 @@ function ScriptEditor(props: ScriptEditorProps) {
         <IconButton
           icon="plus"
           tooltip="Add a new script"
-          onClick={() => onNewLibrary(prompt('Type the name of the script'))}
+          onClick={() => {
+            if (!librariesState.key) {
+              onSaveLibrary(); //Force save temporary content
+            } else {
+              onNewLibrary(prompt('Type the name of the script'));
+            }
+          }}
         />
         <select
           id={librarySelectorId}
@@ -306,7 +367,11 @@ function ScriptEditor(props: ScriptEditorProps) {
           value={getActualScriptVisibility()}
         >
           {visibilities.map((item, key) => {
-            return <option value={item}>{item}</option>;
+            return (
+              <option hidden={!isVisibilityAllowed(item)} value={item}>
+                {item}
+              </option>
+            );
           })}
         </select>
         <IconButton
@@ -315,16 +380,20 @@ function ScriptEditor(props: ScriptEditorProps) {
             setLibraryEdition(false);
           }}
         />
-        <IconButton
-          icon="save"
-          tooltip="Save the script"
-          onClick={onSaveLibrary}
-        />
-        <IconButton
-          icon="trash"
-          tooltip="Delete the script"
-          onClick={onDeleteLibrary}
-        />
+        {isEditAllowed() && (
+          <IconButton
+            icon="save"
+            tooltip="Save the script"
+            onClick={onSaveLibrary}
+          />
+        )}
+        {isDeleteAllowed() && (
+          <IconButton
+            icon="trash"
+            tooltip="Delete the script"
+            onClick={onDeleteLibrary}
+          />
+        )}
         <div>
           {getScriptEditingState()
             ? 'The script is not saved'
@@ -336,6 +405,7 @@ function ScriptEditor(props: ScriptEditorProps) {
           value={getActualScriptContent()}
           language={scriptLanguage}
           onBlur={onEditorBlur}
+          readonly={!isEditAllowed()}
         />
       </Toolbar.Content>
     </Toolbar>

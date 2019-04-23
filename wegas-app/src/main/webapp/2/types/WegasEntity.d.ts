@@ -52,6 +52,7 @@ interface IGameModel extends IWegasEntity, IParentDescriptor {
   clientScriptLibrary: any;
   properties: IGameModelProperties;
   createdByName: string;
+  type: IGameModelType;
 }
 interface IGame extends IWegasEntity {
   '@class': 'Game' | 'DebugGame';
@@ -108,3 +109,4 @@ interface ITeam extends IWegasEntity {
   waiting: boolean;
 }
 type IVisibility = 'INTERNAL' | 'PROTECTED' | 'INHERITED' | 'PRIVATE';
+type IGameModelType = 'MODEL' | 'REFERENCE' | 'SCENARIO' | 'PLAY';
