@@ -41,9 +41,22 @@ export default class AppLayout extends React.Component<
           <TreeView />
         </div>
         <div>
-          <TabLayout tabs={['Page', 'StateMachine', 'File browser']}>
+          <TabLayout
+            tabs={[
+              'Page',
+              'StateMachine',
+              'File browser',
+              'Simple file browser',
+            ]}
+          >
             <PageDisplay />
             <StateMachineEditor />
+            <DndFileBrowser
+              onSelectFile={(files: IFile[]) => {
+                console.log(files);
+              }}
+              multipleSelection={true}
+            />
             <DndFileBrowser
               onSelectFile={(files: IFile[]) => {
                 console.log(files);

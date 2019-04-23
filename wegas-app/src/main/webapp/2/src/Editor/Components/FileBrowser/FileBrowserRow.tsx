@@ -187,6 +187,10 @@ const DndFileRow: React.FC<DndTargetFileRowProps> = (
     props.onSelect(props.file, !selected);
   };
 
+  React.useEffect(() => {
+    setSelected(props.selected);
+  }, [props]);
+
   return props.connectDropTarget(
     <tr onClick={select} className={isActive || selected ? dndHover : dndRow}>
       <FileRow

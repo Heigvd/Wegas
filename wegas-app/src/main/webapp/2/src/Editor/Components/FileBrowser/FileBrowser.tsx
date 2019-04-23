@@ -17,6 +17,7 @@ import { omit } from 'lodash-es';
 
 export interface FileBrowserProps {
   onSelectFile?: (files: IFile[]) => void;
+  multipleSelection?: boolean;
 }
 
 export type IFileMap = { [key: string]: IFile };
@@ -44,7 +45,7 @@ export function FileBrowser(props: FileBrowserProps) {
     // If multipleSelection is defined or true, selected files are saved
     setSelectedFiles(selectedFiles => {
       const key: string = generateGoodPath(file);
-      let newSF: IFileMap = selectedFiles;
+      let newSF: IFileMap = props.multipleSelection ? selectedFiles : {};
       if (selected) {
         newSF[key] = file;
       } else {
@@ -216,7 +217,9 @@ export function FileBrowser(props: FileBrowserProps) {
           )}
           {files.map((file: IFile) => {
             const selected =
-              selectedFiles[getAbsoluteFileName(file)] != undefined;
+              selectedFiles[getAbsoluteFileName(file)] !== undefined;
+
+            console.log(file.name + ' : selected -> ' + selected);
             return (
               <DropTargetFileRow
                 key={file.path + file.name}
