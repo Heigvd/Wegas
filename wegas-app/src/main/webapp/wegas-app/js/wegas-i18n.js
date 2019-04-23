@@ -232,11 +232,17 @@ YUI.add("wegas-i18n", function(Y) {
             return Y.Wegas.I18n._currentCode;
         }
 
-        function genTranslationMarkup(text, inlineEditor, lang, id, favorite, isOutdated) {
+        function genTranslationMarkup(text, inlineEditor, lang, id, favorite, isOutdated, readOnly) {
             var outdatedClass = isOutdated ? " outdated" : "";
 
-            if (inlineEditor === "html") {
-                return "<div class='wegas-translation wegas-translation-std wegas-translation-html " + (favorite ? 'favorite-lang' : 'not-favorite-lang') + outdatedClass +
+            if (!inlineEditor || inlineEditor === "none") {
+                return text;
+            } else if (readOnly) {
+                // editor requested but is readonly !
+                return "<span class='wegas-readonly-translation' data-trid='" + id + "' data-lang='" + lang.code + "' lang='" + lang.code + "'>" + text + "</span>";
+            } else if (inlineEditor === "html") {
+                return "<div class='wegas-translation wegas-translation-std wegas-translation-html "
+                    + (favorite ? 'favorite-lang' : 'not-favorite-lang') + outdatedClass +
                     "' data-trid='" + id +
                     "' lang='" + lang.code + "'data-lang='" + lang.lang + "'>"
                     + I18n.getEditorTools() +
@@ -249,10 +255,6 @@ YUI.add("wegas-i18n", function(Y) {
                     + I18n.getEditorTools() +
                     "<span class='wegas-translation--toolbar'></span>" +
                     "<span class='wegas-translation--value'><span tabindex='0' class='wegas-translation--toedit'>" + text + "</span></span></span>";
-            } else if (inlineEditor === "FORBIDDEN") {
-                return "<span class='wegas-readonly-translation' data-trid='" + id + "' data-lang='" + lang.code + "' lang='" + lang.code + "'>" + text + "</span>";
-            } else {
-                return text;
             }
         }
 
@@ -289,6 +291,7 @@ YUI.add("wegas-i18n", function(Y) {
                 forcedLang = params && params.lang,
                 inlineEditor = params && params.inlineEditor,
                 caseSensitiveCode = params && params.caseSensitiveCode,
+                readOnly = params && !!params.readOnly,
                 theOne, tr,
                 isOutdated;
 
@@ -352,7 +355,8 @@ YUI.add("wegas-i18n", function(Y) {
                         }
                     }
 
-                    if (inlineEditor && Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO") {
+                    if (inlineEditor && Y.Wegas.Facade.GameModel.cache.getCurrentGameModel()
+                        .get("type") === "SCENARIO") {
 
                         // the current scenario may depends on a model.
                         // do not let scenrists update protected translations
@@ -366,7 +370,7 @@ YUI.add("wegas-i18n", function(Y) {
                             visibility = variableDescriptor._getVisibility(variableDescriptor);
                             if (visibility === 'INTERNAL' || visibility === "PROTECTED") {
                                 // this translation is not editable
-                                inlineEditor = "FORBIDDEN";
+                                readOnly = true;
                             }
                         } else if (variableInstanceId) {
                             variableDescriptor = Y.Wegas.Facade.Variable.cache.findByFn(function(item) {
@@ -376,16 +380,16 @@ YUI.add("wegas-i18n", function(Y) {
                                 visibility = variableDescriptor._getVisibility(variableDescriptor);
 
                                 if (visibility === "INTERNAL") {
-                                    inlineEditor = "FORBIDDEN";
+                                    readOnly = true;
                                 }
                             }
                         }
                     }
 
                     if (theOne) {
-                        return genTranslationMarkup(tr, inlineEditor, theOne, trId, theOne.code === favoriteCode, isOutdated);
+                        return genTranslationMarkup(tr, inlineEditor, theOne, trId, theOne.code === favoriteCode, isOutdated, readOnly);
                     } else {
-                        return genTranslationMarkup(params && params.fallback || "", inlineEditor, langs[0], trId, true);
+                        return genTranslationMarkup(params && params.fallback || "", inlineEditor, langs[0], trId, true, readOnly);
                     }
                 }
             }
@@ -527,7 +531,8 @@ YUI.add("wegas-i18n", function(Y) {
 
         function findLanguageByCode(code) {
             if (code) {
-                return Y.Array.find(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"), function(item) {
+                return Y.Array.find(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel()
+                    .get("languages"), function(item) {
                     return item.get("code").toUpperCase() === code.toUpperCase();
                 });
             } else {
@@ -591,12 +596,13 @@ YUI.add("wegas-i18n", function(Y) {
                     String.prototype.colonize = config[lang].colonize; // don't
 
                     Y.all("body > .wegas-playerview.wegas-pageloader, #centerTabView > div > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner > .wegas-pageloader," +
-                        "#rightTabView > div > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner > .wegas-pageloader").each(function(rootPageLoaderNode) {
-                        var pageLoader = Y.Widget.getByNode(rootPageLoaderNode);
-                        if (pageLoader) {
-                            pageLoader.reload();
-                        }
-                    });
+                        "#rightTabView > div > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner > .wegas-pageloader")
+                        .each(function(rootPageLoaderNode) {
+                            var pageLoader = Y.Widget.getByNode(rootPageLoaderNode);
+                            if (pageLoader) {
+                                pageLoader.reload();
+                            }
+                        });
                 });
             }
         }
