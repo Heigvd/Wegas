@@ -7,6 +7,7 @@ import * as t from '../../page-schema.build';
 interface EditorProps {
   value?: string;
   uri?: 'internal://page.json';
+  readonly?: boolean;
   minimap: boolean;
   language: 'javascript' | 'css' | 'json';
   onChange: (value: string) => void;
@@ -36,6 +37,7 @@ class SrcEditor extends React.Component<EditorProps> {
     super(props);
   }
   shouldComponentUpdate(nextProps: EditorProps) {
+    this.editor!.updateOptions({ readOnly: nextProps.readonly });
     return (
       nextProps.value !== this.lastValue ||
       this.props.language !== nextProps.language
@@ -89,6 +91,7 @@ class SrcEditor extends React.Component<EditorProps> {
         theme: 'vs-dark',
         model: model,
         minimap: { enabled: this.props.minimap },
+        readOnly: this.props.readonly,
       });
       this.editor.onDidBlurEditorText(() => {
         this.lastValue = this.editor!.getValue();
