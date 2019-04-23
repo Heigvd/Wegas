@@ -147,6 +147,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     @Inject
     private WebsocketFacade websocketFacade;
 
+    @Inject
+    private ModelFacade modelFacade;
+
     /**
      * Dummy constructor
      */
@@ -656,7 +659,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @throws CloneNotSupportedException
      */
     public GameModel createScenario(final Long sourceId) throws CloneNotSupportedException {
-        final GameModel srcGameModel = this.find(sourceId);
+        GameModel srcGameModel = this.find(sourceId);
 
         if (srcGameModel != null) {
 
@@ -664,11 +667,17 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             switch (srcGameModel.getType()) {
                 case MODEL:
                     requestManager.assertCanInstantiateGameModel(srcGameModel);
+                    // prefer the reference
+                    GameModel ref = modelFacade.getReference(srcGameModel);
+                    if (ref != null){
+                        srcGameModel = ref;
+                    }
                     newGameModel = new GameModel();
                     // merge deep but skip PRIVATE content
                     newGameModel.deepMerge(srcGameModel);
                     newGameModel.setBasedOn(srcGameModel);
                     break;
+
                 case SCENARIO:
                     requestManager.assertCanDuplicateGameModel(srcGameModel);
                     newGameModel = this.duplicate(sourceId);
