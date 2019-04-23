@@ -11,6 +11,7 @@ import { FontAwesome } from '../Views/FontAwesome';
 import { FileAPI } from '../../../API/files.api';
 import { themeVar } from '../../../Components/Theme';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { gameModelDependsOnModel } from './FileBrowser';
 
 const dndRow = css({
   color: themeVar.primaryLighterColor,
@@ -103,6 +104,10 @@ export const getAbsoluteFileName = (file: IFile) => {
 };
 
 const FileRow = (props: FileRowProps) => {
+  const isEditAllowed = () => {
+    return !gameModelDependsOnModel() || props.file.visibility === 'PRIVATE';
+  };
+
   const del = (e: React.MouseEvent) => {
     e.stopPropagation();
     FileAPI.deleteFile(
@@ -151,7 +156,7 @@ const FileRow = (props: FileRowProps) => {
         >
           <FontAwesome icon="search" />
         </span>
-        {!props.file.directory && (
+        {!props.file.directory && isEditAllowed() && (
           <span onClick={clickEdit}>
             <FontAwesome icon="edit" />
             <input
@@ -161,9 +166,11 @@ const FileRow = (props: FileRowProps) => {
             />
           </span>
         )}
-        <span onClick={del}>
-          <FontAwesome icon="trash" />
-        </span>
+        {isEditAllowed() && (
+          <span onClick={del}>
+            <FontAwesome icon="trash" />
+          </span>
+        )}
       </td>
     </>
   );

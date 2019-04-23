@@ -21,12 +21,20 @@ export interface FileBrowserProps {
 
 export type IFileMap = { [key: string]: IFile };
 
+export const gameModelDependsOnModel = () => {
+  return (
+    GameModel.selectCurrent().type === 'SCENARIO' &&
+    GameModel.selectCurrent().basedOnId !== null
+  );
+};
+
 export function FileBrowser(props: FileBrowserProps) {
   const [currentPath, setCurrentPath] = React.useState('/');
   const [files, setFiles] = React.useState<IFile[]>([]);
   const [selectedFiles, setSelectedFiles] = React.useState<IFileMap>({});
   const [refreshToggle, setRefreshToggle] = React.useState(false);
   const [isUploading, setUploading] = React.useState(false);
+  const [uploadAllowed, setUploadAllowed] = React.useState(false);
 
   const generateGoodPath = (file: IFile) => {
     return file.path.replace(/(\/)$/, '') + '/' + file.name;
@@ -57,10 +65,10 @@ export function FileBrowser(props: FileBrowserProps) {
     } else {
       // Open file
       const win = window.open(
-        API_ENDPOINT +
-          `GameModel/${
-            GameModel.selectCurrent().id
-          }/File/read${getAbsoluteFileName(file)}`,
+        FileAPI.fileURL(
+          GameModel.selectCurrent().id!,
+          getAbsoluteFileName(file),
+        ),
         '_blank',
       );
       win!.focus();
@@ -76,7 +84,7 @@ export function FileBrowser(props: FileBrowserProps) {
   };
 
   const refreshFileList = () => {
-    FileAPI.getFileList(GameModel.selectCurrent().id!, currentPath).then(
+    return FileAPI.getFileList(GameModel.selectCurrent().id!, currentPath).then(
       (res: IFile[]) => {
         setFiles(res);
       },
@@ -128,6 +136,9 @@ export function FileBrowser(props: FileBrowserProps) {
 
   React.useEffect(() => {
     refreshFileList();
+    isUploadAllowed().then((allowed: boolean) => {
+      setUploadAllowed(allowed);
+    });
   }, [props, currentPath, refreshToggle, isUploading]);
 
   ///////////////////////////
@@ -160,6 +171,18 @@ export function FileBrowser(props: FileBrowserProps) {
   // Drag and drop management
   ///////////////////////////
 
+  const isUploadAllowed = () => {
+    return FileAPI.getFileMeta(GameModel.selectCurrent().id!, currentPath).then(
+      (file: IFile) => {
+        return (
+          !gameModelDependsOnModel() ||
+          file.visibility === 'PRIVATE' ||
+          file.visibility === 'INHERITED'
+        );
+      },
+    );
+  };
+
   return (
     <div>
       <h2>{currentPath}</h2>
@@ -168,9 +191,11 @@ export function FileBrowser(props: FileBrowserProps) {
           <FontAwesome icon="arrow-left" />
         </button>
       )}
-      <button onClick={addNewDirectory}>
-        <FontAwesome icon="folder-plus" />
-      </button>
+      {uploadAllowed && (
+        <button onClick={addNewDirectory}>
+          <FontAwesome icon="folder-plus" />
+        </button>
+      )}
       <input
         id="newfile-upload"
         type="file"
@@ -181,14 +206,14 @@ export function FileBrowser(props: FileBrowserProps) {
       />
       <table>
         <tbody>
-          {
+          {uploadAllowed && (
             <DropTargetAddFileRow
               accepts={accepts}
               onDrop={handleAddFileDrop}
               onClick={clickNewFile}
               isUploading={isUploading}
             />
-          }
+          )}
           {files.map((file: IFile) => {
             const selected =
               selectedFiles[getAbsoluteFileName(file)] != undefined;

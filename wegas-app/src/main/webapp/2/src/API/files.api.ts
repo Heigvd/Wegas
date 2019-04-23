@@ -1,17 +1,5 @@
 import { rest } from './rest';
 
-// GET	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/exportRawXML
-// GET	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/exportXML
-// GET	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/exportZIP
-// POST	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/importXML
-// GET	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/list{absoluteDirectoryPath : .*?}
-// GET	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/meta{absolutePath : .*?}
-// GET	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/read{absolutePath : .*?}
-// PUT	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/update{absolutePath : .*?}
-// DELETE	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/{force: (force/)?}delete{absolutePath : .*?}
-// POST	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/{force: (force/)?}upload{directory : .*?}
-// DELETE	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/destruct
-
 type IFiles = IFile[];
 
 const FILE_BASE = (gameModelId: number) => `GameModel/${gameModelId}/File/`;
@@ -35,7 +23,44 @@ export const FileAPI = {
     );
   },
   /**
-   * List all pages in a directory
+   * Get all IFiles as XML
+   * @param gameModelId gameModels'id
+   */
+  async getFilesAsXML(gameModelId: number): Promise<string> {
+    return rest(FILE_BASE(gameModelId) + 'exportXML').then(
+      async (res: Response) => {
+        return await res.json();
+      },
+    );
+  },
+  /**
+   * Get all IFiles as ZIP
+   * @param gameModelId gameModels'id
+   */
+  async getFilesAsZIP(gameModelId: number): Promise<string> {
+    return rest(FILE_BASE(gameModelId) + 'exportZIP').then(
+      async (res: Response) => {
+        return await res.json();
+      },
+    );
+  },
+
+  /**
+   * Import an XML file tree
+   * @param gameModelId gameModels'id
+   * @param xmlFiles xml to import
+   */
+  async importXML(gameModelId: number, xmlFiles: string) {
+    const data = new FormData();
+    data.append('file', xmlFiles);
+
+    return await rest(FILE_BASE(gameModelId) + 'importXML', {
+      method: 'POST',
+      body: data,
+    });
+  },
+  /**
+   * List all files in a directory
    * @param gameModelId gameModelId to fetch files from
    * @param absoluteDirectoryPath optional directory from where to list files, will return the content of root directory if not set
    */
@@ -50,12 +75,11 @@ export const FileAPI = {
     );
   },
   /**
-   * List all pages in a directory
+   * Delete a specific file
    * @param gameModelId gameModelId to fetch files from
    * @param absolutePath file to delete
    * @param froce allows recursive delete on directories
    */
-  // DELETE	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}/File/{force: (force/)?}delete{absolutePath : .*?}
   async deleteFile(
     gameModelId: number,
     absolutePath: string,
@@ -84,11 +108,12 @@ export const FileAPI = {
       });
   },
   /**
-   * List all pages in a directory
+   * Create a new file
    * @param gameModelId gameModelId to fetch files from
    * @param name the name of the file to upload
    * @param path the path where to save the file (if undefined, takes root (/))
    * @param file the file to save (keep undefined for directory)
+   * @param force force modifying the file content
    */
   async createFile(
     gameModelId: number,
@@ -107,6 +132,60 @@ export const FileAPI = {
         method: 'POST',
         body: data,
       },
+    );
+  },
+  /**
+   * Get metata of a specific file/directory
+   * @param gameModelId gameModelId to fetch files from
+   * @param absolutePath the absolute path of the file (if undefined, takes root (/))
+   */
+  async getFileMeta(gameModelId: number, absolutePath?: string) {
+    return rest(FILE_BASE(gameModelId) + 'meta' + absolutePath).then(
+      async (res: Response) => {
+        return await res.json();
+      },
+    );
+  },
+  /**
+   * Update file metadata
+   * @param gameModelId gameModelId to fetch files from
+   * @param absolutePath the absolute path of the file (if undefined, takes root (/))
+   * @param file the file to update
+   */
+  async updateMetadata(gameModelId: number, file: File, absolutePath?: string) {
+    const data = new FormData();
+    data.append('name', name);
+    data.append('file', file as Blob);
+
+    return await rest(FILE_BASE(gameModelId) + 'update' + absolutePath, {
+      method: 'PUT',
+      body: data,
+    });
+  },
+  /**
+   * Delete the whole file tree
+   * @param gameModelId gameModelId to fetch files from
+   */
+  async destruct(gameModelId: number): Promise<IFile> {
+    return rest(
+      FILE_BASE(gameModelId) +
+        'destruct' +
+        {
+          method: 'DELETE',
+        },
+    ).then(async (res: Response) => {
+      return await res.json();
+    });
+  },
+
+  /**
+   * Returns url to read a file
+   * @param gameModelId gameModelId to fetch files from
+   * @param absolutePath the absolute path of the file to read
+   */
+  fileURL(gameModelId: number, absolutePath: string): string {
+    return (
+      API_ENDPOINT + 'GameModel/' + gameModelId + '/File/read' + absolutePath
     );
   },
 };
