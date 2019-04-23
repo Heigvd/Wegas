@@ -2,14 +2,12 @@ import * as React from 'react';
 import { TabLayout } from '../../Components/Tabs';
 import { Toolbar } from '../../Components/Toolbar';
 import { IconButton } from '../../Components/Button/IconButton';
-import { Menu } from '../../Components/Menu';
-import { LibraryApi, NewLibErrors } from '../../API/library.api';
+import { LibraryApi, NewLibErrors, LibType } from '../../API/library.api';
 import { GameModel } from '../../data/selectors';
-import { Labeled } from './FormView/labeled';
 import SrcEditor from './SrcEditor';
 
 interface ScriptEditorProps {
-  scriptType: 'CSS' | 'ClientScript' | 'ServerScript';
+  scriptType: LibType;
 }
 
 const visibilities: IVisibility[] = [
@@ -19,18 +17,39 @@ const visibilities: IVisibility[] = [
   'PRIVATE',
 ];
 
+interface LibraryStatus {
+  isEdited: boolean;
+}
+
+interface ILibrariesWithState {
+  [id: string]: {
+    library: ILibrary;
+    status: LibraryStatus;
+  };
+}
+
 interface ILibrariesState {
   key: string;
-  libraries: ILibraries;
+  libraries: ILibrariesWithState;
+  tempLibrary: ILibrary;
+  tempStatus: LibraryStatus;
 }
 
 function ScriptEditor(props: ScriptEditorProps) {
   const gameModelId = GameModel.selectCurrent().id!;
-  //   const libraries =
+  const librarySelectorId = 'library-selector';
+  const visibilitySelectorId = 'visibility-selector';
 
   const [librariesState, setLibrariesState] = React.useState<ILibrariesState>({
     key: '',
     libraries: {},
+    tempLibrary: {
+      content: '',
+      visibility: 'PRIVATE',
+    },
+    tempStatus: {
+      isEdited: false,
+    },
   });
 
   let scriptLanguage: 'css' | 'javascript';
@@ -40,23 +59,62 @@ function ScriptEditor(props: ScriptEditorProps) {
       scriptLanguage = 'css';
       break;
     case 'ClientScript':
-    case 'ServerScript':
+    case 'Script':
     default:
       scriptLanguage = 'javascript';
   }
-
-  const librarySelectorId = 'library-selector';
-  const visibilitySelectorId = 'visibility-selector';
-
-  const getLibrarySelector = () => {
-    return document.getElementById(librarySelectorId)! as HTMLInputElement;
-  };
 
   const getVisibilitySelector = () => {
     return document.getElementById(visibilitySelectorId)! as HTMLInputElement;
   };
 
-  const loadLibraries = async (select?: string) => {
+  const getLibrarySelector = () => {
+    return document.getElementById(librarySelectorId)! as HTMLInputElement;
+  };
+
+  const setLibraryEdition = (isEdited: boolean) => {
+    setLibrariesState((oldState: ILibrariesState) => {
+      if (oldState.key) {
+        const newLibs = oldState.libraries;
+        newLibs[oldState.key].status.isEdited = isEdited;
+        return { ...oldState, libraries: newLibs };
+      } else {
+        return {
+          ...oldState,
+          tempStatus: {
+            ...oldState.tempStatus,
+            isEdited: isEdited,
+          },
+        };
+      }
+    });
+  };
+
+  const setLibraryVisibility = (visibility: IVisibility) => {
+    setLibrariesState((oldState: ILibrariesState) => {
+      if (oldState.key) {
+        const newLibs = oldState.libraries;
+        newLibs[oldState.key].library.visibility = visibility;
+        return { ...oldState, libraries: newLibs };
+      } else {
+        return {
+          ...oldState,
+          tempLibrary: {
+            ...oldState.tempLibrary,
+            visibility: visibility,
+          },
+        };
+      }
+    });
+  };
+
+  const setLibraryKey = (key: string) => {
+    setLibrariesState((oldState: ILibrariesState) => {
+      return { ...oldState, key: key };
+    });
+  };
+
+  const loadLibraries = (select?: string) => {
     LibraryApi.getAllLibraries(gameModelId, props.scriptType)
       .then((libs: ILibraries) => {
         setLibrariesState((oldState: ILibrariesState) => {
@@ -65,63 +123,100 @@ function ScriptEditor(props: ScriptEditorProps) {
             ? select
             : libKeys.indexOf(oldState.key) !== -1 //Checks if old key still exists in libs
             ? oldState.key
-            : libKeys.length > 0 //If not, sets an empty key
+            : libKeys.length > 0 //If not, sets the new key as the first element in library
             ? libKeys[0]
-            : '';
+            : ''; //If no more libraries, set key to ''
+          let newLib: ILibrariesWithState = {};
+
+          for (const key in libs) {
+            newLib[key] = {
+              library: libs[key],
+              status: {
+                isEdited: oldState.libraries[key]
+                  ? oldState.libraries[key].status.isEdited
+                  : false,
+              },
+            };
+          }
+
           return {
+            ...oldState,
             key: libKey,
-            libraries: libs,
+            libraries: newLib,
           };
         });
       })
-      .catch(() => {
-        alert('Impossible de récupérer les scripts');
+      .catch(e => {
+        console.log(e);
+        alert('Cannot get the scripts');
       });
   };
 
   const onLibraryChange = () => {
-    const libKey = getLibrarySelector().value;
-    getVisibilitySelector().value = librariesState.libraries[libKey].visibility;
     setLibrariesState((oldState: ILibrariesState) => {
+      const newKey = getLibrarySelector().value;
+      getVisibilitySelector().value =
+        librariesState.libraries[newKey].library.visibility;
       return {
-        key: libKey,
+        ...oldState,
+        key: newKey,
         libraries: oldState.libraries,
       };
     });
   };
 
-  const onNewLibrary = (name: string | null) => {
+  const onVisibilityChange = () => {
+    setLibraryEdition(true);
+    setLibraryVisibility(getVisibilitySelector().value as IVisibility);
+  };
+
+  const onNewLibrary = (name: string | null, library?: ILibrary) => {
     if (name !== null) {
-      LibraryApi.newLibrary(gameModelId, props.scriptType, name)
+      LibraryApi.addLibrary(gameModelId, props.scriptType, name, library)
         .then((res: IGameModel) => {
           loadLibraries(name);
         })
         .catch((e: NewLibErrors) => {
           switch (e) {
             case 'NOTNEW':
-              alert('Ce fichier existe déja');
+              alert(
+                'Script name not available (script already exists or the name contains bad characters)',
+              );
               break;
             case 'UNKNOWN':
             default:
-              alert('Impossible de créer le script');
+              alert('Cannot create the script');
           }
         });
     }
   };
 
   const onSaveLibrary = () => {
-    const libKey = librariesState.key;
-    LibraryApi.saveLibrary(gameModelId, props.scriptType, libKey, {
-      content: librariesState.libraries[librariesState.key].content,
-      visibility: getVisibilitySelector().value as IVisibility,
-      version: librariesState.libraries[libKey].version,
-    })
-      .then(() => {
-        loadLibraries();
-      })
-      .catch(() => {
-        alert('Impossible de sauver le script');
+    let libKey: string | null = librariesState.key;
+    if (!libKey) {
+      do {
+        libKey = prompt('Please enter a script name');
+      } while (!libKey);
+      setLibraryKey(libKey);
+      onNewLibrary(libKey, {
+        content: librariesState.tempLibrary.content,
+        visibility: getVisibilitySelector().value as IVisibility,
       });
+    } else {
+      LibraryApi.saveLibrary(
+        gameModelId,
+        props.scriptType,
+        libKey,
+        librariesState.libraries[libKey].library,
+      )
+        .then(() => {
+          setLibraryEdition(false);
+          loadLibraries();
+        })
+        .catch(() => {
+          alert('Cannot save the script');
+        });
+    }
   };
 
   const onDeleteLibrary = () => {
@@ -130,19 +225,54 @@ function ScriptEditor(props: ScriptEditorProps) {
         loadLibraries();
       })
       .catch(() => {
-        alert('Impossible de supprimer le script');
+        alert('Cannot delete the script');
       });
   };
 
   const onEditorBlur = (content: string) => {
     setLibrariesState((oldState: ILibrariesState) => {
-      const newLibs = oldState.libraries;
-      newLibs[oldState.key].content = content;
-      return {
-        key: oldState.key,
-        libraries: newLibs,
-      };
+      if (oldState.key !== '') {
+        const newLibs = oldState.libraries;
+        newLibs[oldState.key].status.isEdited =
+          newLibs[oldState.key].status.isEdited ||
+          oldState.libraries[oldState.key].library.content !== content;
+        newLibs[oldState.key].library.content = content;
+        return {
+          ...oldState,
+          libraries: newLibs,
+        };
+      } else {
+        return {
+          ...oldState,
+          tempLibrary: {
+            ...oldState.tempLibrary,
+            content: content,
+          },
+        };
+      }
     });
+  };
+
+  const getScriptEditingState = (): boolean => {
+    return (
+      (!librariesState.key && librariesState.tempStatus.isEdited) ||
+      (librariesState.libraries[librariesState.key] &&
+        librariesState.libraries[librariesState.key].status.isEdited)
+    );
+  };
+
+  const getActualScriptContent = (): string => {
+    return librariesState.libraries[librariesState.key]
+      ? librariesState.libraries[librariesState.key].library.content
+      : !librariesState.key
+      ? librariesState.tempLibrary.content
+      : '';
+  };
+
+  const getActualScriptVisibility = (): IVisibility => {
+    return librariesState.libraries[librariesState.key]
+      ? librariesState.libraries[librariesState.key].library.visibility
+      : 'INTERNAL';
   };
 
   React.useEffect(() => {
@@ -154,8 +284,8 @@ function ScriptEditor(props: ScriptEditorProps) {
       <Toolbar.Header>
         <IconButton
           icon="plus"
-          tooltip="Ajouter un nouveau script"
-          onClick={() => onNewLibrary(prompt('Entrez le nom du script'))}
+          tooltip="Add a new script"
+          onClick={() => onNewLibrary(prompt('Type the name of the script'))}
         />
         <select
           id={librarySelectorId}
@@ -167,32 +297,43 @@ function ScriptEditor(props: ScriptEditorProps) {
               return <option value={key}>{key}</option>;
             })
           ) : (
-            <option value="">Aucun script</option>
+            <option value="">No script</option>
           )}
         </select>
-        <select id={visibilitySelectorId}>
+        <select
+          id={visibilitySelectorId}
+          onChange={onVisibilityChange}
+          value={getActualScriptVisibility()}
+        >
           {visibilities.map((item, key) => {
             return <option value={item}>{item}</option>;
           })}
         </select>
         <IconButton
+          icon="file"
+          onClick={() => {
+            setLibraryEdition(false);
+          }}
+        />
+        <IconButton
           icon="save"
-          tooltip="Sauvegarder le script"
+          tooltip="Save the script"
           onClick={onSaveLibrary}
         />
         <IconButton
           icon="trash"
-          tooltip="Supprimer le script"
+          tooltip="Delete the script"
           onClick={onDeleteLibrary}
         />
+        <div>
+          {getScriptEditingState()
+            ? 'The script is not saved'
+            : 'The script is saved'}
+        </div>
       </Toolbar.Header>
       <Toolbar.Content>
         <SrcEditor
-          value={
-            librariesState.libraries[librariesState.key]
-              ? librariesState.libraries[librariesState.key].content
-              : ''
-          }
+          value={getActualScriptContent()}
           language={scriptLanguage}
           onBlur={onEditorBlur}
         />
@@ -203,10 +344,10 @@ function ScriptEditor(props: ScriptEditorProps) {
 
 export function ScriptEditorLayout() {
   return (
-    <TabLayout tabs={['CSS', 'ClientScript', 'ServerScript']}>
+    <TabLayout tabs={['Styles', 'Client', 'Server']}>
       <ScriptEditor scriptType="CSS" />
       <ScriptEditor scriptType="ClientScript" />
-      <ScriptEditor scriptType="ServerScript" />
+      <ScriptEditor scriptType="Script" />
     </TabLayout>
   );
 }

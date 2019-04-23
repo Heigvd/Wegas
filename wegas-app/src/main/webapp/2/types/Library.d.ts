@@ -4,7 +4,7 @@ interface ILibrary {
   contentType?: string;
   content: string;
   visibility: IVisibility;
-  version: number;
+  version?: number;
 }
 
 interface ILibraries {
