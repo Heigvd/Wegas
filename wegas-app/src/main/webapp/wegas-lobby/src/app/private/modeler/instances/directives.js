@@ -18,7 +18,7 @@ angular
 
                 ctrl.updateInstances = function() {
                     ScenariosModel.getGameModelsByStatusTypeAndPermission("SCENARIO", "LIVE", "VIEW").then(function(response){
-                        ctrl.instances = repsonse.data.filter(function(s) {
+                        ctrl.instances = response.data.filter(function(s) {
                             return s.basedOnId === +ctrl.modelId;
                         });
                     });
