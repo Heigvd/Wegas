@@ -71,10 +71,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     className: "wegas-advanced-feature"
                 }
             },
-            currentState: {
-                "transient": true,
-                type: STRING
-            },
             enabled: {
                 type: BOOLEAN,
                 value: true,
@@ -146,7 +142,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         },
         // *** Private methods *** //
         getCurrentState: function() {
-            return this.getInstance().get("currentState");
+            return this.getState(this.getInstance().get("currentStateId"));
         },
         getInitialStateId: function() {
             return this.get("defaultInstance").get("currentStateId");

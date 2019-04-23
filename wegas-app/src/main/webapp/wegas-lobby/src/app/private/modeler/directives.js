@@ -113,7 +113,7 @@ angular.module('private.modeler.directives', [
             var config = localStorage.getObject("wegas-config");
             config.commons.myModelsFirst = ctrl.mefirst;
             localStorage.setObject("wegas-config", config);
-        }
+        };
 
         ctrl.initMeFirst = function() {
             if (ctrl.user) {
@@ -321,7 +321,7 @@ angular.module('private.modeler.directives', [
                         }
                         // The init routine needs the admin username for filtering
                         ctrl.initMeFirst();
-                    })
+                    });
                 } else {
                     ctrl.initMeFirst();
                 }
@@ -536,6 +536,7 @@ angular.module('private.modeler.directives', [
                 search: '=',
                 duplicate: '=',
                 duplicating: '=',
+                editable: "=",
                 user: '=',
                 username: '=',
                 mefirst: '='
@@ -551,6 +552,7 @@ angular.module('private.modeler.directives', [
                 archive: '=',
                 duplicate: '=',
                 duplicating: '=',
+                editable: "=",
                 user: '=',
                 username: '='
             },

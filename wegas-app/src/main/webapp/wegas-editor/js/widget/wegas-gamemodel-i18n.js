@@ -1107,7 +1107,8 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                 markup.push(I18n.t(tr.value, {
                                     lang: langCode,
                                     caseSensitiveCode: true,
-                                    inlineEditor: this.isLanguageEditable(langCode) ? tr.type && tr.type.replace("I18n", "") : "FORBIDDEN"
+                                    inlineEditor: tr.type && tr.type.replace("I18n", "") || "",
+                                    readOnly: !this.isLanguageEditable(langCode)
                                 }));
                                 markup.push("</div>"); // /translation
                             }

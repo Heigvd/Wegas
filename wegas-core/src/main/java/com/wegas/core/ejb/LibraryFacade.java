@@ -11,6 +11,7 @@ import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
+import com.wegas.core.persistence.variable.ModelScoped;
 import java.util.*;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -90,9 +91,13 @@ public class LibraryFacade {
         if (gameModel.getGameModelContent(lib, key) == null) {
             content.setContentKey(key);
             lib.add(content);
+            if (!gameModel.isModel()) {
+                content.setVisibility(ModelScoped.Visibility.PRIVATE);
+            }
 
             switch (library) {
                 case "Script":
+                case "ServerScript":
                     content.setScriptlibrary_GameModel(gameModel);
                     break;
                 case "ClientScript":
@@ -113,9 +118,15 @@ public class LibraryFacade {
         GameModel gameModel = gameModelFacade.find(gameModelId);
 
         GameModelContent gameModelContent = gameModel.getGameModelContent(lib, key);
+        content.setContentKey(gameModelContent.getContentKey());
         if (gameModelContent != null) {
-            gameModelContent.setContent(content.getContent());
-            gameModelContent.setVersion(content.getVersion());
+            gameModelContent.merge(content);
+            //gameModelContent.setContent(content.getContent());
+            //gameModelContent.setVersion(content.getVersion());
+            //if (gameModel.isModel()) {
+            // visibility is writable only if the gameModel is a model
+            //    gameModelContent.setVisibility(content.getVisibility());
+            //}
             websocketFacade.gameModelContentUpdate(gameModelContent, requestManager.getSocketId());
         } else {
             throw WegasErrorMessage.error("Library does not exists");
