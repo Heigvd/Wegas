@@ -7,14 +7,14 @@ import { ThunkResult } from '../store';
 import { ReplaceOperation } from 'fast-json-patch/lib/core';
 import { Reducer } from 'redux';
 
-export interface PageState {
-  [id: string]: Readonly<Page>;
+export interface LibraryState {
+  [id: string]: Readonly<ILibrary>;
 }
 
-const pageState: Reducer<Readonly<PageState>> = u(
-  (state: PageState, action: StateActions) => {
+const libraryState: Reducer<Readonly<LibraryState>> = u(
+  (state: LibraryState, action: StateActions) => {
     switch (action.type) {
-      case ActionType.PAGE_FETCH:
+      case ActionType.LIBRARY_FETCH:
         return { ...state, ...action.payload.pages };
       case ActionType.PAGE_INDEX:
         return action.payload.reduce(
@@ -32,7 +32,7 @@ const pageState: Reducer<Readonly<PageState>> = u(
   },
   {},
 );
-export default pageState;
+export default libraryState;
 
 // Actions
 
