@@ -14,10 +14,12 @@ import { DropTargetMonitor } from 'react-dnd';
 import { defaultContextManager } from '../../../Components/DragAndDrop';
 import { FontAwesome } from '../Views/FontAwesome';
 import { omit } from 'lodash-es';
+import { resolve } from 'path';
 
 export interface FileBrowserProps {
   onSelectFile?: (files: IFile[]) => void;
   multipleSelection?: boolean;
+  selectedPaths?: string[];
 }
 
 export type IFileMap = { [key: string]: IFile };
@@ -54,6 +56,7 @@ export function FileBrowser(props: FileBrowserProps) {
       if (props.onSelectFile) {
         props.onSelectFile(Object.values(newSF));
       }
+      console.log(newSF);
       return newSF;
     });
   };
@@ -136,11 +139,41 @@ export function FileBrowser(props: FileBrowserProps) {
   };
 
   React.useEffect(() => {
-    refreshFileList();
-    isUploadAllowed().then((allowed: boolean) => {
-      setUploadAllowed(allowed);
+    refreshFileList().then(() => {
+      isUploadAllowed().then((allowed: boolean) => {
+        setUploadAllowed(allowed);
+      });
     });
   }, [props, currentPath, refreshToggle, isUploading]);
+
+  React.useEffect(() => {
+    if (props.selectedPaths) {
+      let newSelectedFiles: IFileMap = {};
+      let highestPath: string = '';
+      let shortestSplit: number = Number.MAX_SAFE_INTEGER;
+
+      const requests = props.selectedPaths.map(item => {
+        return new Promise(resolve => {
+          FileAPI.getFileMeta(GameModel.selectCurrent().id!, item).then(
+            (file: IFile) => {
+              newSelectedFiles[item] = file;
+              const splittedPath = file.path.split('/');
+              if (splittedPath.length < shortestSplit) {
+                shortestSplit = splittedPath.length;
+                highestPath = file.path;
+              }
+              resolve();
+            },
+          );
+        });
+      });
+
+      Promise.all(requests).then(() => {
+        setCurrentPath(highestPath);
+        setSelectedFiles(newSelectedFiles);
+      });
+    }
+  }, [props.selectedPaths]);
 
   ///////////////////////////
   // Drag and drop management
@@ -218,8 +251,6 @@ export function FileBrowser(props: FileBrowserProps) {
           {files.map((file: IFile) => {
             const selected =
               selectedFiles[getAbsoluteFileName(file)] !== undefined;
-
-            console.log(file.name + ' : selected -> ' + selected);
             return (
               <DropTargetFileRow
                 key={file.path + file.name}

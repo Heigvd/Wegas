@@ -139,7 +139,10 @@ export const FileAPI = {
    * @param gameModelId gameModelId to fetch files from
    * @param absolutePath the absolute path of the file (if undefined, takes root (/))
    */
-  async getFileMeta(gameModelId: number, absolutePath?: string) {
+  async getFileMeta(
+    gameModelId: number,
+    absolutePath?: string,
+  ): Promise<IFile> {
     return rest(FILE_BASE(gameModelId) + 'meta' + absolutePath).then(
       async (res: Response) => {
         return await res.json();

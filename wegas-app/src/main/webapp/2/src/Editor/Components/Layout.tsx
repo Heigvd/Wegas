@@ -56,6 +56,12 @@ export default class AppLayout extends React.Component<
                 console.log(files);
               }}
               multipleSelection={true}
+              selectedPaths={[
+                '/TESTOS/fsdf/testimage2.jpg',
+                '/TESTOS/Yo',
+                '/TESTOS/testaudio.mp3',
+                '/TESTOS/testfile.txt',
+              ]}
             />
             <DndFileBrowser
               onSelectFile={(files: IFile[]) => {
