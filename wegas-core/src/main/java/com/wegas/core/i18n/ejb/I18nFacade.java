@@ -370,11 +370,11 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
 
             // convert column/line nunbers to absolute indexes
             for (int i = 0; i < script.length(); i++) {
-                if (startLine == line) {
+                if (indexes[0] == null && startLine == line) {
                     indexes[0] = i + startColumn;
                 }
 
-                if (endLine == line) {
+                if (indexes[1] == null && endLine == line) {
                     indexes[1] = i + endColumn;
                 }
 
