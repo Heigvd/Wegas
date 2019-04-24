@@ -14,6 +14,13 @@ export const PAGE_INDEX = 'PAGE/INDEX';
 export const PAGE_EDIT = 'PAGE/EDIT';
 export const PAGE_FETCH = 'PAGE/FETCH';
 
+export const LIBRARY_EDIT_MODE = 'LIBRARY/EDIT_MODE';
+export const LIBRARY_SRC_MODE = 'LIBRARY/SRC_MODE';
+export const LIBRARY_LOAD_ID = 'LIBRARY/LOAD_ID';
+export const LIBRARY_INDEX = 'LIBRARY/INDEX';
+export const LIBRARY_EDIT = 'LIBRARY/EDIT';
+export const LIBRARY_FETCH = 'LIBRARY/FETCH';
+
 export const SEARCH_USAGE = 'SEARCH/USAGE';
 export const SEARCH_GLOBAL = 'SEARCH/GLOBAL';
 export const SEARCH_ONGOING = 'SEARCH/ONGOING';

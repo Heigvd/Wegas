@@ -5,11 +5,19 @@ import { IconButton } from '../../Components/Button/IconButton';
 import { LibraryApi, NewLibErrors, LibType } from '../../API/library.api';
 import { GameModel } from '../../data/selectors';
 import SrcEditor from './SrcEditor';
+import { StoreConsumer, StoreDispatch } from '../../data/store';
+import { State } from '../../data/Reducer/reducers';
+import { Actions } from '../../data';
 
 type VisibilityMode = 'CREATE' | 'EDIT' | 'DELETE' | 'CONTENT';
 
+interface ScriptEditorLayoutProps {
+  dispatch: StoreDispatch;
+}
+
 interface ScriptEditorProps {
   scriptType: LibType;
+  dispatch: StoreDispatch;
 }
 
 const visibilities: IVisibility[] = [
@@ -199,6 +207,13 @@ function ScriptEditor(props: ScriptEditorProps) {
         });
       }
     } else {
+      props.dispatch(
+        Actions.ScriptActions.patch(
+          librariesState.libraries[libKey].library.id,
+          p,
+        ),
+      );
+
       LibraryApi.saveLibrary(
         gameModelId,
         props.scriptType,
@@ -412,12 +427,22 @@ function ScriptEditor(props: ScriptEditorProps) {
   );
 }
 
-export function ScriptEditorLayout() {
+export function ScriptEditorLayout(props: ScriptEditorLayoutProps) {
   return (
     <TabLayout tabs={['Styles', 'Client', 'Server']}>
-      <ScriptEditor scriptType="CSS" />
-      <ScriptEditor scriptType="ClientScript" />
-      <ScriptEditor scriptType="Script" />
+      <ScriptEditor {...props} scriptType="CSS" />
+      <ScriptEditor {...props} scriptType="ClientScript" />
+      <ScriptEditor {...props} scriptType="Script" />
     </TabLayout>
+  );
+}
+
+export default function ConnectedPageDisplay() {
+  return (
+    <StoreConsumer selector={(s: State) => ({})}>
+      {({ state, dispatch }) => (
+        <ScriptEditorLayout {...state} dispatch={dispatch} />
+      )}
+    </StoreConsumer>
   );
 }
