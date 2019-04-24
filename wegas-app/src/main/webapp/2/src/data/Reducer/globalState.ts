@@ -53,19 +53,24 @@ export interface GlobalState {
   };
   pageEdit: Readonly<boolean>;
   pageSrc: Readonly<boolean>;
-  search:
-    | {
-        type: 'GLOBAL';
-        value: string;
-        result: number[];
-      }
-    | {
-        type: 'USAGE';
-        value: number;
-        result: number[];
-      }
-    | { type: 'ONGOING' }
-    | { type: 'NONE' };
+  search: {
+    type: 'GLOBAL' | 'USAGE' | 'ONGOING' | 'NONE';
+    value?: string;
+    result?: number[];
+  };
+  // search:
+  //   | {
+  //       type: 'GLOBAL';
+  //       value: string;
+  //       result: number[];
+  //     }
+  //   | {
+  //       type: 'USAGE';
+  //       value: number;
+  //       result: number[];
+  //     }
+  //   | { type: 'ONGOING' }
+  //   | { type: 'NONE' };
   pusherStatus: {
     status: string;
     socket_id?: string;

@@ -11,6 +11,7 @@ interface ThemeProps {
   errorColor: string;
   successColor: string;
   disabledColor: string;
+  searchColor: string;
 }
 
 export const themeVar = {
@@ -25,6 +26,7 @@ export const themeVar = {
   successColor: 'var(--success-color)',
   disabledColor: 'var(--disabled-color)',
   backgroundColor: 'var(--background-color)',
+  searchColor: 'var(--search-color)',
 };
 export const primary = css({
   backgroundColor: themeVar.primaryColor,
@@ -55,6 +57,7 @@ export class Theme extends React.PureComponent<
     errorColor: 'red',
     successColor: '#25f325',
     disabledColor: 'lightgrey',
+    searchColor: 'hotpink',
   };
 
   readonly state: Readonly<{ root: HTMLElement | null }> = {
@@ -71,6 +74,7 @@ export class Theme extends React.PureComponent<
       errorColor,
       successColor,
       disabledColor,
+      searchColor,
     } = this.props;
     const bgColor = Color(backgroundColor);
     const textColor = bgColor.isLight() ? darkTextColor : lightTextColor;
@@ -103,6 +107,7 @@ export class Theme extends React.PureComponent<
           '--success-color': successColor,
           '--disabled-color': disabledColor,
           '--background-color': backgroundColor,
+          '--search-color': searchColor,
         })}
       >
         <Provider value={this.state.root}>{children}</Provider>

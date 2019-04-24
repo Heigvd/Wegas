@@ -1,6 +1,6 @@
 import { css, cx } from 'emotion';
 import produce from 'immer';
-import { Connection, Defaults, jsPlumbInstance } from 'jsplumb';
+import { Connection, Defaults, jsPlumbInstance, Overlay } from 'jsplumb';
 import * as React from 'react';
 import { IconButton } from '../../Components/Button/IconButton';
 import { VariableDescriptor } from '../../data/selectors';
@@ -12,6 +12,7 @@ import { FontAwesome } from './Views/FontAwesome';
 import { getInstance } from '../../data/methods/VariableDescriptor';
 import { themeVar } from '../../Components/Theme';
 import { EditorAction } from '../../data/Reducer/globalState';
+import { State as RState } from '../../data/Reducer/reducers';
 
 const editorStyle = css({
   position: 'relative',
@@ -43,6 +44,12 @@ const editorStyle = css({
     },
   },
 });
+
+const searchHighlighted = css({
+  // !important is the only way to take the priority as jsPlumb defines chained selectors for the style
+  backgroundColor: themeVar.searchColor + '!important',
+});
+
 const JS_PLUMB_OPTIONS: Defaults = {
   Anchor: ['Continuous', { faces: ['top', 'left', 'bottom'] }],
   //                    Anchor: ["Perimeter", {shape: "Rectangle", anchorCount: 120}],
@@ -86,6 +93,7 @@ interface StateMachineEditorProps {
    * Currently editing a child in the editor
    */
   editChild: boolean;
+  search: RState['global']['search'];
 }
 class StateMachineEditor extends React.Component<
   StateMachineEditorProps,
@@ -385,6 +393,7 @@ class StateMachineEditor extends React.Component<
                 deleteState={this.deleteState}
                 moveState={this.moveState}
                 editTransition={this.editTransition}
+                search={this.props.search}
               />
             );
           })}
@@ -398,6 +407,7 @@ export default function ConnectedStateMachineEditor() {
       descriptor: IFSMDescriptor | undefined;
       instance: IFSMInstance | undefined;
       editChild?: boolean;
+      search: RState['global']['search'];
     }>
       selector={s => {
         const descriptor = s.global.stateMachineEditor
@@ -418,6 +428,7 @@ export default function ConnectedStateMachineEditor() {
           descriptor,
           instance,
           editChild,
+          search: s.global.search,
         };
       }}
     >
@@ -432,6 +443,7 @@ export default function ConnectedStateMachineEditor() {
               stateMachineInstance={state.instance}
               dispatch={dispatch}
               editChild={state.editChild}
+              search={state.search}
             />
           );
         }
@@ -476,6 +488,7 @@ class State extends React.Component<{
     path: [string, number],
     transition: IFSMDescriptor.Transition,
   ) => void;
+  search: RState['global']['search'];
 }> {
   container: Element | null = null;
   componentDidMount() {
@@ -505,14 +518,25 @@ class State extends React.Component<{
     }
   }
   onClickEdit = () => this.props.editState(this.props.id);
+  isBeingSearched = () => {
+    const { value } = this.props.search;
+    const { label, onEnterEvent } = this.props.state;
+    const searched =
+      (label ? label : '') + (onEnterEvent ? onEnterEvent.content : '');
+    return value && searched.indexOf(value) >= 0;
+  };
   render() {
     const { state, initialState, currentState } = this.props;
     return (
       <div
-        className={cx(stateStyle, {
-          [initialStateStyle]: initialState,
-          [currentStateStyle]: currentState,
-        })}
+        className={cx(
+          stateStyle,
+          {
+            [initialStateStyle]: initialState,
+            [currentStateStyle]: currentState,
+          },
+          this.isBeingSearched() ? searchHighlighted : undefined,
+        )}
         id={this.props.id}
         ref={n => {
           this.container = n;
@@ -546,6 +570,7 @@ class State extends React.Component<{
             position={i}
             parent={this.props.id}
             editTransition={this.props.editTransition}
+            search={this.props.search}
           />
         ))}
       </div>
@@ -562,8 +587,17 @@ class Transition extends React.Component<{
     path: [string, number],
     transition: IFSMDescriptor.Transition,
   ) => void;
+  search: RState['global']['search'];
 }> {
   connection: Connection | null = null;
+  isBeingSearched = () => {
+    const { value } = this.props.search;
+    const { triggerCondition, preStateImpact } = this.props.transition;
+    const searched =
+      (triggerCondition ? triggerCondition.content : '') +
+      (preStateImpact ? preStateImpact.content : '');
+    return value && searched.indexOf(value) >= 0;
+  };
   componentDidMount() {
     const src = this.props.parent;
     const tgt = String(this.props.transition.nextStateId);
@@ -590,6 +624,19 @@ class Transition extends React.Component<{
       this.connection!.setParameter('transition', this.props.transition);
       this.connection!.setParameter('transitionIndex', this.props.position);
       this.connection!.setLabel(label);
+
+      // "(this.connection! as any)" is compulsory since jsPlumb is not fully implemented for TS
+      if (this.isBeingSearched()) {
+        (this.connection! as any).getLabelOverlay().getElement().className +=
+          ' ' + searchHighlighted;
+      } else {
+        const className = (this.connection! as any)
+          .getLabelOverlay()
+          .getElement().className;
+        (this.connection! as any)
+          .getLabelOverlay()
+          .getElement().className = className.replace(searchHighlighted, '');
+      }
     } catch (e) {
       console.error(e);
     }
