@@ -71,10 +71,6 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     @Transient
     private Beanjection beans;
 
-    @JsonIgnore
-    @Transient
-    private boolean shouldCreateInstance = false;
-
     /**
      *
      */
@@ -94,6 +90,22 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      */
     //@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
     private String broadcastScope = PlayerScope.class.getSimpleName();
+
+    public static AbstractScope build(String atClass, String broadcastScope) {
+        AbstractScope scope;
+        switch (atClass) {
+            case "PlayerScope":
+                scope = new PlayerScope();
+                break;
+            case "GameModelScope":
+                scope = new GameModelScope();
+                break;
+            default:
+                scope = new TeamScope();
+        }
+        scope.setBroadcastScope(broadcastScope);
+        return scope;
+    }
 
     /**
      * @param key
@@ -270,14 +282,6 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      */
     public void setBroadcastScope(String broadcastScope) {
         this.broadcastScope = broadcastScope;
-    }
-
-    public boolean getShouldCreateInstance() {
-        return shouldCreateInstance;
-    }
-
-    public void setShouldCreateInstance(boolean shouldCreateInstance) {
-        this.shouldCreateInstance = shouldCreateInstance;
     }
 
     @Override

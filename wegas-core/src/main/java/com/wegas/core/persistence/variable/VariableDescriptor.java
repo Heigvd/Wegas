@@ -265,8 +265,16 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @JoinFetch
     //@JsonView(value = Views.WithScopeI.class)
     //@WegasEntityProperty(callback = VdMergeCallback.class)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private AbstractScope scope;
 
+    @Transient
+    @WegasEntityProperty
+    private String scopeType;
+
+    @Transient
+    @WegasEntityProperty
+    private String broadcastScope;
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
@@ -370,6 +378,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
 
     /**
      * Set the root gameModel. Means this descriptor stands at gameModel root level
+     *
      * @param rootGameModel
      */
     public void setRoot(GameModel rootGameModel) {
@@ -661,6 +670,35 @@ abstract public class VariableDescriptor<T extends VariableInstance>
         }
     }
 
+    @JsonIgnore
+    public String getDeserialisedScopeType(){
+        return this.scopeType;
+    }
+
+    public String getScopeType() {
+        if (this.scope != null) {
+            return this.scope.getJSONClassName();
+        } else {
+            return scopeType;
+        }
+    }
+
+    public void setScopeType(String scopeType) {
+        this.scopeType = scopeType;
+    }
+
+    public String getBroadcastScope() {
+        if (this.scope != null) {
+            return this.scope.getBroadcastScope();
+        } else {
+            return broadcastScope;
+        }
+    }
+
+    public void setBroadcastScope(String broadcastScope) {
+        this.broadcastScope = broadcastScope;
+    }
+
     @Override
     public Visibility getVisibility() {
         return visibility;
@@ -756,49 +794,6 @@ abstract public class VariableDescriptor<T extends VariableInstance>
      * </ul>
      */
     public static class VdMergeCallback implements WegasCallback {
-
-        private AbstractScope cloneScope(AbstractScope scope) {
-            AbstractScope newScope = null;
-            try {
-                if (scope != null) {
-                    newScope = scope.getClass().getDeclaredConstructor().newInstance();
-                    newScope.setBroadcastScope(scope.getBroadcastScope());
-                }
-            } catch (Exception ex) {
-                logger.error("Fails to copy scope {}", newScope);
-            }
-            if (newScope == null) {
-                newScope = new TeamScope();
-                newScope.setBroadcastScope("TeamScope");
-            }
-            return newScope;
-        }
-
-        @Override
-        public void postUpdate(Mergeable entity, Object originalNewValue, Object identifier) {
-            VariableDescriptor vd = (VariableDescriptor) entity;
-
-            if (vd.getGameModel() != null) {
-                if (vd.getVariableDescriptorFacade().findDistinctNames(vd.getGameModel(), vd.getRefId()).contains(vd.getName())) {
-                    throw new WegasConflictException("Name already in use");
-                }
-            }
-
-            AbstractScope scope = vd.getScope();
-            AbstractScope newScope = ((VariableDescriptor) originalNewValue).getScope();
-
-            if (scope != null && newScope != null) {
-                if (!scope.getClass().equals(newScope.getClass())) {
-                    vd.getVariableDescriptorFacade().updateScope(vd, cloneScope(newScope));
-                } else {
-                    scope.setBroadcastScope(newScope.getBroadcastScope());
-                }
-            } else if (scope == null) {
-                newScope = cloneScope(newScope);
-                newScope.setShouldCreateInstance(true);
-                vd.setScope(newScope);
-            }
-        }
 
         @Override
         public void destroy(Mergeable entity, Object identifier) {
