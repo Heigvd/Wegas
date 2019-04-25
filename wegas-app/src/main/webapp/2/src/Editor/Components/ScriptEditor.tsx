@@ -7,16 +7,23 @@ import { GameModel } from '../../data/selectors';
 import SrcEditor from './SrcEditor';
 import { StoreConsumer, StoreDispatch } from '../../data/store';
 import { State } from '../../data/Reducer/reducers';
-import { Actions } from '../../data';
 import { LibraryState } from '../../data/Reducer/libraryState';
+import { omit } from 'lodash-es';
+import u from 'immer';
+import { Reducer } from 'redux';
 
-type VisibilityMode = 'CREATE' | 'EDIT' | 'DELETE' | 'CONTENT';
+// import { Actions } from '../../data';
+// import { LibraryState } from '../../data/Reducer/libraryState';
+
+// type VisibilityMode = 'CREATE' | 'EDIT' | 'DELETE' | 'CONTENT';
 
 interface ScriptEditorLayoutProps {
+  librariesState: LibraryState;
   dispatch: StoreDispatch;
 }
 
 interface ScriptEditorProps {
+  librariesState: LibraryState;
   scriptType: LibType;
   dispatch: StoreDispatch;
 }
@@ -30,6 +37,8 @@ const visibilities: IVisibility[] = [
 
 interface LibraryStatus {
   isEdited: boolean;
+  isOutdated: boolean;
+  // isDeleted: boolean;
 }
 
 interface ILibrariesWithState {
@@ -61,6 +70,8 @@ function ScriptEditor(props: ScriptEditorProps) {
     },
     tempStatus: {
       isEdited: false,
+      isOutdated: false,
+      // isDeleted: false,
     },
   });
 
@@ -71,7 +82,7 @@ function ScriptEditor(props: ScriptEditorProps) {
       scriptLanguage = 'css';
       break;
     case 'ClientScript':
-    case 'Script':
+    case 'ServerScript':
     default:
       scriptLanguage = 'javascript';
   }
@@ -102,6 +113,24 @@ function ScriptEditor(props: ScriptEditorProps) {
     });
   };
 
+  const setLibraryOutdated = (name: string, outdated: boolean) => {
+    setLibrariesState((oldState: ILibrariesState) => {
+      let newLib = oldState.libraries[name];
+      if (newLib) {
+        newLib.status.isOutdated = outdated;
+        return {
+          ...oldState,
+          libraries: {
+            ...oldState.libraries,
+            name: newLib,
+          },
+        };
+      } else {
+        return oldState;
+      }
+    });
+  };
+
   const setLibraryVisibility = (visibility: IVisibility) => {
     setLibrariesState((oldState: ILibrariesState) => {
       if (oldState.key) {
@@ -120,42 +149,34 @@ function ScriptEditor(props: ScriptEditorProps) {
     });
   };
 
-  const loadLibraries = (select?: string) => {
-    LibraryApi.getAllLibraries(gameModelId, props.scriptType)
-      .then((libs: ILibraries) => {
-        setLibrariesState((oldState: ILibrariesState) => {
-          const libKeys = Object.keys(libs);
-          const libKey = select
-            ? select
-            : libKeys.indexOf(oldState.key) !== -1 //Checks if old key still exists in libs
-            ? oldState.key
-            : libKeys.length > 0 //If not, sets the new key as the first element in library
-            ? libKeys[0]
-            : ''; //If no more libraries, set key to ''
-          let newLib: ILibrariesWithState = {};
+  const updateOrCreateLibrary = (name: string, library: ILibrary) => {
+    setLibrariesState((oldState: ILibrariesState) => {
+      console.log('oldState before ', oldState.libraries[name], library);
 
-          for (const key in libs) {
-            newLib[key] = {
-              library: libs[key],
-              status: {
-                isEdited: oldState.libraries[key]
-                  ? oldState.libraries[key].status.isEdited
-                  : false,
-              },
-            };
-          }
+      oldState.libraries[name] = {
+        library: library,
+        status: {
+          isEdited: false,
+          isOutdated: false,
+          // isDeleted: false,
+        },
+      };
 
-          return {
-            ...oldState,
-            key: libKey,
-            libraries: newLib,
-          };
-        });
-      })
-      .catch(e => {
-        console.log(e);
-        alert('Cannot get the scripts');
+      console.log('oldState after ', oldState.libraries[name], library);
+      const libraryState: Reducer<Readonly<ILibrariesState>> = u(() => {
+        return oldState;
       });
+      const test: ReturnType<any> = {};
+
+      console.log('redux', libraryState(oldState, test));
+      return libraryState(oldState, test);
+    });
+  };
+
+  const removeLibrary = (name: string) => {
+    setLibrariesState((oldState: ILibrariesState) => {
+      return { ...oldState, libraries: omit(oldState.libraries, name) };
+    });
   };
 
   const onLibraryChange = () => {
@@ -179,8 +200,8 @@ function ScriptEditor(props: ScriptEditorProps) {
   const onNewLibrary = (name: string | null, library?: ILibrary) => {
     if (name !== null) {
       return LibraryApi.addLibrary(gameModelId, props.scriptType, name, library)
-        .then((res: IGameModel) => {
-          loadLibraries(name);
+        .then((res: ILibrary) => {
+          updateOrCreateLibrary(name, res);
         })
         .catch((e: NewLibErrors) => {
           switch (e) {
@@ -208,13 +229,6 @@ function ScriptEditor(props: ScriptEditorProps) {
         });
       }
     } else {
-      // props.dispatch(
-      //   Actions.ScriptActions.patch(
-      //     librariesState.libraries[libKey].library.id,
-      //     p,
-      //   ),
-      // );
-
       LibraryApi.saveLibrary(
         gameModelId,
         props.scriptType,
@@ -223,7 +237,6 @@ function ScriptEditor(props: ScriptEditorProps) {
       )
         .then(() => {
           setLibraryEdition(false);
-          loadLibraries();
         })
         .catch(() => {
           alert('Cannot save the script');
@@ -239,7 +252,7 @@ function ScriptEditor(props: ScriptEditorProps) {
         librariesState.key,
       )
         .then(() => {
-          loadLibraries();
+          removeLibrary(librariesState.key);
         })
         .catch(() => {
           alert('Cannot delete the script');
@@ -267,11 +280,19 @@ function ScriptEditor(props: ScriptEditorProps) {
             content: content,
           },
           tempStatus: {
+            ...oldState.tempStatus,
             isEdited: oldState.tempLibrary.content !== content,
           },
         };
       }
     });
+  };
+
+  const getScriptOutdatedState = (): boolean => {
+    return (
+      librariesState.libraries[librariesState.key] &&
+      librariesState.libraries[librariesState.key].status.isOutdated
+    );
   };
 
   const getScriptEditingState = (): boolean => {
@@ -317,7 +338,9 @@ function ScriptEditor(props: ScriptEditorProps) {
   };
 
   const isDeleteAllowed = (): boolean => {
-    if (!librariesState.key) {
+    if (getScriptOutdatedState()) {
+      return false;
+    } else if (!librariesState.key) {
       return false;
     } else if (
       gameModel.type === 'SCENARIO' &&
@@ -331,7 +354,9 @@ function ScriptEditor(props: ScriptEditorProps) {
   };
 
   const isEditAllowed = (): boolean => {
-    if (!librariesState.key) {
+    if (getScriptOutdatedState()) {
+      return false;
+    } else if (!librariesState.key) {
       return true;
     } else if (
       gameModel.type === 'SCENARIO' &&
@@ -347,8 +372,63 @@ function ScriptEditor(props: ScriptEditorProps) {
   };
 
   React.useEffect(() => {
-    loadLibraries();
-  }, [props]);
+    // Loading libraries
+    LibraryApi.getAllLibraries(gameModelId, props.scriptType)
+      .then((libs: ILibraries) => {
+        setLibrariesState((oldState: ILibrariesState) => {
+          const libKeys = Object.keys(libs);
+          const libKey =
+            libKeys.length > 0 //If not, sets the new key as the first element in library
+              ? libKeys[0]
+              : ''; //If no more libraries, set key to ''
+          let newLib: ILibrariesWithState = {};
+
+          for (const key in libs) {
+            newLib[key] = {
+              library: libs[key],
+              status: {
+                isEdited: false,
+                isOutdated: false,
+                // isDeleted: false,
+              },
+            };
+          }
+
+          return {
+            ...oldState,
+            key: libKey,
+            libraries: newLib,
+          };
+        });
+      })
+      .catch(e => {
+        console.log(e);
+        alert('Cannot get the scripts');
+      });
+  }, [props.scriptType]);
+
+  React.useEffect(() => {
+    const globLibs = props.librariesState[props.scriptType] as Readonly<
+      ILibraries
+    >;
+    console.log('globlibs', globLibs);
+    if (globLibs) {
+      Object.keys(globLibs).forEach(key => {
+        const locLib = librariesState.libraries[key];
+        const globLib = globLibs[key];
+        if (locLib && locLib.library.version != globLib.version) {
+          console.log('versions', locLib.library.version, globLib.version);
+          if (locLib.status.isEdited) {
+            setLibraryOutdated(key, true);
+          } else {
+            updateOrCreateLibrary(key, globLib);
+          }
+        } else if (!locLib) {
+          updateOrCreateLibrary(key, globLib);
+        }
+      });
+    }
+  }, [props.librariesState, props.scriptType]);
 
   return (
     <Toolbar>
@@ -400,12 +480,6 @@ function ScriptEditor(props: ScriptEditorProps) {
             );
           })}
         </select>
-        <IconButton
-          icon="file"
-          onClick={() => {
-            setLibraryEdition(false);
-          }}
-        />
         {isEditAllowed() && (
           <IconButton
             icon="save"
@@ -421,7 +495,9 @@ function ScriptEditor(props: ScriptEditorProps) {
           />
         )}
         <div>
-          {getScriptEditingState()
+          {getScriptOutdatedState()
+            ? 'The script is dangeroulsy outdated!'
+            : getScriptEditingState()
             ? 'The script is not saved'
             : 'The script is saved'}
         </div>
@@ -443,17 +519,17 @@ export function ScriptEditorLayout(props: ScriptEditorLayoutProps) {
     <TabLayout tabs={['Styles', 'Client', 'Server']}>
       <ScriptEditor {...props} scriptType="CSS" />
       <ScriptEditor {...props} scriptType="ClientScript" />
-      <ScriptEditor {...props} scriptType="Script" />
+      <ScriptEditor {...props} scriptType="ServerScript" />
     </TabLayout>
   );
 }
 
 export default function ConnectedPageDisplay() {
   return (
-    <StoreConsumer selector={(s: State) => ({})}>
-      {({ state, dispatch }) => (
-        <ScriptEditorLayout {...state} dispatch={dispatch} />
-      )}
+    <StoreConsumer selector={(s: State) => ({ librariesState: s.libraries })}>
+      {({ state, dispatch }) => {
+        return <ScriptEditorLayout {...state} dispatch={dispatch} />;
+      }}
     </StoreConsumer>
   );
 }

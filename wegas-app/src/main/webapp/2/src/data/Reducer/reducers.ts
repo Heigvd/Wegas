@@ -19,7 +19,7 @@ export interface State {
   pages: Readonly<PageState>;
   players: Readonly<PlayerState>;
   teams: Readonly<TeamState>;
-  library: Readonly<LibraryState>;
+  libraries: Readonly<LibraryState>;
 }
 
 export default {

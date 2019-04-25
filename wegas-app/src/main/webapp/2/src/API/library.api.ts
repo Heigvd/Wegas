@@ -1,6 +1,6 @@
 import { rest } from './rest';
 
-export type LibType = 'CSS' | 'ClientScript' | 'Script';
+export type LibType = 'CSS' | 'ClientScript' | 'ServerScript';
 export type NewLibErrors = 'NOTNEW' | 'UNKNOWN';
 
 const LIBRARY_BASE = (gameModelId: number, libType: LibType) =>
@@ -21,7 +21,7 @@ export const LibraryApi = {
     gameModelId: number,
     libType: LibType,
     name: string,
-  ): Promise<ILibraries> {
+  ): Promise<ILibrary> {
     return rest(LIBRARY_BASE(gameModelId, libType) + '/' + name).then(
       async (res: Response) => {
         return res.json();
@@ -33,7 +33,7 @@ export const LibraryApi = {
     libType: LibType,
     name: string,
     library?: ILibrary,
-  ): Promise<IGameModel> {
+  ): Promise<ILibrary> {
     return rest(LIBRARY_BASE(gameModelId, libType) + '/' + name, {
       method: 'POST',
       body: JSON.stringify({

@@ -3,6 +3,7 @@ import { ManagedMode } from '../API/rest';
 import * as ActionType from './actionTypes';
 import { ConfigurationSchema } from '../Editor/editionConfig';
 import { PageIndex } from '../API/pages.api';
+import { LibType } from '../API/library.api';
 
 export { ActionType };
 function createAction<T extends string, P>(type: T, payload: P) {
@@ -70,8 +71,16 @@ export const ActionCreator = {
   PAGE_FETCH: (data: { pages: Pages }) =>
     createAction(ActionType.PAGE_FETCH, data),
   // Libraries
-  LIBRARY_FETCH: (data: { libraries: ILibraries }) =>
-    createAction(ActionType.LIBRARY_FETCH, data),
+  LIBRARY_FETCH: (type: LibType, data: { libraries: ILibraries }) => {
+    switch (type) {
+      case 'CSS':
+        return createAction(ActionType.LIBRARY_CSS_FETCH, data);
+      case 'ClientScript':
+        return createAction(ActionType.LIBRARY_CLIENT_FETCH, data);
+      case 'ServerScript':
+        return createAction(ActionType.LIBRARY_SERVER_FETCH, data);
+    }
+  },
   // Search
   SEARCH_CLEAR: () => createAction(ActionType.SEARCH_CLEAR, {}),
   SEARCH_ONGOING: () => createAction(ActionType.SEARCH_ONGOING, {}),
