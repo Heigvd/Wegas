@@ -94,7 +94,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
                             }
                         }, this);
                         if (cb) {
-                            cb.call(this, data.response.entity);
+                            cb.call(this, data.response.entity.get("val.content"));
                         }
                     }, this)
                 }

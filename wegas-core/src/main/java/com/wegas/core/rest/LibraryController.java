@@ -70,11 +70,11 @@ public class LibraryController {
      */
     @GET
     @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
-    public String read(@PathParam("gameModelId") Long gameModelId,
+    public GameModelContent read(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key) {
 
-        return libraryFacade.findLibrary(gameModelId, library).get(key).getContent();
+        return libraryFacade.findLibrary(gameModelId, library).get(key);
     }
 
     /**
