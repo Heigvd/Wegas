@@ -83,7 +83,7 @@ public class LibraryFacade {
         return ret.toString();
     }
 
-    public void create(Long gameModelId, String library, String key, GameModelContent content) {
+    public GameModelContent create(Long gameModelId, String library, String key, GameModelContent content) {
         List<GameModelContent> lib = this.getLibrary(gameModelId, library);
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
@@ -110,6 +110,8 @@ public class LibraryFacade {
         } else {
             throw new WegasConflictException();
         }
+
+        return content;
     }
 
     public GameModelContent update(Long gameModelId, String library, String key, GameModelContent content) {
