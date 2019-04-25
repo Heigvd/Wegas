@@ -185,8 +185,8 @@
                     }
                     //]]></ui:insert>
                 });
-                userChannel.bind('team-update', function(strTeam) {
-                    var team = JSON.parse(strTeam), i, player;
+                userChannel.bind('team-update', function(team) {
+                    var i, player;
                     for (i in team.players) {
                         player = team.players[i];
                         if (player.id === Wegas.playerId) {

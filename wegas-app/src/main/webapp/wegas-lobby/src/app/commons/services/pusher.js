@@ -89,8 +89,8 @@ angular.module('wegas.service.pusher', [])
                 });
             }
             if (userChannel) {
-                userChannel.bind('team-update', function(strTeam) {
-                    $rootScope.$emit('wegaspusher:team-update', JSON.parse(strTeam));
+                userChannel.bind('team-update', function(team) {
+                    $rootScope.$emit('wegaspusher:team-update', team);
                 });
             }
             if (presence) {

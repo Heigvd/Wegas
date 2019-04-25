@@ -185,16 +185,24 @@ public class WebsocketFacade {
     public void sendLock(String channel, String token) {
         if (this.pusher != null) {
             logger.info("send lock  \"{}\" to \"{}\"", token, channel);
-            pusher.trigger(channel, "LockEvent",
-                    "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"lock\"}", null);
+            try {
+                pusher.trigger(channel, "LockEvent",
+                        parseJSON("{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"lock\"}"), null);
+            } catch (IOException ex) {
+                logger.error("Fail to send lockEvent");
+            }
         }
     }
 
     public void sendUnLock(String channel, String token) {
         if (this.pusher != null) {
             logger.info("send unlock  \"{}\" to \"{}\"", token, channel);
-            pusher.trigger(channel, "LockEvent",
-                    "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"unlock\"}", null);
+            try {
+                pusher.trigger(channel, "LockEvent",
+                        parseJSON("{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"unlock\"}"), null);
+            } catch (IOException ex) {
+                logger.error("Fail to send unlockEvent");
+            }
         }
     }
 
@@ -205,8 +213,12 @@ public class WebsocketFacade {
      */
     public void sendLifeCycleEvent(String channel, WegasStatus status, final String socketId) {
         if (this.pusher != null) {
-            pusher.trigger(channel, "LifeCycleEvent",
-                    "{\"@class\": \"LifeCycleEvent\", \"status\": \"" + status.toString() + "\"}", socketId);
+            try {
+                pusher.trigger(channel, "LifeCycleEvent",
+                        parseJSON("{\"@class\": \"LifeCycleEvent\", \"status\": \"" + status.toString() + "\"}"), socketId);
+            } catch (IOException ex) {
+                logger.error("Fails to parse json");
+            }
         }
     }
 
@@ -227,8 +239,12 @@ public class WebsocketFacade {
      */
     public void sendPopup(String channel, String message, final String socketId) {
         if (this.pusher != null) {
-            pusher.trigger(channel, "CustomEvent",
-                    "{\"@class\": \"CustomEvent\", \"type\": \"popupEvent\", \"payload\": {\"content\": \"<p>" + message + "</p>\"}}", socketId);
+            try {
+                pusher.trigger(channel, "CustomEvent",
+                        parseJSON("{\"@class\": \"CustomEvent\", \"type\": \"popupEvent\", \"payload\": {\"content\": \"<p>" + message + "</p>\"}}"), socketId);
+            } catch (IOException ex) {
+                logger.error("Fails to send custom event");
+            }
         }
     }
 
@@ -455,6 +471,11 @@ public class WebsocketFacade {
         }
     }
 
+    public final Object parseJSON(String json) throws IOException {
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();
+        return mapper.readValue(json, Object.class);
+    }
+
     public final String toJson(Object o) throws IOException {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
         //ObjectWriter writerWithView = mapper.writerWithView(Views.class);
@@ -477,7 +498,11 @@ public class WebsocketFacade {
                         this.propagate(new EntityUpdatedEvent(entry.getValue()), entry.getKey(), null);
                     }
 
-                    pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update", toJson(newPlayer.getTeam()));
+                    pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update",
+                            parseJSON(
+                                    // serialise with jackson to exlude unneeded properties
+                                    toJson(newPlayer.getTeam()
+                                    )));
                 } catch (IOException ex) {
                     logger.error("Error while propagating player");
                 }
