@@ -62,7 +62,10 @@ function Uint8ArrayToStr(array: Uint8Array) {
 
   return out;
 }
-async function processEvent(event: string, data: string | {}) {
+async function processEvent(event: string, data: string | {}) : Promise<{
+    event: string;
+    data: string | {};
+    }>{
   if (event.endsWith('.gz') && typeof data === 'string') {
     const ba = [];
     const d = atob(data);
@@ -70,15 +73,13 @@ async function processEvent(event: string, data: string | {}) {
       ba.push(d.charCodeAt(i));
     }
     const compressed = new Uint8Array(ba);
-
-    return [
-      event.slice(0, -3),
-      JSON.parse(
-        Uint8ArrayToStr(await import('pako').then(p => p.inflate(compressed))),
-      ),
-    ];
+    
+    return {
+      event : event.slice(0, -3),
+      data: Uint8ArrayToStr(await import('pako').then(p => p.inflate(compressed))),
+    };
   }
-  return [event, typeof data === 'string' ? JSON.parse(data) : data];
+  return {event, data};
 }
 /**
  *
@@ -114,22 +115,23 @@ export default class WebSocketListener {
         this.socket!.subscribe(chan).bind_global(
           async (event: string, data: {}) => {
             const processed = await processEvent(event, data);
-            if (processed[0].startsWith('pusher:')) {
+            if (processed.event.startsWith('pusher:')) {
               //pusher events
               return;
             }
-            this.eventReveived(processed[0], processed[1]);
+            this.eventReveived(processed.event, processed.data);
           },
         ),
       );
     });
   }
-  private eventReveived(event: string, data: any) {
-    console.log(event, data);
+  private eventReveived(event: string, rawData: any) {
+    console.log(event, rawData);
     switch (event) {
       case 'EntityUpdatedEvent':
       case 'EntityDestroyedEvent':
       case 'CustomEvent':
+        const data = JSON.parse(rawData);
         return store.dispatch(
           managedMode({
             '@class': 'ManagedResponse',
@@ -139,7 +141,7 @@ export default class WebSocketListener {
           }),
         );
       case 'PageUpdate':
-        store.dispatch(Actions.PageActions.get(data));
+        store.dispatch(Actions.PageActions.get(rawData));
         return;
       case 'LibraryUpdate-CSS':
       case 'LibraryUpdate-ClientScript':
