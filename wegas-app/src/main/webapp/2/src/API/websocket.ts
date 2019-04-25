@@ -4,6 +4,7 @@ import { store } from '../data/store';
 import { updatePusherStatus } from '../data/Reducer/globalState';
 import { managedMode } from '../data/actions';
 import { Actions } from '../data';
+import { LibType } from './library.api';
 
 const CHANNEL_PREFIX = {
   Admin: 'private-Admin',
@@ -62,10 +63,13 @@ function Uint8ArrayToStr(array: Uint8Array) {
 
   return out;
 }
-async function processEvent(event: string, data: string | {}) : Promise<{
-    event: string;
-    data: string | {};
-    }>{
+async function processEvent(
+  event: string,
+  data: string | {},
+): Promise<{
+  event: string;
+  data: string | {};
+}> {
   if (event.endsWith('.gz') && typeof data === 'string') {
     const ba = [];
     const d = atob(data);
@@ -73,13 +77,15 @@ async function processEvent(event: string, data: string | {}) : Promise<{
       ba.push(d.charCodeAt(i));
     }
     const compressed = new Uint8Array(ba);
-    
+
     return {
-      event : event.slice(0, -3),
-      data: Uint8ArrayToStr(await import('pako').then(p => p.inflate(compressed))),
+      event: event.slice(0, -3),
+      data: Uint8ArrayToStr(
+        await import('pako').then(p => p.inflate(compressed)),
+      ),
     };
   }
-  return {event, data};
+  return { event, data };
 }
 /**
  *
@@ -126,7 +132,6 @@ export default class WebSocketListener {
     });
   }
   private eventReveived(event: string, rawData: any) {
-    console.log(event, rawData);
     switch (event) {
       case 'EntityUpdatedEvent':
       case 'EntityDestroyedEvent':
@@ -146,8 +151,12 @@ export default class WebSocketListener {
       case 'LibraryUpdate-CSS':
       case 'LibraryUpdate-ClientScript':
       case 'LibraryUpdate-ServerScript':
-        console.log(data);
-        // store.dispatch(Actions.PageActions.get(data));
+        store.dispatch(
+          Actions.LibraryActions.get(
+            event.replace('LibraryUpdate-', '') as LibType,
+            rawData,
+          ),
+        );
         return;
       default:
         throw Error(`Event [${event}] unchecked`);

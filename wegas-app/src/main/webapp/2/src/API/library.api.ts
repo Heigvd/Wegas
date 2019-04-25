@@ -17,6 +17,17 @@ export const LibraryApi = {
       return res.json();
     });
   },
+  getLibrary(
+    gameModelId: number,
+    libType: LibType,
+    name: string,
+  ): Promise<ILibraries> {
+    return rest(LIBRARY_BASE(gameModelId, libType) + '/' + name).then(
+      async (res: Response) => {
+        return res.json();
+      },
+    );
+  },
   addLibrary(
     gameModelId: number,
     libType: LibType,
