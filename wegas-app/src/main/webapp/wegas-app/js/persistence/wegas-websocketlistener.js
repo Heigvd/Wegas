@@ -50,9 +50,8 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 node.hideOverlay(token);
             }
         },
-        onLockEvent: function(data) {
+        onLockEvent: function(payload) {
             if (Y.Wegas.app.lockmanager) {
-                var payload = Y.JSON.parse(data);
                 if (payload.status === "lock") {
                     Y.Wegas.app.lockmanager.lock(payload.token);
                 } else {
@@ -115,12 +114,11 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 }
             });
         },
-        onServerScript: function(contentKey) {
+        onServerScriptUpdate: function(contentKey) {
             this.loadLibrary("ServerScript", contentKey);
         },
-        onLifeCycleEvent: function(data) {
-            var payload = Y.JSON.parse(data),
-                node = this._getNode();
+        onLifeCycleEvent: function(payload) {
+            var node = this._getNode();
             /*(Wegas.TabView.getPreviewTabView() &&
              Wegas.TabView.getPreviewTabView().get("selection")) ||
              ;*/

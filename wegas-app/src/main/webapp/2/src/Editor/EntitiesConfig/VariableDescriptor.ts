@@ -28,23 +28,19 @@ const scopeConfig: ConfigurationSchema<IScope> = {
     value: 'TeamScope',
     view: {
       type: 'select',
-      label: 'Variable is',
+      label: 'One variable for',
       choices: [
         {
-          value: 'TeamScope',
-          label: 'different for each team',
+          value: 'PlayerScope',
+          label: 'each player',
         },
         {
-          value: 'PlayerScope',
-          label: 'different for each user',
+          value: 'TeamScope',
+          label: 'each team',
         },
-        // {
-        //   value: 'GameScope',
-        //   label: 'different for each game',
-        // },
         {
           value: 'GameModelScope',
-          label: 'the same for everybody',
+          label: 'the whole game',
         },
       ],
     },
@@ -58,16 +54,16 @@ const scopeConfig: ConfigurationSchema<IScope> = {
       label: 'Variable is visible by',
       choices: [
         {
-          value: 'TeamScope',
-          label: "anyone in the player's team",
+          value: 'PlayerScope',
+          label: 'the player only',
         },
         {
-          value: 'PlayerScope',
-          label: 'the current player only',
+          value: 'TeamScope',
+          label: "team members",
         },
         {
           value: 'GameScope',
-          label: 'anybody in the game',
+          label: 'everybody',
         },
       ],
     },

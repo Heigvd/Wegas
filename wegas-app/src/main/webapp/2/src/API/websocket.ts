@@ -136,7 +136,6 @@ export default class WebSocketListener {
       case 'EntityUpdatedEvent':
       case 'EntityDestroyedEvent':
       case 'CustomEvent':
-        const data = JSON.parse(rawData);
         return store.dispatch(
           managedMode({
             '@class': 'ManagedResponse',

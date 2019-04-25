@@ -28,7 +28,7 @@ YUI.add('wegas-chat', function(Y) {
                 var sender = Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("name");
 
                 Y.Wegas.Facade.Pusher.triggerCustomEvent(this.get("channel"), {sender: sender, value: input.value}, this.get("event"));
-                input.value = ""
+                input.value = "";
             }, this);
 
             this.responseEvent = Y.Wegas.Facade.Pusher.on(this.get("event"), function(e) {
