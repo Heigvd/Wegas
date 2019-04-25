@@ -131,7 +131,7 @@ export default class WebSocketListener {
       );
     });
   }
-  private eventReveived(event: string, rawData: any) {
+  private eventReveived(event: string, data: any) {
     switch (event) {
       case 'EntityUpdatedEvent':
       case 'EntityDestroyedEvent':
@@ -145,7 +145,7 @@ export default class WebSocketListener {
           }),
         );
       case 'PageUpdate':
-        store.dispatch(Actions.PageActions.get(rawData));
+        store.dispatch(Actions.PageActions.get(data));
         return;
       case 'LibraryUpdate-CSS':
       case 'LibraryUpdate-ClientScript':
@@ -153,7 +153,7 @@ export default class WebSocketListener {
         store.dispatch(
           Actions.LibraryActions.get(
             event.replace('LibraryUpdate-', '') as LibType,
-            rawData,
+              data,
           ),
         );
         return;
