@@ -8,6 +8,7 @@ import SrcEditor from './SrcEditor';
 import { StoreConsumer, StoreDispatch } from '../../data/store';
 import { State } from '../../data/Reducer/reducers';
 import { Actions } from '../../data';
+import { LibraryState } from '../../data/Reducer/libraryState';
 
 type VisibilityMode = 'CREATE' | 'EDIT' | 'DELETE' | 'CONTENT';
 
@@ -207,12 +208,12 @@ function ScriptEditor(props: ScriptEditorProps) {
         });
       }
     } else {
-      props.dispatch(
-        Actions.ScriptActions.patch(
-          librariesState.libraries[libKey].library.id,
-          p,
-        ),
-      );
+      // props.dispatch(
+      //   Actions.ScriptActions.patch(
+      //     librariesState.libraries[libKey].library.id,
+      //     p,
+      //   ),
+      // );
 
       LibraryApi.saveLibrary(
         gameModelId,
@@ -370,10 +371,16 @@ function ScriptEditor(props: ScriptEditorProps) {
         >
           {Object.keys(librariesState.libraries).length > 0 ? (
             Object.keys(librariesState.libraries).map((key: string) => {
-              return <option value={key}>{key}</option>;
+              return (
+                <option key={key} value={key}>
+                  {key}
+                </option>
+              );
             })
           ) : (
-            <option value="">No script</option>
+            <option key={''} value="">
+              No script
+            </option>
           )}
         </select>
         <select
@@ -383,7 +390,11 @@ function ScriptEditor(props: ScriptEditorProps) {
         >
           {visibilities.map((item, key) => {
             return (
-              <option hidden={!isVisibilityAllowed(item)} value={item}>
+              <option
+                key={key}
+                hidden={!isVisibilityAllowed(item)}
+                value={item}
+              >
                 {item}
               </option>
             );

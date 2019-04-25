@@ -8,6 +8,7 @@ import pages, { PageState } from './pageState';
 import games, { GameState } from './game';
 import players, { PlayerState } from './player';
 import teams, { TeamState } from './teams';
+import libraries, { LibraryState } from './libraryState';
 
 export interface State {
   gameModels: Readonly<GameModelState>;
@@ -18,6 +19,7 @@ export interface State {
   pages: Readonly<PageState>;
   players: Readonly<PlayerState>;
   teams: Readonly<TeamState>;
+  library: Readonly<LibraryState>;
 }
 
 export default {
@@ -29,4 +31,5 @@ export default {
   games,
   players,
   teams,
+  libraries,
 };

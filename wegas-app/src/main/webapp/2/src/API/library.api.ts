@@ -47,7 +47,6 @@ export const LibraryApi = {
     name: string,
     library: ILibrary,
   ) {
-    console.log(library);
     return rest(
       LIBRARY_BASE(gameModelId, libType) + '/' + name,
       {
