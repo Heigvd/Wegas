@@ -14,7 +14,6 @@ import { DropTargetMonitor } from 'react-dnd';
 import { defaultContextManager } from '../../../Components/DragAndDrop';
 import { FontAwesome } from '../Views/FontAwesome';
 import { omit } from 'lodash-es';
-import { resolve } from 'path';
 
 export interface FileBrowserProps {
   onSelectFile?: (files: IFile[]) => void;
@@ -195,7 +194,7 @@ export function FileBrowser(props: FileBrowserProps) {
     }
   };
   const handleAddFileDrop = (
-    item: DndAddFileRowProps,
+    _item: DndAddFileRowProps,
     monitor: DropTargetMonitor,
   ) => {
     if (monitor) {

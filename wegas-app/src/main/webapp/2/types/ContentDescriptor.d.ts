@@ -7,5 +7,5 @@ interface IFile {
   note: string;
   path: string;
   refId: string;
-  visibility: ModelVisibility;
+  visibility: IVisibility;
 }

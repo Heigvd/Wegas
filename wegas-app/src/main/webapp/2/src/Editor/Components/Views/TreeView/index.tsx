@@ -1,11 +1,5 @@
 import * as React from 'react';
-import HTML5Backend from 'react-dnd-html5-backend';
-import {
-  DragSource,
-  DragDropContext,
-  DragElementWrapper,
-  DragSourceOptions,
-} from 'react-dnd';
+import { DragSource, DragElementWrapper, DragSourceOptions } from 'react-dnd';
 import { css, cx } from 'emotion';
 import {
   DropZone,

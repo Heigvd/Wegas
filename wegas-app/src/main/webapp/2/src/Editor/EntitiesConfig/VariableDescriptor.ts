@@ -152,6 +152,32 @@ export const config: ConfigurationSchema<IVariableDescriptor> = {
       borderTop: true,
     },
   },
+  visibility: {
+    type: ['string'],
+    value: 'PRIVATE',
+    view: {
+      type: 'select',
+      label: 'Visibility is',
+      choices: [
+        {
+          value: 'INTERNAL',
+          label: 'INTERNAL',
+        },
+        {
+          value: 'PROTECTED',
+          label: 'PROTECTED',
+        },
+        {
+          value: 'INHERITED',
+          label: 'INHERITED',
+        },
+        {
+          value: 'PRIVATE',
+          label: 'PRIVATE',
+        },
+      ],
+    },
+  },
 };
 
 export const actions: EActions<IVariableDescriptor> = {

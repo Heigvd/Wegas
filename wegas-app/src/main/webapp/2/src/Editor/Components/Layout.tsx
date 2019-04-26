@@ -6,7 +6,7 @@ import Editor from './EntityEditor';
 import PageDisplay from './Page/PageDisplay';
 import { TabLayout } from '../../Components/Tabs';
 import StateMachineEditor from './StateMachineEditor';
-import { DndFileBrowser, IFileMap } from './FileBrowser/FileBrowser';
+import { DndFileBrowser } from './FileBrowser/FileBrowser';
 
 const layout = css({
   display: 'grid',
