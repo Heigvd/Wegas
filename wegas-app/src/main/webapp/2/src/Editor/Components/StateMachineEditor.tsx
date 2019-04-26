@@ -1,6 +1,6 @@
 import { css, cx } from 'emotion';
 import produce from 'immer';
-import { Connection, Defaults, jsPlumbInstance, Overlay } from 'jsplumb';
+import { Connection, Defaults, jsPlumbInstance } from 'jsplumb';
 import * as React from 'react';
 import { IconButton } from '../../Components/Button/IconButton';
 import { VariableDescriptor } from '../../data/selectors';
@@ -49,6 +49,18 @@ const searchHighlighted = css({
   // !important is the only way to take the priority as jsPlumb defines chained selectors for the style
   backgroundColor: themeVar.searchColor + '!important',
 });
+
+const searchWithState = (
+  search: RState['global']['search'],
+  searched: string,
+) => {
+  // Assumes there's a field named "value" in search
+  let value = (search as { value: string }).value;
+  // Checks if value is undefined and cast it to string. If undefined, keep undefined type.
+  // If not, the system will search for 'undefined' when search type is ONGOING or NONE
+  value = value ? String(value) : value;
+  return value && searched.indexOf(value) >= 0;
+};
 
 const JS_PLUMB_OPTIONS: Defaults = {
   Anchor: ['Continuous', { faces: ['top', 'left', 'bottom'] }],
@@ -519,11 +531,10 @@ class State extends React.Component<{
   }
   onClickEdit = () => this.props.editState(this.props.id);
   isBeingSearched = () => {
-    const { value } = this.props.search;
     const { label, onEnterEvent } = this.props.state;
     const searched =
       (label ? label : '') + (onEnterEvent ? onEnterEvent.content : '');
-    return value && searched.indexOf(value) >= 0;
+    return searchWithState(this.props.search, searched);
   };
   render() {
     const { state, initialState, currentState } = this.props;
@@ -591,12 +602,11 @@ class Transition extends React.Component<{
 }> {
   connection: Connection | null = null;
   isBeingSearched = () => {
-    const { value } = this.props.search;
     const { triggerCondition, preStateImpact } = this.props.transition;
     const searched =
       (triggerCondition ? triggerCondition.content : '') +
       (preStateImpact ? preStateImpact.content : '');
-    return value && searched.indexOf(value) >= 0;
+    return searchWithState(this.props.search, searched);
   };
   componentDidMount() {
     const src = this.props.parent;
