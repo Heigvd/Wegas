@@ -76,7 +76,9 @@ async function processEvent(event: string, data: string | {}) : Promise<{
     
     return {
       event : event.slice(0, -3),
-      data: Uint8ArrayToStr(await import('pako').then(p => p.inflate(compressed))),
+      data: JSON.parse(
+        Uint8ArrayToStr(await import('pako').then(p => p.inflate(compressed)))
+      ),
     };
   }
   return {event, data};
@@ -125,13 +127,12 @@ export default class WebSocketListener {
       );
     });
   }
-  private eventReveived(event: string, rawData: any) {
-    console.log(event, rawData);
+  private eventReveived(event: string, data: any) {
+    console.log(event, data);
     switch (event) {
       case 'EntityUpdatedEvent':
       case 'EntityDestroyedEvent':
       case 'CustomEvent':
-        const data = JSON.parse(rawData);
         return store.dispatch(
           managedMode({
             '@class': 'ManagedResponse',
@@ -141,7 +142,7 @@ export default class WebSocketListener {
           }),
         );
       case 'PageUpdate':
-        store.dispatch(Actions.PageActions.get(rawData));
+        store.dispatch(Actions.PageActions.get(data));
         return;
       default:
         throw Error(`Event [${event}] unchecked`);
