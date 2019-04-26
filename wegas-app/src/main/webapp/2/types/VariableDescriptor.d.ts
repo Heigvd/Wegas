@@ -16,7 +16,7 @@ interface IVariableDescriptor<T extends IVariableInstance = IVariableInstance>
   parentDescriptorId: number;
   parentDescriptorType: 'GameModel' | 'VariableDescriptor';
   comments: string | null;
-  visibility: ModelVisibility;
+  visibility: IVisibility;
 }
 
 interface IListDescriptor

@@ -112,13 +112,11 @@ public class LibraryController {
      */
     @POST
     @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
-    public GameModel create(@PathParam("gameModelId") Long gameModelId,
+    public GameModelContent create(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key, GameModelContent script) {
 
-        libraryFacade.create(gameModelId, library, key, script);
-        // return Response.ok().build();
-        return gameModelFacade.find(gameModelId);
+        return libraryFacade.create(gameModelId, library, key, script);
     }
 
     /**
