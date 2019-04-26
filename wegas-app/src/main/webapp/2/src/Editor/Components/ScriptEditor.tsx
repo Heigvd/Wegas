@@ -11,6 +11,8 @@ import { LibraryState } from '../../data/Reducer/libraryState';
 import { omit } from 'lodash-es';
 import u from 'immer';
 import { Reducer } from 'redux';
+import { DiffEditor } from './DiffEditor';
+import * as monaco from 'monaco-editor';
 
 // import { Actions } from '../../data';
 // import { LibraryState } from '../../data/Reducer/libraryState';
@@ -74,6 +76,10 @@ function ScriptEditor(props: ScriptEditorProps) {
       // isDeleted: false,
     },
   });
+
+  const [diffNavigator, setDiffNavigator] = React.useState<
+    monaco.editor.IDiffNavigator
+  >();
 
   let scriptLanguage: 'css' | 'javascript';
 
@@ -151,24 +157,20 @@ function ScriptEditor(props: ScriptEditorProps) {
 
   const updateOrCreateLibrary = (name: string, library: ILibrary) => {
     setLibrariesState((oldState: ILibrariesState) => {
-      console.log('oldState before ', oldState.libraries[name], library);
-
-      oldState.libraries[name] = {
-        library: library,
-        status: {
-          isEdited: false,
-          isOutdated: false,
-          // isDeleted: false,
+      const libraryState: Reducer<Readonly<ILibrariesState>> = u(
+        (state: ILibrariesState) => {
+          state.libraries[name] = {
+            library: library,
+            status: {
+              isEdited: false,
+              isOutdated: false,
+              // isDeleted: false,
+            },
+          };
+          return state;
         },
-      };
-
-      console.log('oldState after ', oldState.libraries[name], library);
-      const libraryState: Reducer<Readonly<ILibrariesState>> = u(() => {
-        return oldState;
-      });
+      );
       const test: ReturnType<any> = {};
-
-      console.log('redux', libraryState(oldState, test));
       return libraryState(oldState, test);
     });
   };
@@ -259,6 +261,8 @@ function ScriptEditor(props: ScriptEditorProps) {
         });
     }
   };
+
+  const onMergeLibrary = () => {};
 
   const onEditorBlur = (content: string) => {
     setLibrariesState((oldState: ILibrariesState) => {
@@ -411,14 +415,13 @@ function ScriptEditor(props: ScriptEditorProps) {
     const globLibs = props.librariesState[props.scriptType] as Readonly<
       ILibraries
     >;
-    console.log('globlibs', globLibs);
     if (globLibs) {
       Object.keys(globLibs).forEach(key => {
         const locLib = librariesState.libraries[key];
         const globLib = globLibs[key];
         if (locLib && locLib.library.version != globLib.version) {
-          console.log('versions', locLib.library.version, globLib.version);
           if (locLib.status.isEdited) {
+            console.log('globlib : ', globLib);
             setLibraryOutdated(key, true);
           } else {
             updateOrCreateLibrary(key, globLib);
@@ -494,6 +497,32 @@ function ScriptEditor(props: ScriptEditorProps) {
             onClick={onDeleteLibrary}
           />
         )}
+        {getScriptOutdatedState() && (
+          <IconButton
+            icon="toothbrush"
+            tooltip="Merge the current script with the new one"
+            onClick={onMergeLibrary}
+          />
+        )}
+        {diffNavigator && getScriptOutdatedState() && (
+          <IconButton
+            icon="arrow-right"
+            tooltip="Navigate to next difference"
+            onClick={() => {
+              diffNavigator.next();
+            }}
+          />
+        )}
+        {diffNavigator && getScriptOutdatedState() && (
+          <IconButton
+            icon="arrow-left"
+            tooltip="Navigate to next difference"
+            onClick={() => {
+              diffNavigator.previous();
+            }}
+          />
+        )}
+
         <div>
           {getScriptOutdatedState()
             ? 'The script is dangeroulsy outdated!'
@@ -503,12 +532,25 @@ function ScriptEditor(props: ScriptEditorProps) {
         </div>
       </Toolbar.Header>
       <Toolbar.Content>
-        <SrcEditor
-          value={getActualScriptContent()}
-          language={scriptLanguage}
-          onBlur={onEditorBlur}
-          readonly={!isEditAllowed()}
-        />
+        {getScriptOutdatedState() ? (
+          <DiffEditor
+            originalContent={
+              props.librariesState[props.scriptType][librariesState.key].content
+            }
+            modifiedContent={
+              librariesState.libraries[librariesState.key].library.content
+            }
+            language={scriptLanguage}
+            setDiffNavigator={setDiffNavigator}
+          />
+        ) : (
+          <SrcEditor
+            value={getActualScriptContent()}
+            language={scriptLanguage}
+            onBlur={onEditorBlur}
+            readonly={!isEditAllowed()}
+          />
+        )}
       </Toolbar.Content>
     </Toolbar>
   );
