@@ -12,12 +12,6 @@ import { omit } from 'lodash-es';
 import u from 'immer';
 import { Reducer } from 'redux';
 import { DiffEditor } from './DiffEditor';
-import * as monaco from 'monaco-editor';
-
-// import { Actions } from '../../data';
-// import { LibraryState } from '../../data/Reducer/libraryState';
-
-// type VisibilityMode = 'CREATE' | 'EDIT' | 'DELETE' | 'CONTENT';
 
 interface ScriptEditorLayoutProps {
   librariesState: LibraryState;
@@ -77,10 +71,6 @@ function ScriptEditor(props: ScriptEditorProps) {
     },
   });
 
-  const [diffNavigator, setDiffNavigator] = React.useState<
-    monaco.editor.IDiffNavigator
-  >();
-
   let scriptLanguage: 'css' | 'javascript';
 
   switch (props.scriptType) {
@@ -119,21 +109,23 @@ function ScriptEditor(props: ScriptEditorProps) {
     });
   };
 
-  const setLibraryOutdated = (name: string, outdated: boolean) => {
+  const setLibraryOutdated = (outdated: boolean, name?: string) => {
     setLibrariesState((oldState: ILibrariesState) => {
-      let newLib = oldState.libraries[name];
-      if (newLib) {
-        newLib.status.isOutdated = outdated;
-        return {
-          ...oldState,
-          libraries: {
-            ...oldState.libraries,
-            name: newLib,
-          },
-        };
-      } else {
-        return oldState;
+      name = name ? name : oldState.key;
+      if (name) {
+        let newLib = oldState.libraries[name];
+        if (newLib) {
+          newLib.status.isOutdated = outdated;
+          return {
+            ...oldState,
+            libraries: {
+              ...oldState.libraries,
+              name: newLib,
+            },
+          };
+        }
       }
+      return oldState;
     });
   };
 
@@ -239,6 +231,7 @@ function ScriptEditor(props: ScriptEditorProps) {
       )
         .then(() => {
           setLibraryEdition(false);
+          setLibraryOutdated(false);
         })
         .catch(() => {
           alert('Cannot save the script');
@@ -264,7 +257,7 @@ function ScriptEditor(props: ScriptEditorProps) {
 
   const onMergeLibrary = () => {};
 
-  const onEditorBlur = (content: string) => {
+  const onContentChange = (content: string) => {
     setLibrariesState((oldState: ILibrariesState) => {
       if (oldState.key !== '') {
         const newLibs = oldState.libraries;
@@ -405,8 +398,7 @@ function ScriptEditor(props: ScriptEditorProps) {
           };
         });
       })
-      .catch(e => {
-        console.log(e);
+      .catch(_e => {
         alert('Cannot get the scripts');
       });
   }, [props.scriptType]);
@@ -421,8 +413,7 @@ function ScriptEditor(props: ScriptEditorProps) {
         const globLib = globLibs[key];
         if (locLib && locLib.library.version != globLib.version) {
           if (locLib.status.isEdited) {
-            console.log('globlib : ', globLib);
-            setLibraryOutdated(key, true);
+            setLibraryOutdated(true, key);
           } else {
             updateOrCreateLibrary(key, globLib);
           }
@@ -504,25 +495,6 @@ function ScriptEditor(props: ScriptEditorProps) {
             onClick={onMergeLibrary}
           />
         )}
-        {diffNavigator && getScriptOutdatedState() && (
-          <IconButton
-            icon="arrow-right"
-            tooltip="Navigate to next difference"
-            onClick={() => {
-              diffNavigator.next();
-            }}
-          />
-        )}
-        {diffNavigator && getScriptOutdatedState() && (
-          <IconButton
-            icon="arrow-left"
-            tooltip="Navigate to next difference"
-            onClick={() => {
-              diffNavigator.previous();
-            }}
-          />
-        )}
-
         <div>
           {getScriptOutdatedState()
             ? 'The script is dangeroulsy outdated!'
@@ -541,13 +513,16 @@ function ScriptEditor(props: ScriptEditorProps) {
               librariesState.libraries[librariesState.key].library.content
             }
             language={scriptLanguage}
-            setDiffNavigator={setDiffNavigator}
+            onResolved={(content: string) => {
+              onContentChange(content);
+              onSaveLibrary();
+            }}
           />
         ) : (
           <SrcEditor
             value={getActualScriptContent()}
             language={scriptLanguage}
-            onBlur={onEditorBlur}
+            onBlur={onContentChange}
             readonly={!isEditAllowed()}
           />
         )}
