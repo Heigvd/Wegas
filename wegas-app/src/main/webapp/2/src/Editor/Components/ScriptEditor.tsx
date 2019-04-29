@@ -147,8 +147,8 @@ function ScriptEditor(props: ScriptEditorProps) {
     });
   };
 
-  const updateOrCreateLibrary = (name: string, library: ILibrary) => {
-    setLibrariesState((oldState: ILibrariesState) => {
+  const updateOrCreateLibrary = async (name: string, library: ILibrary) => {
+    await setLibrariesState((oldState: ILibrariesState) => {
       const libraryState: Reducer<Readonly<ILibrariesState>> = u(
         (state: ILibrariesState) => {
           state.libraries[name] = {
@@ -195,7 +195,14 @@ function ScriptEditor(props: ScriptEditorProps) {
     if (name !== null) {
       return LibraryApi.addLibrary(gameModelId, props.scriptType, name, library)
         .then((res: ILibrary) => {
-          updateOrCreateLibrary(name, res);
+          updateOrCreateLibrary(name, res).then(() => {
+            setLibrariesState((oldState: ILibrariesState) => {
+              return {
+                ...oldState,
+                key: name,
+              };
+            });
+          });
         })
         .catch((e: NewLibErrors) => {
           switch (e) {
@@ -247,6 +254,7 @@ function ScriptEditor(props: ScriptEditorProps) {
         librariesState.key,
       )
         .then(() => {
+          console.log('delete library');
           removeLibrary(librariesState.key);
         })
         .catch(() => {
@@ -254,8 +262,6 @@ function ScriptEditor(props: ScriptEditorProps) {
         });
     }
   };
-
-  const onMergeLibrary = () => {};
 
   const onContentChange = (content: string) => {
     setLibrariesState((oldState: ILibrariesState) => {
@@ -309,6 +315,7 @@ function ScriptEditor(props: ScriptEditorProps) {
   };
 
   const getActualScriptVisibility = (): IVisibility => {
+    console.log(librariesState);
     return librariesState.key
       ? librariesState.libraries[librariesState.key].library.visibility
       : librariesState.tempLibrary.visibility;
@@ -486,13 +493,6 @@ function ScriptEditor(props: ScriptEditorProps) {
             icon="trash"
             tooltip="Delete the script"
             onClick={onDeleteLibrary}
-          />
-        )}
-        {getScriptOutdatedState() && (
-          <IconButton
-            icon="toothbrush"
-            tooltip="Merge the current script with the new one"
-            onClick={onMergeLibrary}
           />
         )}
         <div>
