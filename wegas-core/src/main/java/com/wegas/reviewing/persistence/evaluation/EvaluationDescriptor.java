@@ -12,10 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.WithPermission;
@@ -85,7 +82,6 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
      * Evaluation label as displayed to players
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @WegasEntityProperty
     private TranslatableContent label;
 
@@ -93,7 +89,6 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
      * Textual descriptor to be displayed to players
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @WegasEntityProperty
     private TranslatableContent description;
 
@@ -201,21 +196,6 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
             this.setLabel(label);
             this.setDescription(description);
         }
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    @JsonView(Views.IndexI.class)
-    public Long getParentDescriptorId() {
-        if (this.getContainer() != null) {
-            return this.getContainer().getParentDescriptorId();
-        }
-        return null;
-    }
-
-    public void setParentDescriptorId(Long id){
     }
 
     @JsonIgnore

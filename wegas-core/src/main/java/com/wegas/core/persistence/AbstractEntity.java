@@ -286,11 +286,14 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
         return mapper.writerWithView(view).writeValueAsString(this);
     }
+
     /**
      * Serialize to JSON with view
      *
      * @param view the view to use to export this
+     *
      * @return JSON String representing this
+     *
      * @throws IOException
      */
     public String toJsonWithView(String view) throws IOException {

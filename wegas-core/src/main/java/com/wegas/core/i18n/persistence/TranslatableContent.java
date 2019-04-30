@@ -109,19 +109,6 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         }
     }
 
-    @JsonView(Views.IndexI.class)
-    public Long getParentDescriptorId() {
-        if (parentDescriptor != null) {
-            return parentDescriptor.getId();
-        }
-        return null;
-    }
-
-    @JsonView(Views.IndexI.class)
-    public void setParentDescriptorId(Long id) {
-        // Jackson happy
-    }
-
     public VariableInstance getParentInstance() {
         return parentInstance;
     }
@@ -131,19 +118,6 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         if (this.parentInstance != null) {
             this.parentDescriptor = null;
         }
-    }
-
-    @JsonView(Views.IndexI.class)
-    public Long getParentInstanceId() {
-        if (parentInstance != null) {
-            return parentInstance.getId();
-        }
-        return null;
-    }
-
-    @JsonView(Views.IndexI.class)
-    public void setParentInstanceId(Long id) {
-        // Jackson happy
     }
 
     public Long getVersion() {

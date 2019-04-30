@@ -22,6 +22,13 @@ export const config: ConfigurationSchema<IFSMDescriptor.Transition> = {
       label: 'Id',
     },
   },
+  parentType: {
+    type: 'string',
+    view: { type: 'hidden' },
+  },
+  parentId: { type: 'number',
+    view: { type: 'hidden' },
+  },
   nextStateId: {
     view: { type: 'hidden' },
   },
@@ -39,9 +46,6 @@ export const config: ConfigurationSchema<IFSMDescriptor.Transition> = {
       type: 'script',
       label: 'Impact',
     },
-  },
-  stateId: {
-    view: { type: 'hidden' },
   },
   stateMachineId: { view: { type: 'hidden' } },
   index: {

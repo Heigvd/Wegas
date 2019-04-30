@@ -154,7 +154,11 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
                     refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
-                    descriptorId: IDATTRDEF,
+                    parentId: IDATTRDEF,
+                    parentType: {
+                        type: "string",
+                        view: {type: HIDDEN}
+                    },
                     active: {
                         type: BOOLEAN,
                         value: true,
@@ -608,12 +612,16 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
                     refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
-                    descriptorId: IDATTRDEF,
+                    parentId: IDATTRDEF,
+                    parentType: {
+                        type: "string",
+                        view: {type: HIDDEN}
+                    },
                     requirements: {
                         type: ARRAY,
                         view: {
                             label: "Resource requirements",
-                            highlight:true
+                            highlight: true
                         },
                         items: {
                             type: OBJECT,

@@ -177,10 +177,10 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                         }
                     },
                     id: IDATTRDEF,
-                    descriptorId: {
-                        view: {
-                            type: HIDDEN
-                        }
+                    parentId: IDATTRDEF,
+                    parentType: {
+                        type: "string",
+                        view: {type: HIDDEN}
                     },
                     version: VERSION_ATTR_DEF,
                     refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
@@ -308,7 +308,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             "@class": {
                 value: "State"
             },
-            stateMachineId: IDATTRDEF,
             version: VERSION_ATTR_DEF,
             label: {
                 type: [NULL, STRING],
@@ -385,7 +384,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 }
             },
             version: VERSION_ATTR_DEF,
-            stateId: IDATTRDEF,
             stateMachineId: IDATTRDEF,
             preStateImpact: {
                 type: [NULL, OBJECT],
@@ -453,8 +451,9 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                             type: HIDDEN
                         }
                     },
-                    descriptorId: {
-                        type: NUMBER,
+                    parentId: IDATTRDEF,
+                    parentType: {
+                        type: "string",
                         view: {type: HIDDEN}
                     },
                     id: IDATTRDEF,

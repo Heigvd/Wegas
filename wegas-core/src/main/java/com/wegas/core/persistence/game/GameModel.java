@@ -1143,13 +1143,22 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     @Override
     public WegasPermission getAssociatedReadPermission() {
-        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.GAMEMODEL);
+        return GameModel.getAssociatedReadPermission(this.getId());
+    }
+
+    public static WegasPermission getAssociatedReadPermission(long id) {
+        return new WegasEntityPermission(id, WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.GAMEMODEL);
     }
 
     @Override
     public WegasPermission getAssociatedWritePermission() {
-        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAMEMODEL);
+        return GameModel.getAssociatedWritePermission(this.getId());
     }
+
+    public static WegasPermission getAssociatedWritePermission(long id) {
+        return new WegasEntityPermission(id, WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAMEMODEL);
+    }
+
 
     /**
      * The permission which is required to translate a specific language within the game model

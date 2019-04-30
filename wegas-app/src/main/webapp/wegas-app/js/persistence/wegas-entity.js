@@ -244,7 +244,8 @@ YUI.add('wegas-entity', function(Y) {
                             if (ghosts.length) {
                                 // some translations without any known language -> try to attach to any languages which does not own a translation
                                 // this is mainly a hack to rename languages in pages
-                                var gmLanguages = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages");
+                                var gmLanguages = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel()
+                                    .get("languages");
                                 for (var g in ghosts) {
                                     for (var i in gmLanguages) {
                                         var newLang = gmLanguages[i].get("code").toUpperCase();
@@ -276,7 +277,24 @@ YUI.add('wegas-entity', function(Y) {
      * @augments Y.Wegas.Editable
      * @constructor
      */
-    Entity = Base.create('Entity', Base, [Wegas.Editable], {}, {
+    Entity = Base.create('Entity', Base, [Wegas.Editable], {
+        _getParent: function() {
+            if (this.get("parentType")) {
+                var parent = Y.Wegas.Editable.revive({
+                    "@class": this.get("parentType"),
+                    id: this.get("parentId"),
+                });
+
+                if (parent instanceof Y.Wegas.persistence.GameModel) {
+                    return Y.Wegas.Facade.GameModel.cache.find("id", entity.get("parentId"));
+                } else if (parent instanceof Y.Wegas.persistence.VariableDescriptor) {
+                    return Y.Wegas.Facade.Variable.cache.find("id", entity.get("parentId"));
+                } else if (parent instanceof Y.Wegas.persistence.VariableInstance) {
+                    return Y.Wegas.Facade.Instance.cache.find("id", entity.get("parentId"));
+                }
+            }
+        }
+    }, {
         ATTRS: {
             initialized: {
                 transient: true
@@ -318,6 +336,21 @@ YUI.add('wegas-entity', function(Y) {
                     className: "wegas-internal-feature",
                     label: "RefId"
                 }
+            },
+            parentId: {
+                type: NUMBER,
+                "transient": true,
+                view: {
+                    type: HIDDEN
+                }
+            },
+            parentType: {
+                type: STRING,
+                optional: true,
+                "transient": true,
+                view: {
+                    type: HIDDEN
+                }
             }
         },
         /**
@@ -352,7 +385,8 @@ YUI.add('wegas-entity', function(Y) {
                 type: STRING,
                 valueFn: function() {
                     // default visibility is inherited if the object belongs to a model, private otherwise
-                    return Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "MODEL" ? "INHERITED" : "PRIVATE";
+                    return Y.Wegas.Facade.GameModel.cache.getCurrentGameModel()
+                        .get("type") === "MODEL" ? "INHERITED" : "PRIVATE";
                 },
                 view: {
                     type: SELECT,
@@ -537,14 +571,6 @@ YUI.add('wegas-entity', function(Y) {
              },*/
             refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
             version: VERSION_ATTR_DEF,
-            parentInstanceId: {
-                type: "number",
-                "transient": true
-            },
-            parentDescriptorId: {
-                type: "number",
-                "transient": true
-            },
             translations: {
                 type: "object",
                 additionalProperties: {

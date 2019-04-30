@@ -11,11 +11,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.WithPermission;
@@ -82,7 +80,6 @@ public class Result extends AbstractEntity implements LabelledEntity {
     /**
      * Displayed name
      */
-    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty
     private TranslatableContent label;
@@ -90,7 +87,6 @@ public class Result extends AbstractEntity implements LabelledEntity {
     /**
      * Displayed answer when result selected and validated
      */
-    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty
     private TranslatableContent answer;
@@ -98,7 +94,6 @@ public class Result extends AbstractEntity implements LabelledEntity {
     /**
      * Displayed answer when MCQ result not selected and validated
      */
-    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty
     private TranslatableContent ignorationAnswer;
@@ -171,18 +166,6 @@ public class Result extends AbstractEntity implements LabelledEntity {
                 this.getIgnorationAnswer().setParentDescriptor(choiceDescriptor);
             }
         }
-    }
-
-    /**
-     * @return id from the parent choice descriptor
-     */
-    @JsonView(Views.IndexI.class)
-    public Long getChoiceDescriptorId() {
-        return choiceDescriptor.getId();
-    }
-
-    public void setChoiceDescriptorId(Long id) {
-        // NOTHING TO TO....
     }
 
     /**

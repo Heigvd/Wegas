@@ -521,13 +521,23 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
 
     @Override
     public WegasPermission getAssociatedReadPermission() {
-        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.GAME);
+        return Game.getAssociatedReadPermission(this.getId());
+    }
+
+    public static WegasPermission getAssociatedReadPermission(long id) {
+        return new WegasEntityPermission(id, WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.GAME);
     }
 
     @Override
     public WegasPermission getAssociatedWritePermission() {
-        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAME);
+        return Game.getAssociatedWritePermission(this.getId());
     }
+
+    public static WegasPermission getAssociatedWritePermission(long id) {
+        return new WegasEntityPermission(id, WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAME);
+    }
+
+
 
     @Override
     public WithPermission getMergeableParent() {

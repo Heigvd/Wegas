@@ -183,10 +183,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         break;
                 }
 
-                scope = Y.Wegas.Facade.Instance.cache.find(
-                    'descriptorId',
-                    this.get('id')
-                    );
+                scope = Y.Wegas.Facade.Instance.cache.find('descriptorId', this.get('id'));
                 return scope ? scope.variableInstances[key] : undefined;
                 //return this.get("scope").getInstance(player || Wegas.Facade.Game.get("currentPlayer"));
 
@@ -262,21 +259,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         {
             ATTRS: {
                 version: VERSION_ATTR_DEF,
-                parentDescriptorId: {
-                    type: NUMBER,
-                    "transient": true,
-                    view: {
-                        type: HIDDEN
-                    }
-                },
-                parentDescriptorType: {
-                    type: STRING,
-                    optional: true,
-                    "transient": true,
-                    view: {
-                        type: HIDDEN
-                    }
-                },
                 visibility: Wegas.persistence.Entity.ATTRS_DEF.VISIBILITY,
                 comments: {
                     type: ['null', STRING],
@@ -659,12 +641,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
      */
     persistence.VariableInstance = Base.create("VariableInstance", persistence.Entity, [], {
         getDescriptor: function() {
-            return Y.Wegas.Facade.Variable.cache.find("id", this.get("descriptorId"));
+            return Y.Wegas.Facade.Variable.cache.find("id", this.get("parentId"));
         }
     }, {
         ATTRS: {
             version: VERSION_ATTR_DEF,
-            descriptorId: IDATTRDEF,
             scopeKey: {
                 type: NUMBER,
                 view: {type: HIDDEN}
@@ -786,7 +767,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             index: -1,
                             type: STRING
                         }),
-                        descriptorId: IDATTRDEF
+                        parentId: IDATTRDEF,
+                        parentType: {
+                            type: "string",
+                            view: {type: HIDDEN}
+                        }
                     }
                 },
                 allowedValues: {
@@ -968,7 +953,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
                         refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
-                        descriptorId: IDATTRDEF,
+                        parentId: IDATTRDEF,
+                        parentType: {
+                            type: "string",
+                            view: {type: HIDDEN}
+                        },
                         trValue: Y.Wegas.Helper.getTranslationAttr({
                             label: 'Default value',
                             index: -1,
@@ -1130,7 +1119,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
                     refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
-                    descriptorId: IDATTRDEF,
+                    parentId: IDATTRDEF,
+                    parentType: {
+                        type: "string",
+                        view: {type: HIDDEN}
+                    },
                     value: {
                         type: NUMBER,
                         required: true,
@@ -1362,7 +1355,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
                         refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
-                        descriptorId: IDATTRDEF
+                        parentId: IDATTRDEF,
+                        parentType: {
+                            type: "string",
+                            view: {type: HIDDEN}
+                        }
                     }
                 },
                 allowedTypes: {
@@ -1577,7 +1574,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
                         refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
-                        descriptorId: IDATTRDEF
+                        parentId: IDATTRDEF,
+                        parentType: {
+                            type: "string",
+                            view: {type: HIDDEN}
+                        }
                     }
                 }
             },
@@ -1983,7 +1984,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
                         refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
-                        descriptorId: IDATTRDEF,
+                        parentId: IDATTRDEF,
+                        parentType: {
+                            type: "string",
+                            view: {type: HIDDEN}
+                        },
                         value: {
                             type: BOOLEAN,
                             view: {

@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -43,6 +44,7 @@ import javax.persistence.*;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
 })
+@JsonIgnoreProperties(value = {"stateMachineId"})
 //@OptimisticLocking(cascade = true)
 public class State extends AbstractEntity implements Broadcastable {
 
@@ -126,16 +128,6 @@ public class State extends AbstractEntity implements Broadcastable {
 
     public void setStateMachine(StateMachineDescriptor stateMachine) {
         this.stateMachine = stateMachine;
-    }
-
-    @JsonView(Views.IndexI.class)
-    public Long getStateMachineId() {
-        return getStateMachine().getId();
-    }
-
-    @JsonView(Views.IndexI.class)
-    public void setStateMachineId(Long stateMachineId) {
-        //this.stateMachine = stateMachine;
     }
 
     /**

@@ -222,7 +222,7 @@ function CTree(props: {
                         nodeProps={nodeProps}
                         key={r.id}
                         search={props.search}
-                        variableId={r.choiceDescriptorId}
+                        variableId={r.parentId!}
                         subPath={['results', String(index)]}
                       />
                     ))

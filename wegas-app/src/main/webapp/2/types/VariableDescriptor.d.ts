@@ -13,8 +13,6 @@ interface IVariableDescriptor<T extends IVariableInstance = IVariableInstance>
   editorTag: string | null;
   defaultInstance: T;
   scope: IScope;
-  parentDescriptorId: number;
-  parentDescriptorType: 'GameModel' | 'VariableDescriptor';
   comments: string | null;
 }
 
@@ -66,7 +64,6 @@ interface IQuestionDescriptor
 interface IResult extends IWegasEntity, IVersionable {
   '@class': 'Result';
   answer: ITranslatableContent;
-  choiceDescriptorId: number;
   files: string[];
   ignorationAnswer: ITranslatableContent;
   ignorationImpact: IScript;
@@ -95,7 +92,6 @@ declare namespace IFSMDescriptor {
     editorPosition: Coordinate;
     label?: string | null;
     onEnterEvent?: IScript | null;
-    stateMachineId?: number;
     transitions: Transition[];
   }
   export interface Transition extends IWegasEntity, IVersionable {
@@ -103,7 +99,6 @@ declare namespace IFSMDescriptor {
     nextStateId: number;
     triggerCondition?: IScript | null;
     preStateImpact?: IScript | null;
-    stateId?: number;
     stateMachineId?: number;
     index?: number;
   }

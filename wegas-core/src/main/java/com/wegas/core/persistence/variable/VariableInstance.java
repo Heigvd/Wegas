@@ -14,6 +14,7 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -346,14 +347,15 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * Get instance descriptor's id through its scope for regular instance or
-     * the default descriptor's id for default instances
+     * Get instance descriptor through its scope for regular instance or
+     * the default descriptor id for default instances
      *
      * @return descriptor id
      */
-    @JsonView(Views.IndexI.class)
-    public Long getDescriptorId() {
-        return this.findDescriptor().getId();
+    @Override
+    public <T extends Mergeable> T getSerialisedParent() {
+        // Special case: direct parent (the scope) is not known by the client
+        return (T) this.findDescriptor();
     }
 
     /**

@@ -1,6 +1,8 @@
 interface IWegasEntity {
   readonly '@class': string;
   readonly id?: number;
+  readonly parentType?: string;
+  readonly parentId?: number;
 }
 
 interface IParentDescriptor extends IWegasEntity {

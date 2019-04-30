@@ -1,17 +1,10 @@
 import { ConfigurationSchema } from '../editionConfig';
-import { VariableDescriptor } from '../../data/selectors';
+
+import {findNearestParent } from '../../data/selectors/Helper';
 
 function cbxMode(_val: any, formVal: {}, path: string[]) {
-  path.pop(); // remove current key
-  const result: IResult = path.reduce((prev: any, v) => prev[v], formVal);
-  const choice = VariableDescriptor.select(result.choiceDescriptorId);
-  if (choice != null) {
-    const question = VariableDescriptor.select(
-      choice.parentDescriptorId,
-    ) as IQuestionDescriptor;
-    return question.cbx;
-  }
-  return false;
+  const question : any = findNearestParent(formVal as IWegasEntity, path, 'QuestionDescriptor');
+  return !!(question && question.cbx);
 }
 
 export const config: ConfigurationSchema<IResult> = {
@@ -34,6 +27,14 @@ export const config: ConfigurationSchema<IResult> = {
       label: 'Version',
     },
     index: -1,
+  },
+  parentType: {
+    type: 'string',
+    view: { type: 'hidden' },
+  },
+  parentId: {
+    type: 'number',
+    view: { type: 'hidden' },
   },
   label: {
     type: 'object',
@@ -110,12 +111,6 @@ export const config: ConfigurationSchema<IResult> = {
       type: 'script',
     },
     index: 13,
-  },
-  choiceDescriptorId: {
-    type: 'number',
-    view: {
-      type: 'hidden',
-    },
   },
   files: {
     type: 'array',

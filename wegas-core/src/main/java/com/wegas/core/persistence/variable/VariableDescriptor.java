@@ -20,7 +20,6 @@ import com.wegas.core.merge.annotations.WegasEntity;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
@@ -241,7 +240,6 @@ abstract public class VariableDescriptor<T extends VariableInstance>
      * Variable descriptor human readable name
      * Player visible
      */
-    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL /*, orphanRemoval = true*/)
     @WegasEntityProperty
     private TranslatableContent label;
@@ -433,32 +431,6 @@ abstract public class VariableDescriptor<T extends VariableInstance>
         } else {
             throw new WegasNotFoundException("ORPHAN DESCRIPTOR: " + this); // is somebody expect this exception or return null will do the job ?
         }
-    }
-
-    @JsonView(Views.IndexI.class)
-    public String getParentDescriptorType() {
-        if (this.getRoot() != null) {
-            return "GameModel";
-        } else {
-            return "VariableDescriptor";
-        }
-    }
-
-    public void setParentDescriptorType(String type) {
-        // nothing to do
-    }
-
-    @JsonView(Views.IndexI.class)
-    public Long getParentDescriptorId() {
-        try {
-            return this.getParent().getId();
-        } catch (WegasNotFoundException e) {
-            return null;
-        }
-    }
-
-    public void setParentDescriptorId(Long id) {
-        // nothing to do
     }
 
     /**

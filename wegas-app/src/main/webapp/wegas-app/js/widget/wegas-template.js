@@ -95,7 +95,7 @@ YUI.add('wegas-template', function(Y) {
                             data.value = this.undefinedToEmpty(desc.get('value'));
                         }
 
-                        desc = Y.Wegas.Facade.Variable.cache.findById(desc.get('descriptorId'));
+                        desc = Y.Wegas.Facade.Variable.cache.findById(desc.get('parentId'));
                     } else {
                         data.value = undefined;
                     }

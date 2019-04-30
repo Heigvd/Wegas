@@ -1,8 +1,8 @@
 import { TranslatableContent } from '../i18n';
 import {
   VariableDescriptor,
-  GameModel,
   VariableInstance,
+  GameModel,
   Player,
 } from '../selectors';
 
@@ -18,12 +18,12 @@ export function editorLabel(vd: {
 }
 
 export function getParent(vd: IVariableDescriptor): IParentDescriptor {
-  if (vd.parentDescriptorType === 'VariableDescriptor') {
+  if (vd.parentType!.endsWith('Descriptor')) {
     return (VariableDescriptor.select(
-      vd.parentDescriptorId,
+      vd.parentId,
     ) as any) as IParentDescriptor;
   }
-  return GameModel.select(vd.parentDescriptorId);
+  return GameModel.select(vd.parentId!);
 }
 
 export function getInstance<I extends IVariableInstance>(
@@ -35,17 +35,17 @@ export function getInstance<I extends IVariableInstance>(
     switch (vd.scope['@class']) {
       case 'PlayerScope':
         return VariableInstance.firstMatch<IVariableInstance>({
-          descriptorId: vd.id,
+          parentId: vd.id,
           scopeKey: player.id,
         }) as IorUndef;
       case 'TeamScope':
         return VariableInstance.firstMatch<IVariableInstance>({
-          descriptorId: vd.id,
+          parentId: vd.id,
           scopeKey: player.teamId,
         }) as IorUndef;
       case 'GameModelScope':
         return VariableInstance.firstMatch<IVariableInstance>({
-          descriptorId: vd.id,
+          parentId: vd.id,
           scopeKey: 0,
         }) as IorUndef;
     }

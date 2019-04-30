@@ -23,7 +23,7 @@ export const config: ConfigurationSchema<IChoiceDescriptor> = {
     visible: function(_val: any, formVal: { id?: number }) {
       if (formVal.id) {
         const parent = VariableDescriptor.select(
-          VariableDescriptor.select(formVal.id)!.parentDescriptorId,
+          VariableDescriptor.select(formVal.id)!.parentId,
         );
         if (entityIs<IQuestionDescriptor>(parent, 'QuestionDescriptor')) {
           // not applicable for checkboxed questions and useless if q.maxReplies equals 1

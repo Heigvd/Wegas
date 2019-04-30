@@ -24,6 +24,15 @@ export const config: ConfigurationSchema<IFSMDescriptor.State> = {
       label: 'Id',
     },
   },
+  parentType: {
+    type: 'string',
+    view: { type: 'hidden' },
+  },
+  parentId: {
+    type: 'number',
+    view: { type: 'hidden' },
+  },
+
   label: {
     type: 'string',
     view: {
@@ -31,12 +40,6 @@ export const config: ConfigurationSchema<IFSMDescriptor.State> = {
     },
   },
   editorPosition: {
-    view: {
-      type: 'hidden',
-    },
-  },
-  stateMachineId: {
-    type: 'number',
     view: {
       type: 'hidden',
     },
