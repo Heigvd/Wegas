@@ -480,7 +480,9 @@ public class FileController {
             descriptor = DescriptorFactory.getDescriptor(absolutePath, connector);
             descriptor.setNote(tmpDescriptor.getNote());
             descriptor.setDescription(tmpDescriptor.getDescription());
-            descriptor.setVisibility(tmpDescriptor.getVisibility());
+            if(gameModel.isModel()){
+                descriptor.setVisibility(tmpDescriptor.getVisibility());
+            }
             descriptor.setContentToRepository();
             descriptor.getContentFromRepository();                              //Update
             return descriptor;

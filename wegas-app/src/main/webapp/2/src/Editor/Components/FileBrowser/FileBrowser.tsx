@@ -15,11 +15,12 @@ import { FontAwesome } from '../Views/FontAwesome';
 import { omit } from 'lodash-es';
 import { StoreConsumer, StoreDispatch } from '../../../data/store';
 import { State } from '../../../data/Reducer/reducers';
-import { ActionCreator } from '../../../data/actions';
 import u from 'immer';
 import {
   getAbsoluteFileName,
   generateGoodPath,
+  isDirectory,
+  editFileAction,
 } from '../../../data/methods/ContentDescriptor';
 import { Edition } from '../../../data/Reducer/globalState';
 
@@ -61,7 +62,7 @@ export function FileBrowser(props: FileBrowserProps) {
   };
 
   const onOpen = (file: IFile) => {
-    if (file.directory) {
+    if (isDirectory(file)) {
       // Open directory
       setCurrentPath(generateGoodPath(file));
     } else {
@@ -174,7 +175,7 @@ export function FileBrowser(props: FileBrowserProps) {
   ) => {
     if (monitor) {
       // If insertion in directory, open directory after upload
-      if (item.file && item.file.directory) {
+      if (item.file && isDirectory(item.file)) {
         uploadFiles(monitor.getItem().files, generateGoodPath(item.file));
         onOpen(item.file);
       } else {
@@ -260,21 +261,15 @@ function CFileBrowser(props: CFileBrowserProps) {
 
   const [selectedFiles, setSelectedFiles] = React.useState<IFileMap>({});
 
-  const onFileClick = (file: IFile) => {
-    dispatch(ActionCreator.FILE_EDIT(file));
+  const onFileClick = async (file: IFile) => {
+    dispatch(await editFileAction(file, dispatch));
   };
 
   React.useEffect(() => {
     if (editing && editing.type === 'File') {
-      FileAPI.getFileMeta(
-        GameModel.selectCurrent().id!,
-        editing.absolutePath,
-      ).then((file: IFile) => {
-        const newSF: IFileMap = {};
-        newSF[generateGoodPath(file)] = file;
-        console.log('newpath', newSF);
-        setSelectedFiles(newSF);
-      });
+      const newSF: IFileMap = {};
+      newSF[generateGoodPath(editing.file)] = editing.file;
+      setSelectedFiles(newSF);
     } else {
       setSelectedFiles({});
     }

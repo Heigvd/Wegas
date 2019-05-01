@@ -3,6 +3,7 @@ import { ManagedMode } from '../API/rest';
 import * as ActionType from './actionTypes';
 import { ConfigurationSchema } from '../Editor/editionConfig';
 import { PageIndex } from '../API/pages.api';
+import { FileActions } from './Reducer/globalState';
 
 export { ActionType };
 function createAction<T extends string, P>(type: T, payload: P) {
@@ -11,14 +12,15 @@ function createAction<T extends string, P>(type: T, payload: P) {
     payload,
   };
 }
+
 /**
  * Simple action creators.
  */
 export const ActionCreator = {
   // ENTITY_UPDATE: (data: NormalizedData) =>
   //   createAction(ActionType.ENTITY_UPDATE, data),
-  FILE_EDIT: /*To set*/ (file: IFile) =>
-    createAction(ActionType.FILE_EDIT, file),
+  FILE_EDIT: (data: { file: IFile; actions: FileActions }) =>
+    createAction(ActionType.FILE_EDIT, data),
   VARIABLE_EDIT: <T extends IWegasEntity>(data: {
     id: number;
     config?: ConfigurationSchema<T>;

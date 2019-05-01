@@ -1,4 +1,5 @@
 import { rest } from './rest';
+import { generateGoodPath } from '../data/methods/ContentDescriptor';
 
 type IFiles = IFile[];
 
@@ -112,7 +113,7 @@ export const FileAPI = {
   async createFile(
     gameModelId: number,
     name: string,
-    path?: string,
+    path: string = '',
     file?: File,
     force: boolean = false,
   ) {
@@ -126,6 +127,8 @@ export const FileAPI = {
         method: 'POST',
         body: data,
       },
+      undefined,
+      'multipart/form-data',
     );
   },
   /**
@@ -146,17 +149,17 @@ export const FileAPI = {
   /**
    * Update file metadata
    * @param gameModelId gameModelId to fetch files from
-   * @param absolutePath the absolute path of the file (if undefined, takes root (/))
    * @param file the file to update
    */
-  async updateMetadata(gameModelId: number, file: File, absolutePath?: string) {
-    const data = new FormData();
-    data.append('name', name);
-    data.append('file', file as Blob);
-
-    return await rest(FILE_BASE(gameModelId) + 'update' + absolutePath, {
-      method: 'PUT',
-      body: data,
+  async updateMetadata(gameModelId: number, file: IFile) {
+    return await rest(
+      FILE_BASE(gameModelId) + 'update' + generateGoodPath(file),
+      {
+        method: 'PUT',
+        body: JSON.stringify(file),
+      },
+    ).then(async (res: Response) => {
+      return await res.json();
     });
   },
   /**

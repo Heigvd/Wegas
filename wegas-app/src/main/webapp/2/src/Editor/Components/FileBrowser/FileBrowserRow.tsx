@@ -12,7 +12,10 @@ import { FileAPI } from '../../../API/files.api';
 import { themeVar } from '../../../Components/Theme';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { gameModelDependsOnModel } from './FileBrowser';
-import { getAbsoluteFileName } from '../../../data/methods/ContentDescriptor';
+import {
+  getAbsoluteFileName,
+  isDirectory,
+} from '../../../data/methods/ContentDescriptor';
 
 const dndRow = css({
   color: themeVar.primaryLighterColor,
@@ -148,7 +151,7 @@ const FileRow = (props: FileRowProps) => {
         >
           <FontAwesome icon="search" />
         </span>
-        {!props.file.directory && isEditAllowed() && (
+        {!isDirectory(props.file) && isEditAllowed() && (
           <span onClick={clickEdit}>
             <FontAwesome icon="edit" />
             <input

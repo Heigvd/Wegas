@@ -35,6 +35,7 @@ export async function WindowedEditor<T>({
     // return <span>There is nothing to edit</span>;
     return null;
   }
+
   function updatePath(variable: {}) {
     return update != null && update(deepUpdate(entity, path, variable));
   }
@@ -92,12 +93,15 @@ export default function VariableForm(props: {
             entity: VariableDescriptor.select(editing.id),
           };
         }
-        // if (editing.type === 'File') {
-        //   return {
-        //     ...editing,
-        //     entity: VariableDescriptor.select(editing.id),
-        //   };
-        // }
+        if (editing.type === 'File') {
+          return {
+            ...editing,
+            entity: {
+              '@class': 'File',
+              ...editing.file,
+            },
+          };
+        }
         return null;
       }}
     >

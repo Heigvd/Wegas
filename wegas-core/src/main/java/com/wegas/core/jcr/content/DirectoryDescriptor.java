@@ -67,7 +67,7 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
      *
      * @return ????? sum of bytes of children ???
      */
-    @JsonProperty("bytes")
+    @JsonProperty(value = "bytes",access = JsonProperty.Access.READ_ONLY)
     @Override
     public Long getBytes() {
         List<AbstractContentDescriptor> nodes = new ArrayList<>();

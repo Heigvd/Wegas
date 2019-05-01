@@ -190,7 +190,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     /**
      * @return file content as bytes
      */
-    @JsonProperty("bytes")
+    @JsonProperty(value = "bytes",access = JsonProperty.Access.READ_ONLY)
     @Override
     public Long getBytes() {
         return bytes;
