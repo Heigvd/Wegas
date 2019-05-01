@@ -46,18 +46,23 @@ const editorStyle = css({
 });
 
 const searchHighlighted = css({
-  // !important is the only way to take the priority as jsPlumb defines chained selectors for the style
-  backgroundColor: themeVar.searchColor + '!important',
+  // !important is the only way to take the priority because jsPlumb defines chained selectors for the style
+  backgroundColor: themeVar.searchColor + ' !important',
 });
 
 const searchWithState = (
   search: RState['global']['search'],
   searched: string,
 ) => {
-  // Assumes there's a field named "value" in search
-  let value = (search as { value: string }).value;
-  // Checks if value is undefined and cast it to string. If undefined, keep undefined type.
-  // If not, the system will search for 'undefined' when search type is ONGOING or NONE
+  let value = '';
+  if (search.type === 'GLOBAL') {
+    value = search.value;
+  } else if (search.type === 'USAGE') {
+    const variable = VariableDescriptor.select(search.value);
+    if (variable) {
+      value = `Variable.find(gameModel, "${variable.name}")`;
+    }
+  }
   value = value ? String(value) : value;
   return value && searched.indexOf(value) >= 0;
 };
