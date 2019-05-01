@@ -8,6 +8,8 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -35,6 +37,7 @@ import javax.persistence.*;
             @Index(columnList = "actiontext_id")
         }
 )
+@JsonIgnoreProperties({"stateId"})
 public class Transition extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
@@ -126,21 +129,9 @@ public class Transition extends AbstractEntity {
     }
 
     @JsonView(Views.IndexI.class)
-    public Long getStateId() {
-        return this.getState().getId();
-    }
-
-    @JsonView(Views.IndexI.class)
-    public void setStateId(Long id) {
-    }
-
-    @JsonView(Views.IndexI.class)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public Long getStateMachineId() {
-        return this.getState().getStateMachineId();
-    }
-
-    @JsonView(Views.IndexI.class)
-    public void setStateMachineId(Long id) {
+        return this.getState().getStateMachine().getId();
     }
 
     /**

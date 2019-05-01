@@ -177,18 +177,20 @@ public class Permission extends AbstractEntity {
                 case "GameModel":
                     if (isPermId(perm)) {
                         // One should have super right on the gameModel the permission give access to
-                        GameModel gameModel = GameModelFacade.lookup().find(Long.parseLong(perm.replaceFirst("gm", "")));
+                        return WegasPermission.getAsCollection(GameModel.getAssociatedWritePermission(Long.parseLong(perm.replaceFirst("gm", ""))));
+                        /*GameModel gameModel = GameModelFacade.lookup().find(Long.parseLong(perm.replaceFirst("gm", "")));
                         if (gameModel != null) {
                             return gameModel.getRequieredUpdatePermission();
-                        }
+                        }*/
                     }
                 case "Game":
                     if (isPermId(perm)) {
                         // One should have super right on the game the permission give access to
-                        Game game = GameFacade.lookup().find(Long.parseLong(perm.replaceFirst("g", "")));
+                        return WegasPermission.getAsCollection(Game.getAssociatedWritePermission(Long.parseLong(perm.replaceFirst("g", ""))));
+                        /*Game game = GameFacade.lookup().find(Long.parseLong(perm.replaceFirst("g", "")));
                         if (game != null) {
                             return game.getRequieredUpdatePermission();
-                        }
+                    }*/
                     }
             }
         }

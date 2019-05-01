@@ -23,8 +23,11 @@ export const config: ConfigurationSchema<IVariableInstance> = {
       label: 'Instance Version',
     },
   },
-  descriptorId: {
-    type: 'number',
+  parentType: {
+    type: 'string',
+    view: { type: 'hidden' },
+  },
+  parentId: { type: 'number',
     view: { type: 'hidden' },
   },
   scopeKey: {

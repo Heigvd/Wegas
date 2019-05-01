@@ -19,7 +19,7 @@ export interface NormalizedData {
   };
 }
 
-const discriminant = (input: { '@class': string }): keyof NormalizedData => {
+export const discriminant = (input: { '@class': string }): keyof NormalizedData => {
   const cls: string = input['@class'];
   if (cls === 'GameModel') {
     return 'gameModels';

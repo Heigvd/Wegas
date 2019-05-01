@@ -7,9 +7,7 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -25,7 +23,6 @@ public class DialogueTransition extends Transition {
     private static final long serialVersionUID = 1L;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @WegasEntityProperty
     private TranslatableContent actionText;
 

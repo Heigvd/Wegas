@@ -267,7 +267,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             }
         },
         updateInstance: function(e) {
-            var descriptor = Y.Wegas.Facade.Variable.cache.find("id", e.entity.get("descriptorId"));
+            var descriptor = Y.Wegas.Facade.Variable.cache.find("id", e.entity.get("parentId"));
             if (descriptor) {
                 this.updateDescriptor({
                     entity: descriptor

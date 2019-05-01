@@ -87,15 +87,8 @@ public class Helper {
                 try {
                     return (T) context.lookup("java:global/embed-classes/" + service.getSimpleName() + "!" + type.getName());
                 } catch (NamingException ex1) {
-                    try {
-                        // Why cobertura here ???
-                        logger.error("Cobertura lookup for {} ! {}", service.getSimpleName(), type.getName());
-                        Helper.printWegasStackTrace(new Exception());
-                        return (T) context.lookup("java:global/cobertura/" + service.getSimpleName() + "!" + type.getName());
-                    } catch (NamingException ex2) {
-                        logger.error("Unable to retrieve to do jndi lookup on class: {}", type.getSimpleName());
-                        throw ex2;
-                    }
+                    logger.error("Unable to retrieve to do jndi lookup on class: {}", type.getSimpleName());
+                    throw ex1;
                 }
             }
         }
@@ -854,7 +847,12 @@ public class Helper {
                 sb.append(elem);
             }
         }
-        logger.error(sb.toString());
+        String toString = sb.toString();
+        if (toString.contains("jparealm") || toString.contains("GuestRealm")) {
+            return;
+        } else {
+            logger.error(toString);
+        }
     }
 
     /**

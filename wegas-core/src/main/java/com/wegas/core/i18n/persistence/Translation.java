@@ -8,10 +8,12 @@
 package com.wegas.core.i18n.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
 import java.util.Objects;
@@ -78,6 +80,7 @@ public class Translation implements WithPermission {
     @JsonIgnore
     @Id
     @WegasEntityProperty(initOnly = true)
+    @JsonView(Views.IndexI.class)
     private String lang;
 
     @ManyToOne
@@ -86,6 +89,7 @@ public class Translation implements WithPermission {
 
     @Id
     @Column(name = "translatablecontent_id", insertable = false, updatable = false, columnDefinition = "bigint")
+    @JsonView(Views.IndexI.class)
     private Long trId;
 
     @Lob

@@ -247,7 +247,7 @@ public class GameController {
                     appendCSVField(sb, p.getName()).append(",");
                     if (p.getUser() != null) {
                         appendCSVField(sb, p.getUser().getMainAccount().getEmail()).append(",");
-                        appendCSVField(sb, p.getUser().getMainAccount().isVerified() ? "yes" : "no").append(",");
+                        appendCSVField(sb, Boolean.TRUE.equals(p.getUser().getMainAccount().isVerified()) ? "yes" : "no").append(",");
                     } else {
                         sb.append(",").append(",");
                     }

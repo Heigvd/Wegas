@@ -90,19 +90,6 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
         }
     }
 
-    @JsonView(Views.IndexI.class)
-    public Long getParentDescriptorId() {
-        if (feedbacked != null) {
-            return feedbacked.getId();
-        } else if (commented != null) {
-            return commented.getId();
-        }
-        return null;
-    }
-
-    public void setParentDescriptorId(Long id) {
-    }
-
     @JsonIgnore
     public PeerReviewDescriptor getParent() {
         if (this.feedbacked != null) {

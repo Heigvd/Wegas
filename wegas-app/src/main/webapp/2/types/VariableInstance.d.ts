@@ -1,9 +1,5 @@
 interface IVariableInstance extends IWegasEntity, IVersionable {
   /**
-   * Descriptor Id
-   */
-  descriptorId: number;
-  /**
    * Player ID / Team ID / Game ID /
    * GameModel ID (0) hack / null for default Instances.
    */

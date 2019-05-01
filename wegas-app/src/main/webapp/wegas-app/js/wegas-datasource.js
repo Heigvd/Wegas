@@ -696,7 +696,7 @@ YUI.add('wegas-datasource', function(Y) {
                         }
                         return walkEntity(item, findFn);
                     });
-                }
+                };
             findFn(this.getCache());
             if (ret !== undefined && onFindFn) {
                 onFindFn(ret, needle);
@@ -878,7 +878,7 @@ YUI.add('wegas-datasource', function(Y) {
         },
         generateRequest: function(data) {
             if (data[CLASS].indexOf("Instance") > -1) {
-                return '/' + data.descriptorId + '/VariableInstance/' + data.id;
+                return '/' + data.parentId + '/VariableInstance/' + data.id;
             } else {
                 return "/" + data.id;
             }
@@ -964,10 +964,10 @@ YUI.add('wegas-datasource', function(Y) {
             });
         },
         findParentDescriptor: function(entity) {
-            if (entity.get("parentDescriptorType") === "GameModel") {
-                return Y.Wegas.Facade.GameModel.cache.find("id", entity.get("parentDescriptorId"));
+            if (entity.get("parentType") === "GameModel") {
+                return Y.Wegas.Facade.GameModel.cache.find("id", entity.get("parentId"));
             } else {
-                return this.find("id", entity.get("parentDescriptorId"));
+                return this.find("id", entity.get("parentId"));
             }
         },
         move: function(entity, parentEntity, index, localOnly) {
@@ -1084,7 +1084,7 @@ YUI.add('wegas-datasource', function(Y) {
          VariableInstanceCache.superclass.put.call(this, data, cfg);
          },*/
         generateRequest: function(data) {
-            return "/" + data.descriptorId + "/VariableInstance/" + data.id;
+            return "/" + data.parentId + "/VariableInstance/" + data.id;
         },
         /**
          * @function
@@ -1094,7 +1094,7 @@ YUI.add('wegas-datasource', function(Y) {
             var scope, scopeKey, descriptorId, index, ds, dsid;
             ds = this.get("host");
             dsid = ds._yuid;
-            descriptorId = +entity.get("descriptorId");
+            descriptorId = +entity.get("parentId");
             scopeKey = +entity.get("scopeKey");
             scope = this.find("descriptorId", descriptorId);
             eventsCollector = eventsCollector || {};

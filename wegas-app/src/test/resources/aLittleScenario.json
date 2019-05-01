@@ -265,11 +265,8 @@
                                         "@class": "Script",
                                         "content": "",
                                         "language": "JavaScript"
-                                    },
-                                    "stateId": 118112,
-                                    "stateMachineId": 118109
-                                }],
-                            "stateMachineId": 118109
+                                    }
+                                }]
                         }
                     },
                     "label": "aTrigger",
@@ -301,11 +298,8 @@
                                         "@class": "Script",
                                         "content": "true",
                                         "language": "javascript"
-                                    },
-                                    "stateId": 118114,
-                                    "stateMachineId": 118109
-                                }],
-                            "stateMachineId": 118109
+                                    }
+                                }]
                         },
                         "1": {
                             "@class": "State",
@@ -323,11 +317,8 @@
                                         "@class": "Script",
                                         "content": "",
                                         "language": "JavaScript"
-                                    },
-                                    "stateId": 118112,
-                                    "stateMachineId": 118109
-                                }],
-                            "stateMachineId": 118109
+                                    }
+                                }]
                         }
                     },
                     "oneShot": false,
@@ -376,11 +367,8 @@
                                         "@class": "Script",
                                         "content": "Variable.find(gameModel, \"aBoolean\").getValue(self);\n",
                                         "language": "JavaScript"
-                                    },
-                                    "stateId": 118174,
-                                    "stateMachineId": 118171
-                                }],
-                            "stateMachineId": 118171
+                                    }
+                                }]
                         }
                     },
                     "label": "aStateMachine",
@@ -406,8 +394,7 @@
                                 "content": "Variable.find(gameModel, \"anInbox\").sendMessage(self, \"John\", \"Today\", \"Some dummy mail\", \"<p>Quio derent hosce versus mature censunto,<br />Profanum vulgus et inscium ne attrectato:<br />Omnesque Barbari, Psychologi, Sociologi, Politici, Economici, Flici procul sunto,<br />Qui aliter facit, is rite sacer esto</p>\", \"\", []);\n",
                                 "language": "JavaScript"
                             },
-                            "transitions": [],
-                            "stateMachineId": 118171
+                            "transitions": []
                         },
                         "2": {
                             "@class": "State",
@@ -429,11 +416,8 @@
                                     "index": 0,
                                     "nextStateId": 3,
                                     "preStateImpact": null,
-                                    "triggerCondition": null,
-                                    "stateId": 118248,
-                                    "stateMachineId": 118171
-                                }],
-                            "stateMachineId": 118171
+                                    "triggerCondition": null
+                                }]
                         },
                         "1": {
                             "@class": "State",
@@ -459,11 +443,8 @@
                                         "@class": "Script",
                                         "content": "Variable.find(gameModel, \"aBoolean\").getValue(self);\n",
                                         "language": "JavaScript"
-                                    },
-                                    "stateId": 118174,
-                                    "stateMachineId": 118171
-                                }],
-                            "stateMachineId": 118171
+                                    }
+                                }]
                         }
                     }
                 }, {
@@ -581,8 +562,7 @@
                             "label": null,
                             "onEnterEvent": null,
                             "transitions": [],
-                            "text": null,
-                            "stateMachineId": 118196
+                            "text": null
                         }
                     },
                     "label": "aDialogue",
@@ -605,8 +585,7 @@
                             "label": null,
                             "onEnterEvent": null,
                             "transitions": [],
-                            "text": null,
-                            "stateMachineId": 118196
+                            "text": null
                         }
                     },
                     "content": null

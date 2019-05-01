@@ -19,6 +19,14 @@ const wegasEntityConfig: ConfigurationSchema<IWegasEntity> = {
       type: 'uneditable',
     },
   },
+  parentType: {
+    type: 'string',
+    view: { type: 'hidden' },
+  },
+  parentId: {
+    type: 'number',
+    view: { type: 'hidden' },
+  },
 };
 const scopeConfig: ConfigurationSchema<IScope> = {
   '@class': {
@@ -130,14 +138,6 @@ export const config: ConfigurationSchema<IVariableDescriptor> = {
     index: 0,
     type: 'object',
     properties: variableInstanceConfig,
-  },
-  parentDescriptorId: {
-    type: 'number',
-    view: { type: 'hidden' },
-  },
-  parentDescriptorType: {
-    type: 'string',
-    view: { type: 'hidden' },
   },
   comments: {
     type: ['string', 'null'],

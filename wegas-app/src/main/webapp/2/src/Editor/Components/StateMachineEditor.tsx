@@ -168,7 +168,6 @@ class StateMachineEditor extends React.Component<
           ].transitions.filter(t => t.id !== transition.id);
           states[info.newSourceId].transitions.push({
             ...transition,
-            stateId: undefined, // remove ref.
           });
         }
       }),
