@@ -9,3 +9,5 @@ interface IFile {
   refId: string;
   visibility: IVisibility;
 }
+
+type IFileMap = { [key: string]: IFile };

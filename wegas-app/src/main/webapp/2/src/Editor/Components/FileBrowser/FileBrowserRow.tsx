@@ -12,6 +12,7 @@ import { FileAPI } from '../../../API/files.api';
 import { themeVar } from '../../../Components/Theme';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { gameModelDependsOnModel } from './FileBrowser';
+import { getAbsoluteFileName } from '../../../data/methods/ContentDescriptor';
 
 const dndRow = css({
   color: themeVar.primaryLighterColor,
@@ -58,7 +59,7 @@ interface DndTargetProps {
 
 interface FileRowProps {
   file: IFile;
-  onSelect: (file: IFile, toggle?: boolean) => void;
+  onSelect: (file: IFile) => void;
   onOpen: (file: IFile) => void;
   callRefresh: () => void;
   selected?: boolean;
@@ -92,15 +93,6 @@ const getIconForFileType = (fileType: string): IconProp => {
   } else {
     return 'file';
   }
-};
-
-export const getAbsoluteFileName = (file: IFile) => {
-  let filePath = file.path;
-  if (filePath.substr(-1, 1) === '/') {
-    filePath = filePath.substr(0, filePath.length - 1);
-  }
-  filePath += '/' + file.name;
-  return filePath;
 };
 
 const FileRow = (props: FileRowProps) => {
@@ -180,26 +172,18 @@ const DndFileRow: React.FC<DndTargetFileRowProps> = (
   props: DndTargetFileRowProps,
 ) => {
   const isActive: boolean = props.canDrop && props.isOver;
-  const [selected, setSelected] = React.useState(props.selected);
+  // const [selected, setSelected] = React.useState(props.selected);
   const select = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setSelected(!selected);
-    props.onSelect(props.file, !selected);
+    props.onSelect(props.file);
   };
 
-  React.useEffect(() => {
-    setSelected(props.selected);
-  }, [props]);
-
   return props.connectDropTarget(
-    <tr onClick={select} className={isActive || selected ? dndHover : dndRow}>
-      <FileRow
-        file={props.file}
-        onSelect={props.onSelect}
-        onOpen={props.onOpen}
-        callRefresh={props.callRefresh}
-        selected={props.selected}
-      />
+    <tr
+      onClick={select}
+      className={isActive || props.selected ? dndHover : dndRow}
+    >
+      <FileRow {...props} />
     </tr>,
   );
 };

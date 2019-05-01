@@ -6,7 +6,11 @@ import Editor from './EntityEditor';
 import PageDisplay from './Page/PageDisplay';
 import { TabLayout } from '../../Components/Tabs';
 import StateMachineEditor from './StateMachineEditor';
-import { DndFileBrowser } from './FileBrowser/FileBrowser';
+import {
+  DndMultipleFileBrowser,
+  DndFileBrowser,
+  DndConnectedFileBrowser,
+} from './FileBrowser/FileBrowser';
 
 const layout = css({
   display: 'grid',
@@ -45,28 +49,29 @@ export default class AppLayout extends React.Component<
             tabs={[
               'Page',
               'StateMachine',
-              'File browser',
               'Simple file browser',
+              'Connected file browser',
+              'Multiple File browser',
             ]}
           >
             <PageDisplay />
             <StateMachineEditor />
             <DndFileBrowser
-              onSelectFile={(files: IFile[]) => {
+              onFileClick={(file: IFile) => {
+                console.log(file);
+              }}
+            />
+            <DndConnectedFileBrowser />
+            <DndMultipleFileBrowser
+              onSelectFiles={(files: IFileMap) => {
                 console.log(files);
               }}
-              multipleSelection={true}
               selectedPaths={[
                 '/TESTOS/fsdf/testimage2.jpg',
                 '/TESTOS/Yo',
                 '/TESTOS/testaudio.mp3',
                 '/TESTOS/testfile.txt',
               ]}
-            />
-            <DndFileBrowser
-              onSelectFile={(files: IFile[]) => {
-                console.log(files);
-              }}
             />
           </TabLayout>
         </div>

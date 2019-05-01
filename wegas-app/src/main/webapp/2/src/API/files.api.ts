@@ -4,12 +4,6 @@ type IFiles = IFile[];
 
 const FILE_BASE = (gameModelId: number) => `GameModel/${gameModelId}/File/`;
 
-export type PageIndex = {
-  id: string;
-  index: number;
-  name: string;
-}[];
-
 export const FileAPI = {
   /**
    * Get all IFiles as raw XML

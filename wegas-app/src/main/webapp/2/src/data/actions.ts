@@ -17,6 +17,8 @@ function createAction<T extends string, P>(type: T, payload: P) {
 export const ActionCreator = {
   // ENTITY_UPDATE: (data: NormalizedData) =>
   //   createAction(ActionType.ENTITY_UPDATE, data),
+  FILE_EDIT: /*To set*/ (file: IFile) =>
+    createAction(ActionType.FILE_EDIT, file),
   VARIABLE_EDIT: <T extends IWegasEntity>(data: {
     id: number;
     config?: ConfigurationSchema<T>;

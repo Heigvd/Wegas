@@ -92,6 +92,12 @@ export default function VariableForm(props: {
             entity: VariableDescriptor.select(editing.id),
           };
         }
+        // if (editing.type === 'File') {
+        //   return {
+        //     ...editing,
+        //     entity: VariableDescriptor.select(editing.id),
+        //   };
+        // }
         return null;
       }}
     >

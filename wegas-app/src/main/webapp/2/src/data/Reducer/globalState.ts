@@ -7,6 +7,7 @@ import { ConfigurationSchema } from '../../Editor/editionConfig';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { entityIsPersisted } from '../entities';
 import { Reducer } from 'redux';
+import { getAbsoluteFileName } from '../methods/ContentDescriptor';
 
 type actionFn<T extends IWegasEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IWegasEntity> {
@@ -18,7 +19,7 @@ export interface EditorAction<T extends IWegasEntity> {
     };
   };
 }
-type Edition =
+export type Edition =
   | {
       type: 'Variable';
       id: number;
@@ -39,6 +40,10 @@ type Edition =
       path: string[];
       config?: ConfigurationSchema<IWegasEntity>;
       actions: EditorAction<IWegasEntity>;
+    }
+  | {
+      type: 'File';
+      absolutePath: string;
     };
 export interface GlobalState {
   currentGameModelId: number;
@@ -81,6 +86,12 @@ export interface GlobalState {
 const global: Reducer<Readonly<GlobalState>> = u(
   (state: GlobalState, action: StateActions) => {
     switch (action.type) {
+      case ActionType.FILE_EDIT:
+        state.editing = {
+          type: 'File',
+          absolutePath: getAbsoluteFileName(action.payload),
+        };
+        return;
       case ActionType.VARIABLE_EDIT:
         state.editing = {
           type: 'Variable',

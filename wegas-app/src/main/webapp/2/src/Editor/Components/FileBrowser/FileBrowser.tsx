@@ -8,20 +8,36 @@ import {
   DropTargetAddFileRow,
   DndFileRowProps,
   DndAddFileRowProps,
-  getAbsoluteFileName,
 } from './FileBrowserRow';
 import { DropTargetMonitor } from 'react-dnd';
 import { defaultContextManager } from '../../../Components/DragAndDrop';
 import { FontAwesome } from '../Views/FontAwesome';
 import { omit } from 'lodash-es';
+import { StoreConsumer, StoreDispatch } from '../../../data/store';
+import { State } from '../../../data/Reducer/reducers';
+import { ActionCreator } from '../../../data/actions';
+import u from 'immer';
+import {
+  getAbsoluteFileName,
+  generateGoodPath,
+} from '../../../data/methods/ContentDescriptor';
+import { Edition } from '../../../data/Reducer/globalState';
 
-export interface FileBrowserProps {
-  onSelectFile?: (files: IFile[]) => void;
-  multipleSelection?: boolean;
+export interface MultiselectionFileBrowserProps {
+  onSelectFiles?: (files: IFileMap) => void;
   selectedPaths?: string[];
 }
 
-export type IFileMap = { [key: string]: IFile };
+export interface FileBrowserProps {
+  onFileClick?: (files: IFile) => void;
+  selectedFiles?: IFileMap;
+  currentPath?: string;
+}
+
+interface CFileBrowserProps {
+  dispatch: StoreDispatch;
+  editing?: Readonly<Edition>;
+}
 
 export const gameModelDependsOnModel = () => {
   return (
@@ -31,37 +47,20 @@ export const gameModelDependsOnModel = () => {
 };
 
 export function FileBrowser(props: FileBrowserProps) {
-  const [currentPath, setCurrentPath] = React.useState('/');
+  const [currentPath, setCurrentPath] = React.useState(
+    props.currentPath ? props.currentPath : '/',
+  );
   const [files, setFiles] = React.useState<IFile[]>([]);
-  const [selectedFiles, setSelectedFiles] = React.useState<IFileMap>({});
-  const [refreshToggle, setRefreshToggle] = React.useState(false);
   const [isUploading, setUploading] = React.useState(false);
-  const [uploadAllowed, setUploadAllowed] = React.useState(false);
+  const [uploadAllowed, setUploadAllowed] = React.useState(true);
 
-  const generateGoodPath = (file: IFile) => {
-    return file.path.replace(/(\/)$/, '') + '/' + file.name;
-  };
-
-  const onSelect = (file: IFile, selected: boolean) => {
-    // If multipleSelection is defined or true, selected files are saved
-    setSelectedFiles(selectedFiles => {
-      const key: string = generateGoodPath(file);
-      let newSF: IFileMap = props.multipleSelection ? selectedFiles : {};
-      if (selected) {
-        newSF[key] = file;
-      } else {
-        newSF = omit(selectedFiles, key);
-      }
-      if (props.onSelectFile) {
-        props.onSelectFile(Object.values(newSF));
-      }
-      console.log(newSF);
-      return newSF;
-    });
+  const onSelect = (file: IFile) => {
+    if (props.onFileClick) {
+      props.onFileClick(file);
+    }
   };
 
   const onOpen = (file: IFile) => {
-    console.log('onClick');
     if (file.directory) {
       // Open directory
       setCurrentPath(generateGoodPath(file));
@@ -95,12 +94,16 @@ export function FileBrowser(props: FileBrowserProps) {
   };
 
   const refresh = () => {
-    setRefreshToggle(refreshToggle => !refreshToggle);
+    // setRefreshToggle(refreshToggle => !refreshToggle);
+    refreshFileList().then(() => {
+      isUploadAllowed().then((allowed: boolean) => {
+        setUploadAllowed(allowed);
+      });
+    });
   };
 
   const addNewDirectory = () => {
     const newDirName = prompt('Please enter the name of the new directory', '');
-
     FileAPI.createFile(
       GameModel.selectCurrent().id!,
       newDirName!,
@@ -116,6 +119,17 @@ export function FileBrowser(props: FileBrowserProps) {
   };
 
   const uploadFiles = (files: FileList, path: string = currentPath) => {
+    const finaly = (i: number) => {
+      return (e?: any) => {
+        if (e) {
+          console.log(e);
+        }
+        if (i === files.length - 1) {
+          // refresh(); // No need, as uploading is a state and will fire refresh event when changes
+          setUploading(false);
+        }
+      };
+    };
     setUploading(true);
     for (let i = 0; i < files.length; i += 1) {
       FileAPI.createFile(
@@ -123,56 +137,31 @@ export function FileBrowser(props: FileBrowserProps) {
         files[i].name,
         path,
         files[i],
-      ).then(() => {
-        refresh();
-        setUploading(false);
-      });
+      ).then(finaly(i), finaly(i)); // Fires finaly when "then" and "catch" like a true "finally"
     }
   };
 
   const uploadFilesFromEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event);
     if (event.target.files !== null) {
       uploadFiles(event.target.files);
     }
   };
 
-  React.useEffect(() => {
-    refreshFileList().then(() => {
-      isUploadAllowed().then((allowed: boolean) => {
-        setUploadAllowed(allowed);
-      });
-    });
-  }, [props, currentPath, refreshToggle, isUploading]);
+  const isUploadAllowed = () => {
+    return FileAPI.getFileMeta(GameModel.selectCurrent().id!, currentPath).then(
+      (file: IFile) => {
+        return (
+          !gameModelDependsOnModel() ||
+          file.visibility === 'PRIVATE' ||
+          file.visibility === 'INHERITED'
+        );
+      },
+    );
+  };
 
   React.useEffect(() => {
-    if (props.selectedPaths) {
-      let newSelectedFiles: IFileMap = {};
-      let highestPath: string = '';
-      let shortestSplit: number = Number.MAX_SAFE_INTEGER;
-
-      const requests = props.selectedPaths.map(item => {
-        return new Promise(resolve => {
-          FileAPI.getFileMeta(GameModel.selectCurrent().id!, item).then(
-            (file: IFile) => {
-              newSelectedFiles[item] = file;
-              const splittedPath = file.path.split('/');
-              if (splittedPath.length < shortestSplit) {
-                shortestSplit = splittedPath.length;
-                highestPath = file.path;
-              }
-              resolve();
-            },
-          );
-        });
-      });
-
-      Promise.all(requests).then(() => {
-        setCurrentPath(highestPath);
-        setSelectedFiles(newSelectedFiles);
-      });
-    }
-  }, [props.selectedPaths]);
+    refresh();
+  }, [currentPath, isUploading]);
 
   ///////////////////////////
   // Drag and drop management
@@ -203,18 +192,6 @@ export function FileBrowser(props: FileBrowserProps) {
   };
   // Drag and drop management
   ///////////////////////////
-
-  const isUploadAllowed = () => {
-    return FileAPI.getFileMeta(GameModel.selectCurrent().id!, currentPath).then(
-      (file: IFile) => {
-        return (
-          !gameModelDependsOnModel() ||
-          file.visibility === 'PRIVATE' ||
-          file.visibility === 'INHERITED'
-        );
-      },
-    );
-  };
 
   return (
     <div>
@@ -247,19 +224,28 @@ export function FileBrowser(props: FileBrowserProps) {
               isUploading={isUploading}
             />
           )}
+          {/* {console.log(
+            'render',
+            currentPath,
+            files,
+            isUploading,
+            selectedFiles,
+            uploadAllowed,
+          )} */}
           {files.map((file: IFile) => {
-            const selected =
-              selectedFiles[getAbsoluteFileName(file)] !== undefined;
             return (
               <DropTargetFileRow
-                key={file.path + file.name}
+                key={generateGoodPath(file)}
                 accepts={accepts}
                 onDrop={handleFileDrop}
                 file={file}
                 onOpen={onOpen}
                 onSelect={onSelect}
                 callRefresh={refresh}
-                selected={selected}
+                selected={
+                  props.selectedFiles &&
+                  props.selectedFiles[generateGoodPath(file)] !== undefined
+                }
               />
             );
           })}
@@ -269,6 +255,125 @@ export function FileBrowser(props: FileBrowserProps) {
   );
 }
 
+function CFileBrowser(props: CFileBrowserProps) {
+  const { editing, dispatch } = props;
+
+  const [selectedFiles, setSelectedFiles] = React.useState<IFileMap>({});
+
+  const onFileClick = (file: IFile) => {
+    dispatch(ActionCreator.FILE_EDIT(file));
+  };
+
+  React.useEffect(() => {
+    if (editing && editing.type === 'File') {
+      FileAPI.getFileMeta(
+        GameModel.selectCurrent().id!,
+        editing.absolutePath,
+      ).then((file: IFile) => {
+        const newSF: IFileMap = {};
+        newSF[generateGoodPath(file)] = file;
+        console.log('newpath', newSF);
+        setSelectedFiles(newSF);
+      });
+    } else {
+      setSelectedFiles({});
+    }
+  }, [editing]);
+
+  return (
+    <FileBrowser onFileClick={onFileClick} selectedFiles={selectedFiles} />
+  );
+}
+
+export function ConnectedFileFileBrowser() {
+  return (
+    <StoreConsumer
+      selector={(state: State) => {
+        return {
+          editing: state.global.editing,
+        };
+      }}
+    >
+      {({ state, dispatch }) => {
+        return <CFileBrowser {...state} dispatch={dispatch} />;
+      }}
+    </StoreConsumer>
+  );
+}
+
+export function MultiselectionFileFileBrowser(
+  props: MultiselectionFileBrowserProps,
+) {
+  const [selectedFiles, setSelectedFiles] = React.useState<IFileMap>({});
+  const [currentPath, setCurrentPath] = React.useState<string>('');
+
+  const onFileClick = (file: IFile) => {
+    setSelectedFiles(selectedFiles => {
+      return u(selectedFiles, (selectedFiles: IFileMap) => {
+        const key: string = generateGoodPath(file);
+        const selected = selectedFiles[key];
+        if (!selected) {
+          selectedFiles[key] = file;
+        } else {
+          selectedFiles = omit(selectedFiles, key);
+        }
+
+        if (props.onSelectFiles) {
+          props.onSelectFiles(selectedFiles);
+        }
+
+        return selectedFiles;
+      });
+    });
+  };
+
+  React.useEffect(() => {
+    if (props.selectedPaths) {
+      let newSelectedFiles: IFileMap = {};
+      let highestPath: string = '';
+      let shortestSplit: number = Number.MAX_SAFE_INTEGER;
+
+      const requests = props.selectedPaths.map(item => {
+        return new Promise(resolve => {
+          FileAPI.getFileMeta(GameModel.selectCurrent().id!, item).then(
+            (file: IFile) => {
+              newSelectedFiles[item] = file;
+              const splittedPath = file.path.split('/');
+              if (splittedPath.length < shortestSplit) {
+                shortestSplit = splittedPath.length;
+                highestPath = file.path;
+              }
+              resolve();
+            },
+          );
+        });
+      });
+
+      Promise.all(requests).then(() => {
+        setCurrentPath(highestPath);
+        setSelectedFiles(newSelectedFiles);
+      });
+    }
+  }, [props.selectedPaths]);
+
+  return (
+    <FileBrowser
+      {...props}
+      onFileClick={onFileClick}
+      selectedFiles={selectedFiles}
+      currentPath={currentPath}
+    />
+  );
+}
+
 export const DndFileBrowser = defaultContextManager<
   React.ComponentType<FileBrowserProps>
 >(FileBrowser);
+
+export const DndMultipleFileBrowser = defaultContextManager<
+  React.ComponentType<MultiselectionFileBrowserProps>
+>(MultiselectionFileFileBrowser);
+
+export const DndConnectedFileBrowser = defaultContextManager<
+  React.ComponentType<FileBrowserProps>
+>(ConnectedFileFileBrowser);
