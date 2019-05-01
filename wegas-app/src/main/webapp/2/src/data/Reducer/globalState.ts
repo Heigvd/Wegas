@@ -53,11 +53,6 @@ export interface GlobalState {
   };
   pageEdit: Readonly<boolean>;
   pageSrc: Readonly<boolean>;
-  // search: {
-  //   type: 'GLOBAL' | 'USAGE' | 'ONGOING' | 'NONE';
-  //   value?: string;
-  //   result?: number[];
-  // };
   search:
     | {
         type: 'GLOBAL';
