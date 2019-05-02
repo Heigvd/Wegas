@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Toolbar } from './Toolbar';
 import { css } from 'emotion';
 import { primaryLight, primaryDark } from './Theme';
+
 interface TabLayoutProps {
   active?: number;
   vertical: boolean;
@@ -16,8 +17,18 @@ export class TabLayout extends React.Component<
   };
   readonly state = { active: this.props.active || 0 };
   render() {
-    const active = React.Children.map(this.props.children, (c, i) => {
-      return i === this.state.active ? c : null;
+    // const active = React.Children.map(this.props.children, (c, i) => {
+    //   return i === this.state.active ? c : null;
+    // });
+    const childrens = React.Children.map(this.props.children, (c, i) => {
+      // return c;
+      return (
+        <div
+          style={{ visibility: i === this.state.active ? 'visible' : 'hidden' }}
+        >
+          {c}
+        </div>
+      );
     });
     return (
       <Toolbar vertical={this.props.vertical}>
@@ -34,7 +45,7 @@ export class TabLayout extends React.Component<
             );
           })}
         </Toolbar.Header>
-        <Toolbar.Content>{active}</Toolbar.Content>
+        <Toolbar.Content>{childrens}</Toolbar.Content>
       </Toolbar>
     );
   }
