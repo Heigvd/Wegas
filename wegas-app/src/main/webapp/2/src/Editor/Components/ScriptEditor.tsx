@@ -556,7 +556,7 @@ export function ScriptEditorLayout(props: ScriptEditorLayoutProps) {
   );
 }
 
-export default function ConnectedPageDisplay() {
+export default function ConnectedScriptEditorLayout() {
   return (
     <StoreConsumer selector={(s: State) => ({ librariesState: s.libraries })}>
       {({ state, dispatch }) => {
