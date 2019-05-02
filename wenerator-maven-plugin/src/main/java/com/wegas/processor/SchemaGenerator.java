@@ -32,10 +32,10 @@ import com.wegas.editor.JSONSchema.JSONArray;
 import com.wegas.editor.JSONSchema.JSONBoolean;
 import com.wegas.editor.JSONSchema.JSONNumber;
 import com.wegas.editor.JSONSchema.JSONObject;
-import com.wegas.editor.JSONSchema.JSONRef;
 import com.wegas.editor.JSONSchema.JSONSchema;
 import com.wegas.editor.JSONSchema.JSONString;
 import com.wegas.editor.JSONSchema.JSONUnknown;
+import com.wegas.editor.JSONSchema.JSONWRef;
 import com.wegas.editor.JSONSchema.WithView;
 import com.wegas.editor.View.CommonView;
 import com.wegas.editor.View.View;
@@ -247,7 +247,7 @@ public class SchemaGenerator extends AbstractMojo {
                 return allObj.get(type);
             } else if (new TypeToken<Mergeable>() {
             }.isSupertypeOf(type)) {
-                return new JSONRef(fileName((Class<?>) type));
+                return new JSONWRef(fileName((Class<?>) type));
             } else {
                 JSONObject jsonObject = new JSONObject();
                 allObj.put(type, jsonObject);
