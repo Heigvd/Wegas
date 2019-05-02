@@ -169,14 +169,13 @@ function ScriptEditor(props: ScriptEditorProps) {
 
   const removeLibrary = (name: string) => {
     setLibrariesState((oldState: ILibrariesState) => {
+      const newLibs = omit(oldState.libraries, name);
       const newKey =
-        Object.keys(oldState.libraries).length > 1
-          ? Object.keys(oldState.libraries)[1]
-          : '';
+        Object.keys(newLibs).length > 0 ? Object.keys(newLibs)[0] : '';
       return {
         ...oldState,
         key: newKey,
-        libraries: omit(oldState.libraries, name),
+        libraries: newLibs,
       };
     });
   };
