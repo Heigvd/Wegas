@@ -8,6 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.wegas.editor.JSONSchema.JSONSchema;
+import com.wegas.editor.View.View;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
@@ -17,6 +18,8 @@ public @interface Schema {
     Class<? extends JSONSchema> value();
 
     String property();
+
+    View view();
 
     /**
      * Shallow merge, default true

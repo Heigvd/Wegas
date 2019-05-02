@@ -7,13 +7,15 @@
  */
 package com.wegas.core.persistence.annotations;
 
-import com.wegas.core.merge.utils.EmptyCallback;
-import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.variable.ModelScoped;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import com.wegas.core.merge.utils.EmptyCallback;
+import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.editor.View.View;
 
 /**
  * A field annotated with WegasPropertyProperty will be taken into account while {@link com.wegas.core.merge.patch.WegasEntityPatch patching}
@@ -83,4 +85,9 @@ public @interface WegasEntityProperty {
      * @return is the property searchable ?
      */
     public boolean searchable() default false;
+
+    /**
+     * Editor's view.
+     */
+    View view() default @View(label = ""); // @TODO Remove default value
 }
