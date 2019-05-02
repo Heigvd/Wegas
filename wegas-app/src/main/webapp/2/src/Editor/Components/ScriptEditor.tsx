@@ -169,7 +169,15 @@ function ScriptEditor(props: ScriptEditorProps) {
 
   const removeLibrary = (name: string) => {
     setLibrariesState((oldState: ILibrariesState) => {
-      return { ...oldState, libraries: omit(oldState.libraries, name) };
+      const newKey =
+        Object.keys(oldState.libraries).length > 1
+          ? Object.keys(oldState.libraries)[1]
+          : '';
+      return {
+        ...oldState,
+        key: newKey,
+        libraries: omit(oldState.libraries, name),
+      };
     });
   };
 
@@ -254,7 +262,6 @@ function ScriptEditor(props: ScriptEditorProps) {
         librariesState.key,
       )
         .then(() => {
-          console.log('delete library');
           removeLibrary(librariesState.key);
         })
         .catch(() => {
@@ -315,12 +322,19 @@ function ScriptEditor(props: ScriptEditorProps) {
   };
 
   const getActualScriptVisibility = (): IVisibility => {
-    console.log(librariesState);
-    return librariesState.key
-      ? getScriptOutdatedState()
-        ? props.librariesState[props.scriptType][librariesState.key].visibility
-        : librariesState.libraries[librariesState.key].library.visibility
-      : librariesState.tempLibrary.visibility;
+    if (librariesState.key) {
+      if (getScriptOutdatedState()) {
+        // Existance of this global lib is allready done by getScriptOutdatedState(), no need to check
+        return props.librariesState[props.scriptType][librariesState.key]
+          .visibility;
+      } else {
+        const locLib = librariesState.libraries[librariesState.key];
+        if (locLib) {
+          return locLib.library.visibility;
+        }
+      }
+    }
+    return librariesState.tempLibrary.visibility;
   };
 
   const isVisibilityAllowed = (visibility: IVisibility): boolean => {
