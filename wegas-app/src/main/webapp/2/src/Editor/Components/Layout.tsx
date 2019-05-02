@@ -6,11 +6,7 @@ import Editor from './EntityEditor';
 import PageDisplay from './Page/PageDisplay';
 import { TabLayout } from '../../Components/Tabs';
 import StateMachineEditor from './StateMachineEditor';
-import {
-  DndMultipleFileBrowser,
-  DndFileBrowser,
-  DndConnectedFileBrowser,
-} from './FileBrowser/FileBrowser';
+import { DndConnectedFileBrowser } from './FileBrowser/FileBrowser';
 
 const layout = css({
   display: 'grid',
@@ -45,34 +41,10 @@ export default class AppLayout extends React.Component<
           <TreeView />
         </div>
         <div>
-          <TabLayout
-            tabs={[
-              'Page',
-              'StateMachine',
-              'Simple file browser',
-              'Connected file browser',
-              'Multiple File browser',
-            ]}
-          >
+          <TabLayout tabs={['Page', 'StateMachine', 'Files']}>
             <PageDisplay />
             <StateMachineEditor />
-            <DndFileBrowser
-              onFileClick={(file: IFile) => {
-                console.log(file);
-              }}
-            />
             <DndConnectedFileBrowser />
-            <DndMultipleFileBrowser
-              onSelectFiles={(files: IFileMap) => {
-                console.log(files);
-              }}
-              selectedPaths={[
-                '/TESTOS/fsdf/testimage2.jpg',
-                '/TESTOS/Yo',
-                '/TESTOS/testaudio.mp3',
-                '/TESTOS/testfile.txt',
-              ]}
-            />
           </TabLayout>
         </div>
         <div>
