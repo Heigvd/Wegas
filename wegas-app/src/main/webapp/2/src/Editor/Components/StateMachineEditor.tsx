@@ -63,7 +63,6 @@ const searchWithState = (
       value = `Variable.find(gameModel, "${variable.name}")`;
     }
   }
-  value = value ? String(value) : value;
   return value && searched.indexOf(value) >= 0;
 };
 
