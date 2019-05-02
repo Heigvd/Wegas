@@ -7,7 +7,6 @@ import PageDisplay from './Page/PageDisplay';
 import { TabLayout } from '../../Components/Tabs';
 import StateMachineEditor from './StateMachineEditor';
 import SrcEditor from './SrcEditor';
-import { SizedDiv } from '../../Components/SizedDiv';
 
 const layout = css({
   display: 'grid',
