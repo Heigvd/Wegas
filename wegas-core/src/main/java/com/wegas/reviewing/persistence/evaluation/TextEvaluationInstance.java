@@ -9,7 +9,7 @@ package com.wegas.reviewing.persistence.evaluation;
 
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;

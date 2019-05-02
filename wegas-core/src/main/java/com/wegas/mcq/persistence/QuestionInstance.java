@@ -12,7 +12,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
 import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;

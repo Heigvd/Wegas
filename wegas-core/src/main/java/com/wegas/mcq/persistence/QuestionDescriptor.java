@@ -9,13 +9,22 @@ package com.wegas.mcq.persistence;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.persistence.annotations.Errored;
+import com.wegas.editor.Visible;
+import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
+import com.wegas.core.persistence.annotations.WegasConditions.IsTrue;
+import com.wegas.core.persistence.annotations.WegasConditions.And;
+import com.wegas.core.persistence.annotations.WegasConditions.LessThan;
+import com.wegas.core.persistence.annotations.WegasRefs.Const;
+import com.wegas.core.persistence.annotations.WegasRefs.Field;
+import com.wegas.core.persistence.annotations.WegasRefs.Self;
 import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -57,7 +66,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     private TranslatableContent description;
 
     /**
-     * Set this to true when the choice is to be selected with an HTML
+     * Set this to true when the choice is to be selh
      * radio/checkbox
      */
     @Column(columnDefinition = "boolean default false")
@@ -68,16 +77,22 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty
+    @Visible(IsCbx.class)
     private Boolean tabular = FALSE;
     /**
      * Total number of replies allowed. No default value.
      */
     @WegasEntityProperty
+    @Errored(CheckMinMaxBounds.class)
+    @Errored(CheckPositiveness.class)
     private Integer maxReplies = null;
     /**
      * Minimal number of replies required. Makes sense only with CBX-type questions. No default value.
      */
     @WegasEntityProperty
+    @Visible(IsCbx.class)
+    @Errored(CheckPositiveness.class)
+    @Errored(CheckMinMaxBounds.class)
     private Integer minReplies = null;
     /**
      *
@@ -344,5 +359,33 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         }
 
         return true;
+    }
+
+    public static class CheckMinMaxBounds extends And {
+
+        public CheckMinMaxBounds() {
+            super(
+                    new IsDefined(new Field(null, "minReplies")),
+                    new IsDefined(new Field(null, "maxReplies")),
+                    new LessThan(new Field(null, "maxReplies"), new Field(null, "minReplies"))
+            );
+        }
+    }
+
+    public static class CheckPositiveness extends And {
+
+        public CheckPositiveness() {
+            super(
+                    new IsDefined(new Self()),
+                    new LessThan(new Self(), new Const(1))
+            );
+        }
+    }
+
+    public static class IsCbx extends IsTrue {
+
+        public IsCbx() {
+            super(new Field(null, "cbx"));
+        }
     }
 }

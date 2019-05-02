@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import javax.persistence.*;

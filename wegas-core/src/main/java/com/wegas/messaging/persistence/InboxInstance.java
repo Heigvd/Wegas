@@ -10,7 +10,7 @@ package com.wegas.messaging.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.Helper;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.game.GameModelLanguage;

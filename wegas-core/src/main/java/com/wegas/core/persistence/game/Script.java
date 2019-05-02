@@ -9,7 +9,7 @@ package com.wegas.core.persistence.game;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
 
 import javax.persistence.Embeddable;

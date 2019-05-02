@@ -14,8 +14,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.merge.annotations.WegasEntity;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntity;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.i18n.persistence.TranslatableContent;
@@ -27,6 +27,15 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.Visible;
+import com.wegas.core.persistence.annotations.WegasConditions.And;
+import com.wegas.core.persistence.annotations.WegasConditions.Equals;
+import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
+import com.wegas.core.persistence.annotations.WegasConditions.IsTrue;
+import com.wegas.core.persistence.annotations.WegasConditions.Not;
+import com.wegas.core.persistence.annotations.WegasConditions.Or;
+import com.wegas.core.persistence.annotations.WegasRefs.Const;
+import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,6 +98,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * Total number of replies allowed. No default value.
      */
     @WegasEntityProperty
+    @Visible(IsNotQuestionCbxOrMaxEqOne.class)
     private Integer maxReplies = null;
 
     /**
@@ -256,8 +266,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         /*
          * At this point, we're sure this choice has not been selected & validated
          */
-
-
         // has the question been explicitly validated (either CBX case or by a specific impact)
         if (this.getQuestion().getValidated(p)) {
             // validated -> no longer answerable
@@ -487,5 +495,24 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
             }
         }
         super.revive(gameModel, beans);
+    }
+
+    public static class IsNotQuestionCbxOrMaxEqOne extends Not {
+
+        public IsNotQuestionCbxOrMaxEqOne() {
+            super(new Or(
+                    new And(
+                            // choice is answerable only once in CBX questions
+                            new IsDefined(new Field(QuestionDescriptor.class, "cbx")),
+                            new IsTrue(new Field(QuestionDescriptor.class, "cbx"))
+                    ),
+                    new And(
+                            // choice is answerable only once if global max is one
+                            new IsDefined(new Field(QuestionDescriptor.class, "maxReplies")),
+                            new Equals(new Field(QuestionDescriptor.class, "maxReplies"), new Const(1))
+                    )
+            )
+            );
+        }
     }
 }

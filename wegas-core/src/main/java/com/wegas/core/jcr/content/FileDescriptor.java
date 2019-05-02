@@ -10,7 +10,7 @@ package com.wegas.core.jcr.content;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;

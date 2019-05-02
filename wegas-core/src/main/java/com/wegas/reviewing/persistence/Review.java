@@ -8,7 +8,7 @@
 package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.DatedEntity;

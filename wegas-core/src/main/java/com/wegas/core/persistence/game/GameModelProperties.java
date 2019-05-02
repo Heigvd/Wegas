@@ -9,7 +9,7 @@ package com.wegas.core.persistence.game;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;

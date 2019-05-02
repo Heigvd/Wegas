@@ -9,7 +9,7 @@ package com.wegas.core.jcr.content;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import java.util.ArrayList;

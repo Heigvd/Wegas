@@ -9,8 +9,8 @@ package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.wegas.core.merge.annotations.WegasEntity;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntity;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.Helper;

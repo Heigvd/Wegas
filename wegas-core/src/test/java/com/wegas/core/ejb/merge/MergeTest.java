@@ -9,7 +9,7 @@ package com.wegas.core.ejb.merge;
 
 import ch.qos.logback.classic.Level;
 import com.wegas.core.ejb.*;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.patch.WegasPatch;
 import com.wegas.core.merge.utils.WegasEntitiesHelper;
 import com.wegas.core.merge.utils.WegasEntityFields;

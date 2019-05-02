@@ -11,13 +11,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasNotFoundException;
-import com.wegas.core.merge.annotations.WegasEntity;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntity;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
@@ -38,6 +37,11 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.core.persistence.annotations.WegasConditions.And;
+import com.wegas.core.persistence.annotations.WegasConditions.Equals;
+import com.wegas.core.persistence.annotations.WegasConditions.Or;
+import com.wegas.core.persistence.annotations.WegasRefs.Const;
+import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
@@ -265,7 +269,6 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     //@WegasEntityProperty(callback = VdMergeCallback.class)
     private AbstractScope scope;
 
-
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(sameEntityOnly = true)
@@ -368,6 +371,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
 
     /**
      * Set the root gameModel. Means this descriptor stands at gameModel root level
+     *
      * @param rootGameModel
      */
     public void setRoot(GameModel rootGameModel) {
@@ -840,5 +844,30 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getGameModel().getRequieredUpdatePermission();
+    }
+
+    public static class CheckScope extends Or {
+
+        private static Field scope = new Field(null, "scopeType");
+        private static Field bScope = new Field(null, "broadcastScope");
+        private static Const ps = new Const("PlayerScope");
+        private static Const ts = new Const("TeamScope");
+        private static Const gs = new Const("GameModelScope");
+
+        public CheckScope() {
+            super(
+                    new And(
+                            new Equals(scope, ts),
+                            new Equals(bScope, ps)
+                    ),
+                    new And(
+                            new Equals(scope, gs),
+                            new Or(
+                                    new Equals(bScope, ps),
+                                    new Equals(bScope, ts)
+                            )
+                    )
+            );
+        }
     }
 }

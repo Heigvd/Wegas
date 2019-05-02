@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;

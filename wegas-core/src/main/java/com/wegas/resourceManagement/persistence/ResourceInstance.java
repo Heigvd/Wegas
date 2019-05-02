@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Mergeable;

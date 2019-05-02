@@ -90,7 +90,7 @@ public interface Mergeable {
     <T extends Mergeable> T getMergeableParent();
 
     @JsonIgnore
-    default <T extends Mergeable> T getSerialisedParent(){
+    default <T extends Mergeable> T getSerialisedParent() {
         return this.getMergeableParent();
     }
 
@@ -108,21 +108,34 @@ public interface Mergeable {
     }
 
     @JsonView(Views.IndexI.class)
-    @JsonProperty(access=JsonProperty.Access.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     default String getParentType() {
-        AbstractEntity parent= this.getParentEntity();
-        if (parent != null){
+        AbstractEntity parent = this.getParentEntity();
+        if (parent != null) {
             return parent.getJSONClassName();
         }
         return null;
     }
 
     @JsonView(Views.IndexI.class)
-    @JsonProperty(access=JsonProperty.Access.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     default Long getParentId() {
-        AbstractEntity parent= this.getParentEntity();
-        if (parent != null){
+        AbstractEntity parent = this.getParentEntity();
+        if (parent != null) {
             return parent.getId();
+        }
+        return null;
+    }
+
+    default <T extends Mergeable> T findNearestParent(Class<T> filter) {
+        Mergeable parent = this.getSerialisedParent();
+
+        if (parent != null) {
+            if (filter.isAssignableFrom(parent.getClass())) {
+                return (T) parent;
+            } else {
+                return parent.findNearestParent(filter);
+            }
         }
         return null;
     }

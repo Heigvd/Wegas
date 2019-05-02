@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;

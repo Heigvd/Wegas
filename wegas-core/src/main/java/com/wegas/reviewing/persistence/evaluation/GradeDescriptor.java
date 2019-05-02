@@ -7,7 +7,9 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
+import com.wegas.core.persistence.annotations.Errored;
 import javax.persistence.Entity;
 
 /**
@@ -21,9 +23,11 @@ public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
     private static final long serialVersionUID = 1L;
 
     @WegasEntityProperty
+    @Errored(NumberDescriptor.NumberDescBoundsConstraint.class)
     private Long minValue;
 
     @WegasEntityProperty
+    @Errored(NumberDescriptor.NumberDescBoundsConstraint.class)
     private Long maxValue;
 
     /**

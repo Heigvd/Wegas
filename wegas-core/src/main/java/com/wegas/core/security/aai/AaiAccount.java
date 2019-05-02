@@ -9,7 +9,7 @@ package com.wegas.core.security.aai;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.security.persistence.AbstractAccount;
 
 import javax.persistence.*;

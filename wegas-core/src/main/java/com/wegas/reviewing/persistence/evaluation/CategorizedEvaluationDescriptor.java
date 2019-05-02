@@ -7,7 +7,7 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.primitive.Enumeration;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.persistence.variable.primitive.EnumItem;

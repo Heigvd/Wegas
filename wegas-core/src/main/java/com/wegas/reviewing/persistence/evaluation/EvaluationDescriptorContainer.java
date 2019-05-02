@@ -10,7 +10,7 @@ package com.wegas.reviewing.persistence.evaluation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;

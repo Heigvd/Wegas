@@ -7,7 +7,7 @@
  */
 package com.wegas.core.merge.utils;
 
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;

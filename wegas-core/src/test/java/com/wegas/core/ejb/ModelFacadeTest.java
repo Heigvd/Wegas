@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2019 School of Business and Engineering Vaud, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -55,7 +55,6 @@ import javax.naming.NamingException;
 import javax.ws.rs.core.MediaType;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.reflections.Reflections;
 import org.slf4j.Logger;

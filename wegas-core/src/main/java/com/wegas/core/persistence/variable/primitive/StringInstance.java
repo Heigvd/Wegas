@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.VariableDescriptor;

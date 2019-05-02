@@ -8,7 +8,7 @@
 package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;

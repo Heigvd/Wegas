@@ -10,7 +10,7 @@ package com.wegas.core.persistence.variable.primitive;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;

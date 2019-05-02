@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;

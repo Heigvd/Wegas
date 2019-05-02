@@ -16,7 +16,7 @@ import com.wegas.core.jcr.jta.JCRClient;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.EntityComparators;

@@ -9,8 +9,8 @@ package com.wegas.core.persistence.variable.primitive;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
-import com.wegas.core.merge.annotations.WegasEntity;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntity;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.Player;
@@ -20,6 +20,11 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.wegas.core.persistence.annotations.Errored;
+import com.wegas.core.persistence.annotations.WegasConditions.And;
+import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
+import com.wegas.core.persistence.annotations.WegasConditions.LessThan;
+import com.wegas.core.persistence.annotations.WegasRefs.Field;
 
 /**
  *
@@ -27,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @WegasEntity(callback = NumberDescriptor.ValdateDefaultValue.class)
-public class NumberDescriptor extends VariableDescriptor<NumberInstance> implements PrimitiveDescriptorI<Double>{
+public class NumberDescriptor extends VariableDescriptor<NumberInstance> implements PrimitiveDescriptorI<Double> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(NumberDescriptor.class);
@@ -35,11 +40,13 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      *
      */
     @WegasEntityProperty(order = -1) // update bound before the default instance
+    @Errored(NumberDescBoundsConstraint.class)
     private Double minValue;
     /**
      *
      */
     @WegasEntityProperty(order = -1) // update bound before the default instance
+    @Errored(NumberDescBoundsConstraint.class)
     private Double maxValue;
 
     /**
@@ -228,6 +235,21 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
                             nd.getMaxValue(), value, nd.getName(), nd.getLabel().translateOrEmpty(nd.getGameModel()));
                 }
             }
+        }
+    }
+
+    /**
+     * Check bound consistency.
+     * Applicable to any object which defined minValue & maxValue
+     */
+    public static class NumberDescBoundsConstraint extends And {
+
+        public NumberDescBoundsConstraint() {
+            super(
+                    new IsDefined(new Field(null, "minValue")),
+                    new IsDefined(new Field(null, "maxValue")),
+                    new LessThan(new Field(null, "maxValue"), new Field(null, "minValue"))
+            );
         }
     }
 }

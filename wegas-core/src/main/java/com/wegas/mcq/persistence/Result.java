@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
@@ -21,6 +21,12 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.Visible;
+import com.wegas.core.persistence.annotations.WegasConditions.And;
+import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
+import com.wegas.core.persistence.annotations.WegasConditions.IsTrue;
+import com.wegas.core.persistence.annotations.WegasConditions.Not;
+import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -82,6 +88,7 @@ public class Result extends AbstractEntity implements LabelledEntity {
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty
+    @Visible(IsLabelVisible.class)
     private TranslatableContent label;
 
     /**
@@ -96,6 +103,7 @@ public class Result extends AbstractEntity implements LabelledEntity {
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty
+    @Visible(IsQuestionCbx.class)
     private TranslatableContent ignorationAnswer;
 
     /*
@@ -123,6 +131,7 @@ public class Result extends AbstractEntity implements LabelledEntity {
     })
     @JsonView(Views.EditorI.class)
     @WegasEntityProperty
+    @Visible(IsQuestionCbx.class)
     private Script ignorationImpact;
     /**
      *
@@ -155,14 +164,14 @@ public class Result extends AbstractEntity implements LabelledEntity {
      */
     public void setChoiceDescriptor(ChoiceDescriptor choiceDescriptor) {
         this.choiceDescriptor = choiceDescriptor;
-        if (this.choiceDescriptor !=null){
-            if (this.getLabel() != null){
-            this.getLabel().setParentDescriptor(choiceDescriptor);
+        if (this.choiceDescriptor != null) {
+            if (this.getLabel() != null) {
+                this.getLabel().setParentDescriptor(choiceDescriptor);
             }
-            if (this.getAnswer() != null){
+            if (this.getAnswer() != null) {
                 this.getAnswer().setParentDescriptor(choiceDescriptor);
             }
-            if (this.getIgnorationAnswer() != null){
+            if (this.getIgnorationAnswer() != null) {
                 this.getIgnorationAnswer().setParentDescriptor(choiceDescriptor);
             }
         }
@@ -201,7 +210,7 @@ public class Result extends AbstractEntity implements LabelledEntity {
         this.touchImpact();
     }
 
-    private void touchImpact(){
+    private void touchImpact() {
         if (this.impact != null) {
             this.impact.setParent(this, "impact");
         }
@@ -240,8 +249,8 @@ public class Result extends AbstractEntity implements LabelledEntity {
         this.touchIgnorationImpact();
     }
 
-    private void touchIgnorationImpact(){
-        if (this.ignorationImpact!=null){
+    private void touchIgnorationImpact() {
+        if (this.ignorationImpact != null) {
             this.ignorationImpact.setParent(this, "ign");
         }
     }
@@ -304,7 +313,7 @@ public class Result extends AbstractEntity implements LabelledEntity {
      * }
      */
 
-    /*
+ /*
     public void addChoiceInstance(ChoiceInstance choiceInstance) {
         CurrentResult cr = this.getCurrentResult();
         if (!cr.getChoiceInstances().contains(choiceInstance)) {
@@ -400,4 +409,23 @@ public class Result extends AbstractEntity implements LabelledEntity {
         this.getCurrentResult();
     }
      */
+    public static class IsLabelVisible extends Not {
+
+        public IsLabelVisible() {
+            // hide the label if the result stands in a singleResultChoiceDescriptor
+            // -> display it only if parent is not a srcd
+            super(new IsDefined(new Field(SingleResultChoiceDescriptor.class, null)));
+        }
+    }
+
+    public static class IsQuestionCbx extends And {
+
+        public IsQuestionCbx() {
+            super(
+                    new IsDefined(new Field(QuestionDescriptor.class, "cbx")),
+                    new IsTrue(new Field(QuestionDescriptor.class, "cbx"))
+            );
+        }
+    }
+
 }

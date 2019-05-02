@@ -8,7 +8,7 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;

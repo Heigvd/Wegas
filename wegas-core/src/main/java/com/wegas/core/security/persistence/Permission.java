@@ -10,7 +10,7 @@ package com.wegas.core.security.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Game;

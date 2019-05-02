@@ -16,7 +16,7 @@ import javax.persistence.Entity;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.VariableProperty;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;

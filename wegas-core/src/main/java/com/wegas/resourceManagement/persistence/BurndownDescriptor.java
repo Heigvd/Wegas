@@ -14,7 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 
 /**
  *

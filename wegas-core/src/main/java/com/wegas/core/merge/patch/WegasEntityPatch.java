@@ -13,7 +13,7 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.DefaultWegasFactory;
 import com.wegas.core.merge.utils.EmptyCallback;
 import com.wegas.core.merge.utils.LifecycleCollector;
