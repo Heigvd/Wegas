@@ -67,6 +67,8 @@ var WegasHelper = (function() {
                     body = curmsg.getBody() && I18n.t(curmsg.getBody()),
                     from = curmsg.getFrom() && I18n.t(curmsg.getFrom());
 
+                content += '<div class="wegas-dashboard-inbox-message">';
+
                 if (from && from.length) {
                     content += "<b>" + subj + "</b><br/>";
                 }
@@ -80,7 +82,7 @@ var WegasHelper = (function() {
                     content += "<br/>&nbsp;<br/>" + body;
                 }
 
-                content += '<hr/><br/>';
+                content += '<hr/></div>';
             }
         }
         return {"title": teamName + ": " + inboxName, "body": content, "empty": empty};
