@@ -38,6 +38,8 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.Textarea;
+import com.wegas.editor.View.View;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
@@ -179,7 +181,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @Lob
     @JsonView(value = Views.EditorI.class)
     @Column(name = "comments")
-    @WegasEntityProperty(searchable = true)
+    @WegasEntityProperty(searchable = true, view = @View(label = "Comments", borderTop = true, value = Textarea.class))
     private String comments;
 
     /**

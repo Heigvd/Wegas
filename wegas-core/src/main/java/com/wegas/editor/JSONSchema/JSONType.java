@@ -3,11 +3,12 @@ package com.wegas.editor.JSONSchema;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public abstract class JSONType implements JSONSchema {
+public abstract class JSONType extends JSONExtendedSchema {
     abstract String getType();
 
     private JsonNode value;
@@ -51,6 +52,7 @@ public abstract class JSONType implements JSONSchema {
     /**
      * @return the value
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public JsonNode getValue() {
         return value;
     }
@@ -65,6 +67,7 @@ public abstract class JSONType implements JSONSchema {
     /**
      * @return the constant (const)
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public JsonNode getConstant() {
         return constant;
     }

@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.wegas.editor.Schema;
 import com.wegas.editor.JSONSchema.JSONArray;
+import com.wegas.editor.View.View;
 
 /**
  *
@@ -24,29 +25,21 @@ import com.wegas.editor.JSONSchema.JSONArray;
  */
 @Entity
 @Table(name = "MCQSingleResultChoiceDescriptor")
-@Schema(property = "results", value = SingleResultChoiceDescriptor.SingleResultProp.class)
+@Schema(property = "results", value = SingleResultChoiceDescriptor.SingleResultProp.class, view = @View(label = "Result"))
 public class SingleResultChoiceDescriptor extends ChoiceDescriptor {
     public static class SingleResultProp extends JSONArray {
-        @Override
-        public Integer getMinItems() {
-            return 1;
-        }
 
-        @Override
-        public Integer getMaxItems() {
-            return 1;
-        }
+        public SingleResultProp() {
+            this.setMinItems(1);
+            this.setMaxItems(1);
 
-        @Override
-        public JsonNode getValue() {
             final ObjectMapper mapper = new ObjectMapper();
             ArrayNode arrayNode = mapper.createArrayNode();
             ObjectNode objectNode = mapper.createObjectNode();
             objectNode.put("@class", "Result");
             arrayNode.add(objectNode);
-            return arrayNode;
+            this.setValue(arrayNode);
         }
-
     }
 
     private static final long serialVersionUID = 1L;

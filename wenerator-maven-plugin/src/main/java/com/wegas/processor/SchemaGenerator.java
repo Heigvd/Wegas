@@ -1,6 +1,5 @@
 package com.wegas.processor;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
@@ -17,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +36,9 @@ import com.wegas.editor.JSONSchema.JSONRef;
 import com.wegas.editor.JSONSchema.JSONSchema;
 import com.wegas.editor.JSONSchema.JSONString;
 import com.wegas.editor.JSONSchema.JSONUnknown;
+import com.wegas.editor.JSONSchema.WithView;
+import com.wegas.editor.View.CommonView;
+import com.wegas.editor.View.View;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -66,13 +69,32 @@ public class SchemaGenerator extends AbstractMojo {
                 try {
                     JSONSchema val = schema.value().newInstance();
                     if (schema.merge()) {
-                        val = merge(o.getProperties().get(schema.property()), schema.value().newInstance());
+                        val = merge(o.getProperties().get(schema.property()), val);
                     }
                     o.setProperty(schema.property(), val);
-                } catch (InstantiationException | IllegalAccessException | IOException e) {
+                    injectView(val, schema.view());
+                } catch (InstantiationException | IllegalAccessException | IOException | IllegalArgumentException
+                        | SecurityException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+            }
+        }
+    }
+
+    /**
+     * inject View into Schema
+     */
+    private void injectView(JSONSchema schema, View view) {
+        if (schema instanceof WithView) {
+            try {
+                CommonView v = view.value().newInstance();
+                v.setLabel(view.label()).setBorderTop(view.borderTop()).setDescription(view.description())
+                        .setLayout(view.layout());
+                ((WithView) schema).setView(v);
+            } catch (InstantiationException | IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
         }
     }
@@ -121,7 +143,9 @@ public class SchemaGenerator extends AbstractMojo {
             wEF.getFields().forEach(field -> {
                 Type returnType = field.getPropertyDescriptor().getReadMethod().getGenericReturnType();
                 Type reified = TypeResolver.reify(returnType, wEF.getTheClass());
-                o.setProperty(field.getPropertyDescriptor().getName(), javaToJSType(reified));
+                JSONSchema prop = javaToJSType(reified);
+                injectView(prop, field.getAnnotation().view());
+                o.setProperty(field.getPropertyDescriptor().getName(), prop);
             });
 
             Schemas schemas = wEF.getTheClass().getAnnotation(Schemas.class);
@@ -161,27 +185,27 @@ public class SchemaGenerator extends AbstractMojo {
 
     private JSONSchema javaToJSType(Type type) {
         switch (type.getTypeName()) {
-            case "int":
-            case "long":
-            case "java.lang.Long":
-            case "java.lang.Integer":
-                return new JSONNumber();
-            case "double":
-            case "float":
-            case "java.lang.Double":
-            case "java.lang.Float":
-            case "java.util.Date":
-            case "java.util.Calendar":
-                return new JSONNumber();
-            case "char":
-            case "java.lang.Character":
-            case "java.lang.String":
-                return new JSONString();
-            case "java.lang.Boolean":
-            case "boolean":
-                return new JSONBoolean();
-            default:
-                break;
+        case "int":
+        case "long":
+        case "java.lang.Long":
+        case "java.lang.Integer":
+            return new JSONNumber(); // JSONInteger is not handled.
+        case "double":
+        case "float":
+        case "java.lang.Double":
+        case "java.lang.Float":
+        case "java.util.Date":
+        case "java.util.Calendar":
+            return new JSONNumber();
+        case "char":
+        case "java.lang.Character":
+        case "java.lang.String":
+            return new JSONString();
+        case "java.lang.Boolean":
+        case "boolean":
+            return new JSONBoolean();
+        default:
+            break;
         }
         TypeToken<Collection<?>> collection = new TypeToken<Collection<?>>() {
         };
