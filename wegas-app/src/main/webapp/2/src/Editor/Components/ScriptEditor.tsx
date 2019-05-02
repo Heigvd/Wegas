@@ -317,7 +317,9 @@ function ScriptEditor(props: ScriptEditorProps) {
   const getActualScriptVisibility = (): IVisibility => {
     console.log(librariesState);
     return librariesState.key
-      ? librariesState.libraries[librariesState.key].library.visibility
+      ? getScriptOutdatedState()
+        ? props.librariesState[props.scriptType][librariesState.key].visibility
+        : librariesState.libraries[librariesState.key].library.visibility
       : librariesState.tempLibrary.visibility;
   };
 

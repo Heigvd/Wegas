@@ -31,18 +31,6 @@ const libraryState: Reducer<Readonly<LibraryState>> = u(
           ...state,
           Script: { ...state.ServerScript, ...action.payload.libraries },
         };
-      // case ActionType.LIBRARY_INDEX:
-      //   return action.payload.reduce(
-      //     (all, curr) => {
-      //       let library = state[curr.id];
-      //       if (library != null) {
-      //         page = { ...page, '@name': curr.name, '@index': curr.index };
-      //       }
-      //       all[curr.id] = page;
-      //       return all;
-      //     },
-      //     {} as PageState,
-      //   );
     }
   },
   {},
@@ -64,23 +52,3 @@ export function get(
     });
   };
 }
-// export function createPage(
-//   page: WegasComponent,
-// ): ThunkResult<Promise<StateActions<'PAGE_FETCH'>>> {
-//   return function(dispatch, getState) {
-//     const gameModelId = getState().global.currentGameModelId;
-//     return PageAPI.setPage(gameModelId, page).then(pages =>
-//       dispatch(ActionCreator.PAGE_FETCH({ pages })),
-//     );
-//   };
-// }
-// export function deletePage(
-//   id: string,
-// ): ThunkResult<Promise<StateActions<'PAGE_INDEX'>>> {
-//   return function(dispatch, getState) {
-//     const gameModelId = getState().global.currentGameModelId;
-//     return PageAPI.deletePage(gameModelId, id).then(pages =>
-//       dispatch(ActionCreator.PAGE_INDEX(pages)),
-//     );
-//   };
-// }
