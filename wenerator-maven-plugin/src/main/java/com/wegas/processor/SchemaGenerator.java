@@ -16,16 +16,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.github.fge.jsonpatch.JsonPatchException;
+import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.google.common.reflect.TypeToken;
 import com.wegas.core.merge.utils.WegasEntityFields;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.annotations.Errored;
 import com.wegas.editor.Schema;
 import com.wegas.editor.Schemas;
 import com.wegas.editor.JSONSchema.JSONArray;
@@ -36,9 +36,12 @@ import com.wegas.editor.JSONSchema.JSONRef;
 import com.wegas.editor.JSONSchema.JSONSchema;
 import com.wegas.editor.JSONSchema.JSONString;
 import com.wegas.editor.JSONSchema.JSONUnknown;
+import com.wegas.editor.JSONSchema.WithErroreds;
 import com.wegas.editor.JSONSchema.WithView;
+import com.wegas.editor.JSONSchema.WithVisible;
 import com.wegas.editor.View.CommonView;
 import com.wegas.editor.View.View;
+import com.wegas.editor.Visible;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -62,22 +65,47 @@ public class SchemaGenerator extends AbstractMojo {
     @Parameter(property = "schema.pkg", required = true)
     private String[] pkg;
 
-    public void processSchemaAnnotation(JSONObject o, Schema... schemas) {
+    public List<JsonMergePatch> processSchemaAnnotation(JSONObject o, Schema... schemas) {
+        List<JsonMergePatch> patches = new ArrayList<>();
+
         if (schemas != null) {
             for (Schema schema : schemas) {
-                System.out.println("HERE YOU GO !!   " + (schema.property()));
+                System.out.println("Override Schema for  " + (schema.property()));
                 try {
                     JSONSchema val = schema.value().newInstance();
-                    if (schema.merge()) {
-                        val = merge(o.getProperties().get(schema.property()), val);
-                    }
-                    o.setProperty(schema.property(), val);
                     injectView(val, schema.view());
-                } catch (InstantiationException | IllegalAccessException | IOException | IllegalArgumentException
-                        | SecurityException e) {
+
+                    if (schema.merge()) {
+                        JSONObject newO = new JSONObject();
+                        newO.setProperty(schema.property(), val);
+                        patches.add(mapper.readValue(mapper.writeValueAsString(newO), JsonMergePatch.class));
+                    } else {
+                        o.setProperty(schema.property(), val);
+                    }
+                } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                        | SecurityException | IOException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+            }
+        }
+        return patches;
+    }
+
+    private void injectErrords(JSONSchema schema, List<Errored> erroreds) {
+        if (schema instanceof WithErroreds) {
+            for (Errored e : erroreds) {
+                ((WithErroreds) schema).addErrored(e);
+            }
+        }
+    }
+
+    private void injectVisible(JSONSchema schema, Visible visible) {
+        if (schema instanceof WithVisible && visible != null) {
+            try {
+                ((WithVisible) schema).setVisible(visible.value().getDeclaredConstructor().newInstance());
+            } catch (Exception ex) {
+                ex.printStackTrace();;
             }
         }
     }
@@ -100,16 +128,8 @@ public class SchemaGenerator extends AbstractMojo {
     }
 
     public JSONString getJSONClassName(Class<? extends Mergeable> klass) {
-        JsonTypeName annotation = klass.getAnnotation(JsonTypeName.class);
-
         JSONString atClass = new JSONString();
-
-        if (annotation != null) {
-            atClass.setConstant(new TextNode(annotation.value()));
-        } else {
-            atClass.setConstant(new TextNode(klass.getSimpleName()));
-        }
-
+        atClass.setConstant(new TextNode(Mergeable.getJSONClassName(klass)));
         return atClass;
     }
 
@@ -145,38 +165,36 @@ public class SchemaGenerator extends AbstractMojo {
                 Type reified = TypeResolver.reify(returnType, wEF.getTheClass());
                 JSONSchema prop = javaToJSType(reified);
                 injectView(prop, field.getAnnotation().view());
+                injectErrords(prop, field.getErroreds());
+                injectVisible(prop, field.getField().getAnnotation(Visible.class));
                 o.setProperty(field.getPropertyDescriptor().getName(), prop);
             });
 
+            List<JsonMergePatch> patches = new ArrayList<>();
             Schemas schemas = wEF.getTheClass().getAnnotation(Schemas.class);
             if (schemas != null) {
-                this.processSchemaAnnotation(o, schemas.value());
+                patches.addAll(this.processSchemaAnnotation(o, schemas.value()));
             }
 
             Schema schema = wEF.getTheClass().getAnnotation(Schema.class);
             if (schema != null) {
-                this.processSchemaAnnotation(o, schema);
+                patches.addAll(this.processSchemaAnnotation(o, schema));
             }
 
             // Write
             File f = new File(outputDirectory, fileName(wEF.getTheClass()));
             try (FileWriter fw = new FileWriter(f)) {
-                fw.write(mapper.writeValueAsString(o));
+                JsonNode jsonNode = mapper.valueToTree(o);
+                for (JsonMergePatch patch : patches) {
+                    jsonNode = patch.apply(jsonNode);
+                }
+                fw.write(mapper.writeValueAsString(jsonNode));
+            } catch (JsonPatchException ex) {
+                getLog().error("Failed to patch " + o, ex);
             } catch (IOException ex) {
                 getLog().error("Failed to write " + f.getAbsolutePath(), ex);
             }
         });
-    }
-
-    public static <T> T merge(T sourceNode, T updateNode) throws JsonProcessingException, IOException {
-        if (sourceNode == null) {
-            return updateNode;
-        }
-        if (updateNode == null) {
-            return sourceNode;
-        }
-        ObjectReader readerForUpdating = mapper.readerForUpdating(sourceNode);
-        return readerForUpdating.readValue(mapper.writeValueAsString(updateNode));
     }
 
     private String fileName(Class<?> cls) {
@@ -185,27 +203,27 @@ public class SchemaGenerator extends AbstractMojo {
 
     private JSONSchema javaToJSType(Type type) {
         switch (type.getTypeName()) {
-        case "int":
-        case "long":
-        case "java.lang.Long":
-        case "java.lang.Integer":
-            return new JSONNumber(); // JSONInteger is not handled.
-        case "double":
-        case "float":
-        case "java.lang.Double":
-        case "java.lang.Float":
-        case "java.util.Date":
-        case "java.util.Calendar":
-            return new JSONNumber();
-        case "char":
-        case "java.lang.Character":
-        case "java.lang.String":
-            return new JSONString();
-        case "java.lang.Boolean":
-        case "boolean":
-            return new JSONBoolean();
-        default:
-            break;
+            case "int":
+            case "long":
+            case "java.lang.Long":
+            case "java.lang.Integer":
+                return new JSONNumber(); // JSONInteger is not handled.
+            case "double":
+            case "float":
+            case "java.lang.Double":
+            case "java.lang.Float":
+            case "java.util.Date":
+            case "java.util.Calendar":
+                return new JSONNumber();
+            case "char":
+            case "java.lang.Character":
+            case "java.lang.String":
+                return new JSONString();
+            case "java.lang.Boolean":
+            case "boolean":
+                return new JSONBoolean();
+            default:
+                break;
         }
         TypeToken<Collection<?>> collection = new TypeToken<Collection<?>>() {
         };

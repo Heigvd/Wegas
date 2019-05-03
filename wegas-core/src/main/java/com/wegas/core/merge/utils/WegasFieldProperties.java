@@ -2,16 +2,19 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2019 School of Business and Engineering Vaud, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.merge.utils;
 
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.annotations.Errored;
+import com.wegas.editor.Erroreds;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +52,17 @@ public class WegasFieldProperties {
     private final FieldType type;
 
     /**
+     * List of conditional static to detect validation errors
+     */
+    private final List<Errored> erroreds;
+
+    private void processErroredAnnotations(Errored... value) {
+        for (Errored e : value) {
+            erroreds.add(e);
+        }
+    }
+
+    /**
      *
      * @param field         the field
      * @param wegasProperty its WegasPropertyAnotation
@@ -59,7 +73,20 @@ public class WegasFieldProperties {
         this.field = field;
         this.fieldClass = field.getType();
         this.annotation = wegasProperty;
+        this.erroreds = new ArrayList<>();
+
         this.propertyDescriptor = new PropertyDescriptor(field.getName(), field.getDeclaringClass());
+
+        /* Collect errored condition */
+        Erroreds erroreds = field.getAnnotation(Erroreds.class);
+        if (erroreds != null) {
+            this.processErroredAnnotations(erroreds.value());
+        }
+
+        Errored errored = field.getAnnotation(Errored.class);
+        if (errored != null) {
+            this.processErroredAnnotations(errored);
+        }
 
         /*
          * guess field type
@@ -88,6 +115,10 @@ public class WegasFieldProperties {
      */
     public WegasEntityProperty getAnnotation() {
         return annotation;
+    }
+
+    public List<Errored> getErroreds(){
+        return erroreds;
     }
 
     /**

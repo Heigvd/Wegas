@@ -30,9 +30,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.wegas.core.persistence.annotations.Errored;
 import com.wegas.core.persistence.annotations.WegasConditions.And;
-import com.wegas.core.persistence.annotations.WegasConditions.GreaterOrEqualsThan;
+import com.wegas.core.persistence.annotations.WegasConditions.GreaterThanOrEquals;
 import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
-import com.wegas.core.persistence.annotations.WegasConditions.LessOrEqualsThan;
+import com.wegas.core.persistence.annotations.WegasConditions.LessThanOrEquals;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.core.persistence.annotations.WegasRefs.Self;
 
@@ -180,9 +180,8 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
     public static class ValueGreaterThanMax extends And {
 
         public ValueGreaterThanMax() {
-            super(
-                    new IsDefined(new Field(NumberDescriptor.class, "maxValue")),
-                    new GreaterOrEqualsThan(new Self(), new Field(NumberDescriptor.class, "maxValue"))
+            super(new IsDefined(new Field(NumberDescriptor.class, "maxValue")),
+                    new GreaterThanOrEquals(new Self(), new Field(NumberDescriptor.class, "maxValue"))
             );
         }
     }
@@ -190,9 +189,8 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
     public static class ValueLessThanMin extends And {
 
         public ValueLessThanMin() {
-            super(
-                    new IsDefined(new Field(NumberDescriptor.class, "minValue")),
-                    new LessOrEqualsThan(new Self(), new Field(NumberDescriptor.class, "minValue"))
+            super(new IsDefined(new Field(NumberDescriptor.class, "minValue")),
+                    new LessThanOrEquals(new Self(), new Field(NumberDescriptor.class, "minValue"))
             );
         }
     }

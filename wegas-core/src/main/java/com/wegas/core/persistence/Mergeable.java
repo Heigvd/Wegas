@@ -33,15 +33,19 @@ public interface Mergeable {
 
     void setRefId(String refId);
 
-    @JsonIgnore
-    default public String getJSONClassName() {
-        JsonTypeName annotation = this.getClass().getAnnotation(JsonTypeName.class);
+    public static String getJSONClassName(Class<? extends Mergeable> klass) {
+        JsonTypeName annotation = klass.getAnnotation(JsonTypeName.class);
 
         if (annotation != null) {
             return annotation.value();
         } else {
-            return this.getClass().getSimpleName();
+            return klass.getSimpleName();
         }
+    }
+
+    @JsonIgnore
+    default public String getJSONClassName() {
+        return Mergeable.getJSONClassName(this.getClass());
     }
 
     /**

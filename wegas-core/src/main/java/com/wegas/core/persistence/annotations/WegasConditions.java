@@ -38,6 +38,10 @@ public final class WegasConditions {
             this.conditions = conditions;
         }
 
+        public Condition[] getAnd() {
+            return conditions;
+        }
+
         @Override
         public boolean eval(Object self, Mergeable object) {
             for (Condition c : conditions) {
@@ -58,6 +62,10 @@ public final class WegasConditions {
 
         public Or(Condition... conditions) {
             this.conditions = conditions;
+        }
+
+        public Condition[] getOr() {
+            return conditions;
         }
 
         @Override
@@ -82,6 +90,10 @@ public final class WegasConditions {
             this.condition = condition;
         }
 
+        public Condition getNot() {
+            return condition;
+        }
+
         @Override
         public boolean eval(Object self, Mergeable object) {
             return !condition.eval(self, object);
@@ -99,6 +111,10 @@ public final class WegasConditions {
         public Equals(Ref a, Ref b) {
             this.a = a;
             this.b = b;
+        }
+
+        public Ref[] getEq() {
+            return new Ref[]{a, b};
         }
 
         @Override
@@ -120,6 +136,10 @@ public final class WegasConditions {
             this.b = b;
         }
 
+        public Ref[] getNeq() {
+            return new Ref[]{a, b};
+        }
+
         @Override
         public boolean eval(Object self, Mergeable object) {
             return !Objects.equals(a.resolve(self, object), b.resolve(self, object));
@@ -135,6 +155,10 @@ public final class WegasConditions {
 
         public IsDefined(Ref a) {
             this.a = a;
+        }
+
+        public Ref getIsDefined() {
+            return a;
         }
 
         @Override
@@ -160,6 +184,10 @@ public final class WegasConditions {
             this.a = a;
         }
 
+        public Ref getIsTrue() {
+            return a;
+        }
+
         @Override
         public boolean eval(Object self, Mergeable object) {
             Object resolve = a.resolve(self, object);
@@ -180,6 +208,10 @@ public final class WegasConditions {
 
         public IsFalse(Ref a) {
             this.a = a;
+        }
+
+        public Ref getIsFalse() {
+            return a;
         }
 
         @Override
@@ -206,6 +238,10 @@ public final class WegasConditions {
             this.b = b;
         }
 
+        public Ref[] getLt() {
+            return new Ref[]{a, b};
+        }
+
         @Override
         public boolean eval(Object self, Mergeable object) {
             Double a = this.a.resolveAsDouble(self, object);
@@ -223,14 +259,18 @@ public final class WegasConditions {
      * Is the first ref less or equals than the second one ?
      * Throw WegasErrorMessage is any of the ref is not resolvable
      */
-    public static class LessOrEqualsThan extends Condition {
+    public static class LessThanOrEquals extends Condition {
 
         private final Ref a;
         private final Ref b;
 
-        public LessOrEqualsThan(Ref a, Ref b) {
+        public LessThanOrEquals(Ref a, Ref b) {
             this.a = a;
             this.b = b;
+        }
+
+        public Ref[] getLte() {
+            return new Ref[]{a, b};
         }
 
         @Override
@@ -247,33 +287,6 @@ public final class WegasConditions {
     }
 
     /**
-     * Is the first ref less or equals than the second one ?
-     * Throw WegasErrorMessage is any of the ref is not resolvable
-     */
-    public static class GreaterOrEqualsThan extends Condition {
-
-        private final Ref a;
-        private final Ref b;
-
-        public GreaterOrEqualsThan(Ref a, Ref b) {
-            this.a = a;
-            this.b = b;
-        }
-
-        @Override
-        public boolean eval(Object self, Mergeable object) {
-            Double a = this.a.resolveAsDouble(self, object);
-            Double b = this.b.resolveAsDouble(self, object);
-
-            if ((a == null || b == null)) {
-                throw WegasErrorMessage.error("GreaterThan operands can not be null");
-            }
-
-            return a >= b;
-        }
-    }
-
-    /**
      */
     public static class GreaterThan extends Condition {
 
@@ -283,6 +296,10 @@ public final class WegasConditions {
         public GreaterThan(Ref a, Ref b) {
             this.a = a;
             this.b = b;
+        }
+
+        public Ref[] getGt() {
+            return new Ref[]{a, b};
         }
 
         @Override
@@ -295,6 +312,37 @@ public final class WegasConditions {
             }
 
             return a > b;
+        }
+    }
+
+    /**
+     * Is the first ref less or equals than the second one ?
+     * Throw WegasErrorMessage is any of the ref is not resolvable
+     */
+    public static class GreaterThanOrEquals extends Condition {
+
+        private final Ref a;
+        private final Ref b;
+
+        public GreaterThanOrEquals(Ref a, Ref b) {
+            this.a = a;
+            this.b = b;
+        }
+
+        public Ref[] getGte() {
+            return new Ref[]{a, b};
+        }
+
+        @Override
+        public boolean eval(Object self, Mergeable object) {
+            Double a = this.a.resolveAsDouble(self, object);
+            Double b = this.b.resolveAsDouble(self, object);
+
+            if ((a == null || b == null)) {
+                throw WegasErrorMessage.error("GreaterThan operands can not be null");
+            }
+
+            return a >= b;
         }
     }
 }
