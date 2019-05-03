@@ -185,7 +185,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @Lob
     @JsonView(value = Views.EditorI.class)
     @Column(name = "comments")
-    @WegasEntityProperty(searchable = true, view = @View(label = "Comments", borderTop = true, value = Textarea.class))
+    @WegasEntityProperty(searchable = true, view = @View(label = "Comments", borderTop = true, value = Textarea.class, index = 9000))
     private String comments;
 
     /**

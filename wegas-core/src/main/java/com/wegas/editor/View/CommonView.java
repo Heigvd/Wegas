@@ -21,7 +21,6 @@ public class CommonView extends BaseView {
     /**
      * @return the label
      */
-    @JsonSerialize(converter = NoneEmpty.class)
     final public String getLabel() {
         return label;
     }
@@ -38,7 +37,6 @@ public class CommonView extends BaseView {
     /**
      * @return the description
      */
-    @JsonSerialize(converter = NoneEmpty.class)
     final public String getDescription() {
         return description;
     }
@@ -93,17 +91,6 @@ public class CommonView extends BaseView {
             if (LAYOUT.none.equals(value))
                 return null;
             return value.toString();
-        }
-
-    }
-
-    public static class NoneEmpty extends StdConverter<String, String> {
-
-        @Override
-        public String convert(String value) {
-            if (value != null && value.isEmpty())
-                return null;
-            return value;
         }
 
     }

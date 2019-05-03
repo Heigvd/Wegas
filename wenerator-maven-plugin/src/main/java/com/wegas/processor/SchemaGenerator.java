@@ -30,15 +30,13 @@ import com.wegas.editor.Schema;
 import com.wegas.editor.Schemas;
 import com.wegas.editor.JSONSchema.JSONArray;
 import com.wegas.editor.JSONSchema.JSONBoolean;
+import com.wegas.editor.JSONSchema.JSONExtendedSchema;
 import com.wegas.editor.JSONSchema.JSONNumber;
 import com.wegas.editor.JSONSchema.JSONObject;
-import com.wegas.editor.JSONSchema.JSONRef;
 import com.wegas.editor.JSONSchema.JSONSchema;
 import com.wegas.editor.JSONSchema.JSONString;
 import com.wegas.editor.JSONSchema.JSONUnknown;
-import com.wegas.editor.JSONSchema.WithErroreds;
-import com.wegas.editor.JSONSchema.WithView;
-import com.wegas.editor.JSONSchema.WithVisible;
+import com.wegas.editor.JSONSchema.JSONWRef;
 import com.wegas.editor.View.CommonView;
 import com.wegas.editor.View.View;
 import com.wegas.editor.Visible;
@@ -93,17 +91,17 @@ public class SchemaGenerator extends AbstractMojo {
     }
 
     private void injectErrords(JSONSchema schema, List<Errored> erroreds) {
-        if (schema instanceof WithErroreds) {
+        if (schema instanceof JSONExtendedSchema) {
             for (Errored e : erroreds) {
-                ((WithErroreds) schema).addErrored(e);
+                ((JSONExtendedSchema) schema).addErrored(e);
             }
         }
     }
 
     private void injectVisible(JSONSchema schema, Visible visible) {
-        if (schema instanceof WithVisible && visible != null) {
+        if (schema instanceof JSONExtendedSchema && visible != null) {
             try {
-                ((WithVisible) schema).setVisible(visible.value().getDeclaredConstructor().newInstance());
+                ((JSONExtendedSchema) schema).setVisible(visible.value().getDeclaredConstructor().newInstance());
             } catch (Exception ex) {
                 ex.printStackTrace();;
             }
@@ -114,12 +112,13 @@ public class SchemaGenerator extends AbstractMojo {
      * inject View into Schema
      */
     private void injectView(JSONSchema schema, View view) {
-        if (schema instanceof WithView) {
+        if (schema instanceof JSONExtendedSchema) {
             try {
                 CommonView v = view.value().newInstance();
                 v.setLabel(view.label()).setBorderTop(view.borderTop()).setDescription(view.description())
                         .setLayout(view.layout());
-                ((WithView) schema).setView(v);
+                ((JSONExtendedSchema) schema).setView(v);
+                ((JSONExtendedSchema) schema).setIndex(view.index());
             } catch (InstantiationException | IllegalAccessException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -265,7 +264,7 @@ public class SchemaGenerator extends AbstractMojo {
                 return allObj.get(type);
             } else if (new TypeToken<Mergeable>() {
             }.isSupertypeOf(type)) {
-                return new JSONRef(fileName((Class<?>) type));
+                return new JSONWRef(fileName((Class<?>) type));
             } else {
                 JSONObject jsonObject = new JSONObject();
                 allObj.put(type, jsonObject);
