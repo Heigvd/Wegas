@@ -141,7 +141,10 @@ public class SchemaGenerator extends AbstractMojo {
         getLog().info("Writing to " + outputDirectory.getAbsolutePath());
         outputDirectory.mkdirs();
         Set<Class<? extends Mergeable>> classes = new Reflections((Object[]) pkg).getSubTypesOf(Mergeable.class);
-
+        /*
+         * Hold a reference to generated file names
+         */
+        Map<String, String> builtFileNames = new HashMap<>();
         classes.stream().map(c -> {
             try {
                 return Optional.of(new WegasEntityFields(c));
@@ -183,7 +186,16 @@ public class SchemaGenerator extends AbstractMojo {
             }
 
             // Write
-            File f = new File(outputDirectory, fileName(wEF.getTheClass()));
+            String fileName = fileName(wEF.getTheClass());
+
+            if (builtFileNames.containsKey(fileName)) {
+                // At that point seems we have duplicate "@class"
+                getLog().error("Duplicate file name " + fileName + "classes " + builtFileNames.get(fileName) + " <> "
+                        + wEF.getTheClass().getName());
+                return;
+            }
+            builtFileNames.put(fileName, wEF.getTheClass().getName());
+            File f = new File(outputDirectory, fileName);
             try (FileWriter fw = new FileWriter(f)) {
                 JsonNode jsonNode = mapper.valueToTree(o);
                 for (JsonMergePatch patch : patches) {
@@ -198,8 +210,8 @@ public class SchemaGenerator extends AbstractMojo {
         });
     }
 
-    private String fileName(Class<?> cls) {
-        return cls.getName() + ".json";
+    private String fileName(Class<? extends Mergeable> cls) {
+        return Mergeable.getJSONClassName(cls) + ".json";
     }
 
     private JSONSchema javaToJSType(Type type) {
@@ -266,7 +278,7 @@ public class SchemaGenerator extends AbstractMojo {
                 return allObj.get(type);
             } else if (new TypeToken<Mergeable>() {
             }.isSupertypeOf(type)) {
-                return new JSONWRef(fileName((Class<?>) type));
+                return new JSONWRef(fileName((Class<? extends Mergeable>) type));
             } else {
                 JSONObject jsonObject = new JSONObject();
                 allObj.put(type, jsonObject);
