@@ -38,6 +38,7 @@ import com.wegas.editor.JSONSchema.JSONString;
 import com.wegas.editor.JSONSchema.JSONUnknown;
 import com.wegas.editor.JSONSchema.JSONWRef;
 import com.wegas.editor.View.CommonView;
+import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.View;
 import com.wegas.editor.Visible;
 
@@ -103,7 +104,7 @@ public class SchemaGenerator extends AbstractMojo {
             try {
                 ((JSONExtendedSchema) schema).setVisible(visible.value().getDeclaredConstructor().newInstance());
             } catch (Exception ex) {
-                ex.printStackTrace();;
+                ex.printStackTrace();
             }
         }
     }
@@ -129,6 +130,7 @@ public class SchemaGenerator extends AbstractMojo {
     public JSONString getJSONClassName(Class<? extends Mergeable> klass) {
         JSONString atClass = new JSONString();
         atClass.setConstant(new TextNode(Mergeable.getJSONClassName(klass)));
+        atClass.setView(new Hidden());
         return atClass;
     }
 
