@@ -12,6 +12,7 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
@@ -205,6 +206,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      * @return double castes player instance property
      */
+    @Scriptable(label = "Get number property")
     public double getNumberInstanceProperty(Player p, String key) {
         String value = this.getInstance(p).getProperty(key);
         double parsedValue;
@@ -223,6 +225,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      * @return player instance string property
      */
+    @Scriptable(label = "Get text property")
     public String getStringInstanceProperty(Player p, String key) {
         return this.getInstanceProperty(p, key);
     }
@@ -245,6 +248,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      * @param key
      * @param value
      */
+    @Scriptable(label = "Set property")
     public void setInstanceProperty(Player p, String key, String value) {
         this.getInstance(p).setProperty(key, value);
     }
@@ -255,6 +259,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      * @param key
      * @param value
      */
+    @Scriptable(label = "Add to property")
     public void addNumberAtInstanceProperty(Player p, String key, String value) {
         try {
             TaskInstance instance = this.getInstance(p);
@@ -337,6 +342,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      * @return true if the player instance is active
      */
+    @Scriptable(label = "is active")
     public boolean getActive(Player p) {
         TaskInstance instance = this.getInstance(p);
         return instance.getActive();
@@ -356,6 +362,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      * @param p
      */
+    @Scriptable
     public void activate(Player p) {
         this.setActive(p, true);
     }
@@ -364,7 +371,13 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      * @param p
      */
+    @Deprecated
     public void desactivate(Player p) {
+        this.deactivate(p);
+    }
+
+    @Scriptable
+    public void deactivate(Player p) {
         this.setActive(p, false);
     }
 
@@ -372,7 +385,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      * @return the exportedPredecessors
      */
     public Set<String> getPredecessorNames() {
-        if (predecessorNames == null){
+        if (predecessorNames == null) {
             Set<String> names = new HashSet<>();
             for (TaskDescriptor t : this.getPredecessors()) {
                 names.add(t.getName());

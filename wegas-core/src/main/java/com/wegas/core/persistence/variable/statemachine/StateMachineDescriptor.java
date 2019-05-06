@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -111,6 +112,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     /**
      * @param p
      */
+    @Scriptable(label = "activate")
     public void enable(Player p) {
         this.getInstance(p).setEnabled(Boolean.TRUE);
     }
@@ -118,6 +120,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     /**
      * @param p
      */
+    @Scriptable(label = "deactivate")
     public void disable(Player p) {
         this.getInstance(p).setEnabled(Boolean.FALSE);
     }
@@ -127,6 +130,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
      *
      * @return is player instance enabled ?
      */
+    @Scriptable(label = "is active")
     public boolean isEnabled(Player p) {
         return this.getInstance(p).getEnabled();
     }
@@ -136,6 +140,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
      *
      * @return is player instance disabled ?
      */
+    @Scriptable(label = "is inactive")
     public boolean isDisabled(Player p) {
         return !this.getInstance(p).getEnabled();
     }
@@ -151,6 +156,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
         return null;
     }
 
+    @Scriptable
     public boolean wentThroughState(Player p, Long stateKey) {
         List<Long> transitionHistory = this.getInstance(p).getTransitionHistory();
 
@@ -164,9 +170,9 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
         return false;
     }
 
-
+    @Scriptable(label = "did not went through state")
     public boolean notWentThroughState(Player p, Long stateKey) {
-        return ! this.wentThroughState(p, stateKey);
+        return !this.wentThroughState(p, stateKey);
     }
 
 }

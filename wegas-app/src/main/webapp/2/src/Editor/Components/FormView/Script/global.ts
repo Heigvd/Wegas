@@ -20,7 +20,7 @@ const SCRIPTS: ScriptStore = {
   impact: {
     'RequestManager.sendCustomEvent': {
       label: 'Send popup',
-      arguments: [
+      parameters: [
         {
           type: 'string' as 'string',
           value: 'popupEvent',
@@ -45,7 +45,7 @@ const SCRIPTS: ScriptStore = {
     },
     'Event.fire': {
       label: 'Fire event',
-      arguments: [
+      parameters: [
         {
           type: 'string' as 'string',
           required: true,
@@ -54,7 +54,7 @@ const SCRIPTS: ScriptStore = {
     },
     'DelayedEvent.delayedFire': {
       label: 'Fire delayed event',
-      arguments: [
+      parameters: [
         {
           type: 'number' as 'number',
           required: true,
@@ -77,7 +77,7 @@ const SCRIPTS: ScriptStore = {
     'Event.fired': {
       returns: 'boolean',
       label: 'Event has been fired',
-      arguments: [
+      parameters: [
         {
           type: 'string' as 'string',
           required: true,

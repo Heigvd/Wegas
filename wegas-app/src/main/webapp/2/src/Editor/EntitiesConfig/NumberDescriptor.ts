@@ -73,7 +73,7 @@ export const config: ConfigurationSchema<INumberDescriptor> = {
 export const methods: MethodConfig = {
   add: {
     label: 'add',
-    arguments: [
+    parameters: [
       SELFARG,
       {
         type: 'number',
@@ -85,7 +85,7 @@ export const methods: MethodConfig = {
   },
   setValue: {
     label: 'set',
-    arguments: [
+    parameters: [
       SELFARG,
       {
         type: 'number',
@@ -98,7 +98,7 @@ export const methods: MethodConfig = {
   getValue: {
     label: 'value',
     returns: 'number',
-    arguments: [SELFARG],
+    parameters: [SELFARG],
   },
 };
 export const label = 'Number';

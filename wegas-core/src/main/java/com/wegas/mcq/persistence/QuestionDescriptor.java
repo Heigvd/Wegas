@@ -17,6 +17,7 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.persistence.annotations.Errored;
+import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.editor.Visible;
 import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
 import com.wegas.core.persistence.annotations.WegasConditions.IsTrue;
@@ -128,6 +129,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @return the player instance active status
      */
+    @Scriptable
     public boolean isActive(Player p) {
         QuestionInstance instance = this.getInstance(p);
         return instance.getActive();
@@ -137,6 +139,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @param p
      */
+    @Scriptable
     public void activate(Player p) {
         this.setActive(p, true);
     }
@@ -145,7 +148,13 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @param p
      */
+    @Deprecated
     public void desactivate(Player p) {
+        this.deactivate(p);
+    }
+
+    @Scriptable
+    public void deactivate(Player p) {
         this.setActive(p, false);
     }
 
@@ -156,6 +165,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * @param p
      * @param value
      */
+    @Scriptable(label = "validate")
     public void setValidated(Player p, boolean value) {
         this.getInstance(p).setValidated(value);
     }
@@ -168,6 +178,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @return
      */
+    @Scriptable(label  = "is validated")
     public boolean getValidated(Player p) {
         return this.getInstance(p).isValidated();
     }
@@ -317,6 +328,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @return true if the player has already answers this question
      */
+    @Scriptable(label = "has been replied")
     public boolean isReplied(Player p) {
         return !this.isNotReplied(p);
     }
@@ -328,6 +340,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @return true if the player has not yet answers this question
      */
+    @Scriptable(label = "has not been replied")
     public boolean isNotReplied(Player p) {
         QuestionInstance instance = this.getInstance(p);
         // no validated replies at all
@@ -341,6 +354,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @return
      */
+    @Scriptable
     public boolean isStillAnswerabled(Player p) {
         if (this.getMaxReplies() != null) {
             QuestionInstance qi = this.getInstance(p);

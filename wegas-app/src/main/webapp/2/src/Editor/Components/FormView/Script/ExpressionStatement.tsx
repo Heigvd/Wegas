@@ -100,7 +100,7 @@ async function buildDefaultVariableCallAST(
     return createVariableCallAST(
       variable.name,
       method,
-      argsToDefault(config[method].arguments),
+      argsToDefault(config[method].parameters),
     );
   }
 }
@@ -118,7 +118,7 @@ function getInfo(stmt: ExpressionStatement) {
 }
 function buildDefaultGlobalCAllAST(method: string, mode: 'SET' | 'GET') {
   const config = getGlobals(mode === 'GET' ? 'condition' : 'impact')[method];
-  return createGlobalCallAST(method, argsToDefault(config.arguments));
+  return createGlobalCallAST(method, argsToDefault(config.parameters));
 }
 function genGlobalItems(mode: 'SET' | 'GET') {
   return Object.entries(
@@ -199,9 +199,9 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
       if (
         oldCfg &&
         newCfg &&
-        oldCfg.arguments.length === newCfg.arguments.length &&
-        !newCfg.arguments.some((a, i) => {
-          return oldCfg.arguments[i].type !== a.type;
+        oldCfg.parameters.length === newCfg.parameters.length &&
+        !newCfg.parameters.some((a, i) => {
+          return oldCfg.parameters[i].type !== a.type;
         })
       ) {
         // Args are identical
@@ -216,7 +216,7 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
             createVariableCallAST(
               variable!.name,
               value,
-              argsToDefault(newCfg.arguments),
+              argsToDefault(newCfg.parameters),
             ),
           ),
         );
@@ -258,7 +258,7 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
               variable!.name,
               method,
               values.map((a, i) =>
-                valueToAST(a, methodsConfig[method].arguments[i].type),
+                valueToAST(a, methodsConfig[method].parameters[i].type),
               ),
             ),
           ),
@@ -272,7 +272,7 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
           expressionStatement(
             callExpression(
               stmt.expression.callee,
-              values.map((a, i) => valueToAST(a, config.arguments[i].type)),
+              values.map((a, i) => valueToAST(a, config.parameters[i].type)),
             ),
           ),
         );
@@ -386,8 +386,8 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
       const variable = variableName(expression.callee.object);
       const method = expression.callee.property.name;
       const args = expression.arguments;
-      const formItems: MethodConfig['1']['arguments'] = methodsConfig[method]
-        ? methodsConfig[method].arguments.map(
+      const formItems: MethodConfig['1']['parameters'] = methodsConfig[method]
+        ? methodsConfig[method].parameters.map(
             a =>
               a.type === 'identifier'
                 ? { ...a, type: 'string' as 'string' }
@@ -444,8 +444,8 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
       if (config == null) {
         throw Error(`Unknown [${method}]`);
       }
-      const formItems: MethodConfig['1']['arguments'] = config
-        ? config.arguments.map(
+      const formItems: MethodConfig['1']['parameters'] = config
+        ? config.parameters.map(
             a =>
               a.type === 'identifier'
                 ? { ...a, type: 'string' as 'string' }

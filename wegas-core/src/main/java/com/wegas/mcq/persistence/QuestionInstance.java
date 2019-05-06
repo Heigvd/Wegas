@@ -139,6 +139,7 @@ public class QuestionInstance extends VariableInstance implements ReadableInstan
     /**
      *
      */
+    @Deprecated
     public void desactivate() {
         this.deactivate();
     }

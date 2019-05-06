@@ -16,6 +16,7 @@ import javax.persistence.Entity;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import java.util.ArrayList;
 import java.util.List;
@@ -147,6 +148,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      * @return value matching the key from given player's instance, cast to
      *         double, or Double.NaN
      */
+    @Scriptable(label = "get number property")
     public double getNumberInstanceProperty(Player p, String key) {
         String value = this.getInstance(p).getProperty(key);
         double parsedValue;
@@ -165,6 +167,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      *
      * @return value matching the key from given player's instance
      */
+    @Scriptable(label = "get text property")
     public String getStringInstanceProperty(Player p, String key) {
         return this.getInstance(p).getProperty(key);
     }
@@ -185,6 +188,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      * @param key
      * @param value
      */
+    @Scriptable(label = "add to property")
     public void addNumberAtInstanceProperty(Player p, String key, String value) {
         try {
             this.getInstance(p).setProperty(key, "" + (Float.parseFloat(this.getInstance(p).getProperty(key)) + Float.parseFloat(value)));
@@ -200,6 +204,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      * @param editable
      * @param description
      */
+    @Scriptable
     public void addOccupation(Player p, int time, Boolean editable, String description) {
         ResourceInstance instance = this.getInstance(p);
         Occupation occupation = new Occupation();
@@ -315,6 +320,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      *
      * @return true is the player's resourceInstance is active
      */
+    @Scriptable(label = "is active")
     public boolean getActive(Player p) {
         ResourceInstance instance = this.getInstance(p);
         return instance.getActive();
@@ -334,6 +340,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      *
      * @param p
      */
+    @Scriptable
     public void activate(Player p) {
         this.setActive(p, true);
     }
@@ -342,7 +349,13 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      *
      * @param p
      */
+    @Deprecated
     public void desactivate(Player p) {
+        this.deactivate(p);
+    }
+
+    @Scriptable
+    public void deactivate(Player p) {
         this.setActive(p, false);
     }
 }

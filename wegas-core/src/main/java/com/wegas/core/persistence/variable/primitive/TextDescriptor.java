@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.variable.primitive;
 
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
@@ -38,6 +39,7 @@ public class TextDescriptor extends VariableDescriptor<TextInstance>
      * @param p
      * @param value
      */
+    @Scriptable
     public void setValue(Player p, TranslatableContent value) {
         this.getInstance(p).setValue(value);
     }
@@ -59,11 +61,12 @@ public class TextDescriptor extends VariableDescriptor<TextInstance>
      * @return value of player instance
      */
     @Override
+    @Scriptable(label = "value")
     public String getValue(Player p) {
         return this.getInstance(p).getValue();
     }
 
-    /**
+/**
      *
      * @param p
      *

@@ -2,16 +2,19 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.messaging.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.persistence.annotations.Param;
+import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.editor.View.View;
 import java.util.List;
 import static java.lang.Boolean.FALSE;
 import javax.persistence.Column;
@@ -35,7 +38,6 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
     @WegasEntityProperty
     private Boolean capped = FALSE;
 
-
     /**
      * @return the limited capacity
      */
@@ -54,6 +56,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
         this.getInstance(p).sendMessage(message);
         return message;
     }
+
     /**
      *
      * Sugar to be used from scripts.
@@ -114,10 +117,10 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * Sugar to be used from scripts.
      *
-     * @param p            message recipient
-     * @param from         message sender
-     * @param subject      message subject
-     * @param body         message body
+     * @param p           message recipient
+     * @param from        message sender
+     * @param subject     message subject
+     * @param body        message body
      * @param attachments
      *
      * @return {@link Message} the sent message
@@ -130,12 +133,12 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * Sugar to be used from scripts.
      *
-     * @param p            message recipient
-     * @param from         message sender
-     * @param subject      message subject
-     * @param body         message body
-     * @param date         the date the message has been sent (free text, eg. 'Monday
-     *                     Morning', 'may the 4th', 'thrid period', and so on)
+     * @param p           message recipient
+     * @param from        message sender
+     * @param subject     message subject
+     * @param body        message body
+     * @param date        the date the message has been sent (free text, eg. 'Monday
+     *                    Morning', 'may the 4th', 'thrid period', and so on)
      * @param attachments
      *
      * @return {@link Message} the sent message
@@ -148,15 +151,15 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * Sugar to be used from scripts.
      *
-     * @param p            message recipient
-     * @param from         message sender
-     * @param subject      message subject
-     * @param body         message body
-     * @param date         the date the message has been sent (free text, eg. 'Monday
-     *                     Morning', 'may the 4th', 'thrid period', and so on)
-     * @param token        internal message identifier (can be used within a
-     *                     {@link #isTokenMarkedAsRead script condition} to check whether or not
-     *                     message has been read)
+     * @param p           message recipient
+     * @param from        message sender
+     * @param subject     message subject
+     * @param body        message body
+     * @param date        the date the message has been sent (free text, eg. 'Monday
+     *                    Morning', 'may the 4th', 'thrid period', and so on)
+     * @param token       internal message identifier (can be used within a
+     *                    {@link #isTokenMarkedAsRead script condition} to check whether or not
+     *                    message has been read)
      * @param attachments
      *
      * @return {@link Message} the sent message
@@ -169,21 +172,30 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * I18n Sugar to be used from scripts.
      *
-     * @param p            message recipient
-     * @param from         message sender
-     * @param subject      message subject
-     * @param body         message body
-     * @param date         the date the message has been sent (free text, eg. 'Monday
-     *                     Morning', 'may the 4th', 'thrid period', and so on)
-     * @param token        internal message identifier (can be used within a
-     *                     {@link #isTokenMarkedAsRead script condition} to check whether or not
-     *                     message has been read)
+     * @param p           message recipient
+     * @param from        message sender
+     * @param subject     message subject
+     * @param body        message body
+     * @param date        the date the message has been sent (free text, eg. 'Monday
+     *                    Morning', 'may the 4th', 'thrid period', and so on)
+     * @param token       internal message identifier (can be used within a
+     *                    {@link #isTokenMarkedAsRead script condition} to check whether or not
+     *                    message has been read)
      * @param attachments
      *
      * @return
      */
-    public Message sendMessage(Player p, TranslatableContent from, TranslatableContent date, TranslatableContent subject,
-            TranslatableContent body, String token, List<Attachment> attachments) {
+    @Scriptable(returnType = Scriptable.ReturnType.VOID)
+    public Message sendMessage(Player p,
+            @Param(view = @View(label = "from")) TranslatableContent from,
+            @Param(view = @View(label = "date")) TranslatableContent date,
+            @Param(view = @View(label = "subject")) TranslatableContent subject,
+            @Param(view = @View(label = "body")) TranslatableContent body,
+            @Param(view = @View(
+                    label = "token",
+                    description = "Message identifier used to reference the message within FSM/Trigger conditions"
+            )) String token,
+            @Param(view = @View(label = "attachements")) List<Attachment> attachments) {
         return this.getInstance(p).sendMessage(from, subject, body, date, token, attachments);
     }
 
@@ -198,6 +210,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * @return check if the given player's inbox is empty
      */
+    @Scriptable
     public boolean isEmpty(Player p) {
         return this.getInstance(p).getMessages().isEmpty();
     }
@@ -221,6 +234,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @return true is a message identified by the token exists and has been
      *         read, false otherwise
      */
+    @Scriptable
     public boolean isTokenMarkedAsRead(Player self, String token) {
         return this.getInstance(self).isTokenMarkedAsRead(token);
     }

@@ -8,7 +8,7 @@ export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 export interface MethodConfig {
   [method: string]: {
     label: string;
-    arguments: {
+    parameters: {
       type: 'string' | 'number' | 'boolean' | 'identifier' | 'array' | 'object';
       value?: {};
       properties?: {};

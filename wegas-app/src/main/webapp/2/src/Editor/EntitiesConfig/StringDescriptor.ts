@@ -54,7 +54,7 @@ export const config: ConfigurationSchema<IStringDescriptor> = {
 export const methods: MethodConfig = {
   setValue: {
     label: 'set',
-    arguments: [
+    parameters: [
       SELFARG,
       {
         type: 'object',
@@ -67,7 +67,7 @@ export const methods: MethodConfig = {
   getValue: {
     label: 'get',
     returns: 'string',
-    arguments: [SELFARG],
+    parameters: [SELFARG],
   },
 };
 export const label = 'String';

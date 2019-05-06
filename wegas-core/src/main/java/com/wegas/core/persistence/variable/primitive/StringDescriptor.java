@@ -15,6 +15,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.ArrayList;
 import java.util.List;
@@ -133,6 +134,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      * @return value of player instance
      */
     @Override
+    @Scriptable(label = "value")
     public String getValue(Player p) {
         return this.getInstance(p).getValue();
     }
@@ -152,6 +154,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      * @param p
      * @param value
      */
+    @Scriptable
     public void setValue(Player p, TranslatableContent value) {
         this.getInstance(p).setValue(value);
     }
@@ -172,6 +175,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      *
      * @return
      */
+    @Scriptable(label = "selected value is")
     public boolean isValueSelected(Player p, String value) {
         StringInstance instance = this.getInstance(p);
 
@@ -192,6 +196,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      *
      * @return
      */
+    @Scriptable(label = "selected value is not")
     public boolean isNotSelectedValue(Player p, String value) {
         return !this.isValueSelected(p, value);
     }

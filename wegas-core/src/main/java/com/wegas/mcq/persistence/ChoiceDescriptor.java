@@ -19,6 +19,7 @@ import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Player;
@@ -119,6 +120,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
+    @Scriptable
     public void setCurrentResult(Player player, String resultName) throws WegasNoResultException {
         ChoiceInstance instance = this.getInstance(player);
         Result resultByName = getResultByName(resultName);
@@ -159,6 +161,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @param p
      */
+    @Scriptable
     public void activate(Player p) {
         this.getInstance(p).activate();
     }
@@ -167,8 +170,14 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @param p
      */
+    @Deprecated
     public void desactivate(Player p) {
-        this.getInstance(p).desactivate();
+        this.deactivate(p);
+    }
+
+    @Scriptable
+    public void deactivate(Player p) {
+        this.getInstance(p).deactivate();
     }
 
     /**
@@ -241,6 +250,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * @param p <p>
      * @return player instance active status
      */
+    @Scriptable
     public boolean isActive(Player p) {
         return this.getInstance(p).getActive();
     }
@@ -254,6 +264,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @return true only if the choice is not selectable any longer
      */
+    @Scriptable
     public boolean hasBeenIgnored(Player p) {
         // Is there any not ignored validated reply link to this choice
         for (Reply r : this.getInstance(p).getReplies(Boolean.TRUE)) {
@@ -307,6 +318,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @return return true if this choice can be selected by the player
      */
+    @Scriptable
     public boolean hasNotBeenSelected(Player p) {
         return !this.hasBeenSelected(p);
     }
@@ -319,6 +331,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * @return true if one or more question replies referencing this choice
      *         exist
      */
+    @Scriptable
     public boolean hasBeenSelected(Player p) {
         for (Reply r : this.getInstance(p).getReplies(Boolean.TRUE)) {
             if (!r.getIgnored()) {
@@ -356,6 +369,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
+    @Scriptable
     public boolean hasResultBeenApplied(Player p, String resultName) throws WegasNoResultException {
         return this.hasResultBeenApplied(p, this.getResultByName(resultName));
     }

@@ -24,7 +24,7 @@ public @interface View {
 
     /**
      * index (used to sort properties from an object)
-     * 
+     *
      * Technically this property ends into the schema and not the view. But makes
      * most sens beeing declared in the view.
      */

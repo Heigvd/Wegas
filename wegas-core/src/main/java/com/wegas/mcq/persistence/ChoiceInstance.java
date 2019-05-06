@@ -272,7 +272,12 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
     /**
      *
      */
+    @Deprecated
     public void desactivate() {
+        this.deactivate();
+    }
+
+    public void deactivate() {
         this.setActive(false);
     }
 

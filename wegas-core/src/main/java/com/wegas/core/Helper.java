@@ -504,6 +504,41 @@ public class Helper {
     }
 
     /**
+     * Convert camelCase to human readable string.
+     * <ul>
+     * <li>PDFFile -> PDF file</li>
+     * <li>99Files -> 99 files</li>
+     * <li>SomeFiles -> some files</li>
+     * <li>SomePDFFiles -> some PDF files</li>
+     * </ul>
+     *
+     * @param camelCased
+     *
+     * @return human readable string
+     */
+    public static String humanize(String camelCased) {
+        Pattern p = Pattern.compile(
+                "(?<=[A-Z]|^)([A-Z])(?=[a-z])" + "|"
+                + "(?<=[^A-Z])([A-Z])" + "|"
+                + "(?<=[A-Za-z])([^A-Za-z])"
+        );
+        Matcher matcher = p.matcher(camelCased);
+        StringBuffer sb = new StringBuffer();
+
+        while (matcher.find()) {
+            String match = matcher.group();
+            if (matcher.start() > 0) {
+                matcher.appendReplacement(sb, " " + match.toLowerCase());
+            } else {
+                // do not insert any space at the first position
+                matcher.appendReplacement(sb, match.toLowerCase());
+            }
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    /**
      * @param name
      *
      * @return the provided name stripped of its _# suffix.

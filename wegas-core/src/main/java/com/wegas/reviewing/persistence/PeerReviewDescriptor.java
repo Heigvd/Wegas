@@ -15,6 +15,7 @@ import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
@@ -304,10 +305,12 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      *
      * @return player's instance state
      */
+    @Scriptable
     public String getState(Player p) {
         return this.getInstance(p).getReviewState().toString();
     }
 
+    @Scriptable
     public void setState(Player p, String stateName) {
         ReviewingState newState = ReviewingState.valueOf(stateName);
         PeerReviewInstance instance = this.getInstance(p);
