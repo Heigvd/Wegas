@@ -145,6 +145,7 @@ public class SchemaGenerator extends AbstractMojo {
     public JSONString getJSONClassName(Class<? extends Mergeable> klass) {
         JSONString atClass = new JSONString();
         atClass.setConstant(new TextNode(Mergeable.getJSONClassName(klass)));
+        atClass.setView(new Hidden());
         return atClass;
     }
 
@@ -157,6 +158,10 @@ public class SchemaGenerator extends AbstractMojo {
 
         Set<Class<? extends Mergeable>> classes = new Reflections((Object[]) pkg).getSubTypesOf(Mergeable.class);
 
+        /*
+         * Hold a reference to generated file names
+         */
+        Map<String, String> builtFileNames = new HashMap<>();
         classes.stream().filter(c
                 // ignore classes the client dont need
                 -> !Modifier.isAbstract(c.getModifiers())
@@ -206,7 +211,16 @@ public class SchemaGenerator extends AbstractMojo {
                         }
 
                         // Write
-                        File f = new File(outputDirectory, fileName(c));
+                        String fileName = fileName(c);
+
+                        if (builtFileNames.containsKey(fileName)) {
+                            // At that point seems we have duplicate "@class"
+                            getLog().error("Duplicate file name " + fileName + "classes " + builtFileNames.get(fileName) + " <> "
+                                    + c.getName());
+                            return;
+                        }
+                        builtFileNames.put(fileName, wEF.getTheClass().getName());
+                        File f = new File(outputDirectory, fileName);
                         try (FileWriter fw = new FileWriter(f)) {
                             fw.write(configToString(config, patches));
                         } catch (IOException ex) {
@@ -239,8 +253,8 @@ public class SchemaGenerator extends AbstractMojo {
         }
     }
 
-    private String fileName(Class<?> cls) {
-        return cls.getName() + ".json";
+    private String fileName(Class<? extends Mergeable> cls) {
+        return Mergeable.getJSONClassName(cls) + ".json";
     }
 
     /**
@@ -343,7 +357,7 @@ public class SchemaGenerator extends AbstractMojo {
                 return allObj.get(type);
             } else if (new TypeToken<Mergeable>() {
             }.isSupertypeOf(type)) {
-                return new JSONWRef(fileName((Class<?>) type));
+                return new JSONWRef(fileName((Class<? extends Mergeable>) type));
             } else {
                 JSONObject jsonObject = new JSONObject();
                 allObj.put(type, jsonObject);
