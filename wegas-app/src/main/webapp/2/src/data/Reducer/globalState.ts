@@ -3,10 +3,11 @@ import { Actions as ACTIONS, Actions } from '..';
 import { ActionCreator, ActionType, StateActions } from '../actions';
 import { VariableDescriptor } from '../selectors';
 import { ThunkResult, store } from '../store';
-import { ConfigurationSchema } from '../../Editor/editionConfig';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { entityIsPersisted } from '../entities';
 import { Reducer } from 'redux';
+import { Schema } from 'jsoninput';
+import { AvailableViews } from 'src/Editor/Components/FormView';
 
 type actionFn<T extends IWegasEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IWegasEntity> {
@@ -22,7 +23,7 @@ type Edition =
   | {
       type: 'Variable';
       id: number;
-      config?: ConfigurationSchema<IWegasEntity>;
+      config?: Schema<AvailableViews>;
       path?: string[];
       actions: EditorAction<IWegasEntity>;
     }
@@ -30,14 +31,14 @@ type Edition =
       type: 'VariableCreate';
       '@class': string;
       parentId?: number;
-      config?: ConfigurationSchema<IWegasEntity>;
+      config?: Schema<AvailableViews>;
       actions: EditorAction<IWegasEntity>;
     }
   | {
       type: 'Component';
       page: string;
       path: string[];
-      config?: ConfigurationSchema<IWegasEntity>;
+      config?: Schema<AvailableViews>;
       actions: EditorAction<IWegasEntity>;
     };
 export interface GlobalState {
@@ -190,7 +191,7 @@ export default global;
 export function editVariable(
   entity: IVariableDescriptor,
   path: string[] = [],
-  config?: ConfigurationSchema<IVariableDescriptor>,
+  config?: Schema<AvailableViews>,
   actions: EditorAction<IVariableDescriptor> = {
     more: {
       delete: {
@@ -228,7 +229,7 @@ export function editVariable(
 export function editStateMachine(
   entity: IFSMDescriptor,
   path: string[] = [],
-  config?: ConfigurationSchema<IFSMDescriptor>,
+  config?: Schema<AvailableViews>,
 ) {
   return ActionCreator.FSM_EDIT({
     id: entity.id!,

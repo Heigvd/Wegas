@@ -22,6 +22,7 @@ export interface MethodConfig {
   };
 }
 
+/* @TODO REMOVE ME. used in configs only */
 export const SELFARG = {
   type: 'identifier' as 'identifier',
   value: 'self',
@@ -31,16 +32,19 @@ export const SELFARG = {
 
 export default async function getEditionConfig<T extends IWegasEntity>(
   entity: T,
-): Promise<ConfigurationSchema<T>> {
-  return await import(/* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
-    entity['@class']).then(res => res.config);
+): Promise<Schema<AvailableViews>> {
+  return import('../../../generated-schema/' + entity['@class'] + '.json').then(
+    res => res.schema,
+  );
 }
 
 export async function getAvailableChildren<T extends IWegasEntity>(
   entity: T,
 ): Promise<string[]> {
-  return await import(/* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
-    entity['@class']).then(res => res.children);
+  return import(
+    /* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
+      entity['@class']
+  ).then(res => res.children);
 }
 
 export interface EActions<T extends IWegasEntity> {
@@ -50,34 +54,44 @@ export interface EActions<T extends IWegasEntity> {
 export async function getEntityActions<T extends IWegasEntity>(
   entity: T,
 ): Promise<EActions<T>> {
-  return await import(/* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
-    entity['@class']).then(res => res.actions);
+  return import(
+    /* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
+      entity['@class']
+  ).then(res => res.actions);
 }
 
 export async function getMethodConfig<T extends IWegasEntity>(
   entity: T,
 ): Promise<MethodConfig> {
-  return await import(/* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
-    entity['@class']).then(res => ({ ...res.methods }));
+  return import(
+    /* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
+      entity['@class']
+  ).then(res => ({ ...res.methods }));
 }
 
 export async function getIcon<T extends IWegasEntity>(
   entity: T,
 ): Promise<IconProp | undefined> {
-  return await import(/* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
-    entity['@class']).then(({ icon }) => icon);
+  return import(
+    /* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
+      entity['@class']
+  ).then(({ icon }) => icon);
 }
 
 export async function getLabel<T extends IWegasEntity>(
   entity: T,
 ): Promise<string | undefined> {
-  return await import(/* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
-    entity['@class']).then(({ label }) => label);
+  return await import(
+    /* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
+      entity['@class']
+  ).then(({ label }) => label);
 }
 
 export async function getChildren<T extends IWegasEntity>(
   entity: T,
 ): Promise<string[]> {
-  return await import(/* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
-    entity['@class']).then(({ children }) => children || []);
+  return import(
+    /* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
+      entity['@class']
+  ).then(({ children }) => children || []);
 }
