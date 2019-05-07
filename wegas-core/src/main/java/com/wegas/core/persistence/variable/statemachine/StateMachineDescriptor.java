@@ -8,7 +8,6 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -59,21 +58,20 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
      * @return all stated mapped by index numbers
      */
     @JsonIgnore
-    public Set<State> getStates() {
+    public Set<State> getInternalStates() {
         return states;
     }
 
     @JsonIgnore
-    public void setStates(Set<State> states) {
+    public void setInternalStates(Set<State> states) {
         this.states = states;
         for (State state : states) {
             state.setStateMachine(this);
         }
     }
 
-    @JsonProperty(value = "states")
     @JsonView(Views.ExtendedI.class)
-    public Map<Long, State> getStatesAsMap() {
+    public Map<Long, State> getStates() {
         Map<Long, State> map = new HashMap<>();
         for (State state : this.states) {
             map.put(state.getIndex(), state);
@@ -84,15 +82,14 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     public State addState(Long index, State state) {
         state.setIndex(index);
         state.setStateMachine(this);
-        this.getStates().add(state);
+        this.getInternalStates().add(state);
         return state;
     }
 
     /**
      * @param states
      */
-    @JsonProperty("states")
-    public void setStatesFromMap(Map<Long, State> states) {
+    public void setStates(Map<Long, State> states) {
         this.states.clear();
 
         for (Entry<Long, State> entry : states.entrySet()) {
@@ -146,7 +143,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     }
 
     private Transition getTransitionById(Long id) {
-        for (State state : this.getStates()) {
+        for (State state : this.getInternalStates()) {
             for (Transition transition : state.getTransitions()) {
                 if (transition != null && transition.getId().equals(id)) {
                     return transition;

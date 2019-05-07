@@ -105,10 +105,10 @@ public class TriggerDescriptor extends StateMachineDescriptor {
         if (this.postTriggerEvent == null) {
             if (this.getStates() != null && this.getStates().size() > 0) {
                 if (this.getStates().size() == 2) {
-                    this.postTriggerEvent = this.getStatesAsMap().get(2L).getOnEnterEvent();
+                    this.postTriggerEvent = this.getStates().get(2L).getOnEnterEvent();
                 } else {
                     // Backward !!!
-                    this.postTriggerEvent = this.getStatesAsMap().get(1L).getOnEnterEvent();
+                    this.postTriggerEvent = this.getStates().get(1L).getOnEnterEvent();
                 }
             } else {
                 this.postTriggerEvent = null;
@@ -150,9 +150,9 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     public Script getTriggerEvent() {
         if (this.triggerEvent == null) {
             if (this.getStates() != null && this.getStates().size() > 0
-                    && this.getStatesAsMap().get(1L).getTransitions() != null
-                    && this.getStatesAsMap().get(1L).getTransitions().size() > 0) {
-                this.triggerEvent = this.getStatesAsMap().get(1L).getTransitions().get(0).getTriggerCondition();
+                    && this.getStates().get(1L).getTransitions() != null
+                    && this.getStates().get(1L).getTransitions().size() > 0) {
+                this.triggerEvent = this.getStates().get(1L).getTransitions().get(0).getTriggerCondition();
             } else {
                 this.triggerEvent = null;
             }
@@ -177,7 +177,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      */
     @PrePersist // to be called by forthcoming revive method (replace PrePersist and merge usage)
     public void buildStateMachine() {
-        if (this.getStates().size() < 2 || this.getStatesAsMap().get(2L).getTransitions().isEmpty()) {
+        if (this.getStates().size() < 2 || this.getStates().get(2L).getTransitions().isEmpty()) {
             // make sure both initial and final states exists
             State initial;
             State finalState;
@@ -186,7 +186,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
                 initial.setVersion(1L);
                 this.addState(1L, initial);
             } else {
-                initial = this.getStatesAsMap().get(1L);
+                initial = this.getStates().get(1L);
             }
 
             if (this.getStates().size() < 2) {
@@ -199,7 +199,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
                 finalState.setOnEnterEvent(initial.getOnEnterEvent());
                 initial.setOnEnterEvent(null);
             } else {
-                finalState = this.getStatesAsMap().get(2L);
+                finalState = this.getStates().get(2L);
             }
 
             // Make sure transition exists
@@ -225,19 +225,19 @@ public class TriggerDescriptor extends StateMachineDescriptor {
 
         // Condition
         if (this.triggerEvent != null) {
-            this.getStatesAsMap().get(1L).getTransitions().get(0).setTriggerCondition(this.triggerEvent);
+            this.getStates().get(1L).getTransitions().get(0).setTriggerCondition(this.triggerEvent);
             this.triggerEvent = null;
         }
 
         // Impact
         if (this.postTriggerEvent != null) {
-            this.getStatesAsMap().get(2L).setOnEnterEvent(this.postTriggerEvent);
+            this.getStates().get(2L).setOnEnterEvent(this.postTriggerEvent);
             this.postTriggerEvent = null;
         }
 
         // Reset transition
         if (this.oneShot != null) {
-            this.getStatesAsMap().get(2L).getTransitions().get(0).setTriggerCondition(new Script("javascript", (this.oneShot ? "false" : "true")));
+            this.getStates().get(2L).getTransitions().get(0).setTriggerCondition(new Script("javascript", (this.oneShot ? "false" : "true")));
         }
     }
 

@@ -241,7 +241,7 @@ public class MergeTest extends AbstractArquillianTest {
         }
     }
 
-    //@Test
+    @Test
     public void printEntity() {
         Set<Class<? extends Mergeable>> classes = reflections.getSubTypesOf(Mergeable.class);
 
@@ -255,7 +255,7 @@ public class MergeTest extends AbstractArquillianTest {
                 System.out.println("Class " + klass.getSimpleName());
                 System.out.println(" factory:" + factory);
                 for (WegasFieldProperties field : fields) {
-                    System.out.println(" * " + field.getField().getName() + " : " + field.getField().getType().getSimpleName());
+                    System.out.println(" * " + (field.isInherited() ? "inherited " : "") + field.getField().getName() + " : " + field.getField().getType().getSimpleName());
                 }
             }
         }

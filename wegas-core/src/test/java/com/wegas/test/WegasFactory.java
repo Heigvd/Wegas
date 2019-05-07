@@ -250,7 +250,7 @@ public class WegasFactory {
     public StateMachineDescriptor removeState(StateMachineDescriptor fsmD, Long index) {
 
         // remove transition to this state
-        for (Entry<Long, State> entry : fsmD.getStatesAsMap().entrySet()) {
+        for (Entry<Long, State> entry : fsmD.getStates().entrySet()) {
             State state = entry.getValue();
 
             for (Iterator<Transition> it = state.getTransitions().iterator(); it.hasNext();) {
@@ -261,7 +261,7 @@ public class WegasFactory {
             }
         }
 
-        fsmD.getStates().remove(fsmD.getStatesAsMap().get(index));
+        fsmD.getStates().remove(fsmD.getStates().get(index));
 
         StateMachineDescriptor find = (StateMachineDescriptor) variableDescriptorFacade.find(fsmD.getId());
         find.merge(fsmD);
@@ -290,7 +290,7 @@ public class WegasFactory {
         t.setTriggerCondition(new Script(condition));
         t.setPreStateImpact(new Script(impact));
 
-        Map<Long, State> states = find.getStatesAsMap();
+        Map<Long, State> states = find.getStates();
         State fromState = states.get(from);
         fromState.addTransition(t);
 

@@ -73,7 +73,7 @@ public class StateMachineInstance extends VariableInstance {
      */
     @JsonIgnore
     public State getCurrentState() {
-        final Map<Long, State> states = ((StateMachineDescriptor) this.findDescriptor()).getStatesAsMap();
+        final Map<Long, State> states = ((StateMachineDescriptor) this.findDescriptor()).getStates();
         return states.get(this.currentStateId);
     }
 

@@ -51,17 +51,17 @@ public class TriggerTest {
         System.out.println("OneShotTrigger");
         this.triggerDescriptor.setOneShot(true);
         this.triggerDescriptor.buildStateMachine();
-        assertTrue(this.triggerDescriptor.getStatesAsMap().get(1L).getTransitions().get(0).getNextStateId() == 2L);
-        assertTrue(this.triggerDescriptor.getStatesAsMap().get(2L).getTransitions().size() == 1);
+        assertTrue(this.triggerDescriptor.getStates().get(1L).getTransitions().get(0).getNextStateId() == 2L);
+        assertTrue(this.triggerDescriptor.getStates().get(2L).getTransitions().size() == 1);
         assertTrue(this.triggerDescriptor.getDefaultInstance().getCurrentStateId() == 1L);
-        assertTrue(triggerDescriptor.getStatesAsMap().get(2L).getOnEnterEvent().equals(this.triggerDescriptor.getPostTriggerEvent()));
+        assertTrue(triggerDescriptor.getStates().get(2L).getOnEnterEvent().equals(this.triggerDescriptor.getPostTriggerEvent()));
         //testing onLoad method
         this.triggerDescriptor.setTriggerEvent(new Script());
         this.triggerDescriptor.setPostTriggerEvent(new Script());
         this.triggerDescriptor.buildStateMachine();
         assertTrue(Helper.isNullOrEmpty(this.triggerDescriptor.getPostTriggerEvent().getContent()));
         assertTrue(Helper.isNullOrEmpty(this.triggerDescriptor.getTriggerEvent().getContent()));
-        assertTrue(Helper.isNullOrEmpty(triggerDescriptor.getStatesAsMap().get(2L).getOnEnterEvent().getContent()));
+        assertTrue(Helper.isNullOrEmpty(triggerDescriptor.getStates().get(2L).getOnEnterEvent().getContent()));
     }
 
     /**
@@ -72,10 +72,10 @@ public class TriggerTest {
         System.out.println("LoopTrigger");
         this.triggerDescriptor.setOneShot(false);
         this.triggerDescriptor.buildStateMachine();
-        assertTrue(this.triggerDescriptor.getStatesAsMap().get(1L).getTransitions().get(0).getNextStateId() == 2L);
+        assertTrue(this.triggerDescriptor.getStates().get(1L).getTransitions().get(0).getNextStateId() == 2L);
         assertTrue(this.triggerDescriptor.getStates().size() == 2);
         assertTrue(this.triggerDescriptor.getDefaultInstance().getCurrentStateId() == 1L);
-        assertTrue(triggerDescriptor.getStatesAsMap().get(2L).getOnEnterEvent().equals(scriptEntity));
+        assertTrue(triggerDescriptor.getStates().get(2L).getOnEnterEvent().equals(scriptEntity));
         //testing onLoad method
         this.triggerDescriptor.setTriggerEvent(new Script());
         this.triggerDescriptor.setPostTriggerEvent(new Script());

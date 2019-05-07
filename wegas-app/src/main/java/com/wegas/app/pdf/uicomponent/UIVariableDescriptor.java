@@ -677,7 +677,7 @@ public class UIVariableDescriptor extends UIComponentBase {
 
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_FOLDER);
             List<Long> keys = new ArrayList<>();
-            Map<Long, State> states = fsm.getStatesAsMap();
+            Map<Long, State> states = fsm.getStates();
             keys.addAll(states.keySet());
 
             Collections.sort(keys);
