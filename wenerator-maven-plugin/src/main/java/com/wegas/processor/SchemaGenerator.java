@@ -32,6 +32,8 @@ import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.scope.AbstractScope;
+import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.editor.Schema;
 import com.wegas.editor.Schemas;
 import com.wegas.editor.JSONSchema.JSONArray;
@@ -49,9 +51,12 @@ import com.wegas.editor.View.CommonView;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.View;
 import com.wegas.editor.Visible;
+import com.wegas.mcq.persistence.ChoiceDescriptor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -453,7 +458,9 @@ public class SchemaGenerator extends AbstractMojo {
     private String javaToTSType(Type type) {
         if (type instanceof Class) {
             Class<?> returnType = wrap((Class<?>) type);
-            if (Number.class.isAssignableFrom(returnType)) {
+            if (Number.class.isAssignableFrom(returnType)
+                    || Calendar.class.isAssignableFrom(returnType)
+                    || Date.class.isAssignableFrom(returnType)) {
                 return "number";
             } else if (String.class.isAssignableFrom(returnType)) {
                 return "string";
@@ -734,7 +741,7 @@ public class SchemaGenerator extends AbstractMojo {
     }
 
     public static final void main(String... args) throws MojoExecutionException {
-        SchemaGenerator wenerator = new SchemaGenerator(true);
+        SchemaGenerator wenerator = new SchemaGenerator(true, AbstractScope.class, AbstractAccount.class);
         wenerator.execute();
     }
 }
