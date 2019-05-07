@@ -931,7 +931,9 @@
 .wegas-i18n-manager-content .wegas-i18n-manager--languages .language.readonly .save-all-container,
 .wegas-i18n-manager-content .wegas-i18n-manager--languages .language.readonly .form,
 .wegas-i18n-manager-content:not(.show-settings) .wegas-i18n-manager--languages .language .auto-translator,
+.wegas-i18n-manager-content:not(.show-settings) .wegas-i18n-manager--languages .language .auto-copy,
 .wegas-i18n-manager-content .wegas-i18n-manager--languages .language.readonly .wegas-language-i18n-auto,
+.wegas-i18n-manager-content .wegas-i18n-manager--languages .language.readonly .wegas-language-i18n-copy,
 .wegas-i18n-manager-content:not(.show-settings) .wegas-i18n-manager--toolbar .create-button {
     display :none;
 }
@@ -995,6 +997,7 @@
     cursor: wait;
 }
 
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-i18n-copy,
 .wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-i18n-auto {
     cursor: pointer;
 }
