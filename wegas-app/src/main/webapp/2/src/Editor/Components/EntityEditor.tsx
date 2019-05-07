@@ -3,11 +3,12 @@ import { get } from 'lodash-es';
 import { Schema } from 'jsoninput';
 import { State } from '../../data/Reducer/reducers';
 import { VariableDescriptor } from '../../data/selectors';
-import getEditionConfig, { ConfigurationSchema } from '../editionConfig';
+import getEditionConfig from '../editionConfig';
 import { Actions } from '../../data';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepUpdate } from '../../data/updateUtils';
 import { StoreConsumer } from '../../data/store';
+import { AvailableViews } from './FormView';
 
 interface EditorProps<T> {
   entity?: T;
@@ -17,7 +18,7 @@ interface EditorProps<T> {
     action: (entity: T, path?: string[]) => void;
   }[];
   path?: string[];
-  getConfig(entity: T): Promise<ConfigurationSchema<IWegasEntity>>;
+  getConfig(entity: T): Promise<Schema<AvailableViews>>;
 }
 
 export async function WindowedEditor<T>({
@@ -41,7 +42,7 @@ export async function WindowedEditor<T>({
 
   const [Form, schema] = await Promise.all<
     typeof import('./Form')['Form'],
-    Schema | ConfigurationSchema<IWegasEntity>
+    Schema<AvailableViews>
   >([import('./Form').then(m => m.Form), getConfig(pathEntity)]);
   return (
     <Form
@@ -56,7 +57,7 @@ export async function WindowedEditor<T>({
         };
       })}
       path={path}
-      schema={{ type: 'object', properties: schema }}
+      schema={schema}
     />
   );
 }

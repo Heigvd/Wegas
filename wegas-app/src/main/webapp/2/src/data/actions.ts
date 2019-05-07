@@ -1,8 +1,9 @@
 import { normalizeDatas, NormalizedData } from './normalize';
 import { ManagedMode } from '../API/rest';
 import * as ActionType from './actionTypes';
-import { ConfigurationSchema } from '../Editor/editionConfig';
 import { PageIndex } from '../API/pages.api';
+import { Schema } from 'jsoninput';
+import { AvailableViews } from 'src/Editor/Components/FormView';
 
 export { ActionType };
 function createAction<T extends string, P>(type: T, payload: P) {
@@ -19,7 +20,7 @@ export const ActionCreator = {
   //   createAction(ActionType.ENTITY_UPDATE, data),
   VARIABLE_EDIT: <T extends IWegasEntity>(data: {
     id: number;
-    config?: ConfigurationSchema<T>;
+    config?: Schema<AvailableViews>;
     path?: string[];
     actions: {
       save?: (entity: T) => void;
@@ -33,7 +34,7 @@ export const ActionCreator = {
   }) => createAction(ActionType.VARIABLE_EDIT, data),
   FSM_EDIT: (data: {
     id: number;
-    config?: ConfigurationSchema<IVariableDescriptor>;
+    config?: Schema<AvailableViews>;
     path?: string[];
     actions: {
       save?: (entity: IFSMDescriptor) => void;
