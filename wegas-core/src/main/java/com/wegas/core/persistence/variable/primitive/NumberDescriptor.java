@@ -21,6 +21,7 @@ import javax.persistence.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.wegas.core.persistence.annotations.Errored;
+import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.annotations.WegasConditions.And;
 import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
 import com.wegas.core.persistence.annotations.WegasConditions.LessThan;
@@ -148,6 +149,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      * @param value
      */
     @Override
+    @Scriptable(label = "set")
     public void setValue(Player p, Double value) {
         this.getInstance(p).setValue(value);
     }
@@ -184,6 +186,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      * @param p
      * @param value
      */
+    @Scriptable
     public void add(Player p, double value) {
         this.getInstance(p).add(value);
     }
@@ -213,6 +216,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      *
      * @return value of player p instance
      */
+    @Scriptable(label = "value")
     public Double getValue(Player p) {
         return this.getInstance(p).getValue();
     }

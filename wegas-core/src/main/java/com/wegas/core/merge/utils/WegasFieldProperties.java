@@ -42,6 +42,11 @@ public class WegasFieldProperties {
     private final WegasEntityProperty annotation;
 
     /**
+     * The property owner
+     */
+    private final Class<? extends Mergeable> owner;
+
+    /**
      * the field as a beam property
      */
     private final PropertyDescriptor propertyDescriptor;
@@ -69,7 +74,8 @@ public class WegasFieldProperties {
      *
      * @throws IntrospectionException should never been thrown (thanks to MergeFacadeTest.testGetterAndSetter)
      */
-    WegasFieldProperties(Field field, WegasEntityProperty wegasProperty) throws IntrospectionException {
+    WegasFieldProperties(Field field, WegasEntityProperty wegasProperty, Class<? extends Mergeable> owner) throws IntrospectionException {
+        this.owner = owner;
         this.field = field;
         this.fieldClass = field.getType();
         this.annotation = wegasProperty;
@@ -155,6 +161,10 @@ public class WegasFieldProperties {
      */
     public PropertyDescriptor getPropertyDescriptor() {
         return propertyDescriptor;
+    }
+
+    public boolean isInherited(){
+        return !this.field.getDeclaringClass().equals(this.owner);
     }
 
     /**
