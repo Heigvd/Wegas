@@ -1,11 +1,5 @@
 import * as React from 'react';
-import HTML5Backend from 'react-dnd-html5-backend';
-import {
-  DragSource,
-  DragDropContext,
-  DragElementWrapper,
-  DragSourceOptions,
-} from 'react-dnd';
+import { DragSource, DragElementWrapper, DragSourceOptions } from 'react-dnd';
 import { css, cx } from 'emotion';
 import {
   DropZone,
@@ -14,6 +8,7 @@ import {
   Outcome,
 } from './DropZone';
 import { FontAwesome } from '../FontAwesome';
+import { defaultContextManager } from '../../../../Components/DragAndDrop';
 
 function noop() {}
 
@@ -90,9 +85,10 @@ function DropPreview({
     />
   );
 }
-export const Container = DragDropContext(HTML5Backend)<React.ComponentType<ContainerProps>>(
-  ContextContainer,
-);
+
+export const Container = defaultContextManager<
+  React.ComponentType<ContainerProps>
+>(ContextContainer);
 
 interface NodeProps {
   id: {};
@@ -163,17 +159,16 @@ class TreeNode extends React.Component<
       })(),
     });
     const isNode = Array.isArray(children);
-    const cont = isNode &&
-      expanded && (
-        <DropZone id={id} where="INSIDE" index={0}>
-          {({ isOver, boundingRect }) => (
-            <div className={childrenContainer}>
-              {isOver && <DropPreview boundingRect={boundingRect} />}
-              {children}
-            </div>
-          )}
-        </DropZone>
-      );
+    const cont = isNode && expanded && (
+      <DropZone id={id} where="INSIDE" index={0}>
+        {({ isOver, boundingRect }) => (
+          <div className={childrenContainer}>
+            {isOver && <DropPreview boundingRect={boundingRect} />}
+            {children}
+          </div>
+        )}
+      </DropZone>
+    );
     return connectDragSource(
       <div
         ref={n => (this.root = n)}
@@ -184,10 +179,9 @@ class TreeNode extends React.Component<
         <DropZone id={parent} index={index!} where={'AUTO'}>
           {({ isOver, boundingRect, where, separator }) => (
             <div>
-              {isOver &&
-                where === 'BEFORE' && (
-                  <DropPreview boundingRect={boundingRect} />
-                )}
+              {isOver && where === 'BEFORE' && (
+                <DropPreview boundingRect={boundingRect} />
+              )}
               {separator(
                 <div>
                   <span className={toggle} onClick={this.toggleExpand}>
@@ -201,10 +195,9 @@ class TreeNode extends React.Component<
                 </div>,
               )}
               {cont}
-              {isOver &&
-                where === 'AFTER' && (
-                  <DropPreview boundingRect={boundingRect} />
-                )}
+              {isOver && where === 'AFTER' && (
+                <DropPreview boundingRect={boundingRect} />
+              )}
             </div>
           )}
         </DropZone>

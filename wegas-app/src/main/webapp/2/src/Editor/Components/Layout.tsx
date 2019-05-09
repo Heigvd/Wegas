@@ -1,11 +1,7 @@
 import * as React from 'react';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import Header from './Header';
-import TreeView from './Variable/VariableTree';
-import Editor from './EntityEditor';
-import PageDisplay from './Page/PageDisplay';
-import { TabLayout } from '../../Components/Tabs';
-import StateMachineEditor from './StateMachineEditor';
+import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
 
 const layout = css({
   display: 'grid',
@@ -18,6 +14,11 @@ const layout = css({
   },
 });
 
+const flex = css({
+  display: 'flex',
+});
+
+// const fullWidth = css({ gridColumnEnd: 'span 3' });
 const fullWidth = css({ gridColumnEnd: 'span 3' });
 
 export default class AppLayout extends React.Component<
@@ -36,17 +37,8 @@ export default class AppLayout extends React.Component<
         <div className={fullWidth}>
           <Header />
         </div>
-        <div>
-          <TreeView />
-        </div>
-        <div>
-          <TabLayout tabs={['Page', 'StateMachine']}>
-            <PageDisplay />
-            <StateMachineEditor />
-          </TabLayout>
-        </div>
-        <div>
-          <Editor />
+        <div className={cx(fullWidth, flex)}>
+          <DndLinearLayout />
         </div>
       </div>
     );
