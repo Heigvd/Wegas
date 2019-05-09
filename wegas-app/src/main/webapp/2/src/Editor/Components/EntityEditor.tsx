@@ -109,7 +109,7 @@ export default function VariableForm(props: {
         const getConfig = (entity: IVariableDescriptor) => {
           return state.config != null
             ? Promise.resolve(state.config)
-            : getEditionConfig(entity);
+            : (getEditionConfig(entity) as Promise<Schema<AvailableViews>>);
         };
 
         return (
