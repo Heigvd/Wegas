@@ -108,6 +108,14 @@ public class SchemaGenerator extends AbstractMojo {
         this.classFilter = cf;
 
         this.tsInterfaces = new StringBuilder();
+
+        tsInterfaces.append("/**\n"
+                + " * Remove specified keys.\n"
+                + " */\n"
+                + "type Omit<Type, Keys extends keyof Type> = Pick<\n"
+                + "    Type,\n"
+                + "    Exclude<keyof Type, Keys>\n"
+                + ">;");
     }
 
     public List<JsonMergePatch> processSchemaAnnotation(JSONObject o, Schema... schemas) {
@@ -239,15 +247,19 @@ public class SchemaGenerator extends AbstractMojo {
         if (c.getSuperclass() != null) {
             Type[] gTypes = c.getSuperclass().getTypeParameters();
             if (c.getSuperclass() != Object.class) {
-                sb.append(" extends ").append(getTsInterfaceName((Class<? extends Mergeable>) c.getSuperclass()));
-            }
-            if (gTypes != null && gTypes.length > 0) {
-                sb.append("<");
-                Arrays.stream(gTypes).forEach(t -> {
-                    sb.append(javaToTSType(TypeResolver.reify(t, c))).append(",");
-                });
-                sb.deleteCharAt(sb.length() - 1);
-                sb.append(">");
+                sb.append(" extends ")
+                        .append("Omit<")
+                        .append(getTsInterfaceName((Class<? extends Mergeable>) c.getSuperclass()));
+                if (gTypes != null && gTypes.length > 0) {
+                    sb.append("<");
+                    Arrays.stream(gTypes).forEach(t -> {
+                        sb.append(javaToTSType(TypeResolver.reify(t, c))).append(",");
+                    });
+                    sb.deleteCharAt(sb.length() - 1);
+                    sb.append(">");
+                }
+
+                sb.append(", '@class'").append(">");
             }
         }
         sb.append(" {\n");
@@ -312,7 +324,12 @@ public class SchemaGenerator extends AbstractMojo {
             property += "readonly ";
         }
 
-        property += name;
+        if (!name.matches("^[a-zA-Z_][a-zA-Z0-9_]+$")) {
+            // should quote property name !
+            property += "\"" + name + "\"";
+        } else {
+            property += name;
+        }
         if (optional) {
             property += "?";
         }
