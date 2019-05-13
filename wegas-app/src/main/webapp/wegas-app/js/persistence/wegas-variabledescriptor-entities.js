@@ -171,7 +171,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             getInstance: function(player) {
                 var key, scope;
                 player = player || Wegas.Facade.Game.get('currentPlayer');
-                switch (this.get('scope').get('@class')) {
+                switch (this.get('scopeType')) {
                     case 'PlayerScope':
                         key = player.get('id');
                         break;
@@ -185,15 +185,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
 
                 scope = Y.Wegas.Facade.Instance.cache.find('descriptorId', this.get('id'));
                 return scope ? scope.variableInstances[key] : undefined;
-                //return this.get("scope").getInstance(player || Wegas.Facade.Game.get("currentPlayer"));
-
-                /*player = player || Wegas.Facade.Game.get("currentPlayer");
-                 var instance = this.get("scope").getInstance(player);
-                 if (!instance) {
-                 this._loadInstance(player);
-                 instance = this.get("scope").getInstance(player);
-                 }
-                 return instance;*/
             },
             /**
              *
@@ -227,30 +218,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     'wegas-icon-variabledescriptor wegas-icon-' +
                     this.get('@class').toLowerCase()
                     );
-            },
-            _loadInstance: function(player) {
-                var promise = new Y.Promise(function(resolve, reject) {
-                    Y.Wegas.Facade.Variable.sendRequest(
-                        Y.mix({
-                            request: '/' +
-                                this.get('id') +
-                                '/VariableInstance/playerId' +
-                                player.get('id'),
-                            cfg: {
-                                method: 'GET'
-                            },
-                            on: {
-                                success: function(e) {
-                                    resolve(e.target.entity);
-                                },
-                                failure: function(e) {
-                                    resolve(null);
-                                }
-                            }
-                        })
-                        );
-                });
-                this.get("scope").setInstance(player, promise);
             },
             getParent: function() {
                 return Y.Wegas.Facade.Variable.cache.findParentDescriptor(this);
@@ -301,75 +268,62 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         return s === null || Y.Lang.isString(s);
                     }
                 },
-                scope: {
-                    valueFn: function() {
-                        return new persistence.TeamScope(); // Should the default scope be set
-                        // server or client side?
-                    },
-                    validator: function(o) {
-                        return o instanceof persistence.Scope;
-                    },
+                scopeType: {
+                    value: "TeamScope",
                     index: -6,
                     view: {
                         className: 'wegas-advanced-feature'
                     },
-                    properties: {
-                        refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
-                        '@class': {
-                            type: STRING,
-                            value: "TeamScope",
-                            view: {
-                                type: SELECT,
-                                layout: 'shortInline',
-                                choices: [
-                                    {
-                                        value: 'PlayerScope',
-                                        label: 'each player'
-                                    },
-                                    {
-                                        value: 'TeamScope',
-                                        label: 'each team'
-                                    },
-                                    {
-                                        value: 'GameModelScope',
-                                        label: 'the whole game'
-                                    }
-                                ],
-                                label: 'One variable for'
-                            }
-                        },
-                        broadcastScope: {
-                            type: STRING,
-                            value: "TeamScope",
-                            errored: function(val, formVal) {
-                                var errors = [],
-                                    scope = formVal.scope;
-                                if (scope["@class"] === "TeamScope" && val === "PlayerScope" ||
-                                    scope["@class"] === "GameModelScope" && (val === "PlayerScope" || val === "TeamScope")) {
-                                    errors.push('Invalid combination');
-                                }
-                                return errors.join(', ');
+                    view: {
+                        type: SELECT,
+                        layout: 'shortInline',
+                        choices: [
+                            {
+                                value: 'PlayerScope',
+                                label: 'each player'
                             },
-                            view: {
-                                type: SELECT,
-                                label: 'Variable is visible by',
-                                layout: 'shortInline',
-                                choices: [
-                                    {
-                                        value: 'PlayerScope',
-                                        label: 'the player only'
-                                    },
-                                    {
-                                        value: 'TeamScope',
-                                        label: "team members"
-                                    },
-                                    {
-                                        value: 'GameScope',
-                                        label: 'everybody'
-                                    }
-                                ]
+                            {
+                                value: 'TeamScope',
+                                label: 'each team'
+                            },
+                            {
+                                value: 'GameModelScope',
+                                label: 'the whole game'
                             }
+                        ],
+                        label: 'One variable for'
+                    }
+                },
+                broadcastScope: {
+                    type: STRING,
+                    value: "TeamScope",
+                    errored: function(val, formVal) {
+                        var errors = [],
+                            scopeType = formVal.scopeType;
+                        if (scopeType === "TeamScope" && val === "PlayerScope" ||
+                            scopeType === "GameModelScope" && (val === "PlayerScope" || val === "TeamScope")) {
+                            errors.push('Invalid combination');
                         }
+                        return errors.join(', ');
+                    },
+                    view: {
+                        type: SELECT,
+                        label: 'Variable is visible by',
+                        layout: 'shortInline',
+                        choices: [
+                            {
+                                value: 'PlayerScope',
+                                label: 'the player only'
+                            },
+                            {
+                                value: 'TeamScope',
+                                label: "team members"
+                            },
+                            {
+                                value: 'GameScope',
+                                label: 'everybody'
+                            }
+                        ]
                     }
                 },
                 defaultInstance: {

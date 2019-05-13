@@ -32,7 +32,7 @@ export function getInstance<I extends IVariableInstance>(
   return function(self?: IPlayer): Readonly<I> | undefined {
     type IorUndef = Readonly<I> | undefined;
     const player = self != null ? self : Player.selectCurrent();
-    switch (vd.scope['@class']) {
+      switch (vd.scopeType) {
       case 'PlayerScope':
         return VariableInstance.firstMatch<IVariableInstance>({
           parentId: vd.id,

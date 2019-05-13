@@ -1,10 +1,3 @@
-interface IScope {
-  '@class': 'TeamScope' | 'GameModelScope' /* | 'GameScope' */ | 'PlayerScope';
-  broadcastScope:
-    | 'TeamScope' /* | 'GameModelScope' */
-    | 'GameScope'
-    | 'PlayerScope';
-}
 interface IVariableDescriptor<T extends IVariableInstance = IVariableInstance>
   extends IWegasEntity,
     IVersionable {
@@ -12,7 +5,8 @@ interface IVariableDescriptor<T extends IVariableInstance = IVariableInstance>
   label: ITranslatableContent;
   editorTag: string | null;
   defaultInstance: T;
-  scope: IScope;
+  scopeType: 'TeamScope' | 'GameModelScope' | 'PlayerScope';
+  broadcastScope: | 'TeamScope' | 'GameScope' | 'PlayerScope';
   comments: string | null;
 }
 

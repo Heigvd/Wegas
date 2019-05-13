@@ -28,55 +28,6 @@ const wegasEntityConfig: ConfigurationSchema<IWegasEntity> = {
     view: { type: 'hidden' },
   },
 };
-const scopeConfig: ConfigurationSchema<IScope> = {
-  '@class': {
-    type: 'string',
-    index: -15,
-    required: true,
-    value: 'TeamScope',
-    view: {
-      type: 'select',
-      label: 'One variable for',
-      choices: [
-        {
-          value: 'PlayerScope',
-          label: 'each player',
-        },
-        {
-          value: 'TeamScope',
-          label: 'each team',
-        },
-        {
-          value: 'GameModelScope',
-          label: 'the whole game',
-        },
-      ],
-    },
-  },
-  broadcastScope: {
-    type: 'string',
-    value: 'TeamScope',
-    required: true,
-    view: {
-      type: 'select',
-      label: 'Variable is visible by',
-      choices: [
-        {
-          value: 'PlayerScope',
-          label: 'the player only',
-        },
-        {
-          value: 'TeamScope',
-          label: "team members",
-        },
-        {
-          value: 'GameScope',
-          label: 'everybody',
-        },
-      ],
-    },
-  },
-};
 
 export const config: ConfigurationSchema<IVariableDescriptor> = {
   ...wegasEntityConfig,
@@ -129,10 +80,52 @@ export const config: ConfigurationSchema<IVariableDescriptor> = {
         "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character.",
     },
   },
-  scope: {
-    index: -1,
-    type: 'object',
-    properties: scopeConfig,
+  scopeType: {
+    type: 'string',
+    index: -15,
+    required: true,
+    value: 'TeamScope',
+    view: {
+      type: 'select',
+      label: 'Variable is',
+      choices: [
+        {
+          value: 'PlayerScope',
+          label: 'each player',
+        },
+        {
+          value: 'TeamScope',
+          label: 'each team',
+        },
+        {
+          value: 'GameModelScope',
+          label: 'the whole game',
+        },
+      ],
+    },
+  },
+  broadcastScope: {
+    type: 'string',
+    value: 'TeamScope',
+    required: true,
+    view: {
+      type: 'select',
+      label: 'Variable is visible by',
+      choices: [
+        {
+          value: 'PlayerScope',
+          label: 'the player only',
+        },
+        {
+          value: 'TeamScope',
+          label: "team members",
+        },
+        {
+          value: 'GameScope',
+          label: 'everybody',
+        },
+      ],
+    },
   },
   defaultInstance: {
     index: 0,
