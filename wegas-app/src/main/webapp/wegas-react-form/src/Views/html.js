@@ -1,4 +1,4 @@
-import { Editor } from '@tinymce/tinymce-react/lib/es2015';
+import { Editor } from '@tinymce/tinymce-react';
 import { css } from 'glamor';
 import { debounce } from 'lodash-es';
 import PropTypes from 'prop-types';
@@ -9,19 +9,19 @@ import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar';
 import { getY } from './../index';
 import FormStyles from './form-styles';
 
-const {Wegas} = getY();
+const { Wegas } = getY();
 const tinymceStyle = css({
     '& .mce-tinymce': {
-        //boxShadow: 'none',
-        boxSizing: 'border-box'
+    //boxShadow: 'none',
+        boxSizing: 'border-box',
     },
     '& .mce-content-body': {
-        border: "1px solid #BFBFBF",
-        padding: "4px"
+        border: '1px solid #BFBFBF',
+        padding: '4px',
     },
     '& .mce-content-body.mce-edit-focus': {
-        outline: "medium auto #6AACF1"
-    }
+        outline: 'medium auto #6AACF1',
+    },
     // Fix horizontal resize...
     //'& .mce-container > iframe': {width: '100% !important'}
     //'& > .tinymce-toolbar > div': {display: 'block !important'}
@@ -34,9 +34,7 @@ function onFileBrowserClick(fieldName, url, type, win) {
         e.preventDefault();
 
         const window = filePanel.win;
-        const targetInput = window.document.getElementById(
-            filePanel.field_name
-            );
+        const targetInput = window.document.getElementById(filePanel.field_name);
         targetInput.value = Wegas.Facade.File.getPath() + path; // update the input field
 
         if (typeof window.ImageDialog !== 'undefined') {
@@ -48,9 +46,7 @@ function onFileBrowserClick(fieldName, url, type, win) {
 
             if (window.ImageDialog.showPreviewImage) {
                 // ... and preview if necessary
-                window.ImageDialog.showPreviewImage(
-                    Wegas.Facade.File.getPath() + path
-                    );
+                window.ImageDialog.showPreviewImage(Wegas.Facade.File.getPath() + path);
             }
         }
         if (window.Media) {
@@ -70,9 +66,9 @@ function getTinyConfig(fixedToolbar) {
         plugins: [
             'autolink link image lists code media table',
             'paste advlist textcolor dynamic_toolbar',
-                // textcolor wordcount autosave contextmenu
-                // advlist charmap print preview hr anchor pagebreak spellchecker
-                // directionality
+            // textcolor wordcount autosave contextmenu
+            // advlist charmap print preview hr anchor pagebreak spellchecker
+            // directionality
         ],
         toolbar1: 'bold italic bullist | link image media code addToolbarButton',
         toolbar2: `forecolor backcolor underline
@@ -125,23 +121,22 @@ function getTinyConfig(fixedToolbar) {
             },
         ],
         formats: {},
-        // setup: function setup(editor) {
-        //     let tbs;
-        //     editor.on('init', () => {
-        //         tbs = editor.contentAreaContainer.parentElement
-        //             .querySelectorAll('div.mce-toolbar-grp');
-        //         tbs.forEach(e => { e.style.maxHeight = 0; e.style.overflow = 'hidden'; });
-        //     });
-        //     editor.on('focus', () => tbs.forEach(e => { e.style.maxHeight = '90px'; }));
-        //     editor.on('blur', () => tbs.forEach(e => { e.style.maxHeight = 0; }));
-        // }
+    // setup: function setup(editor) {
+    //     let tbs;
+    //     editor.on('init', () => {
+    //         tbs = editor.contentAreaContainer.parentElement
+    //             .querySelectorAll('div.mce-toolbar-grp');
+    //         tbs.forEach(e => { e.style.maxHeight = 0; e.style.overflow = 'hidden'; });
+    //     });
+    //     editor.on('focus', () => tbs.forEach(e => { e.style.maxHeight = '90px'; }));
+    //     editor.on('blur', () => tbs.forEach(e => { e.style.maxHeight = 0; }));
+    // }
     };
-
 
     let extraButtons = Wegas.Config.TinyExtraButtons;
 
     if (extraButtons) {
-        /* config example :
+    /* config example :
          Y.namespace("Wegas.Config").TinyExtraButtons = {
 
             className : "off-game",
@@ -156,9 +151,9 @@ function getTinyConfig(fixedToolbar) {
          }
          };
          */
-        let toolbar = config.toolbar1.split(" ");
+        let toolbar = config.toolbar1.split(' ');
         toolbar.pop(); // remove addToolbarButton
-        toolbar.push("|");
+        toolbar.push('|');
 
         let initFunctions = [];
 
@@ -166,8 +161,8 @@ function getTinyConfig(fixedToolbar) {
             let btnCfg = extraButtons[name];
             config.formats[name] = {
                 attributes: {
-                    'class': btnCfg.className
-                }
+                    class: btnCfg.className,
+                },
             };
 
             if (btnCfg.block) {
@@ -175,7 +170,7 @@ function getTinyConfig(fixedToolbar) {
             } else if (btnCfg.inline) {
                 config.formats[name].inline = btnCfg.inline;
             } else {
-                config.formats[name].inline = "span";
+                config.formats[name].inline = 'span';
             }
 
             toolbar.push(name);
@@ -183,32 +178,35 @@ function getTinyConfig(fixedToolbar) {
             initFunctions.push({
                 name: name,
                 config: btnCfg,
-                'function':
-                    function(editor, name, btnCfg) {
-                        editor.addButton(name, {
-                            icon: "x " + btnCfg.cssIcon,
-                            stateSelector: "." + btnCfg.className,
-                            tooltip: btnCfg.tooltip,
-                            onclick: function(e) {
-                                tinymce.activeEditor.formatter.toggle(name);
-                                tinymce.activeEditor.fire("change");
-                            }
-                        });
-                    }
+                function: function(editor, name, btnCfg) {
+                    editor.addButton(name, {
+                        icon: 'x ' + btnCfg.cssIcon,
+                        stateSelector: '.' + btnCfg.className,
+                        tooltip: btnCfg.tooltip,
+                        onclick: function(e) {
+                            tinymce.activeEditor.formatter.toggle(name);
+                            tinymce.activeEditor.fire('change');
+                        },
+                    });
+                },
             });
             // on setup, call each initFunction
             config.setup = function(editor) {
                 for (let i in initFunctions) {
-                    initFunctions[i].function.call(editor, editor,
-                        initFunctions[i].name, initFunctions[i].config);
+                    initFunctions[i].function.call(
+                        editor,
+                        editor,
+                        initFunctions[i].name,
+                        initFunctions[i].config
+                    );
                 }
             };
         }
 
         // rebuilf toolbar1
-        toolbar.push("|");
-        toolbar.push("addToolbarButton");
-        config.toolbar1 = toolbar.join(" ");
+        toolbar.push('|');
+        toolbar.push('addToolbarButton');
+        config.toolbar1 = toolbar.join(' ');
     }
 
     return config;
@@ -227,9 +225,9 @@ function toTinyMCE(content) {
             new RegExp('data-file="([^"]*)"', 'gi'),
             `src="${Wegas.Facade.File.getPath()}$1"
              href="${Wegas.Facade.File.getPath()}$1"`
-            ); // @hack Place both href and src so it
-        // will work for both <a> and <img>
-        // elements
+        ); // @hack Place both href and src so it
+    // will work for both <a> and <img>
+    // elements
     }
     return updated;
 }
@@ -251,25 +249,23 @@ function toInjectorStyle(content) {
             new RegExp(
                 '((src|href)="[^"]*/rest/File/GameModelId/[^"]*/read([^"]*)")',
                 'gi'
-                ),
+            ),
             'data-file="$3"'
-            ) // Replace absolute path with injector style path (old version)
+        ) // Replace absolute path with injector style path (old version)
         .replace(
             new RegExp(
                 '((src|href)="[^"]*/rest/GameModel/[^"]*/File/read([^"]*)")',
                 'gi'
-                ),
+            ),
             'data-file="$3"'
-            ); // Replace absolute path with injector style path
+        ); // Replace absolute path with injector style path
 }
-
 
 let id = 0;
 function toolbarIdGenerator() {
     const gid = ++id;
     return 'generated-tinymce-toolbar-id--' + gid;
 }
-
 
 class HTMLView extends React.Component {
     static getDerivedStateFromProps(nextProps, state) {
@@ -283,14 +279,14 @@ class HTMLView extends React.Component {
                 content: toTinyMCE(nextProps.value) || '',
             };
         }
-        return {oldProps: nextProps};
+        return { oldProps: nextProps };
     }
     constructor(props) {
         super(props);
         this.id = toolbarIdGenerator();
         this.state = {
             // eslint-disable-next-line
-            oldProps: props,
+      oldProps: props,
             sent: props.value,
             content: toTinyMCE(props.value) || '',
         };
@@ -303,7 +299,7 @@ class HTMLView extends React.Component {
         const oldContent = this.state.sent;
         const newContent = toInjectorStyle(content);
         if (oldContent !== newContent) {
-            this.setState({content, sent: newContent}, () => {
+            this.setState({ content, sent: newContent }, () => {
                 this.props.onChange(newContent);
             });
         }
@@ -311,27 +307,31 @@ class HTMLView extends React.Component {
 
     render() {
         if (this.props.view.readOnly) {
-            return <div  className={FormStyles.disabled.toString()}
-                  dangerouslySetInnerHTML={{
-                                __html: this.state.content
-                  }} />;
-            } else {
-                return (
-                    <div {...tinymceStyle}>
-                        <div id={this.id} className="tinymce-toolbar"></div>
-                        <Editor
-                            value={this.state.content}
-                            init={getTinyConfig("#" + this.id)}
-                            onEditorChange={this.onChangeHandler}
-                            />
-                    </div>
-                    );
-            }
+            return (
+                <div
+                    className={FormStyles.disabled.toString()}
+                    dangerouslySetInnerHTML={{
+                        __html: this.state.content,
+                    }}
+                />
+            );
+        } else {
+            return (
+                <div {...tinymceStyle}>
+                    <div id={this.id} className="tinymce-toolbar" />
+                    <Editor
+                        value={this.state.content}
+                        init={getTinyConfig('#' + this.id)}
+                        onEditorChange={this.onChangeHandler}
+                    />
+                </div>
+            );
         }
     }
-    HTMLView.propTypes = {
-        onChange: PropTypes.func.isRequired,
-        value: PropTypes.string,
-    };
+}
+HTMLView.propTypes = {
+    onChange: PropTypes.func.isRequired,
+    value: PropTypes.string,
+};
 
-    export default commonView(labeled(HTMLView));
+export default commonView(labeled(HTMLView));

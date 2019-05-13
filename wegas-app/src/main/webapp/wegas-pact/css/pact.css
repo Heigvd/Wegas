@@ -614,6 +614,14 @@ API TOOLTIP
     color: #999;
 }
 
+.wegas-dashboard-datatable .result-total {
+    border-top: 1px solid #e7e7e7;
+}
+
+.wegas-dashboard-datatable .result-total td {
+    padding-top: 1px;
+}
+
 .wegas-hostmode .history-error {
     color: red;
 }
