@@ -36,7 +36,7 @@ export async function WindowedEditor<T>({
     return null;
   }
   function updatePath(variable: {}) {
-    return update != null && update(deepUpdate(entity, path, variable));
+    return update != null && update(deepUpdate(entity, path, variable) as T);
   }
 
   const [Form, schema] = await Promise.all<
@@ -51,7 +51,7 @@ export async function WindowedEditor<T>({
         return {
           label,
           action: function(e: T) {
-            action(deepUpdate(entity, path, e), path);
+            action(deepUpdate(entity, path, e) as T, path);
           },
         };
       })}

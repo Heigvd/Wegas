@@ -1,7 +1,7 @@
 import { shallowIs } from './shallowIs';
 
 const empty: never[] = [];
-test.each([
+test.each<[boolean, unknown, unknown]>([
   [true, 1, 1],
   [true, 'hello', 'hello'],
   [true, NaN, NaN],

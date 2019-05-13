@@ -60,6 +60,6 @@ ObjectView.propTypes = {
         className: PropTypes.string,
         label: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
     }),
-    errorMessage: PropTypes.array,
+    errorMessage: PropTypes.arrayOf(PropTypes.string),
 };
 export default ObjectView;
