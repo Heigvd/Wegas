@@ -113,7 +113,7 @@ export function deleteDescriptor(
 ): ThunkResult {
   return function(dispatch, getState) {
     if (path.length > 0) {
-      let vs = deepRemove(variableDescriptor, path);
+      const vs = deepRemove(variableDescriptor, path) as IVariableDescriptor;
       return dispatch(updateDescriptor(vs));
     }
     const gameModelId = getState().global.currentGameModelId;
