@@ -7,30 +7,35 @@
  * Licensed under the MIT License
  */
 
+import { get } from 'lodash-es';
 import { discriminant } from '../normalize';
-
 import {
+  Game,
+  GameModel,
+  Player,
+  Team,
   VariableDescriptor,
   VariableInstance,
-  GameModel,
-  Game,
-  Team,
-  Player,
 } from '../selectors';
-
 
 function findNearestParentInFormVal<T extends IWegasEntity = IWegasEntity>(
   formVal: IWegasEntity,
   path: string[],
   classFilter: string,
 ): Readonly<T> | undefined {
-  const ancestors = path.reduce(
-    (acc: any[], path: string, idx: number) =>
-      acc[idx] && acc[idx][path] ? acc.concat(acc[idx][path]) : acc,
-    [formVal],
-  );
-
-  return ancestors.find(parent => parent['@class'] === classFilter);
+  let parent = path;
+  while (parent.length) {
+    parent = parent.slice(0, -1);
+    let p;
+    if (parent.length === 0) {
+      p = formVal;
+    } else {
+      p = get(formVal, parent);
+    }
+    if (typeof p === 'object' && p != null && p['@class'] === classFilter) {
+      return p;
+    }
+  }
 }
 
 function findNearestParentInStore<T extends IWegasEntity = IWegasEntity>(
