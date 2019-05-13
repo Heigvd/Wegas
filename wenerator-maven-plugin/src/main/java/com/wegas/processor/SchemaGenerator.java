@@ -27,13 +27,12 @@ import com.google.common.reflect.TypeToken;
 import com.wegas.core.Helper;
 import com.wegas.core.merge.utils.WegasEntityFields;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.WithId;
 import com.wegas.core.persistence.annotations.Errored;
 import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.annotations.Scriptable;
-import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.scope.AbstractScope;
-import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.editor.Schema;
 import com.wegas.editor.Schemas;
 import com.wegas.editor.JSONSchema.JSONArray;
@@ -49,14 +48,20 @@ import com.wegas.editor.JSONSchema.JSONUnknown;
 import com.wegas.editor.JSONSchema.JSONWRef;
 import com.wegas.editor.View.CommonView;
 import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.ReadOnlyString;
 import com.wegas.editor.View.View;
 import com.wegas.editor.Visible;
-import com.wegas.mcq.persistence.ChoiceDescriptor;
+import java.beans.Introspector;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -134,9 +139,11 @@ public class SchemaGenerator extends AbstractMojo {
     }
 
     private void injectErrords(JSONSchema schema, List<Errored> erroreds) {
-        if (schema instanceof JSONExtendedSchema) {
-            for (Errored e : erroreds) {
-                ((JSONExtendedSchema) schema).addErrored(e);
+        if (erroreds != null) {
+            if (schema instanceof JSONExtendedSchema) {
+                for (Errored e : erroreds) {
+                    ((JSONExtendedSchema) schema).addErrored(e);
+                }
             }
         }
     }
@@ -194,7 +201,18 @@ public class SchemaGenerator extends AbstractMojo {
         return false;
     }
 
-    private void generateTsInterface(WegasEntityFields wEF) {
+    /**
+     * Guess property name based on the getter name.
+     *
+     * @param method
+     *
+     * @return
+     */
+    private String getPropertyName(Method method) {
+        return Introspector.decapitalize(method.getName().replaceFirst("get", "").replaceFirst("is", ""));
+    }
+
+    private void generateTsInterface(WegasEntityFields wEF, Map<Method, WegasExtraProperty> extraProperties) {
         Class<? extends Mergeable> c = wEF.getTheClass();
         StringBuilder sb = new StringBuilder();
         sb.append("interface ").append(getTsInterfaceName(c));
@@ -220,7 +238,9 @@ public class SchemaGenerator extends AbstractMojo {
 
         if (c.getSuperclass() != null) {
             Type[] gTypes = c.getSuperclass().getTypeParameters();
-            sb.append("  extends ").append(c.getSuperclass().getSimpleName());
+            if (c.getSuperclass() != Object.class) {
+                sb.append(" extends ").append(getTsInterfaceName((Class<? extends Mergeable>) c.getSuperclass()));
+            }
             if (gTypes != null && gTypes.length > 0) {
                 sb.append("<");
                 Arrays.stream(gTypes).forEach(t -> {
@@ -230,23 +250,38 @@ public class SchemaGenerator extends AbstractMojo {
                 sb.append(">");
             }
         }
-        sb.append("{\n");
+        sb.append(" {\n");
 
-        // @class
-        sb.append("  '@class': '").append(Mergeable.getJSONClassName(c)).append("';\n");
+        Map<String, String> properties = new HashMap<>();
+
+        for (Entry<Method, WegasExtraProperty> extraPropertyEntry : extraProperties.entrySet()) {
+            Method method = extraPropertyEntry.getKey();
+            WegasExtraProperty annotation = extraPropertyEntry.getValue();
+            String name = annotation.name().length() > 0
+                    ? annotation.name()
+                    : getPropertyName(method);
+            Type returnType = method.getGenericReturnType();
+
+            appendProperty(properties, name, c, returnType, true, annotation.optional(), genericity);
+        }
+
+        if (!Modifier.isAbstract(c.getModifiers())) {
+            // @class hack: constant value for concrete classes
+            properties.put("@class", "  readonly '@class': '" + Mergeable.getJSONClassName(c) + "';\n");
+        }
+
         wEF.getFields().stream()
                 // keep only self declared ones
                 .filter(f -> !f.isInherited() && f.getAnnotation().includeByDefault())
                 .forEach(field -> {
                     Type returnType = field.getPropertyDescriptor().getReadMethod().getGenericReturnType();
-                    Type reified = TypeResolver.reify(returnType, c);
-                    String tsType = javaToTSType(reified);
-                    if (genericity.containsKey(tsType)) {
-                        tsType = genericity.get(tsType);
-                    }
-                    sb.append("  ").append(field.getField().getName()).append(": ")
-                            .append(tsType).append(";\n");
+                    appendProperty(properties, field.getField().getName(), c, returnType, field.getAnnotation().initOnly(), false, genericity);
                 });
+
+        for (Entry<String, String> entry : properties.entrySet()) {
+            sb.append(entry.getValue());
+        }
+
         sb.append("}\n");
 
         if (dryRun) {
@@ -261,10 +296,67 @@ public class SchemaGenerator extends AbstractMojo {
 
     }
 
+    private void appendProperty(Map<String, String> properties,
+            String name, Class<? extends Mergeable> c,
+            Type returnType,
+            boolean readOnly, boolean optional,
+            Map<String, String> genericity) {
+        Type reified = TypeResolver.reify(returnType, c);
+        String tsType = javaToTSType(reified);
+        if (genericity.containsKey(tsType)) {
+            tsType = genericity.get(tsType);
+        }
+
+        String property = "  ";
+        if (readOnly) {
+            property += "readonly ";
+        }
+
+        property += name;
+        if (optional) {
+            property += "?";
+        }
+
+        property += ": " + tsType + ";\n";
+        properties.put(name, property);
+    }
+
+    private <T extends Annotation> T getFirstAnnotationInHierarchy(Method m, Class<T> annotationClass) {
+        Deque<Class<?>> queue = new LinkedList<>();
+        queue.add(m.getDeclaringClass());
+
+        while (!queue.isEmpty()) {
+            Class<?> klass = queue.removeFirst();
+            try {
+                Method method = klass.getMethod(m.getName(), m.getParameterTypes());
+                if (method.getAnnotation(annotationClass) != null) {
+                    return method.getAnnotation(annotationClass);
+                }
+            } catch (NoSuchMethodException | SecurityException ex) {
+                //silent catch
+            }
+
+            queue.addAll(Arrays.asList(klass.getInterfaces()));
+
+            if (klass.getSuperclass() != null) {
+                queue.addLast(klass.getSuperclass());
+            }
+
+        }
+
+        return null;
+    }
+
     /**
      *
      */
-    private void writeTsInterfaces() {
+    private void writeTsInterfacesToFile() {
+
+        this.otherObjectsTypeD.forEach((klass, typeDef) -> {
+            tsInterfaces.append("/*\n * ").append(((Class) klass).getSimpleName()).append("\n */\n");
+            tsInterfaces.append(typeDef).append("\n");
+        });
+
         File f = new File(outputDirectory, "WegasEntities.d.ts");
 
         try (FileWriter fw = new FileWriter(f)) {
@@ -287,7 +379,6 @@ public class SchemaGenerator extends AbstractMojo {
             pkg = new String[]{"com.wegas"};
         }
 
-        GameModel gm = new GameModel();
         Set<Class<? extends Mergeable>> classes = new Reflections((Object[]) pkg).getSubTypesOf(Mergeable.class);
 
         getLog().info("Mergeable Subtypes: " + classes.size());
@@ -307,10 +398,23 @@ public class SchemaGenerator extends AbstractMojo {
                         final Config config = new Config();
                         Map<String, ScriptableMethod> methods = config.getMethods();
 
+                        Map<Method, WegasExtraProperty> extraProperties = new HashMap<>();
+                        for (Method m : c.getMethods()) {
+                            WegasExtraProperty annotation = this.getFirstAnnotationInHierarchy(m, WegasExtraProperty.class);
+                            if (annotation != null) {
+                                extraProperties.put(m, annotation);
+                            }
+
+                        }
+                        Arrays.stream(c.getMethods())
+                                // brige: methods duplicated when return type is overloaded (see PrimitiveDesc.getValue)
+                                .filter(m -> m.isAnnotationPresent(WegasExtraProperty.class) && !m.isBridge())
+                                .collect(Collectors.toList());
+
                         /*
                          * Generate TS interface
                          */
-                        this.generateTsInterface(wEF);
+                        this.generateTsInterface(wEF, extraProperties);
 
                         /*
                          * Process all public methods (including inherited ones)
@@ -331,19 +435,45 @@ public class SchemaGenerator extends AbstractMojo {
                             // Fill Schema but for concrete classes only
                             JSONObject jsonSchema = config.getSchema();
                             jsonSchema.setDescription(c.getName());
-                            jsonSchema.setProperty("@class", getJSONClassName(c));
+
+                            JSONNumber idDef = new JSONNumber();
+                            idDef.setView(new ReadOnlyNumber());
+
+                            jsonSchema.setProperty("parentId", idDef);
+
+                            if (WithId.class.isAssignableFrom(c)) {
+                                jsonSchema.setProperty("id", idDef);
+                            }
+
+                            JSONString parentTypeDef = new JSONString();
+                            parentTypeDef.setView(new ReadOnlyString());
+
+                            jsonSchema.setProperty("parentType", parentTypeDef);
 
                             wEF.getFields().stream()
                                     .filter(f -> f.getAnnotation().includeByDefault())
                                     .forEach(field -> {
                                         Type returnType = field.getPropertyDescriptor().getReadMethod().getGenericReturnType();
-                                        Type reified = TypeResolver.reify(returnType, c);
-                                        JSONSchema prop = javaToJSType(reified);
-                                        injectView(prop, field.getAnnotation().view());
-                                        injectErrords(prop, field.getErroreds());
-                                        injectVisible(prop, field.getField().getAnnotation(Visible.class));
-                                        jsonSchema.setProperty(field.getPropertyDescriptor().getName(), prop);
+                                        this.addSchemaProperty(jsonSchema, c, returnType,
+                                                field.getPropertyDescriptor().getName(),
+                                                field.getAnnotation().view(),
+                                                field.getErroreds(),
+                                                field.getField().getAnnotation(Visible.class));
                                     });
+
+                            for (Entry<Method, WegasExtraProperty> extraPropertyEntry : extraProperties.entrySet()) {
+                                Method method = extraPropertyEntry.getKey();
+                                WegasExtraProperty annotation = extraPropertyEntry.getValue();
+                                String name = annotation.name().length() > 0
+                                        ? annotation.name()
+                                        : getPropertyName(method);
+                                Type returnType = method.getGenericReturnType();
+
+                                this.addSchemaProperty(jsonSchema, c, returnType, name, annotation.view(), null, null);
+                            }
+
+                            // Override @class with one with default value
+                            jsonSchema.setProperty("@class", getJSONClassName(c));
 
                             List<JsonMergePatch> patches = new ArrayList<>();
                             Schemas schemas = c.getAnnotation(Schemas.class);
@@ -390,8 +520,19 @@ public class SchemaGenerator extends AbstractMojo {
         });
 
         if (!dryRun) {
-            writeTsInterfaces();
+            writeTsInterfacesToFile();
         }
+    }
+
+    private void addSchemaProperty(JSONObject jsonSchema,
+            Class<? extends Mergeable> c, Type returnType,
+            String name, View view, List<Errored> erroreds, Visible visible) {
+        Type reified = TypeResolver.reify(returnType, c);
+        JSONSchema prop = javaToJSType(reified);
+        injectView(prop, view);
+        injectErrords(prop, erroreds);
+        injectVisible(prop, visible);
+        jsonSchema.setProperty(name, prop);
     }
 
     /**
@@ -500,7 +641,7 @@ public class SchemaGenerator extends AbstractMojo {
             Object[] enums = t.getEnumConstants();
 
             for (int i = 0; i < enums.length; i++) {
-                theEnum += enums[i].toString();
+                theEnum += "'" + enums[i].toString() + "'";
                 if (i < enums.length - 1) {
                     theEnum += " | ";
                 }
@@ -510,7 +651,7 @@ public class SchemaGenerator extends AbstractMojo {
 
         if (type instanceof Class) {
             if (otherObjectsTypeD.containsKey(type)) {
-                return otherObjectsTypeD.get(type);
+                return ((Class) type).getSimpleName();
             } else if (new TypeToken<Mergeable>() {
             }.isSupertypeOf(type)) {
                 return getTsInterfaceName((Class<? extends Mergeable>) type);
@@ -525,12 +666,12 @@ public class SchemaGenerator extends AbstractMojo {
                     }
                     typeDef += "  " + f.getName() + ": "
                             + javaToTSType(propertyDescriptor.getReadMethod().getGenericReturnType())
-                            + "\n";
+                            + ";\n";
                 }
                 typeDef += "}\n";
                 otherObjectsTypeD.put(type, typeDef);
 
-                return typeDef;
+                return ((Class) type).getSimpleName();
             }
         }
         return "undef";
@@ -741,7 +882,7 @@ public class SchemaGenerator extends AbstractMojo {
     }
 
     public static final void main(String... args) throws MojoExecutionException {
-        SchemaGenerator wenerator = new SchemaGenerator(true, AbstractScope.class, AbstractAccount.class);
+        SchemaGenerator wenerator = new SchemaGenerator(true);
         wenerator.execute();
     }
 }

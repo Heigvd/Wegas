@@ -55,18 +55,11 @@ import org.slf4j.LoggerFactory;
  */
 @MappedSuperclass
 //@Cache(coordinationType = CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS)
-public abstract class AbstractEntity implements Serializable, Mergeable, WithPermission {
+public abstract class AbstractEntity implements Serializable, Mergeable, WithPermission, WithId {
 
     private static final long serialVersionUID = -2538440276749623728L;
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractEntity.class);
-
-    /**
-     * Get entity id
-     *
-     * @return entity id
-     */
-    abstract public Long getId();
 
     @WegasEntityProperty(initOnly = true)
     //@JsonView(Views.InternalI.class)

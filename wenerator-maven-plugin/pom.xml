@@ -27,7 +27,7 @@
         <maven.compiler.target>1.7</maven.compiler.target>
         <maven.version>3.3.9</maven.version>
         <jackson.scope>compile</jackson.scope>
-        <dryun.scope>provided</dryun.scope>
+        <dryrun.scope>provided</dryrun.scope>
     </properties>
 
     <dependencies>
@@ -61,19 +61,19 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
             <version>${maven.version}</version>
-            <scope>${dryun.scope}</scope>
+            <scope>${dryrun.scope}</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-core</artifactId>
             <version>${maven.version}</version>
-            <scope>${dryun.scope}</scope>
+            <scope>${dryrun.scope}</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-artifact</artifactId>
             <version>${maven.version}</version>
-            <scope>${dryun.scope}</scope>
+            <scope>${dryrun.scope}</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -85,7 +85,7 @@
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
             <version>3.6.0</version>
-            <scope>${dryun.scope}</scope>
+            <scope>${dryrun.scope}</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -172,13 +172,13 @@
         <profile>
             <id>dryrun</id>
             <properties>
-                <dryun.scope>compile</dryun.scope>
+                <dryrun.scope>compile</dryrun.scope>
             </properties>
         </profile>
         <profile>
             <id>default</id>
             <properties>
-                <dryun.scope>provided</dryun.scope>
+                <dryrun.scope>provided</dryrun.scope>
             </properties>
         </profile>
     </profiles>

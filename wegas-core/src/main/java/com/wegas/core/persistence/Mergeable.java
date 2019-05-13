@@ -13,10 +13,15 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.View;
 
 /**
  *
@@ -44,6 +49,7 @@ public interface Mergeable {
     }
 
     @JsonIgnore
+    @WegasExtraProperty(name = "@class", view = @View(value = Hidden.class, label = ""))
     default public String getJSONClassName() {
         return Mergeable.getJSONClassName(this.getClass());
     }
@@ -113,6 +119,7 @@ public interface Mergeable {
 
     @JsonView(Views.IndexI.class)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @WegasExtraProperty(view = @View(value = ReadOnlyString.class, label = ""), optional = true)
     default String getParentType() {
         AbstractEntity parent = this.getParentEntity();
         if (parent != null) {
@@ -123,6 +130,7 @@ public interface Mergeable {
 
     @JsonView(Views.IndexI.class)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @WegasExtraProperty(view = @View(value = ReadOnlyNumber.class, label = ""), optional = true)
     default Long getParentId() {
         AbstractEntity parent = this.getParentEntity();
         if (parent != null) {
