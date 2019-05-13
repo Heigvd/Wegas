@@ -3,7 +3,7 @@ import { ManagedMode } from '../API/rest';
 import * as ActionType from './actionTypes';
 import { PageIndex } from '../API/pages.api';
 import { Schema } from 'jsoninput';
-import { AvailableViews } from 'src/Editor/Components/FormView';
+import { AvailableViews } from '../Editor/Components/FormView';
 
 export { ActionType };
 function createAction<T extends string, P>(type: T, payload: P) {

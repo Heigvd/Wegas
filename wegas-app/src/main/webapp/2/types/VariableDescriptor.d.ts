@@ -6,7 +6,7 @@ interface IVariableDescriptor<T extends IVariableInstance = IVariableInstance>
   editorTag: string | null;
   defaultInstance: T;
   scopeType: 'TeamScope' | 'GameModelScope' | 'PlayerScope';
-  broadcastScope: | 'TeamScope' | 'GameScope' | 'PlayerScope';
+  broadcastScope: 'TeamScope' | 'GameScope' | 'PlayerScope';
   comments: string | null;
 }
 
@@ -73,7 +73,9 @@ interface IChoiceDescriptor extends IVariableDescriptor<IChoiceInstance> {
   results: IResult[];
   maxReplies: null | number;
 }
-interface ISingleResultChoiceDescriptor extends IChoiceDescriptor {
+interface ISingleResultChoiceDescriptor
+  extends Omit<IChoiceDescriptor, '@class'> {
+  '@class': 'SingleResultChoiceDescriptor';
   results: [IResult];
 }
 interface IFSMDescriptor extends IVariableDescriptor<IFSMInstance> {

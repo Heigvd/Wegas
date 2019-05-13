@@ -7,7 +7,7 @@ import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { entityIsPersisted } from '../entities';
 import { Reducer } from 'redux';
 import { Schema } from 'jsoninput';
-import { AvailableViews } from 'src/Editor/Components/FormView';
+import { AvailableViews } from '../../Editor/Components/FormView';
 
 type actionFn<T extends IWegasEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IWegasEntity> {

@@ -2,6 +2,7 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { Schema } from 'jsoninput';
 import { StateActions } from '../data/actions';
 import { AvailableViews } from './Components/FormView';
+import { formValidation } from './validation';
 
 export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 
@@ -41,7 +42,7 @@ export async function schemaUpdater(
     schema: Ext,
   ) => Schema | Promise<Schema>)[]
 ) {
-  let update = await updater.reduce(
+  const update = await updater.reduce(
     async (p, f) => f(await p),
     Promise.resolve({ ...schema }),
   );
@@ -73,6 +74,52 @@ export async function schemaUpdater(
   return update;
 }
 /**
+ * Download configuration schema
+ * @param file filename
+ */
+async function fetchConfig(
+  file: string,
+): Promise<{ schema: Schema; method: MethodConfig }> {
+  return import(
+    /* webpackChunkName: "Config-[request]", webpackPrefetch: true */
+    '../../../generated-schema/' + file
+  );
+}
+type formValidationSchema = Parameters<typeof formValidation>[0];
+/**
+ * Transform schema's visible field from (server side generated) validation Schema into function
+ * @param schema
+ */
+function updateVisibility(schema: Schema.BASE) {
+  const { visible, ...restSchema } = schema as Merge<
+    Schema.BASE,
+    { visible?: formValidationSchema }
+  >;
+  if (visible == null) {
+    return restSchema;
+  }
+  return { ...restSchema, visible: formValidation(visible) };
+}
+function updatedErrored(
+  schema: Merge<
+    Schema.BASE,
+    { erroreds?: { condition: formValidationSchema; message: string }[] }
+  >,
+): Schema.BASE {
+  const { erroreds, ...restSchema } = schema;
+  if (schema.errored != null || erroreds == null) {
+    return restSchema;
+  }
+  const errorFn = (...args: Parameters<ReturnType<typeof formValidation>>) =>
+    erroreds
+      .map(({ condition, message }) =>
+        formValidation(condition)(...args) ? message : '',
+      )
+      .filter(v => v)
+      .join(', ');
+  return { ...restSchema, errored: errorFn };
+}
+/**
  * Inject relative schema into a given schema (wref)
  * @param schema schema to update
  */
@@ -88,19 +135,12 @@ async function injectRef(
   }
   return restSchema;
 }
-async function fetchConfig(
-  file: string,
-): Promise<{ schema: Schema; method: MethodConfig }> {
-  return import(
-    /* webpackChunkName: "Config-[request]", webpackPrefetch: true */
-    '../../../generated-schema/' + file
-  );
-}
+
 export default async function getEditionConfig<T extends IWegasEntity>(
   entity: T,
 ): Promise<Schema> {
   return fetchConfig(entity['@class'] + '.json').then(res =>
-    schemaUpdater(res.schema, injectRef),
+    schemaUpdater(res.schema, injectRef, updateVisibility, updatedErrored),
   );
 }
 
