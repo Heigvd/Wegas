@@ -27,6 +27,7 @@ module.exports = {
     'react-hooks/exhaustive-deps': 'warn',
     'no-console': 'warn',
     'no-var': 'error',
+    'prefer-const': 'error',
     'linebreak-style': ['error', 'unix'],
     'react/no-unescaped-entities': 'off',
     'react/prop-types': 'off',
