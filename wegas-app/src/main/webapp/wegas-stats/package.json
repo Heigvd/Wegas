@@ -9,7 +9,7 @@
     "author": "",
     "license": "MIT",
     "dependencies": {
-        "@babel/polyfill": "^7.2.5",
+        "@babel/polyfill": "^7.4.4",
         "chartist": "^0.11.0",
         "prop-types": "^15.7.2",
         "react": "^16.8.3",
@@ -24,11 +24,11 @@
         "updeep": "^1.0.0"
     },
     "devDependencies": {
-        "@babel/core": "^7.3.4",
-        "@babel/preset-env": "^7.3.4",
+        "@babel/core": "^7.4.4",
+        "@babel/preset-env": "^7.4.4",
         "@babel/preset-react": "^7.0.0",
         "babel-eslint": "^8.2.2",
-        "babel-loader": "^8.0.5",
+        "babel-loader": "^8.0.6",
         "babel-preset-react": "^6.24.1",
         "css-loader": "^2.1.0",
         "eslint": "^4.19.1",

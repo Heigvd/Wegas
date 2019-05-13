@@ -45,10 +45,10 @@
     }
   },
   "dependencies": {
-    "@babel/generator": "^7.3.4",
-    "@babel/parser": "^7.3.4",
-    "@babel/traverse": "^7.3.4",
-    "@babel/types": "^7.3.4",
+    "@babel/generator": "^7.4.4",
+    "@babel/parser": "^7.4.4",
+    "@babel/traverse": "^7.4.4",
+    "@babel/types": "^7.4.4",
     "@fortawesome/fontawesome-svg-core": "^1.2.8",
     "@fortawesome/free-solid-svg-icons": "^5.5.0",
     "@fortawesome/react-fontawesome": "0.1.4",
