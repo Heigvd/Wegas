@@ -39,7 +39,6 @@ const dropHorizontalZone = css({
 });
 
 const dropLeftZone = css({
-  // backgroundColor: 'green',
   position: 'absolute',
   width: '20%',
   height: '60%',
@@ -48,7 +47,6 @@ const dropLeftZone = css({
 });
 
 const dropRightZone = css({
-  // backgroundColor: 'red',
   position: 'absolute',
   width: '20%',
   height: '60%',
@@ -57,7 +55,6 @@ const dropRightZone = css({
 });
 
 const dropTopZone = css({
-  // backgroundColor: 'blue',
   position: 'absolute',
   width: '60%',
   height: '20%',
@@ -66,7 +63,6 @@ const dropTopZone = css({
 });
 
 const dropBottomZone = css({
-  // backgroundColor: 'yellow',
   position: 'absolute',
   width: '60%',
   height: '20%',
@@ -169,7 +165,7 @@ export function DnDTabLayout(props: React.PropsWithChildren<TabLayoutProps>) {
                 <div className={flex}>
                   <span className={grow}> {t.name}</span>
                   <IconButton
-                    icon="trash"
+                    icon="times"
                     tooltip="Remove tab"
                     onClick={() => props.onDeleteTab(t.id)}
                   />
@@ -248,12 +244,10 @@ export function DnDTabLayout(props: React.PropsWithChildren<TabLayoutProps>) {
 const tabStyle = css(primaryLight, {
   display: 'inline-block',
   cursor: 'pointer',
-
   margin: '0 0.2em',
   borderStyle: 'solid',
   borderWidth: '1px 1px 0 1px',
   padding: '5px',
-  // '&:hover': primary,
 });
 const activeTabStyle = css(tabStyle, primaryDark);
 
@@ -266,7 +260,7 @@ interface TabProps {
 }
 
 function Tab(props: TabProps) {
-  const [_collectedProps, drag] = dnd.useDrag({
+  const [, drag] = dnd.useDrag({
     item: { id: props.id, type: accept },
     canDrag: props.onDrag !== undefined,
     begin: () => props.onDrag && props.onDrag(true, String(props.id)),

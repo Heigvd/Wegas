@@ -25,10 +25,6 @@ const flex = css({
   flex: '1 1 auto',
 });
 
-const splitterStyle = {
-  width: '5px',
-};
-
 export interface LinearLayoutComponent {
   name: string;
   component: JSX.Element;
@@ -267,7 +263,7 @@ const createLayout = (
   children: string[] = [],
   vertical: boolean = false,
 ) => {
-  let newLayouts = layouts;
+  const newLayouts = layouts;
   newLayouts.lastKey = incrementNumericKey(newLayouts.lastKey);
   const newLayoutKey = newLayouts.lastKey;
   newLayouts.layoutMap[newLayoutKey] = {
@@ -304,6 +300,8 @@ interface Map<T> {
   [id: string]: T;
 }
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// @ts-ignore may be usefull later (if we don't want to use ommit anymore)
 function deleteMapElement<T>(map: Map<T>, key: string) {
   const newMap: Map<T> = {};
   for (const mapKey in map) {
@@ -313,6 +311,7 @@ function deleteMapElement<T>(map: Map<T>, key: string) {
   }
   return newMap;
 }
+/* eslint-enable */
 
 const incrementNumericKey = (key: string) => {
   const numericKey = Number(key);
@@ -323,6 +322,9 @@ const incrementNumericKey = (key: string) => {
   }
 };
 
+/* eslint-disable @typescript-eslint/no-unused-vars*/
+/* eslint-disable no-console */
+// @ts-ignore
 const logLayouts = (layouts: LayoutMap) => {
   console.log(
     'layouts',
@@ -340,6 +342,7 @@ const logLayouts = (layouts: LayoutMap) => {
     ]),
   );
 };
+/* eslint-enable */
 
 const setLayout = (layouts: ManagedLayoutMap, action: TabLayoutsAction) =>
   u(layouts, (layouts: ManagedLayoutMap) => {
@@ -509,7 +512,7 @@ function MainLinearLayout(props: LinearLayoutProps) {
         }
       }
       case 'ReflexLayoutNode': {
-        let rendered: JSX.Element[] = [];
+        const rendered: JSX.Element[] = [];
         for (let i = 0; i < currentLayout.children.length; i += 1) {
           rendered.push(
             <ReflexElement key={currentLayout.children[i]}>
