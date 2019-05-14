@@ -1,11 +1,5 @@
 import * as React from 'react';
-import HTML5Backend from 'react-dnd-html5-backend';
-import {
-  DragSource,
-  DragDropContext,
-  DragElementWrapper,
-  DragSourceOptions,
-} from 'react-dnd';
+import { DragSource, DragElementWrapper, DragSourceOptions } from 'react-dnd';
 import { css, cx } from 'emotion';
 import {
   DropZone,
@@ -14,6 +8,7 @@ import {
   Outcome,
 } from './DropZone';
 import { FontAwesome } from '../FontAwesome';
+import { defaultContextManager } from '../../../../Components/DragAndDrop';
 
 function noop() {}
 
@@ -90,7 +85,7 @@ function DropPreview({
     />
   );
 }
-export const Container = DragDropContext(HTML5Backend)<
+export const Container = defaultContextManager<
   React.ComponentType<ContainerProps>
 >(ContextContainer);
 
