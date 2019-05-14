@@ -1,6 +1,9 @@
 const path = require('path');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
+
+const smp = new SpeedMeasurePlugin();
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
 //   .BundleAnalyzerPlugin;
 
@@ -23,7 +26,8 @@ if (!isCI) {
   );
   // plugins.push(new BundleAnalyzerPlugin());
 }
-module.exports = {
+module.exports = smp.wrap({
+  // stats: 'verbose',
   devtool: PROD ? 'source-map' : 'inline-source-map',
   entry: {
     editor: ['./src/Editor/index.tsx'],
@@ -100,4 +104,4 @@ module.exports = {
       },
     },
   },
-};
+});

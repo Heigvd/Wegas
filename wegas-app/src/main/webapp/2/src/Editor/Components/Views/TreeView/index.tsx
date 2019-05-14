@@ -1,5 +1,11 @@
 import * as React from 'react';
-import { DragSource, DragElementWrapper, DragSourceOptions } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+import {
+  DragSource,
+  DragDropContext,
+  DragElementWrapper,
+  DragSourceOptions,
+} from 'react-dnd';
 import { css, cx } from 'emotion';
 import {
   DropZone,
@@ -8,7 +14,6 @@ import {
   Outcome,
 } from './DropZone';
 import { FontAwesome } from '../FontAwesome';
-import { defaultContextManager } from '../../../../Components/DragAndDrop';
 
 function noop() {}
 
@@ -85,8 +90,7 @@ function DropPreview({
     />
   );
 }
-
-export const Container = defaultContextManager<
+export const Container = DragDropContext(HTML5Backend)<
   React.ComponentType<ContainerProps>
 >(ContextContainer);
 
@@ -140,7 +144,7 @@ class TreeNode extends React.Component<
       expanded: !this.state.expanded,
     });
   }
-  render(): JSX.Element {
+  render(): JSX.Element | null {
     const {
       connectDragSource,
       isDragging,
@@ -160,6 +164,7 @@ class TreeNode extends React.Component<
     });
     const isNode = Array.isArray(children);
     const cont = isNode && expanded && (
+      // @ts-ignore (ignore dummy props missing)
       <DropZone id={id} where="INSIDE" index={0}>
         {({ isOver, boundingRect }) => (
           <div className={childrenContainer}>
@@ -176,31 +181,34 @@ class TreeNode extends React.Component<
           [isDraggingStyle]: isDragging,
         })}
       >
-        <DropZone id={parent} index={index!} where={'AUTO'}>
-          {({ isOver, boundingRect, where, separator }) => (
-            <div>
-              {isOver && where === 'BEFORE' && (
-                <DropPreview boundingRect={boundingRect} />
-              )}
-              {separator(
-                <div>
-                  <span className={toggle} onClick={this.toggleExpand}>
-                    {isNode && (
-                      <FontAwesome
-                        icon={expanded ? 'caret-down' : 'caret-right'}
-                      />
-                    )}
-                  </span>
-                  {header}
-                </div>,
-              )}
-              {cont}
-              {isOver && where === 'AFTER' && (
-                <DropPreview boundingRect={boundingRect} />
-              )}
-            </div>
-          )}
-        </DropZone>
+        {
+          // @ts-ignore (ignore dummy props missing)
+          <DropZone id={parent} index={index!} where={'AUTO'}>
+            {({ isOver, boundingRect, where, separator }) => (
+              <div>
+                {isOver && where === 'BEFORE' && (
+                  <DropPreview boundingRect={boundingRect} />
+                )}
+                {separator(
+                  <div>
+                    <span className={toggle} onClick={this.toggleExpand}>
+                      {isNode && (
+                        <FontAwesome
+                          icon={expanded ? 'caret-down' : 'caret-right'}
+                        />
+                      )}
+                    </span>
+                    {header}
+                  </div>,
+                )}
+                {cont}
+                {isOver && where === 'AFTER' && (
+                  <DropPreview boundingRect={boundingRect} />
+                )}
+              </div>
+            )}
+          </DropZone>
+        }
       </div>,
     );
   }
@@ -246,6 +254,7 @@ export function Node(props: NodeProps) {
   return (
     <DropContext.Consumer>
       {({ onDropResult }) => {
+        // @ts-ignore (ignore dummy props missing)
         return <DSNode {...props} onDropResult={onDropResult} />;
       }}
     </DropContext.Consumer>

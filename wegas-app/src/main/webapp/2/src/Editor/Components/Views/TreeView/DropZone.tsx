@@ -64,7 +64,9 @@ function outcome(
           ...props,
           where: pos(
             monitor!.getClientOffset()!,
+            /* eslint-disable react/no-find-dom-node */
             component.separator || (findDOMNode(component) as Element),
+            /* eslint-enable */
           ),
         },
         item,
