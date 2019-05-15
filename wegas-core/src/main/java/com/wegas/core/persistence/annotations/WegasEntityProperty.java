@@ -64,6 +64,20 @@ public @interface WegasEntityProperty {
     public boolean initOnly() default false;
 
     /**
+     * Is the property optional ?
+     *
+     * @return true if the property can be omitted
+     */
+    public boolean optional() default false;
+
+    /**
+     * Can the property be null ?
+     *
+     * @return true if the property can be set to null
+     */
+    public boolean nullable() default false;
+
+    /**
      * postUpdate, preDestroy, postPersist callback
      *
      * @return callbacks to apply when updating the field

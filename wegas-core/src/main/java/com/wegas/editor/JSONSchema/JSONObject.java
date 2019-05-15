@@ -4,8 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class JSONObject extends JSONType {
+
     private Map<String, JSONSchema> properties;
     private JSONSchema additionalProperties;
+
+    public JSONObject(boolean nullable) {
+        super(nullable);
+    }
 
     /**
      * @return the additionalProperties

@@ -5,6 +5,9 @@ public class JSONArray extends JSONType {
     private Integer minItems;
     private Integer maxItems;
 
+    public JSONArray() {
+        super(false);
+    }
     /**
      * @return the items
      */

@@ -1,15 +1,34 @@
 package com.wegas.editor.JSONSchema;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.ArrayList;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class JSONType extends JSONExtendedSchema {
+
+    private final boolean nullable;
+
+    @JsonIgnore
     abstract String getType();
+
+    @JsonProperty("type")
+    public Object getEffectiveTypes() {
+
+        if (this.nullable) {
+            List<String> types = new ArrayList<>();
+            types.add(this.getType());
+            types.add("null");
+            return types;
+        }
+
+        return this.getType();
+    }
 
     private JsonNode value;
 
@@ -20,6 +39,10 @@ public abstract class JSONType extends JSONExtendedSchema {
     private JsonNode constant;
 
     private String description;
+
+    protected JSONType(boolean nullable) {
+        this.nullable = nullable;
+    }
 
     /**
      * @return the description

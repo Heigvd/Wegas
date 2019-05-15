@@ -40,13 +40,13 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
     /**
      *
      */
-    @WegasEntityProperty(order = -1) // update bound before the default instance
+    @WegasEntityProperty(order = -1, nullable = true) // update bound before the default instance
     @Errored(NumberDescBoundsConstraint.class)
     private Double minValue;
     /**
      *
      */
-    @WegasEntityProperty(order = -1) // update bound before the default instance
+    @WegasEntityProperty(order = -1, nullable = true) // update bound before the default instance
     @Errored(NumberDescBoundsConstraint.class)
     private Double maxValue;
 

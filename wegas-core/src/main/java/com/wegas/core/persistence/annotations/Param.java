@@ -24,4 +24,6 @@ public @interface Param {
 
     // #TODO defaultValue
     View view();
+
+    boolean nullable() default false;
 }

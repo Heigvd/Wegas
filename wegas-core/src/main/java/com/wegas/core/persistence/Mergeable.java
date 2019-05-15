@@ -119,7 +119,7 @@ public interface Mergeable {
 
     @JsonView(Views.IndexI.class)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @WegasExtraProperty(view = @View(value = ReadOnlyString.class, label = ""), optional = true)
+    @WegasExtraProperty(view = @View(value = ReadOnlyString.class, label = ""), optional = true, nullable = true)
     default String getParentType() {
         AbstractEntity parent = this.getParentEntity();
         if (parent != null) {
@@ -130,7 +130,7 @@ public interface Mergeable {
 
     @JsonView(Views.IndexI.class)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @WegasExtraProperty(view = @View(value = ReadOnlyNumber.class, label = ""), optional = true)
+    @WegasExtraProperty(view = @View(value = ReadOnlyNumber.class, label = ""), optional = true, nullable = true)
     default Long getParentId() {
         AbstractEntity parent = this.getParentEntity();
         if (parent != null) {

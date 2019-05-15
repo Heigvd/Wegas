@@ -416,7 +416,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>gulp</id>
+                        <id>yarn run build</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>exec</goal>

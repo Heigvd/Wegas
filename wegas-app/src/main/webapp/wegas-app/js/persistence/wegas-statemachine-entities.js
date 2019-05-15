@@ -363,7 +363,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         }
     });
     /*
-     * TransitionDescriptor Entity
+     * Transition Entity
      */
     persistence.Transition = Y.Base.create("Transition", persistence.Entity, [], {}, {
         ATTRS: {

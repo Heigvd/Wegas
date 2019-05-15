@@ -25,6 +25,7 @@ public @interface WegasExtraProperty {
 
     /**
      * Property name. If empty, effective name should be extracted from method name
+     *
      * @return
      */
     String name() default "";
@@ -40,4 +41,11 @@ public @interface WegasExtraProperty {
      * @return
      */
     boolean optional() default false;
+
+    /**
+     * Can be null ?
+     *
+     * @return true is null is a valid value
+     */
+    boolean nullable() default false;
 }

@@ -14,6 +14,10 @@ package com.wegas.editor.JSONSchema;
  */
 public class JSONIdentifier extends JSONType {
 
+    public JSONIdentifier() {
+        super(false);
+    }
+
     @Override
     final public String getType() {
         return "identifier";
