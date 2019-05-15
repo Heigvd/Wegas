@@ -74,14 +74,24 @@ interface LayoutNode {
   children: string[];
 }
 
+interface ReflexLayoutNode extends LayoutNode {
+  type: 'ReflexLayoutNode';
+}
+
+interface TabLayoutNode extends LayoutNode {
+  type: 'TabLayoutNode';
+  activeKey?: string;
+}
+
 interface LayoutMap {
-  [id: string]: LayoutNode | LayoutNode;
+  [id: string]: ReflexLayoutNode | TabLayoutNode;
 }
 
 interface ManagedLayoutMap {
   rootKey: string;
   lastKey: string;
   draggedKey: string;
+  isDragging: boolean;
   layoutMap: LayoutMap;
 }
 
@@ -109,6 +119,7 @@ const defaultLayoutMap: ManagedLayoutMap = {
   rootKey: '0',
   lastKey: '5',
   draggedKey: '-1',
+  isDragging: false,
   layoutMap: {
     '0': {
       type: 'ReflexLayoutNode',
@@ -149,7 +160,10 @@ const findTabLayoutKeyByTabKey = (layouts: LayoutMap, tabKey: string) => {
     if (layout.type === 'TabLayoutNode') {
       for (const tabIndex in layout.children) {
         if (layout.children[tabIndex] === tabKey) {
-          return layoutKey;
+          return {
+            parentKey: layoutKey,
+            childIndex: Number(tabIndex),
+          };
         }
       }
     }
@@ -262,39 +276,66 @@ const createLayout = (
   type: LayoutType,
   children: string[] = [],
   vertical: boolean = false,
+  active?: string,
 ) => {
   const newLayouts = layouts;
   newLayouts.lastKey = incrementNumericKey(newLayouts.lastKey);
   const newLayoutKey = newLayouts.lastKey;
-  newLayouts.layoutMap[newLayoutKey] = {
-    type: type,
-    vertical: vertical,
-    children: children,
-  };
+  newLayouts.layoutMap[newLayoutKey] =
+    type === 'ReflexLayoutNode'
+      ? {
+          type: type,
+          vertical: vertical,
+          children: children,
+        }
+      : {
+          type: type,
+          vertical: vertical,
+          children: children,
+          activeKey: active,
+        };
+  return newLayouts;
+};
+
+const insertTab = (
+  layouts: LayoutMap,
+  destLayoutKey: string,
+  tabKey: string,
+) => {
+  const newLayouts = layouts;
+  newLayouts[destLayoutKey].children.push(tabKey);
+  (newLayouts[destLayoutKey] as TabLayoutNode).activeKey = tabKey;
   return newLayouts;
 };
 
 interface Action {
   type: string;
+}
+
+interface TabAction extends Action {
   tabKey: string;
 }
 
 export type DropType = 'TAB' | 'LEFT' | 'RIGHT' | 'TOP' | 'BOTTOM' | 'NEW';
 
-interface ActionDrop extends Action {
+interface ActionDrop extends TabAction {
   type: DropType;
   destTabLayoutKey: string;
 }
 
-interface ActionDelete extends Action {
+interface ActionDelete extends TabAction {
   type: 'DELETE';
 }
 
-interface ActionDrag extends Action {
+interface ActionDrag extends TabAction {
   type: 'DRAG';
 }
 
-type TabLayoutsAction = ActionDrop | ActionDelete | ActionDrag;
+interface ActionConsume extends Action {
+  type: 'CONSUME';
+}
+
+type TabLayoutsAction = ActionDrop | ActionDelete | ActionDrag | ActionConsume;
 
 interface Map<T> {
   [id: string]: T;
@@ -328,47 +369,74 @@ const incrementNumericKey = (key: string) => {
 const logLayouts = (layouts: LayoutMap) => {
   console.log(
     'layouts',
-    Object.keys(layouts).map(key => [
-      key,
-      layouts[key].type,
-      String(
-        layouts[key].children.map(childKey =>
-          layouts[key].type === 'TabLayoutNode' &&
-          defaultTabsMap[childKey] !== undefined
-            ? defaultTabsMap[childKey].name
-            : childKey,
+    Object.keys(layouts).map(key => {
+      const layout = layouts[key];
+      return [
+        key,
+        layout.type,
+        String(
+          layout.children.map(childKey =>
+            layout.type === 'TabLayoutNode' &&
+            defaultTabsMap[childKey] !== undefined
+              ? defaultTabsMap[childKey].name
+              : childKey,
+          ),
         ),
-      ),
-    ]),
+        layout.type === 'TabLayoutNode'
+          ? layout.activeKey !== undefined
+            ? layout.activeKey
+            : 'undefined key'
+          : 'no key',
+      ];
+    }),
   );
 };
 /* eslint-enable */
 
 const setLayout = (layouts: ManagedLayoutMap, action: TabLayoutsAction) =>
   u(layouts, (layouts: ManagedLayoutMap) => {
+    if (action.type === 'CONSUME') {
+      layouts.draggedKey = '-1';
+      return layouts;
+    }
+
     const srcTabLayoutKey = findTabLayoutKeyByTabKey(
       layouts.layoutMap,
       action.tabKey,
     );
 
     // reset dragged key
-    layouts.draggedKey = '-1';
+    layouts.isDragging = false;
 
     if (action.type === 'NEW') {
-      layouts.layoutMap[action.destTabLayoutKey].children.push(action.tabKey);
+      layouts.layoutMap = insertTab(
+        layouts.layoutMap,
+        action.destTabLayoutKey,
+        action.tabKey,
+      );
+      logLayouts(layouts.layoutMap);
     } else if (srcTabLayoutKey) {
       if (action.type === 'DRAG') {
-        layouts.draggedKey = srcTabLayoutKey;
+        layouts.draggedKey = action.tabKey;
+        layouts.isDragging = true;
       } else {
         // Always remove tab from source TabLayout when dropping
-        layouts.layoutMap[srcTabLayoutKey].children = layouts.layoutMap[
-          srcTabLayoutKey
-        ].children.filter(el => el !== action.tabKey);
+        const oldTabLayout = layouts.layoutMap[
+          srcTabLayoutKey.parentKey
+        ] as TabLayoutNode;
+        oldTabLayout.children = oldTabLayout.children.filter(
+          el => el !== action.tabKey,
+        );
+        oldTabLayout.activeKey = undefined;
+        layouts.layoutMap[srcTabLayoutKey.parentKey] = oldTabLayout;
 
         if (action.type === 'TAB') {
-          layouts.layoutMap[action.destTabLayoutKey].children.push(
+          layouts.layoutMap = insertTab(
+            layouts.layoutMap,
+            action.destTabLayoutKey,
             action.tabKey,
           );
+          logLayouts(layouts.layoutMap);
         } else if (action.type !== 'DELETE') {
           const destParentKeyAndIndex = findParentLayoutKeyAndLayoutIndex(
             layouts.layoutMap,
@@ -385,7 +453,13 @@ const setLayout = (layouts: ManagedLayoutMap, action: TabLayoutsAction) =>
               (!dstParentLayout.vertical &&
                 (action.type === 'TOP' || action.type === 'BOTTOM'));
 
-            layouts = createLayout(layouts, 'TabLayoutNode', [action.tabKey]);
+            layouts = createLayout(
+              layouts,
+              'TabLayoutNode',
+              [action.tabKey],
+              false,
+              action.tabKey,
+            );
             const newTabLayoutKey = layouts.lastKey;
 
             if (isNewLayoutInside) {
@@ -425,10 +499,12 @@ const setLayout = (layouts: ManagedLayoutMap, action: TabLayoutsAction) =>
           }
         }
 
-        if (layouts.layoutMap[srcTabLayoutKey].children.length === 0) {
+        if (
+          layouts.layoutMap[srcTabLayoutKey.parentKey].children.length === 0
+        ) {
           layouts.layoutMap = removeLayoutFromLayouts(
             layouts.layoutMap,
-            srcTabLayoutKey,
+            srcTabLayoutKey.parentKey,
           );
         }
 
@@ -484,39 +560,51 @@ function MainLinearLayout(props: LinearLayoutProps) {
     });
   };
 
-  const renderLayouts = (layoutKey?: string, parentKey?: string) => {
+  const onActiveConsume = () => {
+    dispatchLayout({ type: 'CONSUME' });
+  };
+
+  const renderLayouts = (layoutKey?: string) => {
     const currentLayoutKey = layoutKey ? layoutKey : layout.rootKey;
     const currentLayout = layout.layoutMap[currentLayoutKey];
     switch (currentLayout.type) {
       case 'TabLayoutNode': {
-        if (parentKey) {
-          return (
-            <DnDTabLayout
-              tabs={currentLayout.children.map(key => {
-                return {
-                  id: Number(key),
-                  ...tabs[key],
-                };
-              })}
-              unusedTabs={getUnusedTabs(layout.layoutMap, tabs)}
-              allowDrop={layout.draggedKey !== '-1'}
-              vertical={currentLayout.vertical}
-              onDrop={onDrop(currentLayoutKey)}
-              onDeleteTab={onDeleteTab}
-              onDrag={onDrag}
-              onNewTab={onNewTab(currentLayoutKey)}
-            />
+        let active: number | undefined = undefined;
+        if (!layout.isDragging) {
+          const activeInfo = findTabLayoutKeyByTabKey(
+            layout.layoutMap,
+            layout.draggedKey,
           );
-        } else {
-          return null;
+          if (activeInfo && activeInfo.parentKey === layoutKey) {
+            active = activeInfo.childIndex;
+          }
         }
+        return (
+          <DnDTabLayout
+            tabs={currentLayout.children.map(key => {
+              return {
+                id: Number(key),
+                ...tabs[key],
+              };
+            })}
+            unusedTabs={getUnusedTabs(layout.layoutMap, tabs)}
+            allowDrop={layout.isDragging}
+            vertical={currentLayout.vertical}
+            active={active}
+            onDrop={onDrop(currentLayoutKey)}
+            onDeleteTab={onDeleteTab}
+            onDrag={onDrag}
+            onNewTab={onNewTab(currentLayoutKey)}
+            onActiveConsume={onActiveConsume}
+          />
+        );
       }
       case 'ReflexLayoutNode': {
         const rendered: JSX.Element[] = [];
         for (let i = 0; i < currentLayout.children.length; i += 1) {
           rendered.push(
             <ReflexElement key={currentLayout.children[i]}>
-              {renderLayouts(currentLayout.children[i], currentLayoutKey)}
+              {renderLayouts(currentLayout.children[i])}
             </ReflexElement>,
           );
           if (i < currentLayout.children.length - 1) {

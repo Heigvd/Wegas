@@ -5,10 +5,19 @@ import {
   DropTargetMonitor,
 } from 'react-dnd';
 import { Toolbar } from '../../../Components/Toolbar';
-import { primaryLight, primaryDark } from '../../../Components/Theme';
+import { primaryLight, primaryDark, themeVar } from '../../../Components/Theme';
 import { IconButton } from '../../../Components/Button/IconButton';
 import { Menu } from '../../../Components/Menu';
 import { DropType } from './LinearLayout';
+
+const buttonStyle = css({
+  color: themeVar.primaryDarkerTextColor,
+});
+
+const listStyle = css({
+  color: themeVar.primaryDarkerTextColor,
+  backgroundColor: themeVar.primaryDarkerColor,
+});
 
 const compoContent = css({
   position: 'relative',
@@ -96,6 +105,7 @@ interface TabLayoutProps {
   onDeleteTab: (tabKey: number) => void;
   onDrag: (isDragging: boolean, tabKey: string) => void;
   onNewTab: (tabKey: number) => void;
+  onActiveConsume?: () => void;
 }
 
 const accept = 'DnDTab';
@@ -112,11 +122,14 @@ const dropSpecs = (action: DropAction) => {
   };
 };
 
-export function DnDTabLayout(props: React.PropsWithChildren<TabLayoutProps>) {
-  const [active, setActive] = React.useState(
-    props.active ? props.active % props.tabs.length : 0,
-  );
-  const [currentTabs, setCurrentTabs] = React.useState(props.tabs);
+export function DnDTabLayout(props: TabLayoutProps) {
+  const [active, setActive] = React.useState<number>(0);
+  React.useEffect(() => {
+    if (props.active !== undefined && props.onActiveConsume) {
+      setActive(props.active % props.tabs.length);
+      props.onActiveConsume();
+    }
+  }, [props]);
 
   const [dropTabProps, dropTab] = dnd.useDrop(dropSpecs(props.onDrop('TAB')));
   const [dropLeftProps, dropLeft] = dnd.useDrop(
@@ -130,17 +143,6 @@ export function DnDTabLayout(props: React.PropsWithChildren<TabLayoutProps>) {
     dropSpecs(props.onDrop('BOTTOM')),
   );
 
-  React.useEffect(() => {
-    setCurrentTabs(oldTabs => {
-      const newTabs = props.tabs.filter(el => oldTabs.indexOf(el) < 0);
-      if (newTabs.length > 0) {
-        setActive(props.tabs.indexOf(newTabs[0]));
-        return props.tabs;
-      }
-      return oldTabs;
-    });
-  }, [props.tabs]);
-
   return (
     <Toolbar vertical={props.vertical}>
       <div
@@ -153,13 +155,13 @@ export function DnDTabLayout(props: React.PropsWithChildren<TabLayoutProps>) {
         )}
       >
         <Toolbar.Header>
-          {currentTabs.map((t, i) => {
+          {props.tabs.map((t, i) => {
             return (
               <Tab
                 key={t.id}
                 id={t.id}
                 active={i === active}
-                onClick={() => setActive(i)}
+                onClick={() => setActive(i % props.tabs.length)}
                 onDrag={props.onDrag}
               >
                 <div className={flex}>
@@ -168,6 +170,7 @@ export function DnDTabLayout(props: React.PropsWithChildren<TabLayoutProps>) {
                     icon="times"
                     tooltip="Remove tab"
                     onClick={() => props.onDeleteTab(t.id)}
+                    className={buttonStyle}
                   />
                 </div>
               </Tab>
@@ -179,13 +182,15 @@ export function DnDTabLayout(props: React.PropsWithChildren<TabLayoutProps>) {
                 items={props.unusedTabs}
                 icon="plus"
                 onSelect={i => props.onNewTab(i.value)}
+                buttonClassName={buttonStyle}
+                listClassName={listStyle}
               />
             </Tab>
           )}
         </Toolbar.Header>
       </div>
       <Toolbar.Content className={compoContent}>
-        {currentTabs.map((t, i) => {
+        {props.tabs.map((t, i) => {
           return (
             <div
               key={t.id}
