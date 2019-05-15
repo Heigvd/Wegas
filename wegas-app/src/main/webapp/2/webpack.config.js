@@ -8,6 +8,7 @@ const smp = new SpeedMeasurePlugin();
 //   .BundleAnalyzerPlugin;
 
 const PROD = process.env.NODE_ENV === 'production';
+const STATS = process.env.NODE_ENV === 'stats';
 const isCI =
   typeof process.env.CI === 'string'
     ? process.env.CI.toLowerCase() === 'true'
@@ -26,7 +27,8 @@ if (!isCI) {
   );
   // plugins.push(new BundleAnalyzerPlugin());
 }
-module.exports = smp.wrap({
+
+const modules = {
   // stats: 'verbose',
   devtool: PROD ? 'source-map' : 'inline-source-map',
   entry: {
@@ -104,4 +106,6 @@ module.exports = smp.wrap({
       },
     },
   },
-});
+};
+
+module.exports = STATS ? smp.wrap(modules) : modules;
