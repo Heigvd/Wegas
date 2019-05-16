@@ -169,10 +169,7 @@ export async function getEntityActions<T extends IWegasEntity>(
 export async function getMethodConfig<T extends IWegasEntity>(
   entity: T,
 ): Promise<MethodConfig> {
-  return import(
-    /* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
-      entity['@class']
-  ).then(res => ({ ...res.methods }));
+  return fetchConfig(entity['@class'] + '.json').then(res => res.method);
 }
 
 export async function getIcon<T extends IWegasEntity>(
