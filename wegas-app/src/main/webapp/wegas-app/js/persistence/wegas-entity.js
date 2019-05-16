@@ -339,7 +339,7 @@ YUI.add('wegas-entity', function(Y) {
             },
             parentId: {
                 type: NUMBER,
-                "transient": true,
+                /*"transient": true,*/
                 view: {
                     type: HIDDEN
                 }
@@ -347,7 +347,7 @@ YUI.add('wegas-entity', function(Y) {
             parentType: {
                 type: STRING,
                 optional: true,
-                "transient": true,
+                /*"transient": true,*/
                 view: {
                     type: HIDDEN
                 }
