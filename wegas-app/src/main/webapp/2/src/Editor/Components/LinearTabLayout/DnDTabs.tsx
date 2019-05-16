@@ -9,6 +9,9 @@ import { primaryLight, primaryDark, themeVar } from '../../../Components/Theme';
 import { IconButton } from '../../../Components/Button/IconButton';
 import { Menu } from '../../../Components/Menu';
 import { DropType } from './LinearLayout';
+import u from 'immer';
+import { type } from 'os';
+import { number } from 'prop-types';
 
 const buttonStyle = css({
   color: themeVar.primaryDarkerTextColor,
@@ -96,16 +99,14 @@ export interface TabComponent {
 type DropAction = (item: { id: number; type: string }) => void;
 
 interface TabLayoutProps {
-  active?: number;
   vertical?: boolean;
-  tabs: TabComponent[];
-  unusedTabs?: { label: string; value: number }[];
+  components: TabComponent[];
+  selectItems?: { label: string; value: number }[];
   allowDrop: boolean;
   onDrop: (type: DropType) => DropAction;
-  onDeleteTab: (tabKey: number) => void;
+  onDeleteTab: (tabKey: string) => void;
   onDrag: (isDragging: boolean, tabKey: string) => void;
-  onNewTab: (tabKey: number) => void;
-  onActiveConsume?: () => void;
+  onNewTab: (tabKey: string) => void;
 }
 
 const accept = 'DnDTab';
@@ -122,66 +123,164 @@ const dropSpecs = (action: DropAction) => {
   };
 };
 
-export function DnDTabLayout(props: TabLayoutProps) {
-  const [active, setActive] = React.useState<number>(0);
-  React.useEffect(() => {
-    if (props.active !== undefined && props.onActiveConsume) {
-      setActive(props.active % props.tabs.length);
-      props.onActiveConsume();
-    }
-  }, [props]);
+interface TabState {
+  activeId?: number;
+  tabs: TabComponent[];
+}
 
-  const [dropTabProps, dropTab] = dnd.useDrop(dropSpecs(props.onDrop('TAB')));
-  const [dropLeftProps, dropLeft] = dnd.useDrop(
-    dropSpecs(props.onDrop('LEFT')),
-  );
-  const [dropRightProps, dropRight] = dnd.useDrop(
-    dropSpecs(props.onDrop('RIGHT')),
-  );
-  const [dropTopProps, dropTop] = dnd.useDrop(dropSpecs(props.onDrop('TOP')));
+interface Action {
+  type: string;
+}
+
+interface NewTabsAction extends Action {
+  type: 'NEWTABS';
+  tabs: TabComponent[];
+  activeId?: number;
+}
+
+interface KeyAction extends Action {
+  type: 'NEWKEY' | 'REMOVEDKEY';
+  id: number;
+}
+
+type StateAction = NewTabsAction | KeyAction;
+
+const setTabState = (tabState: TabState, action: StateAction) =>
+  u(tabState, (tabState: TabState) => {
+    switch (action.type) {
+      case 'NEWTABS': {
+        if (action.tabs.length === 0) {
+          tabState.activeId = undefined;
+        } else {
+          const newTabIds = action.tabs.map(c => c.id);
+          const oldTabIds = tabState.tabs.map(c => c.id);
+          const areTabsDifferent = String(newTabIds) !== String(oldTabIds);
+
+          if (areTabsDifferent) {
+            if (newTabIds.length < oldTabIds.length) {
+              if (
+                tabState.activeId &&
+                newTabIds.indexOf(tabState.activeId) < 0
+              ) {
+                tabState.activeId = newTabIds[newTabIds.length - 1];
+              }
+            } else {
+              const diffTabIds = newTabIds.filter(
+                key => oldTabIds.indexOf(key) < 0,
+              );
+              tabState.activeId = action.activeId;
+              if (diffTabIds.length > 0) {
+                if (action.activeId === undefined) {
+                  tabState.activeId = diffTabIds[0];
+                }
+              }
+            }
+          }
+        }
+        tabState.tabs = action.tabs;
+        break;
+      }
+      case 'NEWKEY': {
+        tabState.activeId = action.id;
+        break;
+      }
+      case 'REMOVEDKEY': {
+        if (action.id === tabState.activeId) {
+          const newTabs = tabState.tabs.filter(c => c.id !== action.id);
+          const lastTab = newTabs.pop();
+          const newId = lastTab ? lastTab.id : undefined;
+          tabState.activeId = newId;
+        }
+        break;
+      }
+    }
+    return tabState;
+  });
+
+export function DnDTabLayout({
+  vertical,
+  components,
+  selectItems,
+  allowDrop,
+  onDrop,
+  onDeleteTab,
+  onDrag,
+  onNewTab,
+}: TabLayoutProps) {
+  const [tabState, dispatchTabState] = React.useReducer(setTabState, {
+    tabs: [],
+  });
+
+  React.useEffect(() => {
+    dispatchTabState({
+      type: 'NEWTABS',
+      tabs: components,
+    });
+  }, [components]);
+
+  const [dropTabProps, dropTab] = dnd.useDrop(dropSpecs(onDrop('TAB')));
+  const [dropLeftProps, dropLeft] = dnd.useDrop(dropSpecs(onDrop('LEFT')));
+  const [dropRightProps, dropRight] = dnd.useDrop(dropSpecs(onDrop('RIGHT')));
+  const [dropTopProps, dropTop] = dnd.useDrop(dropSpecs(onDrop('TOP')));
   const [dropBottomProps, dropBottom] = dnd.useDrop(
-    dropSpecs(props.onDrop('BOTTOM')),
+    dropSpecs(onDrop('BOTTOM')),
   );
+
+  const onTabDrag = (isDragging: boolean, tabId: number) => {
+    if (isDragging) {
+      dispatchTabState({
+        type: 'REMOVEDKEY',
+        id: tabId,
+      });
+    }
+    onDrag(isDragging, String(tabId));
+  };
 
   return (
-    <Toolbar vertical={props.vertical}>
+    <Toolbar vertical={vertical}>
       <div
         ref={dropTab}
         className={cx(
-          props.allowDrop &&
-            dropTabProps.isOver &&
-            dropTabProps.canDrop &&
-            dropZone,
+          allowDrop && dropTabProps.isOver && dropTabProps.canDrop && dropZone,
         )}
       >
         <Toolbar.Header>
-          {props.tabs.map((t, i) => {
+          {tabState.tabs.map((t, i) => {
+            const isActive =
+              tabState.activeId !== undefined
+                ? t.id === tabState.activeId
+                : i === 0;
             return (
               <Tab
                 key={t.id}
                 id={t.id}
-                active={i === active}
-                onClick={() => setActive(i % props.tabs.length)}
-                onDrag={props.onDrag}
+                active={isActive}
+                onClick={() =>
+                  dispatchTabState({
+                    type: 'NEWKEY',
+                    id: t.id,
+                  })
+                }
+                onDrag={onTabDrag}
               >
                 <div className={flex}>
                   <span className={grow}> {t.name}</span>
                   <IconButton
                     icon="times"
                     tooltip="Remove tab"
-                    onClick={() => props.onDeleteTab(t.id)}
+                    onClick={() => onDeleteTab(String(t.id))}
                     className={buttonStyle}
                   />
                 </div>
               </Tab>
             );
           })}
-          {props.unusedTabs && props.unusedTabs.length > 0 && (
+          {selectItems && selectItems.length > 0 && (
             <Tab key={'-1'} id={-1} active={false}>
               <Menu
-                items={props.unusedTabs}
+                items={selectItems}
                 icon="plus"
-                onSelect={i => props.onNewTab(i.value)}
+                onSelect={i => onNewTab(String(i.value))}
                 buttonClassName={buttonStyle}
                 listClassName={listStyle}
               />
@@ -190,18 +289,18 @@ export function DnDTabLayout(props: TabLayoutProps) {
         </Toolbar.Header>
       </div>
       <Toolbar.Content className={compoContent}>
-        {props.tabs.map((t, i) => {
+        {tabState.tabs.map((t, i) => {
           return (
             <div
               key={t.id}
-              style={i !== active ? { display: 'none' } : undefined}
+              style={i !== tabState.activeId ? { display: 'none' } : undefined}
               className={grow}
             >
               {t.component}
             </div>
           );
         })}
-        {props.allowDrop && (
+        {allowDrop && (
           <>
             <div
               ref={dropLeft}
@@ -261,15 +360,15 @@ interface TabProps {
   id: number;
   children: React.ReactChild | null;
   onClick?: () => void;
-  onDrag?: (isDragging: boolean, tabKey: string) => void;
+  onDrag?: (isDragging: boolean, tabId: number) => void;
 }
 
 function Tab(props: TabProps) {
   const [, drag] = dnd.useDrag({
     item: { id: props.id, type: accept },
     canDrag: props.onDrag !== undefined,
-    begin: () => props.onDrag && props.onDrag(true, String(props.id)),
-    end: () => props.onDrag && props.onDrag(false, String(props.id)),
+    begin: () => props.onDrag && props.onDrag(true, props.id),
+    end: () => props.onDrag && props.onDrag(false, props.id),
   });
 
   if (props.children === null) {

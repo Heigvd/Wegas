@@ -74,17 +74,8 @@ interface LayoutNode {
   children: string[];
 }
 
-interface ReflexLayoutNode extends LayoutNode {
-  type: 'ReflexLayoutNode';
-}
-
-interface TabLayoutNode extends LayoutNode {
-  type: 'TabLayoutNode';
-  activeKey?: string;
-}
-
 interface LayoutMap {
-  [id: string]: ReflexLayoutNode | TabLayoutNode;
+  [id: string]: LayoutNode;
 }
 
 interface ManagedLayoutMap {
@@ -228,16 +219,10 @@ const checkAndCleanLonelyLayout = (
       lonelyLayout.type === 'ReflexLayoutNode' &&
       lonelyLayout.children.length === 1
     ) {
-      //Remove lonely layout parent
+      //Replace lonely layout parent with lonely layout
       newLayouts[parentLayoutInfo.parentKey].children.splice(
         parentLayoutInfo.childIndex,
         1,
-      );
-
-      //Insert lonely layout parent from lonelyLayout in parent parent children
-      newLayouts[parentLayoutInfo.parentKey].children.splice(
-        parentLayoutInfo.childIndex,
-        0,
         lonelyLayout.children[0],
       );
 
@@ -281,19 +266,12 @@ const createLayout = (
   const newLayouts = layouts;
   newLayouts.lastKey = incrementNumericKey(newLayouts.lastKey);
   const newLayoutKey = newLayouts.lastKey;
-  newLayouts.layoutMap[newLayoutKey] =
-    type === 'ReflexLayoutNode'
-      ? {
-          type: type,
-          vertical: vertical,
-          children: children,
-        }
-      : {
-          type: type,
-          vertical: vertical,
-          children: children,
-          activeKey: active,
-        };
+  newLayouts.layoutMap[newLayoutKey] = {
+    type: type,
+    vertical: vertical,
+    children: children,
+  };
+
   return newLayouts;
 };
 
@@ -304,7 +282,6 @@ const insertTab = (
 ) => {
   const newLayouts = layouts;
   newLayouts[destLayoutKey].children.push(tabKey);
-  (newLayouts[destLayoutKey] as TabLayoutNode).activeKey = tabKey;
   return newLayouts;
 };
 
@@ -331,11 +308,7 @@ interface ActionDrag extends TabAction {
   type: 'DRAG';
 }
 
-interface ActionConsume extends Action {
-  type: 'CONSUME';
-}
-
-type TabLayoutsAction = ActionDrop | ActionDelete | ActionDrag | ActionConsume;
+type TabLayoutsAction = ActionDrop | ActionDelete | ActionDrag;
 
 interface Map<T> {
   [id: string]: T;
@@ -382,11 +355,6 @@ const logLayouts = (layouts: LayoutMap) => {
               : childKey,
           ),
         ),
-        layout.type === 'TabLayoutNode'
-          ? layout.activeKey !== undefined
-            ? layout.activeKey
-            : 'undefined key'
-          : 'no key',
       ];
     }),
   );
@@ -395,11 +363,6 @@ const logLayouts = (layouts: LayoutMap) => {
 
 const setLayout = (layouts: ManagedLayoutMap, action: TabLayoutsAction) =>
   u(layouts, (layouts: ManagedLayoutMap) => {
-    if (action.type === 'CONSUME') {
-      layouts.draggedKey = '-1';
-      return layouts;
-    }
-
     const srcTabLayoutKey = findTabLayoutKeyByTabKey(
       layouts.layoutMap,
       action.tabKey,
@@ -421,13 +384,10 @@ const setLayout = (layouts: ManagedLayoutMap, action: TabLayoutsAction) =>
         layouts.isDragging = true;
       } else {
         // Always remove tab from source TabLayout when dropping
-        const oldTabLayout = layouts.layoutMap[
-          srcTabLayoutKey.parentKey
-        ] as TabLayoutNode;
+        const oldTabLayout = layouts.layoutMap[srcTabLayoutKey.parentKey];
         oldTabLayout.children = oldTabLayout.children.filter(
           el => el !== action.tabKey,
         );
-        oldTabLayout.activeKey = undefined;
         layouts.layoutMap[srcTabLayoutKey.parentKey] = oldTabLayout;
 
         if (action.type === 'TAB') {
@@ -507,7 +467,6 @@ const setLayout = (layouts: ManagedLayoutMap, action: TabLayoutsAction) =>
             srcTabLayoutKey.parentKey,
           );
         }
-
         layouts.layoutMap = checkAndCleanMissOrientedLayouts(layouts.layoutMap);
       }
     }
@@ -545,23 +504,19 @@ function MainLinearLayout(props: LinearLayoutProps) {
     });
   };
 
-  const onDeleteTab = (tabkey: number) => {
+  const onDeleteTab = (tabkey: string) => {
     dispatchLayout({
       type: 'DELETE',
-      tabKey: String(tabkey),
+      tabKey: tabkey,
     });
   };
 
-  const onNewTab = (layoutKey: string) => (tabKey: number) => {
+  const onNewTab = (layoutKey: string) => (tabKey: string) => {
     dispatchLayout({
       type: 'NEW',
-      tabKey: String(tabKey),
+      tabKey: tabKey,
       destTabLayoutKey: layoutKey,
     });
-  };
-
-  const onActiveConsume = () => {
-    dispatchLayout({ type: 'CONSUME' });
   };
 
   const renderLayouts = (layoutKey?: string) => {
@@ -569,33 +524,22 @@ function MainLinearLayout(props: LinearLayoutProps) {
     const currentLayout = layout.layoutMap[currentLayoutKey];
     switch (currentLayout.type) {
       case 'TabLayoutNode': {
-        let active: number | undefined = undefined;
-        if (!layout.isDragging) {
-          const activeInfo = findTabLayoutKeyByTabKey(
-            layout.layoutMap,
-            layout.draggedKey,
-          );
-          if (activeInfo && activeInfo.parentKey === layoutKey) {
-            active = activeInfo.childIndex;
-          }
-        }
         return (
           <DnDTabLayout
-            tabs={currentLayout.children.map(key => {
+            key={currentLayoutKey}
+            components={currentLayout.children.map(key => {
               return {
                 id: Number(key),
                 ...tabs[key],
               };
             })}
-            unusedTabs={getUnusedTabs(layout.layoutMap, tabs)}
+            selectItems={getUnusedTabs(layout.layoutMap, tabs)}
             allowDrop={layout.isDragging}
             vertical={currentLayout.vertical}
-            active={active}
             onDrop={onDrop(currentLayoutKey)}
             onDeleteTab={onDeleteTab}
             onDrag={onDrag}
             onNewTab={onNewTab(currentLayoutKey)}
-            onActiveConsume={onActiveConsume}
           />
         );
       }
@@ -626,12 +570,7 @@ function MainLinearLayout(props: LinearLayoutProps) {
     }
   };
 
-  return (
-    <>
-      {/* {console.log('render')} */}
-      <div className={flex}>{renderLayouts()}</div>
-    </>
-  );
+  return <div className={flex}>{renderLayouts()}</div>;
 }
 
 export const DndLinearLayout = defaultContextManager<
