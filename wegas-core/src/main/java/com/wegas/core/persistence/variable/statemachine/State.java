@@ -20,6 +20,11 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.ScriptView;
+import com.wegas.editor.View.View;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,7 +61,8 @@ public class State extends AbstractEntity implements Broadcastable {
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty(sameEntityOnly = true)
+    @WegasEntityProperty(sameEntityOnly = true, view = @View(
+            label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
     private Long version;
 
     public Long getVersion() {
@@ -71,7 +77,7 @@ public class State extends AbstractEntity implements Broadcastable {
      *
      */
     @JsonView(value = Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Graphical coordinates", featureLevel = ADVANCED))
     private Coordinate editorPosition;
 
     /**
@@ -87,13 +93,13 @@ public class State extends AbstractEntity implements Broadcastable {
      *
      */
     @Column(name = "fsm_statekey")
-    @WegasEntityProperty
+    @WegasEntityProperty(optional = true, view = @View(label = "Index", value = ReadOnlyNumber.class))
     private Long index;
 
     /**
      *
      */
-    @WegasEntityProperty(searchable = true)
+    @WegasEntityProperty(searchable = true, nullable = true, view = @View(label = "Label"))
     private String label;
 
     /**
@@ -101,14 +107,14 @@ public class State extends AbstractEntity implements Broadcastable {
      */
     @Embedded
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "On enter impact", value = ScriptView.Impact.class))
     private Script onEnterEvent;
 
     /**
      *
      */
     @OneToMany(mappedBy = "state", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Transitions", value = Hidden.class))
     private List<Transition> transitions = new ArrayList<>();
 
     /**

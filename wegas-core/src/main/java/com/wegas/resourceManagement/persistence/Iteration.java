@@ -19,6 +19,8 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -52,7 +54,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
 
     //@JsonIgnore
     @Transient
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Task names", value = Hidden.class))
     private Set<String> taskNames;
 
     /**
@@ -70,29 +72,29 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     /**
      * Iteration Name
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Name"))
     private String name;
 
     @Enumerated(value = EnumType.STRING)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Status"))
     private IterationStatus status = IterationStatus.NOT_STARTED;
 
     /**
      * Period number the iteration shall start on
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Begin at"))
     private Long beginAt;
 
     /**
      * Total workload as computed at iteration beginning
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Total Workload"))
     private Double totalWorkload;
 
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "SPI"))
     private Double spi;
 
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "WPI"))
     private Double wpi;
 
     private Double cpi;
@@ -104,7 +106,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      */
     @ElementCollection
     @JsonIgnore
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Planned Workloads"))
     private List<IterationPlanning> plannedWorkloads = new ArrayList<>();
 
     /**
@@ -113,7 +115,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      */
     @ElementCollection
     @JsonIgnore
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Replanned Workloads"))
     private List<IterationPlanning> replannedWorkloads = new ArrayList<>();
 
     /**
@@ -121,7 +123,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      * indicates the total remaining workload for the corresponding period.
      */
     @OneToMany(mappedBy = "iteration", cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Workloads"))
     private List<Workload> workloads = new ArrayList<>();
 
     /**

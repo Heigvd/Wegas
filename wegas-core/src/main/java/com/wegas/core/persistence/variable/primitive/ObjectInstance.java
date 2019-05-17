@@ -12,6 +12,7 @@ import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Access;
@@ -37,7 +38,7 @@ public class ObjectInstance extends VariableInstance implements Propertable {
      */
     @ElementCollection
     @JsonIgnore
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Instance properties"))
     private List<VariableProperty> properties = new ArrayList<>();
 
     @Override

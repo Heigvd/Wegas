@@ -16,7 +16,11 @@ import com.wegas.core.jcr.tools.JCRDescriptorFactory;
 import com.wegas.core.persistence.annotations.WegasEntity;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.View;
+import com.wegas.editor.View.VisibilitySelectView;
 import java.io.Serializable;
 import java.util.zip.ZipEntry;
 import javax.jcr.ItemExistsException;
@@ -58,7 +62,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     /**
      * MIME type
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "MIME type", value = ReadOnlyString.class))
     protected String mimeType;
 
     /**
@@ -74,19 +78,19 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     /**
      * Some internal comment
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Note"))
     private String note = "";
 
     /**
      * Some public comment
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Description"))
     private String description = "";
 
     /**
      * The so-called visibility
      */
-    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL)
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL, view = @View(label = "", value = VisibilitySelectView.class))
     private ModelScoped.Visibility visibility = ModelScoped.Visibility.PRIVATE;
     /**
      *
@@ -144,7 +148,6 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
         this.mimeType = mimeType;
     }
 
-
     @JsonIgnore
     public ContentConnector.WorkspaceType getWorkspaceType() throws RepositoryException {
         return this.getConnector().getWorkspaceType();
@@ -187,6 +190,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     /**
      * @return the name
      */
+    @WegasExtraProperty(view = @View(label = "Filename"))
     public String getName() {
         return name;
     }
@@ -205,6 +209,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     /**
      * @return path
      */
+    @WegasExtraProperty(view = @View(label = "Path"))
     public String getPath() {
         return path;
     }
@@ -347,6 +352,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     /**
      * @return node size
      */
+    @WegasExtraProperty(view = @View(label = "File size"))
     public Long getBytes() {
         return 0L;
     }

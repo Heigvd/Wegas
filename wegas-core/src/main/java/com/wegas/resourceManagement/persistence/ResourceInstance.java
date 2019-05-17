@@ -19,6 +19,9 @@ import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
@@ -46,38 +49,46 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
      */)
     @JsonManagedReference
     @OrderColumn
-    @WegasEntityProperty(callback = ResourceInstanceMergeCallback.class)
+    @WegasEntityProperty(callback = ResourceInstanceMergeCallback.class,
+            view = @View(label = "", value = Hidden.class))
     private List<Assignment> assignments = new ArrayList<>();
     /**
      *
      */
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            view = @View(
+                    label = "Occupations",
+                    description = "[period]"
+            ))
     private List<Occupation> occupations = new ArrayList<>();
     /**
      *
      */
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
-    @WegasEntityProperty(callback = ResourceInstanceMergeCallback.class)
+    @WegasEntityProperty(callback = ResourceInstanceMergeCallback.class,
+            view = @View(label = "Activities",
+                    value = Hidden.class
+            ))
     private List<Activity> activities = new ArrayList<>();
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Active"))
     private boolean active = true;
     /**
      *
      */
     @ElementCollection
     @JsonIgnore
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Instance properties", featureLevel = ADVANCED))
     private List<VariableProperty> properties = new ArrayList<>();
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Confidence", value = Hidden.class))
     private int confidence;
 
     @JsonIgnore

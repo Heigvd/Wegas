@@ -15,6 +15,8 @@ import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.utils.StringInstanceCustomizer;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +47,7 @@ public class TextInstance extends VariableInstance {
      *
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Value", value = I18nHtmlView.class))
     private TranslatableContent trValue;
 
     /**

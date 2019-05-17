@@ -16,6 +16,8 @@ import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.View.ScriptView;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
@@ -40,7 +42,10 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      *
      */
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(
+            label = "Only once",
+            description = "Allowed to trigger only once"
+    ))
     private Boolean oneShot = false;
 
     /**
@@ -48,21 +53,24 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      */
     @JsonView(Views.EditorI.class)
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(
+            label = "Disable itself",
+            description = "Disable once triggered. May be rearmed afterwards"
+    ))
     private Boolean disableSelf = true;
     /**
      *
      */
     @Transient
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Condition", value = ScriptView.Condition.class))
     private Script triggerEvent;
     /**
      *
      */
     @Transient
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Impact", value = ScriptView.Impact.class))
     private Script postTriggerEvent;
 
     /**
@@ -118,15 +126,14 @@ public class TriggerDescriptor extends StateMachineDescriptor {
         return postTriggerEvent;
     }
 
-
-    private void touchTriggerEvent(){
-        if (this.triggerEvent != null){
+    private void touchTriggerEvent() {
+        if (this.triggerEvent != null) {
             this.triggerEvent.setParent(this, "condition");
         }
     }
 
-    private void touchPostTriggerEvent(){
-        if (this.postTriggerEvent != null){
+    private void touchPostTriggerEvent() {
+        if (this.postTriggerEvent != null) {
             this.postTriggerEvent.setParent(this, "impact");
         }
     }

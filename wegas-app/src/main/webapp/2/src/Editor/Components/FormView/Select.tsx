@@ -15,7 +15,7 @@ interface Choice {
   };
   children?: Choice[];
 }
-type Choices = (string | Choice)[];
+export type Choices = (string | Choice)[];
 interface ISelectProps extends WidgetProps.BaseProps {
   view: {
     choices: Choices;

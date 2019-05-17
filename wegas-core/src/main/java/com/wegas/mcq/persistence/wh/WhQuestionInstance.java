@@ -8,8 +8,9 @@
 package com.wegas.mcq.persistence.wh;
 
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import static java.lang.Boolean.FALSE;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,20 +28,20 @@ public class WhQuestionInstance extends VariableInstance implements ReadableInst
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Active"))
     private Boolean active = true;
 
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Unread", value= Hidden.class))
     private Boolean unread = true;
     /**
      * False until the user has clicked on the global question-wide "submit"
      * button.
      */
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Validated", value= Hidden.class))
     private Boolean validated = FALSE;
 
     /**

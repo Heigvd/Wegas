@@ -11,6 +11,8 @@ import Html from './Html';
 import { Script } from './Script';
 import { TreeVariableSelect } from './TreeVariableSelect';
 import translatable from './translatable';
+import EntityArrayFieldSelect from './EntityArrayFieldSelect';
+import FlatVariableSelect from './FlatVariableSelect';
 
 const DEFINED_VIEWS = {
   hidden,
@@ -27,6 +29,8 @@ const DEFINED_VIEWS = {
   i18nhtml: translatable(Html),
   script: Script,
   variableselect: TreeVariableSelect,
+  entityarrayfieldselect: EntityArrayFieldSelect,
+    flatvariableselect: FlatVariableSelect
 };
 setDefaultWidgets(DEFINED_VIEWS);
 

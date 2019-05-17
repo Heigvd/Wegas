@@ -16,6 +16,9 @@ import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import static com.wegas.editor.View.CommonView.LAYOUT.shortInline;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import java.util.Collection;
 import javax.persistence.*;
 
@@ -24,7 +27,6 @@ import javax.persistence.*;
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Entity
-
 @Table(indexes = {
     @Index(columnList = "resourceinstance_id")
 })
@@ -42,12 +44,12 @@ public class Occupation extends AbstractEntity implements NamedEntity {
      *
      */
     @Column(name = "wtime")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Period number", layout = shortInline))
     private Integer time = 0;
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Editable (?!?)", layout = shortInline))
     private Boolean editable = true;
     /**
      *
@@ -55,7 +57,7 @@ public class Occupation extends AbstractEntity implements NamedEntity {
     @Lob
     @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Description (!?!)", value = Hidden.class))
     private String description = "";
 
     /**
@@ -101,6 +103,7 @@ public class Occupation extends AbstractEntity implements NamedEntity {
 
     /**
      * Use time as a discriminant
+     *
      * @return
      */
     @JsonIgnore

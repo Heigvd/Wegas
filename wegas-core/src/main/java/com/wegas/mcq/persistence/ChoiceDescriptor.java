@@ -37,6 +37,11 @@ import com.wegas.core.persistence.annotations.WegasConditions.Not;
 import com.wegas.core.persistence.annotations.WegasConditions.Or;
 import com.wegas.core.persistence.annotations.WegasRefs.Const;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
+import com.wegas.editor.View.CommonView;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.NumberView;
+import com.wegas.editor.View.View;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,30 +80,38 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     @OrderColumn
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty(callback = ResultMergeCallback.class)
+    @WegasEntityProperty(callback = ResultMergeCallback.class,
+            view = @View(
+                    value = Hidden.class,
+                    label = ""
+            ))
     private List<Result> results = new ArrayList<>();
     /**
      *
      */
     @OneToOne(cascade = CascadeType.ALL)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Description", value = I18nHtmlView.class))
     private TranslatableContent description;
 
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Duration", value = Hidden.class))
     private Long duration = 1L;
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Cost", value = Hidden.class))
     private Long cost = 0L;
 
     /**
      * Total number of replies allowed. No default value.
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(nullable = true, view = @View(
+            label = "Max. number replies",
+            value = NumberView.WithInfinityPlaceholder.class,
+            layout = CommonView.LAYOUT.shortInline
+    ))
     @Visible(IsNotQuestionCbxOrMaxEqOne.class)
     private Integer maxReplies = null;
 

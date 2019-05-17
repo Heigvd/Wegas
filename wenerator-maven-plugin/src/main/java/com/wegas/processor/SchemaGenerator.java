@@ -25,9 +25,9 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.google.common.reflect.TypeToken;
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.utils.WegasEntityFields;
 import com.wegas.core.persistence.Mergeable;
-import com.wegas.core.persistence.WithId;
 import com.wegas.core.persistence.annotations.Errored;
 import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.annotations.Scriptable;
@@ -46,10 +46,9 @@ import com.wegas.editor.JSONSchema.JSONString;
 import com.wegas.editor.JSONSchema.JSONType;
 import com.wegas.editor.JSONSchema.JSONUnknown;
 import com.wegas.editor.JSONSchema.JSONWRef;
+import com.wegas.editor.JSONSchema.UndefinedSchema;
 import com.wegas.editor.View.CommonView;
 import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.ReadOnlyNumber;
-import com.wegas.editor.View.ReadOnlyString;
 import com.wegas.editor.View.View;
 import com.wegas.editor.Visible;
 import java.beans.Introspector;
@@ -166,13 +165,19 @@ public class SchemaGenerator extends AbstractMojo {
             if (schema instanceof JSONExtendedSchema) {
                 try {
                     CommonView v = view.value().newInstance();
-                    v.setLabel(view.label()).setBorderTop(view.borderTop()).setDescription(view.description())
+
+                    if (!view.label().isEmpty()) {
+                        v.setLabel(view.label());
+                    }
+                    v.setBorderTop(view.borderTop()).setDescription(view.description())
                             .setLayout(view.layout());
+                    ((JSONExtendedSchema) schema).setFeatureLevel(view.featureLevel());
                     ((JSONExtendedSchema) schema).setView(v);
+                    v.setIndex(view.index());
                     ((JSONExtendedSchema) schema).setIndex(view.index());
                 } catch (InstantiationException | IllegalAccessException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
+                    throw WegasErrorMessage.error("Fails to inject " + view);
                 }
             }
         }
@@ -488,6 +493,7 @@ public class SchemaGenerator extends AbstractMojo {
                                     .forEach(field -> {
                                         Type returnType = field.getPropertyDescriptor().getReadMethod().getGenericReturnType();
                                         this.addSchemaProperty(jsonSchema, c, returnType,
+                                                field.getAnnotation().schema(),
                                                 field.getPropertyDescriptor().getName(),
                                                 field.getAnnotation().view(),
                                                 field.getErroreds(),
@@ -504,7 +510,9 @@ public class SchemaGenerator extends AbstractMojo {
                                         : getPropertyName(method);
                                 Type returnType = method.getGenericReturnType();
 
-                                this.addSchemaProperty(jsonSchema, c, returnType, name, annotation.view(), null, null,
+                                this.addSchemaProperty(jsonSchema, c, returnType, 
+                                        annotation.schema(),
+                                        name, annotation.view(), null, null,
                                         annotation.nullable());
                             }
 
@@ -561,12 +569,23 @@ public class SchemaGenerator extends AbstractMojo {
     }
 
     private void addSchemaProperty(JSONObject jsonSchema,
-            Class<? extends Mergeable> c, Type returnType,
+            Class<? extends Mergeable> c,
+            Type returnType,
+            Class<? extends JSONSchema> schemaOverride,
             String name, View view, List<Errored> erroreds,
             Visible visible, boolean nullable) {
-        Type reified = TypeResolver.reify(returnType, c);
 
-        JSONSchema prop = javaToJSType(reified, nullable);
+        JSONSchema prop;
+        if (UndefinedSchema.class.isAssignableFrom(schemaOverride)) {
+            Type reified = TypeResolver.reify(returnType, c);
+            prop = javaToJSType(reified, nullable);
+        } else {
+            try {
+                prop = schemaOverride.newInstance();
+            } catch (InstantiationException | IllegalAccessException ex) {
+                throw WegasErrorMessage.error("Faisl to instantion overrinding schema");
+            }
+        }
         injectView(prop, view);
         injectErrords(prop, erroreds);
         injectVisible(prop, visible);

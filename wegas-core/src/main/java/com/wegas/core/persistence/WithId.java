@@ -8,6 +8,7 @@
 package com.wegas.core.persistence;
 
 import com.wegas.core.persistence.annotations.WegasExtraProperty;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.ReadOnlyNumber;
 import com.wegas.editor.View.View;
 
@@ -17,6 +18,12 @@ import com.wegas.editor.View.View;
  */
 public interface WithId {
 
-    @WegasExtraProperty(view = @View(value = ReadOnlyNumber.class, label = ""), optional = true)
+    @WegasExtraProperty(optional = true,
+            view = @View(value = ReadOnlyNumber.class,
+                    label = "id",
+                    featureLevel = ADVANCED,
+                    index = -1000
+            )
+    )
     public Long getId();
 }

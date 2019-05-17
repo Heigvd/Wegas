@@ -13,6 +13,8 @@ import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -46,21 +48,21 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
      * Current review state
      */
     @Enumerated(value = EnumType.STRING)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Review State"))
     private PeerReviewDescriptor.ReviewingState reviewState = PeerReviewDescriptor.ReviewingState.NOT_STARTED;
 
     /**
      * List of review that contains feedback written by player owning this
      */
     @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "To review", value = Hidden.class))
     private List<Review> toReview = new ArrayList<>();
 
     /**
      * List of review that contains others feedback
      */
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Reviewed", value = Hidden.class))
     private List<Review> reviewed = new ArrayList<>();
 
     /**

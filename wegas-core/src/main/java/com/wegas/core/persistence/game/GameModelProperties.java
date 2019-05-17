@@ -13,6 +13,9 @@ import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.SelectView.FreeForAllSelector;
+import com.wegas.editor.View.View;
 import java.io.Serializable;
 import javax.persistence.*;
 
@@ -32,60 +35,61 @@ public class GameModelProperties implements Serializable, Mergeable {
     @Override
     public void setRefId(String refId) {
     }
-    
+
     private static final long serialVersionUID = 1L;
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(
+            label = "Game is played", value = FreeForAllSelector.class))
     private Boolean freeForAll = false;
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Guest allowed?"))
     private Boolean guestAllowed = false;
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Pages URI"))
     private String pagesUri = "";
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Stylesheets URI"))
     private String cssUri = "";
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Websockets", value = Hidden.class))
     private String websocket = "";
 
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Log ID"))
     private String logID = "";
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "ServerSripts URI"))
     private String scriptUri = "";
 
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "ClientSripts URI"))
     private String clientScriptUri = "";
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Icon"))
     private String iconUri = "";
 
     /**
@@ -240,7 +244,6 @@ public class GameModelProperties implements Serializable, Mergeable {
     public boolean belongsToProtectedGameModel() {
         return false;
     }
-
 
     @Override
     public Visibility getInheritedVisibility() {

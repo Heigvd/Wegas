@@ -18,6 +18,9 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.PrimitiveDescriptorI;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -50,12 +53,12 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      *
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Description", value = I18nHtmlView.class))
     private TranslatableContent description;
 
     @OneToMany(mappedBy = "parentWh", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @OrderColumn(name = "whd_items_order")
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, view = @View(label = "items", value = Hidden.class))
     private List<VariableDescriptor> items = new ArrayList<>();
 
     /**

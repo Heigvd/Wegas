@@ -15,6 +15,8 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,7 +59,7 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
     @OneToMany(mappedBy = "container", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(value = Hidden.class, label = ""))
     @NotNull
     private List<EvaluationDescriptor> evaluations = new ArrayList<>();
 
@@ -85,7 +87,7 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
 
     public void setCommented(PeerReviewDescriptor commented) {
         this.commented = commented;
-        if (this.commented!= null){
+        if (this.commented != null) {
             this.setEvaluations(evaluations);
         }
     }

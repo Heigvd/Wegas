@@ -16,6 +16,11 @@ import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import static com.wegas.editor.View.CommonView.LAYOUT.shortInline;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.SelectView;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,6 +36,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import static com.wegas.editor.View.CommonView.LAYOUT.extraShortInline;
 
 /**
  *
@@ -59,25 +65,29 @@ public class WRequirement extends AbstractEntity implements NamedEntity {
      */
     @Column(name = "wrequirement_name")
     @NotNull
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(
+            label = "Script Alias",
+            featureLevel = ADVANCED,
+            index = -1
+    ))
     private String name;
     /**
      *
      */
     @Column(name = "wlimit")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Limit", layout = extraShortInline, index = 10))
     private Integer limit = 0;
     /**
      *
      */
     @Column(name = "wwork")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "", layout = shortInline, value = SelectView.WorkSkills.class, index = 3))
     private String work = "";
     /*
      *
      */
     @Column(name = "wlevel")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "", layout = shortInline, value = SelectView.WorkLevels.class, index = 2))
     private Integer level = 0;
     /**
      *
@@ -87,17 +97,17 @@ public class WRequirement extends AbstractEntity implements NamedEntity {
     /*
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Quantity", layout = extraShortInline, index = 1))
     private Long quantity = 0L;
     /*
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Completeness", value = Hidden.class))
     private Double completeness = 0.0D;
     /*
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Quality", value = Hidden.class))
     private Double quality = 0.0D;
 
     /**
@@ -120,7 +130,6 @@ public class WRequirement extends AbstractEntity implements NamedEntity {
     public WRequirement(String work) {
         this.work = work;
     }
-
 
     /**
      * @return the id

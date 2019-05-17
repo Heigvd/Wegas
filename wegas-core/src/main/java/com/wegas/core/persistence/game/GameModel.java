@@ -33,6 +33,9 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.Textarea;
+import com.wegas.editor.View.View;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.jcr.RepositoryException;
@@ -90,11 +93,11 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @Basic(optional = false)
     @Pattern(regexp = "^.*\\S+.*$", message = "GameModel name cannot be empty")// must at least contains one non-whitespace character
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Name"))
     private String name;
 
     @Basic(optional = false)
-    @WegasEntityProperty(initOnly = true)
+    @WegasEntityProperty(initOnly = true, view = @View(label = "UI Version", value = ReadOnlyNumber.class))
     private Integer UIVersion;
 
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
@@ -107,7 +110,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Lob
     //@Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty(sameEntityOnly = true)
+    @WegasEntityProperty(sameEntityOnly = true, view = @View(label = "Description"))
     private String description;
 
     /**
@@ -127,7 +130,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Lob
     //@Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty(sameEntityOnly = true)
+    @WegasEntityProperty(sameEntityOnly = true, view = @View(label = "Comments", value = Textarea.class))
     private String comments;
 
     /**
@@ -1158,7 +1161,6 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     public static WegasPermission getAssociatedWritePermission(long id) {
         return new WegasEntityPermission(id, WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAMEMODEL);
     }
-
 
     /**
      * The permission which is required to translate a specific language within the game model

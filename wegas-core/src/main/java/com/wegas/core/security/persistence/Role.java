@@ -14,6 +14,8 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.Textarea;
+import com.wegas.editor.View.View;
 import java.util.*;
 import javax.persistence.Basic;
 import javax.persistence.Cacheable;
@@ -68,7 +70,7 @@ public class Role extends AbstractEntity implements PermissionOwner {
      */
     @Basic(optional = false)
     @Column(length = 100)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Name"))
     private String name;
 
     /**
@@ -76,7 +78,7 @@ public class Role extends AbstractEntity implements PermissionOwner {
      */
     @Basic(optional = false)
     @Column(length = 255)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Description", value = Textarea.class))
     private String description;
 
     /**
@@ -84,7 +86,7 @@ public class Role extends AbstractEntity implements PermissionOwner {
      */
     //@ElementCollection(fetch = FetchType.EAGER)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "role")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Permissions"))
     private List<Permission> permissions = new ArrayList<>();
 
     /**
@@ -111,7 +113,6 @@ public class Role extends AbstractEntity implements PermissionOwner {
     public Role(String name) {
         this.name = name;
     }
-
 
     @Override
     public Long getId() {

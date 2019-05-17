@@ -1,5 +1,6 @@
 package com.wegas.editor.View;
 
+import com.wegas.editor.View.CommonView.FEATURE_LEVEL;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -21,6 +22,8 @@ public @interface View {
     boolean borderTop() default false;
 
     LAYOUT layout() default LAYOUT.none;
+
+    FEATURE_LEVEL featureLevel() default FEATURE_LEVEL.DEFAULT;
 
     /**
      * index (used to sort properties from an object)

@@ -15,6 +15,8 @@ import java.lang.annotation.Target;
 import com.wegas.core.merge.utils.EmptyCallback;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.editor.JSONSchema.JSONSchema;
+import com.wegas.editor.JSONSchema.UndefinedSchema;
 import com.wegas.editor.View.View;
 
 /**
@@ -104,4 +106,11 @@ public @interface WegasEntityProperty {
      * Editor's view.
      */
     View view() default @View(label = ""); // @TODO Remove default value
+
+    /**
+     * Override schema
+     *
+     * @return
+     */
+    Class<? extends JSONSchema> schema() default UndefinedSchema.class;
 }

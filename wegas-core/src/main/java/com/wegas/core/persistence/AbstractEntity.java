@@ -24,6 +24,8 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.View;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -61,7 +63,8 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractEntity.class);
 
-    @WegasEntityProperty(initOnly = true, optional = true)
+    @WegasEntityProperty(initOnly = true, optional = true,
+            view = @View(label = "RefID", value = ReadOnlyString.class, index=-800))
     //@JsonView(Views.InternalI.class)
     private String refId;
 

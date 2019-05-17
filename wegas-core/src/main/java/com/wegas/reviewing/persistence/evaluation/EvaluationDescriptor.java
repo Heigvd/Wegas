@@ -18,6 +18,10 @@ import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.I18nStringView;
+import com.wegas.editor.View.View;
 import java.util.Collection;
 import java.util.List;
 import javax.persistence.*;
@@ -69,27 +73,39 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
     /**
      * to sort evaluation descriptor and instance
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Index"))
     private Integer index;
 
     /**
      * Evaluation internal identifier
      */
-    @WegasEntityProperty(searchable = true)
+    @WegasEntityProperty(searchable = true, view = @View(
+            label = "Script alias",
+            description = "Internal name",
+            featureLevel = ADVANCED
+    ))
     private String name;
 
     /**
      * Evaluation label as displayed to players
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(
+            label ="Label",
+            description = "Displayed to players",
+            value = I18nStringView.class,
+            index = -1
+    ))
     private TranslatableContent label;
 
     /**
      * Textual descriptor to be displayed to players
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(
+            label = "Description",
+            value = I18nHtmlView.class
+    ))
     private TranslatableContent description;
 
     /**
@@ -191,7 +207,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
      */
     public void setContainer(EvaluationDescriptorContainer container) {
         this.container = container;
-        if (this.container != null){
+        if (this.container != null) {
             // revive translatable content link
             this.setLabel(label);
             this.setDescription(description);
@@ -232,7 +248,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
     }
 
     @Override
-    public WithPermission getMergeableParent(){
+    public WithPermission getMergeableParent() {
         return getContainer();
     }
 

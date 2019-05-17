@@ -20,6 +20,9 @@ import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.View;
+import com.wegas.editor.View.VisibilitySelectView;
 import java.util.Collection;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -64,7 +67,10 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
      * short name like en, en_uk, or fr_ch
      */
     @Column(length = 16, columnDefinition = "character varying(16) default ''::character varying")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(
+            label = "Language code",
+            value = ReadOnlyString.class
+    ))
     private String code;
 
     @JsonIgnore
@@ -79,7 +85,11 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
 
     @Enumerated(value = EnumType.STRING)
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
-    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL)
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL,
+            view = @View(
+                    label = "",
+                    value = VisibilitySelectView.class
+            ))
     private Visibility visibility = Visibility.PRIVATE;
 
     /**
@@ -88,7 +98,8 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
     private Integer indexOrder;
 
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty(protectionLevel = ProtectionLevel.INTERNAL)
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.INTERNAL,
+            view = @View(label = "Enabled"))
     private boolean active = false;
 
     @ManyToOne
@@ -114,7 +125,8 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
     }
 
     /**
-     * Set the language name  (ie its code)
+     * Set the language name (ie its code)
+     *
      * @param name
      */
     @Override

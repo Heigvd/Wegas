@@ -15,6 +15,8 @@ import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.editor.View.HtmlView;
+import com.wegas.editor.View.View;
 
 /**
  *
@@ -30,9 +32,9 @@ public class BurndownDescriptor extends VariableDescriptor<BurndownInstance> {
     @Lob
     @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty(searchable = true)
+    @WegasEntityProperty(searchable = true, nullable = true,
+            view = @View(label = "description", value = HtmlView.class))
     private String description;
-
 
     /**
      * @return the description

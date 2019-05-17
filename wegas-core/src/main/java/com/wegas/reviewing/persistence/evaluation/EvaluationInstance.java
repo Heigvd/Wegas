@@ -83,7 +83,7 @@ public abstract class EvaluationInstance extends AbstractEntity {
     private EvaluationDescriptor evaluationDescriptor;
 
     @Transient
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(value = Hidden.class, label = ""))
     private String descriptorName;
 
     /**

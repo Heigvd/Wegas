@@ -16,6 +16,7 @@ import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -32,7 +33,7 @@ import org.slf4j.LoggerFactory;
 @NamedQuery(name = "ListDescriptor.findDistinctChildrenLabels",
         query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentList.id = :containerId")
 @WegasEntity(callback = ListDescriptor.ValidateAllowedItemsCallback.class)
-public class ListDescriptor extends VariableDescriptor<VariableInstance> implements DescriptorListI<VariableDescriptor> {
+public class ListDescriptor extends VariableDescriptor<ListInstance> implements DescriptorListI<VariableDescriptor> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(ListDescriptor.class);
@@ -49,13 +50,13 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
      * List of allowed children types
      */
     @ElementCollection
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Allowed types"))
     private Set<String> allowedTypes = new HashSet<>();
 
     /**
      * shortcut to show within (+) treeview button, must match allowedTypes
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Default child type"))
     private String addShortcut = "";
 
     /**

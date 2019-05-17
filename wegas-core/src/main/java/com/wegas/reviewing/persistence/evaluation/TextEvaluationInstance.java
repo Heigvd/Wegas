@@ -7,9 +7,8 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.editor.View.View;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,7 +32,7 @@ public class TextEvaluationInstance extends EvaluationInstance {
     @Lob
     @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     @Column(name = "evaluationvalue")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Value"))
     private String value;
 
     /**

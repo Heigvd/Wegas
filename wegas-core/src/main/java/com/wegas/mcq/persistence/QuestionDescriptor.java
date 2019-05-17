@@ -26,6 +26,12 @@ import com.wegas.core.persistence.annotations.WegasConditions.LessThan;
 import com.wegas.core.persistence.annotations.WegasRefs.Const;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.core.persistence.annotations.WegasRefs.Self;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import static com.wegas.editor.View.CommonView.LAYOUT.shortInline;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.NumberView;
+import com.wegas.editor.View.View;
 import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -63,7 +69,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      */
     @OneToOne(cascade = CascadeType.ALL)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Description", value = I18nHtmlView.class))
     private TranslatableContent description;
 
     /**
@@ -71,26 +77,42 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * radio/checkbox
      */
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(
+            label = "Checkbox answer",
+            description = "For standard multiple-choice questions"
+    ))
     private Boolean cbx = FALSE;
     /**
      * Determines if choices are presented horizontally in a tabular fashion
      */
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(
+            label = "Tabular layout",
+            description = "Replies are presented horizontally"
+    ))
     @Visible(IsCbx.class)
     private Boolean tabular = FALSE;
     /**
      * Total number of replies allowed. No default value.
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(
+            label = "Max. number replies",
+            description = "Optional value",
+            value = NumberView.WithInfinityPlaceholder.class,
+            layout = shortInline
+    ))
     @Errored(CheckMinMaxBounds.class)
     @Errored(CheckPositiveness.class)
     private Integer maxReplies = null;
     /**
      * Minimal number of replies required. Makes sense only with CBX-type questions. No default value.
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(
+            label = "Min. number replies",
+            description = "Optional value",
+            value = NumberView.WithNegInfinityPlaceholder.class,
+            layout = shortInline
+    ))
     @Visible(IsCbx.class)
     @Errored(CheckPositiveness.class)
     @Errored(CheckMinMaxBounds.class)
@@ -102,7 +124,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     //@BatchFetch(BatchFetchType.IN)
     @JsonManagedReference
     @OrderColumn(name = "qd_items_order")
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, view = @View(label = "Items", value = Hidden.class))
     private List<ChoiceDescriptor> items = new ArrayList<>();
     /**
      *
@@ -110,7 +132,10 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @ElementCollection
     //@JsonView(Views.ExtendedI.class)
     //@JsonView(Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(
+            label = "Pictures",
+            featureLevel = ADVANCED
+    ))
     private Set<String> pictures = new HashSet<>();
 
 // ~~~ Sugar for scripts ~~~
@@ -178,7 +203,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @return
      */
-    @Scriptable(label  = "is validated")
+    @Scriptable(label = "is validated")
     public boolean getValidated(Player p) {
         return this.getInstance(p).isValidated();
     }

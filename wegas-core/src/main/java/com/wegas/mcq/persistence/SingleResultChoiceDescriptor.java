@@ -7,13 +7,13 @@
  */
 package com.wegas.mcq.persistence;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import javax.persistence.Entity;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.wegas.editor.Schema;
 import com.wegas.editor.JSONSchema.JSONArray;
 import com.wegas.editor.View.View;
@@ -24,8 +24,11 @@ import com.wegas.editor.View.View;
  */
 @Entity
 @Table(name = "MCQSingleResultChoiceDescriptor")
-@Schema(property = "results", value = SingleResultChoiceDescriptor.SingleResultProp.class, view = @View(label = "Result"))
+@Schema(property = "results",
+        value = SingleResultChoiceDescriptor.SingleResultProp.class,
+        view = @View(label = "Result"))
 public class SingleResultChoiceDescriptor extends ChoiceDescriptor {
+
     public static class SingleResultProp extends JSONArray {
 
         public SingleResultProp() {

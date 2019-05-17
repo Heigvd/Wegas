@@ -15,6 +15,9 @@ import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.View.ArrayView;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -33,7 +36,6 @@ import javax.persistence.Transient;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-
 /*@Table(indexes = {
 
     @Index(columnList = "plannification.taskinstance_id"),
@@ -45,7 +47,7 @@ public class TaskInstance extends VariableInstance implements Propertable {
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Instance properties"))
     private boolean active = true;
     /**
      *
@@ -56,7 +58,7 @@ public class TaskInstance extends VariableInstance implements Propertable {
      *
      */
     @ElementCollection
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Planning", value = Hidden.class))
     private Set<Integer> plannification = new HashSet<>();
 
     @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
@@ -77,14 +79,15 @@ public class TaskInstance extends VariableInstance implements Propertable {
      */
     @ElementCollection
     @JsonIgnore
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Instance properties"))
     private List<VariableProperty> properties = new ArrayList<>();
     /**
      *
      */
     @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     //@JoinColumn(referencedColumnName = "variableinstance_id")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Resource requirements", 
+            value = ArrayView.Highlight.class))
     private List<WRequirement> requirements = new ArrayList<>();
 
     /**
@@ -288,7 +291,6 @@ public class TaskInstance extends VariableInstance implements Propertable {
         this.getRequirements().add(req);
         req.setTaskInstance(this);
     }
-
 
     @Override
     public void updateCacheOnDelete(Beanjection beans) {

@@ -10,5 +10,5 @@ package com.wegas.editor.View;
 /**
  * @author maxence
  */
-public class ReadOnlyNumber extends Number implements ReadOnlyView {
+public class ReadOnlyNumber extends NumberView implements ReadOnlyView {
 }

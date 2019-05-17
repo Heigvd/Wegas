@@ -19,6 +19,12 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.INTERNAL;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.ScriptView;
+import com.wegas.editor.View.View;
 import java.util.Collection;
 import javax.persistence.*;
 
@@ -52,7 +58,8 @@ public class Transition extends AbstractEntity {
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty(sameEntityOnly = true)
+    @WegasEntityProperty(sameEntityOnly = true, view = @View(
+            label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
     private Long version;
 
     public Long getVersion() {
@@ -67,13 +74,13 @@ public class Transition extends AbstractEntity {
      *
      */
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Index", featureLevel = ADVANCED))
     private Integer index = 0;
 
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Next State", value = Hidden.class, featureLevel = INTERNAL))
     private Long nextStateId;
 
     @JsonIgnore
@@ -91,14 +98,14 @@ public class Transition extends AbstractEntity {
                 = @Column(name = "onTransition_language"))
     })
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Impact", value = ScriptView.Impact.class))
     private Script preStateImpact;
 
     /**
      *
      */
     @Embedded
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Condition", value = ScriptView.Condition.class))
     private Script triggerCondition;
 
     @Override
@@ -148,12 +155,12 @@ public class Transition extends AbstractEntity {
         this.nextStateId = nextStateId;
     }
 
-
-    private void touchPreStateImpact(){
-        if (this.preStateImpact !=null){
+    private void touchPreStateImpact() {
+        if (this.preStateImpact != null) {
             this.preStateImpact.setParent(this, "impact");
         }
     }
+
     /**
      * @return script to execute on transition
      */
@@ -170,8 +177,8 @@ public class Transition extends AbstractEntity {
         this.touchPreStateImpact();
     }
 
-    private void touchTriggerCondition(){
-        if (this.triggerCondition !=null){
+    private void touchTriggerCondition() {
+        if (this.triggerCondition != null) {
             this.triggerCondition.setParent(this, "condition");
         }
     }
@@ -191,7 +198,6 @@ public class Transition extends AbstractEntity {
         this.triggerCondition = triggerCondition;
         this.touchTriggerCondition();
     }
-
 
     @Override
     public String toString() {

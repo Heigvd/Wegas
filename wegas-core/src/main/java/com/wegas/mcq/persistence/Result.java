@@ -27,6 +27,13 @@ import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
 import com.wegas.core.persistence.annotations.WegasConditions.IsTrue;
 import com.wegas.core.persistence.annotations.WegasConditions.Not;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.I18nStringView;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.ScriptView;
+import com.wegas.editor.View.View;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -59,7 +66,8 @@ public class Result extends AbstractEntity implements LabelledEntity {
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty(sameEntityOnly = true)
+    @WegasEntityProperty(sameEntityOnly = true, view = @View(
+            label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
     private Long version;
 
     public Long getVersion() {
@@ -80,14 +88,19 @@ public class Result extends AbstractEntity implements LabelledEntity {
     /**
      * Internal Name
      */
-    @WegasEntityProperty(searchable = true)
+    @WegasEntityProperty(searchable = true, view = @View(
+            label = "Script alias",
+            featureLevel = ADVANCED,
+            description = "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
+    ))
+    @Visible(IsLabelVisible.class)
     private String name;
 
     /**
      * Displayed name
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Label", value = I18nStringView.class))
     @Visible(IsLabelVisible.class)
     private TranslatableContent label;
 
@@ -95,14 +108,14 @@ public class Result extends AbstractEntity implements LabelledEntity {
      * Displayed answer when result selected and validated
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Feedback", value = I18nHtmlView.class))
     private TranslatableContent answer;
 
     /**
      * Displayed answer when MCQ result not selected and validated
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Feedback when ignored", value = I18nHtmlView.class, borderTop = true))
     @Visible(IsQuestionCbx.class)
     private TranslatableContent ignorationAnswer;
 
@@ -110,14 +123,14 @@ public class Result extends AbstractEntity implements LabelledEntity {
      *
      */
     @ElementCollection
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Files", value = Hidden.class))
     private Set<String> files = new HashSet<>();
     /**
      *
      */
     @Embedded
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Impact", value = ScriptView.Impact.class))
     private Script impact;
     /**
      *
@@ -130,7 +143,7 @@ public class Result extends AbstractEntity implements LabelledEntity {
                 = @Column(name = "ignoration_language"))
     })
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Impact when ignored", value =ScriptView.Impact.class))
     @Visible(IsQuestionCbx.class)
     private Script ignorationImpact;
     /**

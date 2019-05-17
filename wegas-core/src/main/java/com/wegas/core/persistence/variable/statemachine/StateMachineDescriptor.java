@@ -16,6 +16,8 @@ import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.persistence.*;
@@ -45,7 +47,8 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     @OneToMany(mappedBy = "stateMachine", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @MapKeyColumn(name = "fsm_statekey")
     @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty(ignoreNull = true, protectionLevel = ProtectionLevel.INHERITED)
+    @WegasEntityProperty(ignoreNull = true, protectionLevel = ProtectionLevel.INHERITED,
+            view = @View(label = "", value = Hidden.class))
     private Set<State> states = new HashSet<>();
 
     /**

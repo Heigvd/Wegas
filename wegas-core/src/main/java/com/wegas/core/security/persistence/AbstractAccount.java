@@ -21,6 +21,8 @@ import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.View;
 import java.util.*;
 import javax.persistence.*;
 
@@ -81,25 +83,26 @@ public abstract class AbstractAccount extends AbstractEntity {
     //@Basic(optional = false)
     @Column(length = 100)
     //@Pattern(regexp = "^\\w+$")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Username"))
     private String username = "";
 
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Firstname"))
     private String firstname;
 
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Lastname"))
     private String lastname;
 
     /**
      *
      */
-    @WegasEntityProperty(callback = CheckEmailChange.class)
+    @WegasEntityProperty(callback = CheckEmailChange.class,
+            view = @View(label = "E-mail"))
     private String email = "";
 
     /**
@@ -115,13 +118,14 @@ public abstract class AbstractAccount extends AbstractEntity {
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
-    @WegasEntityProperty(ignoreNull = true)
+    @WegasEntityProperty(ignoreNull = true, nullable = true,
+            view = @View(label = "Agreed time", value= ReadOnlyNumber.class))
     private Date agreedTime = null;
 
     /**
      * Optional remarks only visible to admins
      */
-    @WegasEntityProperty(ignoreNull = true)
+    @WegasEntityProperty(ignoreNull = true, view = @View(label = "Comment"))
     private String comment = "";
 
     /**
@@ -367,7 +371,7 @@ public abstract class AbstractAccount extends AbstractEntity {
         public void preUpdate(Mergeable entity, Object ref, Object identifier) {
             if (entity instanceof JpaAccount && "email".equals(identifier)) {
                 JpaAccount account = (JpaAccount) entity;
-                if (!account.getEmail().equals(ref)){
+                if (!account.getEmail().equals(ref)) {
                     // email update detected
                     account.setVerified(false);
                 }

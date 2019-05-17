@@ -18,6 +18,9 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.editor.JSONSchema.ListOfTasksSchema;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.View;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -36,6 +39,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static com.wegas.editor.View.CommonView.LAYOUT.shortInline;
 
 /**
  *
@@ -57,21 +61,21 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Description", value = I18nHtmlView.class))
     private TranslatableContent description;
 
     /**
      *
      */
     @Column(length = 24)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Task Number", layout = shortInline, index = -471))
     private String index;
     /**
      *
      */
     @ElementCollection
     @JsonIgnore
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Descriptor properties"))
     private List<VariableProperty> properties = new ArrayList<>();
     /**
      *
@@ -94,7 +98,8 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      */
     @Transient
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Predecessors"),
+            schema = ListOfTasksSchema.class)
     private Set<String> predecessorNames/*
              * = new ArrayList<>()
              */;

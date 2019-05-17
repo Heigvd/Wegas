@@ -8,6 +8,10 @@ public class JSONObject extends JSONType {
     private Map<String, JSONSchema> properties;
     private JSONSchema additionalProperties;
 
+    public JSONObject() {
+        this(false);
+    }
+
     public JSONObject(boolean nullable) {
         super(nullable);
     }

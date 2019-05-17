@@ -21,6 +21,9 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.View;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -53,31 +56,31 @@ public class Reply extends AbstractEntity implements DatedEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Created Time", value= ReadOnlyNumber.class))
     private Date createdTime = new Date();
     /**
      * <p>
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Start Time", value= ReadOnlyNumber.class))
     private Long startTime;
     /**
      *
      */
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Unread"))
     private Boolean unread = false;
     /**
      *
      */
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Ignored"))
     private Boolean ignored = false;
 
     /**
      *
      */
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Validated"))
     private Boolean validated = false;
     /**
      *
@@ -86,11 +89,11 @@ public class Reply extends AbstractEntity implements DatedEntity {
     private Result result;
 
     @Transient
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Result Name", value= ReadOnlyString.class))
     private String resultName;
 
     @Transient
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Choice Name", value= ReadOnlyString.class))
     private String choiceName;
 
     /**

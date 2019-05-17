@@ -18,6 +18,9 @@ import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -42,14 +45,14 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      *
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Description", index = 1, value = I18nHtmlView.class))
     private TranslatableContent description;
     /**
      *
      */
     @ElementCollection
     @JsonIgnore
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Descriptor properties", featureLevel = ADVANCED))
     private List<VariableProperty> properties = new ArrayList<>();
 
     @JsonIgnore

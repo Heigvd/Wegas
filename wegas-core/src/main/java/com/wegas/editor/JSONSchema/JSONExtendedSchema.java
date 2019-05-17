@@ -4,6 +4,7 @@ import com.wegas.core.persistence.annotations.Errored;
 import com.wegas.core.persistence.annotations.WegasConditions.Condition;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.wegas.editor.View.BaseView;
+import com.wegas.editor.View.CommonView.FEATURE_LEVEL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,8 @@ abstract public class JSONExtendedSchema implements JSONSchema, WithView, WithEr
 
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int index;
+
+    private FEATURE_LEVEL featureLevel;
 
     @Override
     public BaseView getView() {
@@ -68,5 +71,13 @@ abstract public class JSONExtendedSchema implements JSONSchema, WithView, WithEr
      */
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public FEATURE_LEVEL getFeatureLevel() {
+        return featureLevel;
+    }
+
+    public void setFeatureLevel(FEATURE_LEVEL featureLevel) {
+        this.featureLevel = featureLevel;
     }
 }

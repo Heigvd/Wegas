@@ -14,6 +14,7 @@ import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.View;
 import java.util.List;
 import static java.lang.Boolean.FALSE;
@@ -35,7 +36,11 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * Tells if the inbox has a capacity of just one message.
      */
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(
+            label = "Limit to one message",
+            description = "Each new message ejects the previous one",
+            featureLevel = ADVANCED
+    ))
     private Boolean capped = FALSE;
 
     /**

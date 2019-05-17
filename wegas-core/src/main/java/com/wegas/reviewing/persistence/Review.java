@@ -15,6 +15,8 @@ import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 import java.util.*;
 import javax.persistence.*;
@@ -122,7 +124,7 @@ public class Review extends AbstractEntity implements DatedEntity, AcceptInjecti
      * 'reviewer' only)
      */
     @OneToMany(mappedBy = "feedbackReview", cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(value = Hidden.class, label ="FeedbacFeedbackk"))
     private List<EvaluationInstance> feedback = new ArrayList<>();
 
     /**
@@ -130,7 +132,7 @@ public class Review extends AbstractEntity implements DatedEntity, AcceptInjecti
      * (writable by 'author' only)
      */
     @OneToMany(mappedBy = "commentsReview", cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(value = Hidden.class, label ="Comments"))
     private List<EvaluationInstance> comments = new ArrayList<>();
 
     @Override

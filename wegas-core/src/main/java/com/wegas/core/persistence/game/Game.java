@@ -26,6 +26,7 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.View;
 import java.util.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -68,7 +69,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @Basic(optional = false)
     @Pattern(regexp = "^.*\\S+.*$", message = "Game name cannot be empty")// must at least contains one non-whitespace character
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Name"))
     private String name;
 
     /**
@@ -78,7 +79,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     @Basic(optional = false)
 
     @Pattern(regexp = "^([a-zA-Z0-9_-]|\\.(?!\\.))*$", message = "Token shall only contains alphanumeric characters, numbers, dots, underscores or hyphens")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Token"))
     private String token;
 
     /**
@@ -120,7 +121,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      *
      */
     @Enumerated
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Access"))
     private GameAccess access = GameAccess.OPEN;
 
     /**

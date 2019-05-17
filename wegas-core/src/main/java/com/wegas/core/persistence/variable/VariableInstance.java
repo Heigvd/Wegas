@@ -25,6 +25,9 @@ import com.wegas.core.persistence.variable.scope.*;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.View;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.wh.WhQuestionInstance;
@@ -121,7 +124,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty(sameEntityOnly = true)
+    @WegasEntityProperty(sameEntityOnly = true, view = @View(
+            label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
     @JsonView(Views.IndexI.class)
     private Long version;
 

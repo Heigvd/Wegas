@@ -6,8 +6,19 @@ import com.fasterxml.jackson.databind.util.StdConverter;
 
 public class CommonView extends BaseView {
 
+    private int index;
+
     public static enum LAYOUT {
-        none, inline, shortInline;
+        none,
+        inline,
+        shortInline,
+        extraShortInline;
+    }
+
+    public static enum FEATURE_LEVEL {
+        DEFAULT,
+        ADVANCED,
+        INTERNAL;
     }
 
     private String label = "";
@@ -19,14 +30,29 @@ public class CommonView extends BaseView {
     private LAYOUT layout = LAYOUT.none;
 
     /**
+     * @return the index
+     */
+    public int getIndex() {
+        return index;
+    }
+
+    /**
+     * @param index the index to set
+     */
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    /**
      * @return the label
      */
-    final public String getLabel() {
+    public String getLabel() {
         return label;
     }
 
     /**
      * @param label the label to set
+     *
      * @return this
      */
     final public CommonView setLabel(String label) {
@@ -43,6 +69,7 @@ public class CommonView extends BaseView {
 
     /**
      * @param description the description to set
+     *
      * @return this
      */
     final public CommonView setDescription(String description) {
@@ -60,6 +87,7 @@ public class CommonView extends BaseView {
 
     /**
      * @param layout the layout to set
+     *
      * @return this
      */
     final public CommonView setLayout(LAYOUT layout) {
@@ -77,6 +105,7 @@ public class CommonView extends BaseView {
 
     /**
      * @param borderTop the borderTop to set
+     *
      * @return this
      */
     final public CommonView setBorderTop(Boolean borderTop) {
@@ -88,8 +117,9 @@ public class CommonView extends BaseView {
 
         @Override
         public String convert(LAYOUT value) {
-            if (LAYOUT.none.equals(value))
+            if (LAYOUT.none.equals(value)) {
                 return null;
+            }
             return value.toString();
         }
 
@@ -99,8 +129,9 @@ public class CommonView extends BaseView {
 
         @Override
         public Boolean convert(Boolean value) {
-            if (Boolean.FALSE.equals(value))
+            if (Boolean.FALSE.equals(value)) {
                 return null;
+            }
             return value;
         }
 

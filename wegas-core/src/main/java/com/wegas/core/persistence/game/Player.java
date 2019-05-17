@@ -26,6 +26,8 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -73,7 +75,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      * RefName of player preferred language
      */
     @Column(length = 16, columnDefinition = "character varying(16) default ''::character varying")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Language", value = ReadOnlyString.class))
     private String lang;
 
     @JsonIgnore
@@ -91,7 +93,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Name", value = ReadOnlyString.class))
     private String name;
     /**
      *

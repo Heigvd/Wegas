@@ -8,8 +8,6 @@
 package com.wegas.core.security.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.ejb.GameFacade;
-import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
@@ -18,6 +16,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.View;
 import java.util.Collection;
 import javax.persistence.*;
 import org.eclipse.persistence.config.CacheUsage;
@@ -62,7 +61,7 @@ public class Permission extends AbstractEntity {
      */
     @Basic
     @Column(name = "permissions")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Value"))
     private String value;
     /**
      *

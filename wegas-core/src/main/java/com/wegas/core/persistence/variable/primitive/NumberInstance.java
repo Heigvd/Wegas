@@ -35,6 +35,8 @@ import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
 import com.wegas.core.persistence.annotations.WegasConditions.LessThanOrEquals;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.core.persistence.annotations.WegasRefs.Self;
+import com.wegas.editor.View.CommonView;
+import com.wegas.editor.View.View;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -58,7 +60,7 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
      *
      */
     @Column(name = "val")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Value"))
     @Errored(ValueLessThanMin.class)
     @Errored(ValueGreaterThanMax.class)
     private double value;
@@ -69,7 +71,11 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
     @ElementCollection
     @JsonView(Views.ExtendedI.class)
     //@OrderColumn
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(
+            label = "History",
+            featureLevel = CommonView.FEATURE_LEVEL.ADVANCED
+    ))
+    @Errored(ValueLessThanMin.class)
     private List<NumberHistoryEntry> history = new ArrayList<>();
 
     /**

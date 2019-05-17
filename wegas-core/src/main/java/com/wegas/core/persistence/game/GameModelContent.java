@@ -18,6 +18,11 @@ import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.View;
+import com.wegas.editor.View.VisibilitySelectView;
 import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.*;
@@ -54,13 +59,13 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     @JsonIgnore
     private GameModel clientscriptlibrary_GameModel;
 
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Key", value = ReadOnlyString.class))
     private String contentKey;
 
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Content Type", value = ReadOnlyString.class))
     private String contentType;
     /**
      *
@@ -69,17 +74,20 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     @Basic(optional = false, fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     //@Column(columnDefinition = "text")
     //@JsonView({Views.Export.class})
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Content", value = Hidden.class))
     private String content = "";
 
     @Enumerated(value = EnumType.STRING)
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
-    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL)
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL, view = @View(
+            label = "",
+            value = VisibilitySelectView.class
+    ))
     private Visibility visibility = Visibility.PRIVATE;
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty(sameEntityOnly = true)
+    @WegasEntityProperty(sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class))
     private Long version;
 
     /**

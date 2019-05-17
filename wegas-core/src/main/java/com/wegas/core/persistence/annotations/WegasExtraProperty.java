@@ -7,6 +7,8 @@
  */
 package com.wegas.core.persistence.annotations;
 
+import com.wegas.editor.JSONSchema.JSONSchema;
+import com.wegas.editor.JSONSchema.UndefinedSchema;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -48,4 +50,11 @@ public @interface WegasExtraProperty {
      * @return true is null is a valid value
      */
     boolean nullable() default false;
+
+    /**
+     * Override schema
+     *
+     * @return
+     */
+    Class<? extends JSONSchema> schema() default UndefinedSchema.class;
 }

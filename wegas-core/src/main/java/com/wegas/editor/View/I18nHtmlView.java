@@ -10,10 +10,10 @@ package com.wegas.editor.View;
 /**
  * @author maxence
  */
-public class Number extends CommonView {
+public class I18nHtmlView extends CommonView {
 
     @Override
     public String getType() {
-        return "number";
+        return "i18nhtml";
     }
 }

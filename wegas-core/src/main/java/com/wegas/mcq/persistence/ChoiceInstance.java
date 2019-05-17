@@ -17,6 +17,9 @@ import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.View.EntityArrayFiledSelect;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -46,12 +49,12 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Active from start"))
     private Boolean active = true;
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Unread", value = Hidden.class))
     private Boolean unread = true;
     /**
      *
@@ -74,21 +77,21 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
     @BatchFetch(BatchFetchType.JOIN)
     @JsonManagedReference
     //@JoinFetch
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Replies", value = Hidden.class))
     private List<Reply> replies = new ArrayList<>();
 
     /**
      *
      */
     @Transient
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Default result", value = EntityArrayFiledSelect.ResultsSelect.class))
     private String currentResultName;
 
     @Transient
     /**
      * @deprecated
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "deprecated current result index", value = Hidden.class))
     private Integer currentResultIndex = null;
 
     public ChoiceInstance() {
@@ -219,7 +222,7 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
 
         if (validatedFilter != null) {
             for (Reply r : replies) {
-                if (validatedFilter.equals(r.isValidated())){
+                if (validatedFilter.equals(r.isValidated())) {
                     subReplies.add(r);
                 }
             }

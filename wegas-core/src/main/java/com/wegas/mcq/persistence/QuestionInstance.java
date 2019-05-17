@@ -14,6 +14,8 @@ import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,19 +34,19 @@ public class QuestionInstance extends VariableInstance implements ReadableInstan
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Active"))
     private Boolean active = true;
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Unread", value= Hidden.class))
     private Boolean unread = true;
     /**
      * False until the user has clicked on the global question-wide "submit"
      * button.
      */
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Validated", value= Hidden.class))
     private Boolean validated = FALSE;
 
     /**

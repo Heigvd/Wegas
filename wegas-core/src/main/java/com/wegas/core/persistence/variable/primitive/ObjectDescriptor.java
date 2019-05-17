@@ -14,6 +14,8 @@ import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.ElementCollection;
@@ -25,7 +27,6 @@ import javax.persistence.Lob;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-
 /*@Table(indexes = {
  @Index(columnList = "properties.objectdescriptor_variabledescriptor_id")
  })*/
@@ -36,14 +37,14 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
      *
      */
     @Lob
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Description", value = I18nHtmlView.class))
     private String description;
     /**
      *
      */
     @ElementCollection
     @JsonIgnore
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Descriptor properties"))
     private List<VariableProperty> properties = new ArrayList<>();
 
     @Override
@@ -51,7 +52,6 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
     public List<VariableProperty> getInternalProperties() {
         return this.properties;
     }
-
 
     /**
      * @return the description

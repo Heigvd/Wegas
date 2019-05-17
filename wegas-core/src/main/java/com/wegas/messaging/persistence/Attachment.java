@@ -22,6 +22,8 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.I18nFileView;
+import com.wegas.editor.View.View;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -66,7 +68,7 @@ public class Attachment extends AbstractEntity implements Serializable {
      * URI
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view= @View(label = "File", value = I18nFileView.class))
     private TranslatableContent file;
 
     @Override

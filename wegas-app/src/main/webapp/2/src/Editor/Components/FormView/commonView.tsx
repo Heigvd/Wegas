@@ -14,21 +14,26 @@ const borderTop = css({
   borderTop: '4px solid',
   paddingTop: '2px',
 });
+const shortInline = css({
+  display: 'inline-block',
+  marginRight: '2em',
+  verticalAlign: 'top',
+  maxWidth: '11em',
+})
 const LAYOUTS = {
-  shortInline: css({
-    display: 'inline-block',
-    marginRight: '2em',
-    verticalAlign: 'top',
-    maxWidth: '11em',
-  }),
+  shortInline: shortInline,
   inline: css({
     display: 'inline-block',
     verticalAlign: 'top',
+  }),
+    extraShortInline: css(shortInline, {
+    maxWidth: '5em',
   }),
 };
 export interface CommonView {
   borderTop?: boolean;
   layout?: keyof typeof LAYOUTS;
+  index?: number;
 }
 interface CommonViewProps {
   children: React.ReactNode;
@@ -52,6 +57,7 @@ export function CommonViewContainer({
         [`${borderTop}`]: Boolean(view.borderTop),
       })}
     >
+    <span>{view.index}: </span>
       {children}
       <div className={errorStyle}>{error}</div>
     </div>

@@ -24,6 +24,9 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -64,7 +67,8 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty(sameEntityOnly = true)
+    @WegasEntityProperty(sameEntityOnly = true, view = @View(
+            label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
     @JsonView(Views.IndexI.class)
     private Long version;
 
@@ -79,7 +83,8 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
      *
      */
     @JsonIgnore
-    @WegasEntityProperty(searchable = true, callback = TranslatableCallback.class)
+    @WegasEntityProperty(searchable = true, callback = TranslatableCallback.class,
+            view = @View(label = "Translations"))
     @OneToMany(mappedBy = "translatableContent", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @PrivateOwned
     private List<Translation> translations = new ArrayList<>();
@@ -462,8 +467,8 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
 
         @Override
         public void add(Object child, Mergeable container, Object identifier) {
-            if (container instanceof TranslatableContent && child instanceof Translation){
-                ((Translation)child).setTranslatableContent((TranslatableContent) container);
+            if (container instanceof TranslatableContent && child instanceof Translation) {
+                ((Translation) child).setTranslatableContent((TranslatableContent) container);
             }
         }
     }

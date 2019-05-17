@@ -19,6 +19,9 @@ import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.I18nStringView;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -52,21 +55,21 @@ public class Message extends AbstractEntity implements DatedEntity {
      *
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Subject", value = I18nStringView.class))
     private TranslatableContent subject;
 
     /**
      * Kind of message identifier
      */
     @Column(length = 64, columnDefinition = "character varying(64) default ''::character varying")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Token"))
     private String token;
 
     /**
      * Message body
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Body", value = I18nHtmlView.class))
     private TranslatableContent body;
 
     /**
@@ -74,25 +77,25 @@ public class Message extends AbstractEntity implements DatedEntity {
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "senttime", columnDefinition = "timestamp with time zone")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Timestamp"))
     private Date time = new Date();
 
     /**
      * Simulation date, for display purpose
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Date", value = I18nStringView.class))
     private TranslatableContent date;
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Unread"))
     private Boolean unread = true;
     /**
      *
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "From", value = I18nStringView.class))
     private TranslatableContent from;
     /**
      *
@@ -100,7 +103,7 @@ public class Message extends AbstractEntity implements DatedEntity {
     @OneToMany(mappedBy = "message", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonDeserialize(using = Attachment.ListDeserializer.class)
     //@JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Attachements"))
     private List<Attachment> attachments = new ArrayList<>();
     /**
      *
@@ -130,7 +133,7 @@ public class Message extends AbstractEntity implements DatedEntity {
         this(from, subject, body, null, null, null);
     }*/
 
-    /*
+ /*
      *
      * @param from
      * @param subject
@@ -141,7 +144,7 @@ public class Message extends AbstractEntity implements DatedEntity {
         this(from, subject, body, null, null, attachments);
     }*/
 
-    /*
+ /*
      *
      * @param from
      * @param subject
@@ -152,7 +155,7 @@ public class Message extends AbstractEntity implements DatedEntity {
         this(from, subject, body, date, null, null);
     }*/
 
-    /*
+ /*
      *
      * @param from
      * @param subject
@@ -163,7 +166,6 @@ public class Message extends AbstractEntity implements DatedEntity {
     public Message(String from, String subject, String body, String date, List<String> attachments) {
         this(from, subject, body, date, null, attachments);
     }*/
-
     /**
      *
      * @param from

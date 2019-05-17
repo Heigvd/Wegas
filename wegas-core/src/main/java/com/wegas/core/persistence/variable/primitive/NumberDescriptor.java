@@ -25,7 +25,13 @@ import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.annotations.WegasConditions.And;
 import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
 import com.wegas.core.persistence.annotations.WegasConditions.LessThan;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
+import com.wegas.editor.View.CommonView;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.NumberView;
+import com.wegas.editor.View.View;
 
 /**
  *
@@ -40,13 +46,27 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
     /**
      *
      */
-    @WegasEntityProperty(order = -1, nullable = true) // update bound before the default instance
+    @WegasEntityProperty(order = -1, // update bound before the default instance
+            nullable = true,
+            view = @View(
+                    label = "Minimum",
+                    layout = CommonView.LAYOUT.shortInline,
+                    value = NumberView.WithNegInfinityPlaceholder.class,
+                    index = 600
+            ))
     @Errored(NumberDescBoundsConstraint.class)
     private Double minValue;
     /**
      *
      */
-    @WegasEntityProperty(order = -1, nullable = true) // update bound before the default instance
+    @WegasEntityProperty(order = -1, // update bound before the default instance
+            nullable = true,
+            view = @View(
+                    label = "Maximum",
+                    layout = CommonView.LAYOUT.shortInline,
+                    value = NumberView.WithNegInfinityPlaceholder.class,
+                    index = 610
+            ))
     @Errored(NumberDescBoundsConstraint.class)
     private Double maxValue;
 
@@ -54,7 +74,12 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      *
      */
     @Column(columnDefinition = "integer default 20")
-    @WegasEntityProperty
+    @WegasEntityProperty(nullable = true,
+            view = @View(
+                    label = "Maximum history size",
+                    featureLevel = ADVANCED,
+                    index = 700
+            ))
     private Integer historySize = 20;
 
     /**
@@ -168,7 +193,9 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      * @return the defaule value
      */
     @Transient
+    @WegasExtraProperty(view = @View(label = "Default value", value = Hidden.class))
     public double getDefaultValue() {
+        // ugly hack used by crimesim.
         return this.getDefaultInstance().getValue();
     }
 

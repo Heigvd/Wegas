@@ -20,6 +20,8 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.Textarea;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -83,7 +85,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @NotNull
     @Basic(optional = false)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Name"))
     private String name;
 
     /**
@@ -106,7 +108,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @Lob
     @JsonView(value = Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Notes", value =Textarea.class))
     private String notes;
 
     /**

@@ -14,6 +14,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.View;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.*;
@@ -47,25 +48,25 @@ public class Workload extends AbstractEntity implements Serializable {
     /**
      * period number
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Period number"))
     private Long periodNumber;
 
     /**
      * workload to do before doing the period
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Workload"))
     private Double workload;
 
     /**
      * effective workload spent during the last period
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Spent"))
     private Double spentWorkload;
 
     /**
      * Period subdivision step
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Last worked step"))
     private Integer lastWorkedStep;
 
     public Long getPeriodNumber() {
