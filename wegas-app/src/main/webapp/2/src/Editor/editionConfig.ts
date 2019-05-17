@@ -3,6 +3,8 @@ import { Schema } from 'jsoninput';
 import { StateActions } from '../data/actions';
 import { AvailableViews } from './Components/FormView';
 import { formValidation } from './validation';
+import { entityIs } from '../data/entities';
+import { editStateMachine, editVariable } from '../data/Reducer/globalState';
 
 export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 
@@ -153,17 +155,17 @@ export async function getAvailableChildren<T extends IWegasEntity>(
   ).then(res => res.children);
 }
 
-export interface EActions<T extends IWegasEntity> {
-  edit: (variable: T, path?: string[]) => StateActions;
+export interface EActions {
+  edit: (variable: IWegasEntity, path?: string[]) => StateActions;
 }
 
-export async function getEntityActions<T extends IWegasEntity>(
-  entity: T,
-): Promise<EActions<T>> {
-  return import(
-    /* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
-      entity['@class']
-  ).then(res => res.actions);
+export async function getEntityActions(
+  entity: IWegasEntity,
+): Promise<EActions> {
+  if (entityIs<IFSMDescriptor>(entity, 'FSMDescriptor')) {
+    return { edit: editStateMachine };
+  }
+  return { edit: editVariable };
 }
 
 export async function getMethodConfig<T extends IWegasEntity>(

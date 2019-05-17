@@ -143,6 +143,6 @@ export const config: ConfigurationSchema<IVariableDescriptor> = {
   },
 };
 
-export const actions: EActions<IVariableDescriptor> = {
+export const actions: EActions = {
   edit: Actions.EditorActions.editVariable,
 };

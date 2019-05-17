@@ -31,7 +31,7 @@ export const config: ConfigurationSchema<IFSMDescriptor> = {
     properties: FSMInstanceConfig,
   },
 };
-export const actions: EActions<IFSMDescriptor> = {
+export const actions: EActions = {
   edit: Actions.EditorActions.editStateMachine,
 };
 export const label = 'State-machine';
