@@ -593,6 +593,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             language={scriptLanguage}
             onBlur={onContentChange}
             readonly={!isEditAllowed()}
+            onSave={onSaveLibrary}
           />
         )}
       </Toolbar.Content>

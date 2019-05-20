@@ -131,6 +131,21 @@ export function DiffEditor({
     }
   }, [modifiedContent]);
 
+  React.useEffect(() => {
+    if (diffEditor.current) {
+      diffEditor.current.addCommand(
+        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
+        () => {
+          if (idx !== -1 || !diffEditor.current) {
+            alert('You must resolve all differences before saving');
+          } else {
+            onResolved(diffEditor.current.getOriginalEditor().getValue());
+          }
+        },
+      );
+    }
+  }, [idx, onResolved]);
+
   const textToArray = (text: string): string[] => {
     return text.split('\n');
   };

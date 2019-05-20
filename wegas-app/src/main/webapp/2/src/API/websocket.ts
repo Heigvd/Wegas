@@ -4,8 +4,6 @@ import { store } from '../data/store';
 import { updatePusherStatus } from '../data/Reducer/globalState';
 import { managedMode } from '../data/actions';
 import { Actions } from '../data';
-import { omit } from 'lodash';
-import { useEffect } from 'react';
 import * as React from 'react';
 
 const CHANNEL_PREFIX = {
@@ -169,7 +167,7 @@ class WebSocketListener {
       );
     });
   }
-  public insertCallback(
+  public bindCallback(
     eventId: WebSocketEvent,
     callback: (
       data: any, //eslint-disable-line @typescript-eslint/no-explicit-any
@@ -178,11 +176,11 @@ class WebSocketListener {
     if (this.events[eventId]) {
       this.events[eventId].push(callback);
     } else {
-      console.log('Unknown event');
+      console.log('Unknown event'); //eslint-disable-line no-console
     }
   }
 
-  public removeCallback(
+  public unbindCallback(
     eventId: WebSocketEvent,
     callback: (
       data: any, //eslint-disable-line @typescript-eslint/no-explicit-any
@@ -191,7 +189,7 @@ class WebSocketListener {
     if (this.events[eventId]) {
       this.events[eventId] = this.events[eventId].filter(el => el !== callback);
     } else {
-      console.log('Unknown event');
+      console.log('Unknown event'); //eslint-disable-line no-console
     }
   }
 
@@ -243,10 +241,10 @@ const SingletonWebSocket = new WebSocketListener(
 
 export const useWebsocket = (
   event: WebSocketEvent,
-  cb: (data: any) => void,
+  cb: (data: any) => void, //eslint-disable-line @typescript-eslint/no-explicit-any
 ) => {
   React.useEffect(() => {
-    SingletonWebSocket.insertCallback(event, cb);
-    return () => SingletonWebSocket.removeCallback(event, cb);
+    SingletonWebSocket.bindCallback(event, cb);
+    return () => SingletonWebSocket.unbindCallback(event, cb);
   }, [event, cb]);
 };

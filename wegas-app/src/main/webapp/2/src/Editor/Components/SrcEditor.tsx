@@ -12,6 +12,7 @@ interface EditorProps {
   language: 'javascript' | 'css' | 'json';
   onChange: (value: string) => void;
   onBlur: (value: string) => void;
+  onSave?: (value: string) => void;
 }
 
 const overflowHide = css({
@@ -61,6 +62,16 @@ class SrcEditor extends React.Component<EditorProps> {
           this.props.language,
         );
       });
+    }
+    const onSave = this.props.onSave;
+    const editor = this.editor!;
+    if (onSave) {
+      this.editor!.addCommand(
+        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
+        function() {
+          onSave(editor.getValue());
+        },
+      );
     }
     this.editor!.layout();
   }
