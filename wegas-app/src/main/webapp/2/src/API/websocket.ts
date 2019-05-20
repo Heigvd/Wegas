@@ -4,7 +4,7 @@ import { store } from '../data/store';
 import { updatePusherStatus } from '../data/Reducer/globalState';
 import { managedMode } from '../data/actions';
 import { Actions } from '../data';
-import { LibType } from './library.api';
+import { omit } from 'lodash';
 
 const CHANNEL_PREFIX = {
   Admin: 'private-Admin',
@@ -24,11 +24,11 @@ function Uint8ArrayToStr(array: Uint8Array) {
    * LastModified: Dec 25 1999
    * This library is free.  You can redistribute it and/or modify it.
    */
-  let out, i, len, c;
+  let out, i, c;
   let char2, char3;
 
   out = '';
-  len = array.length;
+  const len = array.length;
   i = 0;
   while (i < len) {
     c = array[i++];
@@ -87,24 +87,59 @@ async function processEvent(
   }
   return { event, data };
 }
+
+export type WebSocketEvent =
+  | 'EntityUpdatedEvent'
+  | 'EntityDestroyedEvent'
+  | 'CustomEvent'
+  | 'PageUpdate'
+  | 'LibraryUpdate-CSS'
+  | 'LibraryUpdate-ClientScript'
+  | 'LibraryUpdate-ServerScript';
+
+const webSocketEvents: WebSocketEvent[] = [
+  'EntityUpdatedEvent',
+  'EntityDestroyedEvent',
+  'CustomEvent',
+  'PageUpdate',
+  'LibraryUpdate-CSS',
+  'LibraryUpdate-ClientScript',
+  'LibraryUpdate-ServerScript',
+];
+
+interface EventMap {
+  [eventId: string]: {
+    [handlerId: string]: (
+      data: any, //eslint-disable-line @typescript-eslint/no-explicit-any
+    ) => void;
+  };
+}
+
 /**
  *
  *
  * @export
  * @class WebSocketListener
  */
-export default class WebSocketListener {
+class WebSocketListener {
   socketId?: string;
-  status: any;
+  status: any; //eslint-disable-line @typescript-eslint/no-explicit-any
+  events: EventMap = {};
+
   private socket: import('pusher-js').Pusher.PusherSocket | null = null;
   constructor(applicationKey: string, authEndpoint: string, cluster: string) {
+    for (const eventId of webSocketEvents) {
+      this.events[eventId] = {};
+    }
     import('pusher-js').then(Pusher => {
       this.socket = new Pusher.default(applicationKey, {
         cluster,
         authEndpoint,
         encrypted: true,
       });
-      this.socket.connection.bind('state_change', (state: any) => {
+      this.socket.connection.bind('state_change', (
+        state: any, //eslint-disable-line @typescript-eslint/no-explicit-any
+      ) => {
         this.status = state.current;
         this.socketId = this.socket!.connection.socket_id;
         store.dispatch(updatePusherStatus(state.current, this.socketId));
@@ -125,13 +160,51 @@ export default class WebSocketListener {
               //pusher events
               return;
             }
-            this.eventReveived(processed.event, processed.data);
+            this.eventReveived(
+              processed.event as WebSocketEvent,
+              processed.data,
+            );
           },
         ),
       );
     });
   }
-  private eventReveived(event: string, data: any) {
+  public insertCallback(
+    eventId: WebSocketEvent,
+    handlerId: string,
+    callBack: (
+      data: any, //eslint-disable-line @typescript-eslint/no-explicit-any
+    ) => void,
+  ) {
+    if (this.events[eventId][handlerId] !== undefined) {
+      return false;
+    } else {
+      this.events[eventId][handlerId] = callBack;
+      return true;
+    }
+  }
+
+  public removeCallback(eventId: WebSocketEvent, handlerId: string) {
+    if (this.events[eventId][handlerId] !== undefined) {
+      this.events[eventId] = omit(this.events[eventId], handlerId);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private eventReveived(
+    event: WebSocketEvent,
+    data: any, //eslint-disable-line @typescript-eslint/no-explicit-any
+  ) {
+    // Dispatch outisde managed events
+    if (this.events[event] !== undefined) {
+      for (const handlerId of Object.keys(this.events[event])) {
+        this.events[event][handlerId](data);
+      }
+    }
+
+    // Dispatch inside managed events... (may be simplified)
     switch (event) {
       case 'EntityUpdatedEvent':
       case 'EntityDestroyedEvent':
@@ -144,18 +217,12 @@ export default class WebSocketListener {
             events: data.events,
           }),
         );
-      case 'PageUpdate':
-        store.dispatch(Actions.PageActions.get(data));
-        return;
       case 'LibraryUpdate-CSS':
       case 'LibraryUpdate-ClientScript':
       case 'LibraryUpdate-ServerScript':
-        store.dispatch(
-          Actions.LibraryActions.get(
-            event.replace('LibraryUpdate-', '') as LibType,
-              data,
-          ),
-        );
+        return;
+      case 'PageUpdate':
+        store.dispatch(Actions.PageActions.get(data));
         return;
       default:
         throw Error(`Event [${event}] unchecked`);
@@ -163,5 +230,30 @@ export default class WebSocketListener {
   }
   destructor() {
     this.socket!.disconnect();
+  }
+}
+
+export default class SingletonWebSocket {
+  listener: WebSocketListener | null = null;
+  constructor() {
+    if (this.listener === null) {
+      this.listener = new WebSocketListener(
+        PusherApp.applicationKey,
+        PusherApp.authEndpoint,
+        PusherApp.cluster,
+      );
+    }
+  }
+  public insertCallback(
+    eventId: WebSocketEvent,
+    handlerId: string,
+    callBack: (
+      data: any, //eslint-disable-line @typescript-eslint/no-explicit-any
+    ) => void,
+  ) {
+    return this.listener!.insertCallback(eventId, handlerId, callBack);
+  }
+  public removeCallback(eventId: WebSocketEvent, handlerId: string) {
+    return this.listener!.removeCallback(eventId, handlerId);
   }
 }

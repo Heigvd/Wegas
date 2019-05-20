@@ -1,10 +1,11 @@
 import { rest } from './rest';
+import { GameModel } from '../data/selectors';
 
 export type LibType = 'CSS' | 'ClientScript' | 'ServerScript';
 export type NewLibErrors = 'NOTNEW' | 'UNKNOWN';
 
-const LIBRARY_BASE = (gameModelId: number, libType: LibType) =>
-  `GameModel/${gameModelId}/Library/${libType}`;
+const LIBRARY_BASE = (libType: LibType) =>
+  `GameModel/${GameModel.selectCurrent().id!}/Library/${libType}`;
 
 export const LibraryApi = {
   /**
@@ -12,29 +13,24 @@ export const LibraryApi = {
    * @param gameModelId gameModels'id
    * @param libType library types (CSS, ClientScript, ServerScript)
    */
-  getAllLibraries(gameModelId: number, libType: LibType): Promise<ILibraries> {
-    return rest(LIBRARY_BASE(gameModelId, libType)).then((res: Response) => {
+  getAllLibraries(libType: LibType): Promise<ILibraries> {
+    return rest(LIBRARY_BASE(libType)).then((res: Response) => {
       return res.json();
     });
   },
-  getLibrary(
-    gameModelId: number,
-    libType: LibType,
-    name: string,
-  ): Promise<ILibrary> {
-    return rest(LIBRARY_BASE(gameModelId, libType) + '/' + name).then(
+  getLibrary(libType: LibType, name: string): Promise<ILibrary> {
+    return rest(LIBRARY_BASE(libType) + '/' + name).then(
       async (res: Response) => {
         return res.json();
       },
     );
   },
   addLibrary(
-    gameModelId: number,
     libType: LibType,
     name: string,
     library?: ILibrary,
   ): Promise<ILibrary> {
-    return rest(LIBRARY_BASE(gameModelId, libType) + '/' + name, {
+    return rest(LIBRARY_BASE(libType) + '/' + name, {
       method: 'POST',
       body: JSON.stringify({
         '@class': 'GameModelContent',
@@ -52,20 +48,13 @@ export const LibraryApi = {
         }
       });
   },
-  saveLibrary(
-    gameModelId: number,
-    libType: LibType,
-    name: string,
-    library: ILibrary,
-  ) {
+  saveLibrary(libType: LibType, name: string, library: ILibrary) {
     return rest(
-      LIBRARY_BASE(gameModelId, libType) + '/' + name,
+      LIBRARY_BASE(libType) + '/' + name,
       {
         method: 'PUT',
         body: JSON.stringify({
-          ...{
-            '@class': 'GameModelContent',
-          },
+          '@class': 'GameModelContent',
           ...library,
         }),
       },
@@ -73,8 +62,8 @@ export const LibraryApi = {
       'application/json',
     );
   },
-  deleteLibrary(gameModelId: number, libType: LibType, name: string) {
-    return rest(LIBRARY_BASE(gameModelId, libType) + '/' + name, {
+  deleteLibrary(libType: LibType, name: string) {
+    return rest(LIBRARY_BASE(libType) + '/' + name, {
       method: 'DELETE',
     });
   },
