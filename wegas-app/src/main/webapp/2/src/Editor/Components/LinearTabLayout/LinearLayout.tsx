@@ -261,7 +261,6 @@ const createLayout = (
   type: LayoutType,
   children: string[] = [],
   vertical: boolean = false,
-  active?: string,
 ) => {
   const newLayouts = layouts;
   newLayouts.lastKey = incrementNumericKey(newLayouts.lastKey);
@@ -418,7 +417,6 @@ const setLayout = (layouts: ManagedLayoutMap, action: TabLayoutsAction) =>
               'TabLayoutNode',
               [action.tabKey],
               false,
-              action.tabKey,
             );
             const newTabLayoutKey = layouts.lastKey;
 

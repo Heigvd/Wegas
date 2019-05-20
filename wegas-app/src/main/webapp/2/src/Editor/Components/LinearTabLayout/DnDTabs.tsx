@@ -10,8 +10,6 @@ import { IconButton } from '../../../Components/Button/IconButton';
 import { Menu } from '../../../Components/Menu';
 import { DropType } from './LinearLayout';
 import u from 'immer';
-import { type } from 'os';
-import { number } from 'prop-types';
 
 const buttonStyle = css({
   color: themeVar.primaryDarkerTextColor,
@@ -275,8 +273,21 @@ export function DnDTabLayout({
               </Tab>
             );
           })}
+          {/* {allowDrop &&
+            tabState.tabs.map(t => {
+              return (
+                <Tab key={'DROP' + t.id} id={-t.id * 1000} active={false}>
+                  Drop here
+                </Tab>
+              );
+            })} */}
           {selectItems && selectItems.length > 0 && (
-            <Tab key={'-1'} id={-1} active={false}>
+            <Tab
+              key={'-1'}
+              id={-1}
+              active={false}
+              tabColors={{ active: '', inactive: css(dropZoneStyle) }}
+            >
               <Menu
                 items={selectItems}
                 icon="plus"
@@ -289,11 +300,13 @@ export function DnDTabLayout({
         </Toolbar.Header>
       </div>
       <Toolbar.Content className={compoContent}>
-        {tabState.tabs.map((t, i) => {
+        {tabState.tabs.map(t => {
           return (
             <div
               key={t.id}
-              style={i !== tabState.activeId ? { display: 'none' } : undefined}
+              style={
+                t.id !== tabState.activeId ? { display: 'none' } : undefined
+              }
               className={grow}
             >
               {t.component}
@@ -345,7 +358,7 @@ export function DnDTabLayout({
   );
 }
 
-const tabStyle = css(primaryLight, {
+const defaultTabStyle = css({
   display: 'inline-block',
   cursor: 'pointer',
   margin: '0 0.2em',
@@ -353,7 +366,6 @@ const tabStyle = css(primaryLight, {
   borderWidth: '1px 1px 0 1px',
   padding: '5px',
 });
-const activeTabStyle = css(tabStyle, primaryDark);
 
 interface TabProps {
   active: boolean;
@@ -361,6 +373,7 @@ interface TabProps {
   children: React.ReactChild | null;
   onClick?: () => void;
   onDrag?: (isDragging: boolean, tabId: number) => void;
+  tabColors?: { active: string; inactive: string };
 }
 
 function Tab(props: TabProps) {
@@ -371,13 +384,22 @@ function Tab(props: TabProps) {
     end: () => props.onDrag && props.onDrag(false, props.id),
   });
 
+  const activeTabStyle = css(
+    props.tabColors ? props.tabColors.active : primaryDark,
+    defaultTabStyle,
+  );
+  const inactiveTabStyle = css(
+    props.tabColors ? props.tabColors.inactive : primaryLight,
+    defaultTabStyle,
+  );
+
   if (props.children === null) {
     return null;
   }
   return (
     <div
       ref={drag}
-      className={`${props.active ? activeTabStyle : tabStyle}`}
+      className={`${props.active ? activeTabStyle : inactiveTabStyle}`}
       onClick={() => {
         if (props.onClick) {
           props.onClick();
