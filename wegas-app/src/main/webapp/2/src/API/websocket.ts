@@ -80,8 +80,8 @@ async function processEvent(
 
     return {
       event: event.slice(0, -3),
-      data: Uint8ArrayToStr(
-        await import('pako').then(p => p.inflate(compressed)),
+      data: JSON.parse(
+        Uint8ArrayToStr(await import('pako').then(p => p.inflate(compressed))),
       ),
     };
   }
@@ -241,7 +241,7 @@ const SingletonWebSocket = new WebSocketListener(
 
 export const useWebsocket = (
   event: WebSocketEvent,
-  cb: (data: any) => void, //eslint-disable-line @typescript-eslint/no-explicit-any
+  cb: (data: unknown) => void,
 ) => {
   React.useEffect(() => {
     SingletonWebSocket.bindCallback(event, cb);
