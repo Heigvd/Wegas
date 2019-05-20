@@ -5,6 +5,8 @@ import { updatePusherStatus } from '../data/Reducer/globalState';
 import { managedMode } from '../data/actions';
 import { Actions } from '../data';
 import { omit } from 'lodash';
+import { useEffect } from 'react';
+import * as React from 'react';
 
 const CHANNEL_PREFIX = {
   Admin: 'private-Admin',
@@ -108,11 +110,9 @@ const webSocketEvents: WebSocketEvent[] = [
 ];
 
 interface EventMap {
-  [eventId: string]: {
-    [handlerId: string]: (
-      data: any, //eslint-disable-line @typescript-eslint/no-explicit-any
-    ) => void;
-  };
+  [eventId: string]: ((
+    data: any, //eslint-disable-line @typescript-eslint/no-explicit-any
+  ) => void)[];
 }
 
 /**
@@ -129,7 +129,7 @@ class WebSocketListener {
   private socket: import('pusher-js').Pusher.PusherSocket | null = null;
   constructor(applicationKey: string, authEndpoint: string, cluster: string) {
     for (const eventId of webSocketEvents) {
-      this.events[eventId] = {};
+      this.events[eventId] = [];
     }
     import('pusher-js').then(Pusher => {
       this.socket = new Pusher.default(applicationKey, {
@@ -171,25 +171,27 @@ class WebSocketListener {
   }
   public insertCallback(
     eventId: WebSocketEvent,
-    handlerId: string,
-    callBack: (
+    callback: (
       data: any, //eslint-disable-line @typescript-eslint/no-explicit-any
     ) => void,
   ) {
-    if (this.events[eventId][handlerId] !== undefined) {
-      return false;
+    if (this.events[eventId]) {
+      this.events[eventId].push(callback);
     } else {
-      this.events[eventId][handlerId] = callBack;
-      return true;
+      console.log('Unknown event');
     }
   }
 
-  public removeCallback(eventId: WebSocketEvent, handlerId: string) {
-    if (this.events[eventId][handlerId] !== undefined) {
-      this.events[eventId] = omit(this.events[eventId], handlerId);
-      return true;
+  public removeCallback(
+    eventId: WebSocketEvent,
+    callback: (
+      data: any, //eslint-disable-line @typescript-eslint/no-explicit-any
+    ) => void,
+  ) {
+    if (this.events[eventId]) {
+      this.events[eventId] = this.events[eventId].filter(el => el !== callback);
     } else {
-      return false;
+      console.log('Unknown event');
     }
   }
 
@@ -197,10 +199,12 @@ class WebSocketListener {
     event: WebSocketEvent,
     data: any, //eslint-disable-line @typescript-eslint/no-explicit-any
   ) {
+    let eventFound = false;
     // Dispatch outisde managed events
     if (this.events[event] !== undefined) {
-      for (const handlerId of Object.keys(this.events[event])) {
-        this.events[event][handlerId](data);
+      eventFound = Object.keys(this.events[event]).length > 0;
+      for (const callback of this.events[event]) {
+        callback(data);
       }
     }
 
@@ -217,15 +221,13 @@ class WebSocketListener {
             events: data.events,
           }),
         );
-      case 'LibraryUpdate-CSS':
-      case 'LibraryUpdate-ClientScript':
-      case 'LibraryUpdate-ServerScript':
-        return;
       case 'PageUpdate':
         store.dispatch(Actions.PageActions.get(data));
         return;
       default:
-        throw Error(`Event [${event}] unchecked`);
+        if (!eventFound) {
+          throw Error(`Event [${event}] unchecked`);
+        }
     }
   }
   destructor() {
@@ -233,27 +235,18 @@ class WebSocketListener {
   }
 }
 
-export default class SingletonWebSocket {
-  listener: WebSocketListener | null = null;
-  constructor() {
-    if (this.listener === null) {
-      this.listener = new WebSocketListener(
-        PusherApp.applicationKey,
-        PusherApp.authEndpoint,
-        PusherApp.cluster,
-      );
-    }
-  }
-  public insertCallback(
-    eventId: WebSocketEvent,
-    handlerId: string,
-    callBack: (
-      data: any, //eslint-disable-line @typescript-eslint/no-explicit-any
-    ) => void,
-  ) {
-    return this.listener!.insertCallback(eventId, handlerId, callBack);
-  }
-  public removeCallback(eventId: WebSocketEvent, handlerId: string) {
-    return this.listener!.removeCallback(eventId, handlerId);
-  }
-}
+const SingletonWebSocket = new WebSocketListener(
+  PusherApp.applicationKey,
+  PusherApp.authEndpoint,
+  PusherApp.cluster,
+);
+
+export const useWebsocket = (
+  event: WebSocketEvent,
+  cb: (data: any) => void,
+) => {
+  React.useEffect(() => {
+    SingletonWebSocket.insertCallback(event, cb);
+    return () => SingletonWebSocket.removeCallback(event, cb);
+  }, [event, cb]);
+};

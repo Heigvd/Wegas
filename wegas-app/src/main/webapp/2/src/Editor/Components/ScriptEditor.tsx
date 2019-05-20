@@ -10,7 +10,7 @@ import u from 'immer';
 import { DiffEditor } from './DiffEditor';
 import { themeVar } from '../../Components/Theme';
 import { css } from 'emotion';
-import SingletonWebSocket, { WebSocketEvent } from '../../API/websocket';
+import { WebSocketEvent, useWebsocket } from '../../API/websocket';
 
 function StyledLabel({
   type,
@@ -54,11 +54,6 @@ function StyledLabel({
 
 interface ScriptEditorProps {
   scriptType: LibType;
-  callbackManager: (
-    eventId: WebSocketEvent,
-    handlerId: string,
-    callback?: (data: string) => void,
-  ) => boolean;
 }
 
 const visibilities: IVisibility[] = [
@@ -261,7 +256,7 @@ const setLibraryState = (oldState: ILibrariesState, action: StateAction) =>
     return oldState;
   });
 
-function ScriptEditor({ scriptType, callbackManager }: ScriptEditorProps) {
+function ScriptEditor({ scriptType }: ScriptEditorProps) {
   const gameModel = GameModel.selectCurrent();
   const librarySelectorId = 'library-selector';
   const visibilitySelectorId = 'visibility-selector';
@@ -281,33 +276,20 @@ function ScriptEditor({ scriptType, callbackManager }: ScriptEditorProps) {
     },
   );
 
-  React.useEffect(() => {
-    const eventId = ('LibraryUpdate-' + scriptType) as WebSocketEvent;
-    const handlerId = 'ScriptEditor';
-    const onScriptEvent = (data: string) => {
-      LibraryApi.getLibrary(scriptType, data).then((res: ILibrary) => {
-        dispatchStateAction({
-          type: 'RemoteModified',
-          key: data,
-          remoteLibrary: res,
-        });
+  const onScriptEvent = (data: string) => {
+    LibraryApi.getLibrary(scriptType, data).then((res: ILibrary) => {
+      dispatchStateAction({
+        type: 'RemoteModified',
+        key: data,
+        remoteLibrary: res,
       });
-    };
+    });
+  };
 
-    if (!callbackManager(eventId, handlerId, onScriptEvent)) {
-      throw Error(
-        'The handlerId [' +
-          handlerId +
-          '] for the event [' +
-          eventId +
-          '] is already in use',
-      );
-    }
-    return () => {
-      // Unmounting callback manager
-      callbackManager(eventId, handlerId);
-    };
-  }, [callbackManager, scriptType]);
+  useWebsocket(
+    ('LibraryUpdate-' + scriptType) as WebSocketEvent,
+    onScriptEvent,
+  );
 
   let scriptLanguage: 'css' | 'javascript';
 
@@ -619,35 +601,12 @@ function ScriptEditor({ scriptType, callbackManager }: ScriptEditorProps) {
 }
 
 export default function ScriptEditorLayout() {
-  const webSocketListener = React.useRef(new SingletonWebSocket());
-
   // Calling this function without callback removes the previously inserted callback
-  const callbackManager = (
-    eventId: WebSocketEvent,
-    handlerId: string,
-    callback?: (key: string) => void,
-  ) => {
-    if (callback !== undefined) {
-      return webSocketListener.current.insertCallback(
-        eventId,
-        handlerId,
-        callback,
-      );
-    } else {
-      return webSocketListener.current.removeCallback(eventId, handlerId);
-    }
-  };
   return (
     <TabLayout tabs={['Styles', 'Client', 'Server']}>
-      <ScriptEditor scriptType="CSS" callbackManager={callbackManager} />
-      <ScriptEditor
-        scriptType="ClientScript"
-        callbackManager={callbackManager}
-      />
-      <ScriptEditor
-        scriptType="ServerScript"
-        callbackManager={callbackManager}
-      />
+      <ScriptEditor scriptType="CSS" />
+      <ScriptEditor scriptType="ClientScript" />
+      <ScriptEditor scriptType="ServerScript" />
     </TabLayout>
   );
 }

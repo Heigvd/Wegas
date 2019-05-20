@@ -5,7 +5,7 @@ import { Actions } from '.';
 import { StateActions } from './actions';
 import { createReduxContext } from './connectStore';
 import { Page } from './selectors';
-import SingletonWebSocket from '../API/websocket';
+import '../API/websocket';
 
 // Used by redux dev tool extension
 const composeEnhancers: typeof compose =
@@ -28,7 +28,6 @@ function storeInit() {
   });
 }
 storeInit();
-new SingletonWebSocket();
 
 export const { StoreConsumer, StoreProvider } = createReduxContext(store);
 export type ThunkResult<R = void> = ThunkAction<
