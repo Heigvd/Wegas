@@ -9,12 +9,12 @@ import produce from 'immer';
  * @param value value to set at path
  */
 export function deepUpdate(
-  entity: any = {},
+  entity: unknown,
   path: string[] = [],
-  value: any,
-): any {
-  if (path.length > 0) {
-    return produce(entity, draft => set(draft, path, value));
+  value: unknown,
+): unknown {
+  if (path.length > 0 && typeof entity === 'object') {
+    return produce(entity, draft => set(draft || {}, path, value));
   }
   return value;
 }
@@ -26,8 +26,11 @@ export function deepUpdate(
  * @param object
  * @param path
  */
-export function deepRemove(object: any, path: string[]): any {
-  if (path.length === 0) {
+export function deepRemove(
+  object: unknown,
+  path: string[],
+): object | undefined {
+  if (path.length === 0 || typeof object !== 'object' || object == null) {
     return undefined;
   }
   const parentPath = path.slice(0, -1);

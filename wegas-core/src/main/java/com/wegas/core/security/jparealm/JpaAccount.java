@@ -46,8 +46,8 @@ public class JpaAccount extends AbstractAccount {
     @JsonIgnore
     private String passwordHex;
 
-    @Column(columnDefinition = "boolean default true")
-    private Boolean verified;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean verified = false;
 
     @JsonIgnore
     private String token;

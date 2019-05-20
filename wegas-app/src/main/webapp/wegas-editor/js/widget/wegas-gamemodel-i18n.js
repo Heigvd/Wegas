@@ -18,7 +18,8 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
     var LanguagesManager,
         TranslationEditor,
         GameModelScriptUpgrader,
-        GameModelGhostCleaner;
+        GameModelGhostCleaner,
+        LanguageActivator;
 
 
     function _getCfgFromNode(node) {
@@ -154,7 +155,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             for (i in langs) {
                 if (langs[i] && langs[i].get("id")
                     && (count === 0 // always show the first "persisted" language
-                        || (count < 2 && (superuser || this.editableLanguages.indexOf(langs[i].get("code")) >= 0)) 
+                        || (count < 2 && (superuser || this.editableLanguages.indexOf(langs[i].get("code")) >= 0))
                         )
                     ) {
                     this.showTable[langs[i].get("id")] = true;
@@ -360,6 +361,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     "</div>" +
                     "</div>" +
                     (id && this.isCurrentUserAdmin && !this.isLimitReached && this.supportedLanguages.indexOf(code) >= 0 ? "<div class='auto-translator'><span>Auto-Translate: <i class='wegas-language-i18n-auto fa fa-language'></i></span></div>" : "") +
+                    (id && this.isCurrentUserAdmin && this.supportedLanguages.indexOf(code) < 0 ? "<div class='auto-copy'><span>Copy: <i class='wegas-language-i18n-copy fa fa-language'></i></span></div>" : "") +
                     "</div>"
             }));
         },
@@ -370,16 +372,24 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             this.get("contentBox").delegate("click", this.addLanguageClick, ".create-button i", this);
             this.languagesHeader.get("contentBox").delegate("click", this.languageUp, ".move-up", this);
 
-            this.languagesHeader.get("contentBox").delegate("change", this.toggleShow, ".language input.language-show", this);
-            this.languages.get("contentBox").delegate(["input", "change"], this.languageChange, ".language .form input", this);
-            this.languages.get("contentBox").delegate("click", this.openAutoTranslateMenu, ".wegas-language-i18n-auto", this);
+            this.languagesHeader.get("contentBox")
+                .delegate("change", this.toggleShow, ".language input.language-show", this);
+            this.languages.get("contentBox")
+                .delegate(["input", "change"], this.languageChange, ".language .form input", this);
+            this.languages.get("contentBox")
+                .delegate("click", this.openAutoTranslateMenu, ".wegas-language-i18n-auto", this);
+            this.languages.get("contentBox")
+                .delegate("click", this.openAutoCopyMenu, ".wegas-language-i18n-copy", this);
             this.languages.get("contentBox").delegate("click", this.saveAll, ".wegas-language-save-all", this);
-            this.languages.get("contentBox").delegate("click", this.languageSave, ".language:not(.loading) .validate", this);
-            this.languages.get("contentBox").delegate("click", this.languageCancel, ".language:not(.loading) .cancel", this);
+            this.languages.get("contentBox")
+                .delegate("click", this.languageSave, ".language:not(.loading) .validate", this);
+            this.languages.get("contentBox")
+                .delegate("click", this.languageCancel, ".language:not(.loading) .cancel", this);
 
 
             this.editor.get("contentBox").delegate("click", this.toggleCollapse, ".node-name .expander", this);
-            this.editor.get("contentBox").delegate("click", this.revealInTreeview, ".node-name .reveal-in-treeview", this);
+            this.editor.get("contentBox")
+                .delegate("click", this.revealInTreeview, ".node-name .reveal-in-treeview", this);
 
             this.handlers.onRefresh = this.refreshButton.on("click", Y.bind(this.refresh, this));
 
@@ -484,7 +494,77 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 Y.bind(function() {
                     this.showOverlay();
                     Y.Wegas.Facade.GameModel.sendRequest({
-                        request: "/" + Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id") + "/I18n/InitLanguage/" + data.source + "/" + data.target,
+                        request: "/" + Y.Wegas.Facade.GameModel.cache.getCurrentGameModel()
+                            .get("id") + "/I18n/InitLanguage/" + data.source + "/" + data.target,
+                        cfg: {
+                            method: "PUT"
+                        },
+                        on: {
+                            success: Y.bind(function() {
+                                this.hideOverlay();
+                                Y.Wegas.Alerts.showNotification("OK", {
+                                    timeout: 500
+                                });
+                            }, this),
+                            failure: Y.bind(function() {
+                                this.hideOverlay();
+                                Y.Wegas.Alerts.showNotification("Translation service error", {
+                                    iconCss: 'fa fa-warning'
+                                });
+                            }, this)
+                        }
+                    });
+                }, this));
+        },
+
+        openAutoCopyMenu: function(e) {
+            if (!this.i18CopynMenu) {
+                this.i18nCopyMenu = new Y.Wegas.Menu();
+                this.i18nCopyMenu.on("button:click", this.autoCopy, this);
+            } else {
+                this.i18nCopy.destroyAll();
+            }
+
+            var langData = e.target.ancestor("div.language").getData(),
+                i;
+
+            var langs = [];
+            var allLangs = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages");
+            for (i in allLangs) {
+                var code = allLangs[i].get("code");
+                if (code !== langData["language-code"]) {
+                    langs.push({
+                        code: code,
+                        name: allLangs[i].get("lang")
+                    });
+                }
+            }
+
+            var langsBtn = [];
+            for (i in langs) {
+                var lang = langs[i];
+
+                langsBtn.push({
+                    type: "Button",
+                    label: lang.name,
+                    data: {
+                        source: lang.code,
+                        target: langData["language-code"]
+                    }
+                });
+            }
+
+            this.i18nCopyMenu.add(langsBtn);
+            this.i18nCopyMenu.attachTo(e.target);
+        },
+        autoCopy: function(e) {
+            var data = e.target.get("data");
+            Y.Wegas.Panel.confirm("Copy " + data.source + " translations to " + data.target + "?",
+                Y.bind(function() {
+                    this.showOverlay();
+                    Y.Wegas.Facade.GameModel.sendRequest({
+                        request: "/" + Y.Wegas.Facade.GameModel.cache.getCurrentGameModel()
+                            .get("id") + "/I18n/CopyLanguage/" + data.source + "/" + data.target,
                         cfg: {
                             method: "PUT"
                         },
@@ -568,7 +648,8 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             }
         },
         getLanguagesToEdit: function() {
-            return Y.Array.filter(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"), Y.bind(function(lang) {
+            return Y.Array.filter(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel()
+                .get("languages"), Y.bind(function(lang) {
                 return this.showTable[lang.get("id")];
             }, this));
         },
@@ -1015,7 +1096,8 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                 }
                                 markup.push("</span>");
                                 markup.push("</div>"); // /translation title
-                                if (!this.isLanguageEditable(langCode) || node.mode === "READONLY" && Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO") {
+                                if (!this.isLanguageEditable(langCode) || node.mode === "READONLY" && Y.Wegas.Facade.GameModel.cache.getCurrentGameModel()
+                                    .get("type") === "SCENARIO") {
                                     markup.push("<span class='wegas-readonly-translation' ",
                                         "lang='", langCode, "'",
                                         "data-lang='", langCode, "'",
@@ -1366,7 +1448,8 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     this.showOverlay();
 
                     var tId = Y.Wegas.Facade.GameModel.sendRequest({
-                        request: "/" + Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id") + "/I18n/Translate/" + data.source + "/" + data.target,
+                        request: "/" + Y.Wegas.Facade.GameModel.cache.getCurrentGameModel()
+                            .get("id") + "/I18n/Translate/" + data.source + "/" + data.target,
                         cfg: {
                             method: "PUT",
                             data: data.value,
@@ -1425,7 +1508,8 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 var theLang;
 
 
-                var targetNode = e.target.ancestor(".translatedcontent").one(".wegas-translation[lang='" + langCode + "'] .wegas-translation--toedit");
+                var targetNode = e.target.ancestor(".translatedcontent")
+                    .one(".wegas-translation[lang='" + langCode + "'] .wegas-translation--toedit");
 
                 var langs = [];
                 var i;
@@ -1448,9 +1532,11 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     for (i in langs) {
                         var lang = langs[i];
 
-                        var nodeToTranslate = e.target.ancestor(".translatedcontent").one(".wegas-translation[lang='" + lang.code + "'] .wegas-translation--toedit");
+                        var nodeToTranslate = e.target.ancestor(".translatedcontent")
+                            .one(".wegas-translation[lang='" + lang.code + "'] .wegas-translation--toedit");
                         if (!nodeToTranslate) {
-                            nodeToTranslate = e.target.ancestor(".translatedcontent").one(".wegas-readonly-translation[data-lang='" + lang.code + "']");
+                            nodeToTranslate = e.target.ancestor(".translatedcontent")
+                                .one(".wegas-readonly-translation[data-lang='" + lang.code + "']");
                         }
 
                         if (nodeToTranslate) {
@@ -1740,7 +1826,8 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 Y.log("Select File for " + cfg.key);
                 if (this.contents[cfg.key] === undefined) {
                     // save initial values
-                    this.contents[cfg.key] = this.toInjectorStyle(cfg.node.one(".wegas-translation--toedit").getHTML());
+                    this.contents[cfg.key] = this.toInjectorStyle(cfg.node.one(".wegas-translation--toedit")
+                        .getHTML());
                 }
 
                 var filepanel = new Y.Wegas.FileSelect();
@@ -1772,7 +1859,8 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     var toEditNode = cfg.node.one(".wegas-translation--toedit");
                     if (!toEditNode) {
                         var dNode = cfg.node.hasClass("wegas-translation-string") ? "span" : "div";
-                        cfg.node.one(".wegas-translation--value").append("<" + dNode + " class='wegas-translation--toedit'></" + dNode + ">");
+                        cfg.node.one(".wegas-translation--value")
+                            .append("<" + dNode + " class='wegas-translation--toedit'></" + dNode + ">");
                         toEditNode = cfg.node.one(".wegas-translation--toedit");
                     }
 
@@ -2440,4 +2528,73 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         }
     });
     Y.Wegas.GameModelGhostCleaner = GameModelGhostCleaner;
+
+
+    LanguageActivator = Y.Base.create("wegas-i18n-activator", Y.Widget,
+        [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Widget], {
+        initializer: function() {
+        },
+        destructor: function() {
+        },
+        renderUI: function() {
+            var languages = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages");
+            if (languages && languages.length) {
+                this.add(new Y.Wegas.Text({
+                    cssClass: "language-activator-title",
+                    content: "<span>Active Languages</span>"
+                }));
+                this.list = new Y.Wegas.FlexList({"direction": "horizontal"});
+                for (var i in languages) {
+                    var lang = languages[i];
+
+                    var btn = new Y.Wegas.Text({
+                        cssClass: "gm-language",
+                        content: "<span>" + lang.get("lang") + " (" + lang.get("code") + ")</span>"
+                    });
+                    this.list.add(btn);
+                    btn.get("boundingBox").getDOMNode().setAttribute("data-lang", lang.get("code"));
+                }
+
+                this.add(this.list);
+            }
+        },
+        bindUI: function() {
+            this.get("contentBox").delegate("click", this.onClick, ".gm-language", this);
+        },
+        syncUI: function() {
+            var languages = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages");
+
+            for (var i in languages) {
+                var lang = languages[i];
+                var node = this.get("contentBox").one(".gm-language[data-lang=" + lang.get("code") + "]");
+                node && node.toggleClass("active", lang.get("active"));
+            }
+        },
+        onClick: function(e) {
+            var language = I18n.findLanguageByCode(e.currentTarget.getData().lang);
+            var isActive = language.get("active");
+            if (!isActive || Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("activeLanguages").length > 1) {
+                language.set("active", !isActive);
+
+                Y.Wegas.Facade.GameModel.sendRequest({
+                    request: '/' + Y.Wegas.Facade.GameModel.get('currentGameModelId') + "/I18n/Lang",
+                    cfg: {
+                        method: "PUT",
+                        data: language.toObject()
+                    },
+                    on: {
+                        success: Y.bind(this.syncUI, this),
+                        failure: Y.bind(this.syncUI, this)
+                    }
+                });
+            } else {
+                Y.Wegas.Alerts.showMessage("warn", "At least one language must be activated");
+            }
+        }
+    }, {
+        EDITORNAME: "Language Activator",
+        ATTRS: {}
+    });
+
+    Y.Wegas.LanguageActivator = LanguageActivator;
 });

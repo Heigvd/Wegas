@@ -112,9 +112,8 @@ class HashlistView extends React.Component<
             }}
         />
         */
-
         return (
-            <ObjectView {...restProps}>
+            <ObjectView {...restProps as any}>
                 {newChildren}
                 <br />
                 {!this.props.view.readOnly ?

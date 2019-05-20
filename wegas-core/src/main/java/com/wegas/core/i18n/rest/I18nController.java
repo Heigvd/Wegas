@@ -188,6 +188,17 @@ public class I18nController {
     }
 
     @PUT
+    @Path("CopyLanguage/{source: [a-zA-Z]+}/{target: [a-zA-Z]+}")
+    @RequiresRoles("Administrator")
+    public GameModel copyLanguageTranslations(@PathParam("gameModelId") Long gameModelId,
+            @PathParam("target") String targetLangCode,
+            @PathParam("source") String sourceLangCode) throws ScriptException {
+
+        return i18nFacade.copyLanguage(gameModelId, sourceLangCode, targetLangCode);
+    }
+
+
+    @PUT
     @Path("Translate/{source: [a-zA-Z]+}/{target: [a-zA-Z]+}")
     @Consumes(MediaType.TEXT_PLAIN)
     public DeeplTranslation translate(@PathParam("target") String targetLangCode,
