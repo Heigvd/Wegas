@@ -33,6 +33,7 @@ import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.editor.Schema;
 import com.wegas.editor.Schemas;
 import com.wegas.editor.JSONSchema.JSONArray;
@@ -173,7 +174,7 @@ public class SchemaGenerator extends AbstractMojo {
                             .setLayout(view.layout());
                     ((JSONExtendedSchema) schema).setFeatureLevel(view.featureLevel());
                     ((JSONExtendedSchema) schema).setView(v);
-                    v.setIndex(view.index());
+                    v.setIndex(view.index()); // TO REMOVE
                     ((JSONExtendedSchema) schema).setIndex(view.index());
                 } catch (InstantiationException | IllegalAccessException e) {
                     e.printStackTrace();
@@ -276,6 +277,7 @@ public class SchemaGenerator extends AbstractMojo {
                     true /* extra properties are always readonly */,
                     annotation.optional(),
                     annotation.nullable(),
+                    false,
                     genericity);
         }
 
@@ -293,6 +295,7 @@ public class SchemaGenerator extends AbstractMojo {
                             returnType, field.getAnnotation().initOnly(),
                             field.getAnnotation().optional(),
                             field.getAnnotation().nullable(),
+                            field.getField().isAnnotationPresent(Deprecated.class),
                             genericity);
                 });
 
@@ -320,6 +323,7 @@ public class SchemaGenerator extends AbstractMojo {
             boolean readOnly,
             boolean optional,
             boolean nullable,
+            boolean deprecated,
             Map<String, String> genericity) {
         Type reified = TypeResolver.reify(returnType, c);
         String tsType = javaToTSType(reified);
@@ -328,6 +332,10 @@ public class SchemaGenerator extends AbstractMojo {
         }
 
         String property = "  ";
+        if (deprecated){
+            property += "/* @deprecated */\n  ";
+        }
+
         if (readOnly) {
             property += "readonly ";
         }
@@ -498,7 +506,8 @@ public class SchemaGenerator extends AbstractMojo {
                                                 field.getAnnotation().view(),
                                                 field.getErroreds(),
                                                 field.getField().getAnnotation(Visible.class),
-                                                field.getAnnotation().nullable()
+                                                field.getAnnotation().nullable(),
+                                                field.getAnnotation().protectionLevel()
                                         );
                                     });
 
@@ -510,10 +519,11 @@ public class SchemaGenerator extends AbstractMojo {
                                         : getPropertyName(method);
                                 Type returnType = method.getGenericReturnType();
 
-                                this.addSchemaProperty(jsonSchema, c, returnType, 
+                                this.addSchemaProperty(jsonSchema, c, returnType,
                                         annotation.schema(),
                                         name, annotation.view(), null, null,
-                                        annotation.nullable());
+                                        annotation.nullable(),
+                                        ModelScoped.ProtectionLevel.CASCADED);
                             }
 
                             // Override @class with one with default value
@@ -573,7 +583,8 @@ public class SchemaGenerator extends AbstractMojo {
             Type returnType,
             Class<? extends JSONSchema> schemaOverride,
             String name, View view, List<Errored> erroreds,
-            Visible visible, boolean nullable) {
+            Visible visible, boolean nullable,
+            ModelScoped.ProtectionLevel protectionLevel) {
 
         JSONSchema prop;
         if (UndefinedSchema.class.isAssignableFrom(schemaOverride)) {
@@ -587,6 +598,9 @@ public class SchemaGenerator extends AbstractMojo {
             }
         }
         injectView(prop, view);
+        if (prop instanceof JSONExtendedSchema) {
+            ((JSONExtendedSchema) prop).setProtectionLevel(protectionLevel);
+        }
         injectErrords(prop, erroreds);
         injectVisible(prop, visible);
         jsonSchema.setProperty(name, prop);
