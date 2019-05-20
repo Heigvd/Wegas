@@ -10,7 +10,7 @@ interface Context extends LangProviderProps {
   toggleLang: (lang: string) => void;
 }
 export const LangContext = React.createContext<Context>({
-  lang: 'DEF',
+  lang: '',
   toggleLang: () => {},
   availableLang: [],
 });
@@ -20,7 +20,7 @@ function LangHandler({
   lang,
   children,
 }: Readonly<LangProviderProps>) {
-  const [currentLang, setCurrentLang] = React.useState(lang || 'DEF');
+  const [currentLang, setCurrentLang] = React.useState(lang || availableLang[0].code);
   function toggleLang(lang: string) {
     setCurrentLang(lang);
   }
