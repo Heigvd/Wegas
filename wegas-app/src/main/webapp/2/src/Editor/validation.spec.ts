@@ -19,7 +19,7 @@ function leafs(ref: ref): (val: {}, formValue: {}) => unknown {
     case 'Self':
       return val => val;
     case 'Field':
-      return (_val: {}, formVal: IWegasEntity & { [key: string]: {} }) => {
+      return (_val: {}, formVal: IAbstractEntity & { [key: string]: {} }) => {
         return (
           // @ts-ignore
           formVal[ref.fieldName]

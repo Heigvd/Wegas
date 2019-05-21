@@ -138,7 +138,7 @@ async function injectRef(
   return restSchema;
 }
 
-export default async function getEditionConfig<T extends IWegasEntity>(
+export default async function getEditionConfig<T extends IAbstractEntity>(
   entity: T,
 ): Promise<Schema> {
   return fetchConfig(entity['@class'] + '.json').then(res =>
@@ -146,7 +146,7 @@ export default async function getEditionConfig<T extends IWegasEntity>(
   );
 }
 
-export async function getAvailableChildren<T extends IWegasEntity>(
+export async function getAvailableChildren<T extends IAbstractEntity>(
   entity: T,
 ): Promise<string[]> {
   return import(
@@ -156,11 +156,11 @@ export async function getAvailableChildren<T extends IWegasEntity>(
 }
 
 export interface EActions {
-  edit: (variable: IWegasEntity, path?: string[]) => StateActions;
+  edit: (variable: IAbstractEntity, path?: string[]) => StateActions;
 }
 
 export async function getEntityActions(
-  entity: IWegasEntity,
+  entity: IAbstractEntity,
 ): Promise<EActions> {
   if (entityIs<IFSMDescriptor>(entity, 'FSMDescriptor')) {
     return { edit: editStateMachine };
@@ -168,13 +168,13 @@ export async function getEntityActions(
   return { edit: editVariable };
 }
 
-export async function getMethodConfig<T extends IWegasEntity>(
+export async function getMethodConfig<T extends IAbstractEntity>(
   entity: T,
 ): Promise<MethodConfig> {
   return fetchConfig(entity['@class'] + '.json').then(res => res.method);
 }
 
-export async function getIcon<T extends IWegasEntity>(
+export async function getIcon<T extends IAbstractEntity>(
   entity: T,
 ): Promise<IconProp | undefined> {
   return import(
@@ -183,7 +183,7 @@ export async function getIcon<T extends IWegasEntity>(
   ).then(({ icon }) => icon);
 }
 
-export async function getLabel<T extends IWegasEntity>(
+export async function getLabel<T extends IAbstractEntity>(
   entity: T,
 ): Promise<string | undefined> {
   return await import(
@@ -192,7 +192,7 @@ export async function getLabel<T extends IWegasEntity>(
   ).then(({ label }) => label);
 }
 
-export async function getChildren<T extends IWegasEntity>(
+export async function getChildren<T extends IAbstractEntity>(
   entity: T,
 ): Promise<string[]> {
   return import(

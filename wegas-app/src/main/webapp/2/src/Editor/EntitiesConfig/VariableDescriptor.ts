@@ -2,7 +2,7 @@ import { ConfigurationSchema, EActions } from '../editionConfig';
 import { config as variableInstanceConfig } from './VariableInstance';
 import { Actions } from '../../data';
 
-const wegasEntityConfig: ConfigurationSchema<IWegasEntity> = {
+const wegasEntityConfig: ConfigurationSchema<IAbstractEntity> = {
   '@class': {
     type: 'string',
     required: true,

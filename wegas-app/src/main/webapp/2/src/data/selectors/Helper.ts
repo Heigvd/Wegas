@@ -18,8 +18,8 @@ import {
   VariableInstance,
 } from '../selectors';
 
-function findNearestParentInFormVal<T extends IWegasEntity = IWegasEntity>(
-  formVal: IWegasEntity,
+function findNearestParentInFormVal<T extends IAbstractEntity = IAbstractEntity>(
+  formVal: IAbstractEntity,
   path: string[],
   classFilter: string,
 ): Readonly<T> | undefined {
@@ -38,8 +38,8 @@ function findNearestParentInFormVal<T extends IWegasEntity = IWegasEntity>(
   }
 }
 
-function findNearestParentInStore<T extends IWegasEntity = IWegasEntity>(
-  val: IWegasEntity,
+function findNearestParentInStore<T extends IAbstractEntity = IAbstractEntity>(
+  val: IAbstractEntity,
   classFilter: string,
 ): Readonly<T> | undefined {
   let parent: Readonly<T> | undefined;
@@ -77,8 +77,8 @@ function findNearestParentInStore<T extends IWegasEntity = IWegasEntity>(
   }
 }
 
-export function findNearestParent<T extends IWegasEntity = IWegasEntity>(
-  val: IWegasEntity,
+export function findNearestParent<T extends IAbstractEntity = IAbstractEntity>(
+  val: IAbstractEntity,
   path: string[],
   classFilter: string,
 ): Readonly<T> | undefined {

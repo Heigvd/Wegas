@@ -210,7 +210,7 @@ function formLeaf(
   ref: ref,
 ): (
   val: unknown,
-  formValue: IWegasEntity & { [key: string]: {} },
+  formValue: IAbstractEntity & { [key: string]: {} },
   path: string[],
 ) => unknown {
   switch (ref.type) {
@@ -224,7 +224,7 @@ function formLeaf(
           return formVal[ref.fieldName];
         }
         const parent:
-          | IWegasEntity & { [key: string]: {} }
+          | IAbstractEntity & { [key: string]: {} }
           | undefined = findNearestParent(formVal, path, ref.classFilter);
         return parent == null ? undefined : parent[ref.fieldName];
       };
