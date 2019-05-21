@@ -1458,3 +1458,44 @@
 .wegas-translatemode .wegas-editor-treeview-content .yui3-treeview > ul > li .content-header:hover .yui3-treenode-content-extra {
     display: none;
 }
+
+.wegas-i18n-activator .gm-language {
+    height: 24px;
+    padding: 4px;
+}
+
+.wegas-i18n-activator .gm-language span {
+    background:none;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 32px;
+    position: relative;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.wegas-i18n-activator .gm-language span:before {
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    content:"";
+    width:24px;
+    height:24px;
+    background:none;
+    border:solid 1px #666666;
+    border-radius:4px;
+}
+
+.wegas-i18n-activator .gm-language.active span{
+    background:none;
+}
+
+.wegas-i18n-activator .gm-language.active span:before {
+    content: "\2714";
+    font-weight: bold;
+    color: black;
+    line-height: 23px;
+    font-size: 18px;
+    text-align: center;
+}
