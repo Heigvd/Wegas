@@ -18,10 +18,10 @@ function createAction<T extends string, P>(type: T, payload: P) {
 export const ActionCreator = {
   // ENTITY_UPDATE: (data: NormalizedData) =>
   //   createAction(ActionType.ENTITY_UPDATE, data),
-  VARIABLE_EDIT: <T extends IWegasEntity>(data: {
+  VARIABLE_EDIT: <T extends IAbstractEntity>(data: {
     id: number;
     config?: Schema<AvailableViews>;
-    path?: string[];
+    path?: (string | number)[];
     actions: {
       save?: (entity: T) => void;
       more?: {
@@ -46,7 +46,7 @@ export const ActionCreator = {
       };
     };
   }) => createAction(ActionType.FSM_EDIT, data),
-  VARIABLE_CREATE: <T extends IWegasEntity>(data: {
+  VARIABLE_CREATE: <T extends IAbstractEntity>(data: {
     '@class': string;
     parentId?: number;
     actions: {

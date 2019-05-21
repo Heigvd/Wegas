@@ -9,8 +9,8 @@ import { Reducer } from 'redux';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../../Editor/Components/FormView';
 
-type actionFn<T extends IWegasEntity> = (entity: T, path?: string[]) => void;
-export interface EditorAction<T extends IWegasEntity> {
+type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
+export interface EditorAction<T extends IAbstractEntity> {
   save?: (entity: T) => void;
   more?: {
     [id: string]: {
@@ -24,22 +24,22 @@ type Edition =
       type: 'Variable';
       id: number;
       config?: Schema<AvailableViews>;
-      path?: string[];
-      actions: EditorAction<IWegasEntity>;
+      path?: (string|number)[];
+      actions: EditorAction<IAbstractEntity>;
     }
   | {
       type: 'VariableCreate';
       '@class': string;
       parentId?: number;
       config?: Schema<AvailableViews>;
-      actions: EditorAction<IWegasEntity>;
+      actions: EditorAction<IAbstractEntity>;
     }
   | {
       type: 'Component';
       page: string;
-      path: string[];
+      path: (string|number)[];
       config?: Schema<AvailableViews>;
-      actions: EditorAction<IWegasEntity>;
+      actions: EditorAction<IAbstractEntity>;
     };
 export interface GlobalState {
   currentGameModelId: number;
@@ -190,7 +190,7 @@ export default global;
  */
 export function editVariable(
   entity: IVariableDescriptor,
-  path: string[] = [],
+  path: (string|number)[] = [],
   config?: Schema<AvailableViews>,
   actions: EditorAction<IVariableDescriptor> = {
     more: {
@@ -268,7 +268,7 @@ export function editStateMachine(
 export function createVariable(
   cls: string,
   parent?: IParentDescriptor,
-  actions: EditorAction<IWegasEntity> = {},
+  actions: EditorAction<IAbstractEntity> = {},
 ) {
   return ActionCreator.VARIABLE_CREATE({
     '@class': cls,
@@ -284,10 +284,10 @@ export function editComponent(page: string, path: string[]) {
  * Save the content from the editor
  *
  * @export
- * @param {IWegasEntity} value
+ * @param {IAbstractEntity} value
  * @returns {ThunkResult}
  */
-export function saveEditor(value: IWegasEntity): ThunkResult {
+export function saveEditor(value: IAbstractEntity): ThunkResult {
   return function save(dispatch, getState) {
     const editMode = getState().global.editing;
     if (editMode == null) {

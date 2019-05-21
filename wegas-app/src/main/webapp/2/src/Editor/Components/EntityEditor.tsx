@@ -15,9 +15,9 @@ interface EditorProps<T> {
   update?: (variable: T) => void;
   actions?: {
     label: React.ReactNode;
-    action: (entity: T, path?: string[]) => void;
+    action: (entity: T, path?: (string | number)[]) => void;
   }[];
-  path?: string[];
+  path?: (string | number)[];
   getConfig(entity: T): Promise<Schema<AvailableViews>>;
 }
 
@@ -69,7 +69,7 @@ const AsyncVariableForm = asyncSFC<EditorProps<{ '@class': string }>>(
 
 export default function VariableForm(props: {
   entity?: Readonly<IVariableDescriptor>;
-  path?: string[];
+  path?: (string | number)[];
   config?: Schema;
 }) {
   return (
@@ -103,7 +103,7 @@ export default function VariableForm(props: {
         const update =
           'save' in state.actions
             ? state.actions.save
-            : (entity: IWegasEntity) => {
+            : (entity: IAbstractEntity) => {
                 dispatch(Actions.EditorActions.saveEditor(entity));
               };
         const getConfig = (entity: IVariableDescriptor) => {

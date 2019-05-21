@@ -120,7 +120,7 @@ class StateMachineEditor extends React.Component<
     from,
     transitonIndex,
   }: {
-    from: string;
+    from: number;
     transitonIndex: number;
   }) => {
     this.setState(
@@ -151,30 +151,30 @@ class StateMachineEditor extends React.Component<
       newSourceId: string;
       newTargetId: string;
     },
-    transition: IFSMDescriptor.Transition,
+    transition: ITransition,
   ) => {
     this.setState(
       produce((state: StateMachineEditorState) => {
         const { states } = state.stateMachine;
         if (info.originalSourceId === info.newSourceId) {
-          const tr = states[info.originalSourceId].transitions.find(
+          const tr = states[Number(info.originalSourceId)].transitions.find(
             t => t.id === transition.id,
           );
           if (tr != null) {
             tr.nextStateId = Number(info.newTargetId);
           }
         } else {
-          states[info.originalSourceId].transitions = states[
-            info.originalSourceId
+          states[Number(info.originalSourceId)].transitions = states[
+            Number(info.originalSourceId)
           ].transitions.filter(t => t.id !== transition.id);
-          states[info.newSourceId].transitions.push({
+          states[Number(info.newSourceId)].transitions.push({
             ...transition,
           });
         }
       }),
     );
   };
-  deleteState = (id: string) => {
+  deleteState = (id: number) => {
     this.setState(
       produce((state: StateMachineEditorState) => {
         const { states } = state.stateMachine!;
@@ -182,13 +182,13 @@ class StateMachineEditor extends React.Component<
         // delete transitions pointing to deleted state
         for (const s in states) {
           states[s].transitions = states[s].transitions.filter(
-            t => String(t.nextStateId) !== id,
+            t => t.nextStateId !== id,
           );
         }
       }),
     );
   };
-  moveState = (id: string, pos: [number, number]) => {
+  moveState = (id: number, pos: [number, number]) => {
     this.setState(
       produce((state: StateMachineEditorState) => {
         state.stateMachine.states[id].editorPosition.x = pos[0];
@@ -196,7 +196,7 @@ class StateMachineEditor extends React.Component<
       }),
     );
   };
-  createState = (state: IFSMDescriptor.State, transitionSource?: number) => {
+  createState = (state: IState, transitionSource?: number) => {
     this.setState(
       produce((store: StateMachineEditorState) => {
         const nextId =
@@ -218,13 +218,13 @@ class StateMachineEditor extends React.Component<
       }),
     );
   };
-  editState = (id: string) => {
+  editState = (id: number) => {
     const actions: EditorAction<IFSMDescriptor>['more'] = {};
-    if (Number(id) !== this.props.stateMachine.defaultInstance.currentStateId) {
+    if (id !== this.props.stateMachine.defaultInstance.currentStateId) {
       actions.delete = {
         label: 'delete',
-        action: (_entity: IFSMDescriptor, path?: string[]) => {
-          this.deleteState(path![1]);
+        action: (_entity: IFSMDescriptor, path?: (string | number)[]) => {
+          this.deleteState(Number(path![1]));
         },
       };
     }
@@ -239,13 +239,13 @@ class StateMachineEditor extends React.Component<
       ),
     );
   };
-  editTransition = (path: [string, number]) => {
+  editTransition = (path: [number, number]) => {
     const stateId = path[0];
     const transitionIndex = path[1];
     this.props.dispatch(
       Actions.EditorActions.editVariable(
         this.props.stateMachine,
-        ['states', stateId, 'transitions', String(transitionIndex)],
+        ['states', String(stateId), 'transitions', String(transitionIndex)],
         undefined,
         {
           more: {
@@ -292,7 +292,7 @@ class StateMachineEditor extends React.Component<
           // let jsPlumb remove transition the update data
           requestAnimationFrame(() =>
             this.removeTransition({
-              from: info.sourceId,
+              from: Number(info.sourceId),
               transitonIndex: trIndex,
             }),
           );
@@ -300,7 +300,7 @@ class StateMachineEditor extends React.Component<
       });
       plumb.bind('connectionMoved', (info, ev) => {
         if (ev !== undefined) {
-          const transition: IFSMDescriptor.Transition = (info.connection as any).getParameter(
+          const transition: ITransition = (info.connection as any).getParameter(
             'transition',
           );
           this.moveTransition(info, transition);
@@ -314,11 +314,9 @@ class StateMachineEditor extends React.Component<
           {
             '@class': 'State',
             editorPosition: {
-              '@class': 'Coordinate',
               x: parseInt(left || '0', 10),
               y: parseInt(top || '0', 10),
             },
-            version: 0,
             transitions: [],
           },
           Number(src),
@@ -371,16 +369,19 @@ class StateMachineEditor extends React.Component<
       >
         {plumb != null &&
           Object.keys(stateMachine.states).map(k => {
+            const key = Number(k);
             return (
               <State
                 editState={this.editState}
-                state={stateMachine.states[k]}
-                currentState={Number(k) === stateMachineInstance.currentStateId}
-                id={k}
-                initialState={
-                  stateMachine.defaultInstance.currentStateId === Number(k)
+                state={stateMachine.states[key]}
+                currentState={
+                  Number(key) === stateMachineInstance.currentStateId
                 }
-                key={k}
+                id={key}
+                initialState={
+                  stateMachine.defaultInstance.currentStateId === key
+                }
+                key={key}
                 plumb={plumb}
                 deleteState={this.deleteState}
                 moveState={this.moveState}
@@ -463,19 +464,16 @@ const sourceStyle = css({
   },
 });
 class State extends React.Component<{
-  state: IFSMDescriptor.State;
-  id: string;
+  state: IState;
+  id: number;
   initialState: boolean;
   plumb: jsPlumbInstance;
   currentState: boolean;
-  editState: (id: string) => void;
-  deleteState: (id: string) => void;
-  moveState: (id: string, pos: [number, number]) => void;
+  editState: (id: number) => void;
+  deleteState: (id: number) => void;
+  moveState: (id: number, pos: [number, number]) => void;
 
-  editTransition: (
-    path: [string, number],
-    transition: IFSMDescriptor.Transition,
-  ) => void;
+  editTransition: (path: [number, number], transition: ITransition) => void;
 }> {
   container: Element | null = null;
   componentDidMount() {
@@ -513,7 +511,7 @@ class State extends React.Component<{
           [initialStateStyle]: initialState,
           [currentStateStyle]: currentState,
         })}
-        id={this.props.id}
+        id={String(this.props.id)}
         ref={n => {
           this.container = n;
         }}
@@ -554,19 +552,16 @@ class State extends React.Component<{
 }
 
 class Transition extends React.Component<{
-  transition: IFSMDescriptor.Transition;
+  transition: ITransition;
   plumb: jsPlumbInstance;
-  parent: string;
+  parent: number;
   position: number;
-  editTransition: (
-    path: [string, number],
-    transition: IFSMDescriptor.Transition,
-  ) => void;
+  editTransition: (path: [number, number], transition: ITransition) => void;
 }> {
   connection: Connection | null = null;
   componentDidMount() {
     const src = this.props.parent;
-    const tgt = String(this.props.transition.nextStateId);
+    const tgt = this.props.transition.nextStateId;
     this.connection = this.props.plumb.connect({
       source: src,
       target: tgt,

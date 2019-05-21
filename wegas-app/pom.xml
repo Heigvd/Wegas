@@ -287,7 +287,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <outputDirectory>${project.build.directory}/generated-schema</outputDirectory>
+                    <output>${project.build.directory}/generated/schema</output>
+                    <typings>${project.build.directory}/generated/typings</typings>
                     <pkg>
                         <param>com.wegas</param>
                     </pkg>
