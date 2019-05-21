@@ -73,14 +73,14 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
     /**
      *
      */
-    @Column(columnDefinition = "integer default 20")
+    //@Column(columnDefinition = "integer default 20")
     @WegasEntityProperty(nullable = true,
             view = @View(
                     label = "Maximum history size",
                     featureLevel = ADVANCED,
                     index = 700
             ))
-    private Integer historySize = 20;
+    private Integer historySize;// = 20;
 
     /**
      *
