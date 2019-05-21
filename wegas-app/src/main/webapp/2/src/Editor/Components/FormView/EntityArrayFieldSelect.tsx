@@ -4,7 +4,7 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import { LabeledView } from './labeled';
 import { CommonView } from './commonView';
 import * as VariableDescriptor from '../../../data/selectors/VariableDescriptor';
-import { getInstance } from '../../../data/methods/VariableDescriptor';
+import { getInstance, editorLabel } from '../../../data/methods/VariableDescriptor';
 
 interface IName {
   values: string[];
@@ -25,7 +25,11 @@ interface IEntityArrayFieldSelectProps extends WidgetProps.BaseProps {
 function optionNameToString(result: any, name: IName) {
   const separator = name ? name.separator || ',' : ',';
   if (!name || !name.values || name.values.length <= 0) {
-    return 'undefined';
+    if ('label' in result) {
+      return editorLabel(result);
+    } else {
+      return 'undefined';
+    }
   }
   return name.values.map(v => result[v]).join(separator);
 }
@@ -33,7 +37,7 @@ function optionNameToString(result: any, name: IName) {
 function EntityArrayFieldSelect(props: IEntityArrayFieldSelectProps) {
   const { field, returnAttr, scope, entity, name, ...restView } = props.view;
 
-  const computedEntity = VariableDescriptor.first('name', entity);
+  const computedEntity = entity ? VariableDescriptor.first('name', entity) : props.formValue;
   if (!computedEntity) {
     return null;
   }
@@ -41,19 +45,17 @@ function EntityArrayFieldSelect(props: IEntityArrayFieldSelectProps) {
   const results: unknown =
     scope !== 'instance'
       ? (computedEntity as Record<string, unknown>)[field]
-      : ((getInstance(computedEntity) as Record<string, unknown>)[
-          field
-        ] as unknown);
+      : ((getInstance(computedEntity as IVariableDescriptor) as Record<string, unknown>)[field] as unknown);
 
   if (results == null) {
     return null;
   }
 
   let aResults: unknown;
-  if (typeof results === 'object' && results !== null) {
-    aResults = Object.values(results);
-  } else if (Array.isArray(results)) {
+  if (Array.isArray(results)) {
     aResults = results;
+  } else if (typeof results === 'object' && results !== null) {
+    aResults = Object.values(results);
   } else {
     return null;
   }
