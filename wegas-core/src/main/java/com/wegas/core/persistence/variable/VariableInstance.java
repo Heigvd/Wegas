@@ -16,6 +16,7 @@ import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -25,6 +26,7 @@ import com.wegas.core.persistence.variable.scope.*;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.Zero;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.ReadOnlyNumber;
 import com.wegas.editor.View.View;
@@ -124,8 +126,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty(sameEntityOnly = true, view = @View(
-            label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
+    @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
+            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
     @JsonView(Views.IndexI.class)
     private Long version;
 
@@ -316,6 +318,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     @JsonView(Views.IndexI.class)
+    @WegasExtraProperty(optional = false, view = @View(label = "Scope Key", value = ReadOnlyNumber.class))
     public Long getScopeKey() {
         if (this.getTeamScope() != null) {
             return this.getTeam().getId();

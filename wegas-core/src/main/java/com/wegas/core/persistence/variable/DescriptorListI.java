@@ -47,7 +47,9 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
      * @return list of children's id
      */
     @JsonView(Views.IndexI.class)
-    @WegasExtraProperty(view = @View(value = Hidden.class, label = ""))
+    @WegasExtraProperty(view = @View(value = Hidden.class, label = ""),
+            optional = false, nullable = false
+    )
     default List<Long> getItemsIds() {
         List<Long> ids = new LinkedList<>();
         for (T t : this.getItems()) {

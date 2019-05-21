@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.View.SelectView.ScriptLanguageSelector;
 import com.wegas.editor.View.View;
 
@@ -33,13 +34,18 @@ public class Script implements Serializable, Mergeable {
      *
      */
     @Lob
-    @WegasEntityProperty(searchable = true, view = @View(label = "Script Content"))
+    @WegasEntityProperty(
+            optional = false, nullable= false, proposal = EmptyString.class,
+            searchable = true, view = @View(label = "Script Content"))
     private String content = "";
     /**
      *
      */
     @JsonIgnore
-    @WegasEntityProperty(view = @View(label = "Language", value = ScriptLanguageSelector.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "Language", value = ScriptLanguageSelector.class)
+    )
     @Column(name = "lang")
     private String language = "JavaScript";
 

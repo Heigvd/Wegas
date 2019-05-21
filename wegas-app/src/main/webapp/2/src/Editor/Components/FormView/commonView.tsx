@@ -34,6 +34,7 @@ export interface CommonView {
   borderTop?: boolean;
   layout?: keyof typeof LAYOUTS;
   index?: number;
+  readOnly?: boolean;
 }
 interface CommonViewProps {
   children: React.ReactNode;

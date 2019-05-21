@@ -61,11 +61,13 @@ function ArrayWidget(props: IArrayProps) {
   const valueLength = Array.isArray(props.value) ? props.value.length : 0;
   const { maxItems = Infinity, minItems = 0 } = props.schema;
   const disabled = props.view.disabled;
+  const readOnly = props.view.readOnly;
+
   function renderChild(child: React.ReactChild, index: number) {
     return (
       <div className={listElementContainerStyle}>
         <div className={listElementStyle}>{child}</div>
-        {minItems < valueLength && !disabled ? (
+        {minItems < valueLength && !disabled && ! readOnly? (
           <IconButton
             className={transparentStyle}
             icon="trash"
@@ -87,7 +89,7 @@ function ArrayWidget(props: IArrayProps) {
             <>
               {labelNode}
               {maxItems > valueLength &&
-                !disabled && <Adder id={inputId} {...props} />}
+                !disabled && !readOnly && <Adder id={inputId} {...props} />}
               {children}
             </>
           );

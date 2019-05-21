@@ -27,6 +27,7 @@ import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
 import com.wegas.core.persistence.annotations.WegasConditions.LessThan;
 import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
+import com.wegas.editor.ValueGenerators.Twenty;
 import com.wegas.editor.View.CommonView;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.Hidden;
@@ -47,7 +48,6 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      *
      */
     @WegasEntityProperty(order = -1, // update bound before the default instance
-            nullable = true,
             view = @View(
                     label = "Minimum",
                     layout = CommonView.LAYOUT.shortInline,
@@ -60,7 +60,6 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      *
      */
     @WegasEntityProperty(order = -1, // update bound before the default instance
-            nullable = true,
             view = @View(
                     label = "Maximum",
                     layout = CommonView.LAYOUT.shortInline,
@@ -74,7 +73,8 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      *
      */
     //@Column(columnDefinition = "integer default 20")
-    @WegasEntityProperty(nullable = true,
+    @WegasEntityProperty(
+            proposal = Twenty.class,
             view = @View(
                     label = "Maximum history size",
                     featureLevel = ADVANCED,

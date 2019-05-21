@@ -7,9 +7,6 @@
  */
 package com.wegas.mcq.persistence;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import javax.persistence.Entity;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
@@ -17,6 +14,8 @@ import javax.persistence.Table;
 import com.wegas.editor.Schema;
 import com.wegas.editor.JSONSchema.JSONArray;
 import com.wegas.editor.View.View;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -35,12 +34,9 @@ public class SingleResultChoiceDescriptor extends ChoiceDescriptor {
             this.setMinItems(1);
             this.setMaxItems(1);
 
-            final ObjectMapper mapper = new ObjectMapper();
-            ArrayNode arrayNode = mapper.createArrayNode();
-            ObjectNode objectNode = mapper.createObjectNode();
-            objectNode.put("@class", "Result");
-            arrayNode.add(objectNode);
-            this.setValue(arrayNode);
+            List<Result> results =new ArrayList<>();
+            results.add(new Result());
+            this.setValue(results);
         }
     }
 

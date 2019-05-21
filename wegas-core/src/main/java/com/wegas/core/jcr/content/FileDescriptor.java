@@ -31,7 +31,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     static final private Logger logger = LoggerFactory.getLogger(FileDescriptor.class);
 
     @JsonIgnore
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private Calendar dataLastModified;
 
     /**
@@ -44,7 +44,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
      * Some ghost field (since not yet possible to define a WegasEntityProperty without a corresponding field)
      */
     @JsonIgnore
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private FileContent data; // TODO -> allow to define such a transient field withen the WegasEntity class anotation extraProperties = {@WegasEntityProperty + name}
 
     /**

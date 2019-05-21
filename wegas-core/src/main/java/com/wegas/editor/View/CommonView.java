@@ -3,6 +3,7 @@ package com.wegas.editor.View;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.util.StdConverter;
+import com.wegas.core.persistence.variable.ModelScoped;
 
 public class CommonView extends BaseView {
 
@@ -28,6 +29,8 @@ public class CommonView extends BaseView {
     private Boolean borderTop = false;
 
     private LAYOUT layout = LAYOUT.none;
+
+    public ModelScoped.ProtectionLevel protectionLevel;
 
     /**
      * @return the index

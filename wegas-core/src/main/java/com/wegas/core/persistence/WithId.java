@@ -18,7 +18,7 @@ import com.wegas.editor.View.View;
  */
 public interface WithId {
 
-    @WegasExtraProperty(optional = true,
+    @WegasExtraProperty(nullable = false,
             view = @View(value = ReadOnlyNumber.class,
                     label = "id",
                     featureLevel = ADVANCED,

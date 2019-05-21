@@ -48,7 +48,7 @@ function genChoices(items: (IVariableDescriptor | undefined)[],
                     if (newItems.length > 0 || enableFolder) {
                         ret.push({
                             label: genSpaces(level) + editorLabel(i),
-                            value: i.name,
+                            value: i.name!,
                             /*children: newItems,*/
                             disabled:
                                 !enableFolder ||
@@ -56,10 +56,10 @@ function genChoices(items: (IVariableDescriptor | undefined)[],
                         });
                         ret = ret.concat(newItems);
                     }
-                } else if (!classFilter.length || classFilter.indexOf(i['@class']) !== -1) {
+                } else if (!classFilter.length || classFilter.indexOf(i['@class']!) !== -1) {
                     ret.push({
                         label: genSpaces(level) + editorLabel(i),
-                        value: i.name,
+                        value: i.name!,
                         disabled: selectable && selectable.indexOf(level) === -1,
                     });
                 }

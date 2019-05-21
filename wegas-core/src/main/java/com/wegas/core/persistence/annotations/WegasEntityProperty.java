@@ -17,6 +17,8 @@ import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.editor.JSONSchema.JSONSchema;
 import com.wegas.editor.JSONSchema.UndefinedSchema;
+import com.wegas.editor.ValueGenerators.Undefined;
+import com.wegas.editor.ValueGenerators.ValueGenerator;
 import com.wegas.editor.View.View;
 
 /**
@@ -70,14 +72,14 @@ public @interface WegasEntityProperty {
      *
      * @return true if the property can be omitted
      */
-    public boolean optional() default false;
+    public boolean optional() default true;
 
     /**
      * Can the property be null ?
      *
      * @return true if the property can be set to null
      */
-    public boolean nullable() default false;
+    public boolean nullable() default true;
 
     /**
      * postUpdate, preDestroy, postPersist callback
@@ -113,4 +115,15 @@ public @interface WegasEntityProperty {
      * @return
      */
     Class<? extends JSONSchema> schema() default UndefinedSchema.class;
+
+    /**
+     * initial propsal
+     */
+    Class<? extends ValueGenerator> proposal() default Undefined.class;
+
+    /**
+     * set to true if the property is never serialized to the client
+     * @return
+     */
+    boolean notSerialized() default false;
 }

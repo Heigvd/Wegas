@@ -58,31 +58,40 @@ public class Reply extends AbstractEntity implements DatedEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
-    @WegasEntityProperty(view = @View(label = "Created Time", value= ReadOnlyNumber.class))
+    @WegasEntityProperty(optional = false, nullable = false,
+            view = @View(label = "Created Time", value = ReadOnlyNumber.class))
     private Date createdTime = new Date();
     /**
      * <p>
      */
-    @WegasEntityProperty(view = @View(label = "Start Time", value= ReadOnlyNumber.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "Start Time", value = ReadOnlyNumber.class))
     private Long startTime;
     /**
      *
      */
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty(view = @View(label = "Unread"))
+    @WegasEntityProperty(view = @View(label = "Unread"),
+            optional = false, nullable = false
+    )
     private Boolean unread = false;
     /**
      *
      */
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty(view = @View(label = "Ignored"))
+    @WegasEntityProperty(view = @View(label = "Ignored"),
+            optional = false, nullable = false
+    )
     private Boolean ignored = false;
 
     /**
      *
      */
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty(view = @View(label = "Validated"))
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "Validated"))
     private Boolean validated = false;
     /**
      *
@@ -91,11 +100,14 @@ public class Reply extends AbstractEntity implements DatedEntity {
     private Result result;
 
     @Transient
-    @WegasEntityProperty(view = @View(label = "Result Name", value= ReadOnlyString.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "Result Name", value = ReadOnlyString.class))
     private String resultName;
 
     @Transient
-    @WegasEntityProperty(view = @View(label = "Choice Name", value= ReadOnlyString.class))
+    @WegasEntityProperty(optional = false, nullable = false,
+            view = @View(label = "Choice Name", value = ReadOnlyString.class))
     private String choiceName;
 
     /**
@@ -122,7 +134,7 @@ public class Reply extends AbstractEntity implements DatedEntity {
 
     /**
      * Is the reply validated.
-     *
+     * <p>
      * impact (or ignoreationImapct in ignored rely case) of a validated reply has been applied
      *
      * @return
@@ -250,7 +262,7 @@ public class Reply extends AbstractEntity implements DatedEntity {
         this.setChoiceName(null);
     }
 
-    @WegasExtraProperty(view = @View(label= "Answer", value = I18nHtmlView.class))
+    @WegasExtraProperty(view = @View(label = "Answer", value = I18nHtmlView.class))
     public TranslatableContent getAnswer() {
         if (result != null && this.isValidated()) {
             return result.getAnswer();
@@ -263,7 +275,7 @@ public class Reply extends AbstractEntity implements DatedEntity {
         // Make Jackson happy
     }
 
-    @WegasExtraProperty(view = @View(label= "Ignoration Answer", value = I18nHtmlView.class))
+    @WegasExtraProperty(view = @View(label = "Ignoration Answer", value = I18nHtmlView.class))
     public TranslatableContent getIgnorationAnswer() {
         if (result != null && this.isValidated()) {
             return result.getIgnorationAnswer();
@@ -276,7 +288,7 @@ public class Reply extends AbstractEntity implements DatedEntity {
         // Make Jackson happy
     }
 
-    @WegasExtraProperty(view = @View(label= "Files"))
+    @WegasExtraProperty(view = @View(label = "Files"))
     public Set<String> getFiles() {
         if (result != null && this.isValidated()) {
             return result.getFiles();

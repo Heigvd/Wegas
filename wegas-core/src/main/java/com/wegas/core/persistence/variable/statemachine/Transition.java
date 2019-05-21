@@ -19,6 +19,7 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.Zero;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.INTERNAL;
 import com.wegas.editor.View.Hidden;
@@ -58,8 +59,8 @@ public class Transition extends AbstractEntity {
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty(sameEntityOnly = true, view = @View(
-            label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
+    @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
+            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
     private Long version;
 
     public Long getVersion() {

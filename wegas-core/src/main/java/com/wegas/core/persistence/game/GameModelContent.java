@@ -18,6 +18,8 @@ import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.ValueGenerators.Zero;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.ReadOnlyNumber;
 import com.wegas.editor.View.ReadOnlyString;
@@ -79,15 +81,18 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
 
     @Enumerated(value = EnumType.STRING)
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
-    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL, view = @View(
-            label = "",
-            value = VisibilitySelectView.class
-    ))
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL,
+            nullable = false,
+            view = @View(
+                    label = "Visibility",
+                    value = VisibilitySelectView.class
+            ))
     private Visibility visibility = Visibility.PRIVATE;
 
     @Version
+    @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
+            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty(sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class))
     private Long version;
 
     /**

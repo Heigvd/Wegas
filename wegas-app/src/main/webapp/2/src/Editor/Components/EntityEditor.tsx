@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { get } from 'lodash-es';
+import { get, cloneDeep } from 'lodash-es';
 import { Schema } from 'jsoninput';
 import { State } from '../../data/Reducer/reducers';
-import { VariableDescriptor } from '../../data/selectors';
+import { VariableDescriptor, GameModel, Helper } from '../../data/selectors';
 import getEditionConfig from '../editionConfig';
 import { Actions } from '../../data';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
@@ -21,13 +21,105 @@ interface EditorProps<T> {
   getConfig(entity: T): Promise<Schema<AvailableViews>>;
 }
 
-export async function WindowedEditor<T>({
-  entity,
-  update,
-  actions = [],
-  getConfig,
-  path,
-}: EditorProps<T>) {
+type VISIBILITY = 'INTERNAL' | 'PROTECTED' | 'INHERITED' | 'PRIVATE';
+type PROTECTION_LEVEL = 'INTERNAL' | 'PROTECTED' | 'INHERITED' | 'PRIVATE' | 'ALL';
+
+const PROTECTION_LEVELS = ['INTERNAL', 'PROTECTED', 'INHERITED', 'PRIVATE', 'ALL'];
+
+function getVisibility(defaultValue: VISIBILITY, inheritedValue?: VISIBILITY, entity?: IAbstractEntity): VISIBILITY {
+  if (entity && typeof entity === 'object') {
+    if ('visibility' in entity) {
+      return (entity as any).visibility as VISIBILITY;
+    }
+    if (inheritedValue) {
+      return inheritedValue;
+    }
+    let p = Helper.getParent(entity);
+    while (p) {
+      if ('visibility' in p) {
+        return (p as any).visibility as VISIBILITY;
+      }
+      p = Helper.getParent(p);
+    }
+    return defaultValue;
+  }
+
+  return inheritedValue || defaultValue;
+}
+
+/**
+ * when editing a scenatio which depends on a model, some properties are not editable.
+ * Hence, the schema must be modified to make some views readonly.
+ */
+function _overrideSchema(
+  schema: Schema<AvailableViews>,
+    entity?: IAbstractEntity,
+  inheritedVisibility?: VISIBILITY,
+  inheritedProtectionLevel?: PROTECTION_LEVEL,
+) {
+  const v = getVisibility('PRIVATE', inheritedVisibility, entity);
+  const pl = ('protectionLevel' in schema && schema['protectionLevel']) || inheritedProtectionLevel || 'PROTECTED';
+
+  const readOnly = PROTECTION_LEVELS.indexOf(v) <= PROTECTION_LEVELS.indexOf(pl);
+
+  if (readOnly) {
+    if (schema.view) {
+      (schema.view as any).readOnly = true;
+    } else {
+      schema.view = {
+        readOnly,
+      };
+    }
+  }
+
+  if ('properties' in schema) {
+    const oSchema = schema as Schema.Object;
+    for (const key in oSchema.properties) {
+      if (oSchema.properties[key]) {
+        if (entity && key in entity) {
+          _overrideSchema(oSchema.properties[key] as any, (entity as any)[key], v, pl);
+        } else {
+          _overrideSchema(oSchema.properties[key] as any, undefined, v, pl);
+        }
+      }
+    }
+    if (readOnly) {
+      if (oSchema.additionalProperties) {
+        if (oSchema.additionalProperties.view) {
+          (oSchema.additionalProperties.view as any).readOnly = true;
+        } else {
+          (oSchema.additionalProperties.view as any)= {
+            readOnly,
+          };
+        }
+      }
+    }
+  } else if ('items' in schema) {
+    const aSchema = schema as Schema.Array;
+    if (Array.isArray(entity) && entity.length > 0) {
+      _overrideSchema(aSchema.items as any, entity[0], v, pl);
+    } else {
+      _overrideSchema(aSchema.items as any, undefined, v, pl);
+    }
+  }
+
+  return schema;
+}
+
+function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
+  const gameModel = GameModel.selectCurrent();
+  if (gameModel.type === 'SCENARIO') {
+    return _overrideSchema(cloneDeep(schema), entity);
+    /*if (gameModel.basedOnId && gameModel.basedOnId >= 0) {
+      // Editing a scenario which depends on a model -> some properties are read-only
+    } else {
+      return _overrideSchema(cloneDeep(schema), entity);
+    }*/
+  }
+  return schema;
+}
+
+export async function WindowedEditor<T>({ entity, update, actions = [], getConfig, path }: EditorProps<T>) {
   let pathEntity = entity;
   if (Array.isArray(path) && path.length > 0) {
     pathEntity = get(entity, path);
@@ -40,10 +132,10 @@ export async function WindowedEditor<T>({
     return update != null && update(deepUpdate(entity, path, variable) as T);
   }
 
-  const [Form, schema] = await Promise.all<
-    typeof import('./Form')['Form'],
-    Schema<AvailableViews>
-  >([import('./Form').then(m => m.Form), getConfig(pathEntity)]);
+  const [Form, schema] = await Promise.all<typeof import('./Form')['Form'], Schema<AvailableViews>>([
+    import('./Form').then(m => m.Form),
+    getConfig(pathEntity),
+  ]);
   return (
     <Form
       entity={pathEntity}
@@ -57,7 +149,7 @@ export async function WindowedEditor<T>({
         };
       })}
       path={path}
-      schema={schema}
+      schema={overrideSchema(entity, schema)}
     />
   );
 }
@@ -84,6 +176,8 @@ export default function VariableForm(props: {
             ...editing,
             entity: {
               '@class': editing['@class'],
+              parentId: editing.parentId,
+              parentType: editing.parentType,
             },
           };
         }

@@ -27,6 +27,8 @@ import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
 import com.wegas.core.persistence.annotations.WegasConditions.IsTrue;
 import com.wegas.core.persistence.annotations.WegasConditions.Not;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.Zero;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.I18nHtmlView;
@@ -66,8 +68,8 @@ public class Result extends AbstractEntity implements LabelledEntity {
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty(sameEntityOnly = true, view = @View(
-            label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
+    @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
+            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
     private Long version;
 
     public Long getVersion() {
@@ -115,7 +117,9 @@ public class Result extends AbstractEntity implements LabelledEntity {
      * Displayed answer when MCQ result not selected and validated
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(view = @View(label = "Feedback when ignored", value = I18nHtmlView.class, borderTop = true))
+    @WegasEntityProperty(view = @View(
+            label = "Feedback when ignored", value = I18nHtmlView.class, borderTop = true
+    ))
     @Visible(IsQuestionCbx.class)
     private TranslatableContent ignorationAnswer;
 
@@ -123,7 +127,7 @@ public class Result extends AbstractEntity implements LabelledEntity {
      *
      */
     @ElementCollection
-    @WegasEntityProperty(view = @View(label = "Files", value = Hidden.class))
+    @WegasEntityProperty(view = @View(label = "Files", value = Hidden.class), proposal = EmptyArray.class)
     private Set<String> files = new HashSet<>();
     /**
      *
@@ -143,7 +147,7 @@ public class Result extends AbstractEntity implements LabelledEntity {
                 = @Column(name = "ignoration_language"))
     })
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty(view = @View(label = "Impact when ignored", value =ScriptView.Impact.class))
+    @WegasEntityProperty(view = @View(label = "Impact when ignored", value = ScriptView.Impact.class))
     @Visible(IsQuestionCbx.class)
     private Script ignorationImpact;
     /**

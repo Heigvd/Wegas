@@ -71,7 +71,7 @@ export const AddMenuChoice = asyncSFC(
         icon="plus"
         onSelect={i =>
           dispatch(
-            Actions.EditorActions.createVariable(i.value, undefined, {
+            Actions.EditorActions.createVariable(i.value, variable, {
               save: (entity: IResult) => {
                 const newChoice = produce(variable, v => {
                   v.results.push(entity);

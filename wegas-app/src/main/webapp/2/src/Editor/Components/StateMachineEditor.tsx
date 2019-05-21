@@ -313,6 +313,7 @@ class StateMachineEditor extends React.Component<
         this.createState(
           {
             '@class': 'State',
+            version: 0,
             editorPosition: {
               x: parseInt(left || '0', 10),
               y: parseInt(top || '0', 10),

@@ -98,7 +98,7 @@ async function buildDefaultVariableCallAST(
   )[0];
   if (method != null) {
     return createVariableCallAST(
-      variable.name,
+      variable.name!,
       method,
       argsToDefault(config[method].parameters),
     );
@@ -207,14 +207,14 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
         // Args are identical
         this.props.onChange(
           expressionStatement(
-            createVariableCallAST(variable!.name, value, args),
+            createVariableCallAST(variable!.name!, value, args),
           ),
         );
       } else {
         this.props.onChange(
           expressionStatement(
             createVariableCallAST(
-              variable!.name,
+              variable!.name!,
               value,
               argsToDefault(newCfg.parameters),
             ),
@@ -255,7 +255,7 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
         this.props.onChange(
           expressionStatement(
             createVariableCallAST(
-              variable!.name,
+              variable!.name!,
               method,
               values.map((a, i) =>
                 valueToAST(a, methodsConfig[method].parameters[i].type),

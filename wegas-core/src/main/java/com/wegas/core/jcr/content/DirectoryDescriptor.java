@@ -30,7 +30,7 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
     private static final long serialVersionUID = 1L;
 
     @JsonIgnore
-    @WegasEntityProperty(includeByDefault = false, callback = ChildrenCallback.class)
+    @WegasEntityProperty(includeByDefault = false, callback = ChildrenCallback.class, notSerialized = true)
     private List<AbstractContentDescriptor> children;
 
     /**

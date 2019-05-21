@@ -28,9 +28,9 @@ export default function translatable<P extends EndProps>(
     // Updade label
     const curCode = (
       availableLang.find(l => l.code === lang) || {
-        label: '',
+        code: '',
       }
-    ).label;
+    ).code;
     const view = React.useMemo(
       () => ({
         ...props.view,
@@ -44,7 +44,7 @@ export default function translatable<P extends EndProps>(
     );
     const pvalue: ITranslatableContent =
       props.value == null
-        ? { '@class': 'TranslatableContent', translations: {} }
+            ? {'@class': 'TranslatableContent', translations: {}, version: 0 }
         : props.value;
     const currTranslation = pvalue.translations[lang];
     return (

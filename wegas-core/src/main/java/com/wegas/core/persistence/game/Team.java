@@ -15,11 +15,13 @@ import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.Textarea;
 import com.wegas.editor.View.View;
 import java.util.ArrayList;
@@ -217,6 +219,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @JsonManagedReference(value = "player-team")
     @Override
+    @WegasExtraProperty(optional = false, nullable=false, view=@View(label = "Players", value = Hidden.class))
     public List<Player> getPlayers() {
         return players;
     }

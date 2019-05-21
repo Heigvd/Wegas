@@ -25,7 +25,7 @@ public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
 
     private static final long serialVersionUID = 1L;
 
-    @WegasEntityProperty(nullable = true, view = @View(
+    @WegasEntityProperty(view = @View(
             label = "Minimum",
             layout = CommonView.LAYOUT.shortInline,
             value = NumberView.WithNegInfinityPlaceholder.class
@@ -33,7 +33,7 @@ public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
     @Errored(NumberDescriptor.NumberDescBoundsConstraint.class)
     private Long minValue;
 
-    @WegasEntityProperty(nullable = true, view = @View(
+    @WegasEntityProperty(view = @View(
             label = "Maximum",
             layout = CommonView.LAYOUT.shortInline,
             value = NumberView.WithNegInfinityPlaceholder.class

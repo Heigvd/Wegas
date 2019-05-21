@@ -19,6 +19,7 @@ import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
@@ -26,6 +27,7 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.View;
 import java.util.*;
 import javax.persistence.*;
@@ -191,6 +193,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     @JsonManagedReference("game-team")
     // Exclude this property from the Lobby view and force a fetch in Editor view:
     @JsonView(Views.EditorI.class)
+    @WegasExtraProperty(optional = false, nullable=false, view=@View(label = "Teams", value = Hidden.class))
     public List<Team> getTeams() {
         return this.getGameTeams().getTeams();
     }

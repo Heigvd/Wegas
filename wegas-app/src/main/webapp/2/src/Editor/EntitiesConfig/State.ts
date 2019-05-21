@@ -1,12 +1,14 @@
 import { ConfigurationSchema } from '../editionConfig';
 
-export const config: ConfigurationSchema<IFSMDescriptor.State> = {
+export const config: ConfigurationSchema<IState> = {
   '@class': {
     value: 'State',
     view: {
       type: 'hidden',
     },
   },
+  refId: {},
+  index: {},
   version: {
     type: 'number',
     value: 0,

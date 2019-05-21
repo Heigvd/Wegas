@@ -31,6 +31,7 @@ type Edition =
       type: 'VariableCreate';
       '@class': string;
       parentId?: number;
+      parentType?: string,
       config?: Schema<AvailableViews>;
       actions: EditorAction<IAbstractEntity>;
     }
@@ -109,6 +110,7 @@ const global: Reducer<Readonly<GlobalState>> = u(
           type: 'VariableCreate',
           '@class': action.payload['@class'],
           parentId: action.payload.parentId,
+          parentType: action.payload.parentType,
           actions: action.payload.actions,
         };
         return;
@@ -267,12 +269,13 @@ export function editStateMachine(
  */
 export function createVariable(
   cls: string,
-  parent?: IParentDescriptor,
+  parent?: IListDescriptor | IQuestionDescriptor | IChoiceDescriptor ,
   actions: EditorAction<IAbstractEntity> = {},
 ) {
   return ActionCreator.VARIABLE_CREATE({
     '@class': cls,
     parentId: parent ? parent.id : undefined,
+    parentType: parent ? parent['@class']: undefined,
     actions,
   });
 }

@@ -21,6 +21,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.ValueGenerators.Three;
 import com.wegas.editor.View.FlatVariableSelectView.TextOrNumberSelector;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.I18nHtmlView;
@@ -141,7 +142,9 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      * especially is total number of team/player is too small
      * <p>
      */
-    @WegasEntityProperty(view = @View(
+    @WegasEntityProperty(
+            proposal =Three.class,
+            view = @View(
             label = "Number of reviews",
             description = "Maximum reviews per user. Preferably greater than one."
     ))

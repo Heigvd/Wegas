@@ -60,7 +60,9 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
      *
      */
     @Column(name = "val")
-    @WegasEntityProperty(view = @View(label = "Value"))
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "Value"))
     @Errored(ValueLessThanMin.class)
     @Errored(ValueGreaterThanMax.class)
     private double value;

@@ -22,6 +22,8 @@ export const config: ConfigurationSchema<IChoiceInstance> = {
     value: true,
     view: { label: 'Unread' },
   },
+  currentResultIndex: {
+  },
   currentResultName: {
     type: ['null', 'string'],
     view: { label: 'Result' },

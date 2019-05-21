@@ -3,7 +3,7 @@ import * as React from 'react';
 interface LangProviderProps {
   lang?: string;
   children?: React.ReactNode;
-  availableLang: { code: string; label: string; active: boolean }[];
+  availableLang: IGameModelLanguage[];
 }
 interface Context extends LangProviderProps {
   lang: string;
@@ -43,7 +43,7 @@ export function LangToggler() {
     <select value={lang} onChange={ev => toggleLang(ev.target.value)}>
       {availableLang.map(l => (
         <option key={l.code} value={l.code}>
-          {`[${l.code}] ${l.label}`}
+          {`[${l.code}] ${l.lang}`}
         </option>
       ))}
     </select>

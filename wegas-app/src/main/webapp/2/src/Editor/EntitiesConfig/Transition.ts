@@ -1,6 +1,6 @@
 import { ConfigurationSchema } from '../editionConfig';
 
-export const config: ConfigurationSchema<IFSMDescriptor.Transition> = {
+export const config: ConfigurationSchema<ITransition> = {
   '@class': {
     value: 'Transition',
     view: { type: 'hidden' },
@@ -15,6 +15,7 @@ export const config: ConfigurationSchema<IFSMDescriptor.Transition> = {
     },
     index: -1,
   },
+  refId:{},
   id: {
     type: ['number', 'null'],
     view: {
@@ -47,7 +48,7 @@ export const config: ConfigurationSchema<IFSMDescriptor.Transition> = {
       label: 'Impact',
     },
   },
-  stateMachineId: { view: { type: 'hidden' } },
+  /*stateMachineId: { view: { type: 'hidden' } },*/
   index: {
     type: 'number',
     view: {

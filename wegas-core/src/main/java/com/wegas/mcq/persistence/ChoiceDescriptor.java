@@ -37,6 +37,9 @@ import com.wegas.core.persistence.annotations.WegasConditions.Not;
 import com.wegas.core.persistence.annotations.WegasConditions.Or;
 import com.wegas.core.persistence.annotations.WegasRefs.Const;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.One;
+import com.wegas.editor.ValueGenerators.Zero;
 import com.wegas.editor.View.CommonView;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.I18nHtmlView;
@@ -81,6 +84,8 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
     @WegasEntityProperty(callback = ResultMergeCallback.class,
+            proposal = EmptyArray.class,
+            optional = false, nullable = false,
             view = @View(
                     value = Hidden.class,
                     label = ""
@@ -96,18 +101,18 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     /**
      *
      */
-    @WegasEntityProperty(view = @View(label = "Duration", value = Hidden.class))
+    @WegasEntityProperty(proposal = One.class, view = @View(label = "Duration", value = Hidden.class))
     private Long duration = 1L;
     /**
      *
      */
-    @WegasEntityProperty(view = @View(label = "Cost", value = Hidden.class))
+    @WegasEntityProperty(proposal = Zero.class, view = @View(label = "Cost", value = Hidden.class))
     private Long cost = 0L;
 
     /**
      * Total number of replies allowed. No default value.
      */
-    @WegasEntityProperty(nullable = true, view = @View(
+    @WegasEntityProperty(view = @View(
             label = "Max. number replies",
             value = NumberView.WithInfinityPlaceholder.class,
             layout = CommonView.LAYOUT.shortInline

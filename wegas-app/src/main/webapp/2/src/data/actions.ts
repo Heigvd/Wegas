@@ -49,6 +49,7 @@ export const ActionCreator = {
   VARIABLE_CREATE: <T extends IAbstractEntity>(data: {
     '@class': string;
     parentId?: number;
+    parentType?: string;
     actions: {
       save?: (entity: T) => void;
       delete?: (entity: T) => void;

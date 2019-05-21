@@ -17,6 +17,7 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.persistence.annotations.Errored;
+import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.editor.Visible;
 import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
@@ -26,6 +27,9 @@ import com.wegas.core.persistence.annotations.WegasConditions.LessThan;
 import com.wegas.core.persistence.annotations.WegasRefs.Const;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.core.persistence.annotations.WegasRefs.Self;
+import com.wegas.editor.ValueGenerators.False;
+import com.wegas.editor.ValueGenerators.One;
+import com.wegas.editor.ValueGenerators.True;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import static com.wegas.editor.View.CommonView.LAYOUT.shortInline;
 import com.wegas.editor.View.Hidden;
@@ -77,7 +81,9 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * radio/checkbox
      */
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty(view = @View(
+    @WegasEntityProperty(
+            proposal = False.class,
+            view = @View(
             label = "Checkbox answer",
             description = "For standard multiple-choice questions"
     ))
@@ -86,33 +92,39 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * Determines if choices are presented horizontally in a tabular fashion
      */
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty(view = @View(
+    @WegasEntityProperty(
+            proposal = False.class,
+            view = @View(
             label = "Tabular layout",
             description = "Replies are presented horizontally"
     ))
     @Visible(IsCbx.class)
     private Boolean tabular = FALSE;
     /**
-     * Total number of replies allowed. No default value.
+     * Total number of replies allowed. No default value (means infinity).
      */
-    @WegasEntityProperty(view = @View(
-            label = "Max. number replies",
-            description = "Optional value",
-            value = NumberView.WithInfinityPlaceholder.class,
-            layout = shortInline
-    ))
+    @WegasEntityProperty(
+            proposal = One.class,
+            view = @View(
+                    label = "Max. number replies",
+                    description = "Optional value",
+                    value = NumberView.WithInfinityPlaceholder.class,
+                    layout = shortInline
+            ))
     @Errored(CheckMinMaxBounds.class)
     @Errored(CheckPositiveness.class)
     private Integer maxReplies = null;
     /**
      * Minimal number of replies required. Makes sense only with CBX-type questions. No default value.
      */
-    @WegasEntityProperty(view = @View(
-            label = "Min. number replies",
-            description = "Optional value",
-            value = NumberView.WithNegInfinityPlaceholder.class,
-            layout = shortInline
-    ))
+    @WegasEntityProperty(
+            proposal = One.class,
+            view = @View(
+                    label = "Min. number replies",
+                    description = "Optional value",
+                    value = NumberView.WithNegInfinityPlaceholder.class,
+                    layout = shortInline
+            ))
     @Visible(IsCbx.class)
     @Errored(CheckPositiveness.class)
     @Errored(CheckMinMaxBounds.class)
@@ -124,7 +136,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     //@BatchFetch(BatchFetchType.IN)
     @JsonManagedReference
     @OrderColumn(name = "qd_items_order")
-    @WegasEntityProperty(includeByDefault = false, view = @View(label = "Items", value = Hidden.class))
+    @WegasEntityProperty(includeByDefault = false, view = @View(label = "Items", value = Hidden.class), notSerialized = true)
     private List<ChoiceDescriptor> items = new ArrayList<>();
     /**
      *
@@ -191,7 +203,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * @param value
      */
     @Scriptable(label = "validate")
-    public void setValidated(Player p, boolean value) {
+    public void setValidated(Player p, @Param(proposal = True.class) boolean value) {
         this.getInstance(p).setValidated(value);
     }
 

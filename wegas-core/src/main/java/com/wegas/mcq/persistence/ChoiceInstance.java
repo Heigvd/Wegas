@@ -17,6 +17,8 @@ import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.True;
 import com.wegas.editor.View.EntityArrayFiledSelect;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.View;
@@ -49,12 +51,12 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
     /**
      *
      */
-    @WegasEntityProperty(view = @View(label = "Active from start"))
+    @WegasEntityProperty(proposal = True.class, view = @View(label = "Active from start"))
     private Boolean active = true;
     /**
      *
      */
-    @WegasEntityProperty(view = @View(label = "Unread", value = Hidden.class))
+    @WegasEntityProperty(proposal = True.class, view = @View(label = "Unread", value = Hidden.class))
     private Boolean unread = true;
     /**
      *
@@ -77,7 +79,8 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
     @BatchFetch(BatchFetchType.JOIN)
     @JsonManagedReference
     //@JoinFetch
-    @WegasEntityProperty(view = @View(label = "Replies", value = Hidden.class))
+    @WegasEntityProperty(view = @View(label = "Replies", value = Hidden.class), 
+            proposal = EmptyArray.class, optional = false, nullable = false)
     private List<Reply> replies = new ArrayList<>();
 
     /**
@@ -92,6 +95,7 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
      * @deprecated
      */
     @WegasEntityProperty(view = @View(label = "deprecated current result index", value = Hidden.class))
+    @Deprecated
     private Integer currentResultIndex = null;
 
     public ChoiceInstance() {

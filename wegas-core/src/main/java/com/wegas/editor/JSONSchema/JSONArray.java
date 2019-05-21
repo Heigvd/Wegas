@@ -8,6 +8,10 @@ public class JSONArray extends JSONType {
     public JSONArray() {
         super(false);
     }
+
+    public JSONArray(boolean nullable) {
+        super(nullable);
+    }
     /**
      * @return the items
      */

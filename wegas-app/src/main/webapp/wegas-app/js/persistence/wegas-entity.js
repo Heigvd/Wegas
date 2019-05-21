@@ -99,6 +99,11 @@ YUI.add('wegas-entity', function(Y) {
                     label: "RefId"
                 }
             },
+            parentId: IDATTRDEF,
+            parentType: {
+                type: "string",
+                view: {type: HIDDEN}
+            },
             version: VERSION_ATTR_DEF,
             translations: {
                 type: "object",
@@ -571,6 +576,11 @@ YUI.add('wegas-entity', function(Y) {
              },*/
             refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
             version: VERSION_ATTR_DEF,
+            parentId: IDATTRDEF,
+            parentType: {
+                type: "string",
+                view: {type: HIDDEN}
+            },
             translations: {
                 type: "object",
                 additionalProperties: {

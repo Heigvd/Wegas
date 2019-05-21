@@ -15,6 +15,7 @@ export const config: ConfigurationSchema<IVariableInstance> = {
       type: 'uneditable',
     },
   },
+  refId :{},
   version: {
     index: -13,
     type: 'number',

@@ -7,16 +7,9 @@
  * Licensed under the MIT License
  */
 
-import { get } from 'lodash-es';
+import { get, isMatch } from 'lodash-es';
 import { discriminant } from '../normalize';
-import {
-  Game,
-  GameModel,
-  Player,
-  Team,
-  VariableDescriptor,
-  VariableInstance,
-} from '../selectors';
+import { Game, GameModel, Player, Team, VariableDescriptor, VariableInstance } from '../selectors';
 
 function findNearestParentInFormVal<T extends IAbstractEntity = IAbstractEntity>(
   formVal: IAbstractEntity,
@@ -42,38 +35,56 @@ function findNearestParentInStore<T extends IAbstractEntity = IAbstractEntity>(
   val: IAbstractEntity,
   classFilter: string,
 ): Readonly<T> | undefined {
-  let parent: Readonly<T> | undefined;
+  let parent = getParent<T>(val);
+  if (parent) {
+    //@TODO: find a clever way
+    // hack to match classes like SingleChoiceDescriptor and ChoiceDescriptor equiv.
+    if (parent['@class'].endsWith(classFilter)) {
+      return parent;
+    } else {
+      return findNearestParentInStore(parent, classFilter);
+    }
+  }
+}
+
+/**
+ * get entity parent based on entity parentType and parentId
+ */
+export function getParent<T extends IAbstractEntity = IAbstractEntity>(val: IAbstractEntity): Readonly<T> | undefined {
   if (val.parentType) {
     switch (discriminant({ '@class': val.parentType })) {
       case 'variableDescriptors':
-        parent = (VariableDescriptor.select(val.parentId) as unknown) as T;
+        return (VariableDescriptor.select(val.parentId) as unknown) as T;
         break;
       case 'variableInstances':
-        parent = (VariableInstance.select(val.parentId) as unknown) as T;
+        return (VariableInstance.select(val.parentId) as unknown) as T;
         break;
       case 'gameModels':
-        parent = (GameModel.select(val.parentId!) as unknown) as T;
+        return (GameModel.select(val.parentId!) as unknown) as T;
         break;
       case 'games':
-        parent = (Game.select(val.parentId!) as unknown) as T;
+        return (Game.select(val.parentId!) as unknown) as T;
         break;
       case 'teams':
-        parent = (Team.select(val.parentId!) as unknown) as T;
+        return (Team.select(val.parentId!) as unknown) as T;
         break;
       case 'players':
-        parent = (Player.select(val.parentId!) as unknown) as T;
-        break;
+        return (Player.select(val.parentId!) as unknown) as T;
     }
+    return undefined;
+  }
+}
 
-    if (parent) {
-      //@TODO: find a clever way
-      // hack to match classes like SingleChoiceDescriptor and ChoiceDescriptor equiv.
-      if (parent['@class'].endsWith(classFilter)) {
-        return parent;
-      } else {
-        return findNearestParentInStore(parent, classFilter);
-      }
+export function findFirstParentMatch<T extends IAbstractEntity = IAbstractEntity>(
+  entity: IAbstractEntity,
+  o: Partial<T>,
+): Readonly<T> | undefined {
+  let p = getParent(entity);
+  while (p) {
+    if (isMatch(p, o)) {
+      return p as T;
     }
+    p = getParent(p);
   }
 }
 
@@ -82,8 +93,5 @@ export function findNearestParent<T extends IAbstractEntity = IAbstractEntity>(
   path: string[],
   classFilter: string,
 ): Readonly<T> | undefined {
-  return (
-    findNearestParentInFormVal(val, path, classFilter) ||
-    findNearestParentInStore(val, classFilter)
-  );
+  return findNearestParentInFormVal(val, path, classFilter) || findNearestParentInStore(val, classFilter);
 }

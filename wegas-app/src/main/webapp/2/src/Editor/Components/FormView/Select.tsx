@@ -100,6 +100,7 @@ function SelectView(props: ISelectProps) {
                   className={selectStyle}
                   value={value}
                   onChange={onChange}
+                  disabled={props.view.readOnly}
                 >
                   {choices.map(genItems)}
                 </select>

@@ -23,6 +23,7 @@ import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
@@ -33,7 +34,10 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.INTERNAL;
+import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.ReadOnlyString;
 import com.wegas.editor.View.Textarea;
 import com.wegas.editor.View.View;
 import java.util.*;
@@ -101,7 +105,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     private Integer UIVersion;
 
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, optional = false, nullable= false, view = @View(label = "Languages", value = Hidden.class))
     private List<GameModelLanguage> languages = new ArrayList<>();
 
     /**
@@ -172,7 +176,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @OneToMany(mappedBy = "root", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @OrderColumn(name = "gm_items_order")
     //@JsonManagedReference
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private List<VariableDescriptor> items = new ArrayList<>();
 
     /**
@@ -196,7 +200,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @OneToMany(mappedBy = "scriptlibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private List<GameModelContent> scriptLibrary = new ArrayList<>();
 
     /**
@@ -204,7 +208,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @OneToMany(mappedBy = "csslibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private List<GameModelContent> cssLibrary = new ArrayList<>();
 
     /**
@@ -212,7 +216,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @OneToMany(mappedBy = "clientscriptlibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private List<GameModelContent> clientScriptLibrary = new ArrayList<>();
 
     /**
@@ -227,7 +231,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * the same time.
      */
     @Transient
-    @WegasEntityProperty(includeByDefault = false, protectionLevel = ModelScoped.ProtectionLevel.ALL)
+    @WegasEntityProperty(includeByDefault = false, protectionLevel = ModelScoped.ProtectionLevel.ALL, notSerialized = true)
     @JsonView({Views.ExportI.class})
     private Map<String, JsonNode> pages;
 
@@ -291,6 +295,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      *
      * @return
      */
+    @WegasExtraProperty(view = @View(label = "based on", value = Hidden.class, featureLevel = INTERNAL))
     public Long getBasedOnId() {
         return this.basedOnId;
     }
@@ -387,6 +392,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     /**
      * @return Current GameModel's status
      */
+    @WegasExtraProperty(view = @View(label = "Type", value = ReadOnlyString.class))
     public Status getStatus() {
         return status;
     }
@@ -925,6 +931,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         // Here so game deserialization works
     }
 
+    @WegasExtraProperty(view = @View(label = "Type", value = ReadOnlyString.class))
     public GmType getType() {
         return type;
     }

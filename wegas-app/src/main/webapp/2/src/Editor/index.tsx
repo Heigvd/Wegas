@@ -12,11 +12,7 @@ function mount() {
   render(
     <StoreProvider>
       <LangProvider
-        availableLang={GameModel.selectCurrent().languages.map(l => ({
-          code: l.code,
-          label: l.lang,
-          active: l.active,
-        }))}
+        availableLang={GameModel.selectCurrent().languages}
       >
         <Theme>
           <Layout />

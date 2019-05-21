@@ -63,8 +63,7 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractEntity.class);
 
-    @WegasEntityProperty(initOnly = true, optional = true,
-            view = @View(label = "RefID", value = ReadOnlyString.class, index=-800))
+    @WegasEntityProperty(view = @View(label = "RefID", value = ReadOnlyString.class, index=-800))
     //@JsonView(Views.InternalI.class)
     private String refId;
 

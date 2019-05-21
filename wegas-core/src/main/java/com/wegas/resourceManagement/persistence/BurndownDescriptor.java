@@ -32,7 +32,7 @@ public class BurndownDescriptor extends VariableDescriptor<BurndownInstance> {
     @Lob
     @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty(searchable = true, nullable = true,
+    @WegasEntityProperty(searchable = true,
             view = @View(label = "description", value = HtmlView.class))
     private String description;
 

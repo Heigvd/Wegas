@@ -24,8 +24,4 @@ export const config: ConfigurationSchema<IFSMInstance> = {
       type: 'uneditable',
     },
   },
-  currentState: {
-    type: 'object',
-    view: { type: 'hidden' },
-  },
 };

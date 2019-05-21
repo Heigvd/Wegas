@@ -50,6 +50,8 @@ public interface Mergeable {
     }
 
     @WegasExtraProperty(name = "@class",
+            optional = false,
+            nullable = false,
             view = @View(
                     value = ReadOnlyString.class,
                     label = "",
@@ -57,7 +59,7 @@ public interface Mergeable {
                     index = -2000
             )
     )
-    @JsonIgnore
+    @JsonProperty("@class")
     default public String getJSONClassName() {
         return Mergeable.getJSONClassName(this.getClass());
     }
@@ -128,7 +130,7 @@ public interface Mergeable {
     @JsonView(Views.IndexI.class)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @WegasExtraProperty(
-            optional = true, nullable = true,
+            nullable = false,
             view = @View(
                     value = ReadOnlyString.class,
                     label = "Parent Type",
@@ -147,7 +149,7 @@ public interface Mergeable {
     @JsonView(Views.IndexI.class)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @WegasExtraProperty(
-            optional = true, nullable = true,
+            nullable = false,
             view = @View(
                     value = ReadOnlyNumber.class,
                     label = "Parent ID",

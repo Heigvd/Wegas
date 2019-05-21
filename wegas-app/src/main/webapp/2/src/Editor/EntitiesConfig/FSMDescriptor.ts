@@ -16,11 +16,10 @@ export const config: ConfigurationSchema<IFSMDescriptor> = {
         '@class': 'State',
         version: 0,
         editorPosition: {
-          '@class': 'Coordinate',
           x: 10,
           y: 10,
         },
-      } as IFSMDescriptor.State,
+      } as IState,
     },
     view: {
       type: 'hidden',

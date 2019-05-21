@@ -42,14 +42,14 @@ public @interface WegasExtraProperty {
      *
      * @return
      */
-    boolean optional() default false;
+    boolean optional() default true;
 
     /**
      * Can be null ?
      *
      * @return true is null is a valid value
      */
-    boolean nullable() default false;
+    boolean nullable() default true;
 
     /**
      * Override schema

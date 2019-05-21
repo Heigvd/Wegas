@@ -3,7 +3,7 @@ import { ConfigurationSchema } from '../editionConfig';
 import {findNearestParent } from '../../data/selectors/Helper';
 
 function cbxMode(_val: any, formVal: {}, path: string[]) {
-  const question : any = findNearestParent(formVal as IAbstractEntity, path, 'QuestionDescriptor');
+  const question = findNearestParent < IQuestionDescriptor>(formVal as IAbstractEntity, path, 'QuestionDescriptor');
   return !!(question && question.cbx);
 }
 
@@ -18,6 +18,7 @@ export const config: ConfigurationSchema<IResult> = {
       type: 'uneditable',
     },
   },
+  refId:{},
   version: {
     type: 'number',
     value: 0,

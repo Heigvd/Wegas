@@ -34,6 +34,7 @@ import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.editor.Schema;
 import com.wegas.editor.Schemas;
 import com.wegas.editor.JSONSchema.JSONArray;
@@ -48,10 +49,13 @@ import com.wegas.editor.JSONSchema.JSONType;
 import com.wegas.editor.JSONSchema.JSONUnknown;
 import com.wegas.editor.JSONSchema.JSONWRef;
 import com.wegas.editor.JSONSchema.UndefinedSchema;
+import com.wegas.editor.ValueGenerators;
+import com.wegas.editor.ValueGenerators.Undefined;
 import com.wegas.editor.View.CommonView;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.View;
 import com.wegas.editor.Visible;
+import com.wegas.mcq.persistence.Result;
 import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -77,7 +81,10 @@ import net.jodah.typetools.TypeResolver;
 @Mojo(name = "schema", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class SchemaGenerator extends AbstractMojo {
 
-    private static final ObjectMapper mapper = (new ObjectMapper()).enable(SerializationFeature.INDENT_OUTPUT);
+    private static final ObjectMapper mapper = JacksonMapperProvider.getMapper().enable(
+            SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS,
+            SerializationFeature.INDENT_OUTPUT
+    );
 
     private final Class<? extends Mergeable>[] classFilter;
 
@@ -103,6 +110,7 @@ public class SchemaGenerator extends AbstractMojo {
 
     private SchemaGenerator(boolean dryRun) {
         this(dryRun, null);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     private SchemaGenerator(boolean dryRun, Class<? extends Mergeable>... cf) {
@@ -187,8 +195,12 @@ public class SchemaGenerator extends AbstractMojo {
 
     public JSONString getJSONClassName(Class<? extends Mergeable> klass) {
         JSONString atClass = new JSONString(false);
-        atClass.setConstant(new TextNode(Mergeable.getJSONClassName(klass)));
+
+        String klName = Mergeable.getJSONClassName(klass);
+        atClass.setConstant(klName);
         atClass.setView(new Hidden());
+        atClass.setValue(klName);
+
         return atClass;
     }
 
@@ -221,6 +233,9 @@ public class SchemaGenerator extends AbstractMojo {
 
     private void generateTsInterface(WegasEntityFields wEF, Map<Method, WegasExtraProperty> extraProperties) {
         Class<? extends Mergeable> c = wEF.getTheClass();
+
+        boolean isAbstract = Modifier.isAbstract(c.getModifiers());
+
         StringBuilder sb = new StringBuilder();
         sb.append("interface ").append(getTsInterfaceName(c));
         // classname to paramter type map (eg. VariableInstance -> T)
@@ -242,7 +257,6 @@ public class SchemaGenerator extends AbstractMojo {
             sb.deleteCharAt(sb.length() - 1);
             sb.append(">");
         }
-        Boolean isAbstract = Modifier.isAbstract(c.getModifiers());
 
         if (c.getSuperclass() != null) {
             if (c.getSuperclass() != Object.class) {
@@ -260,8 +274,8 @@ public class SchemaGenerator extends AbstractMojo {
                     });
                     sb.deleteCharAt(sb.length() - 1);
                     sb.append(">");
-
                 }
+
                 if (!isAbstract) {
                     sb.append(">");
                 }
@@ -277,13 +291,14 @@ public class SchemaGenerator extends AbstractMojo {
             String name = annotation.name().length() > 0 ? annotation.name() : getPropertyName(method);
             Type returnType = method.getGenericReturnType();
 
-            appendProperty(properties, name, c, returnType,
+            registerProperty(properties, name, c, returnType,
                     true /* extra properties are always readonly */,
                     annotation.optional(),
                     annotation.nullable(),
                     false,
                     genericity);
         }
+
         if (!isAbstract) {
             // @class hack: constant value for concrete classes
             properties.put("@class", "  readonly '@class': '" + Mergeable.getJSONClassName(c) + "';\n");
@@ -291,9 +306,9 @@ public class SchemaGenerator extends AbstractMojo {
 
         wEF.getFields().stream()
                 // keep only self declared ones
-                .filter(f -> !f.isInherited() && f.getAnnotation().includeByDefault()).forEach(field -> {
+                .filter(f -> !f.isInherited() && !f.getAnnotation().notSerialized()).forEach(field -> {
                     Type returnType = field.getPropertyDescriptor().getReadMethod().getGenericReturnType();
-                    appendProperty(properties, field.getField().getName(), c,
+                    registerProperty(properties, field.getField().getName(), c,
                             returnType, field.getAnnotation().initOnly(),
                             field.getAnnotation().optional(),
                             field.getAnnotation().nullable(),
@@ -319,7 +334,20 @@ public class SchemaGenerator extends AbstractMojo {
 
     }
 
-    private void appendProperty(Map<String, String> properties,
+    /**
+     * Add a property to TS interface
+     *
+     * @param properties
+     * @param name
+     * @param c
+     * @param returnType
+     * @param readOnly
+     * @param optional
+     * @param nullable
+     * @param deprecated
+     * @param genericity
+     */
+    private void registerProperty(Map<String, String> properties,
             String name, Class<? extends Mergeable> c,
             Type returnType,
             boolean readOnly,
@@ -334,7 +362,7 @@ public class SchemaGenerator extends AbstractMojo {
         }
 
         String property = "  ";
-        if (deprecated){
+        if (deprecated) {
             property += "/* @deprecated */\n  ";
         }
 
@@ -361,6 +389,15 @@ public class SchemaGenerator extends AbstractMojo {
         properties.put(name, property);
     }
 
+    /**
+     * Go through super method implementation to fetch a spectific annotation
+     *
+     * @param <T>
+     * @param m
+     * @param annotationClass
+     *
+     * @return
+     */
     private <T extends Annotation> T getFirstAnnotationInHierarchy(Method m, Class<T> annotationClass) {
         Deque<Class<?>> queue = new LinkedList<>();
         queue.add(m.getDeclaringClass());
@@ -494,7 +531,7 @@ public class SchemaGenerator extends AbstractMojo {
                             JSONObject jsonSchema = config.getSchema();
                             jsonSchema.setDescription(c.getName());
 
-                            wEF.getFields().stream().filter(f -> f.getAnnotation().includeByDefault())
+                            wEF.getFields().stream().filter(f -> !f.getAnnotation().notSerialized())
                                     .forEach(field -> {
                                         Type returnType = field.getPropertyDescriptor().getReadMethod()
                                                 .getGenericReturnType();
@@ -502,7 +539,9 @@ public class SchemaGenerator extends AbstractMojo {
                                                 field.getAnnotation().schema(), field.getPropertyDescriptor().getName(),
                                                 field.getAnnotation().view(), field.getErroreds(),
                                                 field.getField().getAnnotation(Visible.class),
+                                                field.getAnnotation().optional(),
                                                 field.getAnnotation().nullable(),
+                                                field.getAnnotation().proposal(),
                                                 field.getAnnotation().protectionLevel()
                                         );
                                     });
@@ -517,8 +556,9 @@ public class SchemaGenerator extends AbstractMojo {
                                 this.addSchemaProperty(jsonSchema, c, returnType,
                                         annotation.schema(),
                                         name, annotation.view(), null, null,
-                                        annotation.nullable(),
-                                        ModelScoped.ProtectionLevel.CASCADED);
+                                        annotation.optional(), annotation.nullable(), null,
+                                        ModelScoped.ProtectionLevel.CASCADED
+                                );
                             }
 
                             // Override @class with one with default value
@@ -578,7 +618,10 @@ public class SchemaGenerator extends AbstractMojo {
             Type returnType,
             Class<? extends JSONSchema> schemaOverride,
             String name, View view, List<Errored> erroreds,
-            Visible visible, boolean nullable,
+            Visible visible,
+            boolean optional,
+            boolean nullable,
+            Class<? extends ValueGenerators.ValueGenerator> proposal,
             ModelScoped.ProtectionLevel protectionLevel) {
 
         JSONSchema prop;
@@ -589,15 +632,31 @@ public class SchemaGenerator extends AbstractMojo {
             try {
                 prop = schemaOverride.newInstance();
             } catch (InstantiationException | IllegalAccessException ex) {
-                throw WegasErrorMessage.error("Faisl to instantion overrinding schema");
+                throw WegasErrorMessage.error("Fails to instantion overrinding schema");
             }
         }
+
+        if (!optional) {
+            if (prop instanceof JSONExtendedSchema) {
+                ((JSONExtendedSchema) prop).setRequired(true);
+            }
+        }
+
         injectView(prop, view);
         if (prop instanceof JSONExtendedSchema) {
             ((JSONExtendedSchema) prop).setProtectionLevel(protectionLevel);
         }
         injectErrords(prop, erroreds);
         injectVisible(prop, visible);
+        if (proposal != null && !Undefined.class.equals(proposal)) {
+            try {
+                if (prop instanceof JSONExtendedSchema) {
+                    ((JSONExtendedSchema) prop).setValue(proposal.newInstance().getValue());
+                }
+            } catch (InstantiationException | IllegalAccessException ex) {
+                throw WegasErrorMessage.error("Error while generating initial proposal");
+            }
+        }
         jsonSchema.setProperty(name, prop);
     }
 
@@ -786,7 +845,7 @@ public class SchemaGenerator extends AbstractMojo {
         }
 
         if (collection.isSupertypeOf(type)) { // List / Set
-            JSONArray jsonArray = new JSONArray();
+            JSONArray jsonArray = new JSONArray(nullable);
             for (Type t : ((ParameterizedType) type).getActualTypeArguments()) {
                 jsonArray.setItems(javaToJSType(t, false));
             }
@@ -795,9 +854,9 @@ public class SchemaGenerator extends AbstractMojo {
 
         if (type instanceof Class && ((Class<?>) type).isEnum()) {
             Class<?> t = (Class<?>) type;
-            List<JsonNode> enums = new ArrayList<>();
+            List<String> enums = new ArrayList<>();
             for (Object o : t.getEnumConstants()) {
-                enums.add(new TextNode(o.toString()));
+                enums.add(o.toString());
             }
             JSONString jsonString = new JSONString(nullable);
             jsonString.setEnums(enums);
@@ -809,7 +868,7 @@ public class SchemaGenerator extends AbstractMojo {
                 return otherObjectsSchemas.get(type);
             } else if (new TypeToken<Mergeable>() {
             }.isSupertypeOf(type)) {
-                return new JSONWRef(jsonFileName((Class<? extends Mergeable>) type));
+                return new JSONWRef(jsonFileName((Class<? extends Mergeable>) type), nullable);
             } else {
                 JSONObject jsonObject = new JSONObject(nullable);
                 otherObjectsSchemas.put(type, jsonObject);
@@ -899,6 +958,13 @@ public class SchemaGenerator extends AbstractMojo {
                     JSONExtendedSchema prop = javaToJSType(reified, param != null && param.nullable());
                     if (param != null) {
                         injectView(prop, param.view());
+                        if (!Undefined.class.equals(param.proposal())) {
+                            try {
+                                prop.setValue(param.proposal().newInstance().getValue());
+                            } catch (InstantiationException | IllegalAccessException ex) {
+                                throw WegasErrorMessage.error("Param defautl value error");
+                            }
+                        }
                     }
                     return prop;
                 }
@@ -946,7 +1012,7 @@ public class SchemaGenerator extends AbstractMojo {
     }
 
     public static final void main(String... args) throws MojoExecutionException {
-        SchemaGenerator wenerator = new SchemaGenerator(true);
+        SchemaGenerator wenerator = new SchemaGenerator(true, Result.class);
         wenerator.execute();
     }
 }

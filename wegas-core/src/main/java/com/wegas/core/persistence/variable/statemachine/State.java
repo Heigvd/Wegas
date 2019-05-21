@@ -20,6 +20,9 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.Origin;
+import com.wegas.editor.ValueGenerators.Zero;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.ReadOnlyNumber;
@@ -61,8 +64,8 @@ public class State extends AbstractEntity implements Broadcastable {
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty(sameEntityOnly = true, view = @View(
-            label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
+    @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
+            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
     private Long version;
 
     public Long getVersion() {
@@ -77,7 +80,9 @@ public class State extends AbstractEntity implements Broadcastable {
      *
      */
     @JsonView(value = Views.EditorI.class)
-    @WegasEntityProperty(view = @View(label = "Graphical coordinates", featureLevel = ADVANCED))
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = Origin.class,
+            view = @View(label = "Graphical coordinates", featureLevel = ADVANCED))
     private Coordinate editorPosition;
 
     /**
@@ -93,13 +98,13 @@ public class State extends AbstractEntity implements Broadcastable {
      *
      */
     @Column(name = "fsm_statekey")
-    @WegasEntityProperty(optional = true, view = @View(label = "Index", value = ReadOnlyNumber.class))
+    @WegasEntityProperty(view = @View(label = "Index", value = ReadOnlyNumber.class))
     private Long index;
 
     /**
      *
      */
-    @WegasEntityProperty(searchable = true, nullable = true, view = @View(label = "Label"))
+    @WegasEntityProperty(searchable = true, view = @View(label = "Label"))
     private String label;
 
     /**
@@ -114,7 +119,9 @@ public class State extends AbstractEntity implements Broadcastable {
      *
      */
     @OneToMany(mappedBy = "state", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(view = @View(label = "Transitions", value = Hidden.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(label = "Transitions", value = Hidden.class))
     private List<Transition> transitions = new ArrayList<>();
 
     /**

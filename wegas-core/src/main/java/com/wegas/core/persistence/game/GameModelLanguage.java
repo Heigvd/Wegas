@@ -20,6 +20,7 @@ import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.False;
 import com.wegas.editor.View.ReadOnlyString;
 import com.wegas.editor.View.View;
 import com.wegas.editor.View.VisibilitySelectView;
@@ -67,10 +68,12 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
      * short name like en, en_uk, or fr_ch
      */
     @Column(length = 16, columnDefinition = "character varying(16) default ''::character varying")
-    @WegasEntityProperty(view = @View(
-            label = "Language code",
-            value = ReadOnlyString.class
-    ))
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(
+                    label = "Language code",
+                    value = ReadOnlyString.class
+            ))
     private String code;
 
     @JsonIgnore
@@ -80,14 +83,15 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
     /**
      * Language name to display
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(optional = false, nullable = false)
     private String lang;
 
     @Enumerated(value = EnumType.STRING)
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
     @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL,
+            nullable = false,
             view = @View(
-                    label = "",
+                    label = "Visibility",
                     value = VisibilitySelectView.class
             ))
     private Visibility visibility = Visibility.PRIVATE;
@@ -98,7 +102,9 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
     private Integer indexOrder;
 
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty(protectionLevel = ProtectionLevel.INTERNAL,
+    @WegasEntityProperty(
+            proposal = False.class, nullable = false,
+            protectionLevel = ProtectionLevel.INTERNAL,
             view = @View(label = "Enabled"))
     private boolean active = false;
 

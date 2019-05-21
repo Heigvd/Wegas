@@ -118,7 +118,7 @@ public abstract class AbstractAccount extends AbstractEntity {
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
-    @WegasEntityProperty(ignoreNull = true, nullable = true,
+    @WegasEntityProperty(ignoreNull = true,
             view = @View(label = "Agreed time", value= ReadOnlyNumber.class))
     private Date agreedTime = null;
 

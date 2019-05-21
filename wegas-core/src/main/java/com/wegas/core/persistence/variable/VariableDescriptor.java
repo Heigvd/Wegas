@@ -41,6 +41,9 @@ import com.wegas.core.persistence.annotations.WegasConditions.Equals;
 import com.wegas.core.persistence.annotations.WegasConditions.Or;
 import com.wegas.core.persistence.annotations.WegasRefs.Const;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
+import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.ValueGenerators.TeamScopeVal;
+import com.wegas.editor.ValueGenerators.Zero;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import static com.wegas.editor.View.CommonView.LAYOUT.shortInline;
 import com.wegas.editor.View.I18nStringView;
@@ -190,8 +193,12 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @Lob
     @JsonView(value = Views.EditorI.class)
     @Column(name = "comments")
-    @WegasEntityProperty(searchable = true, nullable = true,
-            view = @View(label = "Comments", borderTop = true, value = Textarea.class, index = 9000))
+    @WegasEntityProperty(searchable = true,
+            view = @View(
+                    label = "Comments",
+                    borderTop = true,
+                    value = Textarea.class,
+                    index = 9000))
     private String comments;
 
     /**
@@ -207,6 +214,8 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @JsonView(value = Views.EditorI.class)
     @WegasEntityProperty(
             protectionLevel = ProtectionLevel.INTERNAL,
+            nullable = false,
+            optional = false,
             view = @View(
                     label = "Default instance",
                     index = 500
@@ -244,7 +253,8 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
     @Enumerated(value = EnumType.STRING)
     @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL,
-            view = @View(label = "", value = VisibilitySelectView.class,
+            nullable = false,
+            view = @View(label = "Visibility", value = VisibilitySelectView.class,
                     index = -300))
     private Visibility visibility = Visibility.PRIVATE;
 
@@ -252,24 +262,30 @@ abstract public class VariableDescriptor<T extends VariableInstance>
      * a token to prefix the label with. For editors only
      */
     //@JsonView(Views.EditorI.class)
-    @WegasEntityProperty(searchable = true, view = @View(
-            label = "Tag",
-            description = "Never displayed to players",
-            index = -480
-    ))
-    private String editorTag;
+    @WegasEntityProperty(searchable = true,
+            proposal = EmptyString.class,
+            nullable = false,
+            view = @View(
+                    label = "Tag",
+                    description = "Never displayed to players",
+                    index = -480
+            ))
+    private String editorTag = "";
 
     /**
      * Variable descriptor human readable name
      * Player visible
      */
     @OneToOne(cascade = CascadeType.ALL /*, orphanRemoval = true*/)
-    @WegasEntityProperty(searchable = true, view = @View(
-            label = "Label",
-            description = "Displayed to players",
-            value = I18nStringView.class,
-            index = -470
-    ))
+    @WegasEntityProperty(searchable = true,
+            nullable = false,
+            optional = false,
+            view = @View(
+                    label = "Label",
+                    description = "Displayed to players",
+                    value = I18nStringView.class,
+                    index = -470
+            ))
     private TranslatableContent label;
 
     @Transient
@@ -283,6 +299,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @Basic(optional = false)
     //@CacheIndex
     @WegasEntityProperty(protectionLevel = ProtectionLevel.INHERITED, searchable = true,
+            nullable = false,
             view = @View(
                     featureLevel = ADVANCED,
                     label = "Script alias",
@@ -301,26 +318,34 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     private AbstractScope scope;
 
     @Transient
-    @WegasEntityProperty(view = @View(
-            label = "One variable for",
-            value = SelectView.ScopeSelector.class,
-            layout = shortInline,
-            index = -400
-    ))
+    @WegasEntityProperty(
+            proposal = TeamScopeVal.class,
+            nullable = false,
+            view = @View(
+                    label = "One variable for",
+                    value = SelectView.ScopeSelector.class,
+                    layout = shortInline,
+                    index = -400
+            ))
     private String scopeType;
 
     @Transient
-    @WegasEntityProperty(view = @View(
-            label = "Variable is visible by ",
-            value = SelectView.BScopeSelector.class,
-            layout = shortInline,
-            index = -390
-    ))
+    @WegasEntityProperty(
+            proposal = TeamScopeVal.class,
+            nullable = false,
+            view = @View(
+                    label = "Variable is visible by ",
+                    value = SelectView.BScopeSelector.class,
+                    layout = shortInline,
+                    index = -390
+            ))
     private String broadcastScope;
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(sameEntityOnly = true,
+            nullable = false, optional = false,
+            proposal = Zero.class,
             view = @View(
                     label = "Version",
                     value = ReadOnlyNumber.class,

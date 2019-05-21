@@ -6,7 +6,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -30,13 +29,13 @@ public abstract class JSONType extends JSONExtendedSchema {
         return this.getType();
     }
 
-    private JsonNode value;
+    private Object value;
 
     @JsonProperty("enum")
-    private List<JsonNode> enums;
+    private List<String> enums;
 
     @JsonProperty("const")
-    private JsonNode constant;
+    private Object constant;
 
     private String description;
 
@@ -61,29 +60,28 @@ public abstract class JSONType extends JSONExtendedSchema {
     /**
      * @return the enums (enum)
      */
-    public List<JsonNode> getEnums() {
+    public List<String> getEnums() {
         return enums;
     }
 
     /**
      * @param enums the enums to set (enum)
      */
-    public void setEnums(List<JsonNode> enums) {
+    public void setEnums(List<String> enums) {
         this.enums = enums;
     }
 
     /**
      * @return the value
      */
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public JsonNode getValue() {
+    public Object getValue() {
         return value;
     }
 
     /**
      * @param value the value to set
      */
-    public void setValue(JsonNode value) {
+    public void setValue(Object value) {
         this.value = value;
     }
 
@@ -91,14 +89,14 @@ public abstract class JSONType extends JSONExtendedSchema {
      * @return the constant (const)
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public JsonNode getConstant() {
+    public Object getConstant() {
         return constant;
     }
 
     /**
      * @param constant the constant to set (const)
      */
-    public void setConstant(JsonNode constant) {
+    public void setConstant(Object constant) {
         this.constant = constant;
     }
 }

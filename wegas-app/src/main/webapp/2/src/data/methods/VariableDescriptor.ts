@@ -41,7 +41,7 @@ export function getInstance<I extends IVariableInstance>(
       case 'TeamScope':
         return VariableInstance.firstMatch<IVariableInstance>({
           parentId: vd.id,
-          scopeKey: player.teamId,
+          scopeKey: player.parentId,
         }) as IorUndef;
       case 'GameModelScope':
         return VariableInstance.firstMatch<IVariableInstance>({

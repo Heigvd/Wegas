@@ -7,6 +7,8 @@
  */
 package com.wegas.core.persistence.annotations;
 
+import com.wegas.editor.ValueGenerators.Undefined;
+import com.wegas.editor.ValueGenerators.ValueGenerator;
 import com.wegas.editor.View.View;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,8 +24,9 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface Param {
 
-    // #TODO defaultValue
-    View view();
+    View view() default @View(label = "");
 
     boolean nullable() default false;
+
+    Class<? extends ValueGenerator> proposal() default Undefined.class;
 }

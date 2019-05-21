@@ -11,6 +11,7 @@ const wegasEntityConfig: ConfigurationSchema<IAbstractEntity> = {
       type: 'hidden',
     },
   },
+  refId:{},
   id: {
     type: 'number',
     index: -14,
@@ -42,6 +43,7 @@ export const config: ConfigurationSchema<IVariableDescriptor> = {
       label: 'Label',
     },
   },
+  visibility:{},
   version: {
     type: 'number',
     index: -13,
