@@ -34,7 +34,9 @@ public abstract class AbstractAssignement extends AbstractEntity {
     }
 
     @Transient
-    @WegasEntityProperty(view = @View(label = "Task", value = TaskFlatSelector.class))
+    @WegasEntityProperty(
+            optional =false, nullable =false,
+            view = @View(label = "Task", value = TaskFlatSelector.class))
     private String taskDescriptorName;
 
 

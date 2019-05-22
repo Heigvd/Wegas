@@ -18,6 +18,8 @@ import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import com.wegas.editor.ValueGenerators.One;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.I18nHtmlView;
 import com.wegas.editor.View.I18nStringView;
@@ -73,39 +75,47 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
     /**
      * to sort evaluation descriptor and instance
      */
-    @WegasEntityProperty(view = @View(label = "Index"))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = One.class,
+            view = @View(label = "Index"))
     private Integer index;
 
     /**
      * Evaluation internal identifier
      */
-    @WegasEntityProperty(searchable = true, view = @View(
-            label = "Script alias",
-            description = "Internal name",
-            featureLevel = ADVANCED
-    ))
+    @WegasEntityProperty(searchable = true,
+            nullable = false,
+            view = @View(
+                    label = "Script alias",
+                    description = "Internal name",
+                    featureLevel = ADVANCED
+            ))
     private String name;
 
     /**
      * Evaluation label as displayed to players
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(view = @View(
-            label ="Label",
-            description = "Displayed to players",
-            value = I18nStringView.class,
-            index = -1
-    ))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(
+                    label = "Label",
+                    description = "Displayed to players",
+                    value = I18nStringView.class,
+                    index = -1
+            ))
     private TranslatableContent label;
 
     /**
      * Textual descriptor to be displayed to players
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(view = @View(
-            label = "Description",
-            value = I18nHtmlView.class
-    ))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(
+                    label = "Description",
+                    value = I18nHtmlView.class
+            ))
     private TranslatableContent description;
 
     /**

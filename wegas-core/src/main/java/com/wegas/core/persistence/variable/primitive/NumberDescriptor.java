@@ -15,7 +15,6 @@ import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 import org.slf4j.Logger;
@@ -193,7 +192,9 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      * @return the defaule value
      */
     @Transient
-    @WegasExtraProperty(view = @View(label = "Default value", value = Hidden.class))
+    @WegasExtraProperty(
+            optional = false, nullable = false,
+            view = @View(label = "Default value", value = Hidden.class))
     public double getDefaultValue() {
         // ugly hack used by crimesim.
         return this.getDefaultInstance().getValue();

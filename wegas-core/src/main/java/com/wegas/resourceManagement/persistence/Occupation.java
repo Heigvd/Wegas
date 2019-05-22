@@ -16,6 +16,8 @@ import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import com.wegas.editor.ValueGenerators.True;
 import static com.wegas.editor.View.CommonView.LAYOUT.shortInline;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.View;
@@ -44,12 +46,16 @@ public class Occupation extends AbstractEntity implements NamedEntity {
      *
      */
     @Column(name = "wtime")
-    @WegasEntityProperty(view = @View(label = "Period number", layout = shortInline))
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "Period number", layout = shortInline))
     private Integer time = 0;
     /**
      *
      */
-    @WegasEntityProperty(view = @View(label = "Editable (?!?)", layout = shortInline))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = True.class,
+            view = @View(label = "Editable (?!?)", layout = shortInline))
     private Boolean editable = true;
     /**
      *
@@ -57,7 +63,9 @@ public class Occupation extends AbstractEntity implements NamedEntity {
     @Lob
     @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty(view = @View(label = "Description (!?!)", value = Hidden.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(label = "Description (!?!)", value = Hidden.class))
     private String description = "";
 
     /**

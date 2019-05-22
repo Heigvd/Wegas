@@ -38,6 +38,7 @@ import com.wegas.core.persistence.annotations.WegasConditions.Or;
 import com.wegas.core.persistence.annotations.WegasRefs.Const;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.One;
 import com.wegas.editor.ValueGenerators.Zero;
 import com.wegas.editor.View.CommonView;
@@ -95,7 +96,9 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      */
     @OneToOne(cascade = CascadeType.ALL)
-    @WegasEntityProperty(view = @View(label = "Description", value = I18nHtmlView.class))
+    @WegasEntityProperty(
+            optional = false, nullable= false, proposal = EmptyI18n.class,
+            view = @View(label = "Description", value = I18nHtmlView.class))
     private TranslatableContent description;
 
     /**

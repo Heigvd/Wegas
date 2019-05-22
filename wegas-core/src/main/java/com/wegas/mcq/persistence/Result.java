@@ -28,6 +28,8 @@ import com.wegas.core.persistence.annotations.WegasConditions.IsTrue;
 import com.wegas.core.persistence.annotations.WegasConditions.Not;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import com.wegas.editor.ValueGenerators.EmptyScript;
 import com.wegas.editor.ValueGenerators.Zero;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.Hidden;
@@ -68,7 +70,8 @@ public class Result extends AbstractEntity implements LabelledEntity {
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = Zero.class,
             sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
     private Long version;
 
@@ -90,11 +93,13 @@ public class Result extends AbstractEntity implements LabelledEntity {
     /**
      * Internal Name
      */
-    @WegasEntityProperty(searchable = true, view = @View(
-            label = "Script alias",
-            featureLevel = ADVANCED,
-            description = "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
-    ))
+    @WegasEntityProperty(searchable = true,
+            nullable = false,
+            view = @View(
+                    label = "Script alias",
+                    featureLevel = ADVANCED,
+                    description = "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
+            ))
     @Visible(IsLabelVisible.class)
     private String name;
 
@@ -102,7 +107,9 @@ public class Result extends AbstractEntity implements LabelledEntity {
      * Displayed name
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(view = @View(label = "Label", value = I18nStringView.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(label = "Label", value = I18nStringView.class))
     @Visible(IsLabelVisible.class)
     private TranslatableContent label;
 
@@ -110,16 +117,20 @@ public class Result extends AbstractEntity implements LabelledEntity {
      * Displayed answer when result selected and validated
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(view = @View(label = "Feedback", value = I18nHtmlView.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(label = "Feedback", value = I18nHtmlView.class))
     private TranslatableContent answer;
 
     /**
      * Displayed answer when MCQ result not selected and validated
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(view = @View(
-            label = "Feedback when ignored", value = I18nHtmlView.class, borderTop = true
-    ))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(
+                    label = "Feedback when ignored", value = I18nHtmlView.class, borderTop = true
+            ))
     @Visible(IsQuestionCbx.class)
     private TranslatableContent ignorationAnswer;
 
@@ -127,14 +138,17 @@ public class Result extends AbstractEntity implements LabelledEntity {
      *
      */
     @ElementCollection
-    @WegasEntityProperty(view = @View(label = "Files", value = Hidden.class), proposal = EmptyArray.class)
+    @WegasEntityProperty(view = @View(label = "Files", value = Hidden.class),
+            optional = false, nullable = false, proposal = EmptyArray.class)
     private Set<String> files = new HashSet<>();
     /**
      *
      */
     @Embedded
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty(view = @View(label = "Impact", value = ScriptView.Impact.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyScript.class,
+            view = @View(label = "Impact", value = ScriptView.Impact.class))
     private Script impact;
     /**
      *
@@ -147,7 +161,9 @@ public class Result extends AbstractEntity implements LabelledEntity {
                 = @Column(name = "ignoration_language"))
     })
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty(view = @View(label = "Impact when ignored", value = ScriptView.Impact.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyScript.class,
+            view = @View(label = "Impact when ignored", value = ScriptView.Impact.class))
     @Visible(IsQuestionCbx.class)
     private Script ignorationImpact;
     /**

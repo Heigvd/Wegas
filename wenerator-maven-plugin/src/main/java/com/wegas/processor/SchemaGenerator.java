@@ -199,7 +199,6 @@ public class SchemaGenerator extends AbstractMojo {
         String klName = Mergeable.getJSONClassName(klass);
         atClass.setConstant(klName);
         atClass.setView(new Hidden());
-        atClass.setValue(klName);
 
         return atClass;
     }
@@ -279,6 +278,8 @@ public class SchemaGenerator extends AbstractMojo {
                 if (!isAbstract) {
                     sb.append(">");
                 }
+            } else {
+                sb.append(" extends IMergeable");
             }
         }
         sb.append(" {\n");
@@ -307,14 +308,14 @@ public class SchemaGenerator extends AbstractMojo {
         wEF.getFields().stream()
                 // keep only self declared ones
                 .filter(f -> !f.isInherited() && !f.getAnnotation().notSerialized()).forEach(field -> {
-                    Type returnType = field.getPropertyDescriptor().getReadMethod().getGenericReturnType();
-                    registerProperty(properties, field.getField().getName(), c,
-                            returnType, field.getAnnotation().initOnly(),
-                            field.getAnnotation().optional(),
-                            field.getAnnotation().nullable(),
-                            field.getField().isAnnotationPresent(Deprecated.class),
-                            genericity);
-                });
+            Type returnType = field.getPropertyDescriptor().getReadMethod().getGenericReturnType();
+            registerProperty(properties, field.getField().getName(), c,
+                    returnType, field.getAnnotation().initOnly(),
+                    field.getAnnotation().optional(),
+                    field.getAnnotation().nullable(),
+                    field.getField().isAnnotationPresent(Deprecated.class),
+                    genericity);
+        });
 
         for (Entry<String, String> entry : properties.entrySet()) {
             sb.append(entry.getValue());
@@ -433,6 +434,15 @@ public class SchemaGenerator extends AbstractMojo {
 
         sb.append("/**\n" + " * Remove specified keys.\n" + " */\n" + "type WithoutAtClass<Type> = Pick<\n"
                 + "    Type,\n" + "    Exclude<keyof Type, '@class'>\n" + ">;");
+        sb.append("/*\n")
+                .append(" * IMergeable\n")
+                .append(" */\n")
+                .append("interface IMergeable {\n")
+                .append("  readonly \"@class\": string;\n")
+                .append("  refId?: string;\n")
+                .append("  readonly parentType?: string;\n")
+                .append("  readonly parentId?: number;\n")
+                .append("}\n");
 
         tsInterfaces.keySet().stream().sorted().map(tsInterfaces::get).forEach(sb::append);
 
@@ -464,7 +474,7 @@ public class SchemaGenerator extends AbstractMojo {
             outputTypings.mkdirs();
         } else {
             getLog().info("DryRun: do not generate any files");
-            pkg = new String[] { "com.wegas" };
+            pkg = new String[]{"com.wegas"};
         }
 
         Set<Class<? extends Mergeable>> classes = new Reflections((Object[]) pkg).getSubTypesOf(Mergeable.class);
@@ -479,131 +489,131 @@ public class SchemaGenerator extends AbstractMojo {
         classes.stream()
                 // ignore classes the client dont need
                 .filter(c -> !c.isAnonymousClass()).forEach(c -> {
-                    try {
-                        WegasEntityFields wEF = new WegasEntityFields(c);
+            try {
+                WegasEntityFields wEF = new WegasEntityFields(c);
 
-                        final Config config = new Config();
-                        Map<String, ScriptableMethod> methods = config.getMethods();
+                final Config config = new Config();
+                Map<String, ScriptableMethod> methods = config.getMethods();
 
-                        Map<Method, WegasExtraProperty> allExtraProperties = new HashMap<>();
-                        Map<Method, WegasExtraProperty> extraProperties = new HashMap<>();
+                Map<Method, WegasExtraProperty> allExtraProperties = new HashMap<>();
+                Map<Method, WegasExtraProperty> extraProperties = new HashMap<>();
 
-                        for (Method m : c.getMethods()) {
-                            WegasExtraProperty annotation = this.getFirstAnnotationInHierarchy(m,
-                                    WegasExtraProperty.class);
-                            if (annotation != null) {
-                                allExtraProperties.put(m, annotation);
-                                if (m.getDeclaringClass().equals(c)
-                                        || Arrays.asList(c.getInterfaces()).contains(m.getDeclaringClass())) {
-                                    extraProperties.put(m, annotation);
-                                }
-                            }
+                for (Method m : c.getMethods()) {
+                    WegasExtraProperty annotation = this.getFirstAnnotationInHierarchy(m,
+                            WegasExtraProperty.class);
+                    if (annotation != null) {
+                        allExtraProperties.put(m, annotation);
+                        if (m.getDeclaringClass().equals(c)
+                                || Arrays.asList(c.getInterfaces()).contains(m.getDeclaringClass())) {
+                            extraProperties.put(m, annotation);
                         }
-
-                        Arrays.stream(c.getMethods())
-                                // brige: methods duplicated when return type is overloaded (see
-                                // PrimitiveDesc.getValue)
-                                .filter(m -> m.isAnnotationPresent(WegasExtraProperty.class) && !m.isBridge())
-                                .collect(Collectors.toList());
-
-                        if (!c.isInterface()) {
-                            /*
-                             * Generate TS interface for classes only
-                             */
-                            this.generateTsInterface(wEF, extraProperties);
-                        }
-
-                        /*
-                         * Process all public methods (including inherited ones)
-                         */
-                        // abstract classes too ? restrict ton concretes ??
-                        methods.putAll(Arrays.stream(c.getMethods())
-                                // brige: methods duplicated when return type is overloaded (see
-                                // PrimitiveDesc.getValue)
-                                .filter(m -> m.isAnnotationPresent(Scriptable.class) && !m.isBridge())
-                                .collect(Collectors.toMap((Method m) -> m.getName(), ScriptableMethod::new)));
-
-                        /**
-                         * Generate JSON Schema : Process all fields (including inherited ones)
-                         */
-                        if (!Modifier.isAbstract(c.getModifiers())) {
-                            // Fill Schema but for concrete classes only
-                            JSONObject jsonSchema = config.getSchema();
-                            jsonSchema.setDescription(c.getName());
-
-                            wEF.getFields().stream().filter(f -> !f.getAnnotation().notSerialized())
-                                    .forEach(field -> {
-                                        Type returnType = field.getPropertyDescriptor().getReadMethod()
-                                                .getGenericReturnType();
-                                        this.addSchemaProperty(jsonSchema, c, returnType,
-                                                field.getAnnotation().schema(), field.getPropertyDescriptor().getName(),
-                                                field.getAnnotation().view(), field.getErroreds(),
-                                                field.getField().getAnnotation(Visible.class),
-                                                field.getAnnotation().optional(),
-                                                field.getAnnotation().nullable(),
-                                                field.getAnnotation().proposal(),
-                                                field.getAnnotation().protectionLevel()
-                                        );
-                                    });
-
-                            for (Entry<Method, WegasExtraProperty> extraPropertyEntry : allExtraProperties.entrySet()) {
-                                Method method = extraPropertyEntry.getKey();
-                                WegasExtraProperty annotation = extraPropertyEntry.getValue();
-                                String name = annotation.name().length() > 0 ? annotation.name()
-                                        : getPropertyName(method);
-                                Type returnType = method.getGenericReturnType();
-
-                                this.addSchemaProperty(jsonSchema, c, returnType,
-                                        annotation.schema(),
-                                        name, annotation.view(), null, null,
-                                        annotation.optional(), annotation.nullable(), null,
-                                        ModelScoped.ProtectionLevel.CASCADED
-                                );
-                            }
-
-                            // Override @class with one with default value
-                            jsonSchema.setProperty("@class", getJSONClassName(c));
-
-                            List<JsonMergePatch> patches = new ArrayList<>();
-                            Schemas schemas = c.getAnnotation(Schemas.class);
-                            if (schemas != null) {
-                                patches.addAll(this.processSchemaAnnotation(jsonSchema, schemas.value()));
-                            }
-
-                            Schema schema = c.getAnnotation(Schema.class);
-                            if (schema != null) {
-                                patches.addAll(this.processSchemaAnnotation(jsonSchema, schema));
-                            }
-
-                            // Write
-                            String fileName = jsonFileName(c);
-
-                            if (jsonBuiltFileNames.containsKey(fileName)) {
-                                // At that point seems we have duplicate "@class"
-                                getLog().error("Duplicate file name " + fileName + "classes "
-                                        + jsonBuiltFileNames.get(fileName) + " <> " + c.getName());
-                                return;
-                            }
-                            jsonBuiltFileNames.put(fileName, wEF.getTheClass().getName());
-
-                            if (!dryRun) {
-                                File f = new File(outputDirectory, fileName);
-                                try (FileWriter fw = new FileWriter(f)) {
-                                    fw.write(configToString(config, patches));
-                                } catch (IOException ex) {
-                                    getLog().error("Failed to write " + f.getAbsolutePath(), ex);
-                                }
-                            } else {
-                                if (matchClassFilter(c)) {
-                                    System.out.println(fileName);
-                                    System.out.println(configToString(config, patches));
-                                }
-                            }
-                        }
-                    } catch (NoClassDefFoundError nf) {
-                        getLog().warn("Can't read " + c.getName() + " - No Class Def found for " + nf.getMessage());
                     }
-                });
+                }
+
+                Arrays.stream(c.getMethods())
+                        // brige: methods duplicated when return type is overloaded (see
+                        // PrimitiveDesc.getValue)
+                        .filter(m -> m.isAnnotationPresent(WegasExtraProperty.class) && !m.isBridge())
+                        .collect(Collectors.toList());
+
+                if (!c.isInterface()) {
+                    /*
+                             * Generate TS interface for classes only
+                     */
+                    this.generateTsInterface(wEF, extraProperties);
+                }
+
+                /*
+                         * Process all public methods (including inherited ones)
+                 */
+                // abstract classes too ? restrict ton concretes ??
+                methods.putAll(Arrays.stream(c.getMethods())
+                        // brige: methods duplicated when return type is overloaded (see
+                        // PrimitiveDesc.getValue)
+                        .filter(m -> m.isAnnotationPresent(Scriptable.class) && !m.isBridge())
+                        .collect(Collectors.toMap((Method m) -> m.getName(), ScriptableMethod::new)));
+
+                /**
+                 * Generate JSON Schema : Process all fields (including inherited ones)
+                 */
+                if (!Modifier.isAbstract(c.getModifiers())) {
+                    // Fill Schema but for concrete classes only
+                    JSONObject jsonSchema = config.getSchema();
+                    jsonSchema.setDescription(c.getName());
+
+                    wEF.getFields().stream().filter(f -> !f.getAnnotation().notSerialized())
+                            .forEach(field -> {
+                                Type returnType = field.getPropertyDescriptor().getReadMethod()
+                                        .getGenericReturnType();
+                                this.addSchemaProperty(jsonSchema, c, returnType,
+                                        field.getAnnotation().schema(), field.getPropertyDescriptor().getName(),
+                                        field.getAnnotation().view(), field.getErroreds(),
+                                        field.getField().getAnnotation(Visible.class),
+                                        field.getAnnotation().optional(),
+                                        field.getAnnotation().nullable(),
+                                        field.getAnnotation().proposal(),
+                                        field.getAnnotation().protectionLevel()
+                                );
+                            });
+
+                    for (Entry<Method, WegasExtraProperty> extraPropertyEntry : allExtraProperties.entrySet()) {
+                        Method method = extraPropertyEntry.getKey();
+                        WegasExtraProperty annotation = extraPropertyEntry.getValue();
+                        String name = annotation.name().length() > 0 ? annotation.name()
+                                : getPropertyName(method);
+                        Type returnType = method.getGenericReturnType();
+
+                        this.addSchemaProperty(jsonSchema, c, returnType,
+                                annotation.schema(),
+                                name, annotation.view(), null, null,
+                                annotation.optional(), annotation.nullable(), null,
+                                ModelScoped.ProtectionLevel.CASCADED
+                        );
+                    }
+
+                    // Override @class with one with default value
+                    jsonSchema.setProperty("@class", getJSONClassName(c));
+
+                    List<JsonMergePatch> patches = new ArrayList<>();
+                    Schemas schemas = c.getAnnotation(Schemas.class);
+                    if (schemas != null) {
+                        patches.addAll(this.processSchemaAnnotation(jsonSchema, schemas.value()));
+                    }
+
+                    Schema schema = c.getAnnotation(Schema.class);
+                    if (schema != null) {
+                        patches.addAll(this.processSchemaAnnotation(jsonSchema, schema));
+                    }
+
+                    // Write
+                    String fileName = jsonFileName(c);
+
+                    if (jsonBuiltFileNames.containsKey(fileName)) {
+                        // At that point seems we have duplicate "@class"
+                        getLog().error("Duplicate file name " + fileName + "classes "
+                                + jsonBuiltFileNames.get(fileName) + " <> " + c.getName());
+                        return;
+                    }
+                    jsonBuiltFileNames.put(fileName, wEF.getTheClass().getName());
+
+                    if (!dryRun) {
+                        File f = new File(outputDirectory, fileName);
+                        try (FileWriter fw = new FileWriter(f)) {
+                            fw.write(configToString(config, patches));
+                        } catch (IOException ex) {
+                            getLog().error("Failed to write " + f.getAbsolutePath(), ex);
+                        }
+                    } else {
+                        if (matchClassFilter(c)) {
+                            System.out.println(fileName);
+                            System.out.println(configToString(config, patches));
+                        }
+                    }
+                }
+            } catch (NoClassDefFoundError nf) {
+                getLog().warn("Can't read " + c.getName() + " - No Class Def found for " + nf.getMessage());
+            }
+        });
         otherObjectsSchemas.forEach((t, v) -> {
             getLog().info("Type " + t);
         });
@@ -802,31 +812,31 @@ public class SchemaGenerator extends AbstractMojo {
 
     private JSONExtendedSchema javaToJSType(Type type, boolean nullable) {
         switch (type.getTypeName()) {
-        case "byte":
-        case "short":
-        case "int":
-        case "long":
-        case "java.lang.Byte":
-        case "java.lang.Short":
-        case "java.lang.Integer":
-        case "java.lang.Long":
-            return new JSONNumber(nullable); // JSONInteger is not handled.
-        case "double":
-        case "float":
-        case "java.lang.Double":
-        case "java.lang.Float":
-        case "java.util.Date":
-        case "java.util.Calendar":
-            return new JSONNumber(nullable);
-        case "char":
-        case "java.lang.Character":
-        case "java.lang.String":
-            return new JSONString(nullable);
-        case "java.lang.Boolean":
-        case "boolean":
-            return new JSONBoolean(nullable);
-        default:
-            break;
+            case "byte":
+            case "short":
+            case "int":
+            case "long":
+            case "java.lang.Byte":
+            case "java.lang.Short":
+            case "java.lang.Integer":
+            case "java.lang.Long":
+                return new JSONNumber(nullable); // JSONInteger is not handled.
+            case "double":
+            case "float":
+            case "java.lang.Double":
+            case "java.lang.Float":
+            case "java.util.Date":
+            case "java.util.Calendar":
+                return new JSONNumber(nullable);
+            case "char":
+            case "java.lang.Character":
+            case "java.lang.String":
+                return new JSONString(nullable);
+            case "java.lang.Boolean":
+            case "boolean":
+                return new JSONBoolean(nullable);
+            default:
+                break;
         }
         TypeToken<Collection<?>> collection = new TypeToken<Collection<?>>() {
         };

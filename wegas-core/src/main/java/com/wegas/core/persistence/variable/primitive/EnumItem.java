@@ -24,6 +24,7 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.I18nStringView;
 import com.wegas.editor.View.View;
@@ -79,6 +80,7 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
      * Internal identifier
      */
     @WegasEntityProperty(searchable = true,
+            nullable = false,
             view = @View(
                     label = "Script alias",
                     description = "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character.",
@@ -91,11 +93,13 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
     private Integer order;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(view = @View(
-            label = "Label",
-            description = "Displayed to players",
-            value = I18nStringView.class
-    ))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(
+                    label = "Label",
+                    description = "Displayed to players",
+                    value = I18nStringView.class
+            ))
     private TranslatableContent label;
 
     @Override

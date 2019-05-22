@@ -28,10 +28,12 @@ public class AaiAccount extends AbstractAccount {
     private static final long serialVersionUID = 1L;
 
     @Column(columnDefinition = "text")
-    @WegasEntityProperty(ignoreNull = true, view = @View(label = "Persistent Id", value = ReadOnlyString.class))
+    @WegasEntityProperty(ignoreNull = true, view = @View(label = "Persistent Id", value = ReadOnlyString.class),
+            optional = false, nullable = false)
     private String persistentId;
 
-    @WegasEntityProperty(view = @View(label = "Organization", value = ReadOnlyString.class))
+    @WegasEntityProperty(view = @View(label = "Organization", value = ReadOnlyString.class),
+            optional = false, nullable = false)
     private String homeOrg;
 
     /*

@@ -35,6 +35,7 @@ import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
 import com.wegas.core.persistence.annotations.WegasConditions.LessThanOrEquals;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.core.persistence.annotations.WegasRefs.Self;
+import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.View.CommonView;
 import com.wegas.editor.View.View;
 
@@ -73,7 +74,9 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
     @ElementCollection
     @JsonView(Views.ExtendedI.class)
     //@OrderColumn
-    @WegasEntityProperty(view = @View(
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(
             label = "History",
             featureLevel = CommonView.FEATURE_LEVEL.ADVANCED
     ))

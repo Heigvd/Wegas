@@ -35,7 +35,9 @@ public class Activity extends AbstractAssignement {
 
     @Transient
     @JsonIgnore
-    @WegasEntityProperty(view = @View(value = ReadOnlyString.class, label = "Requirement name"))
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(value = ReadOnlyString.class, label = "Requirement name"))
     private String requirementName;
 
     /**
@@ -49,21 +51,27 @@ public class Activity extends AbstractAssignement {
      * worked time ? strange spelling...
      */
     @Column(name = "wtime")
-    @WegasEntityProperty(view = @View(value = ReadOnlyNumber.class, label = "time"))
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(value = ReadOnlyNumber.class, label = "time"))
     private double time;
 
     /**
      * Start time
      */
     @Column(name = "stime")
-    @WegasEntityProperty(view = @View(value = ReadOnlyNumber.class, label = "Start time"))
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(value = ReadOnlyNumber.class, label = "Start time"))
     private double startTime;
 
     /**
      *
      */
     @Column(name = "wcompletion")
-    @WegasEntityProperty(view = @View(value = ReadOnlyNumber.class, label = "Completion"))
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(value = ReadOnlyNumber.class, label = "Completion"))
     private double completion;
     /**
      *

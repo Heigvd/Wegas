@@ -11,6 +11,7 @@ import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.editor.JSONSchema.JSONObject;
 import com.wegas.editor.Schema;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.I18nHtmlView;
 import com.wegas.editor.View.View;
@@ -31,7 +32,9 @@ public class DialogueState extends State {
      *
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(view = @View(label = "Text", value = I18nHtmlView.class))
+    @WegasEntityProperty(
+            optional = false, nullable =false, proposal =EmptyI18n.class,
+            view = @View(label = "Text", value = I18nHtmlView.class))
     private TranslatableContent text;
 
     @Override

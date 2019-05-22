@@ -17,6 +17,7 @@ import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -51,13 +52,16 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
      * List of allowed children types
      */
     @ElementCollection
-    @WegasEntityProperty(view = @View(label = "Allowed types"), proposal = EmptyArray.class)
+    @WegasEntityProperty(view = @View(label = "Allowed types"),
+            optional = false, nullable = false, proposal = EmptyArray.class)
     private Set<String> allowedTypes = new HashSet<>();
 
     /**
      * shortcut to show within (+) treeview button, must match allowedTypes
      */
-    @WegasEntityProperty(view = @View(label = "Default child type"))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Default child type"))
     private String addShortcut = "";
 
     /**

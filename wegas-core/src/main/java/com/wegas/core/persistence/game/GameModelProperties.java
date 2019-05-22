@@ -13,6 +13,8 @@ import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.ValueGenerators.False;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.SelectView.FreeForAllSelector;
 import com.wegas.editor.View.View;
@@ -40,56 +42,73 @@ public class GameModelProperties implements Serializable, Mergeable {
     /**
      *
      */
-    @WegasEntityProperty(view = @View(
-            label = "Game is played", value = FreeForAllSelector.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = False.class,
+            view = @View(label = "Game is played", value = FreeForAllSelector.class))
     private Boolean freeForAll = false;
     /**
      *
      */
-    @WegasEntityProperty(view = @View(label = "Guest allowed?"))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = False.class,
+            view = @View(label = "Guest allowed?"))
     private Boolean guestAllowed = false;
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
-    @WegasEntityProperty(view = @View(label = "Pages URI"))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Pages URI"))
     private String pagesUri = "";
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
-    @WegasEntityProperty(view = @View(label = "Stylesheets URI"))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Stylesheets URI"))
     private String cssUri = "";
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
-    @WegasEntityProperty(view = @View(label = "Websockets", value = Hidden.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Websockets", value = Hidden.class))
     private String websocket = "";
 
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
-    @WegasEntityProperty(view = @View(label = "Log ID"))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Log ID"))
     private String logID = "";
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
-    @WegasEntityProperty(view = @View(label = "ServerSripts URI"))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "ServerSripts URI"))
     private String scriptUri = "";
 
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
-    @WegasEntityProperty(view = @View(label = "ClientSripts URI"))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "ClientSripts URI"))
     private String clientScriptUri = "";
     /**
      *
      */
-    @WegasEntityProperty(view = @View(label = "Icon"))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Icon"))
     private String iconUri = "";
 
     /**

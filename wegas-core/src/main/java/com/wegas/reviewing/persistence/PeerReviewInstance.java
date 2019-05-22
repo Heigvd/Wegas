@@ -13,6 +13,8 @@ import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.ReviewingNotStarted;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.View;
 import java.util.ArrayList;
@@ -48,21 +50,27 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
      * Current review state
      */
     @Enumerated(value = EnumType.STRING)
-    @WegasEntityProperty(view = @View(label = "Review State"))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = ReviewingNotStarted.class,
+            view = @View(label = "Review State"))
     private PeerReviewDescriptor.ReviewingState reviewState = PeerReviewDescriptor.ReviewingState.NOT_STARTED;
 
     /**
      * List of review that contains feedback written by player owning this
      */
     @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(view = @View(label = "To review", value = Hidden.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(label = "To review", value = Hidden.class))
     private List<Review> toReview = new ArrayList<>();
 
     /**
      * List of review that contains others feedback
      */
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(view = @View(label = "Reviewed", value = Hidden.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(label = "Reviewed", value = Hidden.class))
     private List<Review> reviewed = new ArrayList<>();
 
     /**
@@ -99,7 +107,7 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
      */
     public void setToReview(List<Review> toReview) {
         this.toReview = toReview;
-        for (Review review : toReview){
+        for (Review review : toReview) {
             review.setReviewer(this);
         }
     }
@@ -129,7 +137,7 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
     public void setReviewed(List<Review> reviewed) {
         this.reviewed = reviewed;
 
-        for (Review review : reviewed){
+        for (Review review : reviewed) {
             review.setAuthor(this);
         }
     }

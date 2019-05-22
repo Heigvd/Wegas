@@ -83,7 +83,9 @@ public abstract class EvaluationInstance extends AbstractEntity {
     private EvaluationDescriptor evaluationDescriptor;
 
     @Transient
-    @WegasEntityProperty(view = @View(value = Hidden.class, label = ""))
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(value = Hidden.class, label = "Evaluation Name"))
     private String descriptorName;
 
     /**
@@ -150,7 +152,9 @@ public abstract class EvaluationInstance extends AbstractEntity {
      * @return index
      */
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @WegasExtraProperty(view = @View(value = Hidden.class, label = ""))
+    @WegasExtraProperty(
+            optional = false, nullable = false,
+            view = @View(value = Hidden.class, label = ""))
     public int getIndex() {
         return this.getDescriptor() != null ? this.getDescriptor().getIndex() : 0;
     }

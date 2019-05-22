@@ -15,6 +15,9 @@ import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.EmptyMap;
+import com.wegas.editor.ValueGenerators.True;
 import com.wegas.editor.View.ArrayView;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.View;
@@ -47,7 +50,9 @@ public class TaskInstance extends VariableInstance implements Propertable {
     /**
      *
      */
-    @WegasEntityProperty(view = @View(label = "Instance properties"))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = True.class,
+            view = @View(label = "Instance properties"))
     private boolean active = true;
     /**
      *
@@ -58,7 +63,9 @@ public class TaskInstance extends VariableInstance implements Propertable {
      *
      */
     @ElementCollection
-    @WegasEntityProperty(view = @View(label = "Planning", value = Hidden.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(label = "Planning", value = Hidden.class))
     private Set<Integer> plannification = new HashSet<>();
 
     @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
@@ -79,14 +86,18 @@ public class TaskInstance extends VariableInstance implements Propertable {
      */
     @ElementCollection
     @JsonIgnore
-    @WegasEntityProperty(view = @View(label = "Instance properties"))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyMap.class,
+            view = @View(label = "Instance properties"))
     private List<VariableProperty> properties = new ArrayList<>();
     /**
      *
      */
     @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     //@JoinColumn(referencedColumnName = "variableinstance_id")
-    @WegasEntityProperty(view = @View(label = "Resource requirements", 
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(label = "Resource requirements",
             value = ArrayView.Highlight.class))
     private List<WRequirement> requirements = new ArrayList<>();
 

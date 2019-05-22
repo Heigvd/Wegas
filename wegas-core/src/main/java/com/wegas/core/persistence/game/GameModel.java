@@ -34,6 +34,9 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.ValueGenerators.GmProperties;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.INTERNAL;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.ReadOnlyNumber;
@@ -97,15 +100,21 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @Basic(optional = false)
     @Pattern(regexp = "^.*\\S+.*$", message = "GameModel name cannot be empty")// must at least contains one non-whitespace character
-    @WegasEntityProperty(view = @View(label = "Name"))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Name"))
     private String name;
 
     @Basic(optional = false)
-    @WegasEntityProperty(initOnly = true, view = @View(label = "UI Version", value = ReadOnlyNumber.class))
+    @WegasEntityProperty(initOnly = true,
+            optional = false, nullable = false,
+            view = @View(label = "UI Version", value = ReadOnlyNumber.class))
     private Integer UIVersion;
 
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @WegasEntityProperty(includeByDefault = false, optional = false, nullable= false, view = @View(label = "Languages", value = Hidden.class))
+    @WegasEntityProperty(includeByDefault = false,
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(label = "Languages", value = Hidden.class))
     private List<GameModelLanguage> languages = new ArrayList<>();
 
     /**
@@ -114,7 +123,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Lob
     //@Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty(sameEntityOnly = true, view = @View(label = "Description"))
+    @WegasEntityProperty(sameEntityOnly = true,
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Description"))
     private String description;
 
     /**
@@ -134,7 +145,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Lob
     //@Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty(sameEntityOnly = true, view = @View(label = "Comments", value = Textarea.class))
+    @WegasEntityProperty(sameEntityOnly = true,
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Comments", value = Textarea.class))
     private String comments;
 
     /**
@@ -223,7 +236,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      *
      */
     @Embedded
-    @WegasEntityProperty
+    @WegasEntityProperty(optional = false, nullable = false, proposal = GmProperties.class)
     private GameModelProperties properties = new GameModelProperties();
 
     /**
@@ -231,6 +244,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * the same time.
      */
     @Transient
+
     @WegasEntityProperty(includeByDefault = false, protectionLevel = ModelScoped.ProtectionLevel.ALL, notSerialized = true)
     @JsonView({Views.ExportI.class})
     private Map<String, JsonNode> pages;
@@ -392,7 +406,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     /**
      * @return Current GameModel's status
      */
-    @WegasExtraProperty(view = @View(label = "Type", value = ReadOnlyString.class))
+    @WegasExtraProperty(
+            optional = true, nullable = false,
+            view = @View(label = "Type", value = ReadOnlyString.class))
     public Status getStatus() {
         return status;
     }
@@ -931,7 +947,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         // Here so game deserialization works
     }
 
-    @WegasExtraProperty(view = @View(label = "Type", value = ReadOnlyString.class))
+    @WegasExtraProperty(
+            optional = true, nullable = false,
+            view = @View(label = "Type", value = ReadOnlyString.class))
     public GmType getType() {
         return type;
     }

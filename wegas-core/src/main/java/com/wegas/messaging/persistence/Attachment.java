@@ -68,7 +68,9 @@ public class Attachment extends AbstractEntity implements Serializable {
      * URI
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(view= @View(label = "File", value = I18nFileView.class))
+    @WegasEntityProperty(
+            optional =false, nullable =false,
+            view= @View(label = "File", value = I18nFileView.class))
     private TranslatableContent file;
 
     @Override

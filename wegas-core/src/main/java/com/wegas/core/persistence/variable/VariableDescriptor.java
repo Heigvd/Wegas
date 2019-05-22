@@ -41,6 +41,7 @@ import com.wegas.core.persistence.annotations.WegasConditions.Equals;
 import com.wegas.core.persistence.annotations.WegasConditions.Or;
 import com.wegas.core.persistence.annotations.WegasRefs.Const;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.ValueGenerators.TeamScopeVal;
 import com.wegas.editor.ValueGenerators.Zero;
@@ -194,6 +195,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @JsonView(value = Views.EditorI.class)
     @Column(name = "comments")
     @WegasEntityProperty(searchable = true,
+            optional = false, nullable =false, proposal =EmptyString.class,
             view = @View(
                     label = "Comments",
                     borderTop = true,
@@ -264,7 +266,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     //@JsonView(Views.EditorI.class)
     @WegasEntityProperty(searchable = true,
             proposal = EmptyString.class,
-            nullable = false,
+            optional = false, nullable = false,
             view = @View(
                     label = "Tag",
                     description = "Never displayed to players",
@@ -278,8 +280,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
      */
     @OneToOne(cascade = CascadeType.ALL /*, orphanRemoval = true*/)
     @WegasEntityProperty(searchable = true,
-            nullable = false,
-            optional = false,
+            nullable = false, optional = false, proposal = EmptyI18n.class,
             view = @View(
                     label = "Label",
                     description = "Displayed to players",

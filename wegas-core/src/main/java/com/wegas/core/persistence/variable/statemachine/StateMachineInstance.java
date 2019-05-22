@@ -16,6 +16,8 @@ import com.wegas.core.Helper;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.True;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.ReadOnlyNumber;
@@ -57,7 +59,9 @@ public class StateMachineInstance extends VariableInstance {
      *
      */
     @Column(columnDefinition = "boolean default true")
-    @WegasEntityProperty(view = @View(label = "Enable"))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = True.class,
+            view = @View(label = "Enable"))
     private Boolean enabled = true;
     /**
      *
@@ -65,7 +69,9 @@ public class StateMachineInstance extends VariableInstance {
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "transitionHistory")
     @JsonIgnore
-    @WegasEntityProperty(view = @View(label = "Transition history", value = Hidden.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(label = "Transition history", value = Hidden.class))
     // history refers to ids of travelled transitions
     private List<TransitionHistoryEntry> transitionHistory = new ArrayList<>();
 

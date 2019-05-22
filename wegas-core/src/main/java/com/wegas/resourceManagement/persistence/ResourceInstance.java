@@ -19,6 +19,8 @@ import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.EmptyMap;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.View;
@@ -49,7 +51,9 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
      */)
     @JsonManagedReference
     @OrderColumn
-    @WegasEntityProperty(callback = ResourceInstanceMergeCallback.class,
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            callback = ResourceInstanceMergeCallback.class,
             view = @View(label = "", value = Hidden.class))
     private List<Assignment> assignments = new ArrayList<>();
     /**
@@ -58,6 +62,7 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
             view = @View(
                     label = "Occupations",
                     description = "[period]"
@@ -68,7 +73,9 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
      */
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
-    @WegasEntityProperty(callback = ResourceInstanceMergeCallback.class,
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            callback = ResourceInstanceMergeCallback.class,
             view = @View(label = "Activities",
                     value = Hidden.class
             ))
@@ -83,7 +90,9 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
      */
     @ElementCollection
     @JsonIgnore
-    @WegasEntityProperty(view = @View(label = "Instance properties", featureLevel = ADVANCED))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyMap.class,
+            view = @View(label = "Instance properties", featureLevel = ADVANCED))
     private List<VariableProperty> properties = new ArrayList<>();
     /**
      *

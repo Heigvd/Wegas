@@ -27,6 +27,7 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.Open;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.View;
 import java.util.*;
@@ -71,7 +72,9 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @Basic(optional = false)
     @Pattern(regexp = "^.*\\S+.*$", message = "Game name cannot be empty")// must at least contains one non-whitespace character
-    @WegasEntityProperty(view = @View(label = "Name"))
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "Name"))
     private String name;
 
     /**
@@ -81,7 +84,9 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     @Basic(optional = false)
 
     @Pattern(regexp = "^([a-zA-Z0-9_-]|\\.(?!\\.))*$", message = "Token shall only contains alphanumeric characters, numbers, dots, underscores or hyphens")
-    @WegasEntityProperty(view = @View(label = "Token"))
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(label = "Token"))
     private String token;
 
     /**
@@ -123,7 +128,9 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      *
      */
     @Enumerated
-    @WegasEntityProperty(view = @View(label = "Access"))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = Open.class,
+            view = @View(label = "Access"))
     private GameAccess access = GameAccess.OPEN;
 
     /**
@@ -193,7 +200,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     @JsonManagedReference("game-team")
     // Exclude this property from the Lobby view and force a fetch in Editor view:
     @JsonView(Views.EditorI.class)
-    @WegasExtraProperty(optional = false, nullable=false, view=@View(label = "Teams", value = Hidden.class))
+    @WegasExtraProperty(optional = false, nullable = false, view = @View(label = "Teams", value = Hidden.class))
     public List<Team> getTeams() {
         return this.getGameTeams().getTeams();
     }
@@ -540,8 +547,6 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     public static WegasPermission getAssociatedWritePermission(long id) {
         return new WegasEntityPermission(id, WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAME);
     }
-
-
 
     @Override
     public WithPermission getMergeableParent() {

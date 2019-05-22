@@ -16,6 +16,7 @@ import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.View;
 import org.slf4j.LoggerFactory;
@@ -60,10 +61,12 @@ public class InboxInstance extends VariableInstance {
 
      */
     @JsonManagedReference("inbox-message")
-    @WegasEntityProperty(view = @View(
-            label = "Messages",
-            value = Hidden.class
-    ))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(
+                    label = "Messages",
+                    value = Hidden.class
+            ))
     private List<Message> messages = new ArrayList<>();
 
     /**

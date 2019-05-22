@@ -21,6 +21,8 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.EmptyScript;
+import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.ValueGenerators.Origin;
 import com.wegas.editor.ValueGenerators.Zero;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
@@ -98,13 +100,17 @@ public class State extends AbstractEntity implements Broadcastable {
      *
      */
     @Column(name = "fsm_statekey")
-    @WegasEntityProperty(view = @View(label = "Index", value = ReadOnlyNumber.class))
+    @WegasEntityProperty(
+            nullable = false,
+            view = @View(label = "Index", value = ReadOnlyNumber.class))
     private Long index;
 
     /**
      *
      */
-    @WegasEntityProperty(searchable = true, view = @View(label = "Label"))
+    @WegasEntityProperty(searchable = true,
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Label"))
     private String label;
 
     /**
@@ -112,7 +118,9 @@ public class State extends AbstractEntity implements Broadcastable {
      */
     @Embedded
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty(view = @View(label = "On enter impact", value = ScriptView.Impact.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyScript.class,
+            view = @View(label = "On enter impact", value = ScriptView.Impact.class))
     private Script onEnterEvent;
 
     /**

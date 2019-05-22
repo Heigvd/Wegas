@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.View;
 import java.util.ArrayList;
@@ -29,7 +30,9 @@ public class BurndownInstance extends VariableInstance {
 
     @OneToMany(mappedBy = "burndownInstance", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    @WegasEntityProperty(view = @View(value = Hidden.class, label = ""))
+    @WegasEntityProperty(
+            optional = false, nullable= false, proposal = EmptyArray.class,
+            view = @View(value = Hidden.class, label = ""))
     private List<Iteration> iterations = new ArrayList<>();
 
     /**

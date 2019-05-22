@@ -103,7 +103,7 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
 
     @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty(
-            proposal = False.class, nullable = false,
+            proposal = False.class, optional = false, nullable = false,
             protectionLevel = ProtectionLevel.INTERNAL,
             view = @View(label = "Enabled"))
     private boolean active = false;

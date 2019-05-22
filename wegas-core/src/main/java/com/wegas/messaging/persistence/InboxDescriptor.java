@@ -38,12 +38,12 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      */
     @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty(
-            proposal = False.class,
+            proposal = False.class, optional = false, nullable = false,
             view = @View(
-            label = "Limit to one message",
-            description = "Each new message ejects the previous one",
-            featureLevel = ADVANCED
-    ))
+                    label = "Limit to one message",
+                    description = "Each new message ejects the previous one",
+                    featureLevel = ADVANCED
+            ))
     private Boolean capped = FALSE;
 
     /**

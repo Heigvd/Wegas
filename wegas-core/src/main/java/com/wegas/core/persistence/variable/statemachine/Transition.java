@@ -19,6 +19,7 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyScript;
 import com.wegas.editor.ValueGenerators.Zero;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.INTERNAL;
@@ -59,7 +60,8 @@ public class Transition extends AbstractEntity {
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = Zero.class,
             sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
     private Long version;
 
@@ -75,13 +77,17 @@ public class Transition extends AbstractEntity {
      *
      */
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty(view = @View(label = "Index", featureLevel = ADVANCED))
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = Zero.class,
+            view = @View(label = "Index", featureLevel = ADVANCED))
     private Integer index = 0;
 
     /**
      *
      */
-    @WegasEntityProperty(view = @View(label = "Next State", value = Hidden.class, featureLevel = INTERNAL))
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(label = "Next State", value = Hidden.class, featureLevel = INTERNAL))
     private Long nextStateId;
 
     @JsonIgnore
@@ -99,14 +105,18 @@ public class Transition extends AbstractEntity {
                 = @Column(name = "onTransition_language"))
     })
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty(view = @View(label = "Impact", value = ScriptView.Impact.class))
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = EmptyScript.class,
+            view = @View(label = "Impact", value = ScriptView.Impact.class))
     private Script preStateImpact;
 
     /**
      *
      */
     @Embedded
-    @WegasEntityProperty(view = @View(label = "Condition", value = ScriptView.Condition.class))
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = EmptyScript.class,
+            view = @View(label = "Condition", value = ScriptView.Condition.class))
     private Script triggerCondition;
 
     @Override

@@ -21,6 +21,7 @@ import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.View.ReadOnlyNumber;
 import com.wegas.editor.View.View;
 import java.util.*;
@@ -83,25 +84,25 @@ public abstract class AbstractAccount extends AbstractEntity {
     //@Basic(optional = false)
     @Column(length = 100)
     //@Pattern(regexp = "^\\w+$")
-    @WegasEntityProperty(view = @View(label = "Username"))
+    @WegasEntityProperty(view = @View(label = "Username"), optional = false, nullable = false)
     private String username = "";
 
     /**
      *
      */
-    @WegasEntityProperty(view = @View(label = "Firstname"))
+    @WegasEntityProperty(view = @View(label = "Firstname"), optional = false, nullable = false)
     private String firstname;
 
     /**
      *
      */
-    @WegasEntityProperty(view = @View(label = "Lastname"))
+    @WegasEntityProperty(view = @View(label = "Lastname"), optional = false, nullable = false)
     private String lastname;
 
     /**
      *
      */
-    @WegasEntityProperty(callback = CheckEmailChange.class,
+    @WegasEntityProperty(callback = CheckEmailChange.class, optional = false, nullable = false,
             view = @View(label = "E-mail"))
     private String email = "";
 
@@ -118,14 +119,15 @@ public abstract class AbstractAccount extends AbstractEntity {
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
-    @WegasEntityProperty(ignoreNull = true,
-            view = @View(label = "Agreed time", value= ReadOnlyNumber.class))
+    @WegasEntityProperty(ignoreNull = true, optional = false, nullable = false,
+            view = @View(label = "Agreed time", value = ReadOnlyNumber.class))
     private Date agreedTime = null;
 
     /**
      * Optional remarks only visible to admins
      */
-    @WegasEntityProperty(ignoreNull = true, view = @View(label = "Comment"))
+    @WegasEntityProperty(ignoreNull = true, optional = false, nullable = false,
+            proposal = EmptyString.class, view = @View(label = "Comment"))
     private String comment = "";
 
     /**

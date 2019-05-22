@@ -27,6 +27,8 @@ import com.wegas.core.persistence.annotations.WegasConditions.LessThan;
 import com.wegas.core.persistence.annotations.WegasRefs.Const;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.core.persistence.annotations.WegasRefs.Self;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.False;
 import com.wegas.editor.ValueGenerators.One;
 import com.wegas.editor.ValueGenerators.True;
@@ -73,7 +75,9 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      */
     @OneToOne(cascade = CascadeType.ALL)
-    @WegasEntityProperty(view = @View(label = "Description", value = I18nHtmlView.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(label = "Description", value = I18nHtmlView.class))
     private TranslatableContent description;
 
     /**
@@ -82,22 +86,22 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty(
-            proposal = False.class,
+            optional = false, nullable = false, proposal = False.class,
             view = @View(
-            label = "Checkbox answer",
-            description = "For standard multiple-choice questions"
-    ))
+                    label = "Checkbox answer",
+                    description = "For standard multiple-choice questions"
+            ))
     private Boolean cbx = FALSE;
     /**
      * Determines if choices are presented horizontally in a tabular fashion
      */
     @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty(
-            proposal = False.class,
+            optional = false, nullable = false, proposal = False.class,
             view = @View(
-            label = "Tabular layout",
-            description = "Replies are presented horizontally"
-    ))
+                    label = "Tabular layout",
+                    description = "Replies are presented horizontally"
+            ))
     @Visible(IsCbx.class)
     private Boolean tabular = FALSE;
     /**
@@ -136,7 +140,8 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     //@BatchFetch(BatchFetchType.IN)
     @JsonManagedReference
     @OrderColumn(name = "qd_items_order")
-    @WegasEntityProperty(includeByDefault = false, view = @View(label = "Items", value = Hidden.class), notSerialized = true)
+    @WegasEntityProperty(includeByDefault = false,
+            view = @View(label = "Items", value = Hidden.class), notSerialized = true)
     private List<ChoiceDescriptor> items = new ArrayList<>();
     /**
      *
@@ -144,10 +149,12 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @ElementCollection
     //@JsonView(Views.ExtendedI.class)
     //@JsonView(Views.EditorI.class)
-    @WegasEntityProperty(view = @View(
-            label = "Pictures",
-            featureLevel = ADVANCED
-    ))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(
+                    label = "Pictures",
+                    featureLevel = ADVANCED
+            ))
     private Set<String> pictures = new HashSet<>();
 
 // ~~~ Sugar for scripts ~~~

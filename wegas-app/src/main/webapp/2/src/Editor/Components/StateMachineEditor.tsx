@@ -137,8 +137,17 @@ class StateMachineEditor extends React.Component<
         states[from].transitions.push({
           '@class': 'Transition',
           nextStateId: to,
-          triggerCondition: null,
-          preStateImpact: null,
+          triggerCondition: {
+              "@class": "Script",
+              language: "JavaScript",
+              content: "",
+          },
+          preStateImpact: {
+              "@class": "Script",
+              language: "JavaScript",
+              content: "",
+          },
+          index: 0,
           version: 0,
         });
       }),
@@ -209,8 +218,17 @@ class StateMachineEditor extends React.Component<
           store.stateMachine.states[transitionSource].transitions.push({
             '@class': 'Transition',
             nextStateId: nextId,
-            triggerCondition: null,
-            preStateImpact: null,
+            triggerCondition: {
+              "@class": "Script",
+              language: "JavaScript",
+              content: "",
+            },
+            preStateImpact: {
+              "@class": "Script",
+              language: "JavaScript",
+              content: "",
+            },
+            index: 0,
             version: 0,
           });
         }
@@ -314,10 +332,16 @@ class StateMachineEditor extends React.Component<
           {
             '@class': 'State',
             version: 0,
+            onEnterEvent : {
+                "@class": "Script",
+                content: "",
+                language: "JavaScript",
+            },
             editorPosition: {
               x: parseInt(left || '0', 10),
               y: parseInt(top || '0', 10),
             },
+            label: "",
             transitions: [],
           },
           Number(src),

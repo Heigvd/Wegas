@@ -21,6 +21,9 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.ValueGenerators.EmptyEvaluationContainer;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import com.wegas.editor.ValueGenerators.False;
 import com.wegas.editor.ValueGenerators.Three;
 import com.wegas.editor.View.FlatVariableSelectView.TextOrNumberSelector;
 import com.wegas.editor.View.Hidden;
@@ -127,14 +130,18 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      * the name of the variable to review. Only used for JSON de serialisation
      */
     @Transient
-    @WegasEntityProperty(view = @View(label = "To Review", value = TextOrNumberSelector.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "To Review", value = TextOrNumberSelector.class))
     private String toReviewName;
 
     /**
      * Allow evicted users to receive something to review
      */
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty(view = @View(label = "Also dispatch to peers who did not submit anything"))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = False.class,
+            view = @View(label = "Also dispatch to peers who did not submit anything"))
     private Boolean includeEvicted;
 
     /**
@@ -143,16 +150,18 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      * <p>
      */
     @WegasEntityProperty(
-            proposal =Three.class,
+            proposal = Three.class, optional = false, nullable = false,
             view = @View(
-            label = "Number of reviews",
-            description = "Maximum reviews per user. Preferably greater than one."
-    ))
+                    label = "Number of reviews",
+                    description = "Maximum reviews per user. Preferably greater than one."
+            ))
     @Column(name = "maxNumberOfReviewer")
     private Integer maxNumberOfReview;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(view = @View(label = "Description", value = I18nHtmlView.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(label = "Description", value = I18nHtmlView.class))
     private TranslatableContent description;
 
     /**
@@ -162,7 +171,9 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     @OneToOne(cascade = CascadeType.ALL)
     @JsonView(Views.EditorI.class)
     @NotNull
-    @WegasEntityProperty(view = @View(label = "Feedback", value = Hidden.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyEvaluationContainer.class,
+            view = @View(label = "Feedback", value = Hidden.class))
     private EvaluationDescriptorContainer feedback;
 
     /**
@@ -172,7 +183,9 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     @OneToOne(cascade = CascadeType.ALL)
     @JsonView(Views.EditorI.class)
     @NotNull
-    @WegasEntityProperty(view = @View(label = "Comment on Feedback", value = Hidden.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyEvaluationContainer.class,
+            view = @View(label = "Comment on Feedback", value = Hidden.class))
     private EvaluationDescriptorContainer fbComments;
 
     /**

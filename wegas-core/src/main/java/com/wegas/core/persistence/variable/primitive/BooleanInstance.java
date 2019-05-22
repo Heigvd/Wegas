@@ -29,7 +29,8 @@ public class BooleanInstance extends VariableInstance {
      *
      */
     @Column(name = "val")
-    @WegasEntityProperty(proposal = False.class, nullable = false, view = @View(label = "Value"))
+    @WegasEntityProperty(proposal = False.class, optional = false, nullable = false,
+            view = @View(label = "Value"))
     private boolean value;
 
     /**

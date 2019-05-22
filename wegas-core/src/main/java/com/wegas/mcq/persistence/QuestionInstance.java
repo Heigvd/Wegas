@@ -36,12 +36,15 @@ public class QuestionInstance extends VariableInstance implements ReadableInstan
     /**
      *
      */
-    @WegasEntityProperty(proposal = True.class, view = @View(label = "Active"))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = True.class,
+            view = @View(label = "Active"))
     private Boolean active = true;
     /**
      *
      */
-    @WegasEntityProperty(proposal = True.class,
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = True.class,
             view = @View(label = "Unread", value = Hidden.class))
     private Boolean unread = true;
     /**
@@ -50,7 +53,7 @@ public class QuestionInstance extends VariableInstance implements ReadableInstan
      */
     @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty(
-            proposal = False.class,
+            optional = false, nullable = false, proposal = False.class,
             view = @View(label = "Validated", value = Hidden.class))
     private Boolean validated = FALSE;
 

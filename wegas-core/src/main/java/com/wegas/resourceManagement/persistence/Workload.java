@@ -48,25 +48,33 @@ public class Workload extends AbstractEntity implements Serializable {
     /**
      * period number
      */
-    @WegasEntityProperty(view = @View(label = "Period number"))
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(label = "Period number"))
     private Long periodNumber;
 
     /**
      * workload to do before doing the period
      */
-    @WegasEntityProperty(view = @View(label = "Workload"))
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(label = "Workload"))
     private Double workload;
 
     /**
      * effective workload spent during the last period
      */
-    @WegasEntityProperty(view = @View(label = "Spent"))
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(label = "Spent"))
     private Double spentWorkload;
 
     /**
      * Period subdivision step
      */
-    @WegasEntityProperty(view = @View(label = "Last worked step"))
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(label = "Last worked step"))
     private Integer lastWorkedStep;
 
     public Long getPeriodNumber() {

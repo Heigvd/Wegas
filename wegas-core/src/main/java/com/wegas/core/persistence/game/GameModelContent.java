@@ -18,6 +18,7 @@ import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.ValueGenerators.Zero;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.Hidden;
@@ -61,13 +62,17 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     @JsonIgnore
     private GameModel clientscriptlibrary_GameModel;
 
-    @WegasEntityProperty(view = @View(label = "Key", value = ReadOnlyString.class))
+    @WegasEntityProperty(
+            nullable = false,
+            view = @View(label = "Key", value = ReadOnlyString.class))
     private String contentKey;
 
     /**
      *
      */
-    @WegasEntityProperty(view = @View(label = "Content Type", value = ReadOnlyString.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Content Type", value = ReadOnlyString.class))
     private String contentType;
     /**
      *
@@ -76,7 +81,9 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     @Basic(optional = false, fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     //@Column(columnDefinition = "text")
     //@JsonView({Views.Export.class})
-    @WegasEntityProperty(view = @View(label = "Content", value = Hidden.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Content", value = Hidden.class))
     private String content = "";
 
     @Enumerated(value = EnumType.STRING)

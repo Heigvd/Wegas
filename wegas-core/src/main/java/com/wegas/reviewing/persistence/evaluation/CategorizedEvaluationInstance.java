@@ -9,6 +9,7 @@ package com.wegas.reviewing.persistence.evaluation;
 
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.primitive.EnumItem;
+import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.View.View;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,8 +28,10 @@ public class CategorizedEvaluationInstance extends EvaluationInstance {
      * the chosen category (null means un-chosen)
      */
     @Column(name = "evaluationvalue")
-    @WegasEntityProperty(view = @View(label = "Value"))
-    private String value;
+    @WegasEntityProperty(
+            optional = false, nullable= false, proposal = EmptyString.class,
+            view = @View(label = "Value"))
+    private String value = "";
 
     /**
      * get the chosen category

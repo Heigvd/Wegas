@@ -61,7 +61,7 @@ public class Permission extends AbstractEntity {
      */
     @Basic
     @Column(name = "permissions")
-    @WegasEntityProperty(view = @View(label = "Value"))
+    @WegasEntityProperty(optional = false, nullable = false, view = @View(label = "Value"))
     private String value;
     /**
      *

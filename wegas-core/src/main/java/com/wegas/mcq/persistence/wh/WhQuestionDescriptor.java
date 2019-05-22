@@ -18,6 +18,7 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.PrimitiveDescriptorI;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.I18nHtmlView;
 import com.wegas.editor.View.View;
@@ -53,7 +54,9 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      *
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(view = @View(label = "Description", value = I18nHtmlView.class))
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = EmptyI18n.class,
+            view = @View(label = "Description", value = I18nHtmlView.class))
     private TranslatableContent description;
 
     @OneToMany(mappedBy = "parentWh", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)

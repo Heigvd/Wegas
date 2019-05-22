@@ -19,6 +19,9 @@ import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.JSONSchema.ListOfTasksSchema;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import com.wegas.editor.ValueGenerators.EmptyMap;
 import com.wegas.editor.View.I18nHtmlView;
 import com.wegas.editor.View.View;
 import com.wegas.resourceManagement.ejb.IterationFacade;
@@ -61,21 +64,27 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty(view = @View(label = "Description", value = I18nHtmlView.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(label = "Description", value = I18nHtmlView.class))
     private TranslatableContent description;
 
     /**
      *
      */
     @Column(length = 24)
-    @WegasEntityProperty(view = @View(label = "Task Number", layout = shortInline, index = -471))
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "Task Number", layout = shortInline, index = -471))
     private String index;
     /**
      *
      */
     @ElementCollection
     @JsonIgnore
-    @WegasEntityProperty(view = @View(label = "Descriptor properties"))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyMap.class,
+            view = @View(label = "Descriptor properties"))
     private List<VariableProperty> properties = new ArrayList<>();
     /**
      *
@@ -98,7 +107,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      */
     @Transient
-    @WegasEntityProperty(view = @View(label = "Predecessors"),
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(label = "Predecessors"),
             schema = ListOfTasksSchema.class)
     private Set<String> predecessorNames/*
              * = new ArrayList<>()

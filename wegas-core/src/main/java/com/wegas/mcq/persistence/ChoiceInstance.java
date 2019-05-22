@@ -51,12 +51,13 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
     /**
      *
      */
-    @WegasEntityProperty(proposal = True.class, view = @View(label = "Active from start"))
+    @WegasEntityProperty(optional = false, nullable = false, proposal = True.class,
+            view = @View(label = "Active from start"))
     private Boolean active = true;
     /**
      *
      */
-    @WegasEntityProperty(proposal = True.class, view = @View(label = "Unread", value = Hidden.class))
+    @WegasEntityProperty(optional = false, nullable = false, proposal = True.class, view = @View(label = "Unread", value = Hidden.class))
     private Boolean unread = true;
     /**
      *
@@ -79,7 +80,7 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
     @BatchFetch(BatchFetchType.JOIN)
     @JsonManagedReference
     //@JoinFetch
-    @WegasEntityProperty(view = @View(label = "Replies", value = Hidden.class), 
+    @WegasEntityProperty(view = @View(label = "Replies", value = Hidden.class),
             proposal = EmptyArray.class, optional = false, nullable = false)
     private List<Reply> replies = new ArrayList<>();
 

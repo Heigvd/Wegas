@@ -17,6 +17,7 @@ import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.View.ArrayView;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.View;
@@ -57,7 +58,9 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      */
     @OneToMany(mappedBy = "parentString", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonDeserialize(using = EnumItem.ListDeserializer.class)
-    @WegasEntityProperty(view = @View(label= "Allowed Values", value = ArrayView.HighlightAndSortable.class))
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(label= "Allowed Values", value = ArrayView.HighlightAndSortable.class))
     //@WegasEntityProperty(callback = EnumItem.EnumItemMergeCallback.class)
     private List<EnumItem> allowedValues = new ArrayList<>();
 

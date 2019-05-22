@@ -7,7 +7,14 @@
  */
 package com.wegas.editor;
 
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModelProperties;
+import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.statemachine.Coordinate;
+import com.wegas.resourceManagement.persistence.Iteration;
+import com.wegas.reviewing.persistence.PeerReviewDescriptor;
+import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -113,6 +120,58 @@ public class ValueGenerators {
             o.setX(0);
             o.setY(0);
             return o;
+        }
+    }
+
+    public static class EmptyScript implements ValueGenerator {
+
+        public Script getValue() {
+            return new Script();
+        }
+    }
+
+    public static class EmptyI18n implements ValueGenerator {
+
+        public TranslatableContent getValue() {
+            return new TranslatableContent();
+        }
+    }
+
+    public static class Open implements ValueGenerator {
+
+        public Game.GameAccess getValue() {
+            return Game.GameAccess.OPEN;
+        }
+    }
+
+    public static class GmProperties implements ValueGenerator {
+
+        public GameModelProperties getValue() {
+            return new GameModelProperties();
+        }
+    }
+
+    public static class IterationNotStarted implements ValueGenerator {
+
+        @Override
+        public Iteration.IterationStatus getValue() {
+            return Iteration.IterationStatus.NOT_STARTED;
+        }
+    }
+
+    public static class ReviewingNotStarted implements ValueGenerator {
+
+        @Override
+        public PeerReviewDescriptor.ReviewingState getValue() {
+            return PeerReviewDescriptor.ReviewingState.NOT_STARTED;
+        }
+    }
+
+    public static class EmptyEvaluationContainer implements ValueGenerator {
+
+        @Override
+        public EvaluationDescriptorContainer getValue() {
+            return new EvaluationDescriptorContainer();
         }
     }
 }

@@ -34,15 +34,15 @@ function getVisibility(defaultValue: VISIBILITY, inheritedValue?: VISIBILITY, en
     if (inheritedValue) {
       return inheritedValue;
     }
-    let p = Helper.getParent(entity);
-    while (p) {
-      if ('visibility' in p) {
-        return (p as any).visibility as VISIBILITY;
+      let p = Helper.getParent(entity);
+      while (p) {
+        if ('visibility' in p) {
+          return (p as any).visibility as VISIBILITY;
+        }
+        p = Helper.getParent(p);
       }
-      p = Helper.getParent(p);
+      return defaultValue;
     }
-    return defaultValue;
-  }
 
   return inheritedValue || defaultValue;
 }

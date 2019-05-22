@@ -11,6 +11,7 @@ import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.primitive.Enumeration;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.persistence.variable.primitive.EnumItem;
+import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,9 @@ public class CategorizedEvaluationDescriptor
      */
     @OneToMany(mappedBy = "parentEvaluation", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonDeserialize(using = EnumItem.ListDeserializer.class)
-    @WegasEntityProperty(view = @View(label = "Categories"))
+    @WegasEntityProperty(
+            optional = false, nullable= false, proposal = EmptyArray.class,
+            view = @View(label = "Categories"))
     private List<EnumItem> categories = new ArrayList<>();
 
     /**
