@@ -22,9 +22,16 @@ interface EditorProps<T> {
 }
 
 type VISIBILITY = 'INTERNAL' | 'PROTECTED' | 'INHERITED' | 'PRIVATE';
-type PROTECTION_LEVEL = 'INTERNAL' | 'PROTECTED' | 'INHERITED' | 'PRIVATE' | 'ALL';
 
-const PROTECTION_LEVELS = ['INTERNAL', 'PROTECTED', 'INHERITED', 'PRIVATE', 'ALL'];
+
+const PROTECTION_LEVELS = [
+  'INTERNAL',
+  'PROTECTED',
+  'INHERITED',
+  'PRIVATE',
+  'ALL',
+] as const;
+type PROTECTION_LEVEL = ValueOf<typeof PROTECTION_LEVELS>;
 
 function getVisibility(defaultValue: VISIBILITY, inheritedValue?: VISIBILITY, entity?: IAbstractEntity): VISIBILITY {
   if (entity && typeof entity === 'object') {

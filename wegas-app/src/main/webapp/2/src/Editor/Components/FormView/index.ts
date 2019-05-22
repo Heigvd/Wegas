@@ -45,5 +45,5 @@ type View<P extends ViewTypes> = PropsType<(typeof DEFINED_VIEWS)[P]> extends {
   : { type?: P };
 
 type ViewMap = { [P in keyof typeof DEFINED_VIEWS]: View<P> };
-type valueof<T> = T[keyof T];
-export type AvailableViews = valueof<ViewMap>;
+
+export type AvailableViews = ValueOf<ViewMap>;
