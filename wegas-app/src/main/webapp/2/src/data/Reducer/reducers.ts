@@ -1,22 +1,23 @@
-import { Immutable } from 'immer';
-import games, { GameState } from './game';
 import gameModels, { GameModelState } from './gameModel';
+import variableDescriptors, {
+  VariableDescriptorState,
+} from './variableDescriptor';
+import variableInstances, { VariableInstanceState } from './variableInstance';
 import global, { GlobalState } from './globalState';
 import pages, { PageState } from './pageState';
+import games, { GameState } from './game';
 import players, { PlayerState } from './player';
 import teams, { TeamState } from './teams';
-import variableDescriptors, { VariableDescriptorState } from './variableDescriptor';
-import variableInstances, { VariableInstanceState } from './variableInstance';
 
 export interface State {
-  gameModels: Immutable<GameModelState>;
-  games: Immutable<GameState>;
-  variableDescriptors: Immutable<VariableDescriptorState>;
-  variableInstances: Immutable<VariableInstanceState>;
-  global: Immutable<GlobalState>;
-  pages: Immutable<PageState>;
-  players: Immutable<PlayerState>;
-  teams: Immutable<TeamState>;
+  gameModels: Readonly<GameModelState>;
+  games: Readonly<GameState>;
+  variableDescriptors: Readonly<VariableDescriptorState>;
+  variableInstances: Readonly<VariableInstanceState>;
+  global: Readonly<GlobalState>;
+  pages: Readonly<PageState>;
+  players: Readonly<PlayerState>;
+  teams: Readonly<TeamState>;
 }
 
 export default {
