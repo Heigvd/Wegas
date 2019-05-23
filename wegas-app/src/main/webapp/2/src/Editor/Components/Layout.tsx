@@ -6,7 +6,10 @@ import Editor from './EntityEditor';
 import PageDisplay from './Page/PageDisplay';
 import { TabLayout } from '../../Components/Tabs';
 import StateMachineEditor from './StateMachineEditor';
-import { DndConnectedFileBrowser } from './FileBrowser/FileBrowser';
+import {
+  ConnectedFileFileBrowser,
+  FileBrowserTree,
+} from './FileBrowser/FileBrowserTree';
 
 const layout = css({
   display: 'grid',
@@ -44,7 +47,21 @@ export default class AppLayout extends React.Component<
           <TabLayout tabs={['Page', 'StateMachine', 'Files']}>
             <PageDisplay />
             <StateMachineEditor />
-            <DndConnectedFileBrowser />
+            <FileBrowserTree
+              selectedFiles={{
+                'yarn-error.log': {
+                  mimeType: 'text/x-log',
+                  name: 'yarn-error.log',
+                  path: '/Lala/blapiblap',
+                  note: '',
+                  description: '',
+                  visibility: 'PRIVATE',
+                  refId: '/Lala/blapiblap/yarn-error.log::FileDescriptor',
+                  dataLastModified: 1558511664640,
+                  bytes: 617545,
+                },
+              }}
+            />
           </TabLayout>
         </div>
         <div>

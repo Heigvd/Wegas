@@ -21,6 +21,7 @@ export const themeVar = {
   primaryDarkerTextColor: 'var(--primary-darker-text-color)',
   primaryLighterColor: 'var(--primary-lighter-color)',
   primaryLighterTextColor: 'var(--primary-lighter-text-color)',
+  primaryHoverColor: 'var(--primary-hover-color)',
   warningColor: 'var(--warning-color)',
   errorColor: 'var(--error-color)',
   successColor: 'var(--success-color)',
@@ -84,6 +85,7 @@ export class Theme extends React.PureComponent<
     const primDarkText = primDark.isLight() ? darkTextColor : lightTextColor;
     const primLight = primary.lighten(0.33);
     const primLightText = primLight.isLight() ? darkTextColor : lightTextColor;
+    const primHover = primLight.lighten(0.66);
     return (
       <div
         ref={n =>
@@ -102,6 +104,7 @@ export class Theme extends React.PureComponent<
           '--primary-darker-text-color': primDarkText,
           '--primary-lighter-color': primLight.string(),
           '--primary-lighter-text-color': primLightText,
+          '--primary-hover-color': primHover.string(),
           '--warning-color': warningColor,
           '--error-color': errorColor,
           '--success-color': successColor,

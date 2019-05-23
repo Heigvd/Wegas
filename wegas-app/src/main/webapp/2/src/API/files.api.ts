@@ -79,7 +79,7 @@ export const FileAPI = {
     gameModelId: number,
     absolutePath: string,
     force?: boolean,
-  ): Promise<IFile> {
+  ): Promise<IFile | undefined> {
     return rest(
       FILE_BASE(gameModelId) +
         (force ? 'force/' : '') +
@@ -98,8 +98,9 @@ export const FileAPI = {
             `Are you sure you want to delete ${absolutePath} with all files and subdirectories?`,
           )
         ) {
-          this.deleteFile(gameModelId, absolutePath, true);
+          return this.deleteFile(gameModelId, absolutePath, true);
         }
+        throw Error('Force delete not accepted or failed');
       });
   },
   /**
@@ -116,12 +117,11 @@ export const FileAPI = {
     path: string = '',
     file?: File,
     force: boolean = false,
-  ) {
+  ): Promise<IFile> {
     const data = new FormData();
     data.append('name', name);
     data.append('file', file as Blob);
-
-    return await rest(
+    return rest(
       FILE_BASE(gameModelId) + (force ? 'force/' : '') + 'upload' + path,
       {
         method: 'POST',
@@ -129,7 +129,9 @@ export const FileAPI = {
       },
       undefined,
       'multipart/form-data',
-    );
+    ).then(async (res: Response) => {
+      return await res.json();
+    });
   },
   /**
    * Get metata of a specific file/directory
