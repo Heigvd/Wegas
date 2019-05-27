@@ -543,12 +543,14 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
             onClick={() =>
               addNewDirectory(fileState.nodes[fileState.rootNode].file)
             }
+            fixedWidth={true}
           />
           <IconButton
             icon={'file-upload'}
             tooltip={'Upload file in the folder'}
             disabled={!isUploadAllowed(fileState.nodes[fileState.rootNode])}
             onClick={addNewFile}
+            fixedWidth={true}
           />
           <input
             ref={uploader}

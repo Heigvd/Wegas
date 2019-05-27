@@ -54,7 +54,7 @@ interface FileBrowserNodeProps {
   openFolder: (node: FileNode, open?: boolean) => void;
   selectFile: (file: FileNode) => void;
   addNewDirectory: (file: IFile) => void;
-  deleteFile: (baseDir: FileNode) => (event: React.MouseEvent) => void;
+  deleteFile: (baseDir: FileNode) => void;
   insertFiles: (files: FileList, path?: string) => void;
   uploadFiles: (
     targetNode: FileNode,
@@ -150,10 +150,11 @@ export function FileBrowserNode(
               : '',
             hoverRow,
           )}
+          onClick={() => selectFile(node)}
         >
           <IconButton
             icon={getIconForFileType(node.file.mimeType)}
-            onClick={() => selectFile(node)}
+            fixedWidth={true}
           />
           {node.file.name}
           <span style={{ float: 'right' }}>
@@ -163,13 +164,18 @@ export function FileBrowserNode(
                   icon={'folder-plus'}
                   tooltip={'Add new directory in folder'}
                   disabled={!isUploadAllowed(node)}
-                  onClick={() => addNewDirectory(node.file)}
+                  onClick={(e: React.MouseEvent) => {
+                    e.preventDefault();
+                    addNewDirectory(node.file);
+                  }}
+                  fixedWidth={true}
                 />
                 <IconButton
                   icon={'file-upload'}
                   tooltip={'Upload file in the folder'}
                   disabled={!isUploadAllowed(node)}
                   onClick={addNewFile}
+                  fixedWidth={true}
                 />
               </>
             ) : (
@@ -178,12 +184,14 @@ export function FileBrowserNode(
                   icon={'external-link-alt'}
                   tooltip={'Open file'}
                   onClick={() => openFile(node.file)}
+                  fixedWidth={true}
                 />
                 <IconButton
                   icon={'file-import'}
                   tooltip={'Upload new version'}
                   disabled={!isUploadAllowed(node)}
                   onClick={addNewFile}
+                  fixedWidth={true}
                 />
               </>
             )}
@@ -191,7 +199,11 @@ export function FileBrowserNode(
             <IconButton
               icon={'trash'}
               tooltip={'Delete'}
-              onClick={deleteFile(node)}
+              onClick={(e: React.MouseEvent) => {
+                e.preventDefault();
+                deleteFile(node);
+              }}
+              fixedWidth={true}
             />
           </span>
         </div>
