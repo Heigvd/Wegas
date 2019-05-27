@@ -23,7 +23,6 @@ interface EditorProps<T> {
 
 type VISIBILITY = 'INTERNAL' | 'PROTECTED' | 'INHERITED' | 'PRIVATE';
 
-
 const PROTECTION_LEVELS = [
   'INTERNAL',
   'PROTECTED',
@@ -33,7 +32,11 @@ const PROTECTION_LEVELS = [
 ] as const;
 type PROTECTION_LEVEL = ValueOf<typeof PROTECTION_LEVELS>;
 
-function getVisibility(defaultValue: VISIBILITY, inheritedValue?: VISIBILITY, entity?: IAbstractEntity): VISIBILITY {
+function getVisibility(
+  defaultValue: VISIBILITY,
+  inheritedValue?: VISIBILITY,
+  entity?: IAbstractEntity,
+): VISIBILITY {
   if (entity && typeof entity === 'object') {
     if ('visibility' in entity) {
       return (entity as any).visibility as VISIBILITY;
@@ -41,15 +44,15 @@ function getVisibility(defaultValue: VISIBILITY, inheritedValue?: VISIBILITY, en
     if (inheritedValue) {
       return inheritedValue;
     }
-      let p = Helper.getParent(entity);
-      while (p) {
-        if ('visibility' in p) {
-          return (p as any).visibility as VISIBILITY;
-        }
-        p = Helper.getParent(p);
+    let p = Helper.getParent(entity);
+    while (p) {
+      if ('visibility' in p) {
+        return (p as any).visibility as VISIBILITY;
       }
-      return defaultValue;
+      p = Helper.getParent(p);
     }
+    return defaultValue;
+  }
 
   return inheritedValue || defaultValue;
 }
@@ -60,14 +63,18 @@ function getVisibility(defaultValue: VISIBILITY, inheritedValue?: VISIBILITY, en
  */
 function _overrideSchema(
   schema: Schema<AvailableViews>,
-    entity?: IAbstractEntity,
+  entity?: IAbstractEntity,
   inheritedVisibility?: VISIBILITY,
   inheritedProtectionLevel?: PROTECTION_LEVEL,
 ) {
   const v = getVisibility('PRIVATE', inheritedVisibility, entity);
-  const pl = ('protectionLevel' in schema && schema['protectionLevel']) || inheritedProtectionLevel || 'PROTECTED';
+  const pl =
+    ('protectionLevel' in schema && schema['protectionLevel']) ||
+    inheritedProtectionLevel ||
+    'PROTECTED';
 
-  const readOnly = PROTECTION_LEVELS.indexOf(v) <= PROTECTION_LEVELS.indexOf(pl);
+  const readOnly =
+    PROTECTION_LEVELS.indexOf(v) <= PROTECTION_LEVELS.indexOf(pl);
 
   if (readOnly) {
     if (schema.view) {
@@ -84,7 +91,12 @@ function _overrideSchema(
     for (const key in oSchema.properties) {
       if (oSchema.properties[key]) {
         if (entity && key in entity) {
-          _overrideSchema(oSchema.properties[key] as any, (entity as any)[key], v, pl);
+          _overrideSchema(
+            oSchema.properties[key] as any,
+            (entity as any)[key],
+            v,
+            pl,
+          );
         } else {
           _overrideSchema(oSchema.properties[key] as any, undefined, v, pl);
         }
@@ -95,7 +107,7 @@ function _overrideSchema(
         if (oSchema.additionalProperties.view) {
           (oSchema.additionalProperties.view as any).readOnly = true;
         } else {
-          (oSchema.additionalProperties.view as any)= {
+          (oSchema.additionalProperties.view as any) = {
             readOnly,
           };
         }
@@ -126,7 +138,13 @@ function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
   return schema;
 }
 
-export async function WindowedEditor<T>({ entity, update, actions = [], getConfig, path }: EditorProps<T>) {
+export async function WindowedEditor<T>({
+  entity,
+  update,
+  actions = [],
+  getConfig,
+  path,
+}: EditorProps<T>) {
   let pathEntity = entity;
   if (Array.isArray(path) && path.length > 0) {
     pathEntity = get(entity, path);
@@ -139,10 +157,10 @@ export async function WindowedEditor<T>({ entity, update, actions = [], getConfi
     return update != null && update(deepUpdate(entity, path, variable) as T);
   }
 
-  const [Form, schema] = await Promise.all<typeof import('./Form')['Form'], Schema<AvailableViews>>([
-    import('./Form').then(m => m.Form),
-    getConfig(pathEntity),
-  ]);
+  const [Form, schema] = await Promise.all<
+    typeof import('./Form')['Form'],
+    Schema<AvailableViews>
+  >([import('./Form').then(m => m.Form), getConfig(pathEntity)]);
   return (
     <Form
       entity={pathEntity}
@@ -163,7 +181,7 @@ export async function WindowedEditor<T>({ entity, update, actions = [], getConfi
 const AsyncVariableForm = asyncSFC<EditorProps<{ '@class': string }>>(
   WindowedEditor,
   () => <div>load...</div>,
-  ({ err }) => <span>{err.message}</span>,
+  ({ err }: { err: Error }) => <span>{err.message}</span>,
 );
 
 export default function VariableForm(props: {

@@ -146,15 +146,6 @@ export default async function getEditionConfig<T extends IAbstractEntity>(
   );
 }
 
-export async function getAvailableChildren<T extends IAbstractEntity>(
-  entity: T,
-): Promise<string[]> {
-  return import(
-    /* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
-      entity['@class']
-  ).then(res => res.children);
-}
-
 export interface EActions {
   edit: (variable: IAbstractEntity, path?: string[]) => StateActions;
 }
@@ -176,27 +167,107 @@ export async function getMethodConfig<T extends IAbstractEntity>(
 
 export async function getIcon<T extends IAbstractEntity>(
   entity: T,
-): Promise<IconProp | undefined> {
-  return import(
-    /* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
-      entity['@class']
-  ).then(({ icon }) => icon);
+): Promise<IconProp> {
+  switch (
+    entity['@class'] as
+      | ValueOf<typeof ListDescriptorChild>
+      | ValueOf<typeof QuestionDescriptorChild>
+      | ValueOf<typeof ChoiceDescriptorChild>
+  ) {
+    case 'ChoiceDescriptor':
+      return 'check-square';
+    case 'FSMDescriptor':
+      return 'project-diagram';
+    case 'ListDescriptor':
+      return 'folder';
+    case 'NumberDescriptor':
+      return 'chart-line';
+    case 'QuestionDescriptor':
+      return 'question-circle';
+    case 'Result':
+      return 'cog';
+    case 'SingleResultChoiceDescriptor':
+      return 'check-square';
+    case 'BooleanDescriptor':
+      return 'toggle-on';
+    case 'ObjectDescriptor':
+      return 'shopping-bag';
+    case 'StringDescriptor':
+      return 'font';
+    case 'TextDescriptor':
+      return 'paragraph';
+    case 'TriggerDescriptor':
+      return 'random';
+    case 'TaskDescriptor':
+      return 'list-ul';
+  }
 }
 
 export async function getLabel<T extends IAbstractEntity>(
   entity: T,
-): Promise<string | undefined> {
-  return await import(
-    /* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
-      entity['@class']
-  ).then(({ label }) => label);
+): Promise<string> {
+  switch (
+    entity['@class'] as
+      | ValueOf<typeof ListDescriptorChild>
+      | ValueOf<typeof QuestionDescriptorChild>
+      | ValueOf<typeof ChoiceDescriptorChild>
+  ) {
+    case 'ChoiceDescriptor':
+      return 'Choice';
+    case 'FSMDescriptor':
+      return 'State Machine';
+    case 'ListDescriptor':
+      return 'Folder';
+    case 'NumberDescriptor':
+      return 'Number';
+    case 'QuestionDescriptor':
+      return 'Question';
+    case 'Result':
+      return 'Result';
+    case 'SingleResultChoiceDescriptor':
+      return 'Single Result Choice';
+    case 'BooleanDescriptor':
+      return 'Boolean';
+    case 'ObjectDescriptor':
+      return 'Object';
+    case 'StringDescriptor':
+      return 'String';
+    case 'TextDescriptor':
+      return 'Text';
+    case 'TriggerDescriptor':
+      return 'Trigger';
+    case 'TaskDescriptor':
+      return 'Task';
+  }
 }
-
+const ListDescriptorChild = [
+  'NumberDescriptor',
+  'StringDescriptor',
+  'ListDescriptor',
+  'TextDescriptor',
+  'TaskDescriptor',
+  'BooleanDescriptor',
+  'ObjectDescriptor',
+  'TriggerDescriptor',
+  'QuestionDescriptor',
+  'FSMDescriptor',
+] as const;
+const QuestionDescriptorChild = [
+  'SingleResultChoiceDescriptor',
+  'ChoiceDescriptor',
+] as const;
+const ChoiceDescriptorChild = ['Result'] as const;
 export async function getChildren<T extends IAbstractEntity>(
   entity: T,
-): Promise<string[]> {
-  return import(
-    /* webpackChunkName: "FormConfig", webpackMode: "lazy-once" */ './EntitiesConfig/' +
-      entity['@class']
-  ).then(({ children }) => children || []);
+): Promise<readonly string[]> {
+  switch (entity['@class']) {
+    case 'ListDescriptor':
+      return ListDescriptorChild;
+    case 'QuestionDescriptor':
+      return QuestionDescriptorChild;
+    case 'ChoiceDescriptor':
+      return ChoiceDescriptorChild;
+    default:
+      return [];
+  }
 }

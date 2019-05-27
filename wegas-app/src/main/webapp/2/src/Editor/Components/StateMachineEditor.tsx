@@ -588,8 +588,8 @@ class Transition extends React.Component<{
     const src = this.props.parent;
     const tgt = this.props.transition.nextStateId;
     this.connection = this.props.plumb.connect({
-      source: src,
-      target: tgt,
+      source: String(src),
+      target: String(tgt),
       ...(src === tgt ? ({ connector: ['StateMachine'] } as any) : undefined),
     });
     (this.connection as any).bind('click', (connection: any) => {
