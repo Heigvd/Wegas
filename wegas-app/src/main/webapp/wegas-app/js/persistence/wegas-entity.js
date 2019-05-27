@@ -941,6 +941,7 @@ YUI.add('wegas-entity', function(Y) {
         {},
         {
             ATTRS: {
+                version: VERSION_ATTR_DEF,
                 name: {
                     type: STRING
                 },
