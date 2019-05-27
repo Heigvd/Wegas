@@ -170,7 +170,7 @@ class WebSocketListener {
   public bindCallback(
     eventId: WebSocketEvent,
     callback: (
-      data: any, //eslint-disable-line @typescript-eslint/no-explicit-any
+      data: unknown,
     ) => void,
   ) {
     if (this.events[eventId]) {
