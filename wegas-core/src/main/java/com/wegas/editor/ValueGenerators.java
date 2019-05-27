@@ -133,7 +133,9 @@ public class ValueGenerators {
     public static class EmptyI18n implements ValueGenerator {
 
         public TranslatableContent getValue() {
-            return new TranslatableContent();
+            TranslatableContent tr = new TranslatableContent();
+            tr.setVersion(0l);
+            return tr;
         }
     }
 

@@ -51,7 +51,7 @@ export default function translatable<P extends EndProps>(
       <Comp
         {...props as any} // https://github.com/Microsoft/TypeScript/issues/28748
         value={
-          currTranslation != null ? currTranslation.translation : undefined
+          currTranslation != null ? currTranslation.translation : ''
         }
         view={view}
         onChange={value => {
@@ -60,8 +60,10 @@ export default function translatable<P extends EndProps>(
             translations: {
               ...pvalue.translations,
               [lang]: {
+                ...{status: ''},
                 ...pvalue.translations[lang],
                 translation: value,
+                lang,
               },
             },
           };
