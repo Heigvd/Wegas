@@ -38,8 +38,7 @@ const SCRIPTS: ScriptStore = {
                 type: 'html',
               },
             },
-          },
-          additionalProperties: false,
+          }
         },
       ],
     },

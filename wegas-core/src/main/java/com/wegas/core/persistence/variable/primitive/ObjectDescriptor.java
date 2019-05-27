@@ -10,6 +10,7 @@ package com.wegas.core.persistence.variable.primitive;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Propertable;
@@ -104,7 +105,9 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
      * @param value
      */
     @Scriptable
-    public void setProperty(Player p, String key, String value) {
+    public void setProperty(Player p,
+            @Param(view = @View(label = "Key")) String key,
+            @Param(view = @View(label = "Value")) String value) {
         this.getInstance(p).setProperty(key, value);
     }
 

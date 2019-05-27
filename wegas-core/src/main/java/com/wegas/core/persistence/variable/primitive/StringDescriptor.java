@@ -15,11 +15,13 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.View.ArrayView;
 import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.I18nHtmlView;
 import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
@@ -161,7 +163,8 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      * @param value
      */
     @Scriptable
-    public void setValue(Player p, TranslatableContent value) {
+    public void setValue(Player p,
+            @Param(view = @View(label = "", value = I18nHtmlView.class)) TranslatableContent value) {
         this.getInstance(p).setValue(value);
     }
 

@@ -14,8 +14,11 @@ import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.False;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.I18nStringView;
 import com.wegas.editor.View.View;
 import java.util.List;
 import static java.lang.Boolean.FALSE;
@@ -195,10 +198,10 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      */
     @Scriptable(returnType = Scriptable.ReturnType.VOID)
     public Message sendMessage(Player p,
-            @Param(view = @View(label = "from")) TranslatableContent from,
-            @Param(view = @View(label = "date")) TranslatableContent date,
-            @Param(view = @View(label = "subject")) TranslatableContent subject,
-            @Param(view = @View(label = "body")) TranslatableContent body,
+            @Param(view = @View(label = "from", value = I18nStringView.class), proposal = EmptyI18n.class) TranslatableContent from,
+            @Param(view = @View(label = "date", value = I18nStringView.class), proposal = EmptyI18n.class) TranslatableContent date,
+            @Param(view = @View(label = "subject", value = I18nStringView.class), proposal = EmptyI18n.class) TranslatableContent subject,
+            @Param(view = @View(label = "body", value = I18nHtmlView.class), proposal = EmptyI18n.class) TranslatableContent body,
             @Param(view = @View(
                     label = "token",
                     description = "Message identifier used to reference the message within FSM/Trigger conditions"
@@ -243,7 +246,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *         read, false otherwise
      */
     @Scriptable
-    public boolean isTokenMarkedAsRead(Player self, String token) {
+    public boolean isTokenMarkedAsRead(Player self, @Param(view = @View(label = "token")) String token) {
         return this.getInstance(self).isTokenMarkedAsRead(token);
     }
 

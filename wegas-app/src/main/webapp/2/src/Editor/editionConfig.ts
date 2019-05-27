@@ -25,13 +25,6 @@ export interface MethodConfig {
   };
 }
 
-/* @TODO REMOVE ME. used in configs only */
-export const SELFARG = {
-  type: 'identifier' as 'identifier',
-  value: 'self',
-  const: 'self',
-  view: { type: 'hidden' } as AvailableViews,
-};
 type SimpleSchema =
   | {}
   | {
@@ -82,6 +75,26 @@ export async function schemaUpdater(
   }
   return update;
 }
+
+export async function methodConfigUpdater(
+  config: MethodConfig,
+  ...updater: (<Ext extends {}>(schema: Ext) => {} | Promise<{}>)[]
+) {
+  const newConfig: MethodConfig = {};
+  for (const method in config) {
+    const newParameters = (await Promise.all(
+      config[method].parameters.map(
+        async p => await schemaUpdater(p, ...updater),
+      ),
+    )) as MethodConfig['1']['parameters'];
+    newConfig[method] = {
+      ...config[method],
+      parameters: newParameters,
+    };
+  }
+  return newConfig;
+}
+
 /**
  * Download configuration schema
  * @param file filename
@@ -167,7 +180,9 @@ export async function getEntityActions(
 export async function getMethodConfig<T extends IAbstractEntity>(
   entity: T,
 ): Promise<MethodConfig> {
-  return fetchConfig(entity['@class'] + '.json').then(res => res.methods);
+  return fetchConfig(entity['@class'] + '.json').then(res =>
+    methodConfigUpdater(res.methods, injectRef),
+  );
 }
 
 export async function getIcon<T extends IAbstractEntity>(

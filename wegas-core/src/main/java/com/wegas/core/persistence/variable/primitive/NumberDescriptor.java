@@ -193,7 +193,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      */
     @Transient
     @WegasExtraProperty(
-            optional = false, nullable = false,
+            nullable = false,
             view = @View(label = "Default value", value = Hidden.class))
     public double getDefaultValue() {
         // ugly hack used by crimesim.

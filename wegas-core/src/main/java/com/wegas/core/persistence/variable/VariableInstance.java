@@ -318,7 +318,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     @JsonView(Views.IndexI.class)
-    @WegasExtraProperty(optional = false, view = @View(label = "Scope Key", value = ReadOnlyNumber.class))
+    @WegasExtraProperty(view = @View(label = "Scope Key", value = ReadOnlyNumber.class))
     public Long getScopeKey() {
         if (this.getTeamScope() != null) {
             return this.getTeam().getId();

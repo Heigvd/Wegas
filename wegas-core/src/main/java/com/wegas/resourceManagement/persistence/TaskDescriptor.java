@@ -12,6 +12,7 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -265,7 +266,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      * @param value
      */
     @Scriptable(label = "Set property")
-    public void setInstanceProperty(Player p, String key, String value) {
+    public void setInstanceProperty(Player p,
+            @Param(view = @View(label = "Key")) String key,
+            @Param(view = @View(label = "Value")) String value) {
         this.getInstance(p).setProperty(key, value);
     }
 
@@ -276,7 +279,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      * @param value
      */
     @Scriptable(label = "Add to property")
-    public void addNumberAtInstanceProperty(Player p, String key, String value) {
+    public void addNumberAtInstanceProperty(Player p,
+            @Param(view = @View(label = "Key")) String key,
+            @Param(view = @View(label = "Value")) String value) {
         try {
             TaskInstance instance = this.getInstance(p);
             double oldValue = instance.getPropertyD(key);

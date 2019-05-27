@@ -16,6 +16,7 @@ import javax.persistence.Entity;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
@@ -198,7 +199,9 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      * @param value
      */
     @Scriptable(label = "add to property")
-    public void addNumberAtInstanceProperty(Player p, String key, String value) {
+    public void addNumberAtInstanceProperty(Player p,
+            @Param(view = @View(label = "Key")) String key,
+            @Param(view = @View(label = "Value")) String value) {
         try {
             this.getInstance(p).setProperty(key, "" + (Float.parseFloat(this.getInstance(p).getProperty(key)) + Float.parseFloat(value)));
         } catch (NumberFormatException e) {
@@ -214,7 +217,10 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      * @param description
      */
     @Scriptable
-    public void addOccupation(Player p, int time, Boolean editable, String description) {
+    public void addOccupation(Player p,
+            @Param(view = @View(label = "period")) int time,
+            @Param(view = @View(label = "editable")) Boolean editable,
+            @Param(view = @View(label = "description")) String description) {
         ResourceInstance instance = this.getInstance(p);
         Occupation occupation = new Occupation();
         occupation.setDescription(description);
