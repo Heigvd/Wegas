@@ -6,7 +6,7 @@ import Editor from './EntityEditor';
 import PageDisplay from './Page/PageDisplay';
 import { TabLayout } from '../../Components/Tabs';
 import StateMachineEditor from './StateMachineEditor';
-import ScriptEditor from './ScriptEditor';
+import ScriptEditor from './ScriptEditors/ScriptEditor';
 
 const layout = css({
   display: 'grid',

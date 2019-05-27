@@ -1,7 +1,7 @@
 import * as React from 'react';
 import PageLoader from '../../../Components/AutoImport/PageLoader';
 import { State } from '../../../data/Reducer/reducers';
-import SrcEditor from '../SrcEditor';
+import SrcEditor from '../ScriptEditors/SrcEditor';
 import PageEditorHeader from './PageEditorHeader';
 import { Toolbar } from '../../../Components/Toolbar';
 import { Actions } from '../../../data';

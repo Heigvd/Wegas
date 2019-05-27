@@ -9,7 +9,7 @@ const LIBRARY_BASE = (libType: LibType, gameModelId?: number) =>
     gameModelId ? gameModelId : GameModel.selectCurrent().id!
   }/Library/${libType}`;
 
-export const LibraryApiFactory = (gameModelId?: number) => {
+export const LibraryAPIFactory = (gameModelId?: number) => {
   return {
     getAllLibraries(libType: LibType): Promise<ILibraries> {
       return rest(LIBRARY_BASE(libType, gameModelId)).then((res: Response) => {
@@ -68,4 +68,4 @@ export const LibraryApiFactory = (gameModelId?: number) => {
   };
 };
 
-export const LibraryAPI = LibraryApiFactory();
+export const LibraryAPI = LibraryAPIFactory();

@@ -1,16 +1,16 @@
 import * as React from 'react';
-import { TabLayout } from '../../Components/Tabs';
-import { Toolbar } from '../../Components/Toolbar';
-import { IconButton } from '../../Components/Button/IconButton';
-import { LibraryApi, NewLibErrors, LibType } from '../../API/library.api';
-import { GameModel } from '../../data/selectors';
+import { TabLayout } from '../../../Components/Tabs';
+import { Toolbar } from '../../../Components/Toolbar';
+import { IconButton } from '../../../Components/Button/IconButton';
+import { LibraryAPI, NewLibErrors, LibType } from '../../../API/library.api';
+import { GameModel } from '../../../data/selectors';
 import SrcEditor from './SrcEditor';
 import { omit } from 'lodash-es';
 import u from 'immer';
 import { DiffEditor } from './DiffEditor';
-import { themeVar } from '../../Components/Theme';
+import { themeVar } from '../../../Components/Theme';
 import { css } from 'emotion';
-import { WebSocketEvent, useWebsocket } from '../../API/websocket';
+import { WebSocketEvent, useWebsocket } from '../../../API/websocket';
 
 function StyledLabel({
   type,
@@ -65,7 +65,7 @@ const visibilities: IVisibility[] = [
 
 interface LibraryStatus {
   isEdited: boolean;
-  upToDateContent?: ILibrary;
+  upToDateLibrary?: ILibrary;
 }
 
 interface ILibrariesWithState {
@@ -210,7 +210,7 @@ const setLibraryState = (oldState: ILibrariesState, action: StateAction) =>
           oldState.libraries[newKey].status = {
             isEdited: false,
           };
-          LibraryApi.saveLibrary(
+          LibraryAPI.saveLibrary(
             action.scriptType,
             newKey,
             oldState.libraries[newKey].library,
@@ -244,7 +244,7 @@ const setLibraryState = (oldState: ILibrariesState, action: StateAction) =>
           oldState.libraries[action.key].library.version !==
             action.remoteLibrary.version
         ) {
-          oldState.libraries[action.key].status.upToDateContent =
+          oldState.libraries[action.key].status.upToDateLibrary =
             action.remoteLibrary;
         } else {
           oldState.libraries[action.key].library = action.remoteLibrary;
@@ -277,7 +277,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
   );
 
   const onScriptEvent = (data: string) => {
-    LibraryApi.getLibrary(scriptType, data).then((res: ILibrary) => {
+    LibraryAPI.getLibrary(scriptType, data).then((res: ILibrary) => {
       dispatchStateAction({
         type: 'RemoteModified',
         key: data,
@@ -324,55 +324,61 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
     });
   };
 
-  const onNewLibrary = (name: string | null, library?: ILibrary) => {
-    if (name !== null) {
-      return LibraryApi.addLibrary(scriptType, name, library)
-        .then((res: ILibrary) => {
-          dispatchStateAction({
-            type: 'Insert',
-            key: name,
-            library: res,
-            focus: true,
+  const onNewLibrary = React.useCallback(
+    (name: string | null, library?: ILibrary) => {
+      if (name !== null) {
+        return LibraryAPI.addLibrary(scriptType, name, library)
+          .then((res: ILibrary) => {
+            dispatchStateAction({
+              type: 'Insert',
+              key: name,
+              library: res,
+              focus: true,
+            });
+          })
+          .catch((e: NewLibErrors) => {
+            switch (e) {
+              case 'NOTNEW':
+                alert(
+                  'Script name not available (script already exists or the name contains bad characters)',
+                );
+                break;
+              case 'UNKNOWN':
+              default:
+                alert('Cannot create the script');
+            }
           });
-        })
-        .catch((e: NewLibErrors) => {
-          switch (e) {
-            case 'NOTNEW':
-              alert(
-                'Script name not available (script already exists or the name contains bad characters)',
-              );
-              break;
-            case 'UNKNOWN':
-            default:
-              alert('Cannot create the script');
-          }
-        });
-    }
-  };
+      }
+    },
+    [scriptType],
+  );
 
-  const onSaveLibrary = (content: string) => {
-    let libKey: string | null = librariesState.key;
-    if (!libKey) {
-      libKey = prompt('Please enter a script name');
-      if (libKey) {
-        onNewLibrary(libKey, {
+  const onSaveLibrary = React.useCallback(
+    (content: string) => {
+      let libKey: string | null = librariesState.key;
+      if (!libKey) {
+        libKey = prompt('Please enter a script name');
+        if (libKey) {
+          onNewLibrary(libKey, {
+            content: content,
+            visibility: getVisibilitySelector().value as IVisibility,
+          });
+        }
+      } else {
+        dispatchStateAction({
+          type: 'SaveContent',
+          key: libKey,
           content: content,
-          visibility: getVisibilitySelector().value as IVisibility,
+          scriptType: scriptType,
         });
       }
-    } else {
-      dispatchStateAction({
-        type: 'SaveContent',
-        key: libKey,
-        content: content,
-        scriptType: scriptType,
-      });
-    }
-  };
+    },
+    [librariesState.key, onNewLibrary, scriptType],
+  );
 
   const onDeleteLibrary = () => {
     if (confirm('Are you sure you want to delete this library?')) {
-      LibraryApi.deleteLibrary(scriptType, librariesState.key)
+      LibraryAPI.deleteLibrary(scriptType, librariesState.key)
         .then(() => {
           removeLibrary(librariesState.key);
         })
@@ -382,16 +388,20 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
     }
   };
 
-  const onContentChange = (content: string) => {
+  const onContentChange = React.useCallback((content: string) => {
     dispatchStateAction({ type: 'SetContent', content: content });
-  };
+  }, []);
 
-  const getScriptOutdatedState = (): boolean => {
+  const getScriptOutdatedState = (
+    libraryEntry: { library: ILibrary; status: LibraryStatus } | undefined,
+  ): libraryEntry is { library: ILibrary; status: LibraryStatus } & {
+    status: {
+      upToDateLibrary: ILibrary;
+    };
+  } => {
     return (
-      librariesState.libraries[librariesState.key] &&
-      // librariesState.libraries[librariesState.key].status.isOutdated
-      librariesState.libraries[librariesState.key].status.upToDateContent !==
-        undefined
+      libraryEntry !== undefined &&
+      libraryEntry.status.upToDateLibrary !== undefined
     );
   };
 
@@ -413,12 +423,11 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
 
   const getActualScriptVisibility = (): IVisibility => {
     if (librariesState.key) {
-      if (getScriptOutdatedState()) {
-        // Existance of upToDateContent is allready done by getScriptOutdatedState(), no need to check
-        return librariesState.libraries[librariesState.key].status
-          .upToDateContent!.visibility;
+      const libEntry = librariesState.libraries[librariesState.key];
+      if (getScriptOutdatedState(libEntry)) {
+        return libEntry.status.upToDateLibrary.visibility;
       } else {
-        const locLib = librariesState.libraries[librariesState.key];
+        const locLib = libEntry;
         if (locLib) {
           return locLib.library.visibility;
         }
@@ -448,14 +457,14 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
   };
 
   const isDeleteAllowed = (): boolean => {
-    if (getScriptOutdatedState()) {
+    const libEntry = librariesState.libraries[librariesState.key];
+    if (getScriptOutdatedState(libEntry)) {
       return false;
     } else if (!librariesState.key) {
       return false;
     } else if (
       gameModel.type === 'SCENARIO' &&
-      librariesState.libraries[librariesState.key].library.visibility !==
-        'PRIVATE'
+      libEntry.library.visibility !== 'PRIVATE'
     ) {
       return false;
     } else {
@@ -464,16 +473,15 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
   };
 
   const isEditAllowed = (): boolean => {
-    if (getScriptOutdatedState()) {
+    const libEntry = librariesState.libraries[librariesState.key];
+    if (getScriptOutdatedState(libEntry)) {
       return false;
     } else if (!librariesState.key) {
       return true;
     } else if (
       gameModel.type === 'SCENARIO' &&
-      librariesState.libraries[librariesState.key].library.visibility !==
-        'PRIVATE' &&
-      librariesState.libraries[librariesState.key].library.visibility !==
-        'INHERITED'
+      libEntry.library.visibility !== 'PRIVATE' &&
+      libEntry.library.visibility !== 'INHERITED'
     ) {
       return false;
     } else {
@@ -483,7 +491,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
 
   React.useEffect(() => {
     // Loading libraries
-    LibraryApi.getAllLibraries(scriptType)
+    LibraryAPI.getAllLibraries(scriptType)
       .then((libs: ILibraries) => {
         dispatchStateAction({ type: 'InsertMultiple', libraries: libs });
       })
@@ -491,6 +499,8 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
         alert('Cannot get the scripts');
       });
   }, [scriptType]);
+
+  const libEntry = librariesState.libraries[librariesState.key];
 
   return (
     <Toolbar>
@@ -546,11 +556,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           <IconButton
             icon="save"
             tooltip="Save the script"
-            onClick={() =>
-              onSaveLibrary(
-                librariesState.libraries[librariesState.key].library.content,
-              )
-            }
+            onClick={() => onSaveLibrary(libEntry.library.content)}
           />
         )}
         {isDeleteAllowed() && (
@@ -560,7 +566,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             onClick={onDeleteLibrary}
           />
         )}
-        {getScriptOutdatedState() ? (
+        {getScriptOutdatedState(libEntry) ? (
           <StyledLabel
             type="error"
             value="The script is dangeroulsy outdated!"
@@ -572,20 +578,12 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
         )}
       </Toolbar.Header>
       <Toolbar.Content>
-        {getScriptOutdatedState() ? (
+        {getScriptOutdatedState(libEntry) ? (
           <DiffEditor
-            originalContent={
-              // Here we assume that upToDateContent exists as it's the outdated signal
-              librariesState.libraries[librariesState.key].status
-                .upToDateContent!.content
-            }
-            modifiedContent={
-              librariesState.libraries[librariesState.key].library.content
-            }
+            originalContent={libEntry.status.upToDateLibrary.content}
+            modifiedContent={libEntry.library.content}
             language={scriptLanguage}
-            onResolved={(content: string) => {
-              onSaveLibrary(content);
-            }}
+            onResolved={onSaveLibrary}
           />
         ) : (
           <SrcEditor
@@ -602,7 +600,6 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
 }
 
 export default function ScriptEditorLayout() {
-  // Calling this function without callback removes the previously inserted callback
   return (
     <TabLayout tabs={['Styles', 'Client', 'Server']}>
       <ScriptEditor scriptType="CSS" />

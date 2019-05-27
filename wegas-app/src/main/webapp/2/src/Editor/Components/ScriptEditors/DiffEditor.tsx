@@ -1,11 +1,11 @@
 import { css } from 'emotion';
 import * as React from 'react';
-import { SizedDiv } from '../../Components/SizedDiv';
+import { SizedDiv } from '../../../Components/SizedDiv';
 import * as monaco from 'monaco-editor';
-import * as t from '../../page-schema.build';
-import { Toolbar } from '../../Components/Toolbar';
-import { IconButton } from '../../Components/Button/IconButton';
-import { themeVar } from '../../Components/Theme';
+import * as t from '../../../page-schema.build';
+import { Toolbar } from '../../../Components/Toolbar';
+import { IconButton } from '../../../Components/Button/IconButton';
+import { themeVar } from '../../../Components/Theme';
 
 export const diffLabel = css({
   color: themeVar.primaryLighterColor,
@@ -18,7 +18,6 @@ interface DiffEditorProps {
   uri?: 'internal://page.json';
   language: 'javascript' | 'css' | 'json';
   onResolved: (newContent: string) => void;
-  getShema?: boolean;
 }
 
 interface ExtendedDiffNavigator extends monaco.editor.IDiffNavigator {
@@ -45,7 +44,6 @@ export function DiffEditor({
   uri,
   language,
   onResolved,
-  getShema: getSchema,
 }: DiffEditorProps) {
   const container = React.useRef<HTMLDivElement>(null);
   const diffEditor = React.useRef<monaco.editor.IStandaloneDiffEditor>();
@@ -55,18 +53,16 @@ export function DiffEditor({
 
   React.useEffect(() => {
     // Setting validation/autocompletion
-    if (getSchema) {
-      monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-        validate: true,
-        schemas: [
-          {
-            fileMatch: ['page.json'],
-            uri: 'internal://page-schema.json',
-            schema: (t as any).schema, //eslint-disable-line @typescript-eslint/no-explicit-any
-          },
-        ],
-      });
-    }
+    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+      validate: true,
+      schemas: [
+        {
+          fileMatch: ['page.json'],
+          uri: 'internal://page-schema.json',
+          schema: (t as any).schema, //eslint-disable-line @typescript-eslint/no-explicit-any
+        },
+      ],
+    });
 
     // Setting up diff editor
     if (container.current !== null) {
@@ -95,7 +91,7 @@ export function DiffEditor({
       diffNavigator.current && diffNavigator.current.dispose();
       diffEditor.current && diffEditor.current.dispose();
     };
-  }, [getSchema]);
+  }, []);
 
   React.useEffect(() => {
     if (diffEditor.current) {

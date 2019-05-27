@@ -1,8 +1,8 @@
 import { css } from 'emotion';
 import * as React from 'react';
-import { SizedDiv } from '../../Components/SizedDiv';
+import { SizedDiv } from '../../../Components/SizedDiv';
 import * as monaco from 'monaco-editor';
-import * as t from '../../page-schema.build';
+import * as t from '../../../page-schema.build';
 
 interface EditorProps {
   value?: string;
