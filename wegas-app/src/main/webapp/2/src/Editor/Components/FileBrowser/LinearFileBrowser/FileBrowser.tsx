@@ -212,14 +212,6 @@ export function FileBrowser(props: FileBrowserProps) {
               isUploading={isUploading}
             />
           )}
-          {/* {console.log(
-            'render',
-            currentPath,
-            files,
-            isUploading,
-            selectedFiles,
-            uploadAllowed,
-          )} */}
           {files.map((file: IFile) => {
             return (
               <DropTargetFileRow

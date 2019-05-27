@@ -1,4 +1,4 @@
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import {
   DropTargetMonitor,
   ConnectDropTarget,
@@ -8,7 +8,7 @@ import {
 import * as React from 'react';
 import { FontAwesome } from '../../Views/FontAwesome';
 import { FileAPI } from '../../../../API/files.api';
-import { themeVar } from '../../../../Components/Theme';
+import { themeVar, primaryLight } from '../../../../Components/Theme';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { gameModelDependsOnModel } from './FileBrowser';
 import {
@@ -18,32 +18,28 @@ import {
 
 const dndRow = css({
   color: themeVar.primaryLighterColor,
-  // backgroundColor: themeVar.primaryLighterColor,
 });
 
-const dndHover = css({
-  color: themeVar.primaryLighterTextColor,
-  backgroundColor: themeVar.primaryLighterColor,
-});
+const dndHover = primaryLight;
 
 const uploadingStyle = css({
   backgroundColor: themeVar.successColor,
 });
 
 const rowCell = css({
-  // color: themeVar.primaryLighterColor,
   borderColor: 'black',
   borderWidth: '1pt',
   borderStyle: 'Solid',
 });
 
-const uploadCell = css({
-  color: themeVar.primaryLighterColor,
-  borderWidth: '2pt',
-  borderStyle: 'Dashed',
-  borderColor: themeVar.primaryLighterColor,
-  textAlign: 'center',
-});
+const uploadCell = cx(
+  css({
+    borderWidth: '2pt',
+    borderStyle: 'Dashed',
+    textAlign: 'center',
+  }),
+  primaryLight,
+);
 
 export const hiddenFileBrowserStyle = css({
   display: 'none',

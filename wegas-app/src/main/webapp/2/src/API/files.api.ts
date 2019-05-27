@@ -176,9 +176,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
      * @param absolutePath the absolute path of the file to read
      */
     fileURL(absolutePath: string): string {
-      return (
-        API_ENDPOINT + 'GameModel/' + gameModelId + '/File/read' + absolutePath
-      );
+      return FILE_BASE(gameModelId) + 'read' + absolutePath;
     },
   };
 };

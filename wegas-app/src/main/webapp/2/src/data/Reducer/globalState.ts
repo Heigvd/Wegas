@@ -48,7 +48,6 @@ export type Edition =
       type: 'File';
       file: IFile;
       actions: FileActions;
-      config: null;
     };
 export interface GlobalState {
   currentGameModelId: number;
@@ -96,7 +95,6 @@ const global: Reducer<Readonly<GlobalState>> = u(
           type: 'File',
           file: action.payload.file,
           actions: action.payload.actions,
-          config: null,
         };
         return;
       case ActionType.VARIABLE_EDIT:
