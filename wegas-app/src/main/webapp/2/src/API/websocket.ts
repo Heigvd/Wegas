@@ -113,6 +113,12 @@ interface EventMap {
   ) => void)[];
 }
 
+interface ICustomEventData {
+  deletedEntities: IWegasEntity[];
+  updatedEntities: IWegasEntity[];
+  events: any[];
+}
+
 /**
  *
  *
@@ -169,9 +175,7 @@ class WebSocketListener {
   }
   public bindCallback(
     eventId: WebSocketEvent,
-    callback: (
-      data: unknown,
-    ) => void,
+    callback: (data: unknown) => void,
   ) {
     if (this.events[eventId]) {
       this.events[eventId].push(callback);
@@ -182,9 +186,7 @@ class WebSocketListener {
 
   public unbindCallback(
     eventId: WebSocketEvent,
-    callback: (
-      data: unknown,
-    ) => void,
+    callback: (data: unknown) => void,
   ) {
     if (this.events[eventId]) {
       this.events[eventId] = this.events[eventId].filter(el => el !== callback);
@@ -193,10 +195,7 @@ class WebSocketListener {
     }
   }
 
-  private eventReveived(
-    event: WebSocketEvent,
-    data: unknown,
-  ) {
+  private eventReveived(event: WebSocketEvent, data: unknown) {
     let eventFound = false;
     // Dispatch outisde managed events
     if (this.events[event] !== undefined) {
@@ -214,13 +213,13 @@ class WebSocketListener {
         return store.dispatch(
           managedMode({
             '@class': 'ManagedResponse',
-            deletedEntities: data.deletedEntities,
-            updatedEntities: data.updatedEntities,
-            events: data.events,
+            deletedEntities: (data as ICustomEventData).deletedEntities,
+            updatedEntities: (data as ICustomEventData).updatedEntities,
+            events: (data as ICustomEventData).events,
           }),
         );
       case 'PageUpdate':
-        store.dispatch(Actions.PageActions.get(data));
+        store.dispatch(Actions.PageActions.get(data as string));
         return;
       default:
         if (!eventFound) {

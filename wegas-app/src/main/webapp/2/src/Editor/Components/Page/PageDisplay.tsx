@@ -1,7 +1,7 @@
 import * as React from 'react';
 import PageLoader from '../../../Components/AutoImport/PageLoader';
 import { State } from '../../../data/Reducer/reducers';
-import SrcEditor from '../ScriptEditors/SrcEditor';
+import SrcEditor, { EditorProps } from '../ScriptEditors/SrcEditor';
 import PageEditorHeader from './PageEditorHeader';
 import { Toolbar } from '../../../Components/Toolbar';
 import { Actions } from '../../../data';
@@ -14,7 +14,7 @@ interface PageDisplayProps {
   dispatch: StoreDispatch;
 }
 class PageDisplay extends React.Component<PageDisplayProps> {
-  editor?: SrcEditor | null;
+  editor?: (props: EditorProps) => JSX.Element | null;
   render() {
     const { pageId } = this.props;
     return (
@@ -29,7 +29,7 @@ class PageDisplay extends React.Component<PageDisplayProps> {
                 <button
                   onClick={() => {
                     if (this.editor && this.props.pageId != null) {
-                      const p = JSON.parse(this.editor.getValue()!);
+                      const p = JSON.parse(this.editor.getValue()!); // THIS IS BAD!
                       this.props.dispatch(
                         Actions.PageActions.patch(this.props.pageId, p),
                       );
@@ -48,6 +48,7 @@ class PageDisplay extends React.Component<PageDisplayProps> {
                       dispatch(Actions.PageActions.get(pageId));
                     }
                     return (
+                      // Need to find a workaround here....
                       <SrcEditor
                         ref={n => (this.editor = n)}
                         key="srcEditor"
