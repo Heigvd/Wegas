@@ -34,7 +34,15 @@ interface ImpactProps {
   onChange: (stmt: ExpressionStatement) => void;
   mode: 'SET' | 'GET';
 }
-
+type parameterType =
+  | 'string'
+  | 'number'
+  | 'boolean'
+  | 'identifier'
+  | 'array'
+  | 'object'
+  | 'null'
+  | undefined;
 interface ExprState {
   variable?: IVariableDescriptor;
   variableSchema: { view: any };
@@ -51,14 +59,11 @@ function astToJSONValue(ast: Expression | SpreadElement) {
       return JSON.parse(generate(ast).code);
   }
 }
-function valueToAST(
-  value: any,
-  type: 'string' | 'number' | 'boolean' | 'identifier' | 'array' | 'object',
-) {
+function valueToAST(value: unknown, type: parameterType) {
   if (value === undefined) {
     return identifier('undefined');
   }
-  if (type === 'identifier') {
+  if (type === 'identifier' && typeof value === 'string') {
     return identifier(value);
   }
   switch (typeof value) {
@@ -78,7 +83,7 @@ function valueToAST(
 
 function argsToDefault(
   args: {
-    type: 'string' | 'number' | 'boolean' | 'identifier' | 'array' | 'object';
+    type: parameterType;
     value?: {};
     const?: string;
   }[],
@@ -90,11 +95,10 @@ async function buildDefaultVariableCallAST(
   mode: 'SET' | 'GET',
 ) {
   const config = await getMethodConfig(variable);
-  const method = Object.keys(config).filter(
-    m =>
-      mode === 'SET'
-        ? config[m].returns === undefined
-        : config[m].returns !== undefined,
+  const method = Object.keys(config).filter(m =>
+    mode === 'SET'
+      ? config[m].returns === undefined
+      : config[m].returns !== undefined,
   )[0];
   if (method != null) {
     return createVariableCallAST(
@@ -364,11 +368,10 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
   render() {
     const { mode, stmt } = this.props;
     const { methodsConfig } = this.state;
-    const availableMethods = Object.keys(methodsConfig).filter(
-      m =>
-        mode === 'SET'
-          ? methodsConfig[m].returns === undefined
-          : methodsConfig[m].returns !== undefined,
+    const availableMethods = Object.keys(methodsConfig).filter(m =>
+      mode === 'SET'
+        ? methodsConfig[m].returns === undefined
+        : methodsConfig[m].returns !== undefined,
     );
     if (isEmptyStatement(stmt)) {
       return (
@@ -387,11 +390,8 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
       const method = expression.callee.property.name;
       const args = expression.arguments;
       const formItems: MethodConfig['1']['parameters'] = methodsConfig[method]
-        ? methodsConfig[method].parameters.map(
-            a =>
-              a.type === 'identifier'
-                ? { ...a, type: 'string' as 'string' }
-                : a,
+        ? methodsConfig[method].parameters.map(a =>
+            a.type === 'identifier' ? { ...a, type: 'string' as 'string' } : a,
           )
         : [];
       return (
@@ -445,11 +445,8 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
         throw Error(`Unknown [${method}]`);
       }
       const formItems: MethodConfig['1']['parameters'] = config
-        ? config.parameters.map(
-            a =>
-              a.type === 'identifier'
-                ? { ...a, type: 'string' as 'string' }
-                : a,
+        ? config.parameters.map(a =>
+            a.type === 'identifier' ? { ...a, type: 'string' as 'string' } : a,
           )
         : [];
       return (

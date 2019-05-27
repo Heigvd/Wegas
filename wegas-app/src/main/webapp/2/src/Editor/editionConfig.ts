@@ -11,16 +11,16 @@ export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 export interface MethodConfig {
   [method: string]: {
     label: string;
-    parameters: {
-      type: 'string' | 'number' | 'boolean' | 'identifier' | 'array' | 'object';
-      value?: {};
-      properties?: {};
-      additionalProperties?: {};
-      items?: {};
-      const?: string;
-      required?: boolean;
-      view?: AvailableViews;
-    }[];
+    parameters: (Schema<AvailableViews> & {
+      type:
+        | 'string'
+        | 'number'
+        | 'array'
+        | 'object'
+        | 'boolean'
+        | 'identifier'
+        | 'null';
+    })[];
     returns?: 'number' | 'string' | 'boolean';
   };
 }
@@ -32,6 +32,15 @@ export const SELFARG = {
   const: 'self',
   view: { type: 'hidden' } as AvailableViews,
 };
+type SimpleSchema =
+  | {}
+  | {
+      properties?: {
+        [props: string]: SimpleSchema;
+      };
+      additionalProperties?: SimpleSchema;
+    }
+  | { items?: SimpleSchema[] | SimpleSchema };
 /**
  * Traverse the schema, update each Schema in this schema with updater functions
  * @param schema Schema to visit
@@ -39,17 +48,15 @@ export const SELFARG = {
  * function and finally replace processed schema.
  */
 export async function schemaUpdater(
-  schema: Schema,
-  ...updater: (<Ext extends Schema.BASE = Schema.BASE>(
-    schema: Ext,
-  ) => Schema | Promise<Schema>)[]
+  schema: SimpleSchema,
+  ...updater: (<Ext extends {}>(schema: Ext) => {} | Promise<{}>)[]
 ) {
-  const update = await updater.reduce(
+  const update: SimpleSchema = await updater.reduce(
     async (p, f) => f(await p),
     Promise.resolve({ ...schema }),
   );
   if ('properties' in update && update.properties != null) {
-    const newProperties: Schema.Object['properties'] = {};
+    const newProperties: { [props: string]: SimpleSchema } = {};
     await Promise.all(
       Object.entries(update.properties).map(async e => {
         const u = await schemaUpdater(e[1], ...updater);
@@ -125,9 +132,7 @@ function updatedErrored(
  * Inject relative schema into a given schema (wref)
  * @param schema schema to update
  */
-async function injectRef(
-  schema: Schema.BASE & { $wref?: string },
-): Promise<Schema> {
+async function injectRef(schema: { $wref?: string }): Promise<Schema> {
   const { $wref, ...restSchema } = schema;
   if (typeof $wref === 'string') {
     const refSchema = await import('../../../generated-schema/' + $wref).then(
