@@ -81,7 +81,7 @@ export async function schemaUpdater(
  */
 async function fetchConfig(
   file: string,
-): Promise<{ schema: Schema; method: MethodConfig }> {
+): Promise<{ schema: Schema; methods: MethodConfig }> {
   return import(
     /* webpackChunkName: "Config-[request]", webpackPrefetch: true */
     '../../../generated-schema/' + file
@@ -171,7 +171,7 @@ export async function getEntityActions(
 export async function getMethodConfig<T extends IAbstractEntity>(
   entity: T,
 ): Promise<MethodConfig> {
-  return fetchConfig(entity['@class'] + '.json').then(res => res.method);
+  return fetchConfig(entity['@class'] + '.json').then(res => res.methods);
 }
 
 export async function getIcon<T extends IAbstractEntity>(
