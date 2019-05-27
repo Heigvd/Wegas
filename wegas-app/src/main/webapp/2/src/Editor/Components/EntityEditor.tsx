@@ -116,7 +116,7 @@ export default function VariableForm(props: {
                 dispatch(Actions.EditorActions.saveEditor(entity));
               };
         const getConfig = (entity: IVariableDescriptor) => {
-          return state.config != null
+          return 'config' in state && state.config != null
             ? Promise.resolve(state.config)
             : getEditionConfig(entity);
         };
