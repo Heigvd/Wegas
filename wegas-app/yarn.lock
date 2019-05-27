@@ -708,7 +708,7 @@
     "@babel/plugin-transform-react-jsx-self" "^7.0.0"
     "@babel/plugin-transform-react-jsx-source" "^7.0.0"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.4.2", "@babel/runtime@^7.4.3":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.2.0", "@babel/runtime@^7.4.2", "@babel/runtime@^7.4.3":
   version "7.4.5"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.4.5.tgz#582bb531f5f9dc67d2fcb682979894f75e253f12"
   integrity sha512-TuI4qpWZP6lGOGIuGWtp9sPluqYICmbk8T/1vpSysqJxRPkudh/ofFWyqdcMsDf2s7KvDL4/YHgKyvcS3g9CJQ==
@@ -8105,7 +8105,6 @@ jsonfile@^3.0.0:
 
 "jsoninput@github:cigit/JSONInput":
   version "0.0.23"
-  uid "64de71f63e78292c0d72e2c1ceb6b3793939b99e"
   resolved "https://codeload.github.com/cigit/JSONInput/tar.gz/64de71f63e78292c0d72e2c1ceb6b3793939b99e"
   dependencies:
     immer "^3.1.2"

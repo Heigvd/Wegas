@@ -119,9 +119,9 @@ const isDraggingStyle = css({
 });
 
 interface ConnectedNodeProps extends NodeProps {
-  connectDragSource: DragElementWrapper<DragSourceOptions>;
-  onDropResult: (result: DropResult) => void;
-  isDragging: boolean;
+  connectDragSource?: DragElementWrapper<DragSourceOptions>;
+  onDropResult?: (result: DropResult) => void;
+  isDragging?: boolean;
 }
 class TreeNode extends React.Component<
   ConnectedNodeProps,
@@ -140,7 +140,7 @@ class TreeNode extends React.Component<
       expanded: !this.state.expanded,
     });
   }
-  render(): JSX.Element {
+  render(): JSX.Element | null {
     const {
       connectDragSource,
       isDragging,
@@ -169,40 +169,43 @@ class TreeNode extends React.Component<
         )}
       </DropZone>
     );
-    return connectDragSource(
-      <div
-        ref={n => (this.root = n)}
-        className={cx({
-          [isDraggingStyle]: isDragging,
-        })}
-      >
-        <DropZone id={parent} index={index!} where={'AUTO'}>
-          {({ isOver, boundingRect, where, separator }) => (
-            <div>
-              {isOver && where === 'BEFORE' && (
-                <DropPreview boundingRect={boundingRect} />
-              )}
-              {separator(
+
+    return connectDragSource
+      ? connectDragSource(
+          <div
+            ref={n => (this.root = n)}
+            className={cx({
+              [isDraggingStyle]: isDragging ? isDragging : false,
+            })}
+          >
+            <DropZone id={parent} index={index!} where={'AUTO'}>
+              {({ isOver, boundingRect, where, separator }) => (
                 <div>
-                  <span className={toggle} onClick={this.toggleExpand}>
-                    {isNode && (
-                      <FontAwesome
-                        icon={expanded ? 'caret-down' : 'caret-right'}
-                      />
-                    )}
-                  </span>
-                  {header}
-                </div>,
+                  {isOver && where === 'BEFORE' && (
+                    <DropPreview boundingRect={boundingRect} />
+                  )}
+                  {separator(
+                    <div>
+                      <span className={toggle} onClick={this.toggleExpand}>
+                        {isNode && (
+                          <FontAwesome
+                            icon={expanded ? 'caret-down' : 'caret-right'}
+                          />
+                        )}
+                      </span>
+                      {header}
+                    </div>,
+                  )}
+                  {cont}
+                  {isOver && where === 'AFTER' && (
+                    <DropPreview boundingRect={boundingRect} />
+                  )}
+                </div>
               )}
-              {cont}
-              {isOver && where === 'AFTER' && (
-                <DropPreview boundingRect={boundingRect} />
-              )}
-            </div>
-          )}
-        </DropZone>
-      </div>,
-    );
+            </DropZone>
+          </div>,
+        )
+      : null;
   }
 }
 
