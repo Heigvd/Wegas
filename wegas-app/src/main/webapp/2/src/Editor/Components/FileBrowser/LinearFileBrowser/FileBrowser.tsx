@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { FileAPI } from '../../../API/files.api';
-import { GameModel } from '../../../data/selectors';
+import { FileAPI } from '../../../../API/files.api';
+import { GameModel } from '../../../../data/selectors';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import {
   hiddenFileBrowserStyle,
@@ -10,19 +10,19 @@ import {
   DndAddFileRowProps,
 } from './FileBrowserRow';
 import { DropTargetMonitor } from 'react-dnd';
-import { defaultContextManager } from '../../../Components/DragAndDrop';
-import { FontAwesome } from '../Views/FontAwesome';
+import { defaultContextManager } from '../../../../Components/DragAndDrop';
+import { FontAwesome } from '../../Views/FontAwesome';
 import { omit } from 'lodash-es';
-import { StoreConsumer, StoreDispatch } from '../../../data/store';
-import { State } from '../../../data/Reducer/reducers';
+import { StoreConsumer, StoreDispatch } from '../../../../data/store';
+import { State } from '../../../../data/Reducer/reducers';
 import u from 'immer';
 import {
   getAbsoluteFileName,
   generateGoodPath,
   isDirectory,
   editFileAction,
-} from '../../../data/methods/ContentDescriptor';
-import { Edition } from '../../../data/Reducer/globalState';
+} from '../../../../data/methods/ContentDescriptor';
+import { Edition } from '../../../../data/Reducer/globalState';
 
 export interface MultiselectionFileBrowserProps {
   onSelectFiles?: (files: IFileMap) => void;
@@ -68,10 +68,7 @@ export function FileBrowser(props: FileBrowserProps) {
     } else {
       // Open file
       const win = window.open(
-        FileAPI.fileURL(
-          GameModel.selectCurrent().id!,
-          getAbsoluteFileName(file),
-        ),
+        FileAPI.fileURL(getAbsoluteFileName(file)),
         '_blank',
       );
       win!.focus();
@@ -86,30 +83,34 @@ export function FileBrowser(props: FileBrowserProps) {
     });
   };
 
-  const refreshFileList = () => {
-    return FileAPI.getFileList(GameModel.selectCurrent().id!, currentPath).then(
-      (res: IFile[]) => {
-        setFiles(res);
-      },
-    );
-  };
+  const refreshFileList = React.useCallback(() => {
+    return FileAPI.getFileList(currentPath).then((res: IFile[]) => {
+      setFiles(res);
+    });
+  }, [currentPath]);
 
-  const refresh = () => {
+  const isUploadAllowed = React.useCallback(() => {
+    return FileAPI.getFileMeta(currentPath).then((file: IFile) => {
+      return (
+        !gameModelDependsOnModel() ||
+        file.visibility === 'PRIVATE' ||
+        file.visibility === 'INHERITED'
+      );
+    });
+  }, [currentPath]);
+
+  const refresh = React.useCallback(() => {
     // setRefreshToggle(refreshToggle => !refreshToggle);
     refreshFileList().then(() => {
       isUploadAllowed().then((allowed: boolean) => {
         setUploadAllowed(allowed);
       });
     });
-  };
+  }, [isUploadAllowed, refreshFileList]);
 
   const addNewDirectory = () => {
     const newDirName = prompt('Please enter the name of the new directory', '');
-    FileAPI.createFile(
-      GameModel.selectCurrent().id!,
-      newDirName!,
-      currentPath,
-    ).then(() => {
+    FileAPI.createFile(newDirName!, currentPath).then(() => {
       refresh();
     });
   };
@@ -121,7 +122,7 @@ export function FileBrowser(props: FileBrowserProps) {
 
   const uploadFiles = (files: FileList, path: string = currentPath) => {
     const finaly = (i: number) => {
-      return (e?: any) => {
+      return (e?: unknown) => {
         if (e) {
           console.log(e);
         }
@@ -133,12 +134,10 @@ export function FileBrowser(props: FileBrowserProps) {
     };
     setUploading(true);
     for (let i = 0; i < files.length; i += 1) {
-      FileAPI.createFile(
-        GameModel.selectCurrent().id!,
-        files[i].name,
-        path,
-        files[i],
-      ).then(finaly(i), finaly(i)); // Fires finaly when "then" and "catch" like a true "finally"
+      FileAPI.createFile(files[i].name, path, files[i]).then(
+        finaly(i),
+        finaly(i),
+      ); // Fires finaly when "then" and "catch" like a true "finally"
     }
   };
 
@@ -148,21 +147,9 @@ export function FileBrowser(props: FileBrowserProps) {
     }
   };
 
-  const isUploadAllowed = () => {
-    return FileAPI.getFileMeta(GameModel.selectCurrent().id!, currentPath).then(
-      (file: IFile) => {
-        return (
-          !gameModelDependsOnModel() ||
-          file.visibility === 'PRIVATE' ||
-          file.visibility === 'INHERITED'
-        );
-      },
-    );
-  };
-
   React.useEffect(() => {
     refresh();
-  }, [currentPath, isUploading]);
+  }, [currentPath, isUploading, refresh]);
 
   ///////////////////////////
   // Drag and drop management
@@ -324,23 +311,21 @@ export function MultiselectionFileFileBrowser(
 
   React.useEffect(() => {
     if (props.selectedPaths) {
-      let newSelectedFiles: IFileMap = {};
-      let highestPath: string = '';
+      const newSelectedFiles: IFileMap = {};
+      let highestPath = '';
       let shortestSplit: number = Number.MAX_SAFE_INTEGER;
 
       const requests = props.selectedPaths.map(item => {
         return new Promise(resolve => {
-          FileAPI.getFileMeta(GameModel.selectCurrent().id!, item).then(
-            (file: IFile) => {
-              newSelectedFiles[item] = file;
-              const splittedPath = file.path.split('/');
-              if (splittedPath.length < shortestSplit) {
-                shortestSplit = splittedPath.length;
-                highestPath = file.path;
-              }
-              resolve();
-            },
-          );
+          FileAPI.getFileMeta(item).then((file: IFile) => {
+            newSelectedFiles[item] = file;
+            const splittedPath = file.path.split('/');
+            if (splittedPath.length < shortestSplit) {
+              shortestSplit = splittedPath.length;
+              highestPath = file.path;
+            }
+            resolve();
+          });
         });
       });
 

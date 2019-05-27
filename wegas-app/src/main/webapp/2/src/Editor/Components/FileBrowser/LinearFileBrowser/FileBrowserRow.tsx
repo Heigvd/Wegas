@@ -6,16 +6,15 @@ import {
   DropTargetConnector,
 } from 'react-dnd';
 import * as React from 'react';
-import { GameModel } from '../../../data/selectors';
-import { FontAwesome } from '../Views/FontAwesome';
-import { FileAPI } from '../../../API/files.api';
-import { themeVar } from '../../../Components/Theme';
+import { FontAwesome } from '../../Views/FontAwesome';
+import { FileAPI } from '../../../../API/files.api';
+import { themeVar } from '../../../../Components/Theme';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { gameModelDependsOnModel } from './FileBrowser';
 import {
   getAbsoluteFileName,
   isDirectory,
-} from '../../../data/methods/ContentDescriptor';
+} from '../../../../data/methods/ContentDescriptor';
 
 const dndRow = css({
   color: themeVar.primaryLighterColor,
@@ -105,10 +104,7 @@ const FileRow = (props: FileRowProps) => {
 
   const del = (e: React.MouseEvent) => {
     e.stopPropagation();
-    FileAPI.deleteFile(
-      GameModel.selectCurrent().id!,
-      getAbsoluteFileName(props.file),
-    ).then(() => {
+    FileAPI.deleteFile(getAbsoluteFileName(props.file)).then(() => {
       props.callRefresh();
     });
   };
@@ -123,7 +119,6 @@ const FileRow = (props: FileRowProps) => {
     event.stopPropagation();
     if (event.target.files !== null && event.target.files[0]) {
       FileAPI.createFile(
-        GameModel.selectCurrent().id!,
         props.file.name,
         props.file.path,
         event.target.files[0],

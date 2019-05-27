@@ -142,8 +142,9 @@ public class JCRFacade {
         List<AbstractContentDescriptor> recurseList = new ArrayList<>();
         List<AbstractContentDescriptor> childrenList = listDirectory(gameModel,workspaceType,directory);
         if(childrenList != null){
-            recurseList.addAll(childrenList);
             for(AbstractContentDescriptor children : childrenList){
+                // We assume here that the directories are always listed first
+                recurseList.add(children);
                 if(children.isDirectory()){
                     recurseList.addAll(
                             this.recurseListDirectory(gameModel,
