@@ -176,7 +176,7 @@ class WebSocketListener {
     if (this.events[eventId]) {
       this.events[eventId].push(callback);
     } else {
-      console.log('Unknown event'); //eslint-disable-line no-console
+      console.log('Unknown event');
     }
   }
 
