@@ -195,7 +195,7 @@ class WebSocketListener {
 
   private eventReveived(
     event: WebSocketEvent,
-    data: any, //eslint-disable-line @typescript-eslint/no-explicit-any
+    data: unknown,
   ) {
     let eventFound = false;
     // Dispatch outisde managed events
