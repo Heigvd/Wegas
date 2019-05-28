@@ -8,16 +8,19 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Embeddable
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+// @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+@JsonIgnoreProperties({"@class"}) // It once had it ...
 public class Coordinate implements Serializable {
 
     private static final long serialVersionUID = 1L;

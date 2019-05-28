@@ -343,21 +343,24 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             },
             editorPosition: {
                 valueFn: function() {
-                    return new persistence.Coordinate({
+                    return {
                         x: 30,
                         y: 30
-                    });
+                    };
                 },
                 view: {
                     label: 'Box position',
                     className: 'wegas-advanced-feature'
                 },
                 properties: {
-                    "@class": {
-                        type: STRING,
-                        value: "Coordinate",
-                        view: {type: HIDDEN}
-                    }
+                    x: {
+                        type: "number",
+                        view: {type: "uneditable", label: "x"}
+                    },
+                    y: {
+                        type: "number",
+                        view: {type: "uneditable", label: "y"}
+                    },
                 }
             }
         }
@@ -713,22 +716,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 view: {
                     type: HIDDEN
                 }
-            }
-        }
-    });
-    /**
-     * Coordinate embeddable mapper
-     **/
-    persistence.Coordinate = Y.Base.create("Coordinate", persistence.Entity, [], {}, {
-        ATTRS: {
-            "@class": {
-                value: "Coordinate"
-            },
-            x: {
-                value: null
-            },
-            y: {
-                value: null
             }
         }
     });

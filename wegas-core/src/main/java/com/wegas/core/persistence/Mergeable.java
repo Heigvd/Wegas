@@ -39,7 +39,7 @@ public interface Mergeable {
 
     void setRefId(String refId);
 
-    public static String getJSONClassName(Class<? extends Mergeable> klass) {
+    public static String getJSONClassName(Class<?> klass) {
         JsonTypeName annotation = klass.getAnnotation(JsonTypeName.class);
 
         if (annotation != null) {
