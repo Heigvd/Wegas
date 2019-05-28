@@ -10,6 +10,7 @@ import { defaultContextManager } from '../../../Components/DragAndDrop';
 import Editor from './../EntityEditor';
 import { omit } from 'lodash';
 import u from 'immer';
+import { ReparentableRoot } from '../Reparentable';
 
 const splitter = css({
   '&.reflex-container.vertical > .reflex-splitter': {
@@ -568,7 +569,11 @@ function MainLinearLayout(props: LinearLayoutProps) {
     }
   };
 
-  return <div className={flex}>{renderLayouts()}</div>;
+  return (
+    <ReparentableRoot>
+      <div className={flex}>{renderLayouts()}</div>
+    </ReparentableRoot>
+  );
 }
 
 export const DndLinearLayout = defaultContextManager<

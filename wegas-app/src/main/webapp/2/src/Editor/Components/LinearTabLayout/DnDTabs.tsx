@@ -10,6 +10,7 @@ import { IconButton } from '../../../Components/Button/IconButton';
 import { Menu } from '../../../Components/Menu';
 import { DropType } from './LinearLayout';
 import u from 'immer';
+import { Reparentable } from '../Reparentable';
 
 const buttonStyle = css({
   color: themeVar.primaryDarkerTextColor,
@@ -85,7 +86,7 @@ const grow = css({
 });
 const flex = css({
   display: 'flex',
-  alignItems: 'center',
+  // alignItems: 'center',
 });
 
 export interface TabComponent {
@@ -273,14 +274,6 @@ export function DnDTabLayout({
               </Tab>
             );
           })}
-          {/* {allowDrop &&
-            tabState.tabs.map(t => {
-              return (
-                <Tab key={'DROP' + t.id} id={-t.id * 1000} active={false}>
-                  Drop here
-                </Tab>
-              );
-            })} */}
           {selectItems && selectItems.length > 0 && (
             <Tab
               key={'-1'}
@@ -302,15 +295,24 @@ export function DnDTabLayout({
       <Toolbar.Content className={compoContent}>
         {tabState.tabs.map(t => {
           return (
-            <div
+            // <div
+            //   key={t.id}
+            //   style={t.id !== tabState.activeId ? { display: 'none' } : {}}
+            //   className={grow}
+            // >
+            <Reparentable
+              id={String(t.id)}
+              className={cx(flex, grow)}
               key={t.id}
               style={
-                t.id !== tabState.activeId ? { display: 'none' } : undefined
+                t.id !== tabState.activeId
+                  ? { display: 'none' }
+                  : { backgroundColor: 'green' }
               }
-              className={grow}
             >
               {t.component}
-            </div>
+            </Reparentable>
+            // </div>
           );
         })}
         {allowDrop && (

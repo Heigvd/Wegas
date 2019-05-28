@@ -52,6 +52,8 @@ export function ReparentableRoot({ children }: { children: React.ReactNode }) {
 export function Reparentable({
   id,
   children,
+  style,
+  className,
 }: {
   /**
    * Identifies a Reparentable Component relatively to it's enclosing `ReparentableRoot`.
@@ -59,6 +61,8 @@ export function Reparentable({
    */
   id: string;
   children: React.ReactNode;
+  style?: React.CSSProperties;
+  className?: string;
 }) {
   const getNode = React.useContext(ctx);
   const n = React.useRef() as React.MutableRefObject<HTMLInputElement>;
@@ -77,5 +81,5 @@ export function Reparentable({
       };
     }
   }, [n, node]);
-  return <div ref={n} />;
+  return <div ref={n} className={className} style={style} />;
 }
