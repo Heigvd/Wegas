@@ -32,11 +32,87 @@ interface ExtendedDiffNavigator extends DiffNavigator {
   ];
 }
 
+interface DiffEditorLineChanges {
+  modifiedEndLineNumber: number;
+  modifiedStartLineNumber: number;
+  originalEndLineNumber: number;
+  originalStartLineNumber: number;
+}
+
 const overflowHide = css({
   overflow: 'hidden',
   width: '100%',
   height: '100%',
 });
+
+const textToArray = (text: string): string[] => {
+  return text.split('\n');
+};
+
+const arrayToText = (splittedText: string[]): string => {
+  const length = splittedText.length;
+  let text = '';
+  for (let i = 0; i < length; ++i) {
+    text += splittedText[i] + (i !== length - 1 ? '\n' : '');
+  }
+  return text;
+};
+
+const getTextLines = (
+  text: string,
+  start: number,
+  end: number,
+): string | null => {
+  if (end < start || start < 0) {
+    return null;
+  }
+  const splittedText = textToArray(text);
+  let lines = '';
+  for (let i = start; i <= end && i < splittedText.length; i += 1) {
+    lines += splittedText[i] + '\n';
+  }
+  return lines;
+};
+
+const replaceContent = (
+  text: string,
+  line: string | null, // If null, remove line
+  start: number,
+  end: number,
+): string => {
+  const splittedText = textToArray(text);
+  const length = end - start;
+  if (line === null) {
+    splittedText.splice(start, length + 1);
+  } else {
+    splittedText.splice(
+      start,
+      length + 1,
+      line.replace(new RegExp('\n$'), ''), // eslint-disable-line no-control-regex
+    );
+  }
+  return arrayToText(splittedText);
+};
+
+const insertContent = (
+  text: string,
+  line: string | null,
+  position: number,
+): string => {
+  if (line !== null) {
+    const splittedText = textToArray(text);
+    splittedText.splice(
+      position,
+      0,
+      line.replace(
+        new RegExp('\n$'), // eslint-disable-line no-control-regex
+        '',
+      ),
+    );
+    return arrayToText(splittedText);
+  }
+  return text;
+};
 
 export function DiffEditor({
   originalContent,
@@ -46,85 +122,141 @@ export function DiffEditor({
   onResolved,
 }: DiffEditorProps) {
   const container = React.useRef<HTMLDivElement>(null);
+  const diffNavigator = React.useRef<ExtendedDiffNavigator>();
   const [diffEditor, setDiffEditor] = React.useState<
     import('monaco-editor').editor.IStandaloneDiffEditor
   >();
-  const diffNavigator = React.useRef<ExtendedDiffNavigator>();
 
   const [idx, setIdx] = React.useState<number>(0);
 
-  // Only when unmount
-  React.useEffect(
-    () => () => {
-      diffNavigator.current && diffNavigator.current.dispose();
-      diffEditor && diffEditor.dispose();
-    },
-    [],
-  );
+  const onSave = React.useCallback(() => {
+    if (diffEditor) {
+      if (idx !== -1) {
+        alert('You must resolve all differences before saving');
+      } else {
+        onResolved(diffEditor.getOriginalEditor().getValue());
+      }
+    }
+  }, [diffEditor, onResolved, idx]);
 
   React.useEffect(() => {
-    // Setting up diff editor
-    import('monaco-editor').then(monaco => {
+    Promise.all([
+      import('monaco-editor'),
+      import('../../../page-schema.build'),
+    ]).then(([monaco, t]) => {
+      monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+        validate: true,
+        schemas: [
+          {
+            fileMatch: ['page.json'],
+            uri: 'internal://page-schema.json',
+            schema: (t as any).schema,
+          },
+        ],
+      });
+
+      if (diffEditor) {
+        diffEditor.dispose();
+      }
+      if (diffNavigator.current) {
+        diffNavigator.current.dispose();
+      }
+
       if (container.current) {
-        // Setting validation/autocompletion
-        import('../../../page-schema.build').then(t =>
-          monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-            validate: true,
-            schemas: [
-              {
-                fileMatch: ['page.json'],
-                uri: 'internal://page-schema.json',
-                schema: (t as any).schema, //eslint-disable-line @typescript-eslint/no-explicit-any
-              },
-            ],
-          }),
-        );
-        const tempEditor = monaco.editor.createDiffEditor(container.current);
-        tempEditor.onDidUpdateDiff(() => {
-          const changes = tempEditor.getLineChanges();
-          if (changes && changes.length === 0) {
-            setIdx(-1);
-          } else {
-            setIdx(0);
-          }
-        });
-        // Setting up diff navigator
-        diffNavigator.current = monaco.editor.createDiffNavigator(tempEditor, {
-          // followsCaret: true, // resets the navigator state when the user selects something in the editor
-          ignoreCharChanges: true, // jump from line to line
-        }) as ExtendedDiffNavigator;
-
-        const originalModel = monaco.editor.createModel(
-          '',
-          language,
-          uri ? monaco.Uri.parse(uri) : undefined,
-        );
-        const modifiedModel = monaco.editor.createModel(
-          '',
-          language,
-          uri ? monaco.Uri.parse(uri) : undefined,
-        );
-
-        tempEditor.setModel({
-          original: originalModel,
-          modified: modifiedModel,
-        });
-
-        tempEditor.addCommand(
-          monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
-          () => {
-            if (idx !== -1 || !tempEditor) {
-              alert('You must resolve all differences before saving');
-            } else {
-              onResolved(tempEditor.getOriginalEditor().getValue());
-            }
+        const tempDiffEditor = monaco.editor.createDiffEditor(
+          container.current,
+          {
+            theme: 'vs-dark',
           },
         );
+        tempDiffEditor.onDidUpdateDiff(() => {
+          if (tempDiffEditor) {
+            const changes = tempDiffEditor.getLineChanges();
+            if (changes && changes.length === 0) {
+              setIdx(-1);
+            } else {
+              setIdx(0);
+            }
+          }
+        });
+        tempDiffEditor.setModel({
+          original: monaco.editor.createModel(''),
+          modified: monaco.editor.createModel(''),
+        });
 
-        setDiffEditor(tempEditor);
+        diffNavigator.current = monaco.editor.createDiffNavigator(
+          tempDiffEditor,
+          { ignoreCharChanges: true },
+        ) as ExtendedDiffNavigator;
+
+        setDiffEditor(tempDiffEditor);
       }
     });
-  }, [idx, onResolved, language, uri]);
+
+    return () => {
+      if (diffNavigator.current) {
+        diffNavigator.current.dispose();
+      }
+      if (diffEditor) {
+        const originalModel = diffEditor.getOriginalEditor().getModel();
+        const modifiedModel = diffEditor.getModifiedEditor().getModel();
+        if (originalModel) {
+          originalModel.dispose();
+        }
+        if (modifiedModel) {
+          modifiedModel.dispose();
+        }
+        diffEditor.dispose();
+      }
+    };
+  }, []); //eslint-disable-line react-hooks/exhaustive-deps
+
+  React.useEffect(() => {
+    if (diffEditor && language) {
+      import('monaco-editor').then(monaco => {
+        const originalModel = diffEditor.getOriginalEditor().getModel();
+        const modifiedModel = diffEditor.getModifiedEditor().getModel();
+        if (language && originalModel && modifiedModel) {
+          monaco.editor.setModelLanguage(originalModel, language);
+          monaco.editor.setModelLanguage(modifiedModel, language);
+        }
+      });
+    }
+  }, [diffEditor, language]);
+
+  React.useEffect(() => {
+    if (diffEditor) {
+      import('monaco-editor').then(monaco => {
+        const originalModel = diffEditor.getOriginalEditor().getModel();
+        const modifiedModel = diffEditor.getModifiedEditor().getModel();
+        if (originalModel && modifiedModel) {
+          const oldOriginalValue = originalModel.getValue();
+          const oldModifiedlValue = modifiedModel.getValue();
+          const oldLanguage = originalModel.getModeId();
+          originalModel.dispose();
+          modifiedModel.dispose();
+          diffEditor
+            .getOriginalEditor()
+            .setModel(
+              monaco.editor.createModel(
+                oldOriginalValue,
+                oldLanguage,
+                uri ? monaco.Uri.parse(uri) : undefined,
+              ),
+            );
+          diffEditor
+            .getModifiedEditor()
+            .setModel(
+              monaco.editor.createModel(
+                oldModifiedlValue,
+                oldLanguage,
+                uri ? monaco.Uri.parse(uri) : undefined,
+              ),
+            );
+        }
+      });
+    }
+  }, [diffEditor, uri]);
 
   React.useEffect(() => {
     if (diffEditor) {
@@ -138,81 +270,16 @@ export function DiffEditor({
     }
   }, [diffEditor, modifiedContent]);
 
-  const textToArray = (text: string): string[] => {
-    return text.split('\n');
-  };
-
-  const arrayToText = (splittedText: string[]): string => {
-    const length = splittedText.length;
-    let text = '';
-    for (let i = 0; i < length; ++i) {
-      text += splittedText[i] + (i !== length - 1 ? '\n' : '');
+  React.useEffect(() => {
+    if (diffEditor) {
+      import('monaco-editor').then(monaco => {
+        diffEditor.addCommand(
+          monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
+          onSave,
+        );
+      });
     }
-    return text;
-  };
-
-  const getTextLines = (
-    text: string,
-    start: number,
-    end: number,
-  ): string | null => {
-    if (end < start || start < 0) {
-      return null;
-    }
-    const splittedText = textToArray(text);
-    let lines = '';
-    for (let i = start; i <= end && i < splittedText.length; i += 1) {
-      lines += splittedText[i] + '\n';
-    }
-    return lines;
-  };
-
-  const replaceContent = (
-    text: string,
-    line: string | null, // If null, remove line
-    start: number,
-    end: number,
-  ): string => {
-    const splittedText = textToArray(text);
-    const length = end - start;
-    if (line === null) {
-      splittedText.splice(start, length + 1);
-    } else {
-      splittedText.splice(
-        start,
-        length + 1,
-        line.replace(new RegExp('\n$'), ''), // eslint-disable-line no-control-regex
-      );
-    }
-    return arrayToText(splittedText);
-  };
-
-  const insertContent = (
-    text: string,
-    line: string | null,
-    position: number,
-  ): string => {
-    if (line !== null) {
-      const splittedText = textToArray(text);
-      splittedText.splice(
-        position,
-        0,
-        line.replace(
-          new RegExp('\n$'), // eslint-disable-line no-control-regex
-          '',
-        ),
-      );
-      return arrayToText(splittedText);
-    }
-    return text;
-  };
-
-  interface DiffEditorLineChanges {
-    modifiedEndLineNumber: number;
-    modifiedStartLineNumber: number;
-    originalEndLineNumber: number;
-    originalStartLineNumber: number;
-  }
+  }, [diffEditor, onSave]);
 
   const onNavigator = (next: boolean) => {
     if (diffNavigator.current) {
@@ -346,10 +413,7 @@ export function DiffEditor({
           <IconButton
             icon="save"
             tooltip="Save current state"
-            onClick={() =>
-              diffEditor &&
-              onResolved(diffEditor.getOriginalEditor().getValue())
-            }
+            onClick={() => onSave}
           />
         )}
       </Toolbar.Header>

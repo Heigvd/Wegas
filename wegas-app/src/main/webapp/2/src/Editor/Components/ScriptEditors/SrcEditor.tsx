@@ -142,7 +142,7 @@ function SrcEditor({
 
   React.useEffect(() => {
     if (editor && onChange) {
-      const handler = editor.onDidChangeModelContent(e => {
+      const handler = editor.onDidChangeModelContent(() => {
         if (!delayed.current) {
           delayed.current = true;
           setTimeout(() => {

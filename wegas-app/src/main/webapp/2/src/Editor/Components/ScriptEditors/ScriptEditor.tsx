@@ -256,11 +256,124 @@ const setLibraryState = (oldState: ILibrariesState, action: StateAction) =>
     return oldState;
   });
 
-function ScriptEditor({ scriptType }: ScriptEditorProps) {
-  const gameModel = GameModel.selectCurrent();
-  const librarySelectorId = 'library-selector';
-  const visibilitySelectorId = 'visibility-selector';
+const getScriptLanguage: (
+  scriptType: LibType,
+) => 'css' | 'javascript' = scriptType => {
+  switch (scriptType) {
+    case 'CSS':
+      return 'css';
+    case 'ClientScript':
+    case 'ServerScript':
+    default:
+      return 'javascript';
+  }
+};
 
+const getScriptOutdatedState = (
+  libraryEntry: { library: ILibrary; status: LibraryStatus } | undefined,
+): libraryEntry is { library: ILibrary; status: LibraryStatus } & {
+  status: {
+    upToDateLibrary: ILibrary;
+  };
+} => {
+  return (
+    libraryEntry !== undefined &&
+    libraryEntry.status.upToDateLibrary !== undefined
+  );
+};
+
+const getScriptEditingState = (librariesState: ILibrariesState): boolean => {
+  return (
+    (!librariesState.key && librariesState.tempStatus.isEdited) ||
+    (librariesState.libraries[librariesState.key] &&
+      librariesState.libraries[librariesState.key].status.isEdited)
+  );
+};
+
+const getActualScriptContent = (librariesState: ILibrariesState): string => {
+  return librariesState.libraries[librariesState.key]
+    ? librariesState.libraries[librariesState.key].library.content
+    : !librariesState.key
+    ? librariesState.tempLibrary.content
+    : '';
+};
+
+const getActualScriptVisibility = (
+  librariesState: ILibrariesState,
+): IVisibility => {
+  if (librariesState.key) {
+    const libEntry = librariesState.libraries[librariesState.key];
+    if (getScriptOutdatedState(libEntry)) {
+      return libEntry.status.upToDateLibrary.visibility;
+    } else {
+      const locLib = libEntry;
+      if (locLib) {
+        return locLib.library.visibility;
+      }
+    }
+  }
+  return librariesState.tempLibrary.visibility;
+};
+
+const isVisibilityAllowed = (
+  librariesState: ILibrariesState,
+  visibility: IVisibility,
+): boolean => {
+  const currentVisibility: IVisibility = librariesState.key
+    ? librariesState.libraries[librariesState.key].library.visibility
+    : 'PRIVATE';
+  let allowedVisibilities: IVisibility[] = [];
+
+  if (
+    GameModel.selectCurrent().type === 'MODEL' ||
+    (GameModel.selectCurrent().type === 'REFERENCE' && librariesState.key)
+  ) {
+    allowedVisibilities = ['INHERITED', 'INTERNAL', 'PRIVATE', 'PROTECTED'];
+  } else if (librariesState.key) {
+    allowedVisibilities.push(currentVisibility);
+  } else {
+    allowedVisibilities.push('PRIVATE');
+  }
+
+  return allowedVisibilities.indexOf(visibility) !== -1;
+};
+
+const isDeleteAllowed = (librariesState: ILibrariesState): boolean => {
+  const libEntry = librariesState.libraries[librariesState.key];
+  if (getScriptOutdatedState(libEntry)) {
+    return false;
+  } else if (!librariesState.key) {
+    return false;
+  } else if (
+    GameModel.selectCurrent().type === 'SCENARIO' &&
+    libEntry.library.visibility !== 'PRIVATE'
+  ) {
+    return false;
+  } else {
+    return true;
+  }
+};
+
+const isEditAllowed = (librariesState: ILibrariesState): boolean => {
+  const libEntry = librariesState.libraries[librariesState.key];
+  if (getScriptOutdatedState(libEntry)) {
+    return false;
+  } else if (!librariesState.key) {
+    return true;
+  } else if (
+    GameModel.selectCurrent().type === 'SCENARIO' &&
+    libEntry.library.visibility !== 'PRIVATE' &&
+    libEntry.library.visibility !== 'INHERITED'
+  ) {
+    return false;
+  } else {
+    return true;
+  }
+};
+
+function ScriptEditor({ scriptType }: ScriptEditorProps) {
+  const librarySelector = React.useRef<HTMLSelectElement>(null);
+  const visibilitySelector = React.useRef<HTMLSelectElement>(null);
   const [librariesState, dispatchStateAction] = React.useReducer(
     setLibraryState,
     {
@@ -276,53 +389,18 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
     },
   );
 
-  const onScriptEvent = (data: string) => {
-    LibraryAPI.getLibrary(scriptType, data).then((res: ILibrary) => {
-      dispatchStateAction({
-        type: 'RemoteModified',
-        key: data,
-        remoteLibrary: res,
-      });
-    });
-  };
-
   useWebsocket(
     ('LibraryUpdate-' + scriptType) as WebSocketEvent,
-    onScriptEvent,
+    (data: string) => {
+      LibraryAPI.getLibrary(scriptType, data).then((res: ILibrary) => {
+        dispatchStateAction({
+          type: 'RemoteModified',
+          key: data,
+          remoteLibrary: res,
+        });
+      });
+    },
   );
-
-  let scriptLanguage: 'css' | 'javascript';
-
-  switch (scriptType) {
-    case 'CSS':
-      scriptLanguage = 'css';
-      break;
-    case 'ClientScript':
-    case 'ServerScript':
-    default:
-      scriptLanguage = 'javascript';
-  }
-
-  const getVisibilitySelector = () => {
-    return document.getElementById(visibilitySelectorId)! as HTMLInputElement;
-  };
-
-  const removeLibrary = (name: string) => {
-    dispatchStateAction({ type: 'Remove', key: name });
-  };
-
-  const onLibraryChange = (selector: React.ChangeEvent<HTMLSelectElement>) => {
-    dispatchStateAction({ type: 'SetKey', key: selector.target.value });
-  };
-
-  const onVisibilityChange = (
-    selector: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    dispatchStateAction({
-      type: 'SetVisibility',
-      visibility: selector.target.value as IVisibility,
-    });
-  };
 
   const onNewLibrary = React.useCallback(
     (name: string | null, library?: ILibrary) => {
@@ -358,10 +436,10 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
       let libKey: string | null = librariesState.key;
       if (!libKey) {
         libKey = prompt('Please enter a script name');
-        if (libKey) {
+        if (libKey && visibilitySelector.current) {
           onNewLibrary(libKey, {
             content: content,
-            visibility: getVisibilitySelector().value as IVisibility,
+            visibility: visibilitySelector.current.value as IVisibility,
           });
         }
       } else {
@@ -380,7 +458,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
     if (confirm('Are you sure you want to delete this library?')) {
       LibraryAPI.deleteLibrary(scriptType, librariesState.key)
         .then(() => {
-          removeLibrary(librariesState.key);
+          dispatchStateAction({ type: 'Remove', key: name });
         })
         .catch(() => {
           alert('Cannot delete the script');
@@ -388,109 +466,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
     }
   };
 
-  const onContentChange = React.useCallback((content: string) => {
-    dispatchStateAction({ type: 'SetContent', content: content });
-  }, []);
-
-  const getScriptOutdatedState = (
-    libraryEntry: { library: ILibrary; status: LibraryStatus } | undefined,
-  ): libraryEntry is { library: ILibrary; status: LibraryStatus } & {
-    status: {
-      upToDateLibrary: ILibrary;
-    };
-  } => {
-    return (
-      libraryEntry !== undefined &&
-      libraryEntry.status.upToDateLibrary !== undefined
-    );
-  };
-
-  const getScriptEditingState = (): boolean => {
-    return (
-      (!librariesState.key && librariesState.tempStatus.isEdited) ||
-      (librariesState.libraries[librariesState.key] &&
-        librariesState.libraries[librariesState.key].status.isEdited)
-    );
-  };
-
-  const getActualScriptContent = (): string => {
-    return librariesState.libraries[librariesState.key]
-      ? librariesState.libraries[librariesState.key].library.content
-      : !librariesState.key
-      ? librariesState.tempLibrary.content
-      : '';
-  };
-
-  const getActualScriptVisibility = (): IVisibility => {
-    if (librariesState.key) {
-      const libEntry = librariesState.libraries[librariesState.key];
-      if (getScriptOutdatedState(libEntry)) {
-        return libEntry.status.upToDateLibrary.visibility;
-      } else {
-        const locLib = libEntry;
-        if (locLib) {
-          return locLib.library.visibility;
-        }
-      }
-    }
-    return librariesState.tempLibrary.visibility;
-  };
-
-  const isVisibilityAllowed = (visibility: IVisibility): boolean => {
-    const currentVisibility: IVisibility = librariesState.key
-      ? librariesState.libraries[librariesState.key].library.visibility
-      : 'PRIVATE';
-    let allowedVisibilities: IVisibility[] = [];
-
-    if (
-      gameModel.type === 'MODEL' ||
-      (gameModel.type === 'REFERENCE' && librariesState.key)
-    ) {
-      allowedVisibilities = ['INHERITED', 'INTERNAL', 'PRIVATE', 'PROTECTED'];
-    } else if (librariesState.key) {
-      allowedVisibilities.push(currentVisibility);
-    } else {
-      allowedVisibilities.push('PRIVATE');
-    }
-
-    return allowedVisibilities.indexOf(visibility) !== -1;
-  };
-
-  const isDeleteAllowed = (): boolean => {
-    const libEntry = librariesState.libraries[librariesState.key];
-    if (getScriptOutdatedState(libEntry)) {
-      return false;
-    } else if (!librariesState.key) {
-      return false;
-    } else if (
-      gameModel.type === 'SCENARIO' &&
-      libEntry.library.visibility !== 'PRIVATE'
-    ) {
-      return false;
-    } else {
-      return true;
-    }
-  };
-
-  const isEditAllowed = (): boolean => {
-    const libEntry = librariesState.libraries[librariesState.key];
-    if (getScriptOutdatedState(libEntry)) {
-      return false;
-    } else if (!librariesState.key) {
-      return true;
-    } else if (
-      gameModel.type === 'SCENARIO' &&
-      libEntry.library.visibility !== 'PRIVATE' &&
-      libEntry.library.visibility !== 'INHERITED'
-    ) {
-      return false;
-    } else {
-      return true;
-    }
-  };
-
   React.useEffect(() => {
-    // Loading libraries
     LibraryAPI.getAllLibraries(scriptType)
       .then((libs: ILibraries) => {
         dispatchStateAction({ type: 'InsertMultiple', libraries: libs });
@@ -499,6 +475,8 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
         alert('Cannot get the scripts');
       });
   }, [scriptType]);
+
+  React.useEffect(() => {}, [librariesState]);
 
   const libEntry = librariesState.libraries[librariesState.key];
 
@@ -517,8 +495,10 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           }}
         />
         <select
-          id={librarySelectorId}
-          onChange={onLibraryChange}
+          ref={librarySelector}
+          onChange={selector => {
+            dispatchStateAction({ type: 'SetKey', key: selector.target.value });
+          }}
           value={librariesState.key}
         >
           {Object.keys(librariesState.libraries).length > 0 ? (
@@ -536,15 +516,20 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           )}
         </select>
         <select
-          id={visibilitySelectorId}
-          onChange={onVisibilityChange}
-          value={getActualScriptVisibility()}
+          ref={visibilitySelector}
+          onChange={selector =>
+            dispatchStateAction({
+              type: 'SetVisibility',
+              visibility: selector.target.value as IVisibility,
+            })
+          }
+          value={getActualScriptVisibility(librariesState)}
         >
           {visibilities.map((item, key) => {
             return (
               <option
                 key={key}
-                hidden={!isVisibilityAllowed(item)}
+                hidden={!isVisibilityAllowed(librariesState, item)}
                 value={item}
               >
                 {item}
@@ -552,14 +537,14 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             );
           })}
         </select>
-        {isEditAllowed() && (
+        {isEditAllowed(librariesState) && (
           <IconButton
             icon="save"
             tooltip="Save the script"
             onClick={() => onSaveLibrary(libEntry.library.content)}
           />
         )}
-        {isDeleteAllowed() && (
+        {isDeleteAllowed(librariesState) && (
           <IconButton
             icon="trash"
             tooltip="Delete the script"
@@ -571,7 +556,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             type="error"
             value="The script is dangeroulsy outdated!"
           />
-        ) : getScriptEditingState() ? (
+        ) : getScriptEditingState(librariesState) ? (
           <StyledLabel type="warning" value="The script is not saved" />
         ) : (
           <StyledLabel type="normal" value="The script is saved" />
@@ -582,15 +567,21 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           <DiffEditor
             originalContent={libEntry.status.upToDateLibrary.content}
             modifiedContent={libEntry.library.content}
-            language={scriptLanguage}
+            language={getScriptLanguage(scriptType)}
             onResolved={onSaveLibrary}
           />
         ) : (
           <SrcEditor
-            value={getActualScriptContent()}
-            language={scriptLanguage}
-            onBlur={onContentChange}
-            readonly={!isEditAllowed()}
+            onChange={content => {
+              console.log('GET : ' + content);
+              dispatchStateAction({ type: 'SetContent', content: content });
+            }}
+            value={(() => {
+              console.log('SET : ' + getActualScriptContent(librariesState));
+              return getActualScriptContent(librariesState);
+            })()}
+            language={getScriptLanguage(scriptType)}
+            readonly={!isEditAllowed(librariesState)}
             onSave={onSaveLibrary}
           />
         )}

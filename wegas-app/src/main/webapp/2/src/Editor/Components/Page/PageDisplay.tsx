@@ -15,9 +15,9 @@ interface PageDisplayProps {
 }
 class PageDisplay extends React.Component<PageDisplayProps> {
   editorValue: string = '';
-  onSave = () => {
+  onSave = (value: string) => {
     if (this.props.pageId != null) {
-      const p = JSON.parse(this.editorValue);
+      const p = JSON.parse(value);
       this.props.dispatch(Actions.PageActions.patch(this.props.pageId, p));
     }
   };
@@ -32,7 +32,9 @@ class PageDisplay extends React.Component<PageDisplayProps> {
           {this.props.srcMode ? (
             <Toolbar>
               <Toolbar.Header>
-                <button onClick={this.onSave}>Save</button>
+                <button onClick={() => this.onSave(this.editorValue)}>
+                  Save
+                </button>
               </Toolbar.Header>
               <Toolbar.Content>
                 <StoreConsumer<Readonly<Page> | undefined>
@@ -52,7 +54,6 @@ class PageDisplay extends React.Component<PageDisplayProps> {
                           this.editorValue = val;
                         }}
                         onSave={this.onSave}
-                        saveWithKey={true}
                       />
                     );
                   }}
