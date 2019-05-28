@@ -1,6 +1,7 @@
 import { css } from 'emotion';
 import * as React from 'react';
 import { SizedDiv } from '../../../Components/SizedDiv';
+import { Uri } from 'monaco-editor';
 
 export interface EditorProps {
   value?: string;
@@ -11,6 +12,7 @@ export interface EditorProps {
   onChange?: (value: string) => void;
   onBlur?: (value: string) => void;
   onSave?: (value: string) => void;
+  saveWithKey?: boolean;
 }
 
 const overflowHide = css({
@@ -28,83 +30,140 @@ function SrcEditor({
   onChange,
   onBlur,
   onSave,
+  saveWithKey,
 }: EditorProps) {
   const container = React.useRef<HTMLDivElement>(null);
-  const [editor, setEditor] = React.useState<
+  const editor = React.useRef<
     import('monaco-editor').editor.IStandaloneCodeEditor
   >();
-
-  React.useEffect(() => () => editor && editor.dispose(), []);
+  const model = React.useRef<import('monaco-editor').editor.ITextModel>();
+  // const [readyState, setReadyState] = React.useState(false);
+  const [monaco, setMonaco] = React.useState<typeof import('monaco-editor')>();
 
   React.useEffect(() => {
     import('monaco-editor').then(monaco => {
-      if (container.current) {
-        import('../../../page-schema.build').then(t =>
-          monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-            validate: true,
-            schemas: [
-              {
-                fileMatch: ['page.json'],
-                uri: 'internal://page-schema.json',
-                schema: (t as any).schema,
-              },
-            ],
-          }),
-        );
-        const model = monaco.editor.createModel(
-          value || '',
-          language,
-          uri ? monaco.Uri.parse(uri) : undefined,
-        );
-        const tempEditor = monaco.editor.create(container.current, {
+      import('../../../page-schema.build').then(t =>
+        monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+          validate: true,
+          schemas: [
+            {
+              fileMatch: ['page.json'],
+              uri: 'internal://page-schema.json',
+              schema: (t as any).schema,
+            },
+          ],
+        }),
+      );
+
+      if (editor.current) {
+        editor.current.dispose();
+      } else if (container.current) {
+        editor.current = monaco.editor.create(container.current, {
           theme: 'vs-dark',
-          model: model,
-          minimap: { enabled: minimap },
-          readOnly: readonly,
         });
-        setEditor(tempEditor);
+
+        if (saveWithKey && onSave) {
+          editor.current.addCommand(
+            monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
+            onSave,
+          );
+        }
+
+        setMonaco(monaco);
       }
     });
-  }, [editor, language, uri, readonly, value, minimap]);
+
+    return () => {
+      if (editor.current) {
+        editor.current.dispose();
+      }
+      if (model.current) {
+        model.current.dispose();
+      }
+    };
+  }, []);
 
   React.useEffect(() => {
-    if (editor && value) {
-      editor.setValue(value);
+    if (editor.current && value) {
+      editor.current.setValue(value);
     }
-  }, [value, editor]);
+  }, [value, monaco]);
 
   React.useEffect(() => {
-    if (editor && onBlur) {
-      editor.onDidBlurEditorText(() => {
-        onBlur(editor.getValue());
+    if (monaco && editor.current) {
+      let oldValue = value;
+      let oldLanguage: string | undefined = language;
+      if (model.current) {
+        oldValue = model.current.getValue();
+        oldLanguage = model.current.getModeId();
+      }
+      if (model.current) {
+        model.current.dispose();
+      }
+
+      model.current = monaco.editor.createModel(
+        oldValue ? oldValue : '',
+        oldLanguage,
+        uri ? monaco.Uri.parse(uri) : undefined,
+      );
+      editor.current.setModel(model.current);
+    }
+  }, [monaco, uri]);
+
+  React.useEffect(() => {
+    if (monaco && editor.current) {
+      editor.current.updateOptions({ readOnly: readonly });
+    }
+  }, [monaco, readonly]);
+
+  React.useEffect(() => {
+    if (monaco && editor.current) {
+      editor.current.updateOptions({ minimap: { enabled: minimap } });
+    }
+  }, [monaco, minimap]);
+
+  React.useEffect(() => {
+    if (monaco && model.current && language) {
+      monaco.editor.setModelLanguage(model.current, language);
+    }
+  }, [monaco, language]);
+
+  React.useEffect(() => {
+    if (editor.current && onBlur) {
+      editor.current.onDidBlurEditorText(() => {
+        if (editor.current) {
+          onBlur(editor.current.getValue());
+        }
       });
     }
-  }, [onBlur, editor]);
+  }, [monaco, onBlur]);
 
   React.useEffect(() => {
-    if (editor && onChange) {
-      editor.onDidBlurEditorText(() => {
-        onChange(editor.getValue());
+    if (editor.current && onChange) {
+      editor.current.onDidChangeModelContent(() => {
+        if (editor.current) {
+          onChange(editor.current.getValue());
+        }
       });
     }
-  }, [onChange, editor]);
+  }, [monaco, onChange]);
 
   React.useEffect(() => {
-    if (editor && onSave) {
-      import('monaco-editor').then(monaco => {
-        editor.addCommand(
-          monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
-          function() {
-            onSave(editor.getValue());
-          },
-        );
-      });
+    if (editor.current && onSave && monaco) {
+      editor.current.addCommand(
+        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
+        () => {
+          if (editor.current) {
+            onSave(editor.current.getValue());
+          }
+        },
+      );
     }
-  }, [onSave, editor]);
+  }, [monaco, onSave]);
 
   const layout = (size: { width: number; height: number }) => {
-    if (editor != null) {
-      editor.layout(size);
+    if (editor.current) {
+      editor.current.layout(size);
     }
   };
 
