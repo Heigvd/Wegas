@@ -20,7 +20,7 @@ import javax.persistence.Entity;
 @Entity
 @JsonIgnoreProperties(value = {"content"})
 @JsonTypeName("DialogueDescriptor")
-public class DialogueDescriptor extends AbstractStateMachineDescriptor<DialogueState> {
+public class DialogueDescriptor extends AbstractStateMachineDescriptor<DialogueState, DialogueTransition> {
 
     private static final long serialVersionUID = 1L;
 

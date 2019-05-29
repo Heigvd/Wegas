@@ -33,7 +33,7 @@ import javax.persistence.Transient;
 )
 @JsonIgnoreProperties(value = {"states"})
 @JsonTypeName(value = "TriggerDescriptor")
-public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerState> {
+public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerState, Transition> {
 
     private static final long serialVersionUID = 1L;
     /**

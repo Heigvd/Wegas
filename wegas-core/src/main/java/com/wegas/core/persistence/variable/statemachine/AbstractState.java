@@ -57,14 +57,6 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
     @WegasEntityProperty(sameEntityOnly = true)
     private Long version;
 
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
-    }
-
     /**
      *
      */
@@ -215,6 +207,14 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
             t.setState(this);
         }
         this.transitions = (List<AbstractTransition>) transitions;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     @Override

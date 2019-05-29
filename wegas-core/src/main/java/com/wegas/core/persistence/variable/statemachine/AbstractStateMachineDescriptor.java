@@ -10,7 +10,6 @@ package com.wegas.core.persistence.variable.statemachine;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.game.Player;
@@ -24,8 +23,8 @@ import javax.persistence.*;
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
-@Table(name = "FSMDescriptor")
-@JsonTypeName(value = "FSMDescriptor")
+//@Table(name = "FSMDescriptor")
+//@JsonTypeName(value = "FSMDescriptor")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StateMachineDescriptor", value = StateMachineDescriptor.class),
     @JsonSubTypes.Type(name = "TriggerDescriptor", value = TriggerDescriptor.class),
@@ -37,7 +36,7 @@ import javax.persistence.*;
                 query = "SELECT DISTINCT sm FROM StateMachineDescriptor sm WHERE sm.gameModel.id = :gameModelId"
         )
 )
-public abstract class AbstractStateMachineDescriptor< T extends AbstractState> extends VariableDescriptor<StateMachineInstance> {
+public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>, U extends AbstractTransition> extends VariableDescriptor<StateMachineInstance> {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -47,7 +46,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState> e
     @MapKeyColumn(name = "fsm_statekey")
     @JsonView(Views.ExtendedI.class)
     @WegasEntityProperty(ignoreNull = true, protectionLevel = ProtectionLevel.INHERITED)
-    private Set<AbstractState> states = new HashSet<>();
+    private Set<AbstractState<U>> states = new HashSet<>();
 
     /**
      *
@@ -65,7 +64,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState> e
 
     @JsonIgnore
     public void setStates(Set<T> states) {
-        this.states = (Set<AbstractState>) states;
+        this.states = (Set<AbstractState<U>>) states;
         for (T state : states) {
             state.setStateMachine(this);
         }
@@ -141,9 +140,9 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState> e
         return !this.getInstance(p).getEnabled();
     }
 
-    private AbstractTransition getTransitionById(Long id) {
+    private U getTransitionById(Long id) {
         for (T state : this.getStates()) {
-            for (AbstractTransition transition : (List<AbstractTransition>) state.getTransitions()) {
+            for (U transition : state.getTransitions()) {
                 if (transition != null && transition.getId().equals(id)) {
                     return transition;
                 }
@@ -156,7 +155,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState> e
         List<Long> transitionHistory = this.getInstance(p).getTransitionHistory();
 
         for (Long tId : transitionHistory) {
-            AbstractTransition t = this.getTransitionById(tId);
+            U t = this.getTransitionById(tId);
             if (t.getNextStateId().equals(stateKey)) {
                 return true;
             }

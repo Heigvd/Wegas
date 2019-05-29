@@ -16,5 +16,5 @@ import javax.persistence.*;
 @Entity
 @Table(name = "FSMDescriptor")
 @JsonTypeName(value = "FSMDescriptor")
-public class StateMachineDescriptor extends AbstractStateMachineDescriptor<State> {
+public class StateMachineDescriptor extends AbstractStateMachineDescriptor<State, Transition> {
 }
