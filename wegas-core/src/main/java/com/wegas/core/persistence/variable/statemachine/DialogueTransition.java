@@ -20,7 +20,7 @@ import javax.persistence.OneToOne;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-public class DialogueTransition extends Transition {
+public class DialogueTransition extends AbstractTransition {
 
     private static final long serialVersionUID = 1L;
 
@@ -37,7 +37,7 @@ public class DialogueTransition extends Transition {
     }
 
     @Override
-    public void setState(State state) {
+    public void setState(AbstractState state) {
         super.setState(state);
         if (state != null){
             this.setActionText(actionText);

@@ -7,14 +7,11 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.persistence.*;
 
 /**
- * @author Cyril Junod (cyril.junod at gmail.com)
+ * @author Maxence
  */
 @Entity
-@Table(name = "FSMDescriptor")
-@JsonTypeName(value = "FSMDescriptor")
-public class StateMachineDescriptor extends AbstractStateMachineDescriptor<State> {
+public class TriggerState extends AbstractState<Transition> {
 }

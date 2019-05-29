@@ -20,7 +20,7 @@ import javax.persistence.OneToOne;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-public class DialogueState extends State {
+public class DialogueState extends AbstractState<DialogueTransition> {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -32,15 +32,12 @@ public class DialogueState extends State {
     private TranslatableContent text;
 
     @Override
-    public void setStateMachine(StateMachineDescriptor stateMachine) {
+    public void setStateMachine(AbstractStateMachineDescriptor stateMachine) {
         super.setStateMachine(stateMachine);
-        if (this.getStateMachine() != null){
+        if (this.getStateMachine() != null) {
             this.setText(this.text);
-            for (Transition t : this.getTransitions()){
-                if (t instanceof DialogueTransition){
-                    DialogueTransition dt = (DialogueTransition) t;
-                    dt.setActionText(dt.getActionText());
-                }
+            for (DialogueTransition t : this.getTransitions()) {
+                t.setActionText(t.getActionText());
             }
         }
     }
