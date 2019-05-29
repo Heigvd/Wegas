@@ -61,7 +61,7 @@ public class MergeHelper {
          * @param ancestors       mergeable ancestors
          * @param references      others paralal mergeable
          */
-        public void visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references);
+        public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references);
 
         /**
          *
@@ -107,219 +107,222 @@ public class MergeHelper {
             if (ancestors == null) {
                 ancestors = new LinkedList<>();
             }
-            visitor.visit(target, protectionLevel, level, f, ancestors, references);
+            boolean shouldContinue = visitor.visit(target, protectionLevel, level, f, ancestors, references);
 
-            ancestors.addFirst(target);
+            if (shouldContinue) {
+                ancestors.addFirst(target);
 
-            WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(target.getClass());
+                WegasEntityFields entityIterator = WegasEntitiesHelper.getEntityIterator(target.getClass());
 
-            for (WegasFieldProperties field : entityIterator.getFields()) {
-                try {
-                    ProtectionLevel fieldProtectionLevel = field.getAnnotation().protectionLevel();
-                    if (fieldProtectionLevel.equals(ProtectionLevel.CASCADED)) {
-                        fieldProtectionLevel = protectionLevel;
-                    }
-                    if (field.getAnnotation().includeByDefault() || forceRecursion) {
-                        Method readMethod = field.getPropertyDescriptor().getReadMethod();
-                        Object[] referencesChildren = null;
-                        switch (field.getType()) {
-                            case CHILD:
-                                Mergeable targetChild = (Mergeable) readMethod.invoke(target);
-
-                                if (references != null) {
-                                    referencesChildren = new Mergeable[references.length];
-                                    for (int i = 0; i < references.length; i++) {
-                                        if (references[i] != null) {
-                                            referencesChildren[i] = (Mergeable) readMethod.invoke(references[i]);
-                                        } else {
-                                            referencesChildren[i] = null;
-                                        }
-                                    }
-                                }
-
-                                MergeHelper.visitMergeable(targetChild, fieldProtectionLevel, forceRecursion, visitor, level + 1, field, ancestors, (Mergeable[]) referencesChildren);
-                                break;
-                            case CHILDREN:
-                                Object children = readMethod.invoke(target);
-
-                                if (references != null) {
-                                    referencesChildren = new Object[references.length];
-                                    for (int i = 0; i < references.length; i++) {
-                                        if (references[i] != null) {
-                                            referencesChildren[i] = readMethod.invoke(references[i]);
-                                        } else {
-                                            referencesChildren[i] = null;
-                                        }
-                                    }
-                                } else {
-                                    references = new Mergeable[0];
-                                    referencesChildren = new Object[0];
-                                }
-
-                                if (children instanceof List) {
-                                    List childrenList = (List) children;
-
-                                    if (!childrenList.isEmpty()) {
-
-                                        for (Integer childIndex = 0; childIndex < childrenList.size(); childIndex++) {
-
-                                            // for each child
-                                            Object get = childrenList.get(childIndex);
-
-                                            Mergeable[] refList = new Mergeable[referencesChildren.length];
-
-                                            if (get instanceof Mergeable) {
-                                                for (int refIndex = 0; refIndex < referencesChildren.length; refIndex++) {
-                                                    Mergeable refGet = null;
-
-                                                    List refChildren = new ArrayList<>();
-                                                    if (referencesChildren[refIndex] instanceof List) {
-                                                        refChildren.addAll((List) referencesChildren[refIndex]);
-                                                    }
-
-                                                    // first try to fetch item with same refId
-                                                    for (Object other : refChildren) {
-                                                        if (other instanceof Mergeable && ((Mergeable) other).getRefId().equals(((Mergeable) get).getRefId())) {
-                                                            refGet = (Mergeable) other;
-                                                            break;
-                                                        }
-                                                    }
-                                                    if (refGet == null && get instanceof NamedEntity) {
-                                                        // no reference with same refId, try to fetch by name
-                                                        for (Object other : refChildren) {
-                                                            if (other instanceof NamedEntity && ((NamedEntity) other).getName().equals(((NamedEntity) get).getName())) {
-                                                                refGet = (Mergeable) other;
-                                                                break;
-                                                            }
-                                                        }
-                                                    }
-                                                    if (refGet != null) {
-                                                        // make sure to fetch refGet only once
-                                                        refChildren.remove(refGet);
-                                                    }
-                                                    refList[refIndex] = refGet;
-
-                                                }
-                                                MergeHelper.visitMergeable((Mergeable) get, fieldProtectionLevel, forceRecursion, visitor, level + 1, field, ancestors, refList);
-                                            } else {
-                                                visitor.visitProperty(get, protectionLevel, level, field, ancestors, childIndex);
-                                            }
-                                        }
-                                    }
-                                } else if (children instanceof Set) {
-                                    Set childrenSet = (Set) children;
-
-                                    if (!childrenSet.isEmpty()) {
-                                        for (Object get : childrenSet) {
-
-                                            Mergeable[] refSet = new Mergeable[referencesChildren.length];
-                                            if (get instanceof Mergeable) {
-                                                for (int refIndex = 0; refIndex < referencesChildren.length; refIndex++) {
-                                                    Mergeable refGet = null;
-
-                                                    Set refChildren = new HashSet<>();
-                                                    if (referencesChildren[refIndex] instanceof Set) {
-                                                        refChildren.addAll((Set) referencesChildren[refIndex]);
-                                                    }
-                                                    // first try to fetch item with same refId
-                                                    for (Object other : refChildren) {
-                                                        if (other instanceof Mergeable && ((Mergeable) other).getRefId().equals(((Mergeable) get).getRefId())) {
-                                                            refGet = (Mergeable) other;
-                                                            break;
-                                                        }
-                                                    }
-                                                    if (refGet == null && get instanceof NamedEntity) {
-                                                        // no reference with same refId, try to fetch by name
-                                                        for (Object other : refChildren) {
-                                                            if (other instanceof NamedEntity && ((NamedEntity) other).getName().equals(((NamedEntity) get).getName())) {
-                                                                refGet = (Mergeable) other;
-                                                                break;
-                                                            }
-                                                        }
-                                                    }
-                                                    if (refGet != null) {
-                                                        // make sure to fetch refGet only once
-                                                        refChildren.remove(refGet);
-                                                    }
-
-                                                    refSet[refIndex] = refGet;
-                                                }
-
-                                                MergeHelper.visitMergeable((Mergeable) get, fieldProtectionLevel, forceRecursion, visitor, level + 1, field, ancestors, refSet);
-                                            } else {
-                                                visitor.visitProperty(get, protectionLevel, level, field, ancestors, null);
-                                            }
-                                        }
-                                    }
-                                } else if (children instanceof Map) {
-                                    Map<Object, Object> childrenMap = (Map) children;
-
-                                    for (Entry<Object, Object> entry : childrenMap.entrySet()) {
-                                        Object child = entry.getValue();
-                                        Object ref = null;
-
-                                        if (child instanceof Mergeable) {
-                                            Mergeable[] mRefs = new Mergeable[references.length];
-                                            for (int refIndex = 0; refIndex < references.length; refIndex++) {
-
-                                                Map<Object, Object> refMap = (Map) referencesChildren[refIndex];
-                                                if (refMap != null) {
-                                                    ref = refMap.get(entry.getKey());
-                                                }
-
-                                                if (ref != null && ref instanceof Mergeable) {
-                                                    mRefs[refIndex] = (Mergeable) ref;
-                                                } else {
-                                                    mRefs[refIndex] = null;
-                                                }
-                                            }
-
-                                            MergeHelper.visitMergeable((Mergeable) child, fieldProtectionLevel, forceRecursion, visitor, level + 1, field, ancestors, mRefs);
-                                        } else {
-                                            Object[] refs = new Object[references.length];
-                                            for (int refIndex = 0; refIndex < references.length; refIndex++) {
-
-                                                Map<Object, Object> refMap = (Map) referencesChildren[refIndex];
-                                                if (refMap != null) {
-                                                    refs[refIndex] = refMap.get(entry.getKey());
-                                                } else {
-                                                    refs[refIndex] = null;
-                                                }
-
-                                            }
-
-                                            visitor.visitProperty(child, protectionLevel, level, field, ancestors, entry.getKey(), refs);
-                                        }
-                                    }
-                                }
-                                break;
-                            case PROPERTY:
-                                Object targetProperty = readMethod.invoke(target);
-                                Object[] referencesProperties;
-                                if (references == null) {
-                                    references = new Mergeable[0];
-                                }
-                                referencesProperties = new Object[references.length];
-
-                                for (int i = 0; i < references.length; i++) {
-                                    if (references[i] != null) {
-                                        referencesProperties[i] = readMethod.invoke(references[i]);
-                                    } else {
-                                        referencesProperties[i] = null;
-                                    }
-                                }
-
-                                visitor.visitProperty(targetProperty, protectionLevel, level, field, ancestors, null, referencesProperties);
-                                break;
+                for (WegasFieldProperties field : entityIterator.getFields()) {
+                    try {
+                        ProtectionLevel fieldProtectionLevel = field.getAnnotation().protectionLevel();
+                        if (fieldProtectionLevel.equals(ProtectionLevel.CASCADED)) {
+                            fieldProtectionLevel = protectionLevel;
                         }
-                    }
-                } catch (Exception ex) {
-                    logger.error(ex.toString());
-                    throw new WegasErrorMessage("error", "Invocation Failure: should never appends: " + ex);
-                }
-            }
+                        if (field.getAnnotation().includeByDefault() || forceRecursion) {
+                            Method readMethod = field.getPropertyDescriptor().getReadMethod();
+                            Object[] referencesChildren = null;
+                            switch (field.getType()) {
+                                case CHILD:
+                                    Mergeable targetChild = (Mergeable) readMethod.invoke(target);
 
-            ancestors.removeFirst();
+                                    if (references != null) {
+                                        referencesChildren = new Mergeable[references.length];
+                                        for (int i = 0; i < references.length; i++) {
+                                            if (references[i] != null) {
+                                                referencesChildren[i] = (Mergeable) readMethod.invoke(references[i]);
+                                            } else {
+                                                referencesChildren[i] = null;
+                                            }
+                                        }
+                                    }
+
+                                    MergeHelper.visitMergeable(targetChild, fieldProtectionLevel, forceRecursion, visitor, level + 1, field, ancestors, (Mergeable[]) referencesChildren);
+                                    break;
+                                case CHILDREN:
+                                    Object children = readMethod.invoke(target);
+
+                                    if (references != null) {
+                                        referencesChildren = new Object[references.length];
+                                        for (int i = 0; i < references.length; i++) {
+                                            if (references[i] != null) {
+                                                referencesChildren[i] = readMethod.invoke(references[i]);
+                                            } else {
+                                                referencesChildren[i] = null;
+                                            }
+                                        }
+                                    } else {
+                                        references = new Mergeable[0];
+                                        referencesChildren = new Object[0];
+                                    }
+
+                                    if (children instanceof List) {
+                                        List childrenList = (List) children;
+
+                                        if (!childrenList.isEmpty()) {
+
+                                            for (Integer childIndex = 0; childIndex < childrenList.size(); childIndex++) {
+
+                                                // for each child
+                                                Object get = childrenList.get(childIndex);
+
+                                                Mergeable[] refList = new Mergeable[referencesChildren.length];
+
+                                                if (get instanceof Mergeable) {
+                                                    for (int refIndex = 0; refIndex < referencesChildren.length; refIndex++) {
+                                                        Mergeable refGet = null;
+
+                                                        List refChildren = new ArrayList<>();
+                                                        if (referencesChildren[refIndex] instanceof List) {
+                                                            refChildren.addAll((List) referencesChildren[refIndex]);
+                                                        }
+
+                                                        // first try to fetch item with same refId
+                                                        for (Object other : refChildren) {
+                                                            if (other instanceof Mergeable && ((Mergeable) other).getRefId().equals(((Mergeable) get).getRefId())) {
+                                                                refGet = (Mergeable) other;
+                                                                break;
+                                                            }
+                                                        }
+                                                        if (refGet == null && get instanceof NamedEntity) {
+                                                            // no reference with same refId, try to fetch by name
+                                                            for (Object other : refChildren) {
+                                                                if (other instanceof NamedEntity && ((NamedEntity) other).getName().equals(((NamedEntity) get).getName())) {
+                                                                    refGet = (Mergeable) other;
+                                                                    break;
+                                                                }
+                                                            }
+                                                        }
+                                                        if (refGet != null) {
+                                                            // make sure to fetch refGet only once
+                                                            refChildren.remove(refGet);
+                                                        }
+                                                        refList[refIndex] = refGet;
+
+                                                    }
+                                                    MergeHelper.visitMergeable((Mergeable) get, fieldProtectionLevel, forceRecursion, visitor, level + 1, field, ancestors, refList);
+                                                } else {
+                                                    visitor.visitProperty(get, protectionLevel, level, field, ancestors, childIndex);
+                                                }
+                                            }
+                                        }
+                                    } else if (children instanceof Set) {
+                                        Set childrenSet = (Set) children;
+
+                                        if (!childrenSet.isEmpty()) {
+                                            for (Object get : childrenSet) {
+
+                                                Mergeable[] refSet = new Mergeable[referencesChildren.length];
+                                                if (get instanceof Mergeable) {
+                                                    for (int refIndex = 0; refIndex < referencesChildren.length; refIndex++) {
+                                                        Mergeable refGet = null;
+
+                                                        Set refChildren = new HashSet<>();
+                                                        if (referencesChildren[refIndex] instanceof Set) {
+                                                            refChildren.addAll((Set) referencesChildren[refIndex]);
+                                                        }
+                                                        // first try to fetch item with same refId
+                                                        for (Object other : refChildren) {
+                                                            if (other instanceof Mergeable && ((Mergeable) other).getRefId().equals(((Mergeable) get).getRefId())) {
+                                                                refGet = (Mergeable) other;
+                                                                break;
+                                                            }
+                                                        }
+                                                        if (refGet == null && get instanceof NamedEntity) {
+                                                            // no reference with same refId, try to fetch by name
+                                                            for (Object other : refChildren) {
+                                                                if (other instanceof NamedEntity && ((NamedEntity) other).getName().equals(((NamedEntity) get).getName())) {
+                                                                    refGet = (Mergeable) other;
+                                                                    break;
+                                                                }
+                                                            }
+                                                        }
+                                                        if (refGet != null) {
+                                                            // make sure to fetch refGet only once
+                                                            refChildren.remove(refGet);
+                                                        }
+
+                                                        refSet[refIndex] = refGet;
+                                                    }
+
+                                                    MergeHelper.visitMergeable((Mergeable) get, fieldProtectionLevel, forceRecursion, visitor, level + 1, field, ancestors, refSet);
+                                                } else {
+                                                    visitor.visitProperty(get, protectionLevel, level, field, ancestors, null);
+                                                }
+                                            }
+                                        }
+                                    } else if (children instanceof Map) {
+                                        Map<Object, Object> childrenMap = (Map) children;
+
+                                        for (Entry<Object, Object> entry : childrenMap.entrySet()) {
+                                            Object child = entry.getValue();
+                                            Object ref = null;
+
+                                            if (child instanceof Mergeable) {
+                                                Mergeable[] mRefs = new Mergeable[references.length];
+                                                for (int refIndex = 0; refIndex < references.length; refIndex++) {
+
+                                                    Map<Object, Object> refMap = (Map) referencesChildren[refIndex];
+                                                    if (refMap != null) {
+                                                        ref = refMap.get(entry.getKey());
+                                                    }
+
+                                                    if (ref != null && ref instanceof Mergeable) {
+                                                        mRefs[refIndex] = (Mergeable) ref;
+                                                    } else {
+                                                        mRefs[refIndex] = null;
+                                                    }
+                                                }
+
+                                                MergeHelper.visitMergeable((Mergeable) child, fieldProtectionLevel, forceRecursion, visitor, level + 1, field, ancestors, mRefs);
+                                            } else {
+                                                Object[] refs = new Object[references.length];
+                                                for (int refIndex = 0; refIndex < references.length; refIndex++) {
+
+                                                    Map<Object, Object> refMap = (Map) referencesChildren[refIndex];
+                                                    if (refMap != null) {
+                                                        refs[refIndex] = refMap.get(entry.getKey());
+                                                    } else {
+                                                        refs[refIndex] = null;
+                                                    }
+
+                                                }
+
+                                                visitor.visitProperty(child, protectionLevel, level, field, ancestors, entry.getKey(), refs);
+                                            }
+                                        }
+                                    }
+                                    break;
+                                case PROPERTY:
+                                    Object targetProperty = readMethod.invoke(target);
+                                    Object[] referencesProperties;
+                                    if (references == null) {
+                                        references = new Mergeable[0];
+                                    }
+                                    referencesProperties = new Object[references.length];
+
+                                    for (int i = 0; i < references.length; i++) {
+                                        if (references[i] != null) {
+                                            referencesProperties[i] = readMethod.invoke(references[i]);
+                                        } else {
+                                            referencesProperties[i] = null;
+                                        }
+                                    }
+
+                                    visitor.visitProperty(targetProperty, protectionLevel, level, field, ancestors, null, referencesProperties);
+                                    break;
+                            }
+                        }
+                    } catch (Exception ex) {
+                        logger.error(ex.toString());
+                        Helper.printWegasStackTrace(ex);
+                        throw new WegasErrorMessage("error", "Invocation Failure: should never appends: " + ex);
+                    }
+                }
+
+                ancestors.removeFirst();
+            }
         }
     }
 
@@ -332,10 +335,11 @@ public class MergeHelper {
         }
 
         @Override
-        public void visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
+        public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
             if (target instanceof ModelScoped) {
                 ((ModelScoped) target).setVisibility(this.visibility);
             }
+            return true;
         }
     }
 
@@ -358,7 +362,7 @@ public class MergeHelper {
         }
 
         @Override
-        public void visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
+        public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
 
             if (target instanceof AbstractEntity) {
                 AbstractEntity entity = (AbstractEntity) target;
@@ -371,6 +375,8 @@ public class MergeHelper {
                     }
                 }
             }
+
+            return true;
         }
     }
 

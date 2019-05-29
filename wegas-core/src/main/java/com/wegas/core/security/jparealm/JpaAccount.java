@@ -43,6 +43,13 @@ public class JpaAccount extends AbstractAccount {
     @Column(length = 255)
     @JsonIgnore
     private String passwordHex;
+
+    @Column(columnDefinition = "boolean default false")
+    private Boolean verified = false;
+
+    @JsonIgnore
+    private String token;
+
     /**
      *
      */
@@ -119,5 +126,22 @@ public class JpaAccount extends AbstractAccount {
      */
     public void setSalt(String salt) {
         this.salt = salt;
+    }
+
+    @Override
+    public Boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(Boolean verified) {
+        this.verified = verified;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

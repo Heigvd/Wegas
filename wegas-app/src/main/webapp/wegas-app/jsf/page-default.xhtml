@@ -28,10 +28,12 @@
         <link rel="icon" type="image/ico" href="#{request.contextPath}/favicon.ico" />
         <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,700i" rel="stylesheet"/>
 
-        <!-- Warning against IE when user arrives directly without visiting the lobby -->
+        <!-- Warn against IE when user arrives directly without visiting the lobby -->
         <script type="application/javascript">
-            if (navigator.appName == 'Microsoft Internet Explorer' || !!(navigator.userAgent.match(/Trident/) || navigator.userAgent.match(/rv:11/)) || (typeof $ !== "undefined" &amp;&amp; typeof $.browser !== "undefined" &amp;&amp; $.browser.msie == 1)){
-                alert("Your browser (Internet Explorer) is unfortunately not supported. Please switch to another browser.");
+            var isIE = /*@cc_on!@*/false || !!document.documentMode;
+            if (isIE){
+                alert("Your browser (Internet Explorer) is not supported. Please switch to another browser.");
+                alert("Ce navigateur (Internet Explorer) est trop vieux. Veuillez changer.");
                 document.title = "Game Aborted";
             }
         </script>

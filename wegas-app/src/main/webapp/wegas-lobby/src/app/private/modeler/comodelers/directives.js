@@ -16,7 +16,7 @@ angular
 
                 ctrl.comodelers = function() {
                     var result = [];
-                    for (var i=0; i<ctrl.permissions.length; i++){
+                    for (var i = 0; i < ctrl.permissions.length; i++) {
                         result.push(ctrl.permissions[i].user);
                     }
                     return result;
@@ -127,17 +127,39 @@ angular
                     scope.canDuplicate = _.contains(scope.userPermissions.permissions, "Duplicate");
                     scope.canCreate = _.contains(scope.userPermissions.permissions, "Instantiate");
 
+                    scope.canTranslate = {};
 
+                    if (scope.canEdit) {
+                        scope.languages.forEach(function(lang) {
+                            scope.canTranslate[lang] = true;
+                        });
+                    } else {
+                        scope.userPermissions.permissions.forEach(function(p) {
+                            if (p.indexOf("Translate-") === 0) {
+                                scope.canTranslate[p.substring(10)] = true;
+                            }
+                        });
+                    }
                 }
+
+                scope.languages = scope.scenario.languages.map(function(language) {
+                    return language.code;
+                });
+                scope.nbColumns = Math.ceil(scope.languages.length / 3) + 1;
+
                 calculatePermissions();
 
                 scope.updatePermissions = function() {
                     if (scope.canEdit) {
                         scope.canDuplicate = true;
                         scope.canCreate = true;
+
+                        scope.languages.forEach(function(lang) {
+                            scope.canTranslate[lang] = true;
+                        })
                     }
 
-                    PermissionsModel.updateScenarioPermissions(this.model.id, this.userPermissions.user.id, this.canCreate, this.canDuplicate, this.canEdit).then(function(response) {
+                    PermissionsModel.updateScenarioPermissions(this.model.id, this.userPermissions.user.id, this.canCreate, this.canDuplicate, this.canEdit, this.canTranslate).then(function(response) {
                         if (response.isErroneous()) {
                             response.flash();
                             calculatePermissions();

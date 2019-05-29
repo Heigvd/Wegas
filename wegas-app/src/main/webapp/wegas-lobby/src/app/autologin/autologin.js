@@ -12,6 +12,60 @@ angular.module('autologin', [
                         templateUrl: 'app/autologin/autologin.tmpl.html'
                     }
                 }
+            })
+            .state('wegas.reset-password', {
+                url: 'reset/:email/:token',
+                views: {
+                    'main@': {
+                        controller: 'ResetPasswordCtrl as resetCtrl',
+                        templateUrl: 'app/autologin/wait.tmpl.html'
+                    }
+                }
+            })
+            .state('wegas.verify-account', {
+                url: 'verify/:email/:token',
+                views: {
+                    'main@': {
+                        controller: 'VerifyCtrl as verifyCtrl',
+                        templateUrl: 'app/autologin/wait.tmpl.html'
+                    }
+                }
+            });
+    })
+    .controller("ResetPasswordCtrl", function(Auth, $scope, $stateParams, $state, WegasModalService) {
+        "use strict";
+
+        $scope.success = false;
+        $scope.failure = false;
+
+        Auth.loginWithToken($stateParams.email, $stateParams.token)
+            .then(function() {
+                WegasModalService.displayAModal({
+                    templateUrl: 'app/private/profile/profile.tmpl.html',
+                    controller: "ModalsController as modalsCtrl"
+                }).then(function(modal) {
+                    modal.close.then(function() {
+                        $state.go("wegas");
+                    });
+                });
+                $state.go("wegas.private.profile");
+            })
+            .catch(function(error) {
+                $scope.errorMessage = error || "Invalid token";
+            });
+    })
+    .controller("VerifyCtrl", function(Auth, $scope, $stateParams, $state) {
+        "use strict";
+
+        $scope.errorMessage = "";
+
+        Auth.loginWithToken($stateParams.email, $stateParams.token)
+            .then(function() {
+                $state.go("wegas");
+            })
+            .catch(function(error) {
+                $scope.errorMessage = error || "Invalid token";
+                //$scope.$apply();
             });
     })
     .controller('AutologinCtrl',

@@ -69,9 +69,9 @@
 
     <distributionManagement>
         <!--        <site>
-                    <id>localhost</id>
-                    <url>file://./site</url>
-                </site>-->
+            <id>localhost</id>
+            <url>file://./site</url>
+        </site>-->
         <site>
             <id>github</id>
             <url>scm:git:https://github.com/Heigvd/Wegas.git</url>
@@ -300,7 +300,7 @@
                 <artifactId>arquillian-payara-server-4-embedded</artifactId>
                 <version>1.0.Beta3</version>
                 <scope>test</scope>
-             </dependency>
+            </dependency>
 
 
             <dependency>

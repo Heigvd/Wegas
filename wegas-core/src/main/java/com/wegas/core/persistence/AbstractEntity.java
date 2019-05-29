@@ -10,7 +10,6 @@ package com.wegas.core.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
@@ -23,6 +22,7 @@ import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import java.io.IOException;
 import java.io.Serializable;
@@ -286,6 +286,16 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
         return mapper.writerWithView(view).writeValueAsString(this);
     }
+    /**
+     * Serialize to JSON with view
+     *
+     * @param view the view to use to export this
+     * @return JSON String representing this
+     * @throws IOException
+     */
+    public String toJsonWithView(String view) throws IOException {
+        return this.toJson(Views.stringToView(view));
+    }
 
     /**
      * String representation of this
@@ -306,17 +316,6 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
      * @param beans facade wrapper
      */
     public void updateCacheOnDelete(Beanjection beans) {
-    }
-
-    @JsonIgnore
-    public String getJSONClassName() {
-        JsonTypeName annotation = this.getClass().getAnnotation(JsonTypeName.class);
-
-        if (annotation != null) {
-            return annotation.value();
-        } else {
-            return this.getClass().getSimpleName();
-        }
     }
 
     /**

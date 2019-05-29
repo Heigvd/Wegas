@@ -22,6 +22,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,12 +37,14 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -542,4 +546,60 @@ public class UtilsController {
         concurrentHelper.unlock(token, audience, true);
         return "ok";
     }
+
+    /**
+     * Returns the current time according to the server.
+     */
+    @GET
+    @Path("ServerTime")
+    public static Date getServerTime() {
+        return new Date();
+    }
+
+    @GET
+    @Path("RequestInspector")
+    @Produces(MediaType.TEXT_HTML)
+    public String getRequestDetails(@Context HttpServletRequest request) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<h1>Http Request</h1>");
+        sb.append("<h2>Headers</h2>");
+        sb.append("<ul>");
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+
+            if (!headerName.equals("cookie")) { // do no print any cookies
+                request.getHeader(headerName);
+                sb.append("<li>").append(headerName).append(": ").append(request.getHeader(headerName)).append("</li>");
+            }
+        }
+        sb.append("</ul>");
+        sb.append("<h2>Others</h2>");
+        sb.append("<ul>");
+        sb.append("<li>");
+        sb.append("ContextPath: ").append(request.getContextPath());
+        sb.append("</li>");
+        sb.append("<li>");
+        sb.append("PathInfo: ").append(request.getPathInfo());
+        sb.append("</li>");
+        sb.append("<li>");
+        sb.append("PathTranslated: ").append(request.getPathTranslated());
+        sb.append("</li>");
+        sb.append("<li>");
+        sb.append("QueryString: ").append(request.getQueryString());
+        sb.append("</li>");
+        sb.append("<li>");
+        sb.append("RequestURI: ").append(request.getRequestURI());
+        sb.append("</li>");
+        sb.append("<li>");
+        sb.append("RequestURL: ").append(request.getRequestURL());
+        sb.append("</li>");
+        sb.append("<li>");
+        sb.append("ServletPath: ").append(request.getServletPath());
+        sb.append("</li>");
+        sb.append("</ul>");
+
+        return sb.toString();
+    }
+
 }

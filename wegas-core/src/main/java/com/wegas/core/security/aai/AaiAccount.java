@@ -8,6 +8,7 @@
 package com.wegas.core.security.aai;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.security.persistence.AbstractAccount;
 
@@ -78,4 +79,12 @@ public class AaiAccount extends AbstractAccount {
         this.homeOrg = homeOrg;
     }
 
+    @Override
+    public Boolean isVerified() {
+        return true;
+    }
+
+    public void setVerified(Boolean verified){
+        // nothing to do, but define such a sette make Jackson happy
+    }
 }

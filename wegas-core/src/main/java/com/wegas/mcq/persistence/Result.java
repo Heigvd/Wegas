@@ -397,7 +397,10 @@ public class Result extends AbstractEntity implements LabelledEntity {
 
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getChoiceDescriptor().getRequieredUpdatePermission();
+        Collection<WegasPermission> perms = this.getMergeableParent().getRequieredUpdatePermission();
+        // see issue #1441
+        perms.add(this.getParentGameModel().getAssociatedTranslatePermission(""));
+        return perms;
     }
 
     @Override

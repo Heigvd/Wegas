@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
-/*global Variable, gameModel, self, YUI */
+/*global YUI */
 
 YUI.add("wegas-i18n", function(Y) {
     "use strict";
@@ -57,24 +57,24 @@ YUI.add("wegas-i18n", function(Y) {
         }
         I18nString.prototype = new String();
         I18nString.prototype.toString = function() {
-            return "" + this.value
-        }
-        I18nString.prototype.valueOf = I18nString.prototype.toString
+            return "" + this.value;
+        };
+        I18nString.prototype.valueOf = I18nString.prototype.toString;
         /**
          * Capitalize sentence's first letter.
          * Uppercase first letter, language dependant
          */
         I18nString.prototype.capitalize = function() {
-            this.value = config[currentLanguage()].capitalize.call(this.value)
+            this.value = config[currentLanguage()].capitalize.call(this.value);
             return this;
-        }
+        };
         /**
          * Colonize sentence, append ":" to it, language dependant
          */
         I18nString.prototype.colonize = function() {
-            this.value = config[currentLanguage()].colonize.call(this.value)
+            this.value = config[currentLanguage()].colonize.call(this.value);
             return this;
-        }
+        };
         /*
          * Take the initial string and replace ALL parameters by theirs argument value
          * provided by k/v in args object.
@@ -134,7 +134,7 @@ YUI.add("wegas-i18n", function(Y) {
                     return value;
                 } else if (value instanceof Y.Wegas.persistence.TranslatableContent) {
                     return I18n.t(value);
-                } else if (value){
+                } else if (value) {
                     return value;
                 }
             }
@@ -205,7 +205,7 @@ YUI.add("wegas-i18n", function(Y) {
                 if (Y.Wegas.Facade.GameModel) {
                     var locale = currentLocale().split(/[-_]/),
                         lang = locale[0].toUpperCase(),
-                        variant = locale[1],
+                        //variant = locale[1],
                         gmLanguages = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"),
                         i, gmLang;
 
@@ -232,11 +232,17 @@ YUI.add("wegas-i18n", function(Y) {
             return Y.Wegas.I18n._currentCode;
         }
 
-        function genTranslationMarkup(text, inlineEditor, lang, id, favorite, isOutdated) {
+        function genTranslationMarkup(text, inlineEditor, lang, id, favorite, isOutdated, readOnly) {
             var outdatedClass = isOutdated ? " outdated" : "";
 
-            if (inlineEditor === "html") {
-                return "<div class='wegas-translation wegas-translation-std wegas-translation-html " + (favorite ? 'favorite-lang' : 'not-favorite-lang') + outdatedClass +
+            if (!inlineEditor || inlineEditor === "none") {
+                return text;
+            } else if (readOnly) {
+                // editor requested but is readonly !
+                return "<span class='wegas-readonly-translation' data-trid='" + id + "' data-lang='" + lang.code + "' lang='" + lang.code + "'>" + text + "</span>";
+            } else if (inlineEditor === "html") {
+                return "<div class='wegas-translation wegas-translation-std wegas-translation-html "
+                    + (favorite ? 'favorite-lang' : 'not-favorite-lang') + outdatedClass +
                     "' data-trid='" + id +
                     "' lang='" + lang.code + "'data-lang='" + lang.lang + "'>"
                     + I18n.getEditorTools() +
@@ -249,10 +255,6 @@ YUI.add("wegas-i18n", function(Y) {
                     + I18n.getEditorTools() +
                     "<span class='wegas-translation--toolbar'></span>" +
                     "<span class='wegas-translation--value'><span tabindex='0' class='wegas-translation--toedit'>" + text + "</span></span></span>";
-            } else if (inlineEditor === "FORBIDDEN") {
-                return "<span class='wegas-readonly-translation'>" + text + "</span>";
-            } else {
-                return text;
             }
         }
 
@@ -289,6 +291,7 @@ YUI.add("wegas-i18n", function(Y) {
                 forcedLang = params && params.lang,
                 inlineEditor = params && params.inlineEditor,
                 caseSensitiveCode = params && params.caseSensitiveCode,
+                readOnly = params && !!params.readOnly,
                 theOne, tr,
                 isOutdated;
 
@@ -352,39 +355,41 @@ YUI.add("wegas-i18n", function(Y) {
                         }
                     }
 
-                    if (inlineEditor && Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO") {
+                    if (inlineEditor && Y.Wegas.Facade.GameModel.cache.getCurrentGameModel()
+                        .get("type") === "SCENARIO") {
 
                         // the current scenario may depends on a model.
                         // do not let scenrists update protected translations
                         var variableDescriptorId = trContent.get("parentDescriptorId"),
-                            variableInstanceId = trContent.get("parentInstanceId");
+                            variableInstanceId = trContent.get("parentInstanceId"),
+                            visibility, variableDescriptor;
+
 
                         if (variableDescriptorId) {
-                            var variableDescriptor = Y.Wegas.Facade.Variable.cache.find("id", variableDescriptorId),
-                                visibility = variableDescriptor._getVisibility(variableDescriptor);
+                            variableDescriptor = Y.Wegas.Facade.Variable.cache.find("id", variableDescriptorId);
+                            visibility = variableDescriptor._getVisibility(variableDescriptor);
                             if (visibility === 'INTERNAL' || visibility === "PROTECTED") {
                                 // this translation is not editable
-                                inlineEditor = "FORBIDDEN";
+                                readOnly = true;
                             }
                         } else if (variableInstanceId) {
-                            var visibility,
-                                variableDescriptor = Y.Wegas.Facade.Variable.cache.findByFn(function(item) {
-                                    return item.get("defaultInstance").get("id") === variableInstanceId;
-                                });
+                            variableDescriptor = Y.Wegas.Facade.Variable.cache.findByFn(function(item) {
+                                return item.get("defaultInstance").get("id") === variableInstanceId;
+                            });
                             if (variableDescriptor) {
                                 visibility = variableDescriptor._getVisibility(variableDescriptor);
 
                                 if (visibility === "INTERNAL") {
-                                    inlineEditor = "FORBIDDEN";
+                                    readOnly = true;
                                 }
                             }
                         }
                     }
 
                     if (theOne) {
-                        return genTranslationMarkup(tr, inlineEditor, theOne, trId, theOne.code === favoriteCode, isOutdated);
+                        return genTranslationMarkup(tr, inlineEditor, theOne, trId, theOne.code === favoriteCode, isOutdated, readOnly);
                     } else {
-                        return genTranslationMarkup(params && params.fallback || "", inlineEditor, langs[0], trId, true);
+                        return genTranslationMarkup(params && params.fallback || "", inlineEditor, langs[0], trId, true, readOnly);
                     }
                 }
             }
@@ -526,7 +531,8 @@ YUI.add("wegas-i18n", function(Y) {
 
         function findLanguageByCode(code) {
             if (code) {
-                return Y.Array.find(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"), function(item) {
+                return Y.Array.find(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel()
+                    .get("languages"), function(item) {
                     return item.get("code").toUpperCase() === code.toUpperCase();
                 });
             } else {
@@ -562,7 +568,7 @@ YUI.add("wegas-i18n", function(Y) {
         }
 
         function getAvailableLang() {
-            return Y.Array.reduce(Y.config.groups.wegas.allModules, [], function(previous, currentValue, index, array) {
+            return Y.Array.reduce(Y.config.groups.wegas.allModules, [], function(previous, currentValue) {
                 if (currentValue.indexOf("wegas-i18n-global-" === 0)) {
                     previous.push(currentValue.substring(18));
                 }
@@ -589,10 +595,14 @@ YUI.add("wegas-i18n", function(Y) {
                     String.prototype.capitalize = config[lang].capitalize; // don't
                     String.prototype.colonize = config[lang].colonize; // don't
 
-                    var preview = Y.Widget.getByNode(Y.one(".wegas-playerview"));
-                    if (preview) {
-                        preview.reload();
-                    }
+                    Y.all("body > .wegas-playerview.wegas-pageloader, #centerTabView > div > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner > .wegas-pageloader," +
+                        "#rightTabView > div > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner > .wegas-pageloader")
+                        .each(function(rootPageLoaderNode) {
+                            var pageLoader = Y.Widget.getByNode(rootPageLoaderNode);
+                            if (pageLoader) {
+                                pageLoader.reload();
+                            }
+                        });
                 });
             }
         }
@@ -640,7 +650,6 @@ YUI.add("wegas-i18n", function(Y) {
                 }
             });
         }
-        ;
 
         return {
             /**

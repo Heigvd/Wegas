@@ -66,9 +66,9 @@ YUI.add("treeview", function(Y) {
         bindUI: function() {
             //this.after("*:addChild", function(e) {
             /* Selection is not updated if a child with selected attribute is added, force it.
-            if (e.target.get(SELECTION)){
-                e.target._set(SELECTION, e.target.get(SELECTION));
-            }*/
+             if (e.target.get(SELECTION)){
+             e.target._set(SELECTION, e.target.get(SELECTION));
+             }*/
             //    e.target._set(SELECTION, e.target.get(SELECTION));
             //});
             this.after("addChild", function() {
@@ -444,6 +444,15 @@ YUI.add("treeview", function(Y) {
                 fireEvent: true
             });
         },
+        expandParents: function() {
+            if (!this.isRoot()) {
+                var parent = this.get("parent");
+                if (parent.expandParents) {
+                    parent.expand();
+                    parent.expandParents();
+                }
+            }
+        },
         /**
          * Expand the treeNode
          * @public
@@ -706,6 +715,15 @@ YUI.add("treeview", function(Y) {
             this.set("rightWidget", this.get("rightWidget"));
             this.set("cssClass", this.get("cssClass"));
         },
+        expandParents: function() {
+            if (!this.isRoot()) {
+                var parent = this.get("parent");
+                if (parent.expandParents) {
+                    parent.expand();
+                    parent.expandParents();
+                }
+            }
+        },
         /**
          * Lifecycle method
          * @private
@@ -719,7 +737,8 @@ YUI.add("treeview", function(Y) {
             if (this.get("rightWidget") && this.get("rightWidget").destroy) {
                 try {
                     this.get("rightWidget").destroy();
-                } catch (e) {}
+                } catch (e) {
+                }
             }
         }
     }, {
@@ -739,7 +758,7 @@ YUI.add("treeview", function(Y) {
             },
             selected: {
                 setter: function(v) {
-                    if(!this.get("destroyed")) {
+                    if (!this.get("destroyed")) {
                         this.get(BOUNDING_BOX).toggleClass(SELECTED, v);
                     }
                     return v;

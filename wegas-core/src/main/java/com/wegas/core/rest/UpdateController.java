@@ -26,6 +26,7 @@ import com.wegas.core.persistence.variable.ListInstance;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
+import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
@@ -263,12 +264,15 @@ public class UpdateController {
             for (VariableInstance vi : values) {
                 em.remove(vi);
             }
+            AbstractScope oldScope = vd.getScope();
+
             GameModelScope scope = new GameModelScope();
             scope.setBroadcastScope("GameScope");
             scope.setVariableDescscriptor(vd);
             vd.setScope(scope);
             em.persist(vd);
             vd.propagateDefaultInstance(null, true);
+            em.remove(oldScope);
         }
     }
 

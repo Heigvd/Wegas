@@ -70,11 +70,11 @@ public class LibraryController {
      */
     @GET
     @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
-    public String read(@PathParam("gameModelId") Long gameModelId,
+    public GameModelContent read(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key) {
 
-        return libraryFacade.findLibrary(gameModelId, library).get(key).getContent();
+        return libraryFacade.findLibrary(gameModelId, library).get(key);
     }
 
     /**
@@ -91,13 +91,11 @@ public class LibraryController {
      */
     @PUT
     @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
-    public GameModel edit(@PathParam("gameModelId") Long gameModelId,
+    public GameModelContent edit(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key, GameModelContent script) {
 
-        libraryFacade.update(gameModelId, library, key, script);
-
-        return gameModelFacade.find(gameModelId);
+        return libraryFacade.update(gameModelId, library, key, script);
     }
 
     /**
@@ -114,13 +112,11 @@ public class LibraryController {
      */
     @POST
     @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
-    public GameModel create(@PathParam("gameModelId") Long gameModelId,
+    public GameModelContent create(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library,
             @PathParam("key") String key, GameModelContent script) {
 
-        libraryFacade.create(gameModelId, library, key, script);
-        // return Response.ok().build();
-        return gameModelFacade.find(gameModelId);
+        return libraryFacade.create(gameModelId, library, key, script);
     }
 
     /**

@@ -15,6 +15,7 @@ $buttons-icon : (
     (player, $fa-var-gamepad, "FontAwesome", 0px),
     //(trainer, $fa-var-tachometer, "FontAwesome", 0px),
     (scenarist, $fa-var-magic, "FontAwesome", 0px),
+    (translate, $fa-var-language, "FontAwesome", 0px),
     (modeler, $fa-var-cubes, "FontAwesome", 0px),
     (add, $fa-var-plus, "FontAwesome", 0px),
     (remove, $fa-var-minus-circle, "FontAwesome", 0px),
@@ -38,12 +39,13 @@ $buttons-icon : (
     (team, $wif-group, "wegas-icons-font", 3px),
     (key, $wif-key, "wegas-icons-font", 3px),
     (list, $wif-list, "wegas-icons-font", 3px),
-    (sign-out, $wif-logout, "wegas-icons-font", 3px),
+    (sign-out, $wif-logout, "wegas-icons-font", 0px),
     (more, $wif-more, "wegas-icons-font", 3px),
     //(play, $wif-play, "wegas-icons-font", 24px),
     (settings, $wif-settings, "wegas-icons-font", 3px),
     (trash, $wif-trash, "wegas-icons-font", 3px),
     (user, $wif-user, "wegas-icons-font", 3px),
+    (user-fa, $fa-var-user, "FontAwesome", 0px),
     (trainer, $wif-trainer, "wegas-icons-font", 0px)
 );
 
@@ -94,10 +96,6 @@ $buttons-icon : (
 
 .button.button--language {
     padding-right: 14px;
-}
-.button.button--language:before,
-.button.button--language:hover:before {
-    margin-top: 2px !important;
 }
 .button.button--language .button__label {
     margin-left: -9px;

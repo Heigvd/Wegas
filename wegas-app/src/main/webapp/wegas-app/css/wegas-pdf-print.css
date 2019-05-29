@@ -120,6 +120,10 @@
     font-family: "DejaVu Sans Mono";
 }
 
+.wegas-pdf-content .hidden {
+    display: none;
+}
+
 div.wegas-pdf-content {
     margin :auto; 
     max-width: 800px; 

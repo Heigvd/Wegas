@@ -1,0 +1,247 @@
+import * as React from 'react';
+import { VariableDescriptor, GameModel } from '../../../data/selectors';
+import { Actions } from '../../../data';
+import { Toolbar } from '../../../Components/Toolbar';
+import { varIsList, entityIs } from '../../../data/entities';
+import { get } from 'lodash-es';
+import { children } from '../../EntitiesConfig/ListDescriptor';
+import { Container, Node } from '../Views/TreeView';
+import { moveDescriptor } from '../../../data/Reducer/variableDescriptor';
+import { getEntityActions, getIcon, getLabel } from '../../editionConfig';
+import { StoreDispatch, StoreConsumer } from '../../../data/store';
+import { State } from '../../../data/Reducer/reducers';
+import { css, cx } from 'emotion';
+import { shallowIs } from '../../../Helper/shallowIs';
+import { Menu } from '../../../Components/Menu';
+import { FontAwesome, withDefault } from '../Views/FontAwesome';
+import { asyncSFC } from '../../../Components/HOC/asyncSFC';
+import { AddMenuParent, AddMenuChoice } from './AddMenu';
+import { editorLabel } from '../../../data/methods/VariableDescriptor';
+import { SearchTool } from '../SearchTool';
+
+const items = children.map(i => {
+  const Label = asyncSFC(async () => {
+    const entity = { '@class': i };
+    const [icon, label = ''] = await Promise.all([
+      getIcon(entity),
+      getLabel(entity),
+    ]);
+    return (
+      <>
+        <FontAwesome icon={withDefault(icon, 'question')} fixedWidth />
+        {label}
+      </>
+    );
+  });
+  return {
+    label: <Label />,
+    value: i,
+  };
+});
+
+interface TreeProps {
+  variables: number[];
+  dispatch: StoreDispatch;
+}
+class TreeView extends React.Component<TreeProps, { search: string }> {
+  state = { search: '' };
+  render() {
+    const { variables, dispatch } = this.props;
+    return (
+      <Toolbar>
+        <Toolbar.Header>
+          <input
+            type="string"
+            value={this.state.search}
+            placeholder="Filter"
+            aria-label="Filter"
+            onChange={ev => {
+              this.setState({ search: ev.target.value });
+            }}
+          />
+          <Menu
+            items={items}
+            icon="plus"
+            onSelect={i =>
+              dispatch(Actions.EditorActions.createVariable(i.value))
+            }
+          />
+          <SearchTool />
+        </Toolbar.Header>
+        <Toolbar.Content>
+          <Container
+            onDropResult={({ source, target, id }) => {
+              if (
+                source.parent !== target.parent ||
+                source.index !== target.index
+              ) {
+                dispatch(
+                  moveDescriptor(
+                    id as IVariableDescriptor,
+                    target.index,
+                    target.parent as IParentDescriptor,
+                  ),
+                );
+              }
+            }}
+          >
+            {({ nodeProps }) => (
+              <div style={{ height: '100%' }}>
+                {variables ? (
+                  variables.map(v => (
+                    <CTree
+                      nodeProps={nodeProps}
+                      key={v}
+                      search={this.state.search}
+                      variableId={v}
+                    />
+                  ))
+                ) : (
+                  <span>Loading ...</span>
+                )}
+              </div>
+            )}
+          </Container>
+        </Toolbar.Content>
+      </Toolbar>
+    );
+  }
+}
+/**
+ * test a variable and children's editorLabel against a text
+ */
+function isMatch(variableId: number, search: string): boolean {
+  const variable = VariableDescriptor.select(variableId);
+  if (variable == null) {
+    return false;
+  }
+  if (
+    editorLabel(variable)
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  ) {
+    return true;
+  }
+  if (varIsList(variable)) {
+    return variable.itemsIds.some(id => isMatch(id, search));
+  }
+  return false;
+}
+const SELECTED_STYLE_WIDTH = 4;
+const editingStyle = css({
+  borderLeft: `${SELECTED_STYLE_WIDTH}px solid`,
+});
+const headerStyle = css({
+  borderLeft: `${SELECTED_STYLE_WIDTH}px solid transparent`,
+});
+function CTree(props: {
+  variableId: number;
+  subPath?: (string)[];
+  search: string;
+  nodeProps: () => {};
+}): JSX.Element {
+  return (
+    <StoreConsumer
+      selector={(state: State) => {
+        const variable = VariableDescriptor.select(props.variableId);
+        return {
+          props,
+          variable,
+          match: isMatch(props.variableId, props.search),
+          editing:
+            state.global.editing != null &&
+            state.global.editing.type === 'Variable' &&
+            props.variableId === state.global.editing.id &&
+            shallowIs(props.subPath || [], state.global.editing.path),
+        };
+      }}
+    >
+      {({ state, dispatch }) => {
+        let { variable } = state;
+        if (Array.isArray(props.subPath) && props.subPath.length > 0) {
+          variable = get(variable, props.subPath) as IVariableDescriptor;
+        }
+        if (variable) {
+          const Title = asyncSFC(async () => {
+            const icon = await getIcon(variable!);
+            return (
+              <FontAwesome icon={withDefault(icon, 'question')} fixedWidth />
+            );
+          });
+          if (!state.match) {
+            return null;
+          }
+          return (
+            <Node
+              {...props.nodeProps()}
+              header={
+                <span
+                  className={cx(headerStyle, { [editingStyle]: state.editing })}
+                  onClick={() =>
+                    getEntityActions(variable!).then(({ edit }) =>
+                      dispatch(
+                        edit(
+                          VariableDescriptor.select(props.variableId)!,
+                          props.subPath,
+                        ),
+                      ),
+                    )
+                  }
+                >
+                  <Title />
+                  {editorLabel(variable)}
+                  {entityIs<IListDescriptor>(variable, 'ListDescriptor') ||
+                  entityIs<IQuestionDescriptor>(
+                    variable,
+                    'QuestionDescriptor',
+                  ) ? (
+                    <AddMenuParent variable={variable} dispatch={dispatch} />
+                  ) : entityIs<IChoiceDescriptor>(
+                      variable,
+                      'ChoiceDescriptor',
+                    ) ? (
+                    <AddMenuChoice variable={variable} dispatch={dispatch} />
+                  ) : null}
+                </span>
+              }
+              id={variable}
+            >
+              {({ nodeProps }) =>
+                varIsList(variable)
+                  ? variable.itemsIds.map(i => (
+                      <CTree
+                        nodeProps={nodeProps}
+                        key={i}
+                        variableId={i}
+                        search={props.search}
+                      />
+                    ))
+                  : entityIs<IChoiceDescriptor>(variable, 'ChoiceDescriptor')
+                  ? variable.results.map((r, index) => (
+                      <CTree
+                        nodeProps={nodeProps}
+                        key={r.id}
+                        search={props.search}
+                        variableId={r.choiceDescriptorId}
+                        subPath={['results', String(index)]}
+                      />
+                    ))
+                  : null
+              }
+            </Node>
+          );
+        }
+        return <div>Loading...</div>;
+      }}
+    </StoreConsumer>
+  );
+}
+export default function Tree() {
+  return (
+    <StoreConsumer selector={() => GameModel.selectCurrent().itemsIds}>
+      {({ state, dispatch }) => {
+        return <TreeView dispatch={dispatch} variables={state} />;
+      }}
+    </StoreConsumer>
+  );
+}

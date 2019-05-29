@@ -1,0 +1,118 @@
+{
+  "name": "wegas_ui2",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "start": "webpack-dev-server --hot --mode development",
+    "build": "rimraf dist && cross-env NODE_ENV=production webpack --mode production",
+    "test": "jest",
+    "lint": "eslint 'src' --ext '.js,.ts,.tsx'"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!**/node_modules/**"
+    ],
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest",
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "moduleNameMapper": {
+      "lodash-es": "lodash"
+    },
+    "watchPathIgnorePatterns": [
+      "<rootDir>/dist/"
+    ],
+    "globals": {
+      "ts-jest": {
+        "babelConfig": false,
+        "diagnostics": {
+          "ignoreCodes": [
+            151001
+          ]
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@babel/generator": "^7.4.4",
+    "@babel/parser": "^7.4.4",
+    "@babel/traverse": "^7.4.4",
+    "@babel/types": "^7.4.4",
+    "@fortawesome/fontawesome-svg-core": "^1.2.18",
+    "@fortawesome/free-solid-svg-icons": "^5.8.2",
+    "@fortawesome/react-fontawesome": "0.1.4",
+    "color": "^3.1.1",
+    "downshift": "^3.2.10",
+    "emotion": "^10.0.9",
+    "fast-json-patch": "^2.1.0",
+    "immer": "3.1.2",
+    "immutable": "^3.8.2",
+    "jsoninput": "github:cigit/jsoninput",
+    "jsplumb": "^2.9.3",
+    "lodash-es": "^4.17.11",
+    "match-sorter": "^3.0.0",
+    "monaco-editor": "^0.17.0",
+    "pako": "^1.0.10",
+    "pusher-js": "^4.3.1",
+    "react": "^16.8.6",
+    "react-dnd": "~7.0.2",
+    "react-dnd-html5-backend": "~7.0.2",
+    "react-dom": "^16.8.6",
+    "redux": "^4.0.1",
+    "redux-thunk": "^2.3.0",
+    "resize-observer-polyfill": "^1.5.0",
+    "slate": "^0.47.2",
+    "slate-html-serializer": "^0.8.4",
+    "slate-react": "^0.22.2"
+  },
+  "devDependencies": {
+    "@types/babel-generator": "^6.25.2",
+    "@types/babel-traverse": "^6.25.4",
+    "@types/babylon": "^6.16.4",
+    "@types/color": "^3.0.0",
+    "@types/jest": "^24.0.12",
+    "@types/lodash-es": "^4.17.3",
+    "@types/pako": "^1.0.1",
+    "@types/react": "^16.8.17",
+    "@types/react-dom": "^16.8.4",
+    "@types/react-grid-layout": "^0.16.4",
+    "@types/slate": "^0.44.0",
+    "@types/slate-react": "^0.21.0",
+    "@types/webpack-env": "^1.13.9",
+    "@typescript-eslint/eslint-plugin": "^1.6.0",
+    "@typescript-eslint/parser": "^1.6.0",
+    "awesome-typescript-loader": "^5.2.1",
+    "cross-env": "^5.2.0",
+    "css-loader": "^2.1.0",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-plugin-react-hooks": "^1.6.0",
+    "fork-ts-checker-webpack-plugin": "^0.5.2",
+    "globby": "^9.1.0",
+    "jest": "^23.6.0",
+    "monaco-editor-webpack-plugin": "^1.5.4",
+    "react-testing-library": "^6.0.0",
+    "rimraf": "^2.6.2",
+    "source-map-loader": "^0.2.4",
+    "style-loader": "^0.23.0",
+    "ts-jest": "^23.10.4",
+    "ts-loader": "^6.0.0",
+    "typescript": "^3.4.5",
+    "val-loader": "^1.1.1",
+    "webpack": "^4.31.0",
+    "webpack-bundle-analyzer": "^3.3.2",
+    "webpack-cli": "^3.3.2",
+    "webpack-dev-server": "^3.3.1"
+  }
+}

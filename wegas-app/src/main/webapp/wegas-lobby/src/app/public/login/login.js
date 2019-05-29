@@ -13,10 +13,22 @@ angular.module('public.login', [])
             });
     })
     .controller('PublicLoginCtrl',
-        function PublicLoginCtrl($scope, Flash, Auth, $state, $q, $http, $translate, TeamsModel, SessionsModel, ScenariosModel) {
+        function PublicLoginCtrl($scope, Flash, Auth, $state, $q, $http, $translate, TeamsModel, SessionsModel, ScenariosModel, $timeout, $rootScope, WegasTranslations) {
             "use strict";
             $scope.showAaiLogin = false; // Default value in case of misconfiguration
             $scope.aaiLoginUrl = "";
+            var config = localStorage.getObject("wegas-config");
+            $scope.currentLanguage = $translate.use();
+            $scope.languages = WegasTranslations.languages;
+
+            $scope.changeLanguage = function(key) {
+                config.commons.language = key;
+                $scope.currentLanguage = key;
+                $translate.use(key);
+                localStorage.setObject("wegas-config", config);
+                $rootScope.translationWorkspace = {workspace: WegasTranslations.workspaces.PLAYER[$translate.use()]};
+                $(".action--language .subactions").removeClass("subactions--show");
+            };
 
             // Returns AAI config for the login page.
             function getAaiConfig() {
@@ -59,6 +71,22 @@ angular.module('public.login', [])
 
             $scope.init = function() {
                 this.agreeCbx = false;
+                $timeout(function() {
+                    // Install click handler on language menu title
+                    var actionLanguage = $('.action--language');
+                    actionLanguage.unbind("click");
+                    actionLanguage.on("click", ".button--language", function(e) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        $(".action--language .subactions").toggleClass("subactions--show");
+                    });
+                });
+                $(document).on('click', function(e) {
+                    // Close language menu when page is clicked elsewhere:
+                    if ($(".action--language .subactions").hasClass("subactions--show")) {
+                        $(".action--language .subactions").removeClass("subactions--show");
+                    }
+                });
             };
             $scope.login = function() {
                 var agreeDiv = document.getElementById('agreeDiv'),
@@ -107,8 +135,8 @@ angular.module('public.login', [])
                                 // Pre-load sessions and scenarios into local cache to speed up display:
                                 Auth.getAuthenticatedUser().then(function(user) {
                                     if (user.isAdmin || (user.isScenarist && user.isTrainer)) {
-                                        SessionsModel.getSessions("LIVE");
                                         ScenariosModel.getScenarios("LIVE");
+                                        ScenariosModel.getGameModelsByStatusTypeAndPermission("SCENARIO", "LIVE", "EDIT");
                                     }
                                 });
                                 $state.go('wegas');

@@ -44,7 +44,7 @@ YUI.add('wegas-cssloader', function(Y) {
             //        success: function(e) {
             //            var i;
             //            for (i in e.response.entities) {                        // Load every db stored sheet (game model specific)
-            //                CSSLoader.updateStyleSheet(i, e.response.entities[i]);
+            //                CSSLoader.updateStyleSheet(i, e.response.entities[i].get("val.content"));
             //            }
             //        },
             //        failure: function(id, o) {

@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipInputStream;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -306,7 +307,7 @@ public class GameModelController {
     @Path("{entityId : [1-9][0-9]*}/{filename: .*\\.json}")
     public Response downloadJSON(@PathParam("entityId") Long entityId, @PathParam("filename") String filename) throws UnsupportedEncodingException {
         return Response.ok(this.get(entityId))
-                .header("Content-Disposition", "attachment; filename=" + URLEncoder.encode(filename,  StandardCharsets.UTF_8.displayName())).build();
+                .header("Content-Disposition", "attachment; filename=" + URLEncoder.encode(filename, StandardCharsets.UTF_8.displayName())).build();
     }
 
     /**
@@ -378,6 +379,19 @@ public class GameModelController {
                 break;
         }
         return gm;
+    }
+
+    /**
+     * Get GameModel permission matrix
+     *
+     * @param status
+     *
+     */
+    @GET
+    @Path("permissions/{type: [A-Z]*}/status/{status: [A-Z]*}")
+    public Map<Long, List<String>> getPermissionsMatrix(@PathParam("status") final GameModel.Status status,
+            @PathParam("type") final GameModel.GmType type) {
+        return gameModelFacade.getPermissionMatrix(type, status);
     }
 
     /**

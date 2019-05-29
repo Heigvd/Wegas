@@ -10,6 +10,7 @@ package com.wegas.core.persistence.game;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
@@ -103,12 +104,6 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     @JsonBackReference(value = "player-team")
     @JoinColumn(nullable = false)
     private Team team;
-
-    @Transient
-    private Boolean verifiedId = null;
-
-    @Transient
-    private String homeOrg = null;
 
     /**
      *
@@ -331,42 +326,30 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     }
 
     /*
-     * @return true if the user's main account is an AaiAccount or equivalent
+     * @return true if the user's main account is verified
      */
-    public boolean isVerifiedId() {
-        if (verifiedId != null) {
-            return verifiedId;
+    @JsonProperty
+    public Boolean isVerifiedId() {
+        if (this.user != null) {
+            return user.getMainAccount().isVerified();
         } else {
-            if (this.user != null) {
-                boolean verif = user.getMainAccount() instanceof AaiAccount;
-                verifiedId = verif;
-                return verif;
-            } else {
-                return false;
-            }
+            return false;
         }
     }
-
 
     /*
     * @return the user's verified homeOrg if it's an AaiAccount or equivalent, otherwise return the empty string
      */
     public String getHomeOrg() {
-        if (homeOrg != null) {
-            return homeOrg;
-        } else {
-            if (this.user != null) {
-                AbstractAccount acct = user.getMainAccount();
-                if (acct instanceof AaiAccount) {
-                    homeOrg = ((AaiAccount) acct).getHomeOrg();
-                } else {
-                    homeOrg = "";
-                }
-                return homeOrg;
-            } else {
-                return "";
+        if (this.user != null) {
+            AbstractAccount account = user.getMainAccount();
+            if (account instanceof AaiAccount) {
+                return "AAI " + ((AaiAccount) account).getHomeOrg();
+            } else if (account != null && Boolean.TRUE == account.isVerified()) { // avoid NPE : isVerified() means isVerified().getValue() !!
+                return Helper.anonymizeEmail(account.getEmail());
             }
         }
+        return "";
     }
 
     /**

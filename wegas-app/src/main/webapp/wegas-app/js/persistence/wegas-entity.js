@@ -249,7 +249,7 @@ YUI.add('wegas-entity', function(Y) {
                                     for (var i in gmLanguages) {
                                         var newLang = gmLanguages[i].get("code").toUpperCase();
                                         if (!newValue.translations.hasOwnProperty(newLang)) {
-                                            newValue.translations[newLang] = ghosts[i];
+                                            newValue.translations[newLang] = ghosts[g];
                                         }
                                     }
                                 }
@@ -716,18 +716,6 @@ YUI.add('wegas-entity', function(Y) {
                     className: 'wegas-internal-feature',
                     label: 'Type'
                 }
-            },
-            canView: {
-                transient: true
-            },
-            canEdit: {
-                transient: true
-            },
-            canDuplicate: {
-                transient: true
-            },
-            canInstantiate: {
-                transient: true
             },
             createdTime: {
                 transient: true

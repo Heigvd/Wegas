@@ -163,20 +163,16 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             setState: {
                 label: "state",
                 "arguments": [
-                    {
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        scriptType: STRING,
-                        type: "select",
-                        choices: [{
-                                label: "",
-                                value: ""
-                            }, {
-                                value: "NOT_STARTED",
-                                label: "restart"
-                            }
-                        ]
+                    SELFARG, {
+                        type: STRING,
+                        view: {
+                            type: "select",
+                            choices: [{
+                                    value: "NOT_STARTED",
+                                    label: "restart"
+                                }
+                            ]
+                        }
                     }]
             },
             getState: {
@@ -328,7 +324,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
         EDITMENU: {
             editBtn: {
                 index: 0,
-                cfg:{
+                cfg: {
                     type: 'EditEntityButton'
                 }
             },
