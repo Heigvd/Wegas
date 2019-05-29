@@ -10,13 +10,16 @@ package com.wegas.core.security.persistence;
 import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.*;
 import javax.persistence.*;
@@ -96,7 +99,7 @@ public abstract class AbstractAccount extends AbstractEntity {
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(callback = CheckEmailChange.class)
     private String email = "";
 
     /**
@@ -317,6 +320,8 @@ public abstract class AbstractAccount extends AbstractEntity {
         this.email = email;
     }
 
+    public abstract Boolean isVerified();
+
     /**
      * @return md5 address hash
      */
@@ -329,7 +334,7 @@ public abstract class AbstractAccount extends AbstractEntity {
         }
     }
 
-    public void setHash(String hash){
+    public void setHash(String hash) {
         /* Jackson useless sugar */
     }
 
@@ -354,5 +359,19 @@ public abstract class AbstractAccount extends AbstractEntity {
     @Override
     public Visibility getInheritedVisibility() {
         return Visibility.INHERITED;
+    }
+
+    public static class CheckEmailChange implements WegasCallback {
+
+        @Override
+        public void preUpdate(Mergeable entity, Object ref, Object identifier) {
+            if (entity instanceof JpaAccount && "email".equals(identifier)) {
+                JpaAccount account = (JpaAccount) entity;
+                if (!account.getEmail().equals(ref)){
+                    // email update detected
+                    account.setVerified(false);
+                }
+            }
+        }
     }
 }

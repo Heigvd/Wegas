@@ -74,7 +74,6 @@ import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 import jdk.nashorn.api.scripting.JSObject;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
-import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -371,11 +370,11 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
 
             // convert column/line nunbers to absolute indexes
             for (int i = 0; i < script.length(); i++) {
-                if (startLine == line) {
+                if (indexes[0] == null && startLine == line) {
                     indexes[0] = i + startColumn;
                 }
 
-                if (endLine == line) {
+                if (indexes[1] == null && endLine == line) {
                     indexes[1] = i + endColumn;
                 }
 
@@ -1027,6 +1026,28 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
         return gameModel;
     }
 
+    public GameModel copyLanguage(Long gameModelId, String sourceLangCode, String targetLangCode) throws ScriptException {
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        if (gameModel.getLanguageByCode(sourceLangCode) != null) {
+            if (gameModel.getLanguageByCode(targetLangCode) != null) {
+
+                try {
+                    copyGameModelLanguage(gameModel, sourceLangCode, targetLangCode, true);
+                } catch (UnsupportedEncodingException ex) {
+                    throw WegasErrorMessage.error("Unsupported encoding exception " + ex);
+                }
+
+            } else {
+                throw WegasErrorMessage.error("Source language in not defined in the gameModel");
+            }
+        } else {
+            throw WegasErrorMessage.error("Source language in not defined in the gameModel");
+        }
+
+        return gameModel;
+
+    }
+
     public DeeplUsage usage() {
         if (isTranslationServiceAvailable()) {
             return getDeeplClient().usage();
@@ -1156,6 +1177,28 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
             }
             return true;
         }
+    }
+
+    /**
+     * Auto translate a something.
+     *
+     * @param target         entity to translate
+     * @param sourceLangCode translation sources language
+     * @param targetLangCode target languages
+     * @param initOnly       do not override existing texts
+     *
+     * @throws ScriptException
+     */
+    private void copyGameModelLanguage(Mergeable target, String sourceLangCode, String targetLangCode, boolean initOnly) throws ScriptException, UnsupportedEncodingException {
+        TranslationExtractor extractor = new TranslationExtractor(sourceLangCode, this, initOnly ? targetLangCode : null);
+        MergeHelper.visitMergeable(target, Boolean.TRUE, extractor);
+        List<I18nUpdate> patches = extractor.getPatches();
+
+        for (I18nUpdate patch: patches){
+            patch.setCode(targetLangCode);
+        }
+
+        this.batchUpdate(patches, UpdateType.OUTDATE);
     }
 
     /**

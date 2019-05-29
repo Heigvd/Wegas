@@ -200,7 +200,7 @@ angular.module('wegas.models.permissions', [])
                     permissions.push("Duplicate");
                 }
                 if (canTranslate) {
-                    for (let lang in canTranslate) {
+                    for (var lang in canTranslate) {
                         if (canTranslate[lang]) {
                             permissions.push("Translate-" + lang);
                         }

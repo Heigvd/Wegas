@@ -11,14 +11,14 @@ angular.module('private.directives', [])
 
                 Auth.getAuthenticatedUser().then(function(user) {
                     scope.user = user;
-                    scope.changeLanguage = function(key){
+                    scope.changeLanguage = function(key) {
                         var type = "";
                         config.commons.language = key;
                         config.users[scope.user.email].language = key;
                         scope.currentLanguage = key;
                         $translate.use(key);
                         localStorage.setObject("wegas-config", config);
-                        switch ($state.current.name){
+                        switch ($state.current.name) {
                             case "wegas.private.scenarist":
                                 type = "SCENARIST";
                                 break;
@@ -52,10 +52,16 @@ angular.module('private.directives', [])
                     });
                 };
 
+                scope.verifyEmail = function() {
+                    Auth.requestEmailValidation().then(function(response) {
+                        response.flash();
+                    });
+                };
+
                 scope.editProfile = function() {
                     // Decide which controller to display in background
                     var profileState;
-                    switch($state.current.name){
+                    switch ($state.current.name) {
                         case "wegas.private.modeler":
                             profileState = "wegas.private.profile.modeler";
                             break;
@@ -104,33 +110,35 @@ angular.module('private.directives', [])
 
                     // if element is opened and click target is outside it, hide it
                     if ($menuToggler.is(':checked')) {
-                        if ($menu.is(e.target) || $menuToggler.is(e.target) || $('#roleMenuTitle').is(e.target) || $('label[for="menu-toggler"]').is(e.target)) {
+                        if ($menu.is(e.target) || $menuToggler.is(e.target)
+                            || $('#roleMenuTitle').is(e.target)
+                            || $('label[for="menu-toggler"]').is(e.target)) {
                             return;
                         } else {
                             $menuToggler.trigger('click');
                         }
                     }
-                    if($(".action--language .subactions").hasClass("subactions--show")){
+                    if ($(".action--language .subactions").hasClass("subactions--show")) {
                         $(".action--language .subactions").removeClass("subactions--show");
                     }
                     return;
                 });
 
-                $timeout(function(){
+                $timeout(function() {
                     // Install click handler on role menu title (which must exist beforehand):
                     /*
-                    var roleMenuTitle = $('#roleMenuTitle');
-                    roleMenuTitle.unbind("click");
-                    roleMenuTitle.on('click', function (e) {
-                        e.preventDefault();
-                        $('#menu-toggler').trigger('click');
-                        return false;
-                    });
-                    */
+                     var roleMenuTitle = $('#roleMenuTitle');
+                     roleMenuTitle.unbind("click");
+                     roleMenuTitle.on('click', function (e) {
+                     e.preventDefault();
+                     $('#menu-toggler').trigger('click');
+                     return false;
+                     });
+                     */
                     // Install click handler on language menu title
                     var actionLanguage = $('.action--language');
                     actionLanguage.unbind("click");
-                    actionLanguage.on("click", ".button--language", function(e){
+                    actionLanguage.on("click", ".button--language", function(e) {
                         e.stopPropagation();
                         e.preventDefault();
                         $(".action--language .subactions").toggleClass("subactions--show");

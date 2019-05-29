@@ -288,6 +288,10 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
          * @private
          */
         genTreeViewElement: function(entity) {
+            if (!entity) {
+                // This happens when many variables are created in a batch by a script.
+                return;
+            }
             var children,
                 elClass = entity.get(CLASS),
                 collapsed = !this.isNodeExpanded(entity),

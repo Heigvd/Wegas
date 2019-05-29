@@ -23,9 +23,9 @@ angular.module('wegas.service.auth', [
             getCurrentUser = function() {
                 var deferred = $q.defer();
                 $http.get(window.ServiceURL + "rest/User/Current?view=Editor").success(function(data) {
-                    if (data){
+                    if (data) {
                         var acct = data.accounts[0],
-                            isLocal = (acct["@class"] !== "AaiAccount");
+                            isLocal = (acct["@class"] === "JpaAccount");
                         authenticatedUser = {
                             id: data.id,
                             accountId: acct.id,
@@ -37,11 +37,12 @@ angular.module('wegas.service.auth', [
                             isScenarist: false,
                             isAdmin: false,
                             isGuest: !!_.find(data.accounts, {
-                                    "@class": "GuestJpaAccount"
-                                }),
+                                "@class": "GuestJpaAccount"
+                            }),
                             agreedTime: acct.agreedTime,
                             hasAgreed: !!acct.agreedTime,
                             isLocalAccount: isLocal,
+                            isVerified: acct.verified,
                             homeOrg: acct.homeOrg || ""
                         };
                         if (authenticatedUser.isGuest) {
@@ -75,7 +76,7 @@ angular.module('wegas.service.auth', [
         service.getLocalAuthenticatedUser = function() {
             return authenticatedUser;
         };
-        
+
         service.getAuthenticatedUser = function() {
             var deferred = $q.defer();
             if (authenticatedUser !== null) {
@@ -104,7 +105,7 @@ angular.module('wegas.service.auth', [
                 "login": login,
                 "password": password,
                 "remember": true,
-                "agreed": agreed===true
+                "agreed": agreed === true
             }, {
                 "headers": {
                     "managed-mode": "true"
@@ -113,14 +114,14 @@ angular.module('wegas.service.auth', [
                 if (data.events !== undefined && !data.events.length) {
                     if (data.updatedEntities !== undefined &&
                         data.updatedEntities[0].accounts !== undefined &&
-                        data.updatedEntities[0].accounts[0].agreedTime===null){
+                        data.updatedEntities[0].accounts[0].agreedTime === null) {
                         console.log("WEGAS LOBBY : User has not agreed to the terms of use");
                         $translate('CREATE-ACCOUNT-FLASH-MUST-AGREE').then(function(message) {
                             deferred.resolve(Responses.info(message, false, {agreed: false}));
                         });
                     } else {
                         authenticatedUser = null;
-                        $translate('COMMONS-AUTH-LOGIN-FLASH-SUCCESS').then(function (message) {
+                        $translate('COMMONS-AUTH-LOGIN-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, true));
                         });
                         service.getAuthenticatedUser();
@@ -148,6 +149,24 @@ angular.module('wegas.service.auth', [
                         deferred.resolve(Responses.danger(message, false));
                     });
                 }
+            });
+            return deferred.promise;
+        };
+
+        service.loginWithToken = function(email, token) {
+            var deferred = $q.defer(),
+                url = "rest/User/AuthenticateWithToken";
+            $http.post(window.ServiceURL + url, {
+                "@class": "AuthenticationInformation",
+                "login": email,
+                "password": token,
+                "remember": false,
+                "agreed": false
+            }).success(function() {
+                service.getAuthenticatedUser();
+                deferred.resolve();
+            }).error(function(data) {
+                deferred.reject(data && data.message);
             });
             return deferred.promise;
         };
@@ -210,6 +229,25 @@ angular.module('wegas.service.auth', [
                         deferred.resolve(Responses.danger(message, false));
                     });
                 });
+            return deferred.promise;
+        };
+
+        service.requestEmailValidation = function() {
+            var deferred = $q.defer(),
+                url = "rest/User/RequestEmailValidation";
+            $http.get(window.ServiceURL + url, {
+                "headers": {
+                    "managed-mode": "true"
+                }
+            }).success(function() {
+                $translate('COMMONS-AUTH-EMAIL-VERIFY-FLASH-SUCCESS').then(function(message) {
+                    deferred.resolve(Responses.success(message, true));
+                });
+            }).error(function() {
+                $translate('COMMONS-AUTH-EMAIL-VERIFY-FLASH-ERROR').then(function(message) {
+                    deferred.reject(Responses.danger(message, false));
+                });
+            });
             return deferred.promise;
         };
 

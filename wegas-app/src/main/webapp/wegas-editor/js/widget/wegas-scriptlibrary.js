@@ -402,7 +402,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
             ATTRS: {
                 library: {
                     type: 'string',
-                    value: 'Script' // Script, ClientScript or CSS
+                    value: 'ServerScript' // ServerScript, ClientScript or CSS
                 }
             }
         }

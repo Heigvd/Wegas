@@ -47,12 +47,15 @@ import javax.naming.NamingException;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
+import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.SimpleByteSource;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -133,6 +136,36 @@ public class UserFacade extends BaseFacade<User> {
         return this.getUserByUsername(username) != null;
     }
 
+    /**
+     * Authenticate with a token
+     *
+     * @param email
+     * @param token
+     *
+     * @return the just authenticated user
+     */
+    public User authenticateFromToken(String email, String token) {
+        if (email != null && token != null) {
+            Subject subject = SecurityUtils.getSubject();
+
+            UsernamePasswordToken shiroToken = new UsernamePasswordToken(email, token);
+            shiroToken.setRememberMe(false);
+            try {
+                subject.login(shiroToken);
+                User user = this.getCurrentUser();
+                AbstractAccount mainAccount = user.getMainAccount();
+                if (mainAccount instanceof JpaAccount) {
+                    JpaAccount jpaAccount = (JpaAccount) mainAccount;
+                    jpaAccount.setToken(null);
+                    jpaAccount.setVerified(Boolean.TRUE);
+                }
+                return user;
+            } catch (AuthenticationException aex) {
+            }
+        }
+        throw WegasErrorMessage.error("Email/token combination not found");
+    }
+
     public User authenticate(AuthenticationInformation authInfo) {
         Subject subject = SecurityUtils.getSubject();
 
@@ -176,7 +209,8 @@ public class UserFacade extends BaseFacade<User> {
             User user;
             Subject subject = SecurityUtils.getSubject();
 
-            if (subject.isAuthenticated() && accountFacade.find((Long) subject.getPrincipal()) instanceof GuestJpaAccount) {
+            if (subject.isAuthenticated()
+                    && accountFacade.find((Long) subject.getPrincipal()) instanceof GuestJpaAccount) {
                 /**
                  * Subject is authenticated as guest but try to signup with a
                  * full account -> let's upgrade
@@ -287,7 +321,8 @@ public class UserFacade extends BaseFacade<User> {
         /*
         // The following check is now done by caller UserController.signup()
         try {
-            if (account instanceof JpaAccount) {                                // @fixme This is only done to have a nice error and not the unparsable ConstraintViolationException
+            // @fixme This is only done to have a nice error and not the unparsable ConstraintViolationException
+            if (account instanceof JpaAccount)
                 String mail = ((JpaAccount) account).getEmail();
                 if (mail != null && !mail.isEmpty()) {
                     accountFacade.findByEmail(mail);
@@ -342,8 +377,14 @@ public class UserFacade extends BaseFacade<User> {
      * @return list of "Role"
      */
     public List<Map> findRolePermissionByInstance(String instance) {
-        TypedQuery<Role> findByToken = getEntityManager().createQuery("SELECT DISTINCT roles FROM Role roles JOIN roles.permissions p WHERE p.value LIKE :instance", Role.class);//@fixme Unable to select role with a like w/ embeddebale
-        // Query findByToken = getEntityManager().createQuery("SELECT DISTINCT roles FROM Role roles WHERE roles.permissions.value = 'mm'");
+        TypedQuery<Role> findByToken = getEntityManager()
+                //@fixme Unable to select role with a like w/ embeddebale
+                .createQuery("SELECT DISTINCT roles "
+                        + "FROM Role roles "
+                        + "JOIN roles.permissions p "
+                        + "WHERE p.value LIKE :instance", Role.class);
+        // Query findByToken = getEntityManager()
+        //.createQuery("SELECT DISTINCT roles FROM Role roles WHERE roles.permissions.value = 'mm'");
         // SELECT DISTINCT roles FROM Role roles WHERE roles.permissions LIKE :gameId
         findByToken.setParameter("instance", "%:" + instance);
 
@@ -423,7 +464,8 @@ public class UserFacade extends BaseFacade<User> {
      * @return all user which have a permission related to the given instance
      */
     public List<User> findUserByPermissionInstance(String instance) {
-        final TypedQuery<User> findByToken = getEntityManager().createNamedQuery("User.findUserPermissions", User.class);
+        final TypedQuery<User> findByToken = getEntityManager()
+                .createNamedQuery("User.findUserPermissions", User.class);
         findByToken.setParameter("instance", "%:" + instance);
         return findByToken.getResultList();
     }
@@ -441,7 +483,8 @@ public class UserFacade extends BaseFacade<User> {
             permission = "Game:%Edit%:";
         }
 
-        final TypedQuery<User> findByToken = getEntityManager().createNamedQuery("User.findUserPermissions", User.class);
+        final TypedQuery<User> findByToken = getEntityManager()
+                .createNamedQuery("User.findUserPermissions", User.class);
         findByToken.setParameter("instance", permission + instance);
         return findByToken.getResultList();
     }
@@ -457,7 +500,8 @@ public class UserFacade extends BaseFacade<User> {
         /* Why not using JPA ?
         return roleFacade.find(role_id).getUsers(); ??????
          */
-        final TypedQuery<User> findWithRole = getEntityManager().createNamedQuery("User.findUsersWithRole", User.class);
+        final TypedQuery<User> findWithRole = getEntityManager()
+                .createNamedQuery("User.findUsersWithRole", User.class);
         findWithRole.setParameter("role_id", role_id);
         return findWithRole.getResultList();
     }
@@ -524,12 +568,14 @@ public class UserFacade extends BaseFacade<User> {
         List<Permission> perms = new ArrayList<>();
 
         for (Role role : this.findRoles(user)) {
-            TypedQuery<Permission> queryRolePermission = getEntityManager().createNamedQuery("Permission.findByRole", Permission.class);
+            TypedQuery<Permission> queryRolePermission = getEntityManager()
+                    .createNamedQuery("Permission.findByRole", Permission.class);
             queryRolePermission.setParameter("roleId", role.getId());
             perms.addAll(queryRolePermission.getResultList());
         }
 
-        TypedQuery<Permission> queryUserPermissions = getEntityManager().createNamedQuery("Permission.findByUser", Permission.class);
+        TypedQuery<Permission> queryUserPermissions = getEntityManager()
+                .createNamedQuery("Permission.findByUser", Permission.class);
         queryUserPermissions.setParameter("userId", user.getId());
         perms.addAll(queryUserPermissions.getResultList());
 
@@ -537,7 +583,8 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     private List<Permission> findUserPermissions(String permission, User user) {
-        TypedQuery<Permission> query = getEntityManager().createNamedQuery("Permission.findByPermissionAndUser", Permission.class);
+        TypedQuery<Permission> query = getEntityManager()
+                .createNamedQuery("Permission.findByPermissionAndUser", Permission.class);
         query.setParameter("userId", user.getId());
         query.setParameter("permission", permission);
 
@@ -559,7 +606,8 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     private void deletePermissions(String permission) {
-        TypedQuery<Permission> query = getEntityManager().createNamedQuery("Permission.findByPermission", Permission.class);
+        TypedQuery<Permission> query = getEntityManager()
+                .createNamedQuery("Permission.findByPermission", Permission.class);
         query.setParameter("permission", permission);
 
         for (Permission p : query.getResultList()) {
@@ -623,35 +671,107 @@ public class UserFacade extends BaseFacade<User> {
         }
     }
 
-    /**
-     * @param email
-     */
-    public void sendNewPassword(String email) {
+    private String generateToken(int length) {
+        RandomNumberGenerator rng = new SecureRandomNumberGenerator();
+        return rng.nextBytes(length / 2).toHex();
+    }
+
+    private String hashToken(String token, JpaAccount account) {
+        return new Sha256Hash(token,
+                (new SimpleByteSource(account.getSalt())).getBytes()).toHex();
+    }
+
+    public void requestPasswordReset(String email, HttpServletRequest request) {
         try {
             requestManager.su();
-            JpaAccount acc = accountFacade.findJpaByEmail(email);
-            EMailFacade emailFacade = new EMailFacade();
-            RandomNumberGenerator rng = new SecureRandomNumberGenerator();
-            String newPassword = rng.nextBytes().toHex().substring(0, 12);
-            String subject = "Wegas account";
-            String body = "A new password for your wegas account has been successfully created: " + newPassword;
-            String from = "noreply@" + Helper.getWegasProperty("mail.default_domain");
-            if (acc != null) {
-                acc.setPassword(newPassword);
-                emailFacade.send(acc.getEmail(), from, null, subject, body, Message.RecipientType.TO, "text/plain; charset=utf-8", true);
+            JpaAccount account = accountFacade.findJpaByEmail(email);
+            if (account != null) {
+                this.sendEmailWithDisposableToken(request, account,
+                        "[Albasim Wegas] Reset Password Request",
+                        "Click <a href='{{link}}'>here</a> to reset your password.<br /><br />"
+                        + "If you did't request this email, then simply ignore this message",
+                        "reset", 60);
             }
             this.flush();
-        } catch (WegasNoResultException | MessagingException ex) {
-            logger.error("Error while sending new password for email: {}", email);
-        } finally{
+        } catch (WegasNoResultException ex) {
+            logger.error("No JPA account for {}", email);
+        } finally {
             requestManager.releaseSu();
         }
     }
 
-    /*
-    ** Sends the given email as one separate message per addressee (as a measure against spam filters)
-    ** and an additional one to the sender to provide him a copy of the message.
-    ** If an address is invalid (but syntactically correct), it should not prevent from sending to the other addressees.
+    public void requestEmailValidation(HttpServletRequest request) {
+        User currentUser = requestManager.getCurrentUser();
+        if (currentUser != null) {
+            AbstractAccount account = currentUser.getMainAccount();
+
+            if (account != null && account instanceof JpaAccount) {
+                this.sendEmailWithDisposableToken(request, (JpaAccount) account,
+                        "[AlbaSim Wegas] Please validate your account",
+                        "Click <a href='{{link}}'>here</a> to confirm your email address.<br /><br />"
+                        + "If you did't request this verification, you can ignore this message",
+                        "verify", 60);
+            }
+        }
+    }
+
+    /**
+     * Send a e mail to a user.
+     * Generates a disposable token with
+     *
+     * @param request               current http request is used to guess the public hostname to generate the link to
+     *                              send
+     * @param account               Jpa account to send email to
+     * @param subject               Subject of the message
+     * @param text                  text of the message with "{{link}}" inside
+     * @param path                  reset or verify
+     * @param tokenValidityDuration how long the token will be valid, in minutes
+     */
+    private void sendEmailWithDisposableToken(HttpServletRequest request, JpaAccount account,
+            String subject, String text, String path, long tokenValidityDuration) {
+        User currentUser = requestManager.getCurrentUser();
+        if (currentUser != null) {
+
+            if (account != null && account instanceof JpaAccount) {
+                try {
+                    EMailFacade emailFacade = new EMailFacade();
+                    String token = generateToken(24);
+
+                    Long expirationDate = (new Date()).getTime() + tokenValidityDuration * 60 * 1000;
+
+                    String hashToken = expirationDate + ":" + hashToken(token, account);
+                    account.setToken(hashToken);
+
+                    String theLink = Helper.getPublicBaseUrl(request)
+                            + "/#/" + path + "/" + account.getEmail() + "/" + token;
+
+                    if (text.contains("{{link}}")) {
+                        text = text.replace("{{link}}", theLink);
+                    } else {
+                        text = text + "<br /><a href='" + theLink + "'>" + path.toUpperCase() + "</a>";
+                    }
+
+                    String body = "Hi " + account.getFirstname() + " " + account.getLastname() + ", "
+                            + "<br />"
+                            + "<br />"
+                            + text;
+
+                    String from = "noreply@" + Helper.getWegasProperty("mail.default_domain");
+                    emailFacade.send(account.getEmail(), from, null, subject,
+                            body,
+                            Message.RecipientType.TO,
+                            "text/html; charset=utf-8", true);
+                } catch (MessagingException ex) {
+                    logger.error("Error while sending validation email to {}", account.getEmail());
+                }
+            }
+        }
+    }
+
+    /**
+     * Sends the given email as one separate message per addressee (as a measure against spam filters)
+     * and an additional one to the sender to provide him a copy of the message.
+     * If an address is invalid (but syntactically correct), it should not prevent from sending to the other addressees.
      */
     public void sendEmail(Email email) /* throws MessagingException */ {
         int nbExceptions = 0;
@@ -661,7 +781,11 @@ public class UserFacade extends BaseFacade<User> {
             AbstractAccount mainAccount = rP.getUser().getMainAccount();
             if (mainAccount instanceof JpaAccount || mainAccount instanceof AaiAccount) {
                 try {
-                    emailFacade.send(mainAccount.getEmail(), email.getFrom(), email.getReplyTo(), email.getSubject(), email.getBody(), Message.RecipientType.TO, "text/html; charset=utf-8", true);
+                    emailFacade.send(mainAccount.getEmail(),
+                            email.getFrom(), email.getReplyTo(),
+                            email.getSubject(),
+                            email.getBody(),
+                            Message.RecipientType.TO, "text/html; charset=utf-8", true);
                 } catch (MessagingException e) {
                     nbExceptions++;
                 }
@@ -669,7 +793,10 @@ public class UserFacade extends BaseFacade<User> {
         }
         try {
             // Send a last message directly to the sender as a confirmation copy
-            emailFacade.send(email.getReplyTo(), email.getFrom(), email.getReplyTo(), email.getSubject(), email.getBody(), Message.RecipientType.TO, "text/html; charset=utf-8", true);
+            emailFacade.send(email.getReplyTo(),
+                    email.getFrom(), email.getReplyTo(),
+                    email.getSubject(),
+                    email.getBody(), Message.RecipientType.TO, "text/html; charset=utf-8", true);
         } catch (MessagingException e) {
             nbExceptions++;
         }
@@ -693,8 +820,10 @@ public class UserFacade extends BaseFacade<User> {
             if (lock.tryLock()) {
                 try {
                     logger.info("removeIdleGuests(): unused guest accounts will be removed");
-                    TypedQuery<GuestJpaAccount> findIdleGuests = getEntityManager().createQuery("SELECT DISTINCT account FROM GuestJpaAccount account "
-                            + "WHERE account.createdTime < :idletime", GuestJpaAccount.class);
+                    TypedQuery<GuestJpaAccount> findIdleGuests
+                            = getEntityManager().createQuery("SELECT DISTINCT account "
+                                    + "FROM GuestJpaAccount account "
+                                    + "WHERE account.createdTime < :idletime", GuestJpaAccount.class);
                     Calendar calendar = Calendar.getInstance();
                     calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 3);
                     findIdleGuests.setParameter("idletime", calendar.getTime(), TemporalType.DATE);
@@ -708,7 +837,8 @@ public class UserFacade extends BaseFacade<User> {
                     //Force flush before closing RequestManager !
                     getEntityManager().flush();
 
-                    logger.info("removeIdleGuests(): {} unused guest accounts removed (idle since: {})", resultList.size(), calendar.getTime());
+                    logger.info("removeIdleGuests(): {} unused guest accounts removed (idle since: {})",
+                            resultList.size(), calendar.getTime());
 
                 } finally {
                     lock.unlock();

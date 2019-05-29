@@ -44,29 +44,49 @@
 
     <ul class="view__sub-menu">
         <li class="action">
-            <a ng-if="user.hasAgreed" ng-click="logout()" class="button button--default-reverse button--label-off button--sign-out"
-               title="{{'PRIVATE-WS-LOGOUT-BTN'| translate}}"><span class="button__label">{{'PRIVATE-WS-LOGOUT-BTN'| translate}}</span></a>
+            <a ng-if="user.hasAgreed"
+               class="button button--default-reverse button--label-off button--sign-out"
+               ng-click="logout()"
+               title="{{'PRIVATE-WS-LOGOUT-BTN'| translate}}">
+                <span class="button__label">{{'PRIVATE-WS-LOGOUT-BTN'| translate}}</span>
+            </a>
         </li>
         <li class="action action--language" ng-if="languages.length > 1">
-            <a class="button button--default-reverse button--language" title="{{'CHOOSE-LANGUAGE-BTN'| translate}}"><span
-                    class="button__label">{{currentLanguage}}</span></a>
+            <a class="button button--default-reverse button--language"
+               title="{{'CHOOSE-LANGUAGE-BTN'| translate}}">
+                <span class="button__label">{{currentLanguage}}</span>
+            </a>
             <ul class="subactions">
-                <li class="subaction" ng-repeat="language in languages"><a class="button button--default-reverse"
-                                                                           ng-class="{'button--active': language.key == currentLanguage}"
-                                                                           ng-click="changeLanguage(language.key)">{{language.name}}</a>
+                <li class="subaction" ng-repeat="language in languages">
+                    <a class="button button--default-reverse"
+                       ng-class="{'button--active': language.key == currentLanguage}"
+                       ng-click="changeLanguage(language.key)">{{language.name}}
+                    </a>
                 </li>
             </ul>
         </li>
-        <li ng-if="user.isLocalAccount && !user.isGuest" class="action">
-            <a ng-click="editProfile()" class="button button--default-reverse button--user button-without-label"
+        <li ng-if="user.isLocalAccount" class="action">
+            <a ng-click="editProfile()"
+               class="button button--default-reverse button--user-fa button-without-label"
                title="{{'PRIVATE-WS-PROFILE-BTN'| translate}}"><span
                     class="button__label">{{ user.username}}</span></a>
         </li>
+        <li ng-if="user.isLocalAccount && !user.isVerified" class="action">
+            <a ng-click="verifyEmail()"
+               class="button button--default-reverse button--exclamation button-without-label"
+               title="{{'PRIVATE-WS-VERIFY-TOOLTIP'| translate}}">
+                <span class="button__label">{{'PRIVATE-WS-VERIFY-BTN'| translate}}</span>
+            </a>
+        </li>
         <li ng-if="user.isGuest" class="action" style="cursor: default">
-            <a class="button button--default-reverse button--user button-without-label unclickable"><span class="button__label">GUEST</span></a>
+            <a class="button button--default-reverse button--user-fa button-without-label unclickable">
+                <span class="button__label">GUEST</span>
+            </a>
         </li>
         <li ng-if="!user.isLocalAccount" class="action" style="cursor: default">
-            <a class="button button--default-reverse button--user button-without-label unclickable"><span class="button__label">{{ user.username}}</span></a>
+            <a class="button button--default-reverse button--user-fa button-without-label unclickable">
+                <span class="button__label">{{ user.username}}</span>
+            </a>
         </li>
     </ul>
 

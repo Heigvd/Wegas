@@ -16,6 +16,7 @@ import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.primitive.utils.StringInstanceCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +27,7 @@ import javax.persistence.Index;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import jdk.nashorn.api.scripting.JSObject;
+import org.eclipse.persistence.annotations.Customizer;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -34,6 +36,7 @@ import jdk.nashorn.api.scripting.JSObject;
     @Index(columnList = "trvalue_id")
 })
 @Entity
+@Customizer(StringInstanceCustomizer.class)
 public class TextInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;

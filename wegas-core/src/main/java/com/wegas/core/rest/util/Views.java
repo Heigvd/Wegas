@@ -13,6 +13,35 @@ package com.wegas.core.rest.util;
 public class Views {
 
     /**
+     *
+     * @param str
+     *
+     * @return Views.Class matching str or public
+     */
+    public static Class stringToView(String str) {
+        switch (str) {
+            case "Extended":
+                return Extended.class;
+
+            case "Export":
+                return Export.class;
+
+            case "Instance":
+                return Instance.class;
+
+            case "Lobby":
+                return Lobby.class;
+
+            case "Editor":
+                return Editor.class;
+
+            case "Public":
+            default:
+                return Public.class;
+        }
+    }
+
+    /**
      * Index minimal (w/ ids)
      */
     public interface IndexI {
