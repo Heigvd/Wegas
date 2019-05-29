@@ -35,6 +35,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -129,6 +130,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      * The game this team belongs to
      */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     @JsonIgnore
     private GameTeams gameTeams;
 
