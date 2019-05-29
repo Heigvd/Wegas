@@ -77,6 +77,11 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL)
     private Visibility visibility = Visibility.PRIVATE;
 
+    @Version
+    @Column(columnDefinition = "bigint default '0'::bigint")
+    @WegasEntityProperty(sameEntityOnly = true)
+    private Long version;
+
     /**
      *
      */
@@ -228,6 +233,14 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     @JsonIgnore
     public void setScriptlibrary_GameModel(GameModel scriptlibrary_GameModel) {
         this.scriptlibrary_GameModel = scriptlibrary_GameModel;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     @Override

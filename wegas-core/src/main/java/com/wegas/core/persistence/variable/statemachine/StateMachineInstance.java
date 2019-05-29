@@ -15,7 +15,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.wegas.core.Helper;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.EntityComparators;
-import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,19 +71,10 @@ public class StateMachineInstance extends VariableInstance {
      *
      * @return the current state
      */
-    @JsonProperty("currentState")
+    @JsonIgnore
     public State getCurrentState() {
         final Map<Long, State> states = ((StateMachineDescriptor) this.findDescriptor()).getStatesAsMap();
         return states.get(this.currentStateId);
-    }
-
-    /**
-     *
-     * @param state
-     */
-    @JsonIgnore
-    public void setCurrentState(State state) {
-        //Not meant to be used
     }
 
     /**
@@ -119,7 +109,7 @@ public class StateMachineInstance extends VariableInstance {
 
     /**
      *
-     * @return list of walked transitions 
+     * @return list of walked transitions
      */
     @JsonProperty
     public List<Long> getTransitionHistory() {
@@ -151,7 +141,6 @@ public class StateMachineInstance extends VariableInstance {
         h.add(id);
         this.setTransitionHistory(h);
     }
-
 
     @Override
     public String toString() {

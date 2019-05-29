@@ -363,6 +363,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Error during password generation",
                             'fr': "Erreur durant la génération du mot de passe"
                         },
+                        'COMMONS-AUTH-EMAIL-VERIFY-FLASH-SUCCESS': {
+                            'en': "A validation request has been sent by e-mail.\nWe recommend that you check your spam/junk mail folder.\n ",
+                            'fr': "Une demande de validation a été envoyée par e-mail.\nVérifiez éventuellement dans vos messages indésirables (spam).\n "
+                        },
+                        'COMMONS-AUTH-EMAIL-VERIFY-FLASH-ERROR': {
+                            'en': "Error during email validation request",
+                            'fr': "Erreur durant la requête de vérification de l'adresse e-mail"
+                        },
                         'COMMONS-AUTH-CREATE-ACCOUNT-FLASH-SUCCESS': {
                             'en': "AlbaSim - Wegas",
                             'fr': "AlbaSim - Wegas"
@@ -986,6 +994,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Edit profile",
                             'fr': "Editer mon profil"
                         },
+                        'PRIVATE-WS-VERIFY-TOOLTIP': {
+                            'en': "Click to verify your e-mail address",
+                            'fr': "Cliquez pour vérifier votre adresse e-mail"
+                        },
+                        'PRIVATE-WS-VERIFY-BTN': {
+                            'en': "Unverified e-mail",
+                            'fr': "e-mail non-verifié"
+                        },
                         'PRIVATE-WS-UNMODIFIABLE-PROFILE-BTN': {
                             'en': "Your user profile is not modifiable",
                             'fr': "Votre profil utilisateur n'est pas modifiable"
@@ -1551,6 +1567,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Duplicate this " + keywords.model.singular.en,
                             'fr': "Dupliquer ce " + keywords.model.singular.fr
                         },
+                        'MODELER-CARD-TRANSLATE-BTN': {
+                            'en': "Translate " + keywords.model.singular.en,
+                            'fr': "Traduire le " + keywords.model.singular.fr
+                        },
                         'MODELER-CARD-EDIT-BTN': {
                             'en': "Edit " + keywords.model.singular.en,
                             'fr': "Modifier le " + keywords.model.singular.fr
@@ -1689,6 +1709,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Move to archives",
                             'fr': "Déplacer vers les archives"
                         },
+                        'SCENARIST-CARD-TRANSLATE-BTN': {
+                            'en': "Translate " + keywords.scenario.singular.en,
+                            'fr': "Traduire le " + keywords.scenario.singular.fr
+                        },
                         'SCENARIST-CARD-EDIT-BTN': {
                             'en': "Edit " + keywords.scenario.singular.en,
                             'fr': "Modifier le " + keywords.scenario.singular.fr
@@ -1725,6 +1749,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Create " + keywords.session.singular.en + " from " + keywords.scenario.singular.en,
                             'fr': "Créer une " + keywords.session.singular.fr + " depuis le " +
                                 keywords.scenario.singular.fr
+                        },
+                        'SCENARIST-MODALE-USERS-TRANSLATE-CHECKBOX': {
+                            'en': "Translate ",
+                            'fr': "Traduire "
                         },
                         'SCENARIST-MODALE-USERS-REMOVE-BTN': {
                             'en': "Remove access for this user",
@@ -1880,6 +1908,14 @@ angular.module('wegas.service.wegasTranslations', [])
                         'ADMIN-USERS-CARD-TITLE': {
                             'en': "User ",
                             'fr': "Utilisateur "
+                        },
+                        'ADMIN-USERS-UNVERIFIED-ID': {
+                            'en': '✘ unverified identity',
+                            'fr': '✘ identité non-vérifiée',
+                        },
+                        'ADMIN-USERS-VERIFIED-ID': {
+                            'en': '✔ verified identity',
+                            'fr': '✔ identité vérifiée',
                         },
                         'ADMIN-USERS-CARD-EDIT-BTN': {
                             'en': "Edit user",

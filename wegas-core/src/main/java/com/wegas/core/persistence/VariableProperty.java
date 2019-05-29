@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Lob;
 
 /**
  *
@@ -25,6 +26,7 @@ public class VariableProperty implements Serializable {
     @Column(name = "properties_key")
     private String key;
 
+    @Lob
     @Column(name = "properties")
     private String value;
 

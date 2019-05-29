@@ -81,7 +81,6 @@ public class State extends AbstractEntity implements Broadcastable {
     @JsonView(Views.IndexI.class)
     private Long id;
 
-
     /**
      *
      */
@@ -167,7 +166,6 @@ public class State extends AbstractEntity implements Broadcastable {
     public void setIndex(Long index) {
         this.index = index;
     }
-
 
     /**
      * @return state name
@@ -259,7 +257,10 @@ public class State extends AbstractEntity implements Broadcastable {
 
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getStateMachine().getRequieredUpdatePermission();
+        Collection<WegasPermission> perms = this.getStateMachine().getRequieredUpdatePermission();
+        // see issue #1441
+        perms.add(this.getParentGameModel().getAssociatedTranslatePermission(""));
+        return perms;
     }
 
     @Override

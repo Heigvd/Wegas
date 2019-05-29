@@ -92,6 +92,9 @@ public class Helper {
                     return (T) context.lookup("java:global/embed-classes/" + service.getSimpleName() + "!" + type.getName());
                 } catch (NamingException ex1) {
                     try {
+                        // Why cobertura here ???
+                        logger.error("Cobertura lookup for {} ! {}", service.getSimpleName(), type.getName());
+                        Helper.printWegasStackTrace(new Exception());
                         return (T) context.lookup("java:global/cobertura/" + service.getSimpleName() + "!" + type.getName());
                     } catch (NamingException ex2) {
                         logger.error("Unable to retrieve to do jndi lookup on class: {}", type.getSimpleName());
@@ -994,6 +997,10 @@ public class Helper {
         return ip;
     }
 
+    public static String getPublicBaseUrl(HttpServletRequest request) {
+        return request.getRequestURL().toString().replace(request.getRequestURI(), "") + request.getContextPath();
+    }
+
     /**
      * Check if current visibility imply read only access for scenarist under given protection level.
      *
@@ -1015,4 +1022,7 @@ public class Helper {
                 || (level == ProtectionLevel.INHERITED && (visibility == Visibility.PROTECTED || visibility == Visibility.INHERITED)));
     }
 
+    public static String anonymizeEmail(String email) {
+        return email.replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2");
+    }
 }

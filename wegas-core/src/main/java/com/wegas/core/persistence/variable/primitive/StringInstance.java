@@ -19,6 +19,7 @@ import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.primitive.utils.StringInstanceCustomizer;
 import java.io.IOException;
 import javax.persistence.CascadeType;
 import javax.persistence.Index;
@@ -26,10 +27,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.persistence.Entity;
 import java.util.List;
 import org.graalvm.polyglot.Value;
+import org.eclipse.persistence.annotations.Customizer;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -38,6 +39,7 @@ import org.graalvm.polyglot.Value;
     @Index(columnList = "trvalue_id")
 })
 @Entity
+@Customizer(StringInstanceCustomizer.class)
 public class StringInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;

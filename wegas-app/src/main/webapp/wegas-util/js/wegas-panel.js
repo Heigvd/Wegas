@@ -193,14 +193,14 @@ YUI.add('wegas-panel', function(Y) {
             // For client-side customization:
             return panel;
         },
-        alert: function(msg, okCb) {
+        alert: function(msg, okCb, okLabel) {
             var panel = new Wegas.Panel({
                 content: "<div class='icon icon-warn'>" + msg + "</div>",
                 modal: true,
                 width: 400,
                 buttons: {
                     footer: [{
-                            label: I18n.t('global.ok') || 'OK',
+                            label: okLabel || I18n.t('global.ok') || 'OK',
                             action: function() {
                                 panel.exit();
                                 okCb && okCb();

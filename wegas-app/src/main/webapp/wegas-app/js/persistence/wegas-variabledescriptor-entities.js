@@ -218,7 +218,8 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     toDisplay = this.get("editorTag") + " - " + trLabel;
                 }
 
-                if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "MODEL" && this.get("visibility") === "PRIVATE") {
+                if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "MODEL"
+                    && this.get("visibility") === "PRIVATE") {
                     toDisplay = "<i class='private-in-model'>" + toDisplay + "</i>";
                 }
 
@@ -868,13 +869,13 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     label: "selected value is not",
                     returns: BOOLEAN,
                     arguments: [SELFARG, {
-                        type: STRING,
-                        view: {
-                            type: "entityarrayfieldselect",
-                            field: "allowedValues",
-                            returnAttr: "name"
-                        }
-                    }]
+                            type: STRING,
+                            view: {
+                                type: "entityarrayfieldselect",
+                                field: "allowedValues",
+                                returnAttr: "name"
+                            }
+                        }]
                 }
             }
         }

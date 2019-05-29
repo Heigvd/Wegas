@@ -97,10 +97,10 @@ public class EntityListener {
             }
         }
 
-        if (o instanceof AbstractEntity) {
+        if (o instanceof WithPermission) {
             logger.debug("PostPersist {}", o);
             if (requestManager != null) {
-                requestManager.assertCreateRight((AbstractEntity) o);
+                requestManager.assertCreateRight((WithPermission) o);
             } else {
                 logger.error("PostPersist NO SECURITY FACADE");
             }
@@ -121,10 +121,10 @@ public class EntityListener {
     @PostUpdate
     void onPostUpdate(Object o) {
 
-        if (o instanceof AbstractEntity) {
+        if (o instanceof WithPermission) {
             logger.debug("PostUpdate {}", o);
             if (requestManager != null) {
-                requestManager.assertUpdateRight((AbstractEntity) o);
+                requestManager.assertUpdateRight((WithPermission)o);
             } else {
                 logger.error("PostUpdate NO SECURITY FACADE");
             }
@@ -142,8 +142,8 @@ public class EntityListener {
 
     @PreRemove
     void onPreRemove(Object o) {
-        if (o instanceof AbstractEntity) {
-            AbstractEntity ae = (AbstractEntity) o;
+        if (o instanceof WithPermission) {
+            WithPermission ae = (WithPermission) o;
             if (requestManager != null) {
                 requestManager.assertDeleteRight(ae);
             } else {
@@ -184,8 +184,11 @@ public class EntityListener {
         if (o instanceof AbstractEntity) {
             logger.debug("PostLoad {}", o);
             ((AbstractEntity) o).setPersisted(true);
+        }
+
+        if (o instanceof WithPermission) {
             if (requestManager != null) {
-                requestManager.assertReadRight((AbstractEntity) o);
+                requestManager.assertReadRight((WithPermission) o);
             } else {
                 logger.error("PostLOAD NO SECURITY FACADE");
             }

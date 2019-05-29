@@ -13,6 +13,7 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.DefaultWegasFactory;
 import com.wegas.core.merge.utils.EmptyCallback;
@@ -536,6 +537,17 @@ public final class WegasEntityPatch extends WegasPatch {
                                             TranslatableContent label = (TranslatableContent) candidate.getEntity();
 
                                             p.setLabel(label);
+                                            break;
+                                        }
+                                    }
+
+                                    /*
+                                     * and restore its translations
+                                     */
+                                    for (CollectedEntity candidate : deleted.values()) {
+                                        if (candidate.getEntity() instanceof Translation
+                                                && candidate.getParent().equals(p.getLabel())) {
+                                            p.getLabel().getRawTranslations().add((Translation) candidate.getEntity());
                                             break;
                                         }
                                     }

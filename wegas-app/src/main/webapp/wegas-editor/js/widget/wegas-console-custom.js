@@ -90,14 +90,14 @@ YUI.add('wegas-console-custom', function(Y) {
                                 if (Y.Lang.isNumber(val[k])) {
                                     value = +val[k];
                                 } else {
-                                    return undefined;
+                                    value = undefined;
                                 }
                                 break;
                             default:
                                 value = val[k];
                         }
                     } else {
-                        val = undefined;
+                        value = undefined;
                     }
 
 

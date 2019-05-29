@@ -29,6 +29,7 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.*;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -359,10 +360,24 @@ public class UserController {
      */
     @POST
     @Path("Authenticate")
-    public User login(AuthenticationInformation authInfo,
+    public User login(
+            AuthenticationInformation authInfo,
             @Context HttpServletRequest request,
             @Context HttpServletResponse response) throws ServletException, IOException {
         return userFacade.authenticate(authInfo);
+    }
+
+    /**
+     * Allows to login using a token
+     *
+     * @return User the current user
+     */
+    @POST
+    @Path("AuthenticateWithToken")
+    public User loginWithDisposableToken( AuthenticationInformation authInfo,
+            @Context HttpServletRequest request
+    ) throws ServletException, IOException, URISyntaxException {
+        return userFacade.authenticateFromToken(authInfo.getLogin(), authInfo.getPassword());
     }
 
     /**
@@ -574,9 +589,19 @@ public class UserController {
      */
     @POST
     @Path("SendNewPassword")
-    public void sendNewPassword(AuthenticationInformation authInfo,
+    public void requestPasswordReset(AuthenticationInformation authInfo,
             @Context HttpServletRequest request) {
-        userFacade.sendNewPassword(authInfo.getLogin());
+        userFacade.requestPasswordReset(authInfo.getLogin(), request);
+    }
+
+    /**
+     * @param authInfo
+     * @param request
+     */
+    @GET
+    @Path("RequestEmailValidation")
+    public void requestEmailValidation(@Context HttpServletRequest request) {
+        userFacade.requestEmailValidation(request);
     }
 
     /**
@@ -767,7 +792,8 @@ public class UserController {
      * @param accountId   user accountId
      */
     @POST
-    @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{permission: (View|Edit|Delete|Duplicate|Instantiate|,)*}/{accountId : [1-9][0-9]*}")
+
+    @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{permission: (View|Edit|Delete|Duplicate|Instantiate|Translate-[A-Z]*|,)*}/{accountId : [1-9][0-9]*}")
     public void shareGameModel(@PathParam("gameModelId") Long gameModelId,
             @PathParam("permission") String permission,
             @PathParam("accountId") Long accountId) {

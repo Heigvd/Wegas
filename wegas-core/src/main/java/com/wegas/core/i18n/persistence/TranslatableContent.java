@@ -12,9 +12,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -30,6 +32,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.persistence.*;
 import org.graalvm.polyglot.Value;
+import org.eclipse.persistence.annotations.OptimisticLocking;
+import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +46,7 @@ import org.slf4j.LoggerFactory;
     @Index(columnList = "parentdescriptor_id"),
     @Index(columnList = "parentinstance_id")
 })
-//@OptimisticLocking
+@OptimisticLocking(cascade = true)
 public class TranslatableContent extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
@@ -73,9 +77,10 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     /**
      *
      */
-    @ElementCollection
     @JsonIgnore
-    @WegasEntityProperty(searchable = true)
+    @WegasEntityProperty(searchable = true, callback = TranslatableCallback.class)
+    @OneToMany(mappedBy = "translatableContent", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @PrivateOwned
     private List<Translation> translations = new ArrayList<>();
 
     @Override
@@ -192,7 +197,9 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         this.translations.clear();
         for (Entry<String, Translation> entry : translations.entrySet()) {
             Translation value = entry.getValue();
-            this.translations.add(new Translation(entry.getKey(), value.getTranslation(), value.getStatus()));
+            value.setTranslatableContent(this);
+            this.translations.add(value);
+            //this.translations.add(new Translation(entry.getKey(), value.getTranslation(), value.getStatus(), this));
         }
     }
 
@@ -221,11 +228,12 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
      *
      * @param languageCode
      */
-    public void removeTranslation(String languageCode) {
+    public Translation removeTranslation(String languageCode) {
         Translation translation = this.getTranslation(languageCode);
         if (translation != null) {
             this.translations.remove(translation);
         }
+        return translation;
     }
 
     /**
@@ -239,7 +247,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         if (tr != null) {
             tr.setTranslation(translation);
         } else {
-            this.getRawTranslations().add(new Translation(code, translation));
+            this.getRawTranslations().add(new Translation(code, translation, null, this));
         }
     }
 
@@ -249,7 +257,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
             tr.setTranslation(translation);
             tr.setStatus(status);
         } else {
-            this.getRawTranslations().add(new Translation(code, translation, status));
+            this.getRawTranslations().add(new Translation(code, translation, status, this));
         }
     }
 
@@ -369,7 +377,9 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         Broadcastable owner = getOwner();
         if (owner != null) {
-            return owner.getRequieredUpdatePermission();
+            Collection<WegasPermission> perms = owner.getRequieredUpdatePermission();
+            perms.add(this.getParentGameModel().getAssociatedTranslatePermission(""));
+            return perms;
         }
         return null;
     }
@@ -386,7 +396,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
 
     public static TranslatableContent build(String lang, String translation) {
         TranslatableContent trC = new TranslatableContent();
-        trC.getRawTranslations().add(new Translation(lang, translation, ""));
+        trC.getRawTranslations().add(new Translation(lang, translation, "", trC));
         return trC;
     }
 
@@ -475,5 +485,15 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     @Override
     public String toString() {
         return this.translateOrEmpty((GameModel) null);
+    }
+
+    public static class TranslatableCallback implements WegasCallback {
+
+        @Override
+        public void add(Object child, Mergeable container, Object identifier) {
+            if (container instanceof TranslatableContent && child instanceof Translation){
+                ((Translation)child).setTranslatableContent((TranslatableContent) container);
+            }
+        }
     }
 }

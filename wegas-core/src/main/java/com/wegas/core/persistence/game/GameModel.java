@@ -38,7 +38,6 @@ import java.util.Map.Entry;
 import javax.jcr.RepositoryException;
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,15 +71,6 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     private static final long serialVersionUID = 1L;
 
     @Transient
-    private Boolean canView = null;
-    @Transient
-    private Boolean canEdit = null;
-    @Transient
-    private Boolean canInstantiate = null;
-    @Transient
-    private Boolean canDuplicate = null;
-
-    @Transient
     private Boolean onGoingPropagation = false;
 
     @Transient
@@ -102,6 +92,10 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Pattern(regexp = "^.*\\S+.*$", message = "GameModel name cannot be empty")// must at least contains one non-whitespace character
     @WegasEntityProperty
     private String name;
+
+    @Basic(optional = false)
+    @WegasEntityProperty(initOnly = true)
+    private Integer UIVersion;
 
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @WegasEntityProperty(includeByDefault = false)
@@ -351,80 +345,10 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @PrePersist
     public void prePersist() {
+        if (this.getUIVersion() == null) {
+            this.setUIVersion(1);
+        }
         this.setCreatedTime(new Date());
-    }
-
-    /**
-     * For serialization
-     *
-     * @return true if current user has view permission on this
-     */
-    @JsonView(Views.LobbyI.class)
-    public Boolean getCanView() {
-        if (canView != null) {
-            return canView;
-        } else {
-            Helper.printWegasStackTrace(new Exception());
-            return true; // by design, non readable gameModel will throws an exception
-        }
-    }
-
-    /**
-     * @return true if current user has edit permission on this
-     */
-    @JsonView(Views.LobbyI.class)
-    public Boolean getCanEdit() {
-        if (canEdit != null) {
-            return canEdit;
-        } else {
-            // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
-            Helper.printWegasStackTrace(new Exception());
-            return SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + this.id);
-        }
-    }
-
-    /**
-     * @return true if current user has duplicate permission on this
-     */
-    @JsonView(Views.LobbyI.class)
-    public Boolean getCanDuplicate() {
-        if (canDuplicate != null) {
-            return canDuplicate;
-        } else {
-            // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
-            Helper.printWegasStackTrace(new Exception());
-            return SecurityUtils.getSubject().isPermitted("GameModel:Duplicate:gm" + this.id);
-        }
-    }
-
-    /**
-     * @return true if current user has instantiate permission on this
-     */
-    @JsonView(Views.LobbyI.class)
-    public Boolean getCanInstantiate() {
-        if (canInstantiate != null) {
-            return canInstantiate;
-        } else {
-            // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
-            Helper.printWegasStackTrace(new Exception());
-            return SecurityUtils.getSubject().isPermitted("GameModel:Instantiate:gm" + this.id);
-        }
-    }
-
-    public void setCanView(Boolean canView) {
-        this.canView = canView;
-    }
-
-    public void setCanEdit(Boolean canEdit) {
-        this.canEdit = canEdit;
-    }
-
-    public void setCanInstantiate(Boolean canInstantiate) {
-        this.canInstantiate = canInstantiate;
-    }
-
-    public void setCanDuplicate(Boolean canDuplicate) {
-        this.canDuplicate = canDuplicate;
     }
 
     @Override
@@ -449,10 +373,17 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         this.name = name;
     }
 
+    public Integer getUIVersion() {
+        return UIVersion;
+    }
+
+    public void setUIVersion(Integer UIVersion) {
+        this.UIVersion = UIVersion;
+    }
+
     /**
      * @return Current GameModel's status
      */
-    @JsonIgnore
     public Status getStatus() {
         return status;
     }
@@ -462,9 +393,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      *
      * @param status status to set
      */
-    @JsonIgnore
     public void setStatus(Status status) {
-        if (status == Status.DELETE){
+        if (status == Status.DELETE) {
             logger.error("SET GM {} STATUS TO DELETE", this);
             Helper.printWegasStackTrace(WegasErrorMessage.error("Setting gm status to DELETE"));
         }
@@ -923,7 +853,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
             try {
                 Pages pagesDAO = this.jcrProvider.getPages(this);
                 pagesDAO.delete();                                              // Remove existing pages
-                // Pay Attention: this.pages != this.getPages() !
+                // Pay Attention: this.pages != this.getPages() ! 
                 // this.pages contains deserialized pages, getPages() fetchs them from the jackrabbit repository
                 for (Entry<String, JsonNode> p : this.pages.entrySet()) {       // Add all pages
                     pagesDAO.store(new Page(p.getKey(), p.getValue()));
@@ -1145,6 +1075,13 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         return this.isProtected();
     }
 
+    /**
+     * Is this scenario protected ?
+     * A scenario is protected if it depends on a model (but the protection is disabled if the instances propagation
+     * is ongoing)
+     *
+     * @return
+     */
     public boolean isProtected() {
         // only scenarios which are based on a model are protected
         // but do no protect a gameModel when the propagation process is ongoing
@@ -1212,6 +1149,17 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Override
     public WegasPermission getAssociatedWritePermission() {
         return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAMEMODEL);
+    }
+
+    /**
+     * The permission which is required to translate a specific language within the game model
+     *
+     * @param lang the language to translate. no languages means "the permission to translate at least one language no matter which one"
+     *
+     * @return
+     */
+    public WegasPermission getAssociatedTranslatePermission(String lang) {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.TRANSLATE, WegasEntityPermission.EntityType.GAMEMODEL, lang);
     }
 
     /**

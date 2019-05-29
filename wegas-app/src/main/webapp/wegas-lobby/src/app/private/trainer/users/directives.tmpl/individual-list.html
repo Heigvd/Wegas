@@ -1,17 +1,29 @@
 <div class="card card--users" ng-repeat="player in players track by player.id">
-	<div ng-if="player.status != 'LIVE'" class="card__illustration illustration illustration--icon" illustration="ICON_light-red_exclamation-triangle_fa" title="Player failed to join the team"></div>
-	<div ng-if="player.status === 'LIVE' && !player.verifiedId" class="card__illustration illustration illustration--icon" illustration="ICON_grey_user_wif" title="✘ Unverified identity"></div>
-    <div ng-if="player.status === 'LIVE' && player.verifiedId"  class="card__illustration illustration illustration--icon" illustration="ICON_grey_id-card-o_fa" title="✔ verified {{player.homeOrg}} member"></div>
-	<div class="card__description">
-	    <div class="line line--primary">{{player.name}}</div>
-	</div>
-	<div class="card__actions">
-	    <a
-	    	class="button button--small button--round button--default-reverse button--label-off button--user-remove"
-	    	title="{{'TRAINER-MODALE-USERS-REMOVE-PLAYER-BTN' | translate}}"
-			confirmed-click="remove(player.id, player.teamId)"
-			ng-confirm-click="{{'TRAINER-MODALE-USERS-REMOVE-PLAYER-CONFIRM' | translate}}">
-	    	<span class="button__label">{{'TRAINER-MODALE-USERS-REMOVE-PLAYER-BTN' | translate}}</span>
-	    </a>
-	</div>
+    <div ng-if="player.status != 'LIVE'"
+         class="card__illustration illustration illustration--icon"
+         illustration="ICON_light-red_exclamation-triangle_fa"
+         title="Player failed to join the team">
+    </div>
+    <div ng-if="player.status === 'LIVE' && !player.verifiedId"
+         class="card__illustration illustration illustration--icon"
+         illustration="ICON_grey_user_wif"
+         title="{{'ADMIN-USERS-UNVERIFIED-ID'| translate}}">
+    </div>
+    <div ng-if="player.status === 'LIVE' && player.verifiedId"
+         class="card__illustration illustration illustration--icon"
+         illustration="ICON_grey_id-card-o_fa"
+         title="{{('ADMIN-USERS-VERIFIED-ID'| translate) + (player.homeOrg ? ' ('+ player.homeOrg + ')': '')}}">
+    </div>
+    <div class="card__description">
+        <div class="line line--primary">{{player.name}}</div>
+    </div>
+    <div class="card__actions">
+        <a
+            class="button button--small button--round button--default-reverse button--label-off button--user-remove"
+            title="{{'TRAINER-MODALE-USERS-REMOVE-PLAYER-BTN'| translate}}"
+            confirmed-click="remove(player.id, player.teamId)"
+            ng-confirm-click="{{'TRAINER-MODALE-USERS-REMOVE-PLAYER-CONFIRM'| translate}}">
+            <span class="button__label">{{'TRAINER-MODALE-USERS-REMOVE-PLAYER-BTN'| translate}}</span>
+        </a>
+    </div>
 </div>

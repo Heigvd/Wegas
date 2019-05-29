@@ -214,6 +214,7 @@ public class Transition extends AbstractEntity {
 
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
+        // same as the state (including the translator right) see issue #1441
         return this.getState().getRequieredUpdatePermission();
     }
 

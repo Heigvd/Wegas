@@ -34,7 +34,17 @@ YUI.add("wegas-simpledialogue", function(Y) {
             }, '.dialogue .response .responseElements li', this);
         },
         syncUI: function() {
-            this.currentDialogue = this.get("dialogueVariable.evaluated");
+            var dial = this.get("dialogueVariable.evaluated");
+            Y.Wegas.Facade.Variable.cache.getWithView(dial, "Extended", {
+                on: {
+                    success: Y.bind(function(e) {
+                        this.displayDialogue(e.response.entity);
+                    }, this)
+                }
+            });
+        },
+        displayDialogue: function(currentDialogue) {
+            this.currentDialogue = currentDialogue;
             this.set("disabled", !this.currentDialogue.getInstance().get("enabled"));
             var responseElements = this.get(CONTENTBOX).one('.dialogue .response .responseElements');
             if (responseElements) {

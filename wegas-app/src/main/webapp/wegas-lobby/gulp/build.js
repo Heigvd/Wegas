@@ -1,6 +1,7 @@
 'use strict';
 
 var gulp = require('gulp');
+var print = require('gulp-print').default;
 var paths = gulp.paths;
 var merge = require('merge-stream');
 
@@ -8,7 +9,7 @@ var $ = require('gulp-load-plugins')({
     pattern: ['gulp-*', 'main-bower-files', 'uglify-save-license', 'del']
 });
 
-gulp.task('html', ['inject'], function() {
+gulp.task('html', ['inject'], function(cb) {
 
     var htmlFilter = $.filter('*.html');
     var jsFilter = $.filter('**/*.js');
@@ -22,6 +23,9 @@ gulp.task('html', ['inject'], function() {
         .pipe($.ngAnnotate())
         .pipe($.cache($.uglify({
             preserveComments: $.uglifySaveLicense
+        }).on('error', function(error) {
+            console.log("Error: " + error);
+            cb(error);
         })))
         .pipe(jsFilter.restore());
     /* CSS COMPRESS */
@@ -49,7 +53,13 @@ gulp.task('html', ['inject'], function() {
 });
 // no compression on js/css
 // should also avoid concatenation ...
-gulp.task('debug-build', ['inject'], function() {
+gulp.task('debug-build', ['inject'], function(cb) {
+    gulp.src('../../../src/main/webapp/wegas-lobby/**/*.js')
+        .pipe($.cache($.uglify().on("error", function(error) {
+            console.log("Error: " + error);
+        }))).pipe(print());
+
+
     return gulp.src(paths.tmp + '/serve/*.jsp')
         .pipe($.useref())
         .pipe(gulp.dest(paths.dist + '/'))

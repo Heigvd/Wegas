@@ -290,7 +290,7 @@ angular.module('wegas.models.groups', [])
                             // NB: User has been thought to have multiple accounts (ways to authenticate)
                             // Actually, there is only one and this explains the below simplification
                             user.account = user.accounts[0];
-                            user.isVerified = user.account['@class'] === 'AaiAccount';
+                            user.isVerified = user.account.verified;
                         });
                     }
                     deferred.resolve(data);

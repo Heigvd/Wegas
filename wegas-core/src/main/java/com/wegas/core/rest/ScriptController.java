@@ -173,7 +173,7 @@ public class ScriptController {
 
         MergeHelper.visitMergeable(gameModel, Boolean.TRUE, new MergeHelper.MergeableVisitor() {
             @Override
-            public void visit(Mergeable target, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
+            public boolean visit(Mergeable target, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
                 if (target instanceof Script) {
                     Script script = (Script) target;
 
@@ -193,7 +193,9 @@ public class ScriptController {
                     } else {
                         logger.error("Script {} has no parent ({})!", script);
                     }
+                    return false;
                 }
+                return true;
             }
         });
 

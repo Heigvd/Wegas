@@ -32,8 +32,9 @@
     }
     .card__description{
         flex-grow: 1;
-        flex-basis: 130px;
-        min-width: 130px;
+        flex-shrink: 1;
+        flex-basis: 80px;
+        min-width: 80px;
         padding:0px ($card-base-padding*3);
         display: flex;
         flex-direction: column;

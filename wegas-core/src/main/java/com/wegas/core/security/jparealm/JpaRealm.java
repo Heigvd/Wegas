@@ -13,6 +13,7 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.persistence.Permission;
+import java.util.Date;
 import javax.ejb.EJBException;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -43,6 +44,22 @@ public class JpaRealm extends AuthorizingRealm {
         AccountFacade accountFacade = AccountFacade.lookup();
         try {
             JpaAccount account = accountFacade.findJpaByEmail(token.getUsername());
+
+            String resetToken = account.getToken();
+
+            if (resetToken != null) {
+                String[] tokenElemeents = resetToken.split(":");
+                Long timestamp = Long.parseLong(tokenElemeents[0], 10);
+                String theToken = tokenElemeents[1];
+
+                Long now = (new Date()).getTime();
+
+                if (now - timestamp < 1000 * 60 * 60) {// 1 hour
+                    SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), theToken, getName());
+                    info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
+                }
+            }
+
             SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
             info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
             return info;

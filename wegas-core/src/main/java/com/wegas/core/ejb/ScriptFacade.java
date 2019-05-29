@@ -37,6 +37,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
+import javax.script.Compilable;
 
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
@@ -69,7 +70,18 @@ public class ScriptFacade extends WegasAbstractFacade {
     /**
      * Keep static scripts pre-compiled
      */
-    private static final Map<String, Source> staticCache = new Helper.LRUCache<>(100);
+    private static final Map<String, CachedScript> staticCache = new Helper.LRUCache<>(100);
+
+    private static class CachedScript {
+
+        public CachedScript(Source script, String version) {
+            this.script = script;
+            this.version = version;
+        }
+        private Source script;
+
+        private String version;
+    }
 
     static {
         engine = Engine.create();
@@ -215,17 +227,24 @@ public class ScriptFacade extends WegasAbstractFacade {
         for (GameModelContent script : player.getGameModel().getScriptLibraryList()) {
             //ctx.setAttribute(ScriptEngine.FILENAME, "Server script " + script.getContentKey(), ScriptContext.ENGINE_SCOPE);
             try {
-                if (false) {
-                    String cacheFileName = "soft-" + script.getContentKey();
-                    if (staticCache.get(cacheFileName) == null) {
-                        Source src = Source.newBuilder("js", script.getContent(), "soft::" + script.getContentKey()).build();
-                        staticCache.putIfAbsent(cacheFileName, src);
-                    }
-                    context.eval(staticCache.get(cacheFileName));
-                } else{
-                    Source src = Source.newBuilder("js", script.getContent(), "soft::" + script.getContentKey()).build();
-                    context.eval(src);
+                String cacheFileName = "soft:" + player.getGameModel().getId() + ":" + script.getContentKey();
+                String version = script.getVersion().toString();
+
+                CachedScript cached = staticCache.get(cacheFileName);
+
+                if (cached == null) {
+                    staticCache.put(cacheFileName, new CachedScript(null, version));
+                    cached = staticCache.get(cacheFileName);
                 }
+
+                if (!cached.version.equals(version) || cached.script == null) {
+
+                    cached.script = Source.newBuilder("js", script.getContent(), cacheFileName).build();
+                    cached.version = version;
+                }
+
+                context.eval(staticCache.get(cacheFileName).script);
+
             } catch (PolyglotException | IOException ex) {
                 throw new WegasScriptException("Server script " + script.getContentKey(), ex.getMessage());
             }
@@ -282,14 +301,25 @@ public class ScriptFacade extends WegasAbstractFacade {
             root = currentPath.substring(0, index);
         }
         String cacheFileName;
-        for (File f : getJavaScriptsRecursively(root, scriptURI.split(";"))) {
-            cacheFileName = f.getPath() + f.lastModified();
-            if (staticCache.get(cacheFileName) == null) {
+        String version;
 
+        for (File f : getJavaScriptsRecursively(root, scriptURI.split(";"))) {
+            cacheFileName = "hard:" + f.getPath();
+            version = "" + f.lastModified();
+
+            CachedScript cached = staticCache.get(cacheFileName);
+
+            if (cached == null) {
+                staticCache.put(cacheFileName, new CachedScript(null, version));
+                cached = staticCache.get(cacheFileName);
+            }
+
+            if (!cached.version.equals(version) || cached.script == null) {
                 try {
-                    //( FileInputStream fis = new FileInputStream(f);  java.io.InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8)) {
-                    Source src = Source.newBuilder("js", f).build();
-                    staticCache.putIfAbsent(cacheFileName, src);
+
+                    cached.script = Source.newBuilder("js", f).build();
+                    cached.version = version;
+
                 } catch (IOException e) {
                     logger.warn("File {} was not found", f.getPath());
                     //} catch (ScriptException ex) {
@@ -298,7 +328,7 @@ public class ScriptFacade extends WegasAbstractFacade {
             }
             //try {
             //ctx.setAttribute(ScriptEngine.FILENAME, "Static Scripts " + f.getPath(), ScriptContext.ENGINE_SCOPE);
-            ctx.eval(staticCache.get(cacheFileName));
+            ctx.eval(staticCache.get(cacheFileName).script);
             logger.info("File {} successfully injected", f);
             /*} catch (ScriptException ex) { // script exception (Java -> JS -> throw)
                 throw new WegasScriptException(scriptURI, ex.getLineNumber(), ex.getMessage());
@@ -498,6 +528,17 @@ public class ScriptFacade extends WegasAbstractFacade {
      */
     private static final long SCRIPT_DELAY = 1000L;
 
+    /**
+     * Runs a script with a delay ({@value #SCRIPT_DELAY} ms)
+     *
+     * @param playerId player to run script as
+     * @param script   script
+     *
+     * @return script result
+     *
+     * @throws WegasScriptException when an error occurred
+     * @see #eval(Script, Map)
+     */
     public Object timeoutEval(Long playerId, Script script) throws WegasScriptException {
         requestManager.setPlayer(playerFacade.find(playerId));
         return this.eval(script, null, SCRIPT_DELAY);

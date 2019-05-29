@@ -23,7 +23,10 @@ public class NHClassLoader extends ClassLoader {
         "java.lang.System",
         "java.lang.Thread",
         "java.lang.Runtime",
-        "org.apache.shiro"
+        "org.apache.shiro",
+        "org.postgresql",
+        "java.sql",
+        "java.net"
     };
 
     Logger logger = LoggerFactory.getLogger(NHClassLoader.class);

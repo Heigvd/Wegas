@@ -354,7 +354,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
 
                 Wegas.Facade.GameModel.sendRequest({
                     request: '/' + Wegas.Facade.GameModel.get('currentGameModelId') + '/Library/'
-                        + this.get('library') + '/' + this.selectField.getValue(),
+                        + this.get('library') + '/' + this.currentScriptName,
                     cfg: {
                         method: 'PUT',
                         updateCache: false,
@@ -362,17 +362,20 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                             '@class': 'GameModelContent',
                             content: this.aceField.getValue(),
                             visibility: this.visibilityField.getValue(),
+                            version: this.scripts.get("val")[this.currentScriptName].version
                         }
                     },
                     on: Wegas.superbind({
-                        success: function() {
+                        success: function(e) {
                             this.showMessage('success', 'Script saved');
                             this.hideOverlay();
+
+                            this.scripts.get("val")[this.currentScriptName].version = e.response.entity.get("val").version;
 
                             if (this.get('library') === 'CSS') {
                                 this.updateStyleSheet(this.currentScriptName, this.aceField.getValue());
                             }
-                            if (this.get('library') === 'ClientScript') {
+                            else if (this.get('library') === 'ClientScript') {
                                 try {
                                     eval(this.aceField.getValue());
                                 } catch (e) {
@@ -399,7 +402,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
             ATTRS: {
                 library: {
                     type: 'string',
-                    value: 'Script' // Script, ClientScript or CSS
+                    value: 'ServerScript' // ServerScript, ClientScript or CSS
                 }
             }
         }

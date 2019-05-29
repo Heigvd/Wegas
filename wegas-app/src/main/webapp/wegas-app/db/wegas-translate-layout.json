@@ -1,0 +1,150 @@
+{
+    "type": "ResizableLayout",
+    "cssClass": "wegas-editview",
+    "plugins": [
+        {
+            "fn": "PopupListener"
+        },
+        {
+            "fn": "OnDeleteListener"
+        }
+    ],
+    "top": {
+        "height": 25,
+        "children": [
+            {
+                "type": "FlexList",
+                "direction": "horizontal",
+                "cssClass": "wegas-edit-maintoolbar",
+                "children": [
+                    {
+                        "type": "FlexList",
+                        "direction": "horizontal",
+                        "cssClass": "wegas-toolbar-title",
+                        "children": [
+                            {
+                                "type": "Button",
+                                "cssClass": "wegas-logo",
+                                "tooltip": "Back to lobby",
+                                "plugins": [
+                                    {
+                                        "fn": "OpenUrlAction",
+                                        "cfg": {
+                                            "url": "",
+                                            "target": "_self"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Text",
+                                "cssClass": "wegas-title"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "FlexList",
+                        "direction": "horizontal",
+                        "cssClass": "wegas-toolbar-menu",
+                        "children": [
+                            {
+                                "type": "Button",
+                                "label": "Edit",
+                                "cssClass": "wegas-advanced-feature",
+                                "plugins": [
+                                    {
+                                        "fn": "WidgetMenu",
+                                        "cfg": {
+                                            "children": [
+                                                {
+                                                    "type": "Button",
+                                                    "label": "Find & Replace",
+                                                    "plugins": [
+                                                        {
+                                                            "fn": "FindAndReplaceAction"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "EditorChat"
+                    },
+                    {
+                        "type": "FlexList",
+                        "direction": "horizontal",
+                        "cssClass": "wegas-button-toolbar",
+                        "children": [
+                            {
+                                "type": "UserLoginButton"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "left": {
+        "width": 300,
+        "children": [
+            {
+                "type": "TabView",
+                "id": "leftTabView",
+                "cssClass": "wegas-tabview-fullheight",
+                "children": [
+                    {
+                        "type": "Tab",
+                        "label": "Content",
+                        "cssClass": "editor-variables",
+                        "children": [
+                            {
+                                "type": "VariableTreeView",
+                                "dataSource": "Variable",
+                                "plugins": [
+                                    {
+                                        "fn": "EditorTVNodeLoader"
+                                    }, {
+                                        "fn": "WidgetToolbar"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "center": {
+        "width": "calc(100% - 300px)",
+        "children": [
+            {
+                "type": "TabView",
+                "cssClass": "wegas-tabview-fullheight",
+                "children": [
+                    {
+                        "type": "Tab",
+                        "id": "Translations",
+                        "label": "Translations",
+                        "selected": true,
+                        "plugins": [],
+                        "children": [
+                            {
+                                "type": "LanguagesManager",
+                                "plugins": [{
+                                        "fn": "Injector"
+                                    }]
+                            }
+                        ]
+                    }
+                ],
+                "plugins": [
+                ]
+            }
+        ]
+    }
+}

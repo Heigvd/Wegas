@@ -40,7 +40,7 @@ angular.module('wegas.models.users', [])
                             // Actually, there is only one and this explains the below simplification
                             _.each(data.updatedEntities, function(user) {
                                 user.account = user.accounts[0];
-                                user.isVerified = user.account['@class'] === 'AaiAccount';
+                                user.isVerified = user.account.verified;
                             });
                             users.cache.data = data.updatedEntities;
                             deferred.resolve(true);

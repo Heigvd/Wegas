@@ -412,7 +412,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
     private AbstractAccount hideEmail(AbstractAccount aa) {
         this.getEntityManager().detach(aa);
-        aa.setEmail(aa.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
+        aa.setEmail(Helper.anonymizeEmail(aa.getEmail()));
         return aa;
     }
 
