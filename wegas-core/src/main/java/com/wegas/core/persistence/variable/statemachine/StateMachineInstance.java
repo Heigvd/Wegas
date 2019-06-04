@@ -71,7 +71,7 @@ public class StateMachineInstance extends VariableInstance {
      *
      * @return the current state
      */
-    @JsonProperty("currentState")
+    @JsonIgnore
     public State getCurrentState() {
         final Map<Long, State> states = ((StateMachineDescriptor) this.findDescriptor()).getStatesAsMap();
         return states.get(this.currentStateId);
