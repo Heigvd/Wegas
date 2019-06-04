@@ -572,14 +572,10 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           />
         ) : (
           <SrcEditor
-            onChange={content => {
-              console.log('GET : ' + content);
-              dispatchStateAction({ type: 'SetContent', content: content });
-            }}
-            value={(() => {
-              console.log('SET : ' + getActualScriptContent(librariesState));
-              return getActualScriptContent(librariesState);
-            })()}
+            onChange={content =>
+              dispatchStateAction({ type: 'SetContent', content: content })
+            }
+            value={getActualScriptContent(librariesState)}
             language={getScriptLanguage(scriptType)}
             readonly={!isEditAllowed(librariesState)}
             onSave={onSaveLibrary}

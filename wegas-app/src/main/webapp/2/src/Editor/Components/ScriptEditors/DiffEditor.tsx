@@ -233,8 +233,6 @@ export function DiffEditor({
           const oldOriginalValue = originalModel.getValue();
           const oldModifiedlValue = modifiedModel.getValue();
           const oldLanguage = originalModel.getModeId();
-          originalModel.dispose();
-          modifiedModel.dispose();
           diffEditor
             .getOriginalEditor()
             .setModel(
@@ -413,7 +411,7 @@ export function DiffEditor({
           <IconButton
             icon="save"
             tooltip="Save current state"
-            onClick={() => onSave}
+            onClick={onSave}
           />
         )}
       </Toolbar.Header>
