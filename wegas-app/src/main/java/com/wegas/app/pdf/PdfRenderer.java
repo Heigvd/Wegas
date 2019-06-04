@@ -8,7 +8,6 @@
 package com.wegas.app.pdf;
 
 import com.lowagie.text.DocumentException;
-import com.wegas.app.pdf.helper.StringInputStream;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.game.GameModel;
@@ -16,6 +15,7 @@ import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -170,11 +170,13 @@ public class PdfRenderer implements Filter {
 
                 Tidy tidy = new Tidy();
                 tidy.setXmlOut(true);
+                tidy.setInputEncoding("UTF-8");
+                tidy.setOutputEncoding("UTF-8");
                 tidy.setTrimEmptyElements(false);
 
                 OutputStream os = new ByteArrayOutputStream();
 
-                InputStream iStream = new StringInputStream(content);
+                InputStream iStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
                 tidy.parse(iStream, os);
 
                 if (renderType != null && renderType.equals("pdf")) {
