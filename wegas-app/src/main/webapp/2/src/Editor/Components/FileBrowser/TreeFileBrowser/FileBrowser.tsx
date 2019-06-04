@@ -25,6 +25,10 @@ import { themeVar } from '../../../../Components/Theme';
 import { omit } from 'lodash';
 import { FileNode, isNodeDirectory, FileBrowserNode } from './FileBrowserNode';
 
+const grow = css({
+  flex: '1 1 auto',
+});
+
 export const hiddenFileBrowserStyle = css({
   display: 'none',
 });
@@ -428,7 +432,7 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
         return <div>Empty...</div>;
       } else if (node.file.name === '' && node.file.path === '/') {
         return (
-          <div>
+          <div className={grow}>
             {isNodeDirectory(node) ? (
               node.childrenIds.map((nodeKey: string) =>
                 renderNode(fileState.nodes[nodeKey]),
@@ -470,6 +474,7 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
       openFolder,
       selectFile,
       uploadFiles,
+      selectedFiles,
     ],
   );
 
@@ -477,7 +482,6 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
     (fileState: FileTreeState, files: IFile[]) => {
       const newFileState = fileState;
       for (const file of files) {
-        // debugger;
         newFileState.nodes[getAbsoluteFileName(file)] = isDirectory(file)
           ? {
               file: file,
@@ -517,7 +521,7 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
   }, [generateFileState]);
 
   return (
-    <div>
+    <div className={grow}>
       <div
         ref={dropZone}
         className={cx(
