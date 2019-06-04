@@ -2,7 +2,6 @@ import * as React from 'react';
 import { css } from 'emotion';
 import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
 import 'react-reflex/styles.css';
-import { DnDTabLayout } from './DnDTabs';
 import StateMachineEditor from '../StateMachineEditor';
 import PageDisplay from '../Page/PageDisplay';
 import TreeView from './../Variable/VariableTree';
@@ -11,6 +10,7 @@ import Editor from './../EntityEditor';
 import { omit } from 'lodash';
 import u from 'immer';
 import { ReparentableRoot } from '../Reparentable';
+import { DnDTabLayout } from './DnDTabLayout';
 
 const splitter = css({
   '&.reflex-container.vertical > .reflex-splitter': {
@@ -116,7 +116,7 @@ const defaultLayoutMap: ManagedLayoutMap = {
     '0': {
       type: 'ReflexLayoutNode',
       vertical: false,
-      children: ['1', '2', '3'],
+      children: ['1', '2', '4'],
     },
     '1': {
       type: 'TabLayoutNode',
@@ -128,21 +128,21 @@ const defaultLayoutMap: ManagedLayoutMap = {
       vertical: false,
       children: ['1', '2'],
     },
-    '3': {
-      type: 'ReflexLayoutNode',
-      vertical: true,
-      children: ['4', '5'],
-    },
+    // '3': {
+    //   type: 'ReflexLayoutNode',
+    //   vertical: true,
+    //   children: ['4', '5'],
+    // },
     '4': {
       type: 'TabLayoutNode',
       vertical: false,
       children: ['3'],
     },
-    '5': {
-      type: 'TabLayoutNode',
-      vertical: false,
-      children: ['4'],
-    },
+    // '5': {
+    //   type: 'TabLayoutNode',
+    //   vertical: false,
+    //   children: ['4'],
+    // },
   },
 };
 
@@ -293,11 +293,18 @@ interface TabAction extends Action {
   tabKey: string;
 }
 
-export type DropType = 'TAB' | 'LEFT' | 'RIGHT' | 'TOP' | 'BOTTOM' | 'NEW';
+export type DropType = 'LEFT' | 'RIGHT' | 'TOP' | 'BOTTOM' | 'NEW';
 
 interface ActionDrop extends TabAction {
   type: DropType;
   destTabLayoutKey: string;
+}
+
+interface ActionDropTab extends TabAction {
+  type: 'TAB';
+  parentKey: string;
+  tabKey: string;
+  tabIndex: number;
 }
 
 interface ActionDelete extends TabAction {
@@ -308,7 +315,7 @@ interface ActionDrag extends TabAction {
   type: 'DRAG';
 }
 
-type TabLayoutsAction = ActionDrop | ActionDelete | ActionDrag;
+type TabLayoutsAction = ActionDrop | ActionDelete | ActionDrag | ActionDropTab;
 
 interface Map<T> {
   [id: string]: T;
@@ -391,12 +398,20 @@ const setLayout = (layouts: ManagedLayoutMap, action: TabLayoutsAction) =>
         layouts.layoutMap[srcTabLayoutKey.parentKey] = oldTabLayout;
 
         if (action.type === 'TAB') {
-          layouts.layoutMap = insertTab(
-            layouts.layoutMap,
-            action.destTabLayoutKey,
+          let index = action.tabIndex;
+
+          if (
+            action.parentKey === srcTabLayoutKey.parentKey &&
+            action.tabIndex > srcTabLayoutKey.childIndex
+          ) {
+            index -= 1;
+          }
+
+          layouts.layoutMap[action.parentKey].children.splice(
+            index,
+            0,
             action.tabKey,
           );
-          logLayouts(layouts.layoutMap);
         } else if (action.type !== 'DELETE') {
           const destParentKeyAndIndex = findParentLayoutKeyAndLayoutIndex(
             layouts.layoutMap,
@@ -503,68 +518,87 @@ function MainLinearLayout(props: LinearLayoutProps) {
     });
   };
 
-  const onDeleteTab = (tabkey: string) => {
+  const onDropTab = (parentLayoutKey: string) => (index: number) => (item: {
+    id: number;
+    type: string;
+  }) =>
+    dispatchLayout({
+      type: 'TAB',
+      parentKey: parentLayoutKey,
+      tabKey: String(item.id),
+      tabIndex: index,
+    });
+
+  const onDeleteTab = (tabkey: string) =>
     dispatchLayout({
       type: 'DELETE',
       tabKey: tabkey,
     });
-  };
 
-  const onNewTab = (layoutKey: string) => (tabKey: string) => {
+  const onNewTab = (layoutKey: string) => (tabKey: string) =>
     dispatchLayout({
       type: 'NEW',
       tabKey: tabKey,
       destTabLayoutKey: layoutKey,
     });
-  };
 
   const renderLayouts = (layoutKey?: string) => {
     const currentLayoutKey = layoutKey ? layoutKey : layout.rootKey;
     const currentLayout = layout.layoutMap[currentLayoutKey];
-    switch (currentLayout.type) {
-      case 'TabLayoutNode': {
-        return (
-          <DnDTabLayout
-            key={currentLayoutKey}
-            components={currentLayout.children.map(key => {
-              return {
-                id: Number(key),
-                ...tabs[key],
-              };
-            })}
-            selectItems={getUnusedTabs(layout.layoutMap, tabs)}
-            allowDrop={layout.isDragging}
-            vertical={currentLayout.vertical}
-            onDrop={onDrop(currentLayoutKey)}
-            onDeleteTab={onDeleteTab}
-            onDrag={onDrag}
-            onNewTab={onNewTab(currentLayoutKey)}
-          />
-        );
-      }
-      case 'ReflexLayoutNode': {
-        const rendered: JSX.Element[] = [];
-        for (let i = 0; i < currentLayout.children.length; i += 1) {
-          rendered.push(
-            <ReflexElement key={currentLayout.children[i]}>
-              {renderLayouts(currentLayout.children[i])}
-            </ReflexElement>,
+    if (currentLayout) {
+      switch (currentLayout.type) {
+        case 'TabLayoutNode': {
+          return (
+            <DnDTabLayout
+              key={currentLayoutKey}
+              components={currentLayout.children.map(key => {
+                return {
+                  id: Number(key),
+                  ...tabs[key],
+                };
+              })}
+              selectItems={getUnusedTabs(layout.layoutMap, tabs)}
+              allowDrop={layout.isDragging}
+              activeId={
+                currentLayout.children.indexOf(layout.draggedKey) >= 0
+                  ? Number(layout.draggedKey)
+                  : undefined
+              }
+              vertical={currentLayout.vertical}
+              onDrop={onDrop(currentLayoutKey)}
+              onDropTab={onDropTab(currentLayoutKey)}
+              onDeleteTab={onDeleteTab}
+              onDrag={onDrag}
+              onNewTab={onNewTab(currentLayoutKey)}
+            />
           );
-          if (i < currentLayout.children.length - 1) {
-            rendered.push(
-              <ReflexSplitter key={currentLayout.children[i] + 'SEPARATOR'} />,
-            );
-          }
         }
-        return (
-          <ReflexContainer
-            className={splitter}
-            // Orientation is inverted to keep same logic in TabLayoutNode and ReflexLayoutNode (vertical==true : v, vertical==false : >)
-            orientation={currentLayout.vertical ? 'horizontal' : 'vertical'}
-          >
-            {rendered}
-          </ReflexContainer>
-        );
+        case 'ReflexLayoutNode': {
+          const rendered: JSX.Element[] = [];
+          for (let i = 0; i < currentLayout.children.length; i += 1) {
+            rendered.push(
+              <ReflexElement key={currentLayout.children[i]}>
+                {renderLayouts(currentLayout.children[i])}
+              </ReflexElement>,
+            );
+            if (i < currentLayout.children.length - 1) {
+              rendered.push(
+                <ReflexSplitter
+                  key={currentLayout.children[i] + 'SEPARATOR'}
+                />,
+              );
+            }
+          }
+          return (
+            <ReflexContainer
+              className={splitter}
+              // Orientation is inverted to keep same logic in TabLayoutNode and ReflexLayoutNode (vertical==true : v, vertical==false : >)
+              orientation={currentLayout.vertical ? 'horizontal' : 'vertical'}
+            >
+              {rendered}
+            </ReflexContainer>
+          );
+        }
       }
     }
   };
