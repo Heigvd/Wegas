@@ -35,13 +35,12 @@ public class Script implements Serializable, Mergeable {
      */
     @Lob
     @WegasEntityProperty(
-            optional = false, nullable= false, proposal = EmptyString.class,
+            optional = false, nullable = false, proposal = EmptyString.class,
             searchable = true, view = @View(label = "Script Content"))
     private String content = "";
     /**
      *
      */
-    @JsonIgnore
     @WegasEntityProperty(
             optional = false, nullable = false,
             view = @View(label = "Language", value = ScriptLanguageSelector.class)

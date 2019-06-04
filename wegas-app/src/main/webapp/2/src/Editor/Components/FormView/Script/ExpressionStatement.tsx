@@ -1,6 +1,8 @@
 import generate from '@babel/generator';
 import { parseExpression } from '@babel/parser';
 import {
+  binaryExpression,
+  BinaryExpression,
   booleanLiteral,
   callExpression,
   EmptyStatement,
@@ -8,13 +10,13 @@ import {
   ExpressionStatement,
   expressionStatement,
   identifier,
+  isBinaryExpression,
   isCallExpression,
   isEmptyStatement,
   isExpressionStatement,
   numericLiteral,
   SpreadElement,
   stringLiteral,
-  isBinaryExpression,
 } from '@babel/types';
 import Form from 'jsoninput';
 import * as React from 'react';
@@ -26,8 +28,6 @@ import {
   isVariableCall,
   variableName,
 } from './variableAST';
-import { binaryExpression } from '@babel/types';
-import { BinaryExpression } from '@babel/types';
 
 interface ImpactProps {
   stmt: ExpressionStatement | EmptyStatement;

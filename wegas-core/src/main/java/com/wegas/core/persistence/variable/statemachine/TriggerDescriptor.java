@@ -16,7 +16,7 @@ import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
-import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.ValueGenerators.EmptyScript;
 import com.wegas.editor.ValueGenerators.False;
 import com.wegas.editor.ValueGenerators.True;
 import com.wegas.editor.View.ScriptView;
@@ -71,7 +71,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     @Transient
     @JsonView(Views.EditorI.class)
     @WegasEntityProperty(
-            nullable = false, optional = false, proposal = EmptyString.class,
+            nullable = false, optional = false, proposal = EmptyScript.class,
             view = @View(label = "Condition", value = ScriptView.Condition.class))
     private Script triggerEvent;
     /**
@@ -80,7 +80,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     @Transient
     @JsonView(Views.EditorI.class)
     @WegasEntityProperty(
-            nullable = false, optional = false, proposal = EmptyString.class,
+            nullable = false, optional = false, proposal = EmptyScript.class,
             view = @View(label = "Impact", value = ScriptView.Impact.class))
     private Script postTriggerEvent;
 

@@ -57,7 +57,10 @@ export const ActionCreator = {
   }) => createAction(ActionType.VARIABLE_CREATE, data),
   CLOSE_EDITOR: () => createAction(ActionType.CLOSE_EDITOR, {}),
   MANAGED_MODE: (data: {
-    deletedEntities: NormalizedData;
+    // Nearly empty shells
+    deletedEntities: {
+      [K in keyof NormalizedData]: { [id: string]: IAbstractEntity }
+    };
     updatedEntities: NormalizedData;
   }) => createAction(ActionType.MANAGED_MODE, data),
   PAGE_EDIT_MODE: (data: boolean) =>
@@ -86,7 +89,7 @@ export type StateActions<
 
 export function managedMode(payload: ManagedMode) {
   return ActionCreator.MANAGED_MODE({
-    deletedEntities: normalizeDatas(payload.deletedEntities as any),
-    updatedEntities: normalizeDatas(payload.updatedEntities as any),
+    deletedEntities: normalizeDatas(payload.deletedEntities),
+    updatedEntities: normalizeDatas(payload.updatedEntities),
   });
 }

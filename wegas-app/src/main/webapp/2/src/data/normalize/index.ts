@@ -19,6 +19,7 @@ export interface NormalizedData {
   };
 }
 
+type RootType = NormalizedData[keyof NormalizedData][0]
 export const discriminant = (input: { '@class': string }): keyof NormalizedData => {
   const cls: string = input['@class'];
   if (cls === 'GameModel') {
@@ -43,11 +44,11 @@ export const discriminant = (input: { '@class': string }): keyof NormalizedData 
 };
 
 export function normalizeDatas(
-  data: (IGameModel | IVariableInstance | IVariableDescriptor)[] = [],
+  data: IAbstractEntity[] = [],
 ): NormalizedData {
   return data.reduce(
     (prev, variable) => {
-      prev[discriminant(variable)][variable.id!] = variable;
+      prev[discriminant(variable)][variable.id!] = variable as RootType;
       return prev;
     },
     {
