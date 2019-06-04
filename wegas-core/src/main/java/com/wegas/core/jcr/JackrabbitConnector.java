@@ -21,6 +21,7 @@ import javax.jcr.Repository;
 import org.apache.jackrabbit.oak.Oak;
 import org.apache.jackrabbit.oak.jcr.Jcr;
 import org.apache.jackrabbit.oak.plugins.document.DocumentNodeStore;
+import org.apache.jackrabbit.oak.plugins.document.LeaseCheckMode;
 import org.apache.jackrabbit.oak.plugins.document.VersionGarbageCollector;
 import static org.apache.jackrabbit.oak.plugins.document.mongo.MongoDocumentNodeStoreBuilder.newMongoDocumentNodeStoreBuilder;
 import org.apache.jackrabbit.oak.segment.SegmentNodeStore;
@@ -63,8 +64,9 @@ public class JackrabbitConnector implements Serializable {
                         hostPort += ":" + uri.getPort();
                     }
                     String dbName = uri.getPath().replaceFirst("/", "");
+
                     nodeStore = newMongoDocumentNodeStoreBuilder()
-                            .setLeaseCheck(false)
+                            .setLeaseCheckMode(LeaseCheckMode.DISABLED)
                             .setMongoDB("mongodb://" + hostPort + "/?readConcernLevel=majority", dbName, 0)
                             .build();
                     JackrabbitConnector.repo = new Jcr(new Oak(nodeStore)).createRepository();

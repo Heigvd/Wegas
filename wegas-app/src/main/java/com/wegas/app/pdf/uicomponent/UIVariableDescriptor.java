@@ -7,6 +7,7 @@
  */
 package com.wegas.app.pdf.uicomponent;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.app.pdf.helper.UIHelper;
 import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.persistence.game.Player;
@@ -271,7 +272,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             // Only care about non-JsonIgnored getter
             if (m.getName().matches("^get.*")
                     && m.getParameterTypes().length == 0
-                    && m.getAnnotation(com.fasterxml.jackson.annotation.JsonIgnore.class) == null) {
+                    && m.getAnnotation(JsonIgnore.class) == null) {
                 try {
                     Object invoke = m.invoke(o);
                     String name, value;

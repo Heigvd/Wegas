@@ -20,7 +20,7 @@ public class ApplicationConfig extends ResourceConfig {
 
     public ApplicationConfig() {
 
-        register(com.wegas.core.rest.util.JacksonFeature.class);
+        register(JacksonFeature.class);
         register(MultiPartFeature.class);
 
         // register REST controllers from those packages :

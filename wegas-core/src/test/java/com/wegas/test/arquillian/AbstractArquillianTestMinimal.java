@@ -46,8 +46,13 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.config.Ini;
 import org.apache.shiro.config.IniSecurityManagerFactory;
+import org.apache.shiro.env.DefaultEnvironment;
+import org.apache.shiro.env.Environment;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.web.env.IniWebEnvironment;
+import org.apache.shiro.web.env.ResourceBasedWebEnvironment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -177,6 +182,14 @@ public abstract class AbstractArquillianTestMinimal {
     @Before
     public void init() {
         this.startTime = System.currentTimeMillis();
+
+        Ini ini = Ini.fromResourcePath("classpath:shiro.ini");
+        IniWebEnvironment env = new IniWebEnvironment();
+        env.setIni(ini);
+        env.init();
+
+        //SecurityUtils.setSecurityManager(env.getSecurityManager());
+
         SecurityUtils.setSecurityManager(new IniSecurityManagerFactory("classpath:shiro.ini").getInstance());
         TestHelper.emptyDBTables();
 

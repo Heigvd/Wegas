@@ -24,7 +24,6 @@ import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.json.Json;
 import javax.json.JsonArray;
-import javax.json.JsonObject;
 import javax.json.JsonPatch;
 import javax.json.JsonReader;
 import javax.ws.rs.*;

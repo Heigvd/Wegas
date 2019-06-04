@@ -9,7 +9,7 @@
 
     <groupId>com.wegas</groupId>
     <artifactId>wegas-project</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>4.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>wegas-core</module>
@@ -93,12 +93,16 @@
 
         <shiro.version>1.4.0</shiro.version>
         <jdk.version>1.8</jdk.version>
-        <payara.version>5.191</payara.version>
-        <payara-api.version>5.191</payara-api.version>
+        <payara.version>5.192</payara.version>
+        <payara-api.version>5.192</payara-api.version>
         <junit.version>4.12</junit.version>
         <arquillian.version>1.4.1.Final</arquillian.version>
         <exec.plugin.version>1.2</exec.plugin.version>
-        
+
+        <jackson.version>2.9.8</jackson.version>
+        <jersey.version>2.28</jersey.version>
+        <eclipselink.version>2.7.4</eclipselink.version>
+
         <profile.dependent.scope>compile</profile.dependent.scope>
 
         <slf4j.version>1.7.25</slf4j.version>
@@ -131,12 +135,12 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
+            <!--<dependency>
                 <groupId>javax</groupId>
                 <artifactId>javaee-api</artifactId>
-                <version>8.0.1-b5</version>
+                <version>8.0.1</version>
                 <scope>provided</scope>
-            </dependency>
+            </dependency>-->
             <dependency>
                 <groupId>commons-collections</groupId>
                 <artifactId>commons-collections</artifactId>
@@ -249,7 +253,7 @@
             <dependency>
                 <groupId>org.xhtmlrenderer</groupId>
                 <artifactId>flying-saucer-pdf</artifactId>
-                <version>9.1.16</version>
+                <version>9.1.18</version>
                 <type>jar</type>
             </dependency>
             <dependency>
@@ -309,7 +313,7 @@
                 <version>1.0.0.Alpha7</version>
                 <scope>test</scope>
             </dependency>
-        
+
             <dependency>
                 <groupId>org.eu.ingwar.tools</groupId>
                 <artifactId>arquillian-suite-extension</artifactId>
@@ -337,7 +341,7 @@
                 <artifactId>reflections</artifactId>
                 <version>0.9.11</version>
             </dependency>
-        
+
             <dependency>
                 <groupId>net.sourceforge.htmlunit</groupId>
                 <artifactId>htmlunit</artifactId>
@@ -372,7 +376,7 @@
             <dependency>
                 <groupId>org.eclipse.microprofile</groupId>
                 <artifactId>microprofile</artifactId>
-                <version>2.1</version>
+                <version>2.2</version>
                 <type>pom</type>
                 <scope>provided</scope>
             </dependency>
@@ -381,15 +385,98 @@
                 <groupId>fish.payara.extras</groupId>
                 <artifactId>payara-embedded-all</artifactId>
                 <version>${payara.version}</version>
-                <scope>provided</scope>
+                <scope>test</scope>
             </dependency>
-            
+
             <!-- Neo4j driver -->
             <dependency>
                 <groupId>org.neo4j.driver</groupId>
                 <artifactId>neo4j-java-driver</artifactId>
                 <version>1.2.1</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+                <type>jar</type>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+                <type>jar</type>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.core</artifactId>
+                <version>${eclipselink.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.cache</groupId>
+                <artifactId>cache-api</artifactId>
+                <version>1.1.0</version>
+                <type>jar</type>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-multipart</artifactId>
+                <version>${jersey.version}</version>
+                <type>jar</type>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.jaxrs</groupId>
+                <artifactId>jackson-jaxrs-base</artifactId>
+                <version>${jackson.version}</version>
+                <type>jar</type>
+                <!--<scope>provided</scope>-->
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.jaxrs</groupId>
+                <artifactId>jackson-jaxrs-json-provider</artifactId>
+                <version>${jackson.version}</version>
+                <type>jar</type>
+                <!--<scope>provided</scope>-->
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-server</artifactId>
+                <version>${jersey.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-common</artifactId>
+                <version>2.28</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.corba</groupId>
+                <artifactId>glassfish-corba-omgapi</artifactId>
+                <version>4.1.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.hazelcast</groupId>
+                <artifactId>hazelcast</artifactId>
+                <version>3.12</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-api</artifactId>
+                <version>8.0.1</version>
+                <scope>provided</scope>
+            </dependency>
+
+
         </dependencies>
     </dependencyManagement>
 
@@ -402,7 +489,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.0</version>
+                    <version>3.8.1</version>
                     <configuration>
                         <optimize>${build.optimize}</optimize>
                         <source>${jdk.version}</source>
@@ -435,7 +522,7 @@
                         <dependency>
                             <groupId>org.eclipse.persistence</groupId>
                             <artifactId>org.eclipse.persistence.jpa</artifactId>
-                            <version>2.7.4</version>
+                            <version>${eclipselink.version}</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -443,7 +530,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.1.2</version>
                     <configuration>
                         <archive>
                             <manifest>
@@ -458,7 +545,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
-                    <version>3.2.2</version>
+                    <version>3.2.3</version>
                     <configuration>
                         <failOnMissingWebXml>false</failOnMissingWebXml>
                     </configuration>
@@ -480,7 +567,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -693,7 +780,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <version>3.0.5</version>
+                <version>3.0.55</version>
                 <configuration>
                     <threshold>Normal</threshold>
                     <effort>Min</effort>
@@ -719,7 +806,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.1.0</version>
                 <configuration>
                     <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
                     <configLocation>sun_checks.xml</configLocation>
@@ -735,7 +822,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>3.12.0</version>
                 <configuration>
                     <rulesets>http://pmd.sourceforge.net/rules/index.html
                         <ruleset>/rulesets/java/braces.xml</ruleset>
@@ -775,6 +862,7 @@
         </plugins>
     </reporting>
 
+    <!--
     <repositories>
         <repository>
             <id>maven2-repository.dev.java.net</id>
@@ -794,11 +882,12 @@
             <url>http://jsdoctk-plugin.googlecode.com/svn/repo</url>
         </repository>
     </repositories>
+    -->
 
     <pluginRepositories>
-        <pluginRepository>
+        <!--<pluginRepository>
             <id>jsdoctk2</id>
             <url>http://jsdoctk-plugin.googlecode.com/svn/repo</url>
-        </pluginRepository>
+        </pluginRepository>-->
     </pluginRepositories>
 </project>
