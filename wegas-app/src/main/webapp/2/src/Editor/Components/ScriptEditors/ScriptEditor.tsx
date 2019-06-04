@@ -583,6 +583,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             language={getScriptLanguage(scriptType)}
             readonly={!isEditAllowed(librariesState)}
             onSave={onSaveLibrary}
+            syncIO={true}
           />
         )}
       </Toolbar.Content>

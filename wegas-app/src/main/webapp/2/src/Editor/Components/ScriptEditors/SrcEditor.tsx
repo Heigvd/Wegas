@@ -4,12 +4,12 @@ import { SizedDiv } from '../../../Components/SizedDiv';
 
 export interface EditorProps {
   value?: string;
+  syncIO?: boolean;
   uri?: 'internal://page.json';
   readonly?: boolean;
   minimap?: boolean;
   language?: 'javascript' | 'css' | 'json';
   onChange?: (value: string) => void;
-  changeDelay?: number;
   onBlur?: (value: string) => void;
   onSave?: (value: string) => void;
 }
@@ -27,7 +27,7 @@ function SrcEditor({
   minimap,
   language,
   onChange,
-  changeDelay,
+  syncIO,
   onBlur,
   onSave,
 }: EditorProps) {
@@ -36,9 +36,7 @@ function SrcEditor({
     import('monaco-editor').editor.IStandaloneCodeEditor
   >();
   const oldValue = React.useRef<string>('');
-  const delayed = React.useRef<boolean>(false);
-
-  const delay = changeDelay !== undefined ? changeDelay : 50;
+  const values = React.useRef<string[]>([]);
 
   React.useEffect(() => {
     Promise.all([
@@ -79,11 +77,21 @@ function SrcEditor({
   }, []); //eslint-disable-line react-hooks/exhaustive-deps
 
   React.useEffect(() => {
-    if (editor && value !== undefined && oldValue.current !== value) {
-      oldValue.current = value;
-      editor.setValue(oldValue.current);
+    if (editor && value) {
+      if (syncIO && values.current.length > 0) {
+        if (value !== values.current[0]) {
+          editor.setValue(value);
+        } else {
+          values.current.shift();
+          if (values.current.length > 0 && onChange) {
+            onChange(values.current[0]);
+          }
+        }
+      } else {
+        editor.setValue(value);
+      }
     }
-  }, [value, editor]);
+  }, [value, editor, onChange, syncIO]);
 
   React.useEffect(() => {
     if (editor) {
@@ -143,20 +151,19 @@ function SrcEditor({
   React.useEffect(() => {
     if (editor && onChange) {
       const handler = editor.onDidChangeModelContent(() => {
-        if (!delayed.current) {
-          delayed.current = true;
-          setTimeout(() => {
-            oldValue.current = editor.getValue();
-            onChange(editor.getValue());
-            return () => {
-              delayed.current = false;
-            };
-          }, delay);
+        const newValue = editor.getValue();
+        if (syncIO) {
+          if (values.current.length === 0) {
+            onChange(newValue);
+          }
+          values.current.push(newValue);
+        } else {
+          onChange(newValue);
         }
       });
       return () => handler.dispose();
     }
-  }, [editor, onChange, delay]);
+  }, [editor, onChange, syncIO]);
 
   React.useEffect(() => {
     if (editor) {
@@ -192,12 +199,3 @@ function SrcEditor({
 }
 
 export default SrcEditor;
-
-// export default React.memo(SrcEditor, (a, b) => {
-//   Object.keys(a).forEach(key => {
-//     if (a[key] !== b[key]) {
-//       console.log(key, a[key], b[key]);
-//     }
-//   });
-//   return false;
-// });
