@@ -443,6 +443,10 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
           <FileBrowserNode
             key={getAbsoluteFileName(node.file)}
             node={node}
+            selected={
+              selectedFiles &&
+              selectedFiles[getAbsoluteFileName(node.file)] !== undefined
+            }
             openFolder={openFolder}
             selectFile={selectFile}
             addNewDirectory={addNewDirectory}

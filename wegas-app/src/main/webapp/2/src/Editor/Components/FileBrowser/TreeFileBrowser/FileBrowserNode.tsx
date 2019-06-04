@@ -16,6 +16,10 @@ import { css, cx } from 'emotion';
 import { themeVar } from '../../../../Components/Theme';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 
+const selectedRow = css({
+  backgroundColor: themeVar.primaryLighterColor,
+});
+
 const hoverRow = css({
   cursor: 'pointer',
   ':hover': {
@@ -51,6 +55,7 @@ const getIconForFileType = (fileType: string): IconProp => {
 
 interface FileBrowserNodeProps {
   node: FileNode;
+  selected?: boolean;
   openFolder: (node: FileNode, open?: boolean) => void;
   selectFile: (file: FileNode) => void;
   addNewDirectory: (file: IFile) => void;
@@ -66,6 +71,7 @@ export function FileBrowserNode(
 ) {
   const {
     node,
+    selected,
     openFolder,
     selectFile,
     addNewDirectory,
@@ -108,9 +114,6 @@ export function FileBrowserNode(
       }
       return () => {
         clearTimeout(openTimeout);
-        // if (!dropZoneProps.isOver && dropZoneProps.canDrop) {
-        //   closeFolder(node.file);
-        // }
       };
     }
   }, [dropZoneProps, node, openFolder]);
@@ -149,6 +152,7 @@ export function FileBrowserNode(
               ? dropZoneStyle
               : '',
             hoverRow,
+            selected ? selectedRow : '',
           )}
           onClick={() => selectFile(node)}
         >
