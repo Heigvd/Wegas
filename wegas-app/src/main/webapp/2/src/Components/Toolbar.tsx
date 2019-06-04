@@ -54,7 +54,7 @@ export const Toolbar = Object.assign(
     },
     Content(props: { children?: React.ReactNode; className?: string }) {
       return (
-        <div className={`${content} ${props.className || ''}`}>
+        <div className={`${content} ${props.className || ''} ${flex}`}>
           {props.children}
         </div>
       );
