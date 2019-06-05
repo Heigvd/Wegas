@@ -17,8 +17,12 @@ class PageDisplay extends React.Component<PageDisplayProps> {
   editorValue: string = '';
   onSave = (value: string) => {
     if (this.props.pageId != null) {
-      const p = JSON.parse(value);
-      this.props.dispatch(Actions.PageActions.patch(this.props.pageId, p));
+      try {
+        const p = JSON.parse(value);
+        this.props.dispatch(Actions.PageActions.patch(this.props.pageId, p));
+      } catch (e) {
+        alert(`There's a syntax error in your script : \n${e}`);
+      }
     }
   };
   render() {
@@ -44,10 +48,11 @@ class PageDisplay extends React.Component<PageDisplayProps> {
                     if (state == null && pageId != null) {
                       dispatch(Actions.PageActions.get(pageId));
                     }
+                    this.editorValue = JSON.stringify(state, null, 2);
                     return (
                       <SrcEditor
                         key="srcEditor"
-                        value={JSON.stringify(state, null, 2)}
+                        value={this.editorValue}
                         uri="internal://page.json"
                         language="json"
                         onChange={val => {

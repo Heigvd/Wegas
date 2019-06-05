@@ -140,59 +140,57 @@ export function DiffEditor({
   }, [diffEditor, onResolved, idx]);
 
   React.useEffect(() => {
-    Promise.all([
-      import('monaco-editor'),
-      import('../../../page-schema.build'),
-    ]).then(([monaco, t]) => {
-      monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-        validate: true,
-        schemas: [
-          {
-            fileMatch: ['page.json'],
-            uri: 'internal://page-schema.json',
-            schema: (t as any).schema,
-          },
-        ],
-      });
+    if (!diffEditor) {
+      Promise.all([
+        import('monaco-editor'),
+        import('../../../page-schema.build'),
+      ]).then(([monaco, t]) => {
+        monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+          validate: true,
+          schemas: [
+            {
+              fileMatch: ['page.json'],
+              uri: 'internal://page-schema.json',
+              schema: (t as any).schema,
+            },
+          ],
+        });
 
-      if (diffEditor) {
-        diffEditor.dispose();
-      }
-      if (diffNavigator.current) {
-        diffNavigator.current.dispose();
-      }
-
-      if (container.current) {
-        const tempDiffEditor = monaco.editor.createDiffEditor(
-          container.current,
-          {
-            theme: 'vs-dark',
-          },
-        );
-        tempDiffEditor.onDidUpdateDiff(() => {
-          if (tempDiffEditor) {
-            const changes = tempDiffEditor.getLineChanges();
-            if (changes && changes.length === 0) {
-              setIdx(-1);
-            } else {
-              setIdx(0);
+        if (container.current) {
+          if (!diffEditor) {
+            const tempDiffEditor = monaco.editor.createDiffEditor(
+              container.current,
+              {
+                theme: 'vs-dark',
+              },
+            );
+            tempDiffEditor.onDidUpdateDiff(() => {
+              if (tempDiffEditor) {
+                const changes = tempDiffEditor.getLineChanges();
+                if (changes && changes.length === 0) {
+                  setIdx(-1);
+                } else {
+                  setIdx(0);
+                }
+              }
+            });
+            tempDiffEditor.setModel({
+              original: monaco.editor.createModel(''),
+              modified: monaco.editor.createModel(''),
+            });
+            if (diffNavigator.current) {
+              diffNavigator.current.dispose();
             }
+            diffNavigator.current = monaco.editor.createDiffNavigator(
+              tempDiffEditor,
+              { ignoreCharChanges: true },
+            ) as ExtendedDiffNavigator;
+
+            setDiffEditor(tempDiffEditor);
           }
-        });
-        tempDiffEditor.setModel({
-          original: monaco.editor.createModel(''),
-          modified: monaco.editor.createModel(''),
-        });
-
-        diffNavigator.current = monaco.editor.createDiffNavigator(
-          tempDiffEditor,
-          { ignoreCharChanges: true },
-        ) as ExtendedDiffNavigator;
-
-        setDiffEditor(tempDiffEditor);
-      }
-    });
-
+        }
+      });
+    }
     return () => {
       if (diffNavigator.current) {
         diffNavigator.current.dispose();
@@ -209,7 +207,7 @@ export function DiffEditor({
         diffEditor.dispose();
       }
     };
-  }, []); //eslint-disable-line react-hooks/exhaustive-deps
+  }, [diffEditor]);
 
   React.useEffect(() => {
     if (diffEditor && language) {

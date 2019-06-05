@@ -2,6 +2,45 @@ import { css } from 'emotion';
 import * as React from 'react';
 import { SizedDiv } from '../../../Components/SizedDiv';
 
+const overflowHide = css({
+  overflow: 'hidden',
+  width: '100%',
+  height: '100%',
+});
+
+/**
+ * useEditorValue is a hook that updates an editor value when the value change
+ *
+ * @param value - the value to insert in the editor
+ * @param editor - the monaco editor
+ * @param syncIO - the flag that says if the editor is sync with the component
+ * @param onChange - the function called when the editor value change
+ * @param values - the fifo containing the history of the changed content
+ */
+export const useEditorValue = (
+  value?: string,
+  editor?: import('monaco-editor').editor.IStandaloneCodeEditor,
+  syncIO?: boolean,
+  onChange?: (value: string) => void,
+  values?: React.MutableRefObject<string[]>,
+) =>
+  React.useEffect(() => {
+    if (editor !== undefined && value !== undefined) {
+      if (syncIO && onChange && values && values.current.length > 0) {
+        if (value !== values.current[0]) {
+          editor.setValue(value);
+        } else {
+          values.current.shift();
+          if (values.current.length > 0) {
+            onChange(values.current[0]);
+          }
+        }
+      } else {
+        editor.setValue(value);
+      }
+    }
+  }, [editor, value, onChange, syncIO, values]);
+
 export interface EditorProps {
   value?: string;
   syncIO?: boolean;
@@ -13,12 +52,6 @@ export interface EditorProps {
   onBlur?: (value: string) => void;
   onSave?: (value: string) => void;
 }
-
-const overflowHide = css({
-  overflow: 'hidden',
-  width: '100%',
-  height: '100%',
-});
 
 function SrcEditor({
   value,
@@ -39,31 +72,31 @@ function SrcEditor({
   const values = React.useRef<string[]>([]);
 
   React.useEffect(() => {
-    Promise.all([
-      import('monaco-editor'),
-      import('../../../page-schema.build'),
-    ]).then(([monaco, t]) => {
-      monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-        validate: true,
-        schemas: [
-          {
-            fileMatch: ['page.json'],
-            uri: 'internal://page-schema.json',
-            schema: (t as any).schema,
-          },
-        ],
-      });
-
-      if (editor) {
-        editor.dispose();
-      } else if (container.current) {
-        const tempEditor = monaco.editor.create(container.current, {
-          theme: 'vs-dark',
+    if (!editor) {
+      Promise.all([
+        import('monaco-editor'),
+        import('../../../page-schema.build'),
+      ]).then(([monaco, t]) => {
+        monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+          validate: true,
+          schemas: [
+            {
+              fileMatch: ['page.json'],
+              uri: 'internal://page-schema.json',
+              schema: (t as any).schema,
+            },
+          ],
         });
-        tempEditor.setModel(monaco.editor.createModel(''));
-        setEditor(tempEditor);
-      }
-    });
+
+        if (container.current) {
+          const tempEditor = monaco.editor.create(container.current, {
+            theme: 'vs-dark',
+          });
+          tempEditor.setModel(monaco.editor.createModel(''));
+          setEditor(tempEditor);
+        }
+      });
+    }
 
     return () => {
       if (editor) {
@@ -74,40 +107,44 @@ function SrcEditor({
         editor.dispose();
       }
     };
-  }, []); //eslint-disable-line react-hooks/exhaustive-deps
+  }, [editor]);
 
-  React.useEffect(() => {
-    if (editor && value) {
-      if (syncIO && values.current.length > 0) {
-        if (value !== values.current[0]) {
-          editor.setValue(value);
-        } else {
-          values.current.shift();
-          if (values.current.length > 0 && onChange) {
-            onChange(values.current[0]);
-          }
-        }
-      } else {
-        editor.setValue(value);
-      }
-    }
-  }, [value, editor, onChange, syncIO]);
+  // React.useEffect(() => {
+  //   if (editor && value) {
+  //     if (syncIO && values.current.length > 0) {
+  //       if (value !== values.current[0]) {
+  //         editor.setValue(value);
+  //       } else {
+  //         values.current.shift();
+  //         if (values.current.length > 0 && onChange) {
+  //           onChange(values.current[0]);
+  //         }
+  //       }
+  //     } else {
+  //       editor.setValue(value);
+  //     }
+  //   }
+  // }, [value, editor, onChange, syncIO]);
+
+  useEditorValue(value, editor, syncIO, onChange, values);
 
   React.useEffect(() => {
     if (editor) {
       import('monaco-editor').then(monaco => {
-        const model = editor.getModel();
-        if (model) {
-          const oldValue = model.getValue();
-          const oldLanguage = model.getModeId();
-          model.dispose();
-          editor.setModel(
-            monaco.editor.createModel(
-              oldValue,
-              oldLanguage,
-              uri ? monaco.Uri.parse(uri) : undefined,
-            ),
-          );
+        const newUri = uri ? monaco.Uri.parse(uri) : undefined;
+        const existingModel = newUri
+          ? monaco.editor.getModel(newUri)
+          : undefined;
+        if (!existingModel) {
+          const model = editor.getModel();
+          if (model) {
+            const oldValue = model.getValue();
+            const oldLanguage = model.getModeId();
+            model.dispose();
+            editor.setModel(
+              monaco.editor.createModel(oldValue, oldLanguage, newUri),
+            );
+          }
         }
       });
     }

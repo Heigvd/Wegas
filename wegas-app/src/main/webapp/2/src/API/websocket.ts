@@ -241,9 +241,8 @@ const SingletonWebSocket = new WebSocketListener(
 export const useWebsocket = (
   event: WebSocketEvent,
   cb: (data: unknown) => void,
-) => {
+) =>
   React.useEffect(() => {
     SingletonWebSocket.bindCallback(event, cb);
     return () => SingletonWebSocket.unbindCallback(event, cb);
   }, [event, cb]);
-};
