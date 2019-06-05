@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { DropType } from './LinearLayout';
 import {
   __EXPERIMENTAL_DND_HOOKS_THAT_MAY_CHANGE_AND_BREAK_MY_BUILD__ as dnd,
   DropTargetMonitor,
@@ -10,8 +9,8 @@ import { Toolbar } from '../../../Components/Toolbar';
 import { Menu } from '../../../Components/Menu';
 import { Reparentable } from '../Reparentable';
 import { cx, css } from 'emotion';
-import u from 'immer';
 import { themeVar } from '../../../Components/Theme';
+import { DropActionType } from './LinearLayout';
 
 const hidden = css({
   display: 'none',
@@ -29,60 +28,39 @@ const listStyle = css({
   backgroundColor: themeVar.primaryDarkerColor,
 });
 
-const compoContent = css({
-  position: 'relative',
-  height: 'auto',
-  display: 'flex',
-});
-
-const dropZoneStyle = {
+const dropZoneFocus = css({
   borderStyle: 'solid',
   borderWidth: '2px',
-  borderColor: 'red',
-};
-
-const dropVerticalZone = css({
-  ...dropZoneStyle,
-  top: 0,
-  height: '100%',
-});
-
-const dropHorizontalZone = css({
-  ...dropZoneStyle,
-  left: 0,
-  width: '100%',
+  borderColor: themeVar.successColor,
+  zIndex: 1000,
 });
 
 const dropLeftZone = css({
   position: 'absolute',
   width: '20%',
-  height: '60%',
+  height: '100%',
   left: 0,
-  top: '20%',
 });
 
 const dropRightZone = css({
   position: 'absolute',
   width: '20%',
-  height: '60%',
+  height: '100%',
   right: 0,
-  top: '20%',
 });
 
 const dropTopZone = css({
   position: 'absolute',
-  width: '60%',
+  width: '100%',
   height: '20%',
   top: 0,
-  left: '20%',
 });
 
 const dropBottomZone = css({
   position: 'absolute',
-  width: '60%',
+  width: '100%',
   height: '20%',
   bottom: 0,
-  left: '20%',
 });
 
 const grow = css({
@@ -100,20 +78,13 @@ export interface TabComponent {
 
 export type DropAction = (item: { id: number; type: string }) => void;
 
-interface TabLayoutProps {
-  vertical?: boolean;
-  components: TabComponent[];
-  selectItems?: { label: string; value: number }[];
-  allowDrop: boolean;
-  activeId?: number;
-  onDrop: (type: DropType) => DropAction;
-  onDropTab: (index: number) => DropAction;
-  onDeleteTab: (tabKey: string) => void;
-  onDrag: (isDragging: boolean, tabKey: string) => void;
-  onNewTab: (tabKey: string) => void;
-}
-
-export const dropSpecs = (action: DropAction) => {
+/**
+ * dropSpecsFactory creates an object for react-dnd drop hooks management
+ *
+ * @param action - the action to do when an element is dropped
+ *
+ */
+export const dropSpecsFactory = (action: DropAction) => {
   return {
     accept: dndAcceptType,
     canDrop: () => true,
@@ -133,82 +104,52 @@ export const dropSpecs = (action: DropAction) => {
   };
 };
 
-interface TabState {
+interface TabLayoutProps {
+  /**
+   * vertical - the orientation of the tab layout
+   */
+  vertical?: boolean;
+  /**
+   * components - the components to be displayed in the tabLayout
+   */
+  components: TabComponent[];
+  /**
+   * selectItems - the components that can be added in the tabLayout
+   */
+  selectItems?: TabComponent[];
+  /**
+   * allowDrop - if true, this enables the drop zones (layout side and dropTabs)
+   */
+  allowDrop?: boolean;
+  /**
+   * activeId - the selected tab
+   */
   activeId?: number;
-  tabs: TabComponent[];
+  /**
+   * onDrop - The function to call when a drop occures on the side
+   */
+  onDrop: (type: DropActionType) => DropAction;
+  /**
+   * onDropTab - The function to call when a drop occures on the dropTabs
+   */
+  onDropTab: (index: number) => DropAction;
+  /**
+   * onDeleteTab - The function to call when a tab is deleted
+   */
+  onDeleteTab: (tabKey: string) => void;
+  /**
+   * onDrag -  The function to call a the begin of a drag action
+   */
+  onDrag: (isDragging: boolean, tabKey: string) => void;
+  /**
+   * onNewTab - The function to call when a new tab is requested
+   */
+  onNewTab: (tabKey: string) => void;
 }
 
-interface Action {
-  type: string;
-}
-
-interface NewTabsAction extends Action {
-  type: 'NEWTABS';
-  tabs: TabComponent[];
-  activeId?: number;
-}
-
-interface KeyAction extends Action {
-  type: 'NEWKEY' | 'REMOVEDKEY';
-  id: number;
-}
-
-type StateAction = NewTabsAction | KeyAction;
-
-const setTabState = (tabState: TabState, action: StateAction) =>
-  u(tabState, (tabState: TabState) => {
-    switch (action.type) {
-      case 'NEWTABS': {
-        if (action.tabs.length === 0) {
-          tabState.activeId = undefined;
-        } else if (action.activeId !== undefined) {
-          tabState.activeId = action.activeId;
-        } else {
-          const newTabIds = action.tabs.map(c => c.id);
-          const oldTabIds = tabState.tabs.map(c => c.id);
-          const areTabsDifferent = String(newTabIds) !== String(oldTabIds);
-
-          if (areTabsDifferent) {
-            if (newTabIds.length < oldTabIds.length) {
-              if (
-                tabState.activeId &&
-                newTabIds.indexOf(tabState.activeId) < 0
-              ) {
-                tabState.activeId = newTabIds[newTabIds.length - 1];
-              }
-            } else {
-              const diffTabIds = newTabIds.filter(
-                key => oldTabIds.indexOf(key) < 0,
-              );
-              tabState.activeId = action.activeId;
-              if (diffTabIds.length > 0) {
-                if (action.activeId === undefined) {
-                  tabState.activeId = diffTabIds[0];
-                }
-              }
-            }
-          }
-        }
-        tabState.tabs = action.tabs;
-        break;
-      }
-      case 'NEWKEY': {
-        tabState.activeId = action.id;
-        break;
-      }
-      case 'REMOVEDKEY': {
-        if (action.id === tabState.activeId) {
-          const newTabs = tabState.tabs.filter(c => c.id !== action.id);
-          const lastTab = newTabs.pop();
-          const newId = lastTab ? lastTab.id : undefined;
-          tabState.activeId = newId;
-        }
-        break;
-      }
-    }
-    return tabState;
-  });
-
+/**
+ * DnDTabLayout creates a tabLayout where you can drag and drop tabs
+ */
 export function DnDTabLayout({
   vertical,
   components,
@@ -221,49 +162,49 @@ export function DnDTabLayout({
   onDrag,
   onNewTab,
 }: TabLayoutProps) {
-  const [tabState, dispatchTabState] = React.useReducer(setTabState, {
-    tabs: [],
-    activeId: activeId,
-  });
+  const [activeKey, setActiveKey] = React.useState(-1);
 
   React.useEffect(() => {
-    dispatchTabState({
-      type: 'NEWTABS',
-      tabs: components,
-      activeId: activeId,
-    });
-  }, [components, activeId]);
+    if (activeId) {
+      setActiveKey(activeId);
+    }
+  }, [activeId]);
 
-  const [dropLeftProps, dropLeft] = dnd.useDrop(dropSpecs(onDrop('LEFT')));
-  const [dropRightProps, dropRight] = dnd.useDrop(dropSpecs(onDrop('RIGHT')));
-  const [dropTopProps, dropTop] = dnd.useDrop(dropSpecs(onDrop('TOP')));
-  const [dropBottomProps, dropBottom] = dnd.useDrop(
-    dropSpecs(onDrop('BOTTOM')),
-  );
-
-  const onDragTab = React.useCallback(
-    (isDragging: boolean, tabId: number) => {
-      if (isDragging) {
-        dispatchTabState({
-          type: 'REMOVEDKEY',
-          id: tabId,
-        });
+  React.useEffect(() => {
+    if (components.find(c => c.id === activeKey) === undefined) {
+      if (components.length > 0) {
+        setActiveKey(components[0].id);
+      } else {
+        setActiveKey(-1);
       }
-      onDrag(isDragging, String(tabId));
-    },
-    [onDrag],
+    }
+    // We dont want to refresh everytime activeKey changes (infinite loop)
+  }, [components]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // DnD hooks (for dropping tabs on the side of the layout)
+  const [dropLeftProps, dropLeft] = dnd.useDrop(
+    dropSpecsFactory(onDrop('LEFT')),
+  );
+  const [dropRightProps, dropRight] = dnd.useDrop(
+    dropSpecsFactory(onDrop('RIGHT')),
+  );
+  const [dropTopProps, dropTop] = dnd.useDrop(dropSpecsFactory(onDrop('TOP')));
+  const [dropBottomProps, dropBottom] = dnd.useDrop(
+    dropSpecsFactory(onDrop('BOTTOM')),
   );
 
+  /**
+   * renderTabs generates a list with draggable and dropable tabs for the tabLayout
+   */
   const renderTabs = React.useCallback(() => {
     const tabs = [];
 
-    for (let i = 0; i < tabState.tabs.length; i += 1) {
-      const t = tabState.tabs[i];
+    for (let i = 0; i < components.length; i += 1) {
+      const t = components[i];
       const isActive =
-        tabState.activeId !== undefined
-          ? t.id === tabState.activeId
-          : Number(i) === 0;
+        activeKey !== undefined ? t.id === activeKey : Number(i) === 0;
 
+      // Always put a dropTab on the left of a tab
       tabs.push(
         <DnDropTab key={String(t.id) + 'LEFTDROP'} onDrop={onDropTab(i)} />,
       );
@@ -273,13 +214,8 @@ export function DnDTabLayout({
           key={t.id}
           id={t.id}
           active={isActive}
-          onClick={() =>
-            dispatchTabState({
-              type: 'NEWKEY',
-              id: t.id,
-            })
-          }
-          onDrag={onDragTab}
+          onClick={() => setActiveKey(t.id)}
+          onDrag={(isDragging, tabId) => onDrag(isDragging, String(tabId))}
         >
           <span className={grow}>
             {t.name}
@@ -293,7 +229,8 @@ export function DnDTabLayout({
         </Tab>,
       );
 
-      if (Number(i) === tabState.tabs.length - 1) {
+      // At the end, don't forget to add a dropTab on the right of the last tab
+      if (Number(i) === components.length - 1) {
         tabs.push(
           <DnDropTab
             key={String(t.id) + 'RIGHTDROP'}
@@ -303,7 +240,7 @@ export function DnDTabLayout({
       }
     }
     return tabs;
-  }, [onDeleteTab, onDragTab, onDropTab, tabState.activeId, tabState.tabs]);
+  }, [components, activeKey, onDeleteTab, onDrag, onDropTab]);
 
   return (
     <Toolbar vertical={vertical}>
@@ -312,27 +249,28 @@ export function DnDTabLayout({
         {selectItems && selectItems.length > 0 && (
           <Tab key={'-1'} id={-1} active={false}>
             <Menu
-              items={selectItems}
+              items={selectItems.map(e => {
+                return { label: e.name, value: e.id };
+              })}
               icon="plus"
-              onSelect={i => onNewTab(String(i.value))}
+              onSelect={i => {
+                setActiveKey(i.value);
+                onNewTab(String(i.value));
+              }}
               buttonClassName={buttonStyle}
               listClassName={listStyle}
             />
           </Tab>
         )}
       </Toolbar.Header>
-      <Toolbar.Content className={compoContent}>
-        {tabState.tabs.map(t => {
+      <Toolbar.Content>
+        {components.map(t => {
           return (
             <Reparentable
               key={t.id}
               id={String(t.id)}
               innerClassName={cx(flex, grow)}
-              outerClassName={cx(
-                flex,
-                grow,
-                t.id !== tabState.activeId ? hidden : '',
-              )}
+              outerClassName={cx(flex, grow, t.id !== activeKey ? hidden : '')}
             >
               {t.component}
             </Reparentable>
@@ -344,9 +282,7 @@ export function DnDTabLayout({
               ref={dropLeft}
               className={cx(
                 dropLeftZone,
-                dropLeftProps.isOver &&
-                  dropLeftProps.canDrop &&
-                  dropVerticalZone,
+                dropLeftProps.isOver && dropLeftProps.canDrop && dropZoneFocus,
               )}
             />
             <div
@@ -355,16 +291,14 @@ export function DnDTabLayout({
                 dropRightZone,
                 dropRightProps.isOver &&
                   dropRightProps.canDrop &&
-                  dropVerticalZone,
+                  dropZoneFocus,
               )}
             />
             <div
               ref={dropTop}
               className={cx(
                 dropTopZone,
-                dropTopProps.isOver &&
-                  dropTopProps.canDrop &&
-                  dropHorizontalZone,
+                dropTopProps.isOver && dropTopProps.canDrop && dropZoneFocus,
               )}
             />
             <div
@@ -373,7 +307,7 @@ export function DnDTabLayout({
                 dropBottomZone,
                 dropBottomProps.isOver &&
                   dropBottomProps.canDrop &&
-                  dropHorizontalZone,
+                  dropZoneFocus,
               )}
             />
           </>
@@ -382,12 +316,3 @@ export function DnDTabLayout({
     </Toolbar>
   );
 }
-
-// export const MyTabLayout = React.memo(DnDTabLayout, (prev, next) => {
-//   Object.keys(prev).forEach(key => {
-//     if (prev[key] !== next[key]) {
-//       console.log(key, prev[key], next[key]);
-//     }
-//   });
-//   return false;
-// });

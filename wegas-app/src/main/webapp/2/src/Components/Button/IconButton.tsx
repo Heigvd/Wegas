@@ -81,7 +81,7 @@ export function IconButton(props: IconButtonProps) {
         shapeStyle,
         {
           [disabledStyle]: Boolean(disabled),
-          [className ? className : defaultActiveStyle]: Boolean(pressed),
+          [defaultActiveStyle]: Boolean(pressed),
         },
         className,
       )}

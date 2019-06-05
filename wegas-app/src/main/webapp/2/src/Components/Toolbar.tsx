@@ -17,6 +17,8 @@ const toolbar = css({
   },
 });
 const content = css({
+  position: 'relative',
+  display: 'flex',
   flex: '1 1 auto',
   overflow: 'auto',
   height: 0,

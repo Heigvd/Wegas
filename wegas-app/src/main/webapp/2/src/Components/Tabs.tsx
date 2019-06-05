@@ -42,12 +42,10 @@ export class TabLayout extends React.Component<
 const tabStyle = css(primaryLight, {
   display: 'inline-block',
   cursor: 'pointer',
-
   margin: '0 0.2em',
   borderStyle: 'solid',
   borderWidth: '1px 1px 0 1px',
   padding: '5px',
-  // '&:hover': primary,
 });
 const activeTabStyle = css(tabStyle, primaryDark);
 function Tab(props: {
