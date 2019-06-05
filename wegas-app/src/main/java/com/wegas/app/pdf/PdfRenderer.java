@@ -272,7 +272,7 @@ public class PdfRenderer implements Filter {
                 + "</title>"
                 + "<link rel=\"stylesheet\" type=\"text/css\" href=\"wegas-app/css/wegas-pdf-print.css\" media=\"all\" />"
                 + "<link rel=\"stylesheet\" type=\"text/css\" href=\"wegas-app/css/wegas-pdf-print-page.css\" media=\"print\" />"
-                + "</head><body class='wegas-pdf-content' style=\"font-family:Helvetica, Arial; font-size:12px\">"
+                + "</head><body class='wegas-pdf-content' style=\"font-family:DejaVu Sans, Helvetica, Arial; font-size:12px\">"
                 + body
                 + "</body></html>";
     }
