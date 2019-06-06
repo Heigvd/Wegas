@@ -207,16 +207,16 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         AbstractScope newScope = null;
 
         if (entity.getDeserialisedScopeType() != null) {
-            newScope = AbstractScope.build(entity.getDeserialisedScopeType(), entity.getBroadcastScope());
+            newScope = AbstractScope.build(entity.getDeserialisedScopeType(), entity.getDeserialisedBroadcastScopeType());
             entity.setScopeType(null);
             entity.setBroadcastScope(null);
 
             AbstractScope scope = entity.getScope();
             if (scope != null) {
-                if (!scope.getClass().equals(newScope.getClass())) {
-                    this.updateScope(entity, newScope);
-                } else {
+                if (scope.getClass().equals(newScope.getClass())) {
                     scope.setBroadcastScope(newScope.getBroadcastScope());
+                } else {
+                    this.updateScope(entity, newScope);
                 }
             } else {
                 entity.setScope(newScope);

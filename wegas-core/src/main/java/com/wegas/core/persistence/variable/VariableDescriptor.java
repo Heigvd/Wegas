@@ -25,6 +25,7 @@ import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.annotations.Errored;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
@@ -199,7 +200,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     @JsonView(value = Views.EditorI.class)
     @Column(name = "comments")
     @WegasEntityProperty(searchable = true,
-            optional = false, nullable =false, proposal =EmptyString.class,
+            optional = false, nullable = false, proposal = EmptyString.class,
             view = @View(
                     label = "Comments",
                     borderTop = true,
@@ -332,6 +333,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
                     layout = shortInline,
                     index = -400
             ))
+    @Errored(CheckScope.class)
     private String scopeType;
 
     @Transient
@@ -344,6 +346,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
                     layout = shortInline,
                     index = -390
             ))
+    @Errored(CheckScope.class)
     private String broadcastScope;
 
     @Version
@@ -739,6 +742,12 @@ public abstract class VariableDescriptor<T extends VariableInstance>
 
     public void setScopeType(String scopeType) {
         this.scopeType = scopeType;
+    }
+
+
+    @JsonIgnore
+    public String getDeserialisedBroadcastScopeType() {
+        return this.broadcastScope;
     }
 
     public String getBroadcastScope() {
