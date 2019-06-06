@@ -341,7 +341,13 @@ YUI.add("wegas-i18n", function(Y) {
                     for (i in langs) {
                         lang = langs[i];
                         tr = translations[lang.code] || (!caseSensitiveCode && translations[lang.code.toLowerCase()]);
+
                         if (tr !== undefined) {
+
+                            if (tr.get) {
+                                tr = tr.toObject();
+                            }
+
                             if (tr.translation) {
                                 theOne = lang;
                                 isOutdated = !!tr.status;

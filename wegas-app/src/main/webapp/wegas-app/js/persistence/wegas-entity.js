@@ -155,7 +155,6 @@ YUI.add('wegas-entity', function(Y) {
                             };
                             var v1Converted = false;
                             var v2Detected = false;
-
                             for (var i in value.properties) {
                                 if (value.properties[i].key.value === "translations") {
                                     if (value.properties[i].value.type === "ObjectExpression") {
@@ -289,7 +288,6 @@ YUI.add('wegas-entity', function(Y) {
                     "@class": this.get("parentType"),
                     id: this.get("parentId"),
                 });
-
                 if (parent instanceof Y.Wegas.persistence.GameModel) {
                     return Y.Wegas.Facade.GameModel.cache.find("id", entity.get("parentId"));
                 } else if (parent instanceof Y.Wegas.persistence.VariableDescriptor) {
@@ -595,6 +593,32 @@ YUI.add('wegas-entity', function(Y) {
                     type: "hashlist",
                     keyLabel: "lang"
                 }
+            }
+        }
+    });
+    persistence.Translation = Base.create("Translation", persistence.Entity, [], {}, {
+        EDITORNAME: "Translation",
+        ATTRS: {
+            version: VERSION_ATTR_DEF,
+            trId: IDATTRDEF,
+            lang: {
+                type: STRING,
+                view: {
+                    label: "code",
+                    type: "uneditable"
+                },
+            },
+            translation: {
+                type: STRING,
+                view: {
+                    label: "translation",
+                },
+            },
+            status: {
+                type: STRING,
+                view: {
+                    label: "status",
+                },
             }
         }
     });
@@ -972,7 +996,6 @@ YUI.add('wegas-entity', function(Y) {
                 }
             }
         });
-
     /**
      * User mapper
      */
@@ -1048,7 +1071,6 @@ YUI.add('wegas-entity', function(Y) {
                 }
             }
         });
-
     /**
      * JpaAccount mapper
      */
@@ -1162,7 +1184,6 @@ YUI.add('wegas-entity', function(Y) {
                 }
             }
         });
-
     /**
      * AaiAccount mapper
      */
@@ -1242,7 +1263,6 @@ YUI.add('wegas-entity', function(Y) {
                 }
             }
         });
-
     /**
      * GuestJpaAccount mapper
      */
