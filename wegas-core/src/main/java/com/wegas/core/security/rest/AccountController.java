@@ -16,7 +16,6 @@ import com.wegas.core.security.persistence.User;
 import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
-import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
@@ -27,7 +26,6 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-@Stateless
 @Path("User/{userId :([1-9][0-9]*)?}{userSep: /?}Account")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)

@@ -17,7 +17,6 @@ import com.wegas.core.security.ejb.UserFacade;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -26,8 +25,6 @@ import javax.ws.rs.core.MediaType;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-@Stateless
-
 @Path("GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}VariableDescriptor/{variableDescriptorId : ([1-9][0-9]*)?}{sep2: /?}VariableInstance/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)

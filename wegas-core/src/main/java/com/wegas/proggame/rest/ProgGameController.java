@@ -11,7 +11,6 @@ import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Script;
 import javax.inject.Inject;
-import javax.ejb.Stateless;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -22,7 +21,6 @@ import javax.ws.rs.core.MediaType;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-@Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/ProgGame/")
 public class ProgGameController {
 

@@ -11,7 +11,6 @@ import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.persistence.Iteration;
 import java.util.Collection;
 import javax.inject.Inject;
-import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -23,7 +22,6 @@ import javax.ws.rs.core.MediaType;
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
-@Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/Burndown/{brnDwnId : [1-9][0-9]*}/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)

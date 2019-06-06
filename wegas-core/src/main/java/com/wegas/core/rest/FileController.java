@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
-import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
@@ -41,7 +40,6 @@ import org.xml.sax.SAXException;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-@Stateless
 @Path("GameModel/{gameModelId : ([1-9][0-9]*)?}/File")
 public class FileController {
 

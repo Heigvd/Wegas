@@ -13,7 +13,6 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
 import java.util.Map;
 import javax.inject.Inject;
-import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.authz.AuthorizationException;
@@ -22,7 +21,6 @@ import org.apache.shiro.authz.AuthorizationException;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-@Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/Library/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)

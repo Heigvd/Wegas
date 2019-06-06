@@ -19,7 +19,6 @@ import com.wegas.core.persistence.game.GameModel;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Map;
-import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.json.Json;
@@ -34,7 +33,6 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-@Stateless
 @Path("GameModel/{gameModelId : [0-9]+}/Page")
 //@Path("GameModel/{gameModelId : [1-0][0-9]*}/Page")
 @Consumes("application/json; charset=UTF-8")

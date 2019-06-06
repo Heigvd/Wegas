@@ -14,7 +14,6 @@ import org.neo4j.driver.v1.StatementResult;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
@@ -31,7 +30,6 @@ import java.util.stream.Collectors;
  * @author Gérald Eberle
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-@Stateless
 @Path("Statistics")
 @Produces(MediaType.APPLICATION_JSON)
 public class Neo4jStatistics {

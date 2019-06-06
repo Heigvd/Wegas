@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
-import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.ws.rs.*;
@@ -41,7 +40,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-@Stateless
 @Path("GameModel")
 @Produces(MediaType.APPLICATION_JSON)
 public class GameModelController {

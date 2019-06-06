@@ -15,7 +15,6 @@ import com.wegas.messaging.ejb.MessageFacade;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
 import java.util.List;
-import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -24,7 +23,6 @@ import javax.ws.rs.core.MediaType;
  * @deprecated ???
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-@Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/Inbox/")
 @Produces(MediaType.APPLICATION_JSON)
 public class InboxDescriptorController {

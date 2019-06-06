@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.ws.rs.*;
@@ -34,7 +33,6 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-@Stateless
 @Path("GameModel/{gameModelId : ([1-9][0-9]*)?}/History")
 public class HistoryController {
 

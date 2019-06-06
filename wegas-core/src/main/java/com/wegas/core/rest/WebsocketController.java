@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
-import javax.ejb.Stateless;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -40,7 +39,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Yannick Lagger (lagger.yannick.com)
  */
-@Stateless
 @Path("Pusher/")
 public class WebsocketController {
 
