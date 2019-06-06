@@ -8,16 +8,26 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.EmptyScript;
+import com.wegas.editor.ValueGenerators.Origin;
+import com.wegas.editor.ValueGenerators.Zero;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.ScriptView;
+import com.wegas.editor.View.View;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,6 +53,7 @@ import javax.persistence.*;
     @JsonSubTypes.Type(name = "State", value = State.class),
     @JsonSubTypes.Type(name = "TriggerState", value = TriggerState.class)
 })
+@JsonIgnoreProperties(value = {"stateMachineId"})
 //@OptimisticLocking(cascade = true)
 public abstract class AbstractState<T extends AbstractTransition> extends AbstractEntity implements Broadcastable {
 
@@ -54,14 +65,17 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty(sameEntityOnly = true)
+    @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
+            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
     private Long version;
 
     /**
      *
      */
     @JsonView(value = Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = Origin.class,
+            view = @View(label = "Graphical coordinates", featureLevel = ADVANCED))
     private Coordinate editorPosition;
 
     /**
@@ -77,7 +91,9 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
      *
      */
     @Column(name = "fsm_statekey")
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            nullable = false,
+            view = @View(label = "Index", value = ReadOnlyNumber.class))
     private Long index;
 
     /**
@@ -85,14 +101,18 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
      */
     @Embedded
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyScript.class,
+            view = @View(label = "On enter impact", value = ScriptView.Impact.class))
     private Script onEnterEvent;
 
     /**
      *
      */
     @OneToMany(mappedBy = "state", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(label = "Transitions", value = Hidden.class))
     //private List<T> transitions = new ArrayList<>(); // templated mapping <T> faisl with eclipselink 2.6.4
     private List<AbstractTransition> transitions = new ArrayList<>();
 

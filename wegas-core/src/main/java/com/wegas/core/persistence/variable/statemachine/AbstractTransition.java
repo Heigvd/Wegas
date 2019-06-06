@@ -8,15 +8,24 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyScript;
+import com.wegas.editor.ValueGenerators.Zero;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.INTERNAL;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.ScriptView;
+import com.wegas.editor.View.View;
 import java.util.Collection;
 import javax.persistence.*;
 
@@ -36,6 +45,7 @@ import javax.persistence.*;
             @Index(columnList = "actiontext_id")
         }
 )
+@JsonIgnoreProperties({"stateId"})
 public abstract class AbstractTransition extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
@@ -50,7 +60,9 @@ public abstract class AbstractTransition extends AbstractEntity {
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty(sameEntityOnly = true)
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = Zero.class,
+            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
     private Long version;
 
     public Long getVersion() {
@@ -61,17 +73,22 @@ public abstract class AbstractTransition extends AbstractEntity {
         this.version = version;
     }
 
+
     /**
      *
      */
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = Zero.class,
+            view = @View(label = "Index", featureLevel = ADVANCED))
     private Integer index = 0;
 
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(label = "Next State", value = Hidden.class, featureLevel = INTERNAL))
     private Long nextStateId;
 
     @JsonIgnore
@@ -89,14 +106,18 @@ public abstract class AbstractTransition extends AbstractEntity {
                 = @Column(name = "onTransition_language"))
     })
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = EmptyScript.class,
+            view = @View(label = "Impact", value = ScriptView.Impact.class))
     private Script preStateImpact;
 
     /**
      *
      */
     @Embedded
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = EmptyScript.class,
+            view = @View(label = "Condition", value = ScriptView.Condition.class))
     private Script triggerCondition;
 
     @Override
@@ -124,15 +145,6 @@ public abstract class AbstractTransition extends AbstractEntity {
 
     public void setState(AbstractState state) {
         this.state = state;
-    }
-
-    @JsonView(Views.IndexI.class)
-    public Long getStateId() {
-        return this.getState().getId();
-    }
-
-    @JsonView(Views.IndexI.class)
-    public void setStateId(Long id) {
     }
 
     @JsonView(Views.IndexI.class)

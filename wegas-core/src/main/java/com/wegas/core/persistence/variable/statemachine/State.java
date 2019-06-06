@@ -7,7 +7,9 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.View.View;
 import javax.persistence.*;
 
 /**

@@ -8,13 +8,16 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.Scriptable;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.ValueGenerators.EmptyMap;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.persistence.*;
@@ -45,7 +48,9 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
     @OneToMany(mappedBy = "stateMachine", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @MapKeyColumn(name = "fsm_statekey")
     @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty(ignoreNull = true, protectionLevel = ProtectionLevel.INHERITED)
+    @WegasEntityProperty(ignoreNull = true, protectionLevel = ProtectionLevel.INHERITED,
+            optional = false, nullable= false, proposal = EmptyMap.class,
+            view = @View(label = "", value = Hidden.class))
     private Set<AbstractState<U>> states = new HashSet<>();
 
     /**
@@ -58,21 +63,20 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
      * @return all stated mapped by index numbers
      */
     @JsonIgnore
-    public Set<T> getStates() {
+    public Set<T> getInternalStates() {
         return (Set<T>) states;
     }
 
     @JsonIgnore
-    public void setStates(Set<T> states) {
+    public void setInternalStates(Set<T> states) {
         this.states = (Set<AbstractState<U>>) states;
         for (T state : states) {
             state.setStateMachine(this);
         }
     }
 
-    @JsonProperty(value = "states")
     @JsonView(Views.ExtendedI.class)
-    public Map<Long, T> getStatesAsMap() {
+    public Map<Long, T> getStates() {
         Map<Long, T> map = new HashMap<>();
         for (T state : (Set<T>) this.states) {
             map.put(state.getIndex(), state);
@@ -83,15 +87,14 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
     public T addState(Long index, T state) {
         state.setIndex(index);
         state.setStateMachine(this);
-        this.getStates().add(state);
+        this.getInternalStates().add(state);
         return state;
     }
 
     /**
      * @param states
      */
-    @JsonProperty("states")
-    public void setStatesFromMap(Map<Long, T> states) {
+    public void setStates(Map<Long, T> states) {
         this.states.clear();
 
         for (Entry<Long, T> entry : states.entrySet()) {
@@ -111,6 +114,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
     /**
      * @param p
      */
+    @Scriptable(label = "activate")
     public void enable(Player p) {
         this.getInstance(p).setEnabled(Boolean.TRUE);
     }
@@ -118,6 +122,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
     /**
      * @param p
      */
+    @Scriptable(label = "deactivate")
     public void disable(Player p) {
         this.getInstance(p).setEnabled(Boolean.FALSE);
     }
@@ -127,6 +132,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
      *
      * @return is player instance enabled ?
      */
+    @Scriptable(label = "is active")
     public boolean isEnabled(Player p) {
         return this.getInstance(p).getEnabled();
     }
@@ -136,12 +142,13 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
      *
      * @return is player instance disabled ?
      */
+    @Scriptable(label = "is inactive")
     public boolean isDisabled(Player p) {
         return !this.getInstance(p).getEnabled();
     }
 
     private U getTransitionById(Long id) {
-        for (T state : this.getStates()) {
+        for (T state : this.getInternalStates()) {
             for (U transition : state.getTransitions()) {
                 if (transition != null && transition.getId().equals(id)) {
                     return transition;
@@ -151,6 +158,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
         return null;
     }
 
+    @Scriptable
     public boolean wentThroughState(Player p, Long stateKey) {
         List<Long> transitionHistory = this.getInstance(p).getTransitionHistory();
 
@@ -164,6 +172,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
         return false;
     }
 
+    @Scriptable(label = "did not went through state")
     public boolean notWentThroughState(Player p, Long stateKey) {
         return !this.wentThroughState(p, stateKey);
     }
