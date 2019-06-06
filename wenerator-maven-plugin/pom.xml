@@ -9,7 +9,6 @@
 
     <groupId>com.wegas</groupId>
     <artifactId>wenerator-maven-plugin</artifactId>
-    <version>3.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>wenerator-maven-plugin Maven Plugin</name>

@@ -278,6 +278,7 @@
             <plugin>
                 <groupId>com.wegas</groupId>
                 <artifactId>wenerator-maven-plugin</artifactId>
+                <version>${project.version}</version>
                 <executions>
                     <execution>
                         <phase>process-classes</phase>
