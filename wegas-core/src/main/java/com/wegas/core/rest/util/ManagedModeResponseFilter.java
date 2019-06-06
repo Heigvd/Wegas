@@ -35,8 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Provider
-//@Stateless
-public class ManagedModeResponseFilter implements ContainerResponseFilter {
+public class ManagedModeResponseFilter extends Payara3994Workaround implements ContainerResponseFilter {
 
     private final static Logger logger = LoggerFactory.getLogger(ManagedModeResponseFilter.class);
     /**

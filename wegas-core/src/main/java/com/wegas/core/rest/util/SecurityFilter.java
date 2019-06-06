@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
 @Provider
-public class SecurityFilter implements ContainerRequestFilter {
+public class SecurityFilter extends Payara3994Workaround implements ContainerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityFilter.class);
 

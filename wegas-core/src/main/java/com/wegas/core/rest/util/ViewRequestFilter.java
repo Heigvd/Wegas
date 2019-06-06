@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 @PreMatching
-public class ViewRequestFilter implements ContainerRequestFilter {
+public class ViewRequestFilter extends Payara3994Workaround implements ContainerRequestFilter {
 
     @Inject
     RequestIdentifierGenerator idGenerator;
