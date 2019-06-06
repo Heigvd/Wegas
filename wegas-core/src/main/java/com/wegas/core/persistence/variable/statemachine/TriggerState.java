@@ -7,11 +7,11 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 
 /**
- * @author Cyril Junod (cyril.junod at gmail.com)
+ * @author Maxence
  */
 @Entity
-public class Transition extends AbstractTransition {
+public class TriggerState extends AbstractState<Transition> {
 }

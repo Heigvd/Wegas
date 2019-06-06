@@ -38,7 +38,7 @@ import javax.persistence.Transient;
 )
 @JsonIgnoreProperties(value = {"states"})
 @JsonTypeName(value = "TriggerDescriptor")
-public class TriggerDescriptor extends StateMachineDescriptor {
+public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerState, Transition> {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -83,12 +83,6 @@ public class TriggerDescriptor extends StateMachineDescriptor {
             nullable = false, optional = false, proposal = EmptyScript.class,
             view = @View(label = "Impact", value = ScriptView.Impact.class))
     private Script postTriggerEvent;
-
-    /**
-     *
-     */
-    public TriggerDescriptor() {
-    }
 
     /**
      * is the trigger designed to trigger only once ?
@@ -197,10 +191,10 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     public void buildStateMachine() {
         if (this.getStates().size() < 2 || this.getStates().get(2L).getTransitions().isEmpty()) {
             // make sure both initial and final states exists
-            State initial;
-            State finalState;
+            TriggerState initial;
+            TriggerState finalState;
             if (this.getStates().isEmpty()) {
-                initial = new State();
+                initial = new TriggerState();
                 initial.setVersion(1L);
                 this.addState(1L, initial);
             } else {
@@ -209,7 +203,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
 
             if (this.getStates().size() < 2) {
                 // Create the second one
-                finalState = new State();
+                finalState = new TriggerState();
                 finalState.setVersion(1L);
                 this.addState(2L, finalState);
 

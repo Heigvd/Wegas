@@ -9,10 +9,7 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.editor.JSONSchema.JSONObject;
-import com.wegas.editor.Schema;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
-import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.I18nHtmlView;
 import com.wegas.editor.View.View;
 import javax.persistence.CascadeType;
@@ -24,8 +21,8 @@ import javax.persistence.OneToOne;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-@Schema(property = "label", value = JSONObject.class, view = @View(label = "", value = Hidden.class))
-public class DialogueState extends State {
+//@Schema(property = "label", value = JSONObject.class, view = @View(label = "", value = Hidden.class))
+public class DialogueState extends AbstractState<DialogueTransition> {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -38,16 +35,12 @@ public class DialogueState extends State {
     private TranslatableContent text;
 
     @Override
-    public void setStateMachine(StateMachineDescriptor stateMachine) {
+    public void setStateMachine(AbstractStateMachineDescriptor stateMachine) {
         super.setStateMachine(stateMachine);
         if (this.getStateMachine() != null) {
             this.setText(this.text);
-
-            for (Transition t : this.getTransitions()) {
-                if (t instanceof DialogueTransition) {
-                    DialogueTransition dt = (DialogueTransition) t;
-                    dt.setActionText(dt.getActionText());
-                }
+            for (DialogueTransition t : this.getTransitions()) {
+                t.setActionText(t.getActionText());
             }
         }
     }

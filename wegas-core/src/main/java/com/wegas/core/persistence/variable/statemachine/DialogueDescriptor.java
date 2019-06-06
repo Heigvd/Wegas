@@ -20,27 +20,21 @@ import javax.persistence.Entity;
 @Entity
 @JsonIgnoreProperties(value = {"content"})
 @JsonTypeName("DialogueDescriptor")
-public class DialogueDescriptor extends StateMachineDescriptor {
+public class DialogueDescriptor extends AbstractStateMachineDescriptor<DialogueState, DialogueTransition> {
 
     private static final long serialVersionUID = 1L;
 
     @Override
     public void revive(GameModel gameModel, Beanjection beans) {
         super.revive(gameModel, beans);
-        for (State s : this.getInternalStates()) {
-            if (s instanceof DialogueState) {
-                DialogueState ds = (DialogueState) s;
-                if (ds.getText() != null) {
-                    ds.getText().setParentDescriptor(this);
-                }
+        for (DialogueState s : this.getInternalStates()) {
+            if (s.getText() != null) {
+                s.getText().setParentDescriptor(this);
             }
 
-            for (Transition t : s.getTransitions()) {
-                if (t instanceof DialogueTransition) {
-                    DialogueTransition dt = (DialogueTransition) t;
-                    if (dt.getActionText() != null) {
-                        dt.getActionText().setParentDescriptor(this);
-                    }
+            for (DialogueTransition t : s.getTransitions()) {
+                if (t.getActionText() != null) {
+                    t.getActionText().setParentDescriptor(this);
                 }
             }
         }

@@ -106,6 +106,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     private String name;
 
     @Basic(optional = false)
+    @Column(columnDefinition = "int not null default 1")
     @WegasEntityProperty(initOnly = true,
             optional = false, nullable = false,
             view = @View(label = "UI Version", value = ReadOnlyNumber.class))
