@@ -603,6 +603,15 @@ YUI.add("wegas-i18n", function(Y) {
                             }
                         });
                 });
+            } else {
+                Y.all("body > .wegas-playerview.wegas-pageloader, #centerTabView > div > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner > .wegas-pageloader," +
+                    "#rightTabView > div > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner > .wegas-pageloader")
+                    .each(function(rootPageLoaderNode) {
+                        var pageLoader = Y.Widget.getByNode(rootPageLoaderNode);
+                        if (pageLoader) {
+                            pageLoader.reload();
+                        }
+                    });
             }
         }
 
