@@ -172,7 +172,7 @@ public class PdfRenderer implements Filter {
                     content = capContent.getContent();
 
                     tidy.setInputEncoding("UTF-8");
-                    tidy.setOutputEncoding("UTF-8");
+                    //tidy.setOutputEncoding("UTF-8");
                 }
 
                 InputStream iStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
