@@ -2,6 +2,42 @@ import { css } from 'emotion';
 import * as React from 'react';
 import { SizedDiv } from '../../../Components/SizedDiv';
 
+interface EditorProps {
+  /**
+   * value - the content of the editor
+   */
+  value?: string;
+  /**
+   * minimap - the editor shows a minimap of the code
+   */
+  minimap?: boolean;
+  /**
+   * readonly - the editor is not listening to keys
+   */
+  readonly?: boolean;
+  /**
+   * langauge - the editor language
+   */
+  language?: 'javascript' | 'css' | 'json';
+  /**
+   * onChange - this function is fired each time the content of the editor is changed by the user
+   */
+  onChange?: (value: string) => void;
+  /**
+   * onBlur - this function is fired each time the editor loose focus
+   */
+  onBlur?: (value: string) => void;
+  /**
+   * onSave - this function is fired each time the user press Ctrl+S
+   */
+  onSave?: (value: string) => void;
+  /**
+   * defaultUri - allows the language to be inferred from this uri
+   * To apply changes you must rerender the whole editor (i.e : change the key of the componnent)
+   */
+  defaultUri?: 'internal://page.json';
+}
+
 const overflowHide = css({
   overflow: 'hidden',
   width: '100%',
@@ -9,74 +45,65 @@ const overflowHide = css({
 });
 
 /**
- * useEditorValue is a hook that updates an editor value when the value change
- *
- * @param value - the value to insert in the editor
- * @param editor - the monaco editor
- * @param syncIO - the flag that says if the editor is sync with the component
- * @param onChange - the function called when the editor value change
- * @param values - the fifo containing the history of the changed content
+ * SrcEditor is a component uses monaco-editor to create a code edition panel
  */
-export const useEditorValue = (
-  value?: string,
-  editor?: import('monaco-editor').editor.IStandaloneCodeEditor,
-  syncIO?: boolean,
-  onChange?: (value: string) => void,
-  values?: React.MutableRefObject<string[]>,
-) =>
-  React.useEffect(() => {
-    if (editor !== undefined && value !== undefined) {
-      if (syncIO && onChange && values && values.current.length > 0) {
-        if (value !== values.current[0]) {
-          editor.setValue(value);
+class SrcEditor extends React.Component<EditorProps> {
+  private editor: ReturnType<
+    typeof import('monaco-editor').editor.create
+  > | null = null;
+  private lastValue?: string = '';
+  private outsideChange: boolean = false;
+  private container: HTMLDivElement | null = null;
+
+  shouldComponentUpdate(nextProps: EditorProps) {
+    return (
+      nextProps.value !== this.lastValue ||
+      nextProps.language !== this.props.language ||
+      nextProps.readonly !== this.props.readonly ||
+      nextProps.minimap !== this.props.minimap
+    );
+  }
+
+  componentDidUpdate(prevProps: EditorProps) {
+    if (this.editor !== null) {
+      if (this.lastValue !== this.props.value) {
+        this.lastValue = this.props.value;
+        this.outsideChange = true;
+        if ('string' === typeof this.props.value) {
+          this.editor.setValue(this.props.value);
         } else {
-          values.current.shift();
-          if (values.current.length > 0) {
-            onChange(values.current[0]);
-          }
+          this.editor.setValue('');
         }
-      } else {
-        editor.setValue(value);
+        this.outsideChange = false;
       }
+      if (this.props.language !== prevProps.language) {
+        import('monaco-editor').then(monaco => {
+          if (this.editor) {
+            monaco.editor.setModelLanguage(
+              this.editor.getModel()!,
+              this.props.language ? this.props.language : 'plaintext',
+            );
+          }
+        });
+      }
+      if (this.props.readonly !== prevProps.readonly) {
+        this.editor.updateOptions({ readOnly: this.props.readonly });
+      }
+      if (this.props.minimap !== prevProps.minimap) {
+        this.editor.updateOptions({ minimap: { enabled: this.props.minimap } });
+      }
+      this.editor.layout();
     }
-  }, [editor, value, onChange, syncIO, values]);
+  }
 
-export interface EditorProps {
-  value?: string;
-  syncIO?: boolean;
-  uri?: 'internal://page.json';
-  readonly?: boolean;
-  minimap?: boolean;
-  language?: 'javascript' | 'css' | 'json';
-  onChange?: (value: string) => void;
-  onBlur?: (value: string) => void;
-  onSave?: (value: string) => void;
-}
-
-function SrcEditor({
-  value,
-  uri,
-  readonly,
-  minimap,
-  language,
-  onChange,
-  syncIO,
-  onBlur,
-  onSave,
-}: EditorProps) {
-  const container = React.useRef<HTMLDivElement>(null);
-  const [editor, setEditor] = React.useState<
-    import('monaco-editor').editor.IStandaloneCodeEditor
-  >();
-  const oldValue = React.useRef<string>('');
-  const values = React.useRef<string[]>([]);
-
-  React.useEffect(() => {
-    if (!editor) {
-      Promise.all([
-        import('monaco-editor'),
-        import('../../../page-schema.build'),
-      ]).then(([monaco, t]) => {
+  componentDidMount() {
+    this.lastValue = this.props.value;
+    Promise.all([
+      import('monaco-editor'),
+      import('../../../page-schema.build'),
+    ]).then(([monaco, t]) => {
+      if (this.container != null) {
+        this.lastValue = this.props.value;
         monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
           validate: true,
           schemas: [
@@ -87,152 +114,73 @@ function SrcEditor({
             },
           ],
         });
-
-        if (container.current) {
-          const tempEditor = monaco.editor.create(container.current, {
-            theme: 'vs-dark',
-          });
-          tempEditor.setModel(monaco.editor.createModel(''));
-          setEditor(tempEditor);
-        }
-      });
-    }
-
-    return () => {
-      if (editor) {
-        const model = editor.getModel();
-        if (model) {
-          model.dispose();
-        }
-        editor.dispose();
-      }
-    };
-  }, [editor]);
-
-  // React.useEffect(() => {
-  //   if (editor && value) {
-  //     if (syncIO && values.current.length > 0) {
-  //       if (value !== values.current[0]) {
-  //         editor.setValue(value);
-  //       } else {
-  //         values.current.shift();
-  //         if (values.current.length > 0 && onChange) {
-  //           onChange(values.current[0]);
-  //         }
-  //       }
-  //     } else {
-  //       editor.setValue(value);
-  //     }
-  //   }
-  // }, [value, editor, onChange, syncIO]);
-
-  useEditorValue(value, editor, syncIO, onChange, values);
-
-  React.useEffect(() => {
-    if (editor) {
-      import('monaco-editor').then(monaco => {
-        const newUri = uri ? monaco.Uri.parse(uri) : undefined;
-        const existingModel = newUri
-          ? monaco.editor.getModel(newUri)
-          : undefined;
-        if (!existingModel) {
-          const model = editor.getModel();
-          if (model) {
-            const oldValue = model.getValue();
-            const oldLanguage = model.getModeId();
-            model.dispose();
-            editor.setModel(
-              monaco.editor.createModel(oldValue, oldLanguage, newUri),
-            );
-          }
-        }
-      });
-    }
-  }, [editor, uri]);
-
-  React.useEffect(() => {
-    if (editor) {
-      editor.updateOptions({ readOnly: readonly });
-    }
-  }, [editor, readonly]);
-
-  React.useEffect(() => {
-    if (editor) {
-      editor.updateOptions({ minimap: { enabled: minimap } });
-    }
-  }, [editor, minimap]);
-
-  React.useEffect(() => {
-    if (editor && language) {
-      import('monaco-editor').then(monaco => {
-        const model = editor.getModel();
-        if (language && model) {
-          monaco.editor.setModelLanguage(model, language);
-        }
-      });
-    }
-  }, [editor, language]);
-
-  React.useEffect(() => {
-    if (editor && onBlur) {
-      const handler = editor.onDidBlurEditorText(() => {
-        if (editor) {
-          oldValue.current = editor.getValue();
-          onBlur(oldValue.current);
-        }
-      });
-      return () => handler.dispose();
-    }
-  }, [editor, onBlur]);
-
-  React.useEffect(() => {
-    if (editor && onChange) {
-      const handler = editor.onDidChangeModelContent(() => {
-        const newValue = editor.getValue();
-        if (syncIO) {
-          if (values.current.length === 0) {
-            onChange(newValue);
-          }
-          values.current.push(newValue);
-        } else {
-          onChange(newValue);
-        }
-      });
-      return () => handler.dispose();
-    }
-  }, [editor, onChange, syncIO]);
-
-  React.useEffect(() => {
-    if (editor) {
-      import('monaco-editor').then(monaco => {
-        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, () => {
-          if (editor && onSave) {
-            onSave(editor.getValue());
+        const model = monaco.editor.createModel(
+          this.props.value || '',
+          this.props.language,
+          this.props.defaultUri
+            ? monaco.Uri.parse(this.props.defaultUri)
+            : undefined,
+        );
+        this.editor = monaco.editor.create(this.container, {
+          theme: 'vs-dark',
+          model: model,
+          readOnly: this.props.readonly,
+          minimap: { enabled: this.props.minimap },
+        });
+        this.editor.onDidBlurEditorText(() => {
+          if (this.editor && this.props.onBlur) {
+            this.lastValue = this.editor.getValue();
+            this.props.onBlur(this.lastValue);
           }
         });
-      });
-    }
-  }, [editor, onSave]);
-
-  const layout = React.useCallback(
-    (size: { width: number; height: number }) => {
-      if (editor) {
-        editor.layout(size);
+        this.editor.onDidChangeModelContent(() => {
+          if (!this.outsideChange && this.editor && this.props.onChange) {
+            this.lastValue = this.editor.getValue();
+            this.props.onChange(this.lastValue);
+          }
+        });
+        this.editor.addCommand(
+          monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
+          () => {
+            if (this.editor && this.props.onSave) {
+              this.props.onSave(this.editor.getValue());
+            }
+          },
+        );
       }
-    },
-    [editor],
-  );
-
-  return (
-    <SizedDiv className={overflowHide}>
-      {size => {
-        if (size !== undefined) {
-          layout(size);
-        }
-        return <div className={overflowHide} ref={container} />;
-      }}
-    </SizedDiv>
-  );
+    });
+  }
+  private layout = (size: { width: number; height: number }) => {
+    if (this.editor != null) {
+      this.editor.layout(size);
+    }
+  };
+  getValue() {
+    if (this.editor != null) {
+      return this.editor.getValue();
+    }
+    return this.lastValue;
+  }
+  componentWillUnmount() {
+    if (this.editor != null && this.editor.getModel() !== null) {
+      this.editor.getModel()!.dispose();
+      this.editor.dispose();
+    }
+  }
+  refContainer = (n: HTMLDivElement | null) => {
+    this.container = n;
+  };
+  render() {
+    return (
+      <SizedDiv className={overflowHide}>
+        {size => {
+          if (size !== undefined) {
+            this.layout(size);
+          }
+          return <div className={overflowHide} ref={this.refContainer} />;
+        }}
+      </SizedDiv>
+    );
+  }
 }
-
 export default SrcEditor;

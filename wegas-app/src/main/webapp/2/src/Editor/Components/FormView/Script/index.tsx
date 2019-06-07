@@ -18,10 +18,10 @@ import {
 import { WidgetProps } from 'jsoninput/typings/types';
 import * as React from 'react';
 import { IconButton } from '../../../../Components/Button/IconButton';
-import SrcEditor from '../../ScriptEditors/SrcEditor';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { Labeled, LabeledView } from '../labeled';
 import { Statements } from './Statements';
+import SrcEditor from '../../ScriptEditors/SrcEditor';
 
 function literalToExpression(expr: Expression) {
   return isBooleanLiteral(expr, { value: true })

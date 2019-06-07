@@ -1,12 +1,12 @@
 import * as React from 'react';
 import PageLoader from '../../../Components/AutoImport/PageLoader';
 import { State } from '../../../data/Reducer/reducers';
-import SrcEditor from '../ScriptEditors/SrcEditor';
 import PageEditorHeader from './PageEditorHeader';
 import { Toolbar } from '../../../Components/Toolbar';
 import { Actions } from '../../../data';
 import { StoreDispatch, StoreConsumer } from '../../../data/store';
 import { Theme } from '../../../Components/Theme';
+import SrcEditor from '../ScriptEditors/SrcEditor';
 
 interface PageDisplayProps {
   srcMode: boolean;
@@ -51,9 +51,9 @@ class PageDisplay extends React.Component<PageDisplayProps> {
                     this.editorValue = JSON.stringify(state, null, 2);
                     return (
                       <SrcEditor
-                        key="srcEditor"
+                        key="SrcEditor"
                         value={this.editorValue}
-                        uri="internal://page.json"
+                        defaultUri="internal://page.json"
                         language="json"
                         onChange={val => {
                           this.editorValue = val;
