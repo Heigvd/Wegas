@@ -1,43 +1,14 @@
 import { css } from 'emotion';
 import * as React from 'react';
 import { SizedDiv } from '../../../Components/SizedDiv';
+import { themeVar } from '../../../Components/Theme';
 import { Toolbar } from '../../../Components/Toolbar';
 import { IconButton } from '../../../Components/Button/IconButton';
-import { themeVar } from '../../../Components/Theme';
 
-export const diffLabel = css({
+const diffLabel = css({
   color: themeVar.primaryLighterColor,
   padding: '5px',
 });
-
-interface DiffEditorProps {
-  originalContent: string;
-  modifiedContent: string;
-  uri?: 'internal://page.json';
-  language: 'javascript' | 'css' | 'json';
-  onResolved: (newContent: string) => void;
-}
-
-type DiffNavigator = import('monaco-editor').editor.IDiffNavigator;
-
-interface ExtendedDiffNavigator extends DiffNavigator {
-  nextIdx: number;
-  ranges: [
-    {
-      endColumn: number;
-      endLineNumber: number;
-      startColumn: number;
-      startLineNumber: number;
-    }
-  ];
-}
-
-interface DiffEditorLineChanges {
-  modifiedEndLineNumber: number;
-  modifiedStartLineNumber: number;
-  originalEndLineNumber: number;
-  originalStartLineNumber: number;
-}
 
 const overflowHide = css({
   overflow: 'hidden',
@@ -45,19 +16,35 @@ const overflowHide = css({
   height: '100%',
 });
 
+/**
+ * textToArray split a text into an array of lines
+ *
+ * @param text - the text to be splitted
+ */
 const textToArray = (text: string): string[] => {
   return text.split('\n');
 };
 
-const arrayToText = (splittedText: string[]): string => {
-  const length = splittedText.length;
+/**
+ * arrayToText merge an array of lines into a single string
+ *
+ * @param lines - the array of lines
+ */
+const arrayToText = (lines: string[]): string => {
   let text = '';
-  for (let i = 0; i < length; ++i) {
-    text += splittedText[i] + (i !== length - 1 ? '\n' : '');
+  for (let i = 0; i < lines.length; ++i) {
+    text += lines[i] + (i !== lines.length - 1 ? '\n' : '');
   }
   return text;
 };
 
+/**
+ * getTextLines slice lines in a text
+ *
+ * @param text - the text to be sliced
+ * @param start - the first line of the returned text
+ * @param end - the last line of the returned text
+ */
 const getTextLines = (
   text: string,
   start: number,
@@ -66,85 +53,250 @@ const getTextLines = (
   if (end < start || start < 0) {
     return null;
   }
-  const splittedText = textToArray(text);
-  let lines = '';
-  for (let i = start; i <= end && i < splittedText.length; i += 1) {
-    lines += splittedText[i] + '\n';
-  }
-  return lines;
+  return arrayToText(textToArray(text).slice(start, end + 1));
 };
 
+/**
+ * replaceContent replace lines of a text by a new content
+ *
+ * @param text - the text to modify
+ * @param newContent - the text to insert
+ * @param start - the beginning of the replacement
+ * @param end - the end of the replacement
+ */
 const replaceContent = (
   text: string,
-  line: string | null, // If null, remove line
+  newContent: string | null,
   start: number,
   end: number,
 ): string => {
   const splittedText = textToArray(text);
   const length = end - start;
-  if (line === null) {
+  if (newContent === null) {
+    // If new content is null, remove lines
     splittedText.splice(start, length + 1);
   } else {
-    splittedText.splice(
-      start,
-      length + 1,
-      line.replace(new RegExp('\n$'), ''), // eslint-disable-line no-control-regex
-    );
+    splittedText.splice(start, length + 1, newContent);
   }
   return arrayToText(splittedText);
 };
 
+/**
+ * insertContent insert new content in a text
+ *
+ * @param text - the text to be modified
+ * @param newContent - the content to insert
+ * @param lineNumber - the position of the insertion
+ */
 const insertContent = (
   text: string,
-  line: string | null,
-  position: number,
+  newContent: string | null,
+  lineNumber: number,
 ): string => {
-  if (line !== null) {
+  if (newContent !== null) {
     const splittedText = textToArray(text);
-    splittedText.splice(
-      position,
-      0,
-      line.replace(
-        new RegExp('\n$'), // eslint-disable-line no-control-regex
-        '',
-      ),
-    );
+    splittedText.splice(lineNumber, 0, newContent);
     return arrayToText(splittedText);
   }
   return text;
 };
 
-export function DiffEditor({
-  originalContent,
-  modifiedContent,
-  uri,
-  language,
-  onResolved,
-}: DiffEditorProps) {
-  const container = React.useRef<HTMLDivElement>(null);
-  const diffNavigator = React.useRef<ExtendedDiffNavigator>();
-  const [diffEditor, setDiffEditor] = React.useState<
-    import('monaco-editor').editor.IStandaloneDiffEditor
-  >();
+type DiffEditorType = import('monaco-editor').editor.IStandaloneDiffEditor;
+type DiffNavigator = import('monaco-editor').editor.IDiffNavigator;
+type DiffEditorLineChanges = import('monaco-editor').editor.ILineChange[];
 
-  const [idx, setIdx] = React.useState<number>(0);
+/**
+ * ExtendedDiffNavigator is an interface that exposes two more attributes than the standard IDiffNavigator
+ */
+interface ExtendedDiffNavigator extends DiffNavigator {
+  /**
+   * _editor - the current diff editor
+   */
+  _editor: DiffEditorType;
+  /**
+   * nextIdx - the index of the focused diff
+   */
+  nextIdx: number;
+}
 
-  const onSave = React.useCallback(() => {
-    if (diffEditor) {
-      if (idx !== -1) {
-        alert('You must resolve all differences before saving');
-      } else {
-        onResolved(diffEditor.getOriginalEditor().getValue());
+/**
+ * The DiffEditor state
+ */
+interface NavState {
+  /**
+   * hasChanges - tells the ui if it stills diff in the editor
+   */
+  hasChanges: boolean;
+  /**
+   * idx - the index of the focused diff
+   */
+  idx: number;
+}
+
+/**
+ * refreshIdx synchronize the component state with the diffNavigator state
+ * It force the navigator to align on a diff and refresh the hasChanges flag
+ *
+ * @param diffNavigator - the diff navigator that allows to focus diffs in the diff editor
+ */
+const refreshIdx = (diffNavigator: ExtendedDiffNavigator) => (
+  oldState: NavState,
+) => {
+  const lineChanges = diffNavigator._editor.getLineChanges();
+  if (diffNavigator.nextIdx === -1 && lineChanges && lineChanges.length > 0) {
+    // When the user clicks on a non diff line, the navigator idx is set to -1
+    if (oldState.idx >= 0 && oldState.idx < lineChanges.length) {
+      // If the old state idx is still in range, focus the same diff index
+      diffNavigator.nextIdx = oldState.idx;
+    } else {
+      // If the old idx is out of range, ask the navigator to focus the next diff
+      diffNavigator.next();
+      if (diffNavigator.nextIdx === -1 && lineChanges.length > 0) {
+        //Dummy check, it may occure that even with remaining changes nextIdx is set to -1
+        diffNavigator.nextIdx = 0;
       }
     }
-  }, [diffEditor, onResolved, idx]);
+  }
+  return {
+    hasChanges: lineChanges && lineChanges.length > 0,
+    idx: diffNavigator.nextIdx,
+  };
+};
 
-  React.useEffect(() => {
-    if (!diffEditor) {
-      Promise.all([
-        import('monaco-editor'),
-        import('../../../page-schema.build'),
-      ]).then(([monaco, t]) => {
+interface DiffEditorProps {
+  /**
+   * originalValue - the original content.
+   * Located on the left side of the editor.
+   * Is readonly for user.
+   */
+  originalValue: string;
+  /**
+   * modifiedValue - the modified content.
+   * Located on the right side of the editor
+   */
+  modifiedValue: string;
+  /**
+   * minimap - the editor shows a minimap of the code
+   */
+  minimap?: boolean;
+  /**
+   * readonly - the editor is not listening to keys
+   */
+  readonly?: boolean;
+  /**
+   * langauge - the editor language
+   */
+  language?: 'javascript' | 'css' | 'json';
+  /**
+   * onResolved - this function is fired each time the user resolved all diff and want to apply changes
+   * There is a small floppy button
+   */
+  onResolved?: (newContent: string) => void;
+  /**
+   * onChange - this function is fired each time the user modifies the modifiedValue
+   */
+  onChange?: (value: string) => void;
+  /**
+   * onBlur - this function is fired each time the modifiedEditor loose focus
+   */
+  onBlur?: (value: string) => void;
+  /**
+   * defaultUri - allows the language to be inferred from this uri
+   * To apply changes you must rerender the whole editor (i.e : change the key of the componnent)
+   */
+  defaultUri?: 'internal://page.json';
+}
+
+/**
+ * DiffEditor is a component that displays
+ */
+class DiffEditor extends React.Component<DiffEditorProps> {
+  public readonly state: NavState = { hasChanges: true, idx: -1 };
+  private diffEditor: DiffEditorType | null = null;
+  private diffNavigator: ExtendedDiffNavigator | null = null;
+  private lastOriginalValue?: string = '';
+  private lastModifiedValue?: string = '';
+  private outsideChange: boolean = false;
+  private container: HTMLDivElement | null = null;
+  static defaultProps = {
+    language: 'javascript',
+  };
+
+  shouldComponentUpdate(nextProps: DiffEditorProps, nextState: NavState) {
+    return (
+      nextState.idx !== this.state.idx ||
+      nextState.hasChanges !== this.state.hasChanges ||
+      nextProps.originalValue !== this.lastOriginalValue ||
+      nextProps.modifiedValue !== this.lastModifiedValue ||
+      nextProps.language !== this.props.language ||
+      nextProps.readonly !== this.props.readonly ||
+      nextProps.minimap !== this.props.minimap
+    );
+  }
+  componentDidUpdate(prevProps: DiffEditorProps) {
+    if (this.diffEditor !== null && this.diffNavigator !== null) {
+      if (this.lastOriginalValue !== this.props.originalValue) {
+        this.lastOriginalValue = this.props.originalValue;
+        this.outsideChange = true;
+        if ('string' === typeof this.props.originalValue) {
+          this.diffEditor
+            .getOriginalEditor()
+            .setValue(this.props.originalValue);
+        } else {
+          this.diffEditor.getOriginalEditor().setValue('');
+        }
+        this.outsideChange = false;
+      }
+      if (this.lastModifiedValue !== this.props.modifiedValue) {
+        this.lastModifiedValue = this.props.modifiedValue;
+        this.outsideChange = true;
+        if ('string' === typeof this.props.modifiedValue) {
+          this.diffEditor
+            .getModifiedEditor()
+            .setValue(this.props.modifiedValue);
+        } else {
+          this.diffEditor.getModifiedEditor().setValue('');
+        }
+        this.outsideChange = false;
+      }
+      if (this.props.language !== prevProps.language) {
+        import('monaco-editor').then(monaco => {
+          if (this.diffEditor) {
+            const originalModel = this.diffEditor
+              .getOriginalEditor()
+              .getModel();
+            const modifiedModel = this.diffEditor
+              .getModifiedEditor()
+              .getModel();
+            if (originalModel && modifiedModel) {
+              const newLanguage = this.props.language
+                ? this.props.language
+                : DiffEditor.defaultProps.language;
+              monaco.editor.setModelLanguage(originalModel, newLanguage);
+              monaco.editor.setModelLanguage(modifiedModel, newLanguage);
+            }
+          }
+        });
+      }
+      if (this.props.readonly !== prevProps.readonly) {
+        this.diffEditor.updateOptions({ readOnly: this.props.readonly });
+      }
+      if (this.props.minimap !== prevProps.minimap) {
+        this.diffEditor.updateOptions({
+          minimap: { enabled: this.props.minimap },
+        });
+      }
+      this.diffEditor.layout();
+    }
+  }
+  componentDidMount() {
+    Promise.all([
+      import('monaco-editor'),
+      import('../../../page-schema.build'),
+    ]).then(([monaco, t]) => {
+      if (this.container != null) {
+        this.lastOriginalValue = this.props.originalValue;
+        this.lastModifiedValue = this.props.modifiedValue;
         monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
           validate: true,
           schemas: [
@@ -155,274 +307,266 @@ export function DiffEditor({
             },
           ],
         });
-
-        if (container.current) {
-          if (!diffEditor) {
-            const tempDiffEditor = monaco.editor.createDiffEditor(
-              container.current,
-              {
-                theme: 'vs-dark',
-              },
-            );
-            tempDiffEditor.onDidUpdateDiff(() => {
-              if (tempDiffEditor) {
-                const changes = tempDiffEditor.getLineChanges();
-                if (changes && changes.length === 0) {
-                  setIdx(-1);
-                } else {
-                  setIdx(0);
-                }
-              }
-            });
-            tempDiffEditor.setModel({
-              original: monaco.editor.createModel(''),
-              modified: monaco.editor.createModel(''),
-            });
-            if (diffNavigator.current) {
-              diffNavigator.current.dispose();
-            }
-            diffNavigator.current = monaco.editor.createDiffNavigator(
-              tempDiffEditor,
-              { ignoreCharChanges: true },
-            ) as ExtendedDiffNavigator;
-
-            setDiffEditor(tempDiffEditor);
+        const originalModel = monaco.editor.createModel(
+          this.props.originalValue || '',
+          this.props.language,
+          this.props.defaultUri
+            ? monaco.Uri.parse(this.props.defaultUri)
+            : undefined,
+        );
+        const modifiedModel = monaco.editor.createModel(
+          this.props.modifiedValue || '',
+          this.props.language,
+          this.props.defaultUri
+            ? monaco.Uri.parse(this.props.defaultUri)
+            : undefined,
+        );
+        this.diffEditor = monaco.editor.createDiffEditor(this.container, {
+          theme: 'vs-dark',
+          readOnly: this.props.readonly,
+          minimap: { enabled: this.props.minimap },
+        });
+        this.diffEditor.setModel({
+          original: originalModel,
+          modified: modifiedModel,
+        });
+        this.diffEditor.onDidUpdateDiff(() => {
+          this.diffNavigator && this.setState(refreshIdx(this.diffNavigator));
+        });
+        this.diffEditor.getModifiedEditor().onDidBlurEditorText(() => {
+          if (this.diffEditor && this.props.onBlur) {
+            this.lastModifiedValue = this.diffEditor
+              .getModifiedEditor()
+              .getValue();
+            this.props.onBlur(this.lastModifiedValue);
           }
-        }
-      });
-    }
-    return () => {
-      if (diffNavigator.current) {
-        diffNavigator.current.dispose();
-      }
-      if (diffEditor) {
-        const originalModel = diffEditor.getOriginalEditor().getModel();
-        const modifiedModel = diffEditor.getModifiedEditor().getModel();
-        if (originalModel) {
-          originalModel.dispose();
-        }
-        if (modifiedModel) {
-          modifiedModel.dispose();
-        }
-        diffEditor.dispose();
-      }
-    };
-  }, [diffEditor]);
-
-  React.useEffect(() => {
-    if (diffEditor && language) {
-      import('monaco-editor').then(monaco => {
-        const originalModel = diffEditor.getOriginalEditor().getModel();
-        const modifiedModel = diffEditor.getModifiedEditor().getModel();
-        if (language && originalModel && modifiedModel) {
-          monaco.editor.setModelLanguage(originalModel, language);
-          monaco.editor.setModelLanguage(modifiedModel, language);
-        }
-      });
-    }
-  }, [diffEditor, language]);
-
-  React.useEffect(() => {
-    if (diffEditor) {
-      import('monaco-editor').then(monaco => {
-        const originalModel = diffEditor.getOriginalEditor().getModel();
-        const modifiedModel = diffEditor.getModifiedEditor().getModel();
-        if (originalModel && modifiedModel) {
-          const oldOriginalValue = originalModel.getValue();
-          const oldModifiedlValue = modifiedModel.getValue();
-          const oldLanguage = originalModel.getModeId();
-          diffEditor
-            .getOriginalEditor()
-            .setModel(
-              monaco.editor.createModel(
-                oldOriginalValue,
-                oldLanguage,
-                uri ? monaco.Uri.parse(uri) : undefined,
-              ),
-            );
-          diffEditor
-            .getModifiedEditor()
-            .setModel(
-              monaco.editor.createModel(
-                oldModifiedlValue,
-                oldLanguage,
-                uri ? monaco.Uri.parse(uri) : undefined,
-              ),
-            );
-        }
-      });
-    }
-  }, [diffEditor, uri]);
-
-  React.useEffect(() => {
-    if (diffEditor) {
-      diffEditor.getOriginalEditor().setValue(originalContent);
-    }
-  }, [diffEditor, originalContent]);
-
-  React.useEffect(() => {
-    if (diffEditor) {
-      diffEditor.getModifiedEditor().setValue(modifiedContent);
-    }
-  }, [diffEditor, modifiedContent]);
-
-  React.useEffect(() => {
-    if (diffEditor) {
-      import('monaco-editor').then(monaco => {
-        diffEditor.addCommand(
-          monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
-          onSave,
-        );
-      });
-    }
-  }, [diffEditor, onSave]);
-
-  const onNavigator = (next: boolean) => {
-    if (diffNavigator.current) {
-      if (next) {
-        diffNavigator.current.next();
-      } else {
-        diffNavigator.current.previous();
-      }
-      setIdx(diffNavigator.current.nextIdx);
-    }
-  };
-
-  const onKeepOne = (original: boolean) => {
-    if (diffEditor && idx >= 0) {
-      const content = diffEditor.getOriginalEditor().getValue();
-      const change = (diffEditor.getLineChanges() as DiffEditorLineChanges[])[
-        idx
-      ];
-      const modified = diffEditor.getModifiedEditor().getValue();
-      const newContent = original ? content : modified;
-      const oldContent = original ? modified : content;
-      const newStartLine = original
-        ? change.originalStartLineNumber
-        : change.modifiedStartLineNumber;
-      const newEndLine = original
-        ? change.originalEndLineNumber
-        : change.modifiedEndLineNumber;
-      const oldStartLine = original
-        ? change.modifiedStartLineNumber
-        : change.originalStartLineNumber;
-      const oldEndLine = original
-        ? change.modifiedEndLineNumber
-        : change.originalEndLineNumber;
-
-      const newText = getTextLines(
-        newContent,
-        newStartLine - 1,
-        newEndLine - 1,
-      );
-      const savedContent =
-        oldEndLine > 0 // Checks if line is missing
-          ? replaceContent(
-              oldContent,
-              newText,
-              oldStartLine - 1,
-              oldEndLine - 1,
-            )
-          : insertContent(oldContent, newText, oldStartLine);
-      if (original) {
-        diffEditor.getModifiedEditor().setValue(savedContent);
-      } else {
-        diffEditor.getOriginalEditor().setValue(savedContent);
-      }
-    }
-  };
-
-  const onKeepAll = () => {
-    if (diffEditor && idx >= 0) {
-      const content = diffEditor.getOriginalEditor().getValue();
-      const modified = diffEditor.getModifiedEditor().getValue();
-      const change = (diffEditor.getLineChanges() as DiffEditorLineChanges[])[
-        idx
-      ];
-      const origText = getTextLines(
-        content,
-        change.originalStartLineNumber - 1,
-        change.originalEndLineNumber - 1,
-      );
-      const modifText = getTextLines(
-        modified,
-        change.modifiedStartLineNumber - 1,
-        change.modifiedEndLineNumber - 1,
-      );
-      const newText = (origText ? origText : '') + (modifText ? modifText : '');
-      diffEditor
-        .getModifiedEditor()
-        .setValue(
-          replaceContent(
-            modified,
-            newText,
-            change.modifiedStartLineNumber - 1,
-            change.modifiedEndLineNumber - 1,
-          ),
-        );
-      diffEditor
-        .getOriginalEditor()
-        .setValue(
-          replaceContent(
-            content,
-            newText,
-            change.originalStartLineNumber - 1,
-            change.originalEndLineNumber - 1,
-          ),
-        );
-    }
-  };
-
-  return (
-    <Toolbar>
-      <Toolbar.Header>
-        {idx >= 0 ? (
-          <>
-            <IconButton
-              icon="arrow-left"
-              tooltip="Navigate to previous difference"
-              onClick={() => onNavigator(false)}
-            />
-            <div className={diffLabel}>Difference : #{idx}</div>
-            <IconButton
-              icon="arrow-right"
-              tooltip="Navigate to next difference"
-              onClick={() => onNavigator(true)}
-            />
-            <IconButton
-              icon="hand-point-left"
-              tooltip="Accept remote diff"
-              onClick={() => onKeepOne(true)}
-            />
-            <IconButton
-              icon="hand-point-right"
-              tooltip="Accept local diff"
-              onClick={() => onKeepOne(false)}
-            />
-            <IconButton
-              icon="balance-scale"
-              tooltip="Accept both"
-              onClick={onKeepAll}
-            />
-          </>
-        ) : (
-          <IconButton
-            icon="save"
-            tooltip="Save current state"
-            onClick={onSave}
-          />
-        )}
-      </Toolbar.Header>
-      <Toolbar.Content>
-        <SizedDiv className={overflowHide}>
-          {size => {
-            if (size && diffEditor) {
-              diffEditor.layout(size);
+        });
+        this.diffEditor.getModifiedEditor().onDidChangeModelContent(() => {
+          if (this.diffEditor) {
+            if (!this.outsideChange && this.props.onChange) {
+              this.lastModifiedValue = this.diffEditor
+                .getModifiedEditor()
+                .getValue();
+              this.props.onChange(this.lastModifiedValue);
             }
-            return <div className={overflowHide} ref={container} />;
-          }}
-        </SizedDiv>
-      </Toolbar.Content>
-    </Toolbar>
-  );
+          }
+        });
+        this.diffEditor.addCommand(
+          monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
+          this.onSave,
+        );
+        this.diffNavigator = monaco.editor.createDiffNavigator(
+          this.diffEditor,
+          { ignoreCharChanges: true },
+        ) as ExtendedDiffNavigator;
+      }
+    });
+  }
+  private layout = (size: { width: number; height: number }) => {
+    if (this.diffEditor != null) {
+      this.diffEditor.layout(size);
+    }
+  };
+  getOriginalValue() {
+    if (this.diffEditor != null) {
+      return this.diffEditor.getOriginalEditor().getValue();
+    }
+    return this.lastOriginalValue;
+  }
+  getModifiedValue() {
+    if (this.diffEditor != null) {
+      return this.diffEditor.getModifiedEditor().getValue();
+    }
+    return this.lastModifiedValue;
+  }
+  componentWillUnmount() {
+    if (this.diffNavigator) {
+      this.diffNavigator.dispose();
+    }
+    if (this.diffEditor) {
+      const originalModel = this.diffEditor.getOriginalEditor().getModel();
+      const modifiedModel = this.diffEditor.getModifiedEditor().getModel();
+      if (originalModel) {
+        originalModel.dispose();
+      }
+      if (modifiedModel) {
+        modifiedModel.dispose();
+      }
+      this.diffEditor.dispose();
+    }
+  }
+  refContainer = (n: HTMLDivElement | null) => {
+    this.container = n;
+  };
+
+  private onSave = () => {
+    if (this.diffEditor && this.props.onResolved) {
+      const lineChanges = this.diffEditor.getLineChanges();
+      if (lineChanges && lineChanges.length > 0) {
+        alert('You must resolve all differences before saving');
+      } else {
+        this.props.onResolved(this.diffEditor.getOriginalEditor().getValue());
+      }
+    }
+  };
+
+  private onNavigate = (next: boolean) => {
+    if (this.diffNavigator) {
+      if (next) {
+        this.diffNavigator.next();
+      } else {
+        this.diffNavigator.previous();
+      }
+      this.setState(refreshIdx(this.diffNavigator));
+    }
+  };
+
+  private onKeepOne = (original: boolean) => {
+    if (this.diffEditor) {
+      const lineChanges: DiffEditorLineChanges | null = this.diffEditor.getLineChanges();
+      if (lineChanges && lineChanges.length > 0) {
+        const content = this.diffEditor.getOriginalEditor().getValue();
+        const change = lineChanges[this.state.idx];
+        const modified = this.diffEditor.getModifiedEditor().getValue();
+        const newContent = original ? content : modified;
+        const oldContent = original ? modified : content;
+        const newStartLine = original
+          ? change.originalStartLineNumber
+          : change.modifiedStartLineNumber;
+        const newEndLine = original
+          ? change.originalEndLineNumber
+          : change.modifiedEndLineNumber;
+        const oldStartLine = original
+          ? change.modifiedStartLineNumber
+          : change.originalStartLineNumber;
+        const oldEndLine = original
+          ? change.modifiedEndLineNumber
+          : change.originalEndLineNumber;
+
+        const newText = getTextLines(
+          newContent,
+          newStartLine - 1,
+          newEndLine - 1,
+        );
+        const savedContent =
+          oldEndLine > 0 // Checks if line is missing
+            ? replaceContent(
+                oldContent,
+                newText,
+                oldStartLine - 1,
+                oldEndLine - 1,
+              )
+            : insertContent(oldContent, newText, oldStartLine);
+        if (original) {
+          this.diffEditor.getModifiedEditor().setValue(savedContent);
+        } else {
+          this.diffEditor.getOriginalEditor().setValue(savedContent);
+        }
+      }
+    }
+  };
+  private onKeepAll = () => {
+    if (this.diffEditor) {
+      const lineChanges: DiffEditorLineChanges | null = this.diffEditor.getLineChanges();
+      if (lineChanges && lineChanges.length > 0) {
+        const content = this.diffEditor.getOriginalEditor().getValue();
+        const modified = this.diffEditor.getModifiedEditor().getValue();
+        const change = lineChanges[this.state.idx];
+        const origText = getTextLines(
+          content,
+          change.originalStartLineNumber - 1,
+          change.originalEndLineNumber - 1,
+        );
+        if (origText === null) {
+          return this.onKeepOne(false);
+        }
+        const modifText = getTextLines(
+          modified,
+          change.modifiedStartLineNumber - 1,
+          change.modifiedEndLineNumber - 1,
+        );
+        if (modifText === null) {
+          return this.onKeepOne(true);
+        }
+        const newText =
+          (origText ? origText : '') + '\n' + (modifText ? modifText : '');
+        this.diffEditor
+          .getModifiedEditor()
+          .setValue(
+            replaceContent(
+              modified,
+              newText,
+              change.modifiedStartLineNumber - 1,
+              change.modifiedEndLineNumber - 1,
+            ),
+          );
+        this.diffEditor
+          .getOriginalEditor()
+          .setValue(
+            replaceContent(
+              content,
+              newText,
+              change.originalStartLineNumber - 1,
+              change.originalEndLineNumber - 1,
+            ),
+          );
+      }
+    }
+  };
+
+  render() {
+    return (
+      <Toolbar>
+        <Toolbar.Header>
+          {this.state.hasChanges ? (
+            <>
+              <IconButton
+                icon="arrow-left"
+                tooltip="Navigate to previous difference"
+                onClick={() => this.onNavigate(false)}
+              />
+              <div className={diffLabel}>Difference : #{this.state.idx}</div>
+              <IconButton
+                icon="arrow-right"
+                tooltip="Navigate to next difference"
+                onClick={() => this.onNavigate(true)}
+              />
+              <IconButton
+                icon="hand-point-left"
+                tooltip="Accept remote diff"
+                onClick={() => this.onKeepOne(true)}
+              />
+              <IconButton
+                icon="hand-point-right"
+                tooltip="Accept local diff"
+                onClick={() => this.onKeepOne(false)}
+              />
+              <IconButton
+                icon="balance-scale"
+                tooltip="Accept both"
+                onClick={this.onKeepAll}
+              />
+            </>
+          ) : (
+            <IconButton
+              icon="save"
+              tooltip="Save current state"
+              onClick={this.onSave}
+            />
+          )}
+        </Toolbar.Header>
+        <Toolbar.Content>
+          <SizedDiv className={overflowHide}>
+            {size => {
+              if (size !== undefined) {
+                this.layout(size);
+              }
+              return <div className={overflowHide} ref={this.refContainer} />;
+            }}
+          </SizedDiv>
+        </Toolbar.Content>
+      </Toolbar>
+    );
+  }
 }
+export default DiffEditor;
