@@ -147,6 +147,10 @@ public class PdfRenderer implements Filter {
                 String title = req.getParameter("title");
                 String content;
 
+                Tidy tidy = new Tidy();
+                tidy.setXmlOut(true);
+                tidy.setTrimEmptyElements(false);
+
                 if (req.getMethod().equalsIgnoreCase("POST")) {
                     // To prevent abuse, check that the user is logged in
                     User user = userFacade.getCurrentUser();
@@ -166,17 +170,15 @@ public class PdfRenderer implements Filter {
                      * convert xhtml from String to XML Document
                      */
                     content = capContent.getContent();
+
+                    tidy.setInputEncoding("UTF-8");
+                    tidy.setOutputEncoding("UTF-8");
                 }
 
-                Tidy tidy = new Tidy();
-                tidy.setXmlOut(true);
-                tidy.setInputEncoding("UTF-8");
-                tidy.setOutputEncoding("UTF-8");
-                tidy.setTrimEmptyElements(false);
+                InputStream iStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
 
                 OutputStream os = new ByteArrayOutputStream();
 
-                InputStream iStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
                 tidy.parse(iStream, os);
 
                 if (renderType != null && renderType.equals("pdf")) {
