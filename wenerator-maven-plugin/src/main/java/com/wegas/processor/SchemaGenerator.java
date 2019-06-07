@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.google.common.reflect.TypeToken;
+import com.google.inject.internal.MoreTypes;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.utils.WegasEntityFields;
@@ -34,6 +35,8 @@ import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.persistence.variable.statemachine.AbstractStateMachineDescriptor;
+import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.editor.Schema;
 import com.wegas.editor.Schemas;
@@ -55,7 +58,6 @@ import com.wegas.editor.View.CommonView;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.View;
 import com.wegas.editor.Visible;
-import com.wegas.mcq.persistence.Result;
 import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -66,6 +68,8 @@ import java.util.Date;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -109,7 +113,7 @@ public class SchemaGenerator extends AbstractMojo {
     }
 
     private SchemaGenerator(boolean dryRun) {
-        this(dryRun, null);
+        this(dryRun, (Class<? extends Mergeable>[]) null);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
@@ -203,6 +207,17 @@ public class SchemaGenerator extends AbstractMojo {
         return atClass;
     }
 
+    private String getTsInterfaceName(String className) {
+        try {
+            Class<?> forName = Class.forName(className);
+            if (Mergeable.class.isAssignableFrom(forName)) {
+                return getTsInterfaceName((Class<? extends Mergeable>) forName);
+            }
+        } catch (ClassNotFoundException ex) {
+        }
+        throw WegasErrorMessage.error(className + " not found");
+    }
+
     private String getTsInterfaceName(Class<? extends Mergeable> klass) {
         return "I" + Mergeable.getJSONClassName(klass);
     }
@@ -239,18 +254,21 @@ public class SchemaGenerator extends AbstractMojo {
         sb.append("interface ").append(getTsInterfaceName(c));
         // classname to paramter type map (eg. VariableInstance -> T)
         Map<String, String> genericity = new HashMap<>();
+        List<String> genericityOrder = new ArrayList<>();
+
         if (c.getTypeParameters() != null) {
             for (Type t : c.getTypeParameters()) {
                 String typeName = t.getTypeName();
                 Type reified = TypeResolver.reify(t, c);
                 String tsType = javaToTSType(reified);
                 genericity.put(tsType, typeName);
+                genericityOrder.add(tsType);
             }
         }
         if (!genericity.isEmpty()) {
             sb.append("<");
-            genericity.forEach((k, v) -> {
-                sb.append(v).append(" extends ").append(k);
+            genericityOrder.forEach(k -> {
+                sb.append(genericity.get(k)).append(" extends ").append(k);
                 sb.append(" = ").append(k).append(",");
             });
             sb.deleteCharAt(sb.length() - 1);
@@ -807,6 +825,11 @@ public class SchemaGenerator extends AbstractMojo {
                 return ((Class) type).getSimpleName();
             }
         }
+        if (type instanceof ParameterizedType) {
+            ParameterizedType pType = (ParameterizedType) type;
+            String typeName = pType.getRawType().getTypeName();
+            return getTsInterfaceName(typeName);
+        }
         return "undef";
     }
 
@@ -1022,7 +1045,7 @@ public class SchemaGenerator extends AbstractMojo {
     }
 
     public static final void main(String... args) throws MojoExecutionException {
-        SchemaGenerator wenerator = new SchemaGenerator(true, Result.class);
+        SchemaGenerator wenerator = new SchemaGenerator(true, AbstractStateMachineDescriptor.class, DialogueDescriptor.class);
         wenerator.execute();
     }
 }
