@@ -6,7 +6,7 @@ import Editor from './EntityEditor';
 import PageDisplay from './Page/PageDisplay';
 import { TabLayout } from '../../Components/Tabs';
 import StateMachineEditor from './StateMachineEditor';
-import ScriptEditor from './ScriptEditors/LibraryEditor';
+import LibraryEditor from './ScriptEditors/LibraryEditor';
 
 const layout = css({
   display: 'grid',
@@ -44,7 +44,7 @@ export default class AppLayout extends React.Component<
           <TabLayout tabs={['Page', 'StateMachine', 'Scripts']}>
             <PageDisplay />
             <StateMachineEditor />
-            <ScriptEditor />
+            <LibraryEditor />
           </TabLayout>
         </div>
         <div>

@@ -649,7 +649,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
   );
 }
 
-export default function ScriptEditorLayout() {
+export default function LibraryEditor() {
   return (
     <TabLayout tabs={['Styles', 'Client', 'Server']}>
       <ScriptEditor scriptType="CSS" />
