@@ -11,7 +11,6 @@ import {
 } from './FileBrowserRow';
 import { DropTargetMonitor } from 'react-dnd';
 import { defaultContextManager } from '../../../../Components/DragAndDrop';
-import { FontAwesome } from '../../Views/FontAwesome';
 import { omit } from 'lodash-es';
 import { StoreConsumer, StoreDispatch } from '../../../../data/store';
 import { State } from '../../../../data/Reducer/reducers';
@@ -23,6 +22,7 @@ import {
   editFileAction,
 } from '../../../../data/methods/ContentDescriptor';
 import { Edition } from '../../../../data/Reducer/globalState';
+import { IconButton } from '../../../../Components/Button/IconButton';
 
 export interface MultiselectionFileBrowserProps {
   onSelectFiles?: (files: IFileMap) => void;
@@ -184,15 +184,9 @@ export function FileBrowser(props: FileBrowserProps) {
   return (
     <div>
       <h2>{currentPath}</h2>
-      {currentPath !== '/' && (
-        <button onClick={onBack}>
-          <FontAwesome icon="arrow-left" />
-        </button>
-      )}
+      {currentPath !== '/' && <IconButton onClick={onBack} icon="arrow-left" />}
       {uploadAllowed && (
-        <button onClick={addNewDirectory}>
-          <FontAwesome icon="folder-plus" />
-        </button>
+        <IconButton onClick={addNewDirectory} icon="folder-plus" />
       )}
       <input
         id="newfile-upload"
@@ -308,16 +302,13 @@ export function MultiselectionFileFileBrowser(
       let shortestSplit: number = Number.MAX_SAFE_INTEGER;
 
       const requests = props.selectedPaths.map(item => {
-        return new Promise(resolve => {
-          FileAPI.getFileMeta(item).then((file: IFile) => {
-            newSelectedFiles[item] = file;
-            const splittedPath = file.path.split('/');
-            if (splittedPath.length < shortestSplit) {
-              shortestSplit = splittedPath.length;
-              highestPath = file.path;
-            }
-            resolve();
-          });
+        return FileAPI.getFileMeta(item).then((file: IFile) => {
+          newSelectedFiles[item] = file;
+          const splittedPath = file.path.split('/');
+          if (splittedPath.length < shortestSplit) {
+            shortestSplit = splittedPath.length;
+            highestPath = file.path;
+          }
         });
       });
 
