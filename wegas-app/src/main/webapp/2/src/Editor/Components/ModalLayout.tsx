@@ -42,14 +42,14 @@ interface ModalSpecs {
 
 interface ModalLayoutProps {
   root?: boolean;
-  children: (modals: {
+  children: (modals?: {
     walert: AlertAction;
     waccept: AcceptAction;
     wprompt: PromptAction;
   }) => React.ReactNode;
 }
 
-export function ModalLayout(props: React.PropsWithChildren<ModalLayoutProps>) {
+export function ModalLayout(props: ModalLayoutProps) {
   const [modals, setModals] = React.useState<ModalSpecs[]>([]);
 
   const consumeModal = () => {
