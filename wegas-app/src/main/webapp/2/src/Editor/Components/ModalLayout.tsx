@@ -63,7 +63,7 @@ interface ModalSpecs {
 }
 
 interface ModalLayoutProps {
-  root?: boolean;
+  global?: boolean;
   children: (modals?: WModals, disabled?: boolean) => React.ReactNode;
 }
 
@@ -128,7 +128,7 @@ export function ModalLayout(props: ModalLayoutProps) {
     );
   };
 
-  if (props.root) {
+  if (props.global) {
     globalModals.walert = walert;
     globalModals.waccept = waccept;
     globalModals.wprompt = wprompt;
