@@ -10,23 +10,31 @@ interface TabLayoutProps {
 }
 export class TabLayout extends React.Component<
   TabLayoutProps,
-  { active: number }
+  { active: number; renderedFlag: number }
 > {
   static defaultProps = {
     vertical: false,
   };
-  readonly state = { active: this.props.active || 0 };
+  readonly state = {
+    active: this.props.active || 0,
+    renderedFlag: this.props.active || 0,
+  };
+
   render() {
+    debugger;
     const childrens = React.Children.map(this.props.children, (c, i) => {
       return (
-        <div
-          style={{
-            display: i === this.state.active ? 'flex' : 'none',
-            flex: '1 1 auto',
-          }}
-        >
-          {c}
-        </div>
+        (i === this.state.active ||
+          (this.state.renderedFlag & (i + 1)) > 0) && (
+          <div
+            style={{
+              display: i === this.state.active ? 'flex' : 'none',
+              flex: '1 1 auto',
+            }}
+          >
+            {c}
+          </div>
+        )
       );
     });
     return (
@@ -37,7 +45,14 @@ export class TabLayout extends React.Component<
               <Tab
                 key={i}
                 active={i === this.state.active}
-                onClick={() => this.setState({ active: i })}
+                onClick={() =>
+                  this.setState(oldState => {
+                    return {
+                      active: i,
+                      renderedFlag: oldState.renderedFlag | (i + 1),
+                    };
+                  })
+                }
               >
                 {t}
               </Tab>
