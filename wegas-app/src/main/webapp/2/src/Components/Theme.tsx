@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { css } from 'emotion';
 import * as Color from 'color';
+import { faFileExcel } from '@fortawesome/free-solid-svg-icons';
 
 interface ThemeProps {
   backgroundColor: string;
@@ -88,6 +89,7 @@ export class Theme extends React.PureComponent<
           })
         }
         className={css({
+          display: 'flex',
           width: '100%',
           height: '100%',
           backgroundColor: backgroundColor,
