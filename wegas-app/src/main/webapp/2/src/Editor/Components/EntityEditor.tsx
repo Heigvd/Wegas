@@ -20,7 +20,7 @@ interface EditorProps<T> {
   getConfig(entity: T): Promise<ConfigurationSchema<IWegasEntity>>;
 }
 
-export async function WindowedEditor<T>({
+async function WindowedEditor<T>({
   entity,
   update,
   actions = [],
@@ -60,7 +60,7 @@ export async function WindowedEditor<T>({
     />
   );
 }
-export const AsyncVariableForm = asyncSFC<EditorProps<{ '@class': string }>>(
+const AsyncVariableForm = asyncSFC<EditorProps<{ '@class': string }>>(
   WindowedEditor,
   () => <div>load...</div>,
   ({ err }) => <span>{err.message}</span>,

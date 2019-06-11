@@ -15,7 +15,6 @@ interface IconButtonProps extends Props {
   tabIndex?: number;
   prefixedLabel?: boolean;
   type?: 'submit' | 'reset';
-  className?: string;
 }
 const defaultActiveStyle = css({ color: themeVar.primaryDarkerColor });
 

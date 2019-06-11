@@ -69,6 +69,9 @@ const grow = css({
 const flex = css({
   display: 'flex',
 });
+const relative = css({
+  position: 'relative',
+});
 
 export interface TabComponent {
   id: number;
@@ -118,13 +121,9 @@ interface TabLayoutProps {
    */
   selectItems?: TabComponent[];
   /**
-   * allowDrop - if true, this enables the drop zones (layout side and dropTabs)
-   */
-  allowDrop?: boolean;
-  /**
    * activeId - the selected tab
    */
-  activeId?: number;
+  defaultActiveId?: number;
   /**
    * onDrop - The function to call when a drop occures on the side
    */
@@ -138,10 +137,6 @@ interface TabLayoutProps {
    */
   onDeleteTab: (tabKey: string) => void;
   /**
-   * onDrag -  The function to call a the begin of a drag action
-   */
-  onDrag: (isDragging: boolean, tabKey: string) => void;
-  /**
    * onNewTab - The function to call when a new tab is requested
    */
   onNewTab: (tabKey: string) => void;
@@ -154,30 +149,34 @@ export function DnDTabLayout({
   vertical,
   components,
   selectItems,
-  allowDrop,
-  activeId,
+  defaultActiveId,
   onDrop,
   onDropTab,
   onDeleteTab,
-  onDrag,
   onNewTab,
 }: TabLayoutProps) {
-  const [activeKey, setActiveKey] = React.useState(-1);
+  const [activeKey, setActiveKey] = React.useState(
+    defaultActiveId !== undefined ? defaultActiveId : -1,
+  );
+  const prevComponents = React.useRef<TabComponent[]>([]);
+
+  const onDrag = (tabId: number) => {
+    prevComponents.current = prevComponents.current.filter(c => c.id !== tabId);
+  };
 
   React.useEffect(() => {
-    if (activeId) {
-      setActiveKey(activeId);
-    }
-  }, [activeId]);
+    const newComponents = components.filter(
+      c => prevComponents.current.find(pc => pc.id === c.id) === undefined,
+    );
 
-  React.useEffect(() => {
-    if (components.find(c => c.id === activeKey) === undefined) {
+    if (newComponents.length > 0) {
+      setActiveKey(components.find(c => c === newComponents[0])!.id);
+    } else if (components.find(c => c.id === activeKey) === undefined) {
       if (components.length > 0) {
         setActiveKey(components[0].id);
-      } else {
-        setActiveKey(-1);
       }
     }
+    prevComponents.current = components;
     // We dont want to refresh everytime activeKey changes (infinite loop)
   }, [components]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -215,7 +214,7 @@ export function DnDTabLayout({
           id={t.id}
           active={isActive}
           onClick={() => setActiveKey(t.id)}
-          onDrag={(isDragging, tabId) => onDrag(isDragging, String(tabId))}
+          onDrag={onDrag}
         >
           <span className={grow}>
             {t.name}
@@ -240,7 +239,7 @@ export function DnDTabLayout({
       }
     }
     return tabs;
-  }, [components, activeKey, onDeleteTab, onDrag, onDropTab]);
+  }, [components, activeKey, onDeleteTab, onDropTab]);
 
   return (
     <Toolbar vertical={vertical}>
@@ -263,7 +262,7 @@ export function DnDTabLayout({
           </Tab>
         )}
       </Toolbar.Header>
-      <Toolbar.Content>
+      <Toolbar.Content className={cx(flex, relative)}>
         {components.map(t => {
           return (
             <Reparentable
@@ -276,41 +275,35 @@ export function DnDTabLayout({
             </Reparentable>
           );
         })}
-        {allowDrop && (
-          <>
-            <div
-              ref={dropLeft}
-              className={cx(
-                dropLeftZone,
-                dropLeftProps.isOver && dropLeftProps.canDrop && dropZoneFocus,
-              )}
-            />
-            <div
-              ref={dropRight}
-              className={cx(
-                dropRightZone,
-                dropRightProps.isOver &&
-                  dropRightProps.canDrop &&
-                  dropZoneFocus,
-              )}
-            />
-            <div
-              ref={dropTop}
-              className={cx(
-                dropTopZone,
-                dropTopProps.isOver && dropTopProps.canDrop && dropZoneFocus,
-              )}
-            />
-            <div
-              ref={dropBottom}
-              className={cx(
-                dropBottomZone,
-                dropBottomProps.isOver &&
-                  dropBottomProps.canDrop &&
-                  dropZoneFocus,
-              )}
-            />
-          </>
+        {dropLeftProps.canDrop && (
+          <div
+            ref={dropLeft}
+            className={cx(dropLeftZone, dropLeftProps.isOver && dropZoneFocus)}
+          />
+        )}
+        {dropRightProps.canDrop && (
+          <div
+            ref={dropRight}
+            className={cx(
+              dropRightZone,
+              dropRightProps.isOver && dropZoneFocus,
+            )}
+          />
+        )}
+        {dropTopProps.canDrop && (
+          <div
+            ref={dropTop}
+            className={cx(dropTopZone, dropTopProps.isOver && dropZoneFocus)}
+          />
+        )}
+        {dropBottomProps.canDrop && (
+          <div
+            ref={dropBottom}
+            className={cx(
+              dropBottomZone,
+              dropBottomProps.isOver && dropZoneFocus,
+            )}
+          />
         )}
       </Toolbar.Content>
     </Toolbar>

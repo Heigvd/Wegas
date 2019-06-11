@@ -1,25 +1,13 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { css } from 'emotion';
 import Header from './Header';
 import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
 
 const layout = css({
-  display: 'grid',
-  gridTemplateRows: 'auto 1fr',
-  height: '100%',
-  gridTemplateColumns: 'auto 1fr auto',
-  '& > div': {
-    boxSizing: 'border-box',
-    borderRight: '1px solid',
-  },
-});
-
-const flex = css({
   display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
 });
-
-// const fullWidth = css({ gridColumnEnd: 'span 3' });
-const fullWidth = css({ gridColumnEnd: 'span 3' });
 
 export default class AppLayout extends React.Component<
   {},
@@ -34,12 +22,8 @@ export default class AppLayout extends React.Component<
   render() {
     return (
       <div className={layout}>
-        <div className={fullWidth}>
-          <Header />
-        </div>
-        <div className={cx(fullWidth, flex)}>
-          <DndLinearLayout />
-        </div>
+        <Header />
+        <DndLinearLayout />
       </div>
     );
   }

@@ -13,21 +13,18 @@ import { DropAction } from './DnDTabLayout';
 export const dndAcceptType = 'DnDTab';
 
 const dropZoneFocus = css({
+  width: '10px',
   borderStyle: 'solid',
   borderWidth: '2px',
   borderColor: themeVar.successColor,
   zIndex: 1000,
 });
 
-const inactiveDropableTabStyle = css({
-  width: '2px',
-});
-
 const activeDropableTabStyle = cx(
   css({
-    width: '20px',
+    width: '100px',
+    backgroundColor: themeVar.successColor,
   }),
-  dropZoneFocus,
 );
 
 const defaultTabStyle = css({
@@ -61,6 +58,10 @@ interface DnDropTabProps extends DropTabProps {
    */
   connectDropTarget: DragElementWrapper<DnDropTabProps>;
   /**
+   * canDrop - Tells the component if something is beegin dragged
+   */
+  canDrop: boolean;
+  /**
    * isOverCurrent - Tells if the drag element is over the current component
    */
   isOverCurrent: boolean;
@@ -69,13 +70,15 @@ function DropTab({
   className,
   children,
   connectDropTarget,
+  canDrop,
   isOverCurrent,
 }: DnDropTabProps) {
   return connectDropTarget(
     <div
       className={cx(
         className,
-        isOverCurrent ? activeDropableTabStyle : inactiveDropableTabStyle,
+        canDrop && dropZoneFocus,
+        isOverCurrent && activeDropableTabStyle,
       )}
     >
       {children}
@@ -96,6 +99,7 @@ const dropTabTarget = {
 function collect(connect: DropTargetConnector, monitor: DropTargetMonitor) {
   return {
     connectDropTarget: connect.dropTarget(),
+    canDrop: monitor.canDrop() && monitor.getItemType() === dndAcceptType,
     isOverCurrent: monitor.isOver({ shallow: true }),
   };
 }
@@ -127,7 +131,7 @@ interface TabProps {
   /**
    * onDrag - the function to be called when a drag event occures
    */
-  onDrag?: (isDragging: boolean, tabId: number) => void;
+  onDrag?: (tabId: number) => void;
   /**
    * className - the className to apply on the component
    */
@@ -137,9 +141,7 @@ interface TabProps {
 export function Tab(props: TabProps) {
   const [, drag] = dnd.useDrag({
     item: { id: props.id, type: dndAcceptType },
-    canDrag: props.onDrag !== undefined,
-    begin: () => props.onDrag && props.onDrag(true, props.id),
-    end: () => props.onDrag && props.onDrag(false, props.id),
+    begin: () => props.onDrag && props.onDrag(props.id),
   });
 
   if (props.children === null) {
