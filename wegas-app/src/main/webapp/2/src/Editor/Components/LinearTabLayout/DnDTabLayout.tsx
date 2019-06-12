@@ -3,7 +3,7 @@ import {
   __EXPERIMENTAL_DND_HOOKS_THAT_MAY_CHANGE_AND_BREAK_MY_BUILD__ as dnd,
   DropTargetMonitor,
 } from 'react-dnd';
-import { DnDropTab, Tab, dndAcceptType } from './DnDTabs';
+import { DnDropTab, Tab, dndAcceptType, DragTab } from './DnDTabs';
 import { IconButton } from '../../../Components/Button/IconButton';
 import { Toolbar } from '../../../Components/Toolbar';
 import { Menu } from '../../../Components/Menu';
@@ -73,13 +73,22 @@ const relative = css({
   position: 'relative',
 });
 
-export interface TabComponent {
-  id: number;
-  name: string;
-  component: JSX.Element;
+export interface ComponentMap {
+  [name: string]: React.ReactNode;
 }
 
-export type DropAction = (item: { id: number; type: string }) => void;
+export const filterMap = (
+  map: ComponentMap,
+  filterFN: (k: string, i: number) => boolean,
+) => {
+  const newComponents: ComponentMap = {};
+  Object.keys(map)
+    .filter((k, i) => filterFN(k, i))
+    .map(k => (newComponents[k] = map[k]));
+  return newComponents;
+};
+
+export type DropAction = (item: { label: string; type: string }) => void;
 
 /**
  * dropSpecsFactory creates an object for react-dnd drop hooks management
@@ -115,15 +124,19 @@ interface TabLayoutProps {
   /**
    * components - the components to be displayed in the tabLayout
    */
-  components: TabComponent[];
+  components: ComponentMap;
   /**
    * selectItems - the components that can be added in the tabLayout
    */
-  selectItems?: TabComponent[];
+  selectItems?: ComponentMap;
   /**
    * activeId - the selected tab
    */
-  defaultActiveId?: number;
+  defaultActiveLabel?: string;
+  /**
+   * onSelect - The function to call when a tab is selected
+   */
+  onSelect?: (label: string) => void;
   /**
    * onDrop - The function to call when a drop occures on the side
    */
@@ -135,11 +148,11 @@ interface TabLayoutProps {
   /**
    * onDeleteTab - The function to call when a tab is deleted
    */
-  onDeleteTab: (tabKey: string) => void;
+  onDeleteTab: (label: string) => void;
   /**
    * onNewTab - The function to call when a new tab is requested
    */
-  onNewTab: (tabKey: string) => void;
+  onNewTab: (label: string) => void;
 }
 
 /**
@@ -149,36 +162,22 @@ export function DnDTabLayout({
   vertical,
   components,
   selectItems,
-  defaultActiveId,
+  defaultActiveLabel: activeLabel,
+  onSelect,
   onDrop,
   onDropTab,
   onDeleteTab,
   onNewTab,
 }: TabLayoutProps) {
-  const [activeKey, setActiveKey] = React.useState(
-    defaultActiveId !== undefined ? defaultActiveId : -1,
-  );
-  const prevComponents = React.useRef<TabComponent[]>([]);
-
-  const onDrag = (tabId: number) => {
-    prevComponents.current = prevComponents.current.filter(c => c.id !== tabId);
-  };
-
   React.useEffect(() => {
-    const newComponents = components.filter(
-      c => prevComponents.current.find(pc => pc.id === c.id) === undefined,
-    );
-
-    if (newComponents.length > 0) {
-      setActiveKey(components.find(c => c === newComponents[0])!.id);
-    } else if (components.find(c => c.id === activeKey) === undefined) {
-      if (components.length > 0) {
-        setActiveKey(components[0].id);
-      }
+    if (
+      activeLabel === undefined ||
+      (components[activeLabel] === undefined &&
+        Object.keys(components).length > 0)
+    ) {
+      onSelect && onSelect(Object.keys(components)[0]);
     }
-    prevComponents.current = components;
-    // We dont want to refresh everytime activeKey changes (infinite loop)
-  }, [components]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [components, activeLabel, onSelect]);
 
   // DnD hooks (for dropping tabs on the side of the layout)
   const [dropLeftProps, dropLeft] = dnd.useDrop(
@@ -197,63 +196,57 @@ export function DnDTabLayout({
    */
   const renderTabs = React.useCallback(() => {
     const tabs = [];
-
-    for (let i = 0; i < components.length; i += 1) {
-      const t = components[i];
-      const isActive =
-        activeKey !== undefined ? t.id === activeKey : Number(i) === 0;
+    const componentsKeys = Object.keys(components);
+    for (let i = 0; i < componentsKeys.length; i += 1) {
+      const label = componentsKeys[i];
 
       // Always put a dropTab on the left of a tab
-      tabs.push(
-        <DnDropTab key={String(t.id) + 'LEFTDROP'} onDrop={onDropTab(i)} />,
-      );
+      tabs.push(<DnDropTab key={label + 'LEFTDROP'} onDrop={onDropTab(i)} />);
 
       tabs.push(
-        <Tab
-          key={t.id}
-          id={t.id}
-          active={isActive}
-          onClick={() => setActiveKey(t.id)}
-          onDrag={onDrag}
+        <DragTab
+          key={label}
+          label={label}
+          active={label === activeLabel}
+          onClick={() => {
+            onSelect && onSelect(label);
+          }}
         >
           <span className={grow}>
-            {t.name}
+            {label}
             <IconButton
               icon="times"
               tooltip="Remove tab"
-              onClick={() => onDeleteTab(String(t.id))}
+              onClick={() => onDeleteTab(label)}
               className={buttonStyle}
             />
           </span>
-        </Tab>,
+        </DragTab>,
       );
 
       // At the end, don't forget to add a dropTab on the right of the last tab
-      if (Number(i) === components.length - 1) {
+      if (Number(i) === componentsKeys.length - 1) {
         tabs.push(
-          <DnDropTab
-            key={String(t.id) + 'RIGHTDROP'}
-            onDrop={onDropTab(i + 1)}
-          />,
+          <DnDropTab key={label + 'RIGHTDROP'} onDrop={onDropTab(i + 1)} />,
         );
       }
     }
     return tabs;
-  }, [components, activeKey, onDeleteTab, onDropTab]);
+  }, [components, activeLabel, onDeleteTab, onDropTab, onSelect]);
 
   return (
     <Toolbar vertical={vertical}>
       <Toolbar.Header>
         {renderTabs()}
-        {selectItems && selectItems.length > 0 && (
-          <Tab key={'-1'} id={-1} active={false}>
+        {selectItems && Object.keys(selectItems).length > 0 && (
+          <Tab key={'-1'}>
             <Menu
-              items={selectItems.map(e => {
-                return { label: e.name, value: e.id };
+              items={Object.keys(selectItems).map(label => {
+                return { label: label, value: label };
               })}
               icon="plus"
               onSelect={i => {
-                setActiveKey(i.value);
+                onSelect && onSelect(i.value);
                 onNewTab(String(i.value));
               }}
               buttonClassName={buttonStyle}
@@ -263,15 +256,19 @@ export function DnDTabLayout({
         )}
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, relative)}>
-        {components.map(t => {
+        {Object.keys(components).map(label => {
           return (
             <Reparentable
-              key={t.id}
-              id={String(t.id)}
+              key={label}
+              id={label}
               innerClassName={cx(flex, grow)}
-              outerClassName={cx(flex, grow, t.id !== activeKey ? hidden : '')}
+              outerClassName={cx(
+                flex,
+                grow,
+                label !== activeLabel ? hidden : '',
+              )}
             >
-              {t.component}
+              {components[label]}
             </Reparentable>
           );
         })}

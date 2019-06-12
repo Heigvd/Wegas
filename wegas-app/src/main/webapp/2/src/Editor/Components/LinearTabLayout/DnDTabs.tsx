@@ -37,6 +37,100 @@ const defaultTabStyle = css({
   verticalAlign: '',
 });
 
+interface TabProps {
+  /**
+   * active - the state of the tab
+   */
+  active?: boolean;
+  /**
+   * children - the content of the tab
+   */
+  children?: React.ReactChild | null;
+  /**
+   * onClick - the function to be called when the tab is clicked
+   */
+  onClick?: () => void;
+  /**
+   * className - the className to apply on the component
+   */
+  className?: string;
+}
+
+export function Tab(props: TabProps) {
+  if (props.children === null) {
+    return null;
+  }
+  return (
+    <div
+      className={cx(
+        defaultTabStyle,
+        props.className
+          ? props.className
+          : props.active
+          ? primaryDark
+          : primaryLight,
+      )}
+      onClick={props.onClick}
+    >
+      {props.children}
+    </div>
+  );
+}
+
+interface DragTabProps {
+  /**
+   * active - the state of the tab
+   */
+  active: boolean;
+  /**
+   * label - the name of the draggable item
+   */
+  label: string;
+  /**
+   * children - the content of the tab
+   */
+  children?: React.ReactChild | null;
+  /**
+   * onClick - the function to be called when the tab is clicked
+   */
+  onClick?: () => void;
+  /**
+   * onDrag - the function to be called when a drag event occures
+   */
+  onDrag?: (label: string) => void;
+  /**
+   * className - the className to apply on the component
+   */
+  className?: string;
+}
+
+export function DragTab(props: DragTabProps) {
+  const [, drag] = dnd.useDrag({
+    item: { label: props.label, type: dndAcceptType },
+    begin: () => props.onDrag && props.onDrag(props.label),
+  });
+
+  if (props.children === null) {
+    return null;
+  }
+  return (
+    <div
+      ref={drag}
+      className={cx(
+        defaultTabStyle,
+        props.className
+          ? props.className
+          : props.active
+          ? primaryDark
+          : primaryLight,
+      )}
+      onClick={() => props.onClick && props.onClick()}
+    >
+      {props.children}
+    </div>
+  );
+}
+
 export interface DropTabProps {
   /**
    * onDrop - The function to call when a drop occures on this tab
@@ -110,57 +204,3 @@ function collect(connect: DropTargetConnector, monitor: DropTargetMonitor) {
 export const DnDropTab = DropTarget(dndAcceptType, dropTabTarget, collect)(
   DropTab,
 );
-
-interface TabProps {
-  /**
-   * active - the state of the tab
-   */
-  active: boolean;
-  /**
-   * id - the id of the draggable item
-   */
-  id: number;
-  /**
-   * children - the content of the tab
-   */
-  children?: React.ReactChild | null;
-  /**
-   * onClick - the function to be called when the tab is clicked
-   */
-  onClick?: () => void;
-  /**
-   * onDrag - the function to be called when a drag event occures
-   */
-  onDrag?: (tabId: number) => void;
-  /**
-   * className - the className to apply on the component
-   */
-  className?: string;
-}
-
-export function Tab(props: TabProps) {
-  const [, drag] = dnd.useDrag({
-    item: { id: props.id, type: dndAcceptType },
-    begin: () => props.onDrag && props.onDrag(props.id),
-  });
-
-  if (props.children === null) {
-    return null;
-  }
-  return (
-    <div
-      ref={drag}
-      className={cx(
-        defaultTabStyle,
-        props.className
-          ? props.className
-          : props.active
-          ? primaryDark
-          : primaryLight,
-      )}
-      onClick={() => props.onClick && props.onClick()}
-    >
-      {props.children}
-    </div>
-  );
-}

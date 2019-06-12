@@ -10,7 +10,7 @@ import Editor from './../EntityEditor';
 import { omit } from 'lodash';
 import u from 'immer';
 import { ReparentableRoot } from '../Reparentable';
-import { DnDTabLayout } from './DnDTabLayout';
+import { DnDTabLayout, ComponentMap, filterMap } from './DnDTabLayout';
 
 const splitter = css({
   '&.reflex-container.vertical > .reflex-splitter': {
@@ -25,34 +25,6 @@ const flex = css({
   display: 'flex',
   flex: '1 1 auto',
 });
-
-interface Tab {
-  name: string;
-  component: JSX.Element;
-}
-
-interface TabsMap {
-  [id: string]: Tab;
-}
-
-const defaultTabsMap: TabsMap = {
-  '0': {
-    name: 'Variables',
-    component: <TreeView />,
-  },
-  '1': {
-    name: 'Page',
-    component: <PageDisplay />,
-  },
-  '2': {
-    name: 'StateMachine',
-    component: <StateMachineEditor />,
-  },
-  '3': {
-    name: 'Editor',
-    component: <Editor />,
-  },
-};
 
 type LayoutType = 'ReflexLayoutNode' | 'TabLayoutNode';
 
@@ -72,9 +44,13 @@ interface LayoutNode {
    * children - the children keys
    * type :
    *  - ReflexLayout : keys are from LayoutNode in the LayoutMap
-   *  - TabLayout : keys are from Tabs in theTabsMap
+   *  - TabLayout : labels are from Tabs in the TabsMap
    */
   children: string[];
+  /**
+   * defaultActive - the label of the active children
+   */
+  defaultActive?: string;
 }
 
 interface LayoutMap {
@@ -108,22 +84,40 @@ interface ManagedLayoutMap {
  *
  * @returns every unused tabs in a tabMap
  */
-const getUnusedTabs = (layouts: LayoutMap, tabs: TabsMap) => {
-  const unusedTabsKeys = Object.keys(tabs).filter(tabKey => {
+const getUnusedTabs = (layouts: LayoutMap, tabs: ComponentMap) => {
+  return filterMap(tabs, label => {
     return (
       Object.keys(layouts).filter(layoutKey => {
         const layout = layouts[layoutKey];
         return (
-          layout.type === 'TabLayoutNode' &&
-          layout.children.indexOf(tabKey) >= 0
+          layout.type === 'TabLayoutNode' && layout.children.indexOf(label) >= 0
         );
       }).length === 0
     );
   });
+};
 
-  return unusedTabsKeys.map(tabKey => {
-    return { id: Number(tabKey), ...tabs[tabKey] };
-  });
+/**
+ * makeTabMap simply makes a tab map from a list of labels
+ *
+ * @param labels - the names of the tabs to be used
+ * @param tabs - the tabs that can be used in the linearLayout
+ *
+ * @returns a map of the tabs corresponding to the given labels
+ */
+const makeTabMap = (labels: string[], tabs: ComponentMap) => {
+  const newTabs: ComponentMap = {};
+  for (const label of labels) {
+    newTabs[label] = tabs[label];
+  }
+  return newTabs;
+};
+
+const defaultTabMap: ComponentMap = {
+  Variables: <TreeView />,
+  Page: <PageDisplay />,
+  StateMachine: <StateMachineEditor />,
+  Editor: <Editor />,
 };
 
 const defaultLayoutMap: ManagedLayoutMap = {
@@ -139,17 +133,17 @@ const defaultLayoutMap: ManagedLayoutMap = {
     '1': {
       type: 'TabLayoutNode',
       vertical: false,
-      children: ['0'],
+      children: ['Variables'],
     },
     '2': {
       type: 'TabLayoutNode',
       vertical: false,
-      children: ['1', '2'],
+      children: ['Page', 'StateMachine'],
     },
     '3': {
       type: 'TabLayoutNode',
       vertical: false,
-      children: ['3'],
+      children: ['Editor'],
     },
   },
 };
@@ -389,18 +383,13 @@ const logLayouts = (layouts: LayoutMap) => {
     'layouts',
     Object.keys(layouts).map(key => {
       const layout = layouts[key];
-      return [
-        key,
-        layout.type,
-        String(
-          layout.children.map(childKey =>
-            layout.type === 'TabLayoutNode' &&
-            defaultTabsMap[childKey] !== undefined
-              ? defaultTabsMap[childKey].name
-              : childKey,
-          ),
-        ),
-      ];
+      return (
+        key +
+        ' ' +
+        layout.type +
+        ' [' +
+        String(layout.children + '] ==> ' + layout.defaultActive)
+      );
     }),
   );
 };
@@ -421,11 +410,15 @@ const insertChildren = (
   destLayoutKey: string,
   key: string,
   index?: number,
+  active?: boolean,
 ) => {
   const newLayouts = layouts;
   const newIndex =
     index !== undefined ? index : newLayouts[destLayoutKey].children.length;
   newLayouts[destLayoutKey].children.splice(newIndex, 0, key);
+  if (active) {
+    newLayouts[destLayoutKey].defaultActive = key;
+  }
   return newLayouts;
 };
 
@@ -439,6 +432,10 @@ interface TabAction extends Action {
 
 interface ActionDelete extends TabAction {
   type: 'DELETE';
+}
+
+interface ActionSelect extends TabAction {
+  type: 'SELECT';
 }
 
 export type DropActionType = 'LEFT' | 'RIGHT' | 'TOP' | 'BOTTOM' | 'NEW';
@@ -455,13 +452,19 @@ interface ActionDropTab extends TabAction {
   tabIndex: number;
 }
 
-type TabLayoutsAction = ActionDrop | ActionDelete | ActionDropTab;
+type TabLayoutsAction =
+  | ActionDrop
+  | ActionDelete
+  | ActionDropTab
+  | ActionSelect;
 
 /**
  * setLayout is the reducer function for layout disposition management
  */
 const setLayout = (layouts: ManagedLayoutMap, action: TabLayoutsAction) =>
   u(layouts, (layouts: ManagedLayoutMap) => {
+    logLayouts(layouts.layoutMap);
+    // debugger;
     // Find the parent tabLayout of the tab
     const srcTabLayoutKey = findLayoutByKey(
       layouts.layoutMap,
@@ -475,10 +478,17 @@ const setLayout = (layouts: ManagedLayoutMap, action: TabLayoutsAction) =>
         layouts.layoutMap,
         action.destTabLayoutKey,
         action.tabKey,
+        undefined,
+        true,
       );
     }
     // For the other actions, the tab must have a parent tabLayout
     else if (srcTabLayoutKey) {
+      if (action.type === 'SELECT') {
+        layouts.layoutMap[srcTabLayoutKey.parentKey].defaultActive =
+          action.tabKey;
+        return layouts;
+      }
       // Remaining actions are drop actions, always remove tab from source TabLayout when dropping
       const oldTabLayout = layouts.layoutMap[srcTabLayoutKey.parentKey];
       oldTabLayout.children = oldTabLayout.children.filter(
@@ -503,6 +513,7 @@ const setLayout = (layouts: ManagedLayoutMap, action: TabLayoutsAction) =>
           action.parentKey,
           action.tabKey,
           index,
+          true,
         );
       } else if (action.type !== 'DELETE') {
         // Getting the parent of the TabLayout
@@ -628,7 +639,7 @@ interface LinearLayoutProps {
    * tabMap - the tabs that can be used in the linearLayout
    * Be carefull, if a new tabMap is given and the current layoutMap is using these tabs the component will fail
    */
-  tabMap?: TabsMap;
+  tabMap?: ComponentMap;
   /**
    * layoutMap - the layout initial disposition
    */
@@ -639,31 +650,31 @@ interface LinearLayoutProps {
  * MainLinearLayout is a component that allows to chose the position and size of its children
  */
 function MainLinearLayout(props: LinearLayoutProps) {
-  const tabs = props.tabMap ? props.tabMap : defaultTabsMap;
+  const tabs = props.tabMap ? props.tabMap : defaultTabMap;
   const [layout, dispatchLayout] = React.useReducer(
     setLayout,
     props.layoutMap ? props.layoutMap : defaultLayoutMap,
   );
-
+  logLayouts(layout.layoutMap);
   const onDrop = (layoutKey: string) => (type: DropActionType) => (item: {
-    id: number;
+    label: string;
     type: string;
   }) => {
     dispatchLayout({
       type: type,
       destTabLayoutKey: layoutKey,
-      tabKey: String(item.id),
+      tabKey: item.label,
     });
   };
 
   const onDropTab = (parentLayoutKey: string) => (index: number) => (item: {
-    id: number;
+    label: string;
     type: string;
   }) =>
     dispatchLayout({
       type: 'TAB',
       parentKey: parentLayoutKey,
-      tabKey: String(item.id),
+      tabKey: item.label,
       tabIndex: index,
     });
 
@@ -678,6 +689,12 @@ function MainLinearLayout(props: LinearLayoutProps) {
       type: 'NEW',
       tabKey: tabKey,
       destTabLayoutKey: layoutKey,
+    });
+
+  const onSelect = (tabKey: string) =>
+    dispatchLayout({
+      type: 'SELECT',
+      tabKey: tabKey,
     });
 
   /**
@@ -696,18 +713,15 @@ function MainLinearLayout(props: LinearLayoutProps) {
           return (
             <DnDTabLayout
               key={currentLayoutKey}
-              components={currentLayout.children.map(key => {
-                return {
-                  id: Number(key),
-                  ...tabs[key],
-                };
-              })}
+              components={makeTabMap(currentLayout.children, tabs)}
               selectItems={getUnusedTabs(layout.layoutMap, tabs)}
               vertical={currentLayout.vertical}
               onDrop={onDrop(currentLayoutKey)}
               onDropTab={onDropTab(currentLayoutKey)}
               onDeleteTab={onDeleteTab}
               onNewTab={onNewTab(currentLayoutKey)}
+              defaultActiveLabel={currentLayout.defaultActive}
+              onSelect={onSelect}
             />
           );
         }
