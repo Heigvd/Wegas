@@ -21,7 +21,6 @@ export class TabLayout extends React.Component<
   };
 
   render() {
-    debugger;
     const childrens = React.Children.map(this.props.children, (c, i) => {
       return (
         (i === this.state.active ||
