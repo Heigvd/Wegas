@@ -64,12 +64,28 @@ interface ModalSpecs {
 
 interface ModalLayoutProps {
   global?: boolean;
+  noDebugger?: boolean;
   children: (modals?: WModals, disabled?: boolean) => React.ReactNode;
 }
 
 export function ModalLayout(props: ModalLayoutProps) {
   const [modals, setModals] = React.useState<ModalSpecs[]>([]);
   const prompter = React.useRef('');
+
+  /**
+   * This is an evil workaround to prevent nasty user to use console while playing
+   * Warning, may be used only in player mode if we want to keep debuging the app
+   */
+  if (props.noDebugger) {
+    setInterval(function() {
+      const date = Date.now();
+      debugger; // eslint-disable-line no-debugger
+      if (Date.now() - date > 100) {
+        alert("Don't opent the console! The page will reload now...");
+        location.reload();
+      }
+    }, 100);
+  }
 
   const consumeModal = () => {
     setModals(oldModals =>

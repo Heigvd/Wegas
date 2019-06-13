@@ -33,7 +33,7 @@ export default class AppLayout extends React.Component<
   }
   render() {
     return (
-      <ModalLayout global={true}>
+      <ModalLayout global={true} noDebugger={true}>
         {modals => {
           return (
             <div className={layout}>
