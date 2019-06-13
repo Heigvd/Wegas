@@ -33,7 +33,6 @@ export function LibrariesLoader() {
         alert('Cannot get the scripts');
       });
   }, []);
-  console.log(libraries);
   return (
     <>
       {Object.keys(libraries.CSS).map(libKey => {
