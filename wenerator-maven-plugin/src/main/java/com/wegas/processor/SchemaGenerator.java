@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.google.common.reflect.TypeToken;
-import com.google.inject.internal.MoreTypes;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.utils.WegasEntityFields;
@@ -35,8 +34,11 @@ import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.persistence.variable.statemachine.AbstractState;
 import com.wegas.core.persistence.variable.statemachine.AbstractStateMachineDescriptor;
+import com.wegas.core.persistence.variable.statemachine.AbstractTransition;
 import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
+import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.editor.Schema;
 import com.wegas.editor.Schemas;
@@ -64,12 +66,12 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -207,22 +209,28 @@ public class SchemaGenerator extends AbstractMojo {
         return atClass;
     }
 
-    private String getTsInterfaceName(String className) {
+    private String getTsInterfaceName(String className, Map<String, String> genericity) {
         try {
             Class<?> forName = Class.forName(className);
             if (Mergeable.class.isAssignableFrom(forName)) {
-                return getTsInterfaceName((Class<? extends Mergeable>) forName);
+                return getTsInterfaceName((Class<? extends Mergeable>) forName, genericity);
             }
         } catch (ClassNotFoundException ex) {
         }
         throw WegasErrorMessage.error(className + " not found");
     }
 
-    private String getTsInterfaceName(Class<? extends Mergeable> klass) {
-        return "I" + Mergeable.getJSONClassName(klass);
+    private String getTsInterfaceName(Class<? extends Mergeable> klass, Map<String, String> genericity) {
+        String tsName = "I" + Mergeable.getJSONClassName(klass);
+        if (genericity != null) {
+            if (genericity.containsKey(tsName)) {
+                return genericity.get(tsName);
+            }
+        }
+        return tsName;
     }
 
-    private boolean matchClassFilter(Class<?> klass) {
+    /*private boolean matchClassFilter(Class<?> klass) {
         if (classFilter == null || this.classFilter.length == 0) {
             return true;
         }
@@ -232,8 +240,7 @@ public class SchemaGenerator extends AbstractMojo {
             }
         }
         return false;
-    }
-
+    }*/
     /**
      * Guess property name based on the getter name.
      *
@@ -251,7 +258,7 @@ public class SchemaGenerator extends AbstractMojo {
         boolean isAbstract = Modifier.isAbstract(c.getModifiers());
 
         StringBuilder sb = new StringBuilder();
-        sb.append("interface ").append(getTsInterfaceName(c));
+        sb.append("interface ").append(getTsInterfaceName(c, null));
         // classname to paramter type map (eg. VariableInstance -> T)
         Map<String, String> genericity = new HashMap<>();
         List<String> genericityOrder = new ArrayList<>();
@@ -260,7 +267,7 @@ public class SchemaGenerator extends AbstractMojo {
             for (Type t : c.getTypeParameters()) {
                 String typeName = t.getTypeName();
                 Type reified = TypeResolver.reify(t, c);
-                String tsType = javaToTSType(reified);
+                String tsType = javaToTSType(reified, null);
                 genericity.put(tsType, typeName);
                 genericityOrder.add(tsType);
             }
@@ -281,13 +288,13 @@ public class SchemaGenerator extends AbstractMojo {
                 if (!isAbstract) {
                     sb.append("WithoutAtClass<");
                 }
-                sb.append(getTsInterfaceName((Class<? extends Mergeable>) c.getSuperclass()));
+                sb.append(getTsInterfaceName((Class<? extends Mergeable>) c.getSuperclass(), null));
 
                 Type[] gTypes = c.getSuperclass().getTypeParameters();
                 if (gTypes != null && gTypes.length > 0) {
                     sb.append("<");
                     Arrays.stream(gTypes).forEach(t -> {
-                        sb.append(javaToTSType(TypeResolver.reify(t, c))).append(",");
+                        sb.append(javaToTSType(TypeResolver.reify(t, c), genericity)).append(",");
                     });
                     sb.deleteCharAt(sb.length() - 1);
                     sb.append(">");
@@ -342,12 +349,10 @@ public class SchemaGenerator extends AbstractMojo {
         sb.append("}\n");
 
         if (dryRun) {
-            if (matchClassFilter(c)) {
-                System.out.println(c.getSimpleName() + ":");
-                System.out.println(sb);
-            }
+            System.out.println(c.getSimpleName() + ":");
+            System.out.println(sb);
         } else {
-            String iName = getTsInterfaceName(c);
+            String iName = getTsInterfaceName(c, null);
             tsInterfaces.put(iName, "/*\n * " + iName + "\n */\n" + sb + "\n");
         }
 
@@ -375,7 +380,7 @@ public class SchemaGenerator extends AbstractMojo {
             boolean deprecated,
             Map<String, String> genericity) {
         Type reified = TypeResolver.reify(returnType, c);
-        String tsType = javaToTSType(reified);
+        String tsType = javaToTSType(reified, genericity);
         if (genericity.containsKey(tsType)) {
             tsType = genericity.get(tsType);
         }
@@ -480,7 +485,12 @@ public class SchemaGenerator extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
+        Set<Class<? extends Mergeable>> classes;
+
         if (!dryRun) {
+            pkg = new String[]{"com.wegas"};
+            classes = new Reflections((Object[]) pkg).getSubTypesOf(Mergeable.class);
+
             if (outputDirectory.isFile()) {
                 throw new MojoExecutionException(outputDirectory.getAbsolutePath() + " is not a directory");
             }
@@ -492,10 +502,8 @@ public class SchemaGenerator extends AbstractMojo {
             outputTypings.mkdirs();
         } else {
             getLog().info("DryRun: do not generate any files");
-            pkg = new String[]{"com.wegas"};
+            classes = new HashSet<>(Arrays.asList(this.classFilter));
         }
-
-        Set<Class<? extends Mergeable>> classes = new Reflections((Object[]) pkg).getSubTypesOf(Mergeable.class);
 
         getLog().info("Mergeable Subtypes: " + classes.size());
 
@@ -622,10 +630,8 @@ public class SchemaGenerator extends AbstractMojo {
                             getLog().error("Failed to write " + f.getAbsolutePath(), ex);
                         }
                     } else {
-                        if (matchClassFilter(c)) {
-                            System.out.println(fileName);
-                            System.out.println(configToString(config, patches));
-                        }
+                        System.out.println(fileName);
+                        System.out.println(configToString(config, patches));
                     }
                 }
             } catch (NoClassDefFoundError nf) {
@@ -749,7 +755,7 @@ public class SchemaGenerator extends AbstractMojo {
         return klass;
     }
 
-    private String javaToTSType(Type type) {
+    private String javaToTSType(Type type, Map<String, String> genericity) {
         if (type instanceof Class) {
             Class<?> returnType = wrap((Class<?>) type);
             if (Number.class.isAssignableFrom(returnType) || Calendar.class.isAssignableFrom(returnType)
@@ -768,8 +774,8 @@ public class SchemaGenerator extends AbstractMojo {
         };
         if (mapType.isSupertypeOf(type)) { // Dictionary
             Type[] typeArguments = ((ParameterizedType) type).getActualTypeArguments();
-            String keyType = javaToTSType(typeArguments[0]);
-            String valueType = javaToTSType(typeArguments[1]);
+            String keyType = javaToTSType(typeArguments[0], genericity);
+            String valueType = javaToTSType(typeArguments[1], genericity);
 
             return "{\n  [key: " + keyType + "] :" + valueType + "\n}";
         }
@@ -777,10 +783,10 @@ public class SchemaGenerator extends AbstractMojo {
         if (collection.isSupertypeOf(type)) { // List / Set
             Type[] types = ((ParameterizedType) type).getActualTypeArguments();
             if (types.length == 1) {
-                return javaToTSType(types[0]) + "[]";
+                return javaToTSType(types[0], genericity) + "[]";
             } else {
                 for (Type t : types) {
-                    String javaToTSType = javaToTSType(t);
+                    String javaToTSType = javaToTSType(t, genericity);
                     System.out.println("ArrayType:" + javaToTSType);
                 }
                 return "any[]";
@@ -806,7 +812,7 @@ public class SchemaGenerator extends AbstractMojo {
                 return ((Class) type).getSimpleName();
             } else if (new TypeToken<Mergeable>() {
             }.isSupertypeOf(type)) {
-                return getTsInterfaceName((Class<? extends Mergeable>) type);
+                return getTsInterfaceName((Class<? extends Mergeable>) type, genericity);
             } else {
                 String typeDef = "interface " + ((Class) type).getSimpleName() + "{\n";
                 for (Field f : ((Class<?>) type).getDeclaredFields()) {
@@ -817,7 +823,7 @@ public class SchemaGenerator extends AbstractMojo {
                         continue;
                     }
                     typeDef += "  " + f.getName() + ": "
-                            + javaToTSType(propertyDescriptor.getReadMethod().getGenericReturnType()) + ";\n";
+                            + javaToTSType(propertyDescriptor.getReadMethod().getGenericReturnType(), genericity) + ";\n";
                 }
                 typeDef += "}\n";
                 otherObjectsTypeD.put(type, typeDef);
@@ -828,7 +834,7 @@ public class SchemaGenerator extends AbstractMojo {
         if (type instanceof ParameterizedType) {
             ParameterizedType pType = (ParameterizedType) type;
             String typeName = pType.getRawType().getTypeName();
-            return getTsInterfaceName(typeName);
+            return getTsInterfaceName(typeName, genericity);
         }
         return "undef";
     }
@@ -1044,8 +1050,16 @@ public class SchemaGenerator extends AbstractMojo {
         }
     }
 
+    /**
+     * Main class.
+     * Run with dryrun profile: -Pdryrun
+     *
+     * @param args
+     *
+     * @throws MojoExecutionException
+     */
     public static final void main(String... args) throws MojoExecutionException {
-        SchemaGenerator wenerator = new SchemaGenerator(true, AbstractStateMachineDescriptor.class, DialogueDescriptor.class);
+        SchemaGenerator wenerator = new SchemaGenerator(true, AbstractState.class);
         wenerator.execute();
     }
 }

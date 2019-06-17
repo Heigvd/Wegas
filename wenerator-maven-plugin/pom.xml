@@ -10,6 +10,7 @@
     <groupId>com.wegas</groupId>
     <artifactId>wenerator-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
+    <version>3.0-SNAPSHOT</version>
 
     <name>wenerator-maven-plugin Maven Plugin</name>
 
@@ -24,7 +25,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.version>3.3.9</maven.version>
+        <maven.version>3.6.0</maven.version>
         <jackson.scope>compile</jackson.scope>
         <dryrun.scope>provided</dryrun.scope>
     </properties>

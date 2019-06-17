@@ -56,9 +56,9 @@ public class HelperTest {
     @Test
     public void testHumanize(){
         assertEquals("some files", Helper.humanize("SomeFiles"));
-        assertEquals("pDF file", Helper.humanize("PDFFile"));
+        assertEquals("PDF file", Helper.humanize("PDFFile"));
         assertEquals("99 files", Helper.humanize("99Files"));
         assertEquals("file 123", Helper.humanize("File123"));
-        assertEquals("some PDF files", Helper.humanize("SomePDFFiles"));
+        assertEquals("some pDF files", Helper.humanize("SomePDFFiles"));
     }
 }

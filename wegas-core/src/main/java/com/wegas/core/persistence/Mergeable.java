@@ -60,8 +60,14 @@ public interface Mergeable {
             )
     )
     @JsonProperty("@class")
+    //@JsonProperty(value = "@class", access = JsonProperty.Access.READ_ONLY)
     default public String getJSONClassName() {
         return Mergeable.getJSONClassName(this.getClass());
+    }
+
+    @JsonProperty("@class")
+    default public void setJSONClassName(String atClass){
+        // no-op
     }
 
     /**
