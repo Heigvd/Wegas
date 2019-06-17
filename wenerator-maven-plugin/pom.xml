@@ -14,8 +14,8 @@
 
     <name>wenerator-maven-plugin Maven Plugin</name>
 
-    <!-- FIXME change it to the project's website -->
-    <url>http://www.example.com</url>
+    <!-- FIXME change it to the project's website 
+    <url>http://www.example.com</url>-->
 
     <prerequisites>
         <maven>${maven.version}</maven>
@@ -25,7 +25,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.version>3.6.0</maven.version>
+        <maven.version>3.5.2</maven.version>
         <jackson.scope>compile</jackson.scope>
         <dryrun.scope>provided</dryrun.scope>
     </properties>
