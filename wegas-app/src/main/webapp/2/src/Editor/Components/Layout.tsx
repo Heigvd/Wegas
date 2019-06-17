@@ -6,7 +6,7 @@ import Editor from './EntityEditor';
 import PageDisplay from './Page/PageDisplay';
 import { TabLayout } from '../../Components/Tabs';
 import StateMachineEditor from './StateMachineEditor';
-import { ModalLayout, globalModals } from './ModalLayout';
+import { ModalLayout, globalModals, WModals } from './ModalLayout';
 
 const layout = css({
   display: 'grid',
@@ -34,72 +34,69 @@ export default class AppLayout extends React.Component<
   render() {
     return (
       <ModalLayout global={true} noDebugger={true}>
-        {modals => {
+        {(modals: WModals) => {
           return (
             <div className={layout}>
               <div className={fullWidth}>
                 <Header />
               </div>
               <div>
-                <TreeView />
-              </div>
-              <div>
-                <TabLayout tabs={['TestModal', 'Page', 'StateMachine']}>
-                  <div>
-                    <button
-                      onClick={() =>
-                        globalModals.walert('This is a test alert')
-                      }
-                    >
-                      Test alert
-                    </button>
-                    <button
-                      onClick={() =>
-                        globalModals.waccept('This is a test accept', res => {
-                          console.log('accept answered : ' + res);
-                        })
-                      }
-                    >
-                      Test accept
-                    </button>
-                    <button
-                      onClick={() =>
-                        globalModals.wprompt('This is a test prompt', res => {
-                          console.log('prompt answered : ' + res);
-                        })
-                      }
-                    >
-                      Test prompt
-                    </button>
-                    <button
-                      onClick={() => {
-                        for (let i = 0; i < 10; i += 1) {
-                          globalModals.walert('This is a multi test alert');
-                        }
-                      }}
-                    >
-                      Test Multiple Modals
-                    </button>
-                    <button
-                      onClick={() =>
-                        globalModals.walert(
-                          <>
-                            <div>Super!!!</div>
-                            <input type={'text'} />
-                            <img
-                              src={
-                                'https://www.google.com//images/branding/googlelogo/2x/googlelogo_color_272x92dp.png'
-                              }
-                            />
-                          </>,
-                        )
-                      }
-                    >
-                      Test exotic content
-                    </button>
-                  </div>
-                  <PageDisplay />
-                  <StateMachineEditor />
+                <TabLayout tabs={['TestModalLocal', 'TestModalGlobal']}>
+                  {[modals, globalModals].map((m, i) => {
+                    return (
+                      <div key={i}>
+                        <button
+                          onClick={() => m.walert('This is a test alert')}
+                        >
+                          Test alert
+                        </button>
+                        <button
+                          onClick={() =>
+                            m.waccept('This is a test accept', res => {
+                              alert('accept answered : ' + res);
+                            })
+                          }
+                        >
+                          Test accept
+                        </button>
+                        <button
+                          onClick={() =>
+                            m.wprompt('This is a test prompt', res => {
+                              alert('prompt answered : ' + res);
+                            })
+                          }
+                        >
+                          Test prompt
+                        </button>
+                        <button
+                          onClick={() => {
+                            for (let i = 0; i < 10; i += 1) {
+                              m.walert('This is a multi test alert');
+                            }
+                          }}
+                        >
+                          Test Multiple Modals
+                        </button>
+                        <button
+                          onClick={() =>
+                            m.walert(
+                              <>
+                                <div>Super!!!</div>
+                                <input type={'text'} />
+                                <img
+                                  src={
+                                    'https://www.google.com//images/branding/googlelogo/2x/googlelogo_color_272x92dp.png'
+                                  }
+                                />
+                              </>,
+                            )
+                          }
+                        >
+                          Test custom content
+                        </button>
+                      </div>
+                    );
+                  })}
                 </TabLayout>
               </div>
               <div>

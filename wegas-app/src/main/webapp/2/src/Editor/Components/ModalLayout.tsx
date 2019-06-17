@@ -47,7 +47,7 @@ type PromptAction = (
   callback: PromptCallback,
 ) => void;
 
-interface WModals {
+export interface WModals {
   walert: AlertAction;
   waccept: AcceptAction;
   wprompt: PromptAction;
@@ -78,11 +78,13 @@ export function ModalLayout(props: ModalLayoutProps) {
    */
   if (props.noDebugger) {
     setInterval(function() {
-      const date = Date.now();
-      debugger; // eslint-disable-line no-debugger
-      if (Date.now() - date > 100) {
-        alert("Don't opent the console! The page will reload now...");
-        location.reload();
+      if (modals.length > 0) {
+        const date = Date.now();
+        debugger; // eslint-disable-line no-debugger
+        if (Date.now() - date > 100) {
+          alert("Don't opent the console! The page will reload now...");
+          location.reload();
+        }
       }
     }, 100);
   }
