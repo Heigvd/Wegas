@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -42,7 +43,8 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 @PreMatching
-public class ViewRequestFilter extends Payara3994Workaround implements ContainerRequestFilter {
+@RequestScoped // payara 3994 workaround (fixed in 193)
+public class ViewRequestFilter implements ContainerRequestFilter {
 
     @Inject
     RequestIdentifierGenerator idGenerator;
