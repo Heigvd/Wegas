@@ -29,7 +29,6 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
-import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
 import com.wegas.mcq.persistence.Result;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.messaging.persistence.InboxInstance;
@@ -191,7 +190,7 @@ public class WegasFactory {
         desc.setPostTriggerEvent(new Script("Javascript", impact));
         desc.setTriggerEvent(new Script("Javascript", condition));
 
-        desc.setDefaultInstance(new TriggerInstance());
+        desc.setDefaultInstance(new StateMachineInstance());
 
         this.createDescriptor(gameModel, desc, parent);
 

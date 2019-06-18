@@ -56,7 +56,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         // Create a trigger
         TriggerDescriptor trigger = new TriggerDescriptor();
-        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setTriggerEvent(new Script("Variable.find(gameModel, \"testnumber\").getInstance(self).value >= 0.9"));
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, \"testnumber\").getInstance(self).value = 2;"));
         variableDescriptorFacade.create(scenario.getId(), trigger);
@@ -99,7 +99,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         // Create a resource
         TriggerDescriptor trigger = new TriggerDescriptor();
-        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(
                 new Script("Variable.find(" + number.getId() + ").setValue(self, " + FINALVALUE + " )"));

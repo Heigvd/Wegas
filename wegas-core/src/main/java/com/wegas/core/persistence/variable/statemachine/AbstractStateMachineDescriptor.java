@@ -49,7 +49,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
     @MapKeyColumn(name = "fsm_statekey")
     @JsonView(Views.ExtendedI.class)
     @WegasEntityProperty(ignoreNull = true, protectionLevel = ProtectionLevel.INHERITED,
-            optional = false, nullable= false, proposal = EmptyMap.class,
+            optional = false, nullable = false, proposal = EmptyMap.class,
             view = @View(label = "", value = Hidden.class))
     private Set<AbstractState<U>> states = new HashSet<>();
 

@@ -11,7 +11,7 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
-import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
+import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import javax.ejb.EJB;
 import org.junit.Assert;
@@ -34,7 +34,7 @@ public class GameControllerTest extends AbstractArquillianTest {
         gameModelFacade.update(scenario.getId(), scenario);
 
         TriggerDescriptor trigg = new TriggerDescriptor();
-        final TriggerInstance triggerInstance = new TriggerInstance();
+        final StateMachineInstance triggerInstance = new StateMachineInstance();
         trigg.setName("trigg");
         trigg.setDefaultInstance(triggerInstance);
         variableDescriptorFacade.create(scenario.getId(), trigg);
@@ -44,7 +44,7 @@ public class GameControllerTest extends AbstractArquillianTest {
         final Game g = gameFacade.find(game.getId());
         final Player p = g.getTeams().get(g.getTeams().size() - 1).getPlayers().get(0);
         final VariableInstance variableInstance = variableInstanceFacade.find(trigg.getId(), p.getId());
-        Assert.assertTrue(variableInstance instanceof TriggerInstance);
+        Assert.assertTrue(variableInstance instanceof StateMachineInstance);
 
         playerController.delete(p.getId());
     }

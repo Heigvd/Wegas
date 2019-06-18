@@ -10,27 +10,27 @@ package com.wegas.core.persistence.statemachine;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.scope.TeamScope;
+import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
-import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
 import java.util.Objects;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Testing Triggers, class TriggerInstance and class TriggerDescriptor
+ * Testing Triggers, class StateMachineInstance and class TriggerDescriptor
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class TriggerTest {
 
-    private TriggerInstance trigger;
+    private StateMachineInstance trigger;
     private TriggerDescriptor triggerDescriptor;
     private Script scriptEntity;
 
     @Before
     public void setUp() {
-        this.trigger = new TriggerInstance();
+        this.trigger = new StateMachineInstance();
         // this.trigger.setId(666L);
         this.triggerDescriptor = new TriggerDescriptor();
         this.triggerDescriptor.setDefaultInstance(this.trigger);
@@ -100,7 +100,7 @@ public class TriggerTest {
     @Test
     public void testMerge() {
         System.out.println("Merge trigger");
-        TriggerInstance instanceEntity = new TriggerInstance();
+        StateMachineInstance instanceEntity = new StateMachineInstance();
         //   instanceEntity.setId(45L);
         instanceEntity.setCurrentStateId(2L);
         this.triggerDescriptor.setOneShot(false);

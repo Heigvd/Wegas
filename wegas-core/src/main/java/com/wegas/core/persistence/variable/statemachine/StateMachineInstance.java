@@ -17,6 +17,7 @@ import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.One;
 import com.wegas.editor.ValueGenerators.True;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.Hidden;
@@ -40,7 +41,7 @@ import java.util.Map;
 @Access(AccessType.FIELD)
 @JsonTypeName(value = "FSMInstance")
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "TriggerInstance", value = TriggerInstance.class)
+    @JsonSubTypes.Type(name = "TriggerInstance", value = StateMachineInstance.class)
 })
 public class StateMachineInstance extends VariableInstance {
 
@@ -49,11 +50,15 @@ public class StateMachineInstance extends VariableInstance {
      *
      */
     @Column(name = "currentstate_id")
-    @WegasEntityProperty(view = @View(
-            label = "Current State id",
-            featureLevel = ADVANCED,
-            value = ReadOnlyNumber.class
-    ))
+    @WegasEntityProperty(
+            proposal = One.class,
+            nullable = false,
+            optional = false,
+            view = @View(
+                    label = "Current State id",
+                    featureLevel = ADVANCED,
+                    value = ReadOnlyNumber.class
+            ))
     private Long currentStateId;
     /**
      *

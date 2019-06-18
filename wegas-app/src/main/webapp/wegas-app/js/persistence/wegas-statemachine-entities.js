@@ -435,12 +435,12 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             },
             defaultInstance: {
                 valueFn: function() {
-                    return new persistence.TriggerInstance();
+                    return new persistence.FSMInstance();
                 },
                 properties: {
                     '@class': {
                         type: STRING,
-                        value: 'TriggerInstance',
+                        value: 'FSMInstance',
                         view: {
                             type: HIDDEN
                         }
@@ -449,6 +449,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                     currentStateId: {
                         type: NUMBER,
+                        value: 1,
                         view: {
                             label: 'Initial state id',
                             type: HIDDEN
@@ -531,22 +532,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 maxVisibility: "INTERNAL",
                 cfg: {
                     type: "EditEntityButton"
-                }
-            }
-        }
-    });
-    /*
-     * TriggerInstance Entity
-     */
-    persistence.TriggerInstance = Y.Base.create("TriggerInstance", persistence.FSMInstance, [], {}, {
-        ATTRS: {
-            "@class": {
-                value: "TriggerInstance"
-            },
-            currentStateId: {
-                type: NUMBER,
-                view: {
-                    type: HIDDEN
                 }
             }
         }

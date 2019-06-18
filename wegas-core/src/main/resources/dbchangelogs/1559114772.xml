@@ -23,4 +23,11 @@
             UNION SELECT id FROM dialoguedescriptor;
         </sql>
     </changeSet>
+
+    <changeSet author="maxence" id="1559114784027-4">
+        <update tableName="variableinstance">
+            <column name="dtype" value="StateMachineInstance"></column>
+            <where>dtype = 'TriggerInstance'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>

@@ -251,6 +251,8 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
         if (this.oneShot != null) {
             this.getStates().get(2L).getTransitions().get(0).setTriggerCondition(new Script("javascript", (this.oneShot ? "false" : "true")));
         }
+
+        this.getDefaultInstance().setCurrentStateId(1l);
     }
 
     @Override
