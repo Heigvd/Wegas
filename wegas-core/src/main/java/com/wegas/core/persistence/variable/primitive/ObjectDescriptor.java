@@ -15,9 +15,9 @@ import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.EmptyMap;
-import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.View.HtmlView;
 import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,8 +41,8 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
      */
     @Lob
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(label = "Description", value = I18nHtmlView.class))
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Description", value = HtmlView.class))
     private String description;
     /**
      *

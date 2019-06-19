@@ -20,7 +20,6 @@ import com.wegas.mcq.persistence.QuestionDescriptor.CheckPositiveness;
 import com.wegas.mcq.persistence.QuestionDescriptor.IsCbx;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Result;
-import com.wegas.mcq.persistence.Result.IsLabelVisible;
 import com.wegas.mcq.persistence.Result.IsQuestionCbx;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
 import com.wegas.reviewing.persistence.evaluation.GradeDescriptor;
@@ -41,7 +40,7 @@ public class ErroreAndValidatedTest {
         Condition isCbx = new IsCbx();
         Condition notCbx = new IsNotQuestionCbxOrMaxEqOne();
         Condition isQuestionCbx = new IsQuestionCbx();
-        Condition isLabelVisible = new IsLabelVisible();
+        Condition isLabelVisible = new Result.HasMultipleResult();
 
         // Create default question
         QuestionDescriptor question = new QuestionDescriptor();

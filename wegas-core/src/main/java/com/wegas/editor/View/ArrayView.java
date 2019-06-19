@@ -31,6 +31,10 @@ public abstract class ArrayView extends CommonView {
         }
     }
 
+
+    public static class Default extends ArrayView {
+    }
+
     public static class Highlight extends ArrayView implements IHighlight {
     }
 

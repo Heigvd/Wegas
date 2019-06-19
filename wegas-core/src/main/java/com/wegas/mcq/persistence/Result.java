@@ -72,7 +72,12 @@ public class Result extends AbstractEntity implements LabelledEntity {
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(
             nullable = false, optional = false, proposal = Zero.class,
-            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
+            sameEntityOnly = true, view = @View(
+                    index = 0,
+                    label = "Version",
+                    value = ReadOnlyNumber.class,
+                    featureLevel = ADVANCED
+            ))
     private Long version;
 
     public Long getVersion() {
@@ -96,11 +101,12 @@ public class Result extends AbstractEntity implements LabelledEntity {
     @WegasEntityProperty(searchable = true,
             nullable = false,
             view = @View(
+                    index = 1,
                     label = "Script alias",
                     featureLevel = ADVANCED,
                     description = "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
             ))
-    @Visible(IsLabelVisible.class)
+    @Visible(HasMultipleResult.class)
     private String name;
 
     /**
@@ -109,8 +115,8 @@ public class Result extends AbstractEntity implements LabelledEntity {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(label = "Label", value = I18nStringView.class))
-    @Visible(IsLabelVisible.class)
+            view = @View(index = 2, label = "Label", value = I18nStringView.class))
+    @Visible(HasMultipleResult.class)
     private TranslatableContent label;
 
     /**
@@ -119,7 +125,7 @@ public class Result extends AbstractEntity implements LabelledEntity {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(label = "Feedback", value = I18nHtmlView.class))
+            view = @View(index = 3, label = "Feedback", value = I18nHtmlView.class))
     private TranslatableContent answer;
 
     /**
@@ -129,7 +135,10 @@ public class Result extends AbstractEntity implements LabelledEntity {
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyI18n.class,
             view = @View(
-                    label = "Feedback when ignored", value = I18nHtmlView.class, borderTop = true
+                    index = 4,
+                    label = "Feedback when ignored",
+                    value = I18nHtmlView.class,
+                    borderTop = true
             ))
     @Visible(IsQuestionCbx.class)
     private TranslatableContent ignorationAnswer;
@@ -442,9 +451,9 @@ public class Result extends AbstractEntity implements LabelledEntity {
         this.getCurrentResult();
     }
      */
-    public static class IsLabelVisible extends Not {
+    public static class HasMultipleResult extends Not {
 
-        public IsLabelVisible() {
+        public HasMultipleResult() {
             // hide the label if the result stands in a singleResultChoiceDescriptor
             // -> display it only if parent is not a srcd
             super(new IsDefined(new Field(SingleResultChoiceDescriptor.class, null)));

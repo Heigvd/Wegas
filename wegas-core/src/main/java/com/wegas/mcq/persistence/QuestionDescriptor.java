@@ -77,7 +77,11 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @OneToOne(cascade = CascadeType.ALL)
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(label = "Description", value = I18nHtmlView.class))
+            view = @View(
+                    index = 1,
+                    label = "Description",
+                    value = I18nHtmlView.class
+            ))
     private TranslatableContent description;
 
     /**
@@ -88,6 +92,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = False.class,
             view = @View(
+                    index = 10,
                     label = "Checkbox answer",
                     description = "For standard multiple-choice questions"
             ))
@@ -99,6 +104,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = False.class,
             view = @View(
+                    index = 11,
                     label = "Tabular layout",
                     description = "Replies are presented horizontally"
             ))
@@ -110,6 +116,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @WegasEntityProperty(
             proposal = One.class,
             view = @View(
+                    index = 21,
                     label = "Max. number replies",
                     description = "Optional value",
                     value = NumberView.WithInfinityPlaceholder.class,
@@ -124,9 +131,10 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @WegasEntityProperty(
             proposal = One.class,
             view = @View(
+                    index = 20,
                     label = "Min. number replies",
                     description = "Optional value",
-                    value = NumberView.WithNegInfinityPlaceholder.class,
+                    value = NumberView.WithOnePlaceholder.class,
                     layout = shortInline
             ))
     @Visible(IsCbx.class)
@@ -152,6 +160,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyArray.class,
             view = @View(
+                    index = 30,
                     label = "Pictures",
                     featureLevel = ADVANCED
             ))

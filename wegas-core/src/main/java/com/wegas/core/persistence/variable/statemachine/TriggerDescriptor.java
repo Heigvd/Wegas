@@ -48,6 +48,7 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
     @WegasEntityProperty(
             nullable = false, optional = false, proposal = False.class,
             view = @View(
+                    index = 601,
                     label = "Only once",
                     description = "Allowed to trigger only once"
             ))
@@ -61,6 +62,7 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
     @WegasEntityProperty(
             nullable = false, optional = false, proposal = True.class,
             view = @View(
+                    index = 602,
                     label = "Disable itself",
                     description = "Disable once triggered. May be rearmed afterwards"
             ))
@@ -72,7 +74,11 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
     @JsonView(Views.EditorI.class)
     @WegasEntityProperty(
             nullable = false, optional = false, proposal = EmptyScript.class,
-            view = @View(label = "Condition", value = ScriptView.Condition.class))
+            view = @View(
+                    index = 603,
+                    label = "Condition",
+                    value = ScriptView.Condition.class
+            ))
     private Script triggerEvent;
     /**
      *
@@ -81,7 +87,11 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
     @JsonView(Views.EditorI.class)
     @WegasEntityProperty(
             nullable = false, optional = false, proposal = EmptyScript.class,
-            view = @View(label = "Impact", value = ScriptView.Impact.class))
+            view = @View(
+                    index = 603,
+                    label = "Impact",
+                    value = ScriptView.Impact.class
+            ))
     private Script postTriggerEvent;
 
     /**

@@ -30,4 +30,11 @@ package com.wegas.editor.View;
             return "-∞";
         }
     }
+
+    public static class WithOnePlaceholder extends NumberView {
+
+        public String getPlaceholder() {
+            return "1";
+        }
+    }
 }

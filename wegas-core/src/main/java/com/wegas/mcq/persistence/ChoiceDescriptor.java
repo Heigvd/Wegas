@@ -97,8 +97,12 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      */
     @OneToOne(cascade = CascadeType.ALL)
     @WegasEntityProperty(
-            optional = false, nullable= false, proposal = EmptyI18n.class,
-            view = @View(label = "Description", value = I18nHtmlView.class))
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(
+                    index = 1,
+                    label = "Description",
+                    value = I18nHtmlView.class
+            ))
     private TranslatableContent description;
 
     /**
@@ -116,6 +120,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * Total number of replies allowed. No default value.
      */
     @WegasEntityProperty(view = @View(
+            index = 2,
             label = "Max. number replies",
             value = NumberView.WithInfinityPlaceholder.class,
             layout = CommonView.LAYOUT.shortInline

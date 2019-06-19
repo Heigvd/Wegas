@@ -58,7 +58,7 @@ export function CommonViewContainer({
         [`${borderTop}`]: Boolean(view.borderTop),
       })}
     >
-    <span>{view.index}: </span>
+    <span>Index: {view.index}: </span>
       {children}
       <div className={errorStyle}>{error}</div>
     </div>

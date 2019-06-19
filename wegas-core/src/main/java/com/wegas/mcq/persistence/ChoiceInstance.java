@@ -22,6 +22,7 @@ import com.wegas.editor.ValueGenerators.True;
 import com.wegas.editor.View.EntityArrayFiledSelect;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.View;
+import com.wegas.editor.Visible;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -89,6 +90,7 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
      */
     @Transient
     @WegasEntityProperty(view = @View(label = "Default result", value = EntityArrayFiledSelect.ResultsSelect.class))
+    @Visible(Result.HasMultipleResult.class)
     private String currentResultName;
 
     @Transient

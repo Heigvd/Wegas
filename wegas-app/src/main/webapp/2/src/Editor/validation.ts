@@ -84,7 +84,10 @@ export function validation<Args extends unknown[], Ref>(
     return 'isDefined' in value;
   }
   function isDefined(value: ISDEFINED): validator<Args> {
-    return (...args) => leafValidation(value.isDefined)(...args) != null;
+    return (...args) => {
+      const v = leafValidation(value.isDefined)(...args);
+      return v != null && v != undefined;
+    };
   }
   interface ISTRUE {
     isTrue: Ref;
@@ -226,7 +229,11 @@ function formLeaf(
         const parent:
           | IAbstractEntity & { [key: string]: {} }
           | undefined = findNearestParent(formVal, path, ref.classFilter);
-        return parent == null ? undefined : parent[ref.fieldName];
+          if (ref.fieldName){
+            return parent ? parent[ref.fieldName] : undefined;
+          } else {
+            return parent;
+          }
       };
   }
   throw Error('Unhandled reference: ' + JSON.stringify(ref));

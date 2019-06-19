@@ -51,7 +51,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
                     label = "Minimum",
                     layout = CommonView.LAYOUT.shortInline,
                     value = NumberView.WithNegInfinityPlaceholder.class,
-                    index = 600
+                    index = 1
             ))
     @Errored(NumberDescBoundsConstraint.class)
     private Double minValue;
@@ -63,7 +63,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
                     label = "Maximum",
                     layout = CommonView.LAYOUT.shortInline,
                     value = NumberView.WithNegInfinityPlaceholder.class,
-                    index = 610
+                    index = 2
             ))
     @Errored(NumberDescBoundsConstraint.class)
     private Double maxValue;
