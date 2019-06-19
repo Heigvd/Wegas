@@ -12,30 +12,30 @@ export const FileAPIFactory = (gameModelId?: number) => {
     /**
      * Get all IFiles as raw XML
      */
-    async getFilesAsRawXML(): Promise<string> {
+    getFilesAsRawXML(): Promise<string> {
       return rest(FILE_BASE(gameModelId) + 'exportRawXML').then(
-        async (res: Response) => {
-          return await res.json();
+        (res: Response) => {
+          return res.json();
         },
       );
     },
     /**
      * Get all IFiles as XML
      */
-    async getFilesAsXML(): Promise<string> {
+    getFilesAsXML(): Promise<string> {
       return rest(FILE_BASE(gameModelId) + 'exportXML').then(
-        async (res: Response) => {
-          return await res.json();
+        (res: Response) => {
+          return res.json();
         },
       );
     },
     /**
      * Get all IFiles as ZIP
      */
-    async getFilesAsZIP(): Promise<string> {
+    getFilesAsZIP(): Promise<string> {
       return rest(FILE_BASE(gameModelId) + 'exportZIP').then(
-        async (res: Response) => {
-          return await res.json();
+        (res: Response) => {
+          return res.json();
         },
       );
     },
@@ -44,11 +44,11 @@ export const FileAPIFactory = (gameModelId?: number) => {
      * Import an XML file tree
      * @param xmlFiles xml to import
      */
-    async importXML(xmlFiles: string) {
+    importXML(xmlFiles: string) {
       const data = new FormData();
       data.append('file', xmlFiles);
 
-      return await rest(FILE_BASE(gameModelId) + 'importXML', {
+      return rest(FILE_BASE(gameModelId) + 'importXML', {
         method: 'POST',
         body: data,
       });
@@ -58,7 +58,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
      * @param absoluteDirectoryPath optional directory from where to list files, will return the content of root directory if not set
      * @param recursive list recursively directory content and subdirectories content
      */
-    async getFileList(
+    getFileList(
       absoluteDirectoryPath: string = '',
       recursive?: boolean,
     ): Promise<IFile[]> {
@@ -66,8 +66,8 @@ export const FileAPIFactory = (gameModelId?: number) => {
         FILE_BASE(gameModelId) +
           (recursive ? 'recurseList' : 'list') +
           absoluteDirectoryPath,
-      ).then(async (res: Response) => {
-        return await res.json();
+      ).then((res: Response) => {
+        return res.json();
       });
     },
     /**
@@ -75,7 +75,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
      * @param absolutePath file to delete
      * @param froce allows recursive delete on directories
      */
-    async deleteFile(
+    deleteFile(
       absolutePath: string,
       force?: boolean,
     ): Promise<IFile | undefined> {
@@ -88,8 +88,8 @@ export const FileAPIFactory = (gameModelId?: number) => {
           method: 'DELETE',
         },
       )
-        .then(async (res: Response) => {
-          return await res.json();
+        .then((res: Response) => {
+          return res.json();
         })
         .catch(() => {
           if (
@@ -109,7 +109,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
      * @param file the file to save (keep undefined for directory)
      * @param force force modifying the file content
      */
-    async createFile(
+    createFile(
       name: string,
       path: string = '',
       file?: File,
@@ -126,18 +126,18 @@ export const FileAPIFactory = (gameModelId?: number) => {
         },
         undefined,
         'multipart/form-data',
-      ).then(async (res: Response) => {
-        return await res.json();
+      ).then((res: Response) => {
+        return res.json();
       });
     },
     /**
      * Get metata of a specific file/directory
      * @param absolutePath the absolute path of the file (if undefined, takes root (/))
      */
-    async getFileMeta(absolutePath: string = ''): Promise<IFile> {
+    getFileMeta(absolutePath: string = ''): Promise<IFile> {
       return rest(FILE_BASE(gameModelId) + 'meta' + absolutePath).then(
-        async (res: Response) => {
-          return await res.json();
+        (res: Response) => {
+          return res.json();
         },
       );
     },
@@ -145,29 +145,26 @@ export const FileAPIFactory = (gameModelId?: number) => {
      * Update file metadata
      * @param file the file to update
      */
-    async updateMetadata(file: IFile) {
-      return await rest(
-        FILE_BASE(gameModelId) + 'update' + generateGoodPath(file),
-        {
-          method: 'PUT',
-          body: JSON.stringify(file),
-        },
-      ).then(async (res: Response) => {
-        return await res.json();
+    updateMetadata(file: IFile) {
+      return rest(FILE_BASE(gameModelId) + 'update' + generateGoodPath(file), {
+        method: 'PUT',
+        body: JSON.stringify(file),
+      }).then((res: Response) => {
+        return res.json();
       });
     },
     /**
      * Delete the whole file tree
      */
-    async destruct(): Promise<IFile> {
+    destruct(): Promise<IFile> {
       return rest(
         FILE_BASE(gameModelId) +
           'destruct' +
           {
             method: 'DELETE',
           },
-      ).then(async (res: Response) => {
-        return await res.json();
+      ).then((res: Response) => {
+        return res.json();
       });
     },
 

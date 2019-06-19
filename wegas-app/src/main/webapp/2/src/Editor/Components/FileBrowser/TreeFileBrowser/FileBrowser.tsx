@@ -273,13 +273,16 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
 
   const addNewDirectory = React.useCallback((parentDir: IFile) => {
     const newDirName = prompt('Please enter the name of the new directory', '');
-    FileAPI.createFile(newDirName!, getAbsoluteFileName(parentDir)).then(file =>
-      dispatchFileStateAction({
-        type: 'InsertFile',
-        file: file,
-        openPath: true,
-      }),
-    );
+    if (newDirName !== null) {
+      FileAPI.createFile(newDirName, getAbsoluteFileName(parentDir)).then(
+        file =>
+          dispatchFileStateAction({
+            type: 'InsertFile',
+            file: file,
+            openPath: true,
+          }),
+      );
+    }
   }, []);
 
   const insertFile = React.useCallback(
@@ -378,25 +381,20 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
     [insertFiles, insertFile],
   );
 
-  const addNewFile = (event: React.MouseEvent) => {
-    event.stopPropagation();
+  const addNewFile = () => {
     if (uploader.current) {
       uploader.current.click();
     }
   };
 
-  const deleteNode = React.useCallback(
-    (node: FileNode) => (e: React.MouseEvent) => {
-      e.stopPropagation();
-      FileAPI.deleteFile(getAbsoluteFileName(node.file)).then(() => {
-        dispatchFileStateAction({
-          type: 'RemoveFile',
-          node: node,
-        });
+  const deleteNode = React.useCallback((node: FileNode) => {
+    FileAPI.deleteFile(getAbsoluteFileName(node.file)).then(() => {
+      dispatchFileStateAction({
+        type: 'RemoveFile',
+        node: node,
       });
-    },
-    [],
-  );
+    });
+  }, []);
 
   const isFileOpen = React.useCallback(
     (file: IFile) =>
@@ -587,7 +585,7 @@ function CFileBrowser(props: CFileBrowserProps) {
 
   const onFileClick = React.useCallback(
     async (file: IFile) => {
-      dispatch(await editFileAction(file, dispatch));
+      dispatch(editFileAction(file, dispatch));
     },
     [dispatch],
   );

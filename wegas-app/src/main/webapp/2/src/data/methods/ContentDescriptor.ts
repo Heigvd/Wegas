@@ -20,19 +20,17 @@ export const generateGoodPath = (file: IFile) => {
   return file.path.replace(/(\/)$/, '') + '/' + file.name;
 };
 
-export const editFileAction = async (file: IFile, dispatch?: StoreDispatch) => {
+export const editFileAction = (file: IFile, dispatch?: StoreDispatch) => {
   return ActionCreator.FILE_EDIT({
-    file: await FileAPI.getFileMeta(generateGoodPath(file)),
+    file: file,
     actions: {
       save: (file: IFileConfig) => {
         const cleanFile = omit(file, '@class');
-        return FileAPI.updateMetadata(cleanFile).then(
-          async (resFile: IFile) => {
-            if (dispatch) {
-              dispatch(await editFileAction(resFile));
-            }
-          },
-        );
+        return FileAPI.updateMetadata(cleanFile).then((resFile: IFile) => {
+          if (dispatch) {
+            dispatch(editFileAction(resFile));
+          }
+        });
       },
       more: null,
     },
