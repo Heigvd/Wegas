@@ -32,7 +32,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.wegas</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>wegas-core</artifactId>
             <version>${project.version}</version>
         </dependency>

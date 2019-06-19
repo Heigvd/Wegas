@@ -17,7 +17,6 @@
     <properties>
         <skip.yarn>${skipYarn}</skip.yarn>
         <skip.surefire.tests>${skipTests}</skip.surefire.tests>
-        <skip.yarn>${skipYarn}</skip.yarn>
         <netbeans.hint.license>license</netbeans.hint.license>
     </properties>
 
