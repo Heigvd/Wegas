@@ -11,6 +11,8 @@ import { omit } from 'lodash';
 import u from 'immer';
 import { ReparentableRoot } from '../Reparentable';
 import { DnDTabLayout, ComponentMap, filterMap } from './DnDTabLayout';
+import LibraryEditor from '../ScriptEditors/LibraryEditor';
+import { ConnectedFileBrowser } from '../FileBrowser/TreeFileBrowser/FileBrowser';
 
 const splitter = css({
   '&.reflex-container.vertical > .reflex-splitter': {
@@ -463,8 +465,6 @@ type TabLayoutsAction =
  */
 const setLayout = (layouts: ManagedLayoutMap, action: TabLayoutsAction) =>
   u(layouts, (layouts: ManagedLayoutMap) => {
-    logLayouts(layouts.layoutMap);
-    // debugger;
     // Find the parent tabLayout of the tab
     const srcTabLayoutKey = findLayoutByKey(
       layouts.layoutMap,
