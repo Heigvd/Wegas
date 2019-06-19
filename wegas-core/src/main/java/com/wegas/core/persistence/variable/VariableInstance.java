@@ -113,7 +113,6 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "TaskInstance", value = TaskInstance.class),
     @JsonSubTypes.Type(name = "ObjectInstance", value = ObjectInstance.class),
     @JsonSubTypes.Type(name = "PeerReviewInstance", value = PeerReviewInstance.class),
-
     @JsonSubTypes.Type(name = "BurndownInstance", value = BurndownInstance.class)
 })
 @OptimisticLocking(cascade = true)
@@ -127,7 +126,12 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
-            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
+            sameEntityOnly = true, view = @View(
+                    index = -999,
+                    label = "Version",
+                    value = ReadOnlyNumber.class,
+                    featureLevel = ADVANCED
+            ))
     @JsonView(Views.IndexI.class)
     private Long version;
 
@@ -318,7 +322,11 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     @JsonView(Views.IndexI.class)
-    @WegasExtraProperty(view = @View(label = "Scope Key", value = ReadOnlyNumber.class))
+    @WegasExtraProperty(view = @View(
+            index = -500,
+            label = "Scope Key",
+            value = ReadOnlyNumber.class
+    ))
     public Long getScopeKey() {
         if (this.getTeamScope() != null) {
             return this.getTeam().getId();
@@ -493,7 +501,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     public void setGameModelScope(GameModelScope gameModelScope) {
         this.gameModelScope = gameModelScope;
     }
-
 
     @Override
     public WithPermission getMergeableParent() {
