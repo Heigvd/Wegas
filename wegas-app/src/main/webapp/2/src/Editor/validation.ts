@@ -1,4 +1,4 @@
-import { findNearestParent } from "../data/selectors/Helper";
+import { findNearestParent } from '../data/selectors/Helper';
 
 type validator<Args extends unknown[]> = (...args: Args) => boolean;
 type Leaf<Args extends unknown[], Ref> = (
@@ -84,10 +84,7 @@ export function validation<Args extends unknown[], Ref>(
     return 'isDefined' in value;
   }
   function isDefined(value: ISDEFINED): validator<Args> {
-    return (...args) => {
-      const v = leafValidation(value.isDefined)(...args);
-      return v != null && v != undefined;
-    };
+    return (...args) => leafValidation(value.isDefined)(...args) != null;
   }
   interface ISTRUE {
     isTrue: Ref;
@@ -207,7 +204,7 @@ interface Self {
 interface Field {
   type: 'Field';
   classFilter?: string;
-  fieldName: string;
+  fieldName?: string;
 }
 function formLeaf(
   ref: ref,
@@ -224,16 +221,19 @@ function formLeaf(
     case 'Field':
       return (_val, formVal, path) => {
         if (ref.classFilter == null) {
-          return formVal[ref.fieldName];
+          if (ref.fieldName != null) {
+            return formVal[ref.fieldName];
+          }
+          return formVal;
         }
         const parent:
           | IAbstractEntity & { [key: string]: {} }
           | undefined = findNearestParent(formVal, path, ref.classFilter);
-          if (ref.fieldName){
-            return parent ? parent[ref.fieldName] : undefined;
-          } else {
-            return parent;
-          }
+        if (ref.fieldName != null) {
+          return parent ? parent[ref.fieldName] : undefined;
+        } else {
+          return parent;
+        }
       };
   }
   throw Error('Unhandled reference: ' + JSON.stringify(ref));
