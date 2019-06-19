@@ -9,6 +9,8 @@ package com.wegas.core.persistence.annotations;
 
 import com.wegas.editor.JSONSchema.JSONSchema;
 import com.wegas.editor.JSONSchema.UndefinedSchema;
+import com.wegas.editor.ValueGenerators.Undefined;
+import com.wegas.editor.ValueGenerators.ValueGenerator;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -57,4 +59,9 @@ public @interface WegasExtraProperty {
      * @return
      */
     Class<? extends JSONSchema> schema() default UndefinedSchema.class;
+
+    /**
+     * initial propsal
+     */
+    Class<? extends ValueGenerator> proposal() default Undefined.class;
 }

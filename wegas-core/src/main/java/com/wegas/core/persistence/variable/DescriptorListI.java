@@ -13,6 +13,7 @@ import com.wegas.core.persistence.WithId;
 import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.View;
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
      */
     @JsonView(Views.IndexI.class)
     @WegasExtraProperty(view = @View(value = Hidden.class, label = ""),
+            proposal = EmptyArray.class,
             optional = false, nullable = false
     )
     default List<Long> getItemsIds() {

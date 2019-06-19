@@ -33,12 +33,8 @@ import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.ModelScoped;
-import com.wegas.core.persistence.variable.statemachine.AbstractState;
-import com.wegas.core.persistence.variable.statemachine.AbstractStateMachineDescriptor;
-import com.wegas.core.persistence.variable.statemachine.AbstractTransition;
-import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
-import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.editor.Schema;
 import com.wegas.editor.Schemas;
@@ -66,7 +62,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Deque;
 import java.util.HashSet;
@@ -592,7 +587,7 @@ public class SchemaGenerator extends AbstractMojo {
                         this.addSchemaProperty(jsonSchema, c, returnType,
                                 annotation.schema(),
                                 name, annotation.view(), null, null,
-                                annotation.optional(), annotation.nullable(), null,
+                                annotation.optional(), annotation.nullable(), annotation.proposal(),
                                 ModelScoped.ProtectionLevel.CASCADED
                         );
                     }
@@ -1059,7 +1054,7 @@ public class SchemaGenerator extends AbstractMojo {
      * @throws MojoExecutionException
      */
     public static final void main(String... args) throws MojoExecutionException {
-        SchemaGenerator wenerator = new SchemaGenerator(true, AbstractState.class);
+        SchemaGenerator wenerator = new SchemaGenerator(true, ListDescriptor.class);
         wenerator.execute();
     }
 }
