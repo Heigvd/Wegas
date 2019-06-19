@@ -9,12 +9,13 @@ import {
 export function editorLabel(vd: {
   label: ITranslatableContent;
   editorTag?: string | null;
+  name?: string;
 }) {
   const label = TranslatableContent.toString(vd.label);
   if (vd.editorTag && label) {
     return `${vd.editorTag} - ${label}`;
   }
-  return vd.editorTag || label;
+  return vd.editorTag || label || vd.name || '';
 }
 
 export function getParent(vd: IVariableDescriptor): IParentDescriptor {
