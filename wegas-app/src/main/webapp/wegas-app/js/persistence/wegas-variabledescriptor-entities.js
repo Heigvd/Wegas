@@ -740,6 +740,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             },
                             id: IDATTRDEF,
                             refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
+                            parentId: IDATTRDEF,
+                            parentType: {
+                                type: "string",
+                                view: {type: HIDDEN}
+                            },
                             name: {
                                 type: STRING,
                                 view: {
@@ -1167,7 +1172,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     value: 'NumberInstance'
                 },
                 value: {
-                    type: NUMBER
+                    type: NUMBER,
+                    view: {
+                        label: 'Value',
+                        layout: 'shortInline'
+                    }
                 },
                 history: {
                     type: ARRAY,

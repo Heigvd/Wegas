@@ -23,14 +23,12 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         Wegas = Y.Wegas, persistence = Wegas.persistence,
         VERSION_ATTR_DEF,
         IDATTRDEF, lvl;
-
     VERSION_ATTR_DEF = {
         type: NUMBER,
         view: {
             type: HIDDEN
         }
     };
-
     IDATTRDEF = {
         type: NUMBER,
         optional: true, // The id is optional for entites that have not been persisted
@@ -205,6 +203,11 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                 },
                                 refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                                 id: IDATTRDEF,
+                                parentId: IDATTRDEF,
+                                parentType: {
+                                    type: "string",
+                                    view: {type: HIDDEN}
+                                },
                                 editable: {
                                     type: BOOLEAN,
                                     value: false,
@@ -633,6 +636,11 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                 },
                                 id: IDATTRDEF,
                                 refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
+                                parentId: IDATTRDEF,
+                                parentType: {
+                                    type: "string",
+                                    view: {type: HIDDEN}
+                                },
                                 name: {type: STRING, view: {type: HIDDEN}},
                                 work: {
                                     type: STRING,
@@ -930,8 +938,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             }
         }
     });
-
-
     /*
      * BURNDOWN
      */
@@ -965,6 +971,11 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
                     refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
+                    parentId: IDATTRDEF,
+                    parentType: {
+                        type: "string",
+                        view: {type: HIDDEN}
+                    },
                     iterations: {
                         type: ARRAY,
                         value: [],
@@ -999,7 +1010,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             }
         }
     });
-
     persistence.Iteration = Y.Base.create("Iteration", persistence.Entity, [], {
         getTaskDescriptors: function() {
             var names = this.get("taskNames"), i, taskDs = [];

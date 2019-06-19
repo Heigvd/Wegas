@@ -582,6 +582,12 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                             view: {type: HIDDEN}
                         },
                         id: IDATTRDEF,
+                        refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
+                        parentId: IDATTRDEF,
+                        parentType: {
+                            type: "string",
+                            view: {type: HIDDEN}
+                        },
                         name: {
                             type: STRING,
                             view: {
