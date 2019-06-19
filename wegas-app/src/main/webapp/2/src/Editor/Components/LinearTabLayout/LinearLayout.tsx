@@ -11,8 +11,6 @@ import { omit } from 'lodash';
 import u from 'immer';
 import { ReparentableRoot } from '../Reparentable';
 import { DnDTabLayout, ComponentMap, filterMap } from './DnDTabLayout';
-import LibraryEditor from '../ScriptEditors/LibraryEditor';
-import { ConnectedFileBrowser } from '../FileBrowser/TreeFileBrowser/FileBrowser';
 
 const splitter = css({
   '&.reflex-container.vertical > .reflex-splitter': {
@@ -27,6 +25,10 @@ const flex = css({
   display: 'flex',
   flex: '1 1 auto',
 });
+
+export const selectContext = React.createContext<
+  undefined | ((id: string) => void)
+>(undefined);
 
 type LayoutType = 'ReflexLayoutNode' | 'TabLayoutNode';
 
@@ -440,6 +442,10 @@ interface ActionSelect extends TabAction {
   type: 'SELECT';
 }
 
+interface ActionExternalSelect extends TabAction {
+  type: 'EXTERNALSELECT';
+}
+
 export type DropActionType = 'LEFT' | 'RIGHT' | 'TOP' | 'BOTTOM' | 'NEW';
 
 interface ActionDrop extends TabAction {
@@ -458,7 +464,8 @@ type TabLayoutsAction =
   | ActionDrop
   | ActionDelete
   | ActionDropTab
-  | ActionSelect;
+  | ActionSelect
+  | ActionExternalSelect;
 
 /**
  * setLayout is the reducer function for layout disposition management
@@ -482,9 +489,22 @@ const setLayout = (layouts: ManagedLayoutMap, action: TabLayoutsAction) =>
         true,
       );
     }
+    // If the selection come from the oustide of the component (selectContext) and the tab is not in use
+    else if (action.type === 'EXTERNALSELECT' && !srcTabLayoutKey) {
+      // Create a new tabLayout and insert the selected tab in it
+      layouts = createLayout(layouts, 'TabLayoutNode', [action.tabKey], false);
+      // Insert the new tabLayout in the root layout
+      layouts.layoutMap = insertChildren(
+        layouts.layoutMap,
+        layouts.rootKey,
+        layouts.lastKey,
+        undefined,
+        true,
+      );
+    }
     // For the other actions, the tab must have a parent tabLayout
     else if (srcTabLayoutKey) {
-      if (action.type === 'SELECT') {
+      if (action.type === 'SELECT' || action.type === 'EXTERNALSELECT') {
         layouts.layoutMap[srcTabLayoutKey.parentKey].defaultActive =
           action.tabKey;
         return layouts;
@@ -655,7 +675,7 @@ function MainLinearLayout(props: LinearLayoutProps) {
     setLayout,
     props.layoutMap ? props.layoutMap : defaultLayoutMap,
   );
-  logLayouts(layout.layoutMap);
+
   const onDrop = (layoutKey: string) => (type: DropActionType) => (item: {
     label: string;
     type: string;
@@ -756,9 +776,15 @@ function MainLinearLayout(props: LinearLayoutProps) {
   };
 
   return (
-    <ReparentableRoot>
-      <div className={flex}>{renderLayouts()}</div>
-    </ReparentableRoot>
+    <selectContext.Provider
+      value={(id: string) => {
+        dispatchLayout({ type: 'EXTERNALSELECT', tabKey: id });
+      }}
+    >
+      <ReparentableRoot>
+        <div className={flex}>{renderLayouts()}</div>
+      </ReparentableRoot>
+    </selectContext.Provider>
   );
 }
 

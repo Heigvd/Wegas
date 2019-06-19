@@ -18,6 +18,7 @@ import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { AddMenuParent, AddMenuChoice } from './AddMenu';
 import { editorLabel } from '../../../data/methods/VariableDescriptor';
 import { SearchTool } from '../SearchTool';
+import { selectContext } from '../LinearTabLayout/LinearLayout';
 
 const items = children.map(i => {
   const Label = asyncSFC(async () => {
@@ -140,6 +141,7 @@ function CTree(props: {
   search: string;
   nodeProps: () => {};
 }): JSX.Element {
+  const select = React.useContext(selectContext);
   return (
     <StoreConsumer
       selector={(state: State) => {
@@ -177,7 +179,14 @@ function CTree(props: {
               header={
                 <span
                   className={cx(headerStyle, { [editingStyle]: state.editing })}
-                  onClick={() =>
+                  onClick={() => {
+                    if (
+                      variable !== undefined &&
+                      variable['@class'] === 'FSMDescriptor' &&
+                      select
+                    ) {
+                      select('StateMachine');
+                    }
                     getEntityActions(variable!).then(({ edit }) =>
                       dispatch(
                         edit(
@@ -185,8 +194,8 @@ function CTree(props: {
                           props.subPath,
                         ),
                       ),
-                    )
-                  }
+                    );
+                  }}
                 >
                   <Title />
                   {editorLabel(variable)}
