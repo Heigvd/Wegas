@@ -296,6 +296,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 },
                 broadcastScope: {
                     type: STRING,
+                    index: -5,
                     value: "TeamScope",
                     errored: function(val, formVal) {
                         var errors = [],

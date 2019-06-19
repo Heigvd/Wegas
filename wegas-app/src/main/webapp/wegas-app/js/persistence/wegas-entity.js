@@ -386,6 +386,7 @@ YUI.add('wegas-entity', function(Y) {
             },
             VISIBILITY: {
                 type: STRING,
+                index: -4,
                 valueFn: function() {
                     // default visibility is inherited if the object belongs to a model, private otherwise
                     return Y.Wegas.Facade.GameModel.cache.getCurrentGameModel()
