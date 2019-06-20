@@ -969,7 +969,7 @@ public class RequestManager implements RequestManagerI {
                 + (currentPlayer != null ? currentPlayer.getId() : "n/a") + "::"
                 + (currentTeam != null ? currentTeam.getId() : "n/a") + "]";
 
-        if (this.status.getStatusCode() >= 400) {
+        if (this.status != null && this.status.getStatusCode() >= 400) {
             RequestManager.logger.error("Request [{}] \"{} {}\" for {} processed in {} ms ( processing: {}; management: {}, propagation: {}, serialisation: {}) => {}",
                     this.requestId, this.getMethod(), this.getPath(), info, totalDuration, processingDuration, managementDuration, propagationDuration, serialisationDuration, this.status);
         } else {
