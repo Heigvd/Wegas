@@ -103,8 +103,6 @@
         <jersey.version>2.28</jersey.version>
         <eclipselink.version>2.7.4</eclipselink.version>
 
-        <profile.dependent.scope>compile</profile.dependent.scope>
-
         <slf4j.version>1.7.25</slf4j.version>
         <logback.version>1.2.3</logback.version>
 
@@ -128,19 +126,12 @@
                 <wegas.debug>false</wegas.debug>
                 <wegas.clientErrorLogging>true</wegas.clientErrorLogging>
                 <wegas.useYUICDN>true</wegas.useYUICDN>
-                <profile.dependent.scope>compile</profile.dependent.scope>
             </properties>
         </profile>
     </profiles>
 
     <dependencyManagement>
         <dependencies>
-            <!--<dependency>
-                <groupId>javax</groupId>
-                <artifactId>javaee-api</artifactId>
-                <version>8.0.1</version>
-                <scope>provided</scope>
-            </dependency>-->
             <dependency>
                 <groupId>commons-collections</groupId>
                 <artifactId>commons-collections</artifactId>
@@ -151,7 +142,6 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
-                <scope>${profile.dependent.scope}</scope>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -211,13 +201,11 @@
                 <groupId>org.apache.jackrabbit</groupId>
                 <artifactId>oak-jcr</artifactId>
                 <version>${oak.version}</version>
-                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.jackrabbit</groupId>
                 <artifactId>oak-segment-tar</artifactId>
                 <version>${oak.version}</version>
-                <scope>compile</scope>
             </dependency>
             <!-- https://issues.apache.org/jira/browse/OAK-6542-->
             <dependency>
@@ -229,7 +217,6 @@
                 <groupId>org.apache.jackrabbit</groupId>
                 <artifactId>oak-store-document</artifactId>
                 <version>${oak.version}</version>
-                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.mongodb</groupId>
@@ -241,7 +228,6 @@
                 <groupId>javax.jcr</groupId>
                 <artifactId>jcr</artifactId>
                 <version>${jcr.version}</version>
-                <scope>compile</scope>
             </dependency>
 
             <!-- PDF Generation -->
@@ -283,45 +269,6 @@
                 <version>4.0</version>
             </dependency>
 
-            <!-- Test -->
-            <dependency>
-                <groupId>org.jboss.arquillian</groupId>
-                <artifactId>arquillian-bom</artifactId>
-                <version>${arquillian.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jboss.arquillian.junit</groupId>
-                <artifactId>arquillian-junit-container</artifactId>
-                <version>${arquillian.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>fish.payara.arquillian</groupId>
-                <artifactId>arquillian-payara-server-4-embedded</artifactId>
-                <version>1.0.Beta3</version>
-                <scope>test</scope>
-            </dependency>
-
-
-            <dependency>
-                <groupId>org.jboss.arquillian.extension</groupId>
-                <artifactId>arquillian-persistence-dbunit</artifactId>
-                <version>1.0.0.Alpha7</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eu.ingwar.tools</groupId>
-                <artifactId>arquillian-suite-extension</artifactId>
-                <version>1.2.0</version>
-                <scope>test</scope>
-            </dependency>
-
-
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
@@ -329,25 +276,9 @@
             </dependency>
 
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-
-            <dependency>
                 <groupId>org.reflections</groupId>
                 <artifactId>reflections</artifactId>
                 <version>0.9.11</version>
-            </dependency>
-
-            <dependency>
-                <groupId>net.sourceforge.htmlunit</groupId>
-                <artifactId>htmlunit</artifactId>
-                <version>2.33</version>
-                <scope>test</scope>
-                <type>jar</type>
             </dependency>
 
             <!-- Postgresql Driver -->
@@ -365,6 +296,30 @@
                 <version>1.0.0</version>
             </dependency>
 
+            <!-- Neo4j driver -->
+            <dependency>
+                <groupId>org.neo4j.driver</groupId>
+                <artifactId>neo4j-java-driver</artifactId>
+                <version>1.2.1</version>
+            </dependency>
+
+            <!--<dependency>
+                <groupId>com.fasterxml.jackson.jaxrs</groupId>
+                <artifactId>jackson-jaxrs-base</artifactId>
+                <version>${jackson.version}</version>
+                <type>jar</type>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.jaxrs</groupId>
+                <artifactId>jackson-jaxrs-json-provider</artifactId>
+                <version>${jackson.version}</version>
+                <type>jar</type>
+            </dependency>-->
+
+            <!--
+                Provided by payara micro
+            -->
             <dependency>
                 <groupId>fish.payara.api</groupId>
                 <artifactId>payara-api</artifactId>
@@ -379,20 +334,6 @@
                 <version>2.2</version>
                 <type>pom</type>
                 <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>fish.payara.extras</groupId>
-                <artifactId>payara-embedded-all</artifactId>
-                <version>${payara.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <!-- Neo4j driver -->
-            <dependency>
-                <groupId>org.neo4j.driver</groupId>
-                <artifactId>neo4j-java-driver</artifactId>
-                <version>1.2.1</version>
             </dependency>
 
             <dependency>
@@ -432,18 +373,11 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.jaxrs</groupId>
-                <artifactId>jackson-jaxrs-base</artifactId>
-                <version>${jackson.version}</version>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json-jackson</artifactId>
+                <version>${jersey.version}</version>
                 <type>jar</type>
-                <!--<scope>provided</scope>-->
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.jaxrs</groupId>
-                <artifactId>jackson-jaxrs-json-provider</artifactId>
-                <version>${jackson.version}</version>
-                <type>jar</type>
-                <!--<scope>provided</scope>-->
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
@@ -476,7 +410,68 @@
                 <scope>provided</scope>
             </dependency>
 
+            <!--
+                Test deps
+            -->
+            <dependency>
+                <groupId>fish.payara.extras</groupId>
+                <artifactId>payara-embedded-all</artifactId>
+                <version>${payara.version}</version>
+                <scope>test</scope>
+            </dependency>
 
+
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>${arquillian.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.arquillian.junit</groupId>
+                <artifactId>arquillian-junit-container</artifactId>
+                <version>${arquillian.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>fish.payara.arquillian</groupId>
+                <artifactId>arquillian-payara-server-4-embedded</artifactId>
+                <version>1.0.Beta3</version>
+                <scope>test</scope>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.jboss.arquillian.extension</groupId>
+                <artifactId>arquillian-persistence-dbunit</artifactId>
+                <version>1.0.0.Alpha7</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eu.ingwar.tools</groupId>
+                <artifactId>arquillian-suite-extension</artifactId>
+                <version>1.2.0</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>net.sourceforge.htmlunit</groupId>
+                <artifactId>htmlunit</artifactId>
+                <version>2.33</version>
+                <scope>test</scope>
+                <type>jar</type>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
