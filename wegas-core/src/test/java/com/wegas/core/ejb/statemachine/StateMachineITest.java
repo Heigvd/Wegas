@@ -17,8 +17,8 @@ import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
+import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
-import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.IOException;
 import javax.naming.NamingException;
@@ -52,14 +52,14 @@ public class StateMachineITest extends AbstractArquillianTest {
         testNumber2.setScope(new GameModelScope());
 
         TriggerDescriptor trigger = new TriggerDescriptor();
-        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setTriggerEvent(new Script("1===1"));
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, \"number\").getInstance(self).value = " + FINAL_VALUE));
         trigger.setOneShot(Boolean.TRUE);
         trigger.setDisableSelf(Boolean.FALSE);
 
         TriggerDescriptor trigger2 = new TriggerDescriptor();
-        trigger2.setDefaultInstance(new TriggerInstance());
+        trigger2.setDefaultInstance(new StateMachineInstance());
         trigger2.setTriggerEvent(new Script("true"));
         trigger2.setPostTriggerEvent(new Script("Variable.find(gameModel, \"number2\").getInstance(self).value += 1 "));
         trigger2.setOneShot(Boolean.FALSE);
@@ -176,7 +176,7 @@ public class StateMachineITest extends AbstractArquillianTest {
         testNumber.setDefaultInstance(new NumberInstance(0));
         variableDescriptorFacade.create(scenario.getId(), testNumber);
         TriggerDescriptor trigger = new TriggerDescriptor();
-        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setTriggerEvent(new Script("1===1"));
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, \"numberTest\").setValue(self, " + FINAL_VALUE + ");"));
         trigger.setOneShot(Boolean.FALSE);
@@ -209,7 +209,7 @@ public class StateMachineITest extends AbstractArquillianTest {
 
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setScope(new PlayerScope());
-        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setTriggerEvent(new Script("Variable.find(gameModel, 'personalScore').getInstance(self).value > Variable.find(gameModel, 'highScore').getInstance(self).value"));
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, 'highScore').getInstance(self).value = 10"));
         trigger.setOneShot(Boolean.FALSE);
@@ -242,7 +242,7 @@ public class StateMachineITest extends AbstractArquillianTest {
 
         // Create a trigger
         TriggerDescriptor trigger = new TriggerDescriptor();
-        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setTriggerEvent(new Script("Event.fired('testEvent')"));
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, " + ENDVAL + ");"));
         variableDescriptorFacade.create(scenario.getId(), trigger);
@@ -256,7 +256,7 @@ public class StateMachineITest extends AbstractArquillianTest {
     public void duplicate() throws NamingException, WegasNoResultException, CloneNotSupportedException {
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setName("trigger");
-        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setTriggerEvent(new Script("Event.fired('testEvent')"));
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, param);"));
         variableDescriptorFacade.create(scenario.getId(), trigger);
@@ -274,7 +274,7 @@ public class StateMachineITest extends AbstractArquillianTest {
 
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setName("trigger");
-        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, 'number').setValue(self, 5);"));
         trigger.setOneShot(Boolean.FALSE);

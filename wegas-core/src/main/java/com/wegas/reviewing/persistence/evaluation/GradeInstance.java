@@ -8,7 +8,8 @@
 package com.wegas.reviewing.persistence.evaluation;
 
 import com.wegas.core.exception.client.WegasOutOfBoundException;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.editor.View.View;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
@@ -27,7 +28,7 @@ public class GradeInstance extends EvaluationInstance {
      * given grade
      */
     @Column(name = "evaluationvalue")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Value"))
     private Double value;
 
     /**
@@ -43,6 +44,7 @@ public class GradeInstance extends EvaluationInstance {
      * Set the grade
      *
      * @param value the grade to give
+     *
      * @throws WegasOutOfBoundException when grade is out of bound
      */
     public void setValue(Double value) {

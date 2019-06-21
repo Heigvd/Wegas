@@ -9,22 +9,28 @@ package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.wegas.core.merge.annotations.WegasEntity;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntity;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
+import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.ValueGenerators.EmptyEvaluationContainer;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import com.wegas.editor.ValueGenerators.False;
+import com.wegas.editor.ValueGenerators.Three;
+import com.wegas.editor.View.FlatVariableSelectView.TextOrNumberSelector;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.View;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
-import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -124,14 +130,18 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      * the name of the variable to review. Only used for JSON de serialisation
      */
     @Transient
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "To Review", value = TextOrNumberSelector.class))
     private String toReviewName;
 
     /**
      * Allow evicted users to receive something to review
      */
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = False.class,
+            view = @View(label = "Also dispatch to peers who did not submit anything"))
     private Boolean includeEvicted;
 
     /**
@@ -139,13 +149,19 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      * especially is total number of team/player is too small
      * <p>
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            proposal = Three.class, optional = false, nullable = false,
+            view = @View(
+                    label = "Number of reviews",
+                    description = "Maximum reviews per user. Preferably greater than one."
+            ))
     @Column(name = "maxNumberOfReviewer")
     private Integer maxNumberOfReview;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationContentDeserializer.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(label = "Description", value = I18nHtmlView.class))
     private TranslatableContent description;
 
     /**
@@ -155,7 +171,9 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     @OneToOne(cascade = CascadeType.ALL)
     @JsonView(Views.EditorI.class)
     @NotNull
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyEvaluationContainer.class,
+            view = @View(label = "Feedback", value = Hidden.class))
     private EvaluationDescriptorContainer feedback;
 
     /**
@@ -165,7 +183,9 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     @OneToOne(cascade = CascadeType.ALL)
     @JsonView(Views.EditorI.class)
     @NotNull
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyEvaluationContainer.class,
+            view = @View(label = "Comment on Feedback", value = Hidden.class))
     private EvaluationDescriptorContainer fbComments;
 
     /**
@@ -308,10 +328,12 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      *
      * @return player's instance state
      */
+    @Scriptable
     public String getState(Player p) {
         return this.getInstance(p).getReviewState().toString();
     }
 
+    @Scriptable
     public void setState(Player p, String stateName) {
         ReviewingState newState = ReviewingState.valueOf(stateName);
         PeerReviewInstance instance = this.getInstance(p);

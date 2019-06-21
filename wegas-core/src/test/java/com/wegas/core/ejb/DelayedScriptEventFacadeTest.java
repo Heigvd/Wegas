@@ -11,8 +11,8 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
+import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
-import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -53,7 +53,7 @@ public class DelayedScriptEventFacadeTest extends AbstractArquillianTest {
 
         // a trigger triggered by '3secDelay' event
         TriggerDescriptor myTrigger = new TriggerDescriptor();
-        myTrigger.setDefaultInstance(new TriggerInstance());
+        myTrigger.setDefaultInstance(new StateMachineInstance());
         myTrigger.setName("aTrigger");
         myTrigger.setTriggerEvent(new Script("Javascript", "Event.fired(\"" + delayedEventName + "\")"));
         myTrigger.setPostTriggerEvent(new Script("Javascript", "Variable.find(gameModel, \"" + str1Name + "\").setValue(self, \"" + str1NewValue + "\");"));
@@ -61,7 +61,7 @@ public class DelayedScriptEventFacadeTest extends AbstractArquillianTest {
 
         // a 2nd trigger triggered by 'noDelay' event
         TriggerDescriptor my2ndTrigger = new TriggerDescriptor();
-        my2ndTrigger.setDefaultInstance(new TriggerInstance());
+        my2ndTrigger.setDefaultInstance(new StateMachineInstance());
         my2ndTrigger.setName("aTrigger");
         my2ndTrigger.setTriggerEvent(new Script("Javascript", "Event.fired(\"" + eventName + "\")"));
         my2ndTrigger.setPostTriggerEvent(new Script("Javascript", "Variable.find(gameModel, \"" + str2Name + "\").setValue(self, \"" + str2NewValue + "\");"));

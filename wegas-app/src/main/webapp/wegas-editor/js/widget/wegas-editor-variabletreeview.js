@@ -267,7 +267,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             }
         },
         updateInstance: function(e) {
-            var descriptor = Y.Wegas.Facade.Variable.cache.find("id", e.entity.get("descriptorId"));
+            var descriptor = Y.Wegas.Facade.Variable.cache.find("id", e.entity.get("parentId"));
             if (descriptor) {
                 this.updateDescriptor({
                     entity: descriptor
@@ -493,7 +493,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 if (instances.hasOwnProperty(i)) {
                     instance = instances[i];
                     label = '';
-                    switch (el.get("scope").get(CLASS)) {
+                    switch (el.get("scopeType")) {
                         case 'PlayerScope':
                             player = Wegas.Facade.Game.cache.getPlayerById(i);
                             if (!player) {

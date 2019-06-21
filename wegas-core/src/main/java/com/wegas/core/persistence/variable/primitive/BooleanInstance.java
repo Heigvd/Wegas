@@ -7,8 +7,10 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.ValueGenerators.False;
+import com.wegas.editor.View.View;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import org.slf4j.Logger;
@@ -27,7 +29,8 @@ public class BooleanInstance extends VariableInstance {
      *
      */
     @Column(name = "val")
-    @WegasEntityProperty
+    @WegasEntityProperty(proposal = False.class, optional = false, nullable = false,
+            view = @View(label = "Value"))
     private boolean value;
 
     /**

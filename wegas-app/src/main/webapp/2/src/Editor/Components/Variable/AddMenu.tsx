@@ -7,7 +7,7 @@ import { Menu } from '../../../Components/Menu';
 import { FontAwesome, withDefault } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 
-function buildMenuItems(variable: IWegasEntity) {
+function buildMenuItems(variable: IAbstractEntity) {
   return getChildren(variable).then(children => {
     return children.map(i => {
       const Label = asyncSFC(async () => {
@@ -71,7 +71,7 @@ export const AddMenuChoice = asyncSFC(
         icon="plus"
         onSelect={i =>
           dispatch(
-            Actions.EditorActions.createVariable(i.value, undefined, {
+            Actions.EditorActions.createVariable(i.value, variable, {
               save: (entity: IResult) => {
                 const newChoice = produce(variable, v => {
                   v.results.push(entity);

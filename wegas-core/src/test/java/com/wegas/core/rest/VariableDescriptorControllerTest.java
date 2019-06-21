@@ -13,14 +13,13 @@ import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.TextDescriptor;
 import com.wegas.core.persistence.variable.primitive.TextInstance;
+import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
-import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Result;
-import com.wegas.test.WegasFactory;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.Arrays;
 import javax.ejb.EJB;
@@ -57,7 +56,7 @@ public class VariableDescriptorControllerTest extends AbstractArquillianTest {
         Assert.assertTrue(variableDescriptorController.idsContains(gameModel.getId(), "instance val").contains(text.getId()));
 
         TriggerDescriptor trigger = new TriggerDescriptor();
-        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(new Script("var imascriptcontent"));
         variableDescriptorFacade.create(gameModel.getId(), trigger);
@@ -75,7 +74,7 @@ public class VariableDescriptorControllerTest extends AbstractArquillianTest {
         Assert.assertTrue(!variableDescriptorController.idsContainsAll(gameModel.getId(), "testnumber2").contains(number.getId()));
 
         TriggerDescriptor trigger = new TriggerDescriptor();
-        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(new Script("var imascriptcontent"));
         variableDescriptorFacade.create(gameModel.getId(), trigger);

@@ -217,9 +217,9 @@ public class ModelFacade {
 
                 // the state machine exists in the model.
                 //inScenario.setStates(new HashMap<>());
-                Set<State> inModelStates = inModel.getStates();
+                Set<State> inModelStates = inModel.getInternalStates();
 
-                for (Iterator<State> it = inScenario.getStates().iterator(); it.hasNext();) {
+                for (Iterator<State> it = inScenario.getInternalStates().iterator(); it.hasNext();) {
                     State state = it.next();
                     boolean found = false;
                     for (State mState : inModelStates) {
