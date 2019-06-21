@@ -56,7 +56,10 @@ const html = new HtmlSerial({
 
 const plugins = generated.map(g => g.plugin);
 
-interface HtmlProps extends WidgetProps.BaseProps<CommonView & LabeledView> {
+interface HtmlProps
+  extends WidgetProps.BaseProps<
+    { placeholder?: string } & CommonView & LabeledView
+  > {
   value?: string;
 }
 interface HtmlState {
@@ -122,6 +125,7 @@ export default class Html extends React.Component<HtmlProps, HtmlState> {
                 value={this.state.value}
                 onChange={this.onChange}
                 plugins={plugins}
+                placeholder={this.props.view.placeholder}
               />
             </>
           )}
