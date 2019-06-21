@@ -542,16 +542,19 @@ YUI.add('wegas-editor-action', function(Y) {
                 } else {
                     if (inFormEntity instanceof Y.Wegas.persistence.VariableInstance) {
                         // Care about the descriptor
-                        inFormEntity = Y.Wegas.Facade.Variable.cache.find("id", inFormEntity.get("descriptorId"));
+                        inFormEntity = Y.Wegas.Facade.Variable.cache.find("id", inFormEntity.get("parentId"));
                     }
 
                     if (Y.Wegas.persistence.FSMDescriptor && entity instanceof Y.Wegas.persistence.FSMDescriptor) {
-                        if (inFormEntity.get("@class") === "Transition" || inFormEntity.get("@class") === "State") {
+                        if (inFormEntity.get("@class") === "Transition"){
                             removeTab = inFormEntity.get("stateMachineId") === entity.get("id");
+                        } else if (inFormEntity.get("@class") === "State") {
+                            removeTab = inFormEntity.get("parentId") === entity.get("id");
                         }
+
                     } else if (entity.get("@class") === "ChoiceDescriptor") {
                         if (inFormEntity.get("@class") === "Result") {
-                            removeTab = inFormEntity.get("choiceDescriptorId") === entity.get("id");
+                            removeTab = inFormEntity.get("parentId") === entity.get("id");
                         }
                     }
                 }

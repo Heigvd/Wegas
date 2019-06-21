@@ -177,10 +177,10 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                         }
                     },
                     id: IDATTRDEF,
-                    descriptorId: {
-                        view: {
-                            type: HIDDEN
-                        }
+                    parentId: IDATTRDEF,
+                    parentType: {
+                        type: "string",
+                        view: {type: HIDDEN}
                     },
                     version: VERSION_ATTR_DEF,
                     refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
@@ -308,7 +308,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             "@class": {
                 value: "State"
             },
-            stateMachineId: IDATTRDEF,
             version: VERSION_ATTR_DEF,
             label: {
                 type: [NULL, STRING],
@@ -344,27 +343,30 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             },
             editorPosition: {
                 valueFn: function() {
-                    return new persistence.Coordinate({
+                    return {
                         x: 30,
                         y: 30
-                    });
+                    };
                 },
                 view: {
                     label: 'Box position',
                     className: 'wegas-advanced-feature'
                 },
                 properties: {
-                    "@class": {
-                        type: STRING,
-                        value: "Coordinate",
-                        view: {type: HIDDEN}
-                    }
+                    x: {
+                        type: "number",
+                        view: {type: "uneditable", label: "x"}
+                    },
+                    y: {
+                        type: "number",
+                        view: {type: "uneditable", label: "y"}
+                    },
                 }
             }
         }
     });
     /*
-     * TransitionDescriptor Entity
+     * Transition Entity
      */
     persistence.Transition = Y.Base.create("Transition", persistence.Entity, [], {}, {
         ATTRS: {
@@ -385,7 +387,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 }
             },
             version: VERSION_ATTR_DEF,
-            stateId: IDATTRDEF,
             stateMachineId: IDATTRDEF,
             preStateImpact: {
                 type: [NULL, OBJECT],
@@ -434,12 +435,12 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             },
             defaultInstance: {
                 valueFn: function() {
-                    return new persistence.TriggerInstance();
+                    return new persistence.FSMInstance();
                 },
                 properties: {
                     '@class': {
                         type: STRING,
-                        value: 'TriggerInstance',
+                        value: 'FSMInstance',
                         view: {
                             type: HIDDEN
                         }
@@ -448,13 +449,15 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                     currentStateId: {
                         type: NUMBER,
+                        value: 1,
                         view: {
                             label: 'Initial state id',
                             type: HIDDEN
                         }
                     },
-                    descriptorId: {
-                        type: NUMBER,
+                    parentId: IDATTRDEF,
+                    parentType: {
+                        type: "string",
                         view: {type: HIDDEN}
                     },
                     id: IDATTRDEF,
@@ -529,22 +532,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 maxVisibility: "INTERNAL",
                 cfg: {
                     type: "EditEntityButton"
-                }
-            }
-        }
-    });
-    /*
-     * TriggerInstance Entity
-     */
-    persistence.TriggerInstance = Y.Base.create("TriggerInstance", persistence.FSMInstance, [], {}, {
-        ATTRS: {
-            "@class": {
-                value: "TriggerInstance"
-            },
-            currentStateId: {
-                type: NUMBER,
-                view: {
-                    type: HIDDEN
                 }
             }
         }
@@ -714,22 +701,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 view: {
                     type: HIDDEN
                 }
-            }
-        }
-    });
-    /**
-     * Coordinate embeddable mapper
-     **/
-    persistence.Coordinate = Y.Base.create("Coordinate", persistence.Entity, [], {}, {
-        ATTRS: {
-            "@class": {
-                value: "Coordinate"
-            },
-            x: {
-                value: null
-            },
-            y: {
-                value: null
             }
         }
     });

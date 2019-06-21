@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
@@ -24,6 +24,11 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.Zero;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -63,7 +68,8 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty(sameEntityOnly = true)
+    @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
+            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
     @JsonView(Views.IndexI.class)
     private Long version;
 
@@ -78,7 +84,9 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
      *
      */
     @JsonIgnore
-    @WegasEntityProperty(searchable = true, callback = TranslatableCallback.class)
+    @WegasEntityProperty(searchable = true, callback = TranslatableCallback.class, 
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(label = "Translations"))
     @OneToMany(mappedBy = "translatableContent", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @PrivateOwned
     private List<Translation> translations = new ArrayList<>();
@@ -108,19 +116,6 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         }
     }
 
-    @JsonView(Views.IndexI.class)
-    public Long getParentDescriptorId() {
-        if (parentDescriptor != null) {
-            return parentDescriptor.getId();
-        }
-        return null;
-    }
-
-    @JsonView(Views.IndexI.class)
-    public void setParentDescriptorId(Long id) {
-        // Jackson happy
-    }
-
     public VariableInstance getParentInstance() {
         return parentInstance;
     }
@@ -130,19 +125,6 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         if (this.parentInstance != null) {
             this.parentDescriptor = null;
         }
-    }
-
-    @JsonView(Views.IndexI.class)
-    public Long getParentInstanceId() {
-        if (parentInstance != null) {
-            return parentInstance.getId();
-        }
-        return null;
-    }
-
-    @JsonView(Views.IndexI.class)
-    public void setParentInstanceId(Long id) {
-        // Jackson happy
     }
 
     public Long getVersion() {
@@ -491,8 +473,8 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
 
         @Override
         public void add(Object child, Mergeable container, Object identifier) {
-            if (container instanceof TranslatableContent && child instanceof Translation){
-                ((Translation)child).setTranslatableContent((TranslatableContent) container);
+            if (container instanceof TranslatableContent && child instanceof Translation) {
+                ((Translation) child).setTranslatableContent((TranslatableContent) container);
             }
         }
     }

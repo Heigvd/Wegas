@@ -10,12 +10,15 @@ package com.wegas.messaging.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.Helper;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.CascadeType;
@@ -58,7 +61,12 @@ public class InboxInstance extends VariableInstance {
 
      */
     @JsonManagedReference("inbox-message")
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(
+                    label = "Messages",
+                    value = Hidden.class
+            ))
     private List<Message> messages = new ArrayList<>();
 
     /**
@@ -98,9 +106,9 @@ public class InboxInstance extends VariableInstance {
         this.messages.add(0, message);
     }
 
-
     /**
      * @param message
+     *
      * @return
      */
     public Message sendMessage(Message message) {
@@ -182,9 +190,9 @@ public class InboxInstance extends VariableInstance {
     public Message sendMessage(final String from, final String subject, final String body, final String date, String token, final List<String> attachments) {
         VariableDescriptor desc = this.findDescriptor();
         String lang = "en";
-        if (desc != null && desc.getGameModel() != null){
+        if (desc != null && desc.getGameModel() != null) {
             List<GameModelLanguage> languages = desc.getGameModel().getRawLanguages();
-            if (languages != null && !languages.isEmpty()){
+            if (languages != null && !languages.isEmpty()) {
                 lang = languages.get(0).getCode();
             }
         }
@@ -214,7 +222,7 @@ public class InboxInstance extends VariableInstance {
         msg.setDate(TranslatableContent.merger(null, date));
 
         List<Attachment> atts = new ArrayList<>();
-        for (Attachment att : attachments){
+        for (Attachment att : attachments) {
             try {
                 atts.add((Attachment) att.duplicate());
             } catch (CloneNotSupportedException ex) {

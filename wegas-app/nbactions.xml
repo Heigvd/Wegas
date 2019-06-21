@@ -233,5 +233,12 @@
                 <skipYarn>true</skipYarn>
             </properties>
         </action>
+    <action>
+            <actionName>CUSTOM-wenerate It</actionName>
+            <displayName>wenerate It</displayName>
+            <goals>
+                <goal>com.wegas:wenerator-maven-plugin:schema</goal>
+            </goals>
+        </action>
 
 </actions>

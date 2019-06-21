@@ -7,6 +7,7 @@
  */
 package com.wegas.core.event.client;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
@@ -24,7 +25,6 @@ public class DestroyedEntity extends AbstractEntity {
 
     private final Long id;
 
-    @JsonProperty(value = "@class")
     private final String effectiveClass;
 
     public DestroyedEntity(AbstractEntity entity) {
@@ -37,6 +37,13 @@ public class DestroyedEntity extends AbstractEntity {
         return id;
     }
 
+    @JsonProperty("@class")
+    @Override
+    public String getJSONClassName() {
+        return effectiveClass;
+    }
+
+    @JsonIgnore
     public String getEffectiveClass() {
         return effectiveClass;
     }

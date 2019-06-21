@@ -12,15 +12,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.merge.annotations.WegasEntity;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntity;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
+import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Player;
@@ -29,6 +28,24 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.Visible;
+import com.wegas.core.persistence.annotations.WegasConditions.And;
+import com.wegas.core.persistence.annotations.WegasConditions.Equals;
+import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
+import com.wegas.core.persistence.annotations.WegasConditions.IsTrue;
+import com.wegas.core.persistence.annotations.WegasConditions.Not;
+import com.wegas.core.persistence.annotations.WegasConditions.Or;
+import com.wegas.core.persistence.annotations.WegasRefs.Const;
+import com.wegas.core.persistence.annotations.WegasRefs.Field;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import com.wegas.editor.ValueGenerators.One;
+import com.wegas.editor.ValueGenerators.Zero;
+import com.wegas.editor.View.CommonView;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.NumberView;
+import com.wegas.editor.View.View;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,31 +84,48 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     @OrderColumn
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty(callback = ResultMergeCallback.class)
+    @WegasEntityProperty(callback = ResultMergeCallback.class,
+            proposal = EmptyArray.class,
+            optional = false, nullable = false,
+            view = @View(
+                    value = Hidden.class,
+                    label = ""
+            ))
     private List<Result> results = new ArrayList<>();
     /**
      *
      */
     @OneToOne(cascade = CascadeType.ALL)
-    @JsonDeserialize(using = TranslationContentDeserializer.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(
+                    index = 1,
+                    label = "Description",
+                    value = I18nHtmlView.class
+            ))
     private TranslatableContent description;
 
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(proposal = One.class, view = @View(label = "Duration", value = Hidden.class))
     private Long duration = 1L;
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(proposal = Zero.class, view = @View(label = "Cost", value = Hidden.class))
     private Long cost = 0L;
 
     /**
      * Total number of replies allowed. No default value.
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(
+            index = 2,
+            label = "Max. number replies",
+            value = NumberView.WithInfinityPlaceholder.class,
+            layout = CommonView.LAYOUT.shortInline
+    ))
+    @Visible(IsNotQuestionCbxOrMaxEqOne.class)
     private Integer maxReplies = null;
 
     /**
@@ -112,6 +146,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
+    @Scriptable
     public void setCurrentResult(Player player, String resultName) throws WegasNoResultException {
         ChoiceInstance instance = this.getInstance(player);
         Result resultByName = getResultByName(resultName);
@@ -152,6 +187,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @param p
      */
+    @Scriptable
     public void activate(Player p) {
         this.getInstance(p).activate();
     }
@@ -160,8 +196,14 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @param p
      */
+    @Deprecated
     public void desactivate(Player p) {
-        this.getInstance(p).desactivate();
+        this.deactivate(p);
+    }
+
+    @Scriptable
+    public void deactivate(Player p) {
+        this.getInstance(p).deactivate();
     }
 
     /**
@@ -234,6 +276,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * @param p <p>
      * @return player instance active status
      */
+    @Scriptable
     public boolean isActive(Player p) {
         return this.getInstance(p).getActive();
     }
@@ -247,6 +290,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @return true only if the choice is not selectable any longer
      */
+    @Scriptable
     public boolean hasBeenIgnored(Player p) {
         // Is there any not ignored validated reply link to this choice
         for (Reply r : this.getInstance(p).getReplies(Boolean.TRUE)) {
@@ -259,8 +303,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         /*
          * At this point, we're sure this choice has not been selected & validated
          */
-
-
         // has the question been explicitly validated (either CBX case or by a specific impact)
         if (this.getQuestion().getValidated(p)) {
             // validated -> no longer answerable
@@ -302,6 +344,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @return return true if this choice can be selected by the player
      */
+    @Scriptable
     public boolean hasNotBeenSelected(Player p) {
         return !this.hasBeenSelected(p);
     }
@@ -314,6 +357,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * @return true if one or more question replies referencing this choice
      *         exist
      */
+    @Scriptable
     public boolean hasBeenSelected(Player p) {
         for (Reply r : this.getInstance(p).getReplies(Boolean.TRUE)) {
             if (!r.getIgnored()) {
@@ -351,6 +395,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
+    @Scriptable
     public boolean hasResultBeenApplied(Player p, String resultName) throws WegasNoResultException {
         return this.hasResultBeenApplied(p, this.getResultByName(resultName));
     }
@@ -490,5 +535,24 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
             }
         }
         super.revive(gameModel, beans);
+    }
+
+    public static class IsNotQuestionCbxOrMaxEqOne extends Not {
+
+        public IsNotQuestionCbxOrMaxEqOne() {
+            super(new Or(
+                    new And(
+                            // choice is answerable only once in CBX questions
+                            new IsDefined(new Field(QuestionDescriptor.class, "cbx")),
+                            new IsTrue(new Field(QuestionDescriptor.class, "cbx"))
+                    ),
+                    new And(
+                            // choice is answerable only once if global max is one
+                            new IsDefined(new Field(QuestionDescriptor.class, "maxReplies")),
+                            new Equals(new Field(QuestionDescriptor.class, "maxReplies"), new Const(1))
+                    )
+            )
+            );
+        }
     }
 }

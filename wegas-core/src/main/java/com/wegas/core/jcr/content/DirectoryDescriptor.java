@@ -9,7 +9,7 @@ package com.wegas.core.jcr.content;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
     private static final long serialVersionUID = 1L;
 
     @JsonIgnore
-    @WegasEntityProperty(includeByDefault = false, callback = ChildrenCallback.class)
+    @WegasEntityProperty(includeByDefault = false, callback = ChildrenCallback.class, notSerialized = true)
     private List<AbstractContentDescriptor> children;
 
     /**

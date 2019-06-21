@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.Helper;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
@@ -26,6 +26,11 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.Zero;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -73,7 +78,8 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      * RefName of player preferred language
      */
     @Column(length = 16, columnDefinition = "character varying(16) default ''::character varying")
-    @WegasEntityProperty
+    @WegasEntityProperty(nullable = false, optional = false,
+            view = @View(label = "Language", value = ReadOnlyString.class))
     private String lang;
 
     @JsonIgnore
@@ -91,7 +97,8 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(optional = false, nullable = false,
+            view = @View(label = "Name", value = ReadOnlyString.class))
     private String name;
     /**
      *
@@ -115,6 +122,8 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     private Status status = Status.WAITING;
 
     @Version
+    @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
+            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
     @Column(columnDefinition = "bigint default '0'::bigint")
     private Long version;
 

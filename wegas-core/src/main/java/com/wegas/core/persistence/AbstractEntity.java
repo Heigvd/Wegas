@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.patch.WegasEntityPatch;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -24,6 +24,8 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.View;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -55,20 +57,15 @@ import org.slf4j.LoggerFactory;
  */
 @MappedSuperclass
 //@Cache(coordinationType = CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS)
-public abstract class AbstractEntity implements Serializable, Mergeable, WithPermission {
+public abstract class AbstractEntity implements Serializable, Mergeable, WithPermission, WithId {
 
     private static final long serialVersionUID = -2538440276749623728L;
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractEntity.class);
 
-    /**
-     * Get entity id
-     *
-     * @return entity id
-     */
-    abstract public Long getId();
-
-    @WegasEntityProperty(initOnly = true)
+    @WegasEntityProperty(
+            nullable = false,
+            view = @View(label = "RefID", value = ReadOnlyString.class, index=-800))
     //@JsonView(Views.InternalI.class)
     private String refId;
 
@@ -286,11 +283,14 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
         return mapper.writerWithView(view).writeValueAsString(this);
     }
+
     /**
      * Serialize to JSON with view
      *
      * @param view the view to use to export this
+     *
      * @return JSON String representing this
+     *
      * @throws IOException
      */
     public String toJsonWithView(String view) throws IOException {

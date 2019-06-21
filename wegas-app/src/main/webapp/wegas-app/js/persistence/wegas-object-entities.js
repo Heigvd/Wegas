@@ -83,9 +83,13 @@ YUI.add('wegas-object-entities', function(Y) {
                         }
                     },
                     id: IDATTRDEF,
+                    parentId: IDATTRDEF,
+                    parentType: {
+                        type: "string",
+                        view: {type: HIDDEN}
+                    },
                     version: VERSION_ATTR_DEF,
                     refId: persistence.Entity.ATTRS_DEF.REF_ID,
-                    descriptorId: IDATTRDEF,
                     properties: {
                         type: "object",
                         additionalProperties: {

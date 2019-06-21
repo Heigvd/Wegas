@@ -141,7 +141,7 @@ public class VariableInstanceController {
     @Path("{variableInstanceId: [1-9][0-9]*}")
     public VariableInstance get(@PathParam("variableDescriptorId") Long variableDescriptorId, @PathParam("variableInstanceId") Long variableInstanceId) {
         VariableInstance vi = variableInstanceFacade.find(variableInstanceId);
-        if (variableDescriptorId != null && !vi.getDescriptorId().equals(variableDescriptorId)) {
+        if (variableDescriptorId != null && !vi.getParentId().equals(variableDescriptorId)) {
             return null;
         }
 

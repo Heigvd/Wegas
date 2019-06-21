@@ -341,7 +341,13 @@ YUI.add("wegas-i18n", function(Y) {
                     for (i in langs) {
                         lang = langs[i];
                         tr = translations[lang.code] || (!caseSensitiveCode && translations[lang.code.toLowerCase()]);
+
                         if (tr !== undefined) {
+
+                            if (tr.get) {
+                                tr = tr.toObject();
+                            }
+
                             if (tr.translation) {
                                 theOne = lang;
                                 isOutdated = !!tr.status;
@@ -360,21 +366,20 @@ YUI.add("wegas-i18n", function(Y) {
 
                         // the current scenario may depends on a model.
                         // do not let scenrists update protected translations
-                        var variableDescriptorId = trContent.get("parentDescriptorId"),
-                            variableInstanceId = trContent.get("parentInstanceId"),
+                        var parentId = trContent.get("parentId"),
+                            parentType = trContent.get("parentType"),
                             visibility, variableDescriptor;
 
-
-                        if (variableDescriptorId) {
-                            variableDescriptor = Y.Wegas.Facade.Variable.cache.find("id", variableDescriptorId);
+                        if (parentType.endsWith("Descriptor")) {
+                            variableDescriptor = Y.Wegas.Facade.Variable.cache.find("id", parentId);
                             visibility = variableDescriptor._getVisibility(variableDescriptor);
                             if (visibility === 'INTERNAL' || visibility === "PROTECTED") {
                                 // this translation is not editable
                                 readOnly = true;
                             }
-                        } else if (variableInstanceId) {
+                        } else if (parentType.endsWith("Instance")) {
                             variableDescriptor = Y.Wegas.Facade.Variable.cache.findByFn(function(item) {
-                                return item.get("defaultInstance").get("id") === variableInstanceId;
+                                return item.get("defaultInstance").get("id") === parentId;
                             });
                             if (variableDescriptor) {
                                 visibility = variableDescriptor._getVisibility(variableDescriptor);
@@ -604,6 +609,15 @@ YUI.add("wegas-i18n", function(Y) {
                             }
                         });
                 });
+            } else {
+                Y.all("body > .wegas-playerview.wegas-pageloader, #centerTabView > div > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner > .wegas-pageloader," +
+                    "#rightTabView > div > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner > .wegas-pageloader")
+                    .each(function(rootPageLoaderNode) {
+                        var pageLoader = Y.Widget.getByNode(rootPageLoaderNode);
+                        if (pageLoader) {
+                            pageLoader.reload();
+                        }
+                    });
             }
         }
 

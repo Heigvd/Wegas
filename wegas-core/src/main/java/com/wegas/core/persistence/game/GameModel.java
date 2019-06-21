@@ -16,13 +16,14 @@ import com.wegas.core.jcr.jta.JCRClient;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
@@ -33,6 +34,15 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.ValueGenerators.GmProperties;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.INTERNAL;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.Textarea;
+import com.wegas.editor.View.View;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.jcr.RepositoryException;
@@ -90,15 +100,22 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @Basic(optional = false)
     @Pattern(regexp = "^.*\\S+.*$", message = "GameModel name cannot be empty")// must at least contains one non-whitespace character
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Name"))
     private String name;
 
     @Basic(optional = false)
-    @WegasEntityProperty(initOnly = true)
+    @Column(columnDefinition = "int not null default 1")
+    @WegasEntityProperty(initOnly = true,
+            optional = false, nullable = false,
+            view = @View(label = "UI Version", value = ReadOnlyNumber.class))
     private Integer UIVersion;
 
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false,
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(label = "Languages", value = Hidden.class))
     private List<GameModelLanguage> languages = new ArrayList<>();
 
     /**
@@ -107,7 +124,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Lob
     //@Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty(sameEntityOnly = true)
+    @WegasEntityProperty(sameEntityOnly = true,
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Description"))
     private String description;
 
     /**
@@ -127,7 +146,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Lob
     //@Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty(sameEntityOnly = true)
+    @WegasEntityProperty(sameEntityOnly = true,
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Comments", value = Textarea.class))
     private String comments;
 
     /**
@@ -169,7 +190,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @OneToMany(mappedBy = "root", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @OrderColumn(name = "gm_items_order")
     //@JsonManagedReference
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private List<VariableDescriptor> items = new ArrayList<>();
 
     /**
@@ -193,7 +214,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @OneToMany(mappedBy = "scriptlibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private List<GameModelContent> scriptLibrary = new ArrayList<>();
 
     /**
@@ -201,7 +222,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @OneToMany(mappedBy = "csslibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private List<GameModelContent> cssLibrary = new ArrayList<>();
 
     /**
@@ -209,14 +230,14 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @OneToMany(mappedBy = "clientscriptlibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private List<GameModelContent> clientScriptLibrary = new ArrayList<>();
 
     /**
      *
      */
     @Embedded
-    @WegasEntityProperty
+    @WegasEntityProperty(optional = false, nullable = false, proposal = GmProperties.class)
     private GameModelProperties properties = new GameModelProperties();
 
     /**
@@ -224,7 +245,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * the same time.
      */
     @Transient
-    @WegasEntityProperty(includeByDefault = false, protectionLevel = ModelScoped.ProtectionLevel.ALL)
+
+    @WegasEntityProperty(includeByDefault = false, protectionLevel = ModelScoped.ProtectionLevel.ALL, notSerialized = true)
     @JsonView({Views.ExportI.class})
     private Map<String, JsonNode> pages;
 
@@ -288,6 +310,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      *
      * @return
      */
+    @WegasExtraProperty(view = @View(label = "based on", value = Hidden.class, featureLevel = INTERNAL))
     public Long getBasedOnId() {
         return this.basedOnId;
     }
@@ -384,6 +407,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     /**
      * @return Current GameModel's status
      */
+    @WegasExtraProperty(
+            optional = true, nullable = false,
+            view = @View(label = "Type", value = ReadOnlyString.class))
     public Status getStatus() {
         return status;
     }
@@ -922,6 +948,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         // Here so game deserialization works
     }
 
+    @WegasExtraProperty(
+            optional = true, nullable = false,
+            view = @View(label = "Type", value = ReadOnlyString.class))
     public GmType getType() {
         return type;
     }
@@ -1143,12 +1172,20 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     @Override
     public WegasPermission getAssociatedReadPermission() {
-        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.GAMEMODEL);
+        return GameModel.getAssociatedReadPermission(this.getId());
+    }
+
+    public static WegasPermission getAssociatedReadPermission(long id) {
+        return new WegasEntityPermission(id, WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.GAMEMODEL);
     }
 
     @Override
     public WegasPermission getAssociatedWritePermission() {
-        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAMEMODEL);
+        return GameModel.getAssociatedWritePermission(this.getId());
+    }
+
+    public static WegasPermission getAssociatedWritePermission(long id) {
+        return new WegasEntityPermission(id, WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAMEMODEL);
     }
 
     /**

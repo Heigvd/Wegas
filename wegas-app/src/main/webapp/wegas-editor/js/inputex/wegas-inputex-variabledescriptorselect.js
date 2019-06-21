@@ -133,7 +133,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 this.currentEntity = currentEntity; // Keeps a reference to the current entity
                 entityStack.push(currentEntity);
 
-                while (currentEntity.get("parentDescriptorType") !== "GameModel") { // Add the current entity hierarchy
+                while (currentEntity.get("parentType") !== "GameModel") { // Add the current entity hierarchy
                     currentEntity = currentEntity.getParent();
                     entityStack.push(currentEntity);
 

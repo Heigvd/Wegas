@@ -91,15 +91,8 @@ public class Helper {
                 try {
                     return (T) context.lookup("java:global/embed-classes/" + service.getSimpleName() + "!" + type.getName());
                 } catch (NamingException ex1) {
-                    try {
-                        // Why cobertura here ???
-                        logger.error("Cobertura lookup for {} ! {}", service.getSimpleName(), type.getName());
-                        Helper.printWegasStackTrace(new Exception());
-                        return (T) context.lookup("java:global/cobertura/" + service.getSimpleName() + "!" + type.getName());
-                    } catch (NamingException ex2) {
-                        logger.error("Unable to retrieve to do jndi lookup on class: {}", type.getSimpleName());
-                        throw ex2;
-                    }
+                    logger.error("Unable to retrieve to do jndi lookup on class: {}", type.getSimpleName());
+                    throw ex1;
                 }
             }
         }
@@ -521,6 +514,41 @@ public class Helper {
     }
 
     /**
+     * Convert camelCase to human readable string.
+     * <ul>
+     * <li>PDFFile -> PDF file</li>
+     * <li>99Files -> 99 files</li>
+     * <li>SomeFiles -> some files</li>
+     * <li>SomePDFFiles -> some PDF files</li>
+     * </ul>
+     *
+     * @param camelCased
+     *
+     * @return human readable string
+     */
+    public static String humanize(String camelCased) {
+        Pattern p = Pattern.compile(
+                "(?<=[A-Z]|^)([A-Z])(?=[a-z])" + "|"
+                + "(?<=[^A-Z])([A-Z])" + "|"
+                + "(?<=[A-Za-z])([^A-Za-z])"
+        );
+        Matcher matcher = p.matcher(camelCased);
+        StringBuffer sb = new StringBuffer();
+
+        while (matcher.find()) {
+            String match = matcher.group();
+            if (matcher.start() > 0) {
+                matcher.appendReplacement(sb, " " + match.toLowerCase());
+            } else {
+                // do not insert any space at the first position
+                matcher.appendReplacement(sb, match.toLowerCase());
+            }
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    /**
      * @param name
      *
      * @return the provided name stripped of its _# suffix.
@@ -864,7 +892,12 @@ public class Helper {
                 sb.append(elem);
             }
         }
-        logger.error(sb.toString());
+        String toString = sb.toString();
+        if (toString.contains("jparealm") || toString.contains("GuestRealm")) {
+            return;
+        } else {
+            logger.error(toString);
+        }
     }
 
     /**
