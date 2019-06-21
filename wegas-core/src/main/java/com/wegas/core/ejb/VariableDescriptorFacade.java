@@ -284,20 +284,14 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     }
 
     public void reviveDialogue(GameModel gameModel, DialogueDescriptor dialogueDescriptor) {
-        for (State s : dialogueDescriptor.getStates()) {
-            if (s instanceof DialogueState) {
-                DialogueState ds = (DialogueState) s;
-                if (ds.getText() != null) {
-                    ds.getText().setParentDescriptor(dialogueDescriptor);
-                }
+        for (DialogueState s : dialogueDescriptor.getInternalStates()) {
+            if (s.getText() != null) {
+                s.getText().setParentDescriptor(dialogueDescriptor);
             }
 
-            for (Transition t : s.getTransitions()) {
-                if (t instanceof DialogueTransition) {
-                    DialogueTransition dt = (DialogueTransition) t;
-                    if (dt.getActionText() != null) {
-                        dt.getActionText().setParentDescriptor(dialogueDescriptor);
-                    }
+            for (DialogueTransition t : s.getTransitions()) {
+                if (t.getActionText() != null) {
+                    t.getActionText().setParentDescriptor(dialogueDescriptor);
                 }
             }
         }

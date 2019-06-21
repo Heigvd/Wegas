@@ -101,8 +101,13 @@
         <exec.plugin.version>1.2</exec.plugin.version>
 
         <jackson.version>2.9.8</jackson.version>
-        <jersey.version>2.28</jersey.version>
+        <jackson.scope>provided</jackson.scope>
+
+        <jersey.version>2.29.payara-p2</jersey.version>
+
+        <eclipselink.scope>provided</eclipselink.scope>
         <eclipselink.version>2.7.4</eclipselink.version>
+        <eclipselink.pversion>2.7.4.payara-p2</eclipselink.pversion>
 
         <slf4j.version>1.7.25</slf4j.version>
         <logback.version>1.2.3</logback.version>
@@ -133,11 +138,11 @@
 
     <dependencyManagement>
         <dependencies>
-        <dependency>
-            <groupId>com.wegas</groupId>
-            <artifactId>wegas-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+            <dependency>
+                <groupId>com.wegas</groupId>
+                <artifactId>wegas-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>commons-collections</groupId>
                 <artifactId>commons-collections</artifactId>
@@ -309,20 +314,6 @@
                 <version>1.2.1</version>
             </dependency>
 
-            <!--<dependency>
-                <groupId>com.fasterxml.jackson.jaxrs</groupId>
-                <artifactId>jackson-jaxrs-base</artifactId>
-                <version>${jackson.version}</version>
-                <type>jar</type>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.jaxrs</groupId>
-                <artifactId>jackson-jaxrs-json-provider</artifactId>
-                <version>${jackson.version}</version>
-                <type>jar</type>
-            </dependency>-->
-
             <!--
                 Provided by payara micro
             -->
@@ -347,7 +338,7 @@
                 <artifactId>jackson-databind</artifactId>
                 <version>${jackson.version}</version>
                 <type>jar</type>
-                <scope>provided</scope>
+                <scope>${jackson.scope}</scope>
             </dependency>
 
             <dependency>
@@ -355,14 +346,14 @@
                 <artifactId>jackson-annotations</artifactId>
                 <version>${jackson.version}</version>
                 <type>jar</type>
-                <scope>provided</scope>
+                <scope>${jackson.scope}</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.core</artifactId>
-                <version>${eclipselink.version}</version>
-                <scope>provided</scope>
+                <version>${eclipselink.pversion}</version>
+                <scope>${eclipselink.scope}</scope>
             </dependency>
             <dependency>
                 <groupId>javax.cache</groupId>
@@ -863,25 +854,30 @@
         </plugins>
     </reporting>
 
-    <!--<repositories>
+    <repositories>
         <repository>
-            <id>maven2-repository.dev.java.net</id>
-            <name>Java.net Repository for Maven</name>
-            <url>http://maven.glassfish.org/content/groups/glassfish</url>
-            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
         </repository>
 
         <repository>
-            <url>http://download.eclipse.org/rt/eclipselink/maven.repo/</url>
-            <id>eclipselink</id>
-            <layout>default</layout>
-            <name>Repository for library Library[eclipselink]</name>
+            <id>payara-patched-externals</id>
+            <name>Payara Patched Externals</name>
+            <url>https://raw.github.com/payara/Payara_PatchedProjects/master</url>
+            <!--<url>file:///opt/PayaraDev/Payara_PatchedProjects</url>-->
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
-        <repository>
-            <id>jsdoctk1</id>
-            <url>http://jsdoctk-plugin.googlecode.com/svn/repo</url>
-        </repository> 
-    </repositories>-->
+
+    </repositories>
 
     <!--<pluginRepositories>
         <pluginRepository>
