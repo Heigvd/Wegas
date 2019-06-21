@@ -11,15 +11,19 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import com.wegas.editor.ValueGenerators.One;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.I18nStringView;
+import com.wegas.editor.View.View;
 import java.util.Collection;
 import java.util.List;
 import javax.persistence.*;
@@ -71,29 +75,47 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
     /**
      * to sort evaluation descriptor and instance
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = One.class,
+            view = @View(label = "Index"))
     private Integer index;
 
     /**
      * Evaluation internal identifier
      */
-    @WegasEntityProperty(searchable = true)
+    @WegasEntityProperty(searchable = true,
+            nullable = false,
+            view = @View(
+                    label = "Script alias",
+                    description = "Internal name",
+                    featureLevel = ADVANCED
+            ))
     private String name;
 
     /**
      * Evaluation label as displayed to players
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationContentDeserializer.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(
+                    label = "Label",
+                    description = "Displayed to players",
+                    value = I18nStringView.class,
+                    index = -1
+            ))
     private TranslatableContent label;
 
     /**
      * Textual descriptor to be displayed to players
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationContentDeserializer.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(
+                    label = "Description",
+                    value = I18nHtmlView.class
+            ))
     private TranslatableContent description;
 
     /**
@@ -195,26 +217,11 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
      */
     public void setContainer(EvaluationDescriptorContainer container) {
         this.container = container;
-        if (this.container != null){
+        if (this.container != null) {
             // revive translatable content link
             this.setLabel(label);
             this.setDescription(description);
         }
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    @JsonView(Views.IndexI.class)
-    public Long getParentDescriptorId() {
-        if (this.getContainer() != null) {
-            return this.getContainer().getParentDescriptorId();
-        }
-        return null;
-    }
-
-    public void setParentDescriptorId(Long id){
     }
 
     @JsonIgnore
@@ -251,7 +258,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
     }
 
     @Override
-    public WithPermission getMergeableParent(){
+    public WithPermission getMergeableParent() {
         return getContainer();
     }
 

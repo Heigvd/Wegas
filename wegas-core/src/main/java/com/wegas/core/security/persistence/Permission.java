@@ -8,9 +8,7 @@
 package com.wegas.core.security.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.ejb.GameFacade;
-import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Game;
@@ -18,6 +16,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.View;
 import java.util.Collection;
 import javax.persistence.*;
 import org.eclipse.persistence.config.CacheUsage;
@@ -58,7 +57,7 @@ public class Permission extends AbstractEntity {
      */
     @Basic
     @Column(name = "permissions")
-    @WegasEntityProperty
+    @WegasEntityProperty(optional = false, nullable = false, view = @View(label = "Value"))
     private String value;
     /**
      *
@@ -173,18 +172,20 @@ public class Permission extends AbstractEntity {
                 case "GameModel":
                     if (isPermId(perm)) {
                         // One should have super right on the gameModel the permission give access to
-                        GameModel gameModel = GameModelFacade.lookup().find(Long.parseLong(perm.replaceFirst("gm", "")));
+                        return WegasPermission.getAsCollection(GameModel.getAssociatedWritePermission(Long.parseLong(perm.replaceFirst("gm", ""))));
+                        /*GameModel gameModel = GameModelFacade.lookup().find(Long.parseLong(perm.replaceFirst("gm", "")));
                         if (gameModel != null) {
                             return gameModel.getRequieredUpdatePermission();
-                        }
+                        }*/
                     }
                 case "Game":
                     if (isPermId(perm)) {
                         // One should have super right on the game the permission give access to
-                        Game game = GameFacade.lookup().find(Long.parseLong(perm.replaceFirst("g", "")));
+                        return WegasPermission.getAsCollection(Game.getAssociatedWritePermission(Long.parseLong(perm.replaceFirst("g", ""))));
+                        /*Game game = GameFacade.lookup().find(Long.parseLong(perm.replaceFirst("g", "")));
                         if (game != null) {
                             return game.getRequieredUpdatePermission();
-                        }
+                    }*/
                     }
             }
         }

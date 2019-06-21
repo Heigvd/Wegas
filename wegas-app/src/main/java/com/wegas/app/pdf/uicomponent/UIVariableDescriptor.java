@@ -23,9 +23,11 @@ import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.primitive.TextDescriptor;
 import com.wegas.core.persistence.variable.primitive.TextInstance;
+import com.wegas.core.persistence.variable.statemachine.AbstractStateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
+import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.ChoiceInstance;
@@ -669,16 +671,17 @@ public class UIVariableDescriptor extends UIComponentBase {
      *
      * @throws IOException
      */
-    public void encode(FacesContext context, ResponseWriter writer, StateMachineDescriptor fsm) throws IOException {
+    public void encode(FacesContext context, ResponseWriter writer, AbstractStateMachineDescriptor fsm) throws IOException {
         if (editorMode) { // never show to players
             //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             encodeBase(context, writer, fsm, editorMode);
-            UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, fsm.getDefaultInstance().getEnabled());
-            UIHelper.printProperty(context, writer, UIHelper.TEXT_DEFAULT_STATE, fsm.getDefaultInstance().getCurrentStateId().toString());
+            StateMachineInstance instance = (StateMachineInstance)fsm.getDefaultInstance();
+            UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, instance.getEnabled());
+            UIHelper.printProperty(context, writer, UIHelper.TEXT_DEFAULT_STATE, instance.getCurrentStateId().toString());
 
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_FOLDER);
             List<Long> keys = new ArrayList<>();
-            Map<Long, State> states = fsm.getStatesAsMap();
+            Map<Long, State> states = fsm.getStates();
             keys.addAll(states.keySet());
 
             Collections.sort(keys);

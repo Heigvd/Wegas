@@ -10,7 +10,7 @@ package com.wegas.core.jcr.content;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +32,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     private static final long serialVersionUID = 5695858459529162019L;
 
     @JsonIgnore
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private Calendar dataLastModified;
 
     /**
@@ -45,7 +45,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
      * Some ghost field (since not yet possible to define a WegasEntityProperty without a corresponding field)
      */
     @JsonIgnore
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private FileContent data; // TODO -> allow to define such a transient field withen the WegasEntity class anotation extraProperties = {@WegasEntityProperty + name}
 
     /**

@@ -9,14 +9,12 @@ package com.wegas.core.ejb;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.wegas.core.Helper;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.game.GameModel;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

@@ -12,13 +12,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
@@ -26,6 +27,9 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.Open;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import java.util.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -66,7 +70,9 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @Basic(optional = false)
     @Pattern(regexp = "^.*\\S+.*$", message = "Game name cannot be empty")// must at least contains one non-whitespace character
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "Name"))
     private String name;
 
     /**
@@ -76,7 +82,9 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     @Basic(optional = false)
 
     @Pattern(regexp = "^([a-zA-Z0-9_-]|\\.(?!\\.))*$", message = "Token shall only contains alphanumeric characters, numbers, dots, underscores or hyphens")
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(label = "Token"))
     private String token;
 
     /**
@@ -118,7 +126,9 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      *
      */
     @Enumerated
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = Open.class,
+            view = @View(label = "Access"))
     private GameAccess access = GameAccess.OPEN;
 
     /**
@@ -188,6 +198,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     @JsonManagedReference("game-team")
     // Exclude this property from the Lobby view and force a fetch in Editor view:
     @JsonView(Views.EditorI.class)
+    @WegasExtraProperty(optional = false, nullable = false, view = @View(label = "Teams", value = Hidden.class))
     public List<Team> getTeams() {
         return this.getGameTeams().getTeams();
     }
@@ -519,12 +530,20 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
 
     @Override
     public WegasPermission getAssociatedReadPermission() {
-        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.GAME);
+        return Game.getAssociatedReadPermission(this.getId());
+    }
+
+    public static WegasPermission getAssociatedReadPermission(long id) {
+        return new WegasEntityPermission(id, WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.GAME);
     }
 
     @Override
     public WegasPermission getAssociatedWritePermission() {
-        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAME);
+        return Game.getAssociatedWritePermission(this.getId());
+    }
+
+    public static WegasPermission getAssociatedWritePermission(long id) {
+        return new WegasEntityPermission(id, WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAME);
     }
 
     @Override

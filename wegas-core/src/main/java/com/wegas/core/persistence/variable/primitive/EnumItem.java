@@ -13,12 +13,10 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.Orderable;
@@ -26,6 +24,10 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.I18nStringView;
+import com.wegas.editor.View.View;
 import com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -77,7 +79,13 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
     /**
      * Internal identifier
      */
-    @WegasEntityProperty(searchable = true)
+    @WegasEntityProperty(searchable = true,
+            nullable = false,
+            view = @View(
+                    label = "Script alias",
+                    description = "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character.",
+                    featureLevel = ADVANCED
+            ))
     private String name;
 
     @Column(name = "item_order")
@@ -85,8 +93,13 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
     private Integer order;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
-    @JsonDeserialize(using = TranslationContentDeserializer.class)
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(
+                    label = "Label",
+                    description = "Displayed to players",
+                    value = I18nStringView.class
+            ))
     private TranslatableContent label;
 
     @Override

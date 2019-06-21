@@ -3,14 +3,14 @@ import * as React from 'react';
 interface LangProviderProps {
   lang?: string;
   children?: React.ReactNode;
-  availableLang: { code: string; label: string; active: boolean }[];
+  availableLang: IGameModelLanguage[];
 }
 interface Context extends LangProviderProps {
   lang: string;
   toggleLang: (lang: string) => void;
 }
 export const LangContext = React.createContext<Context>({
-  lang: 'DEF',
+  lang: '',
   toggleLang: () => {},
   availableLang: [],
 });
@@ -20,7 +20,7 @@ function LangHandler({
   lang,
   children,
 }: Readonly<LangProviderProps>) {
-  const [currentLang, setCurrentLang] = React.useState(lang || 'DEF');
+  const [currentLang, setCurrentLang] = React.useState(lang || availableLang[0].code);
   function toggleLang(lang: string) {
     setCurrentLang(lang);
   }
@@ -43,7 +43,7 @@ export function LangToggler() {
     <select value={lang} onChange={ev => toggleLang(ev.target.value)}>
       {availableLang.map(l => (
         <option key={l.code} value={l.code}>
-          {`[${l.code}] ${l.label}`}
+          {`[${l.code}] ${l.lang}`}
         </option>
       ))}
     </select>

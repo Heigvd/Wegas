@@ -8,10 +8,12 @@
 package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.FlatVariableSelectView.TaskFlatSelector;
+import com.wegas.editor.View.View;
 import java.util.Collection;
 import javax.persistence.Transient;
 
@@ -32,7 +34,9 @@ public abstract class AbstractAssignement extends AbstractEntity {
     }
 
     @Transient
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional =false, nullable =false,
+            view = @View(label = "Task", value = TaskFlatSelector.class))
     private String taskDescriptorName;
 
 

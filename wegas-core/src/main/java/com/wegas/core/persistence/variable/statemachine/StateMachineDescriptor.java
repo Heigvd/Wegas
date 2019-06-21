@@ -7,17 +7,14 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.rest.util.Views;
-import java.util.*;
-import java.util.Map.Entry;
+import com.wegas.core.persistence.game.Script;
+import com.wegas.editor.JSONSchema.JSONObject;
+import com.wegas.editor.Schema;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
+import java.util.HashMap;
+import java.util.Map;
 import javax.persistence.*;
 
 /**
@@ -26,144 +23,25 @@ import javax.persistence.*;
 @Entity
 @Table(name = "FSMDescriptor")
 @JsonTypeName(value = "FSMDescriptor")
-@JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "TriggerDescriptor", value = TriggerDescriptor.class),
-    @JsonSubTypes.Type(name = "DialogueDescriptor", value = DialogueDescriptor.class)
-})
-@NamedQuery(
-        name = "StateMachineDescriptor.findAllForGameModelId",
-        query = "SELECT DISTINCT sm FROM StateMachineDescriptor sm WHERE sm.gameModel.id = :gameModelId"
-)
-public class StateMachineDescriptor extends VariableDescriptor<StateMachineInstance> {
+@Schema(property = "states", value = StateMachineDescriptor.StateProp.class, view = @View(label = "", value = Hidden.class))
+public class StateMachineDescriptor extends AbstractStateMachineDescriptor<State, Transition> {
 
-    private static final long serialVersionUID = 1L;
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "stateMachine", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @MapKeyColumn(name = "fsm_statekey")
-    @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty(ignoreNull = true, protectionLevel = ProtectionLevel.INHERITED)
-    private Set<State> states = new HashSet<>();
+    public static class StateProp extends JSONObject {
 
-    /**
-     *
-     */
-    public StateMachineDescriptor() {
-    }
+        public StateProp() {
+            Map<Long, AbstractState> states = new HashMap<>();
+            State state = new State();
+            state.setLabel("");
+            state.setVersion(0l);
+            state.setEditorPosition(new Coordinate());
+            state.getEditorPosition().setX(100);
+            state.getEditorPosition().setY(100);
 
-    /**
-     * @return all stated mapped by index numbers
-     */
-    @JsonIgnore
-    public Set<State> getStates() {
-        return states;
-    }
+            state.setOnEnterEvent(new Script());
 
-    @JsonIgnore
-    public void setStates(Set<State> states) {
-        this.states = states;
-        for (State state : states) {
-            state.setStateMachine(this);
+            states.put(1l, state);
+            this.setValue(states);
         }
-    }
-
-    @JsonProperty(value = "states")
-    @JsonView(Views.ExtendedI.class)
-    public Map<Long, State> getStatesAsMap() {
-        Map<Long, State> map = new HashMap<>();
-        for (State state : this.states) {
-            map.put(state.getIndex(), state);
-        }
-        return map;
-    }
-
-    public State addState(Long index, State state) {
-        state.setIndex(index);
-        state.setStateMachine(this);
-        this.getStates().add(state);
-        return state;
-    }
-
-    /**
-     * @param states
-     */
-    @JsonProperty("states")
-    public void setStatesFromMap(Map<Long, State> states) {
-        this.states.clear();
-
-        for (Entry<Long, State> entry : states.entrySet()) {
-            this.addState(entry.getKey(), entry.getValue());
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "StateMachineDescriptor{id=" + this.getId() + ", states=" + states + '}';
-    }
-
-
-    /*
-     * script methods
-     */
-    /**
-     * @param p
-     */
-    public void enable(Player p) {
-        this.getInstance(p).setEnabled(Boolean.TRUE);
-    }
-
-    /**
-     * @param p
-     */
-    public void disable(Player p) {
-        this.getInstance(p).setEnabled(Boolean.FALSE);
-    }
-
-    /**
-     * @param p
-     *
-     * @return is player instance enabled ?
-     */
-    public boolean isEnabled(Player p) {
-        return this.getInstance(p).getEnabled();
-    }
-
-    /**
-     * @param p
-     *
-     * @return is player instance disabled ?
-     */
-    public boolean isDisabled(Player p) {
-        return !this.getInstance(p).getEnabled();
-    }
-
-    private Transition getTransitionById(Long id) {
-        for (State state : this.getStates()) {
-            for (Transition transition : state.getTransitions()) {
-                if (transition != null && transition.getId().equals(id)) {
-                    return transition;
-                }
-            }
-        }
-        return null;
-    }
-
-    public boolean wentThroughState(Player p, Long stateKey) {
-        List<Long> transitionHistory = this.getInstance(p).getTransitionHistory();
-
-        for (Long tId : transitionHistory) {
-            Transition t = this.getTransitionById(tId);
-            if (t.getNextStateId().equals(stateKey)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public boolean notWentThroughState(Player p, Long stateKey) {
-        return !this.wentThroughState(p, stateKey);
     }
 
 }

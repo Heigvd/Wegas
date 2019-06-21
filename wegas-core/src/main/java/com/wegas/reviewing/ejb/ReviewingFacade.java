@@ -588,10 +588,11 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
     public void revivePeerReviewDescriptor(PeerReviewDescriptor reviewD) {
         try {
             String toReviewName = reviewD.getImportedToReviewName();
-            GameModel gameModel = reviewD.getGameModel();
-            VariableDescriptor toReview = variableDescriptorFacade.find(gameModel, toReviewName);
-
-            reviewD.setToReview(toReview);
+            if (toReviewName != null) {
+                GameModel gameModel = reviewD.getGameModel();
+                VariableDescriptor toReview = variableDescriptorFacade.find(gameModel, toReviewName);
+                reviewD.setToReview(toReview);
+            }
 
             assertScopesAreValid(reviewD);
 
@@ -612,8 +613,8 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
                 ed.getDescription().setParentDescriptor(parent);
                 if (ed instanceof CategorizedEvaluationDescriptor) {
                     CategorizedEvaluationDescriptor ced = (CategorizedEvaluationDescriptor) ed;
-                    for (EnumItem category: ced.getCategories()){
-                        if (category.getLabel() !=null){
+                    for (EnumItem category : ced.getCategories()) {
+                        if (category.getLabel() != null) {
                             category.getLabel().setParentDescriptor(parent);
                         }
                     }

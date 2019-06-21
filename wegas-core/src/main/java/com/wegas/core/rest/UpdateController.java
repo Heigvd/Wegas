@@ -165,7 +165,7 @@ public class UpdateController {
                 }
             } else if (vd instanceof StateMachineDescriptor) {
                 StateMachineDescriptor fsm = (StateMachineDescriptor) vd;
-                for (Map.Entry<Long, State> s : fsm.getStatesAsMap().entrySet()) {
+                for (Map.Entry<Long, State> s : fsm.getStates().entrySet()) {
                     replaceAll(s.getValue().getOnEnterEvent(), keys, values);
                     for (Transition t : s.getValue().getTransitions()) {
                         replaceAll(t.getPreStateImpact(), keys, values);

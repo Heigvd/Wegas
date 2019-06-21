@@ -20,6 +20,7 @@ export default class BooleanView extends React.Component<BooleanProps> {
                 id={inputId}
                 checked={value || false}
                 type="checkbox"
+                readOnly={view.readOnly}
                 onChange={this.onChange}
               />
               {labelNode}

@@ -1,3 +1,5 @@
+/* eslint-env node */
+/* eslint  @typescript-eslint/no-var-requires: "off" */
 const path = require('path');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useAsync } from '../Hooks/useAsync';
 
 /**
  * async SFC
@@ -7,58 +8,21 @@ import * as React from 'react';
  * @param Err
  */
 export function asyncSFC<T>(
-  PComp: (props: T) => Promise<React.ReactNode>,
-  Loader: React.SFC<{}> = () => null,
-  Err: React.SFC<{ err: Error }> = () => null,
-): React.ComponentClass<T> {
-  class AsyncDeps extends React.PureComponent<
-    T,
-    { el: React.ReactNode | null; loaded: boolean; oldProps: T }
-  > {
-    static getDerivedStateFromProps(
-      nextProps: T,
-      { oldProps }: { oldProps: T },
-    ) {
-      if (oldProps !== nextProps) {
-        return {
-          loaded: false,
-          oldProps: nextProps,
-        };
-      }
-      return null;
-    }
-    mount: boolean = true;
-    readonly state = {
-      oldProps: this.props,
-      loaded: false,
-      el: Loader({}),
-    };
-    loadComp() {
-      PComp(this.props)
-        .then(el => {
-          if (this.mount) {
-            this.setState({ loaded: true, el });
-          }
-        })
-        .catch(err => {
-          if (this.mount) {
-            this.setState({ loaded: true, el: Err({ err }) });
-          }
-        });
-    }
-    componentDidMount() {
-      this.loadComp();
-    }
-    componentDidUpdate() {
-      if (!this.state.loaded) {
-        this.loadComp();
-      }
-    }
-    componentWillUnmount() {
-      this.mount = false;
-    }
-    render() {
-      return this.state.el;
+  PComp: (props: T) => Promise<React.ReactElement | null>,
+  Loader: React.FunctionComponent<{}> = () => null,
+  Err: React.FunctionComponent<{ err: unknown }> = () => null,
+) {
+  function AsyncDeps(props: T): React.ReactElement {
+    const { status, data } = useAsync(
+      React.useMemo(() => PComp(props), [props]),
+    );
+    switch (status) {
+      case 'pending':
+        return <Loader />;
+      case 'rejected':
+        return <Err err={data} />;
+      case 'resolved':
+        return data!;
     }
   }
   return AsyncDeps;

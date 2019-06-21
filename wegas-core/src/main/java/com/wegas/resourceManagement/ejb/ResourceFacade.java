@@ -397,38 +397,34 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
 
         /**
          * Transform task name into real TaskDescriptor
+         * New predecessor's names : be sure they're registered
          */
         if (task.getImportedPredecessorNames() != null) {
+            Set<String> predecessorNames = task.getImportedPredecessorNames();
             /**
              * New predecessor's names : be sure they're registered
              */
-            if (task.getImportedPredecessorNames() != null) {
-                Set<String> predecessorNames = task.getImportedPredecessorNames();
-                /**
-                 * New predecessor's names : be sure they're registered
-                 */
-                task.getPredecessors().clear();
-                
-                for (String predecessorName : predecessorNames) {
-                    try{
+            task.getPredecessors().clear();
+
+            for (String predecessorName : predecessorNames) {
+                try {
                     TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
                     //if (!task.getPredecessorNames().contains(predecessorName)) {
-                        task.addPredecessor(predecessor);
+                    task.addPredecessor(predecessor);
                     //}
-                    } catch (WegasNoResultException ex){
-                        throw WegasErrorMessage.error("Unable to restore task predecessor : " + task + " -> " + predecessorName);
-                    }
+                } catch (WegasNoResultException ex) {
+                    throw WegasErrorMessage.error("Unable to restore task predecessor : " + task + " -> " + predecessorName);
                 }
-                /**
-                 * Old predecessor's names : make sure to remove oldies
-                 * for (String predecessorName : task.getPredecessorNames()) {
-                 * TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
-                 * if (!task.getImportedPredecessorNames().contains(predecessorName)) {
-                 * task.removePredecessor(predecessor);
-                 * }
-                 * }
-                 */
             }
+            /**
+             * Old predecessor's names : make sure to remove oldies
+             * for (String predecessorName : task.getPredecessorNames()) {
+             * TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
+             * if (!task.getImportedPredecessorNames().contains(predecessorName)) {
+             * task.removePredecessor(predecessor);
+             * }
+             * }
+             */
         }
         //this.setPredecessors(ListUtils.updateList(this.getPredecessors(), other.getPredecessors()));
     }

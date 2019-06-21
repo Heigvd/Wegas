@@ -31,10 +31,12 @@ YUI.add('wegas-bscopeinspector', function(Y) {
         },
         renderUI: function() {
             var theVar = this.get("variable.evaluated"),
-                theScope = theVar.get("scope");
+                scope = theVar.get("scopeType"),
+                bScope = theVar.get("broadcastScope");
+
 
             this.get(CONTENTBOX).one("h1").setHTML(I18n.t(theVar.get("label")) + " (" + theVar.get("name") + ")");
-            this.get(CONTENTBOX).one("h3").setHTML(theScope.get("@class") + " / " + theScope.get("broadcastScope") + ")");
+            this.get(CONTENTBOX).one("h3").setHTML(scope + " / " + bScope + ")");
         },
         bindUI: function() {
             this.handlers.push(Y.Wegas.Facade.Instance.after("*:updatedInstance", this.instanceUpdateTrigger, this));
@@ -61,8 +63,6 @@ YUI.add('wegas-bscopeinspector', function(Y) {
             var theVar = this.get("variable.evaluated"), i, j,
                 mine = theVar.getInstance(),
                 theUl = this.get(CONTENTBOX).one("ul"),
-                scope = theVar.get("scope").get("@class"),
-                bScope = theVar.get("scope").get("broadcastScope"),
                 instances = Y.Wegas.Facade.Instance.cache.find("descriptorId", theVar.get("id")).variableInstances,
                 game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
                 team, player,

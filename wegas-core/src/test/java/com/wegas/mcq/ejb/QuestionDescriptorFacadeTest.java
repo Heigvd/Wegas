@@ -587,7 +587,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
         Assert.assertEquals(question, (QuestionDescriptor) choice.getParent());
-        Assert.assertEquals("VariableDescriptor", choice.getParentDescriptorType());
+        Assert.assertEquals("QuestionDescriptor", choice.getParentType());
         Assert.assertEquals(2, gameModelFacade.find(scenario.getId()).getItems().size());
         Assert.assertEquals(1, ((DescriptorListI)variableDescriptorFacade.find(question.getId())).getItems().size());
         Assert.assertEquals(0, ((DescriptorListI)variableDescriptorFacade.find(list.getId())).getItems().size());
@@ -596,7 +596,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.move(choice.getId(), 0);
         choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
         Assert.assertEquals(scenario, (GameModel) choice.getParent());
-        Assert.assertEquals("GameModel", choice.getParentDescriptorType());
+        Assert.assertEquals("GameModel", choice.getParentType());
         Assert.assertEquals(3, gameModelFacade.find(scenario.getId()).getItems().size());
         Assert.assertEquals(0, ((DescriptorListI)variableDescriptorFacade.find(question.getId())).getItems().size());
         Assert.assertEquals(0, ((DescriptorListI)variableDescriptorFacade.find(list.getId())).getItems().size());
@@ -606,7 +606,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
         Assert.assertEquals(list, (ListDescriptor) choice.getParent());
-        Assert.assertEquals("VariableDescriptor", choice.getParentDescriptorType());
+        Assert.assertEquals("ListDescriptor", choice.getParentType());
         Assert.assertEquals(2, gameModelFacade.find(scenario.getId()).getItems().size());
         Assert.assertEquals(0, ((DescriptorListI)variableDescriptorFacade.find(question.getId())).getItems().size());
         Assert.assertEquals(1, ((DescriptorListI)variableDescriptorFacade.find(list.getId())).getItems().size());

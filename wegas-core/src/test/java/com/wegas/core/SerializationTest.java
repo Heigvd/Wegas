@@ -98,6 +98,12 @@ public class SerializationTest {
     public void tearDown() {
     }
 
+
+    public void assertPropertyEquals(String json, String property, Number expected) {
+        String pattern = "\"" + property + "\":" + expected + "";
+        assertTrue("Expected " + expected + ", found " + json, json.contains(pattern));
+    }
+
     public void assertPropertyEquals(String json, String property, String expected) {
         String pattern = "\"" + property + "\":\"" + expected + "\"";
         assertTrue("Expected " + expected + ", found " + json, json.contains(pattern));
@@ -135,10 +141,10 @@ public class SerializationTest {
         assertPropertyEquals(mapper.writeValueAsString(smI), "@class", "FSMInstance");
 
         assertPropertyEquals(mapper.writeValueAsString(s1), "@class", "State");
-        assertPropertyEquals(mapper.writeValueAsString(coord1), "@class", "Coordinate");
+        assertPropertyEquals(mapper.writeValueAsString(coord1), "x", 100);
 
         assertPropertyEquals(mapper.writeValueAsString(s2), "@class", "State");
-        assertPropertyEquals(mapper.writeValueAsString(coord2), "@class", "Coordinate");
+        assertPropertyEquals(mapper.writeValueAsString(coord2), "x", 500);
 
         assertPropertyEquals(mapper.writeValueAsString(trans1), "@class", "Transition");
     }

@@ -28,9 +28,9 @@ export default function translatable<P extends EndProps>(
     // Updade label
     const curCode = (
       availableLang.find(l => l.code === lang) || {
-        label: '',
+        code: '',
       }
-    ).label;
+    ).code;
     const view = React.useMemo(
       () => ({
         ...props.view,
@@ -44,14 +44,14 @@ export default function translatable<P extends EndProps>(
     );
     const pvalue: ITranslatableContent =
       props.value == null
-        ? { '@class': 'TranslatableContent', translations: {} }
+            ? {'@class': 'TranslatableContent', translations: {}, version: 0 }
         : props.value;
     const currTranslation = pvalue.translations[lang];
     return (
       <Comp
         {...props as any} // https://github.com/Microsoft/TypeScript/issues/28748
         value={
-          currTranslation != null ? currTranslation.translation : undefined
+          currTranslation != null ? currTranslation.translation : ''
         }
         view={view}
         onChange={value => {
@@ -60,8 +60,10 @@ export default function translatable<P extends EndProps>(
             translations: {
               ...pvalue.translations,
               [lang]: {
+                ...{status: ''},
                 ...pvalue.translations[lang],
                 translation: value,
+                lang,
               },
             },
           };

@@ -213,12 +213,29 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * @param propagate indicate whether default instance should be propagated
      */
     public void shallowRevive(GameModel gameModel, VariableDescriptor entity, boolean propagate) {
+        AbstractScope newScope = null;
+
+        if (entity.getDeserialisedScopeType() != null) {
+            newScope = AbstractScope.build(entity.getDeserialisedScopeType(), entity.getDeserialisedBroadcastScopeType());
+            entity.setScopeType(null);
+            entity.setBroadcastScope(null);
+
+            AbstractScope scope = entity.getScope();
+            if (scope != null) {
+                if (scope.getClass().equals(newScope.getClass())) {
+                    scope.setBroadcastScope(newScope.getBroadcastScope());
+                } else {
+                    this.updateScope(entity, newScope);
+                }
+            } else {
+                entity.setScope(newScope);
+                propagate = true;
+            }
+        }
+
         if (entity.getScope() == null) {
             entity.setScope(new TeamScope());
             propagate = true;
-        } else if (entity.getScope().getShouldCreateInstance()) {
-            propagate = true;
-            entity.getScope().setShouldCreateInstance(false);
         }
 
         if (entity instanceof ListDescriptor) {
@@ -344,6 +361,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         }
     }
 
+    @Deprecated
     public void flushAndreviveItems(GameModel gameModel, DescriptorListI entity, boolean propagate) {
         this.reviveItems(gameModel, entity, propagate);
     }

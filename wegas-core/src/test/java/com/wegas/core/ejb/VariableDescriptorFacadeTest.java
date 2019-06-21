@@ -178,7 +178,7 @@ public class VariableDescriptorFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.create(scenario.getId(), desc);
         gameModelFacade.reset(scenario.getId());
 
-        Assert.assertEquals(desc.getId(), variableInstanceFacade.find(desc.getId(), player).getDescriptorId());
+        Assert.assertEquals(desc.getId(), variableInstanceFacade.find(desc.getId(), player).getParentId());
 
         // Check its value
         BooleanInstance instance = (BooleanInstance) variableInstanceFacade.find(desc.getId(), player);
