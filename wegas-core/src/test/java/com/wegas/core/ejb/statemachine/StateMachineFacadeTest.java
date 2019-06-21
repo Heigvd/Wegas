@@ -88,7 +88,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
     public void testErroneousCondition() throws NamingException {
         // Create a trigger
         TriggerDescriptor trigger = new TriggerDescriptor();
-        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setDefaultInstance(new StateMachineInstance());
         // trigger.setTriggerEvent(new Script("\"I'm kind of erroneous condition'\""));
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(new Script(""));

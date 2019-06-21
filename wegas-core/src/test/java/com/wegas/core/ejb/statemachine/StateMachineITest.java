@@ -59,7 +59,7 @@ public class StateMachineITest extends AbstractArquillianTest {
         trigger.setDisableSelf(Boolean.FALSE);
 
         TriggerDescriptor countPlayer = new TriggerDescriptor();
-        countPlayer.setDefaultInstance(new TriggerInstance());
+        countPlayer.setDefaultInstance(new StateMachineInstance());
         countPlayer.setTriggerEvent(new Script("1===1"));
         countPlayer.setPostTriggerEvent(new Script("Variable.find(gameModel, \"nbPlayer\").getInstance(self).value += 1;"));
         countPlayer.setOneShot(Boolean.TRUE);
