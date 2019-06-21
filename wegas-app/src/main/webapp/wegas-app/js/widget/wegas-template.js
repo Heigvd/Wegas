@@ -53,11 +53,15 @@ YUI.add('wegas-template', function(Y) {
                         this
                         );
                 } else {
-                    this.vdUpdateHandler = Wegas.Facade.Instance.after(
-                        'updatedInstance',
-                        this.syncTemplate,
-                        this
-                        );
+                    var instance = this.get("variable.evaluated").getInstance();
+                    if (instance) {
+                        this.vdUpdateHandler = Wegas.Facade.Instance.after(
+                            //'*:updatedInstance',
+                            instance.get("id") + ':updatedInstance',
+                            this.syncUI,
+                            this
+                            );
+                    }
                 }
             },
             syncTemplate: function(payload) {
@@ -91,14 +95,15 @@ YUI.add('wegas-template', function(Y) {
                             data.value = this.undefinedToEmpty(desc.get('value'));
                         }
 
-                        desc = Y.Wegas.Facade.Variable.cache.findById(desc.get('descriptorId'));
+                        desc = Y.Wegas.Facade.Variable.cache.findById(desc.get('parentId'));
                     } else {
                         data.value = undefined;
                     }
 
-                    if (desc instanceof Wegas.persistence.ListDescriptor && desc.get("currentItem")) {       // If the widget is a list,
-                        desc = desc.get("currentItem"); // display it with the current list and the current element
-                    }
+                    /*This behaviour is not even possible since years...
+                     * if (desc instanceof Wegas.persistence.ListDescriptor && desc.get("currentItem")) {       // If the widget is a list,
+                     desc = desc.get("currentItem"); // display it with the current list and the current element
+                     }*/
 
                     //  data.label = this.undefinedToEmpty(desc.getLabel());
                     if (initialData.label) {
@@ -117,9 +122,6 @@ YUI.add('wegas-template', function(Y) {
                     }
                     data.maxValue = this.undefinedToEmpty(desc.get('maxValue'));
                     data.minValue = this.undefinedToEmpty(desc.get('minValue'));
-                    data.defaultValue = this.undefinedToEmpty(
-                        desc.get('defaultValue')
-                        );
                     data.variable = desc;
                 }
 
@@ -137,7 +139,8 @@ YUI.add('wegas-template', function(Y) {
                 return null;
             },
             destructor: function() {
-                this.vdUpdateHandler.detach();
+                Y.log("DestroyTemplate");
+                this.vdUpdateHandler && this.vdUpdateHandler.detach();
             },
             undefinedToEmpty: function(value) {
                 return Y.Lang.isUndefined(value) ? '' : '' + value;
@@ -221,8 +224,8 @@ YUI.add('wegas-template', function(Y) {
                 "  <% } %>" +
                 "  <div class='wegas-template-valuebox-units'>" +
                 "    <% for(var i=+this.minValue; i < +this.maxValue + 1; i+=1){%>" +
-                "      <div class='wegas-template-valuebox-unit <%= +i < +this.value ? ' wegas-template-valuebox-previous' : '' %><%= +i === 0 ? ' wegas-template-valuebox-zero' : '' %><%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'>" +
-                "        <%= I18n.formatNumber(i) %>" +
+                "      <div data-value=\"<%= i %>\" class='wegas-template-valuebox-unit <%= +i < +this.value ? ' wegas-template-valuebox-previous' : '' %><%= +i === 0 ? ' wegas-template-valuebox-zero' : '' %><%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'>" +
+                "        <span><%= I18n.formatNumber(i) %></span>" +
                 "      </div>" +
                 "    <% } %>" +
                 "  </div>" +
@@ -275,7 +278,6 @@ YUI.add('wegas-template', function(Y) {
                 "<div class='wegas-template-box-unit <%= 1+i == +this.value ? ' wegas-template-box-selected' : (2+i == +this.value ? ' wegas-template-box-pred' : '') %>' value='<%= 1+i %>'></div><% } %></div>" +
                 "<span class='wegas-template-box-value'>" +
                 "(<%= I18n.formatNumber(this.value || '{value}') %>" +
-                //+ "<% if(this.defaultValue != ''){ %><%= '/' + (this.defaultValue || '{defaultValue}') %><% } %>"
                 ')</span></div>'
                 )
         },
@@ -327,8 +329,8 @@ YUI.add('wegas-template', function(Y) {
                 )
         },
         {
+            EDITORNAME: "Number Template",
             ATTRS: {
-                EDITORNAME: "Number Template",
                 variable: {
                     type: "object",
                     getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
@@ -405,35 +407,28 @@ YUI.add('wegas-template', function(Y) {
             }
         }
     );
-    Wegas.TextTemplate = Y.Base.create(
-        'wegas-template',
-        AbstractTemplate,
-        [],
-        {
-            TEMPLATE: Micro.compile('<div><%== this.value %></div>')
-        },
-        {
-            ATTRS: {
-                /**
-                 * The target variable, returned either based on the variableName attribute,
-                 * and if absent by evaluating the expr attribute.
-                 */
-                variable: {
-                    type: 'object',
-                    getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                    view: {
-                        type: 'variableselect',
-                        label: 'Variable',
-                        classFilter: ['TextDescriptor', 'StringDescriptor']
-                    }
-                },
-                data: {
-                    type: 'object',
-                    properties: {
-                    },
-                    view: {}
+    Wegas.TextTemplate = Y.Base.create('wegas-template', AbstractTemplate, [], {
+        TEMPLATE: Micro.compile('<div><%== (this.variable instanceof Y.Wegas.persistence.ListDescriptor ? this.variable.getLabel() : this.value) %></div>')
+    }, {
+        ATTRS: {
+            /**
+             * The target variable, returned either based on the variableName attribute,
+             * and if absent by evaluating the expr attribute.
+             */
+            variable: {
+                type: 'object',
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                view: {
+                    type: 'variableselect',
+                    label: 'Variable',
+                    classFilter: ['TextDescriptor', 'StringDescriptor', 'ListDescriptor']
                 }
+            },
+            data: {
+                type: 'object',
+                properties: {},
+                view: {}
             }
         }
-    );
+    });
 });

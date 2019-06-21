@@ -13,17 +13,24 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import java.util.ArrayList;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.View;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.*;
 
 /**
@@ -51,21 +58,41 @@ public class Reply extends AbstractEntity implements DatedEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
+    @WegasEntityProperty(optional = false, nullable = false,
+            view = @View(label = "Created Time", value = ReadOnlyNumber.class))
     private Date createdTime = new Date();
     /**
      * <p>
      */
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "Start Time", value = ReadOnlyNumber.class))
     private Long startTime;
     /**
      *
      */
     @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty(view = @View(label = "Unread"),
+            optional = false, nullable = false
+    )
     private Boolean unread = false;
     /**
      *
      */
     @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty(view = @View(label = "Ignored"),
+            optional = false, nullable = false
+    )
     private Boolean ignored = false;
+
+    /**
+     *
+     */
+    @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "Validated"))
+    private Boolean validated = false;
     /**
      *
      */
@@ -73,9 +100,14 @@ public class Reply extends AbstractEntity implements DatedEntity {
     private Result result;
 
     @Transient
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "Result Name", value = ReadOnlyString.class))
     private String resultName;
 
     @Transient
+    @WegasEntityProperty(optional = false, nullable = false,
+            view = @View(label = "Choice Name", value = ReadOnlyString.class))
     private String choiceName;
 
     /**
@@ -85,24 +117,6 @@ public class Reply extends AbstractEntity implements DatedEntity {
     @JoinColumn(nullable = false)
     @JsonBackReference
     private ChoiceInstance choiceInstance;
-
-    /**
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof Reply) {
-            Reply other = (Reply) a;
-            this.setUnread(other.getUnread());
-            this.setResultName(other.getResultName());
-            this.setChoiceName(other.getChoiceName());
-            this.setStartTime(other.getStartTime());
-            this.setIgnored(other.getIgnored());
-            this.setCreatedTime(other.getCreatedTime());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
-    }
 
     /**
      * @return the ignored status.
@@ -116,6 +130,26 @@ public class Reply extends AbstractEntity implements DatedEntity {
      */
     public void setIgnored(Boolean ignored) {
         this.ignored = ignored;
+    }
+
+    /**
+     * Is the reply validated.
+     * <p>
+     * impact (or ignoreationImapct in ignored rely case) of a validated reply has been applied
+     *
+     * @return
+     */
+    public Boolean isValidated() {
+        return validated;
+    }
+
+    /**
+     * Set validated
+     *
+     * @param validated
+     */
+    public void setValidated(Boolean validated) {
+        this.validated = validated;
     }
 
     @Override
@@ -228,35 +262,38 @@ public class Reply extends AbstractEntity implements DatedEntity {
         this.setChoiceName(null);
     }
 
+    @WegasExtraProperty(view = @View(label = "Answer", value = I18nHtmlView.class))
     public TranslatableContent getAnswer() {
-        if (result != null) {
+        if (result != null && this.isValidated()) {
             return result.getAnswer();
         } else {
             return null;
         }
     }
 
-    public void setAnswer(String answer) {
+    public void setAnswer(Object answer) {
         // Make Jackson happy
     }
 
+    @WegasExtraProperty(view = @View(label = "Ignoration Answer", value = I18nHtmlView.class))
     public TranslatableContent getIgnorationAnswer() {
-        if (result != null) {
+        if (result != null && this.isValidated()) {
             return result.getIgnorationAnswer();
         } else {
             return null;
         }
     }
 
-    public void setIgnorationAnswer(String answer) {
+    public void setIgnorationAnswer(Object answer) {
         // Make Jackson happy
     }
 
-    public List<String> getFiles() {
-        if (result != null) {
+    @WegasExtraProperty(view = @View(label = "Files"))
+    public Set<String> getFiles() {
+        if (result != null && this.isValidated()) {
             return result.getFiles();
         } else {
-            return new ArrayList<>();
+            return new HashSet<>();
         }
     }
 
@@ -286,6 +323,11 @@ public class Reply extends AbstractEntity implements DatedEntity {
         }
          */
         super.updateCacheOnDelete(beans);
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return getChoiceInstance();
     }
 
     @Override

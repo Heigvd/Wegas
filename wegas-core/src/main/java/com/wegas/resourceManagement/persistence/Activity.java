@@ -11,10 +11,12 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.View;
 import javax.persistence.*;
 
 /**
@@ -22,7 +24,6 @@ import javax.persistence.*;
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Entity
-
 @Table(indexes = {
     @Index(columnList = "resourceinstance_id"),
     @Index(columnList = "taskinstance_id"),
@@ -34,7 +35,10 @@ public class Activity extends AbstractAssignement {
 
     @Transient
     @JsonIgnore
-    private String deserialisedRequirementName;
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(value = ReadOnlyString.class, label = "Requirement name"))
+    private String requirementName;
 
     /**
      *
@@ -47,18 +51,27 @@ public class Activity extends AbstractAssignement {
      * worked time ? strange spelling...
      */
     @Column(name = "wtime")
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(value = ReadOnlyNumber.class, label = "time"))
     private double time;
 
     /**
      * Start time
      */
     @Column(name = "stime")
-    private double sTime;
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(value = ReadOnlyNumber.class, label = "Start time"))
+    private double startTime;
 
     /**
      *
      */
     @Column(name = "wcompletion")
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(value = ReadOnlyNumber.class, label = "Completion"))
     private double completion;
     /**
      *
@@ -90,26 +103,6 @@ public class Activity extends AbstractAssignement {
         this.time = 0.0D;
         this.completion = 0.0D;
         this.requirement = null;
-    }
-
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof Activity) {
-            Activity other = (Activity) a;
-            super.merge(other);
-
-            this.setTime(other.getTime());
-            this.setStartTime(other.getStartTime());
-            this.setCompletion(other.getCompletion());
-
-            this.setRequirementName(other.getRequirementName());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
     }
 
     @Override
@@ -154,7 +147,7 @@ public class Activity extends AbstractAssignement {
      * @return the start time (Period.Step)
      */
     public double getStartTime() {
-        return sTime;
+        return startTime;
     }
 
     /**
@@ -163,7 +156,7 @@ public class Activity extends AbstractAssignement {
      * @param sTime
      */
     public void setStartTime(double sTime) {
-        this.sTime = sTime;
+        this.startTime = sTime;
     }
 
     /**
@@ -213,7 +206,7 @@ public class Activity extends AbstractAssignement {
         if (requirement != null) {
             return requirement.getName();
         } else {
-            return deserialisedRequirementName;
+            return requirementName;
         }
     }
 
@@ -223,7 +216,7 @@ public class Activity extends AbstractAssignement {
      * @param name
      */
     public void setRequirementName(String name) {
-        this.deserialisedRequirementName = name;
+        this.requirementName = name;
     }
 
     /**
@@ -232,7 +225,7 @@ public class Activity extends AbstractAssignement {
     public void setRequirement(WRequirement requirement) {
         this.requirement = requirement;
         if (requirement != null) {
-            this.deserialisedRequirementName = null;
+            this.requirementName = null;
         }
     }
 

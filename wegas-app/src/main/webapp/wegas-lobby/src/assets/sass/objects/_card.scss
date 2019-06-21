@@ -1,8 +1,10 @@
 .card{
     position:relative;
-    display:block;
-    width:100%;
-    height:auto;
+    display:flex;
+    flex-wrap: wrap;
+
+    /*width:100%;*/
+    height: auto;
     padding:0px;
     margin:12px auto;
     border:none;
@@ -11,7 +13,6 @@
     border-radius:2px;
     transition:.3s;
     clear:both;
-    height:auto;
     overflow:hidden;
     @include material-shadow(1);
 
@@ -19,16 +20,26 @@
         @include material-shadow(2);
     }
 
+    > div {
+        height:$card-size;
+    }
+
     .card__illustration{
-        display:block;
-        float:left;
+        flex-shrink:  0;
         .icon-users {
             padding-right: 8px;
         }
     }
     .card__description{
-        float:left;
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 80px;
+        min-width: 80px;
         padding:0px ($card-base-padding*3);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
         .line{
             line-height: $card-text-size;
             font-size: $card-text-size;
@@ -59,27 +70,6 @@
                 font-weight:500;
             }
         }
-
-        @each $description in $card-description{
-            $description-type: nth($description, 1);
-            $description-padding-top: nth($description, 2);
-            $description-padding-bottom: nth($description, 3);
-
-            &.card__description--#{$description-type}{
-                .line{
-                    &:first-child{
-                        padding-top:$description-padding-top;
-                    }
-
-                    &:last-child{
-                        padding-bottom:$description-padding-bottom;
-                        &.line--primary{
-                            padding-bottom:$description-padding-bottom - 2;
-                        }
-                    }
-                }
-            }
-        }
     }
 
     &.ng-enter,
@@ -103,12 +93,13 @@
     }
 
     .card__actions{
-        float: right;
+        display: flex;
+        flex-wrap: wrap;
         padding: 16px;
+        height: auto;
 
         .button{
             display: block;
-            float: left;
         }
     }
 
@@ -163,10 +154,6 @@
     }
 
     &.card--scenario {
-        &.card--big {
-            height: inherit;
-            overflow: auto;
-        }
         .card__illustration {
             width: 96px;
         }
@@ -190,45 +177,17 @@
         &.ng-leave {
             animation: bounceOut 1s;
         }
-        .card__description {
-            width:calc(100% - 464px);
-        }
         .card__detailled-actions {
-            width: 260px;
             padding:11px 16px 12px 16px;
-            float:left;
             ul {
                 padding: 0px;
                 margin: 0px;
                 list-style-type: none;
             }
         }
-
-        @media screen and (max-width: 620px) {
-            .card__description{
-                width: calc(100% - 80px);
-            }
-
-            .card__detailled-actions{
-                width: calc(100% - 82px);
-                border-top:solid 1px $border;
-                box-sizing:border-box;
-            }
-
-            .card__actions{
-                width:82px;
-                border-top:solid 1px $border;
-                box-sizing:border-box;
-            }
-        }
     }
 
     &.card--player-session{
-        .card__description{
-            width:calc(100% - 276px); /* was 262px */
-            box-sizing:border-box;
-        }
-
         .card__actions.progressbar{
             padding: 32px 16px;
 
@@ -251,34 +210,20 @@
                 }
             }
         }
-
-        @media screen and (max-width: 600px) { /* was 579px */
-            max-width: 450px;
-            .card__description{
-                width: calc(100% - 80px);
-            }
-            .card__actions{
-                width:100%;
-                border-top:solid 1px $border;
-                box-sizing:border-box;
-                .button--info{
-                    float:right;
-                }
-            }
-        }
     }
 
     &.card--player-mini {
-        height: 60px;
-        width: auto;
         margin-left: 78px;
         margin-top: 10px;
         margin-bottom: 6px;
         transition: none;
 
+        > div {
+            height: 60px;
+        }
+
         .card__illustration {
             width: 60px;
-            height: 60px;
 
             &.illustration--icon i {
                 font-size: 30px;
@@ -291,46 +236,25 @@
             }
         }
 
-        .card__description {
-            height: 60px;
-        }
-
-        .card__description.card__description--two-lines .line:first-child {
-            padding-top: 15px;
-        }
-
         .card__actions {
             padding-top: 6px;
-        }
-
-        @media screen and (max-width: 700px) {
-            height: 120px;
-            margin-left: 7px;
-            .card__description {
-                width: calc(100% - 80px);
-            }
-            .card__actions {
-                width: 100%;
-                border-top: solid 1px $border;
-                box-sizing: border-box;
-                .button--info {
-                    float: right;
-                }
-            }
         }
     }
 
     &.card--group-mini {
-        height: 60px;
         width: auto;
         margin-left: 7px;
         margin-top: 13px;
         margin-bottom: 6px;
         transition: none;
 
+
+        > div {
+            height: 60px;
+        }
+
         .card__illustration {
             width: 60px;
-            height: 60px;
 
             &.illustration--icon i {
                 font-size: 30px;
@@ -343,49 +267,18 @@
             }
         }
 
-        .card__description {
-            height: 60px;
-        }
-
-        .card__description.card__description--one-line .line:first-child {
-            padding-top: 24px;
-        }
-
         .card__actions {
             padding-top: 6px;
-        }
-
-        @media screen and (max-width: 700px) {
-            height: 120px;
-            .card__description {
-                width: calc(100% - 80px);
-            }
-            .card__actions {
-                width: 100%;
-                border-top: solid 1px $border;
-                box-sizing: border-box;
-                .button--info {
-                    float: right;
-                }
-            }
         }
     }
 
     &.card--trainer-session{
-
-        .card__description{
-            width:calc(100% - 540px); /* was 542px */
-            box-sizing:border-box;
-        }
-
         .card__actions{
             user-select:none;
             .card__actions__access{
                 display:block;
                 position:relative;
-                float:left;
                 /* width:230px; */
-                height:100%;
                 white-space: nowrap;
 
                 .line{
@@ -506,67 +399,9 @@
                 }
             }
         }
-
-        @media screen and (max-width: 800px) { /* was 700 */
-            max-width: 450px;
-
-            .card__description{
-                width: calc(100% - 80px);
-            }
-            .card__actions{
-                width:100%;
-                border-top:solid 1px $border;
-            }
-        }
     }
 
-    &.card--scenarist-scenario{
-        .card__description{
-            width:calc(100% - 426px);  /* was 362px then 412px */
-            box-sizing:border-box;
-        }
-        @media screen and (max-width: 700px) { /* was 659px */
-            max-width: 370px;
-            .card__description{
-                width:calc(100% - 80px);
-            }
-            .card__actions{
-                float:right;
-                clear:both;
-                border-top:solid 1px $border;
-                width:100%;
-                .button{
-                    margin-bottom:4px;
-                    &.button--info{
-                        float:right;
-                    }
-                }
-
-            }
-        }
-        @media screen and (max-width: 460px) {
-            .card__actions{
-                .button{
-                    &.button--info{
-                        float:left;
-                    }
-                }
-            }
-        }
-    }
     &.card--team-joinable{
-        .card__description{
-            width:calc(100% - 515px); /* Was 494px */
-        }
-        @media screen and (max-width: 619px) {
-            .card__description{
-                width:calc(100% - 80px);
-            }
-            .card__actions{
-                width:100%;
-                border-top:solid 1px $border;
-            }
-        }
         @media screen and (max-width: 440px) {
             .card__actions{
                 .button--eye, .button--eye-slash{
@@ -575,130 +410,46 @@
                         display:none;
                     }
                 }
-                .button--info{
-                    float:right;
-                }
-            }
-        }
-    }
-    &.card--archive-trainer{
-        .card__description{
-            width:calc(100% - 312px);
-            box-sizing:border-box;
-        }
-        @media screen and (max-width: 500px) {
-            .card__description{
-                width:calc(100% - 80px);
-            }
-            .card__actions{
-                width:100%;
-                border-top:solid 1px $border;
-            }
-        }
-    }
-    &.card--archive-scenarist{
-        .card__description{
-            width:calc(100% - 212px);
-            box-sizing:border-box;
-        }
-        @media screen and (max-width: 420px) {
-            .card__description{
-                width:calc(100% - 80px);
-            }
-            .card__actions{
-                width:100%;
-                border-top:solid 1px $border;
-            }
-        }
-    }
-    &.card--group{
-        .card__description{
-            width:calc(100% - 263px);
-            box-sizing:border-box;
-        }
-        @media screen and (max-width: 420px) {
-            .card__description{
-                width:calc(100% - 80px);
-            }
-            .card__actions{
-                width:100%;
-                border-top:solid 1px $border;
-                .button--trash{
-                    float:right;
-                }
             }
         }
     }
 
     &.card--admin-who{
+
+        > div {
+            height : 40px;
+        }
+
         .card__description{
-            width: 100%;
             padding: 4px;
-            box-sizing:border-box;
 
-            .card-number {
-                float: left;
-                width: 50px;
-                text-align: right;
-                padding-right: 10px;
-            }
+            .line {
+                display: flex;
 
-            .card-fullname {
-                float: left;
-                width: 300px;
-                overflow-x: auto;
-                overflow-y: hidden;
-                margin-right:10px;
-            }
+                .card-number{
+                    width: 25px;
+                }
 
-            .card-email {
-                float: left;
-                width: 300px;
-                overflow-x: auto;
-                overflow-y:hidden;
+                .card-fullname, .card-email{
+                    flex-grow: 1;
+                    flex-basis: 1px;
+                }
+
             }
+        }
+
+        .card__actions{
 
             .card-be{
-                float: right;
                 transform: scale(0.7);
-                padding: 0;
-                margin-top: -16px;
-                margin-bottom: -16px;
+                margin-top: -18px;
             }
         }
 
         .card__description * {
             font-weight: normal;
         }
-
-        @media screen and (max-width: 868px) {
-            .card__description {
-                .card-fullname {
-                    width: auto;
-                }
-
-                .card-email {
-                    clear: both;
-                    margin-left: 50px;
-                }
-
-                .card-roles {
-                    width: auto;
-                }
-            }
-        }
-
-        @media screen and (max-width: 660px) {
-            .card__description {
-                .card-roles {
-                    clear: both;
-                    float: left;
-                    margin-left: 50px;
-                }
-            }
-        }
     }
-
 }
 
 .card--group-users-list {

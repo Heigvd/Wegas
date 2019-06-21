@@ -5,6 +5,11 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+
+.yui3-skin-sam .yui3-widget-mask {
+    z-index :99999 ! important; /* force zindex !!!*/
+}
+
 .wegas-panel {
     position: absolute;
     min-width: 300px;
@@ -86,6 +91,10 @@
     background-image: url(../../wegas-app/images/wegas-icon-warning-48.png)
 }
 
+.wegas-panel-content .yui3-widget-bd .icon-question {
+    background-image: url(../../wegas-app/images/wegas-icon-question-48.png)
+}
+
 .wegas-panel-hidden {
     display: none;
 }
@@ -96,4 +105,41 @@
 .wegas-panel-pageloader {
     width: 100%;
     height: 100%;
+}
+
+.yui3-skin-sam .wegas-panel-content.wegas-panel-modern {
+    color: black;
+    background-color: white;
+    box-shadow: 0px 5px 10px #888;
+}
+
+.yui3-skin-sam .wegas-panel-modern > .yui3-widget-hd,
+.yui3-skin-sam .wegas-panel-modern > .yui3-widget-ft {
+    font-size :1.4em;
+    color : black;
+}
+
+.yui3-skin-sam .wegas-panel-modern > .yui3-widget-hd {
+    display: flex;
+    align-items: center;
+}
+.yui3-skin-sam .wegas-panel-modern > .yui3-widget-hd .modern-title {
+    flex-grow: 1;
+}
+
+.yui3-skin-sam .wegas-panel-modern > .yui3-widget-hd button:hover,
+.yui3-skin-sam .wegas-panel-modern > .yui3-widget-ft button:hover,
+.yui3-skin-sam .wegas-panel-modern > .yui3-widget-hd button,
+.yui3-skin-sam .wegas-panel-modern > .yui3-widget-ft button {
+    background: none;
+    color: #00000000;
+    margin-bottom: 8px;
+}
+
+.wegas-panel-modern > .yui3-widget-hd button:before,
+.wegas-panel-modern > .yui3-widget-ft button:before {
+    content: "\f00d"; /* fa-times*/
+    color: black;
+    font-family: "FontAwesome";
+    font-size: 1.5em;
 }

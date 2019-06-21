@@ -8,17 +8,22 @@
 package com.wegas.reviewing.persistence.evaluation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import com.wegas.reviewing.ejb.ReviewingFacade;
 import com.wegas.reviewing.persistence.Review;
 import java.util.Collection;
-import java.util.Objects;
 import javax.persistence.*;
 
 /**
@@ -78,6 +83,9 @@ public abstract class EvaluationInstance extends AbstractEntity {
     private EvaluationDescriptor evaluationDescriptor;
 
     @Transient
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(value = Hidden.class, label = "Evaluation Name"))
     private String descriptorName;
 
     /**
@@ -135,35 +143,6 @@ public abstract class EvaluationInstance extends AbstractEntity {
     }
 
     @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof EvaluationInstance) {
-            this.setDescriptorName(((EvaluationInstance) a).getDescriptorName());
-        }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof EvaluationInstance) {
-            EvaluationInstance ed = (EvaluationInstance) o;
-
-            if (ed.getId() == null || this.getId() == null) {
-                return false;
-            } else {
-                return this.getId().equals(ed.getId());
-            }
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 53 * hash + Objects.hashCode(this.id);
-        return hash;
-    }
-
-    @Override
     public Long getId() {
         return this.id;
     }
@@ -172,14 +151,12 @@ public abstract class EvaluationInstance extends AbstractEntity {
      * @Override
      * @return index
      */
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @WegasExtraProperty(
+            optional = false, nullable = false,
+            view = @View(value = Hidden.class, label = ""))
     public int getIndex() {
         return this.getDescriptor() != null ? this.getDescriptor().getIndex() : 0;
-    }
-
-    /**
-     * @param index the index number to set
-     */
-    public void setIndex(int index) {
     }
 
     /**
@@ -274,6 +251,11 @@ public abstract class EvaluationInstance extends AbstractEntity {
         }
 
         super.updateCacheOnDelete(beans);
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return this.getEffectiveReview();
     }
 
     @Override

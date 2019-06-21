@@ -10,17 +10,25 @@ package com.wegas.core.i18n.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.Zero;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,6 +38,8 @@ import java.util.Map.Entry;
 import javax.persistence.*;
 import jdk.nashorn.api.scripting.JSObject;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.eclipse.persistence.annotations.OptimisticLocking;
+import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +52,8 @@ import org.slf4j.LoggerFactory;
     @Index(columnList = "parentdescriptor_id"),
     @Index(columnList = "parentinstance_id")
 })
-public class TranslatableContent extends AbstractEntity implements Searchable, Broadcastable {
+@OptimisticLocking(cascade = true)
+public class TranslatableContent extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
 
@@ -56,6 +67,13 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
     @JsonIgnore
     private VariableInstance parentInstance;
 
+    @Version
+    @Column(columnDefinition = "bigint default '0'::bigint")
+    @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
+            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
+    @JsonView(Views.IndexI.class)
+    private Long version;
+
     /**
      *
      */
@@ -66,13 +84,26 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
     /**
      *
      */
-    @ElementCollection
     @JsonIgnore
+    @WegasEntityProperty(searchable = true, callback = TranslatableCallback.class, 
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(label = "Translations"))
+    @OneToMany(mappedBy = "translatableContent", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @PrivateOwned
     private List<Translation> translations = new ArrayList<>();
 
     @Override
     public Long getId() {
         return this.id;
+    }
+
+    /**
+     * Use with caution (it means NEVER but in custom JSON deserialisator)
+     *
+     * @param id
+     */
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public VariableDescriptor getParentDescriptor() {
@@ -97,6 +128,14 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
         }
     }
 
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
     /**
      * Nearest broadcastable parent
      *
@@ -119,8 +158,8 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
     }
 
     @JsonIgnore
-    public Map<String, String> getModifiableTranslations() {
-        return ListUtils.mapEntries(translations, new Translation.Extractor());
+    public Map<String, Translation> getModifiableTranslations() {
+        return ListUtils.mapEntries(translations, new Translation.Mapper());
     }
 
     /**
@@ -128,7 +167,7 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
      * @return the translations
      */
     @JsonProperty
-    public Map<String, String> getTranslations() {
+    public Map<String, Translation> getTranslations() {
         return Collections.unmodifiableMap(this.getModifiableTranslations());
     }
 
@@ -137,42 +176,29 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
      * @param translations
      */
     @JsonProperty
-    public void setTranslations(Map<String, String> translations) {
+    public void setTranslations(Map<String, Translation> translations) {
         this.translations.clear();
-        for (Entry<String, String> entry : translations.entrySet()) {
-            this.translations.add(new Translation(entry.getKey(), entry.getValue()));
+        for (Entry<String, Translation> entry : translations.entrySet()) {
+            Translation value = entry.getValue();
+            value.setTranslatableContent(this);
+            this.translations.add(value);
+            //this.translations.add(new Translation(entry.getKey(), value.getTranslation(), value.getStatus(), this));
         }
-    }
-
-    @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof TranslatableContent) {
-            this.setTranslations(((TranslatableContent) other).getTranslations());
-        }
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        for (Translation translation : this.translations) {
-            if (Helper.insensitiveContainsAll(translation.getTranslation(), criterias)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
      * Get a translation
      *
-     * @param refName language ref name
+     * @param code language code
      *
      * @return the translation or null if there is no such translation
      *
      */
-    public Translation getTranslation(String refName) {
-        if (refName != null) {
+    public Translation getTranslation(String code) {
+        if (code != null) {
+            String CODE = code.toUpperCase();
             for (Translation tr : this.translations) {
-                if (refName.equals(tr.getLang())) {
+                if (CODE.equals(tr.getLang())) {
                     return tr;
                 }
             }
@@ -181,17 +207,40 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
     }
 
     /**
+     * remove a translation
+     *
+     * @param languageCode
+     */
+    public Translation removeTranslation(String languageCode) {
+        Translation translation = this.getTranslation(languageCode);
+        if (translation != null) {
+            this.translations.remove(translation);
+        }
+        return translation;
+    }
+
+    /**
      * Update or set a translation
      *
-     * @param refName     language ref name
+     * @param code        language code
      * @param translation the new translation
      */
-    public void updateTranslation(String refName, String translation) {
-        Translation tr = this.getTranslation(refName);
+    public void updateTranslation(String code, String translation) {
+        Translation tr = this.getTranslation(code);
         if (tr != null) {
             tr.setTranslation(translation);
         } else {
-            this.getRawTranslations().add(new Translation(refName, translation));
+            this.getRawTranslations().add(new Translation(code, translation, null, this));
+        }
+    }
+
+    public void updateTranslation(String code, String translation, String status) {
+        Translation tr = this.getTranslation(code);
+        if (tr != null) {
+            tr.setTranslation(translation);
+            tr.setStatus(status);
+        } else {
+            this.getRawTranslations().add(new Translation(code, translation, status, this));
         }
     }
 
@@ -203,8 +252,12 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
      * @return
      */
     public Translation translate(Player player) {
-        GameModel gameModel = player.getGameModel();
-        return this.translate(gameModel.getPreferredLanguagesRefName(player));
+        if (player != null) {
+            GameModel gameModel = player.getGameModel();
+            return this.translate(gameModel.getPreferredLanguagesCodes(player));
+        } else {
+            return this.getAnyTranslation();
+        }
     }
 
     public String translateOrEmpty(Player self) {
@@ -216,12 +269,12 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
         }
     }
 
-    private Translation translate(GameModel gameModel, String refName) {
-        return this.translate(gameModel.getPreferredLanguagesRefName(refName));
+    private Translation translate(GameModel gameModel, String code) {
+        return this.translate(gameModel.getPreferredLanguagesCode(code));
     }
 
-    public String translateOrEmpty(GameModel gameModel, String refName) {
-        Translation tr = this.translate(gameModel, refName);
+    public String translateOrEmpty(GameModel gameModel, String code) {
+        Translation tr = this.translate(gameModel, code);
         if (tr != null) {
             return tr.getTranslation();
         } else {
@@ -255,7 +308,7 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
      * returns the first translation which is not empty. If all translation are empty
      * returns, the first non null, returns null o otherwise
      *
-     * @param languages languages sorted by preference
+     * @param languages languages codes sorted by preference
      *
      * @return
      */
@@ -263,8 +316,8 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
         Map<String, Translation> trMap = ListUtils.mapEntries(translations, new Translation.Mapper());
         Translation emptyOne = null;
 
-        for (String langRef : languages) {
-            Translation tr = trMap.get(langRef);
+        for (String code : languages) {
+            Translation tr = trMap.get(code);
             if (tr != null) {
                 String str = tr.getTranslation();
                 if (str != null) {
@@ -284,7 +337,7 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
     public Translation translate(GameModel gameModel) {
         if (gameModel != null) {
             Player player = gameModel.findTestPlayer();
-            return this.translate(gameModel.getPreferredLanguagesRefName(player));
+            return this.translate(gameModel.getPreferredLanguagesCodes(player));
         } else {
             return getAnyTranslation();
         }
@@ -307,7 +360,9 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         Broadcastable owner = getOwner();
         if (owner != null) {
-            return owner.getRequieredUpdatePermission();
+            Collection<WegasPermission> perms = owner.getRequieredUpdatePermission();
+            perms.add(this.getParentGameModel().getAssociatedTranslatePermission(""));
+            return perms;
         }
         return null;
     }
@@ -324,7 +379,7 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
 
     public static TranslatableContent build(String lang, String translation) {
         TranslatableContent trC = new TranslatableContent();
-        trC.getRawTranslations().add(new Translation(lang, translation));
+        trC.getRawTranslations().add(new Translation(lang, translation, "", trC));
         return trC;
     }
 
@@ -335,6 +390,23 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
             return owner.getEntities();
         }
         return null;
+    }
+
+    /*@Override
+    public boolean belongsToProtectedGameModel() {
+        Mergeable parent = getParent();
+        if (parent != null) {
+            return parent.belongsToProtectedGameModel();
+        }
+        return false;
+    }*/
+    @Override
+    public WithPermission getMergeableParent() {
+        if (this.getParentDescriptor() != null) {
+            return getParentDescriptor();
+        } else {
+            return getParentInstance();
+        }
     }
 
     /**
@@ -370,13 +442,37 @@ public class TranslatableContent extends AbstractEntity implements Searchable, B
             if (theClass != null && theClass.equals("TranslatableContent")) {
                 ScriptObjectMirror trs = (ScriptObjectMirror) jsTr.getMember("translations");
                 String[] langs = trs.getOwnKeys(true);
-                for (String refName : langs) {
-                    trContent.updateTranslation(refName, (String) trs.getMember(refName));
+                for (String code : langs) {
+                    Object member = trs.getMember(code);
+                    if (member instanceof String) {
+                        trContent.updateTranslation(code, (String) trs.getMember(code));
+                    } else if (member instanceof ScriptObjectMirror) {
+                        String tr = (String) ((ScriptObjectMirror) member).getMember("translation");
+                        String status = (String) ((ScriptObjectMirror) member).getMember("status");
+                        trContent.updateTranslation(code, tr, status);
+                    } else if (member != null) {
+                        throw WegasErrorMessage.error("Unhandled Translatable Content Type: " + member);
+                    }
                 }
             }
             return trContent;
         } else {
             return null;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return this.translateOrEmpty((GameModel) null);
+    }
+
+    public static class TranslatableCallback implements WegasCallback {
+
+        @Override
+        public void add(Object child, Mergeable container, Object identifier) {
+            if (container instanceof TranslatableContent && child instanceof Translation) {
+                ((Translation) child).setTranslatableContent((TranslatableContent) container);
+            }
         }
     }
 }

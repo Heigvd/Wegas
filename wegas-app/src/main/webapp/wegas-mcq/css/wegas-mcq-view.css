@@ -8,191 +8,172 @@
 /**
  * Question
  */
+
+/*.wegas-mcqview-content:not([data-displayResult='bottom']) {*/
+.wegas-whview,
+.wegas-mcqview {
+    height:100%;
+}
+
+.wegas-whview .wegas-whview-content,
+.wegas-mcqview .wegas-mcqview-content {
+    height:100%;
+    overflow-y: auto;
+}
+
+/*.wegas-mcqview-content:not([data-displayResult='bottom']) .wegas-mcqview-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.wegas-mcqview-content:not([data-displayResult='bottom']) .mcq-view-question-layout {
+    position: relative;
+    overflow-y: hidden;
+    flex-shrink: 1;
+    flex-grow: 2;
+}
+
+.wegas-mcqview-content:not([data-displayResult='bottom']) .mcq-view-result-layout {
+    position: relative;
+    overflow-y: hidden;
+    flex-shrink: 1;
+    flex-grow: 1;
+}
+
+.wegas-mcqview-content:not([data-displayResult='bottom']) .mcq-view-question-layout > div,
+.wegas-mcqview-content:not([data-displayResult='bottom']) .mcq-view-result-layout > div{
+    position: absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right: 0;
+}*/
+
+.wegas-mcqchoice[nbfb='0'] .mcq-choice-result-layout,
+.wegas-mcqview-content.noFeedbacks .mcq-view-result-layout {
+    display: none;
+}
+
+
 .wegas-whview__mainlist,
-.wegas-mcqview .mcq-question {
-    padding: 0 6px 10px 6px;
+.wegas-mcqview .wegas-mcqview-content {
+    padding: 0 0 10px 6px;
     position: relative;
     height: 100%;
+    box-sizing : border-box;
 }
 
 .wegas-whview .wegas-whview__title,
-.wegas-mcqview .mcq-question-title {
+.wegas-mcqview .mcq-view__question-title {
     font-weight: bold;
     font-size: 13px;
     margin-bottom: 10px;
     border-bottom: 1px solid lightgray;
 }
 
-.wegas-mcqview .mcq-question-details {
-    /* margin-bottom: 20px; */
-    margin-bottom: 8px;
-}
-
-
-/*
- * Choice details
- */
-.wegas-mcqview .mcq-choices-vertical,
-.wegas-mcqview .mcq-choices {
-    display: table;
-    box-sizing: border-box;
-    border-collapse: separate;
-    border-spacing: 0 15px;
-    margin-top: -10px;
-    margin-bottom: -10px;
-    width: 100%;
-    text-align: left;
-}
-.wegas-mcqview .mcq-choices-horizontal {
-    display: table;
-    border-collapse: separate;
-    border-spacing: 4px 0;
-    width: 100%;
-    text-align: center;
-}
-.wegas-mcqview .mcq-choices .mcq-choice-vertical,
-.wegas-mcqview .mcq-choices-horizontal .mcq-choice-horizontal,
-.wegas-mcqview .mcq-choices-horizontal .mcq-last-horizontal,
-.wegas-mcqview .mcq-choices-vertical .mcq-choice-vertical,
-.wegas-mcqview .mcq-choices-vertical .mcq-last-vertical {
-    display: table-row;
-    width: 100%;
-}
-.wegas-mcqview .mcq-choice-horizontal .mcq-choice:hover,
-.wegas-mcqview .mcq-choice-vertical:hover,
-.wegas-mcqview .mcq-choice-vertical .mcq-choice:hover {
-    background-color: rgb(245,245,245);
-}
-.wegas-mcqview .mcq-choice-vertical.nohover:hover {
-    background-color: transparent;
-}
-.wegas-mcqview .mcq-choices-vertical-checkbox,
-.wegas-mcqview .mcq-choices-vertical-submit,
-.wegas-mcqview .mcq-choice-vertical {
-    border-top-right-radius: 3px;
-    border-bottom-right-radius: 3px;
-}
-.wegas-mcqview .mcq-choice-horizontal .mcq-choice {
-    border-top-left-radius: 3px;
-    border-bottom-left-radius: 3px;
-    border-top-right-radius: 3px;
-    border-bottom-right-radius: 3px;
-}
-
-.wegas-mcqview .mcq-choices-vertical-checkbox,
-.wegas-mcqview .mcq-choices-vertical-submit {
-    position: relative;
-    display: table-cell;
-    text-align: center;
-    vertical-align: top;
-    white-space: nowrap;
-    border: 1px solid #d8d9dd;
-    border-left: none;
-    border-bottom-width: 3px;
-}
-.wegas-mcqview .mcq-choices-vertical-checkbox.nodescr,
-.wegas-mcqview .mcq-choices-vertical-submit.nodescr {
-    background: #d8d9dd;
-    vertical-align: baseline;
-}
-.wegas-mcqview .mcq-choices-vertical-submit.notitle.nodescr {
-    background: transparent;
-    vertical-align: baseline;
-    border: none;
-}
-.wegas-mcqview .mcq-choices-vertical-submit.colspan {
-    position: inherit;
-}
-.wegas-mcqview .mcq-choices-vertical-finalsubmit {
-    display: table-cell;
-    text-align: center;
-    vertical-align: bottom;
-}
-.wegas-mcqview .mcq-choices-horizontal-finalsubmit {
-    display: table-cell;
-    text-align: right;
-    vertical-align: bottom;
-}
-.wegas-mcqview .mcq-choices-horizontal-finalsubmit .yui3-button {
-    margin-top: 20px;
-    margin-right: 5px;
-}
-.wegas-mcqview .mcq-finalsubmit {
-    width: 100%;
-    height: 24px;
-    box-sizing: border-box;
-    padding: 20px;
-    position: relative;
-}
-
-.wegas-mcqview .mcq-finalsubmit .yui3-button {
-    right: 0;
-    position: absolute;
-}
-
-
-.wegas-mcqview .mcq-choices-horizontal .mcq-choice {
-    display: table-cell;
-    width: 100%;
-    margin: 0 10px;
-    border: 1px solid #d8d9dd;
-    border-bottom-width: 3px;
-}
-/* .wegas-tabview .mcq-choice-vertical .mcq-choice-namedescr, */
-.wegas-mcqview .mcq-choice-vertical .mcq-choice {
-    display: table-cell;
-    width: 82%;
-    border: 1px solid #d8d9dd;
-    border-right: none;
-    border-bottom-width: 3px;
-}
-
 .wegas-whview__answers .wegas-input-label,
-.wegas-mcqview .mcq-choice-name {
-    line-height: 35px;
+.wegas-mcqview .wegas-mcqchoice .mcqchoice__title {
     background: #d8d9dd;
     font-weight: 600;
+    min-height:35px;
+    box-sizing: border-box;
+    padding-top: 8px;
+    padding-bottom: 8px;
 }
-.wegas-mcqview .mcq-choice.notitle {
-    border: none;
+
+.wegas-mcqview .wegas-mcqview-content .mcq-view__choices {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    flex-shrink: 1;
+    overflow-y: auto;
 }
-.wegas-mcqview .mcq-choice.notitle:hover {
-    background-color: transparent;
+
+.wegas-mcqview .wegas-mcqview-content[data-nbChoices='1'] .mcq-view__choices {
+    overflow-y: hidden;
+    position: relative;
+    /*height: 100%;*/
 }
-.wegas-mcqview .mcq-choice-name.notitle {
-    line-height: 35px;
-    background-color: transparent;
+
+
+.wegas-mcqview .wegas-mcqview-content[data-nbChoices='1'] .mcq-view__choices > div {
+    /*position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0 ;
+    right: 0;*/
 }
-.wegas-mcqview .mcq-choice-vertical .mcq-choice-name.colspan {
-    z-index: 2;
-    padding-right: 0;
-    width: 119.5%; /* 1/82% */
+
+.wegas-mcqview .wegas-mcqview-content[data-nbChoices='1'] .wegas-mcqchoice,
+.wegas-mcqview .wegas-mcqview-content[data-nbChoices='1'] .wegas-mcqchoice  > div {
+    height: 100%;
 }
-.wegas-mcqview .mcq-choices-vertical-submit.spurned,
-.wegas-mcqview .mcq-choices-vertical-checkbox.spurned,
-.wegas-mcqview .mcq-choice.spurned,
-.wegas-mcqview .mcq-choice.spurned:hover {
-    background: #eeeeee;
-    color: #aaa;
+
+.wegas-mcqview .wegas-mcqview-content[data-nbChoices='1'] .wegas-mcqchoice .mcq-choice-result-layout,
+.wegas-mcqview .wegas-mcqview-content[data-nbChoices='1'] .wegas-mcqchoice .mcq-choice-result-layout > div{
+    /*height: 100%;*/
+    overflow-y: hidden;
 }
-.wegas-mcqview .mcq-choices-vertical-submit.spurned .mcq-choice-name,
-.wegas-mcqview .mcq-choices-vertical-checkbox.spurned .mcq-choice-name,
-.wegas-mcqview .mcq-choices-vertical-checkbox.spurned.nodescr,
-.wegas-mcqview .mcq-choices-vertical-submit.spurned.nodescr,
-.wegas-mcqview .mcq-choice.spurned .mcq-choice-name {
-    background: #d0d0d0;
-    color: #999;
+
+
+.wegas-mcqview .wegas-mcqview-content .mcq-view-result-layout .mcq-view__results {
+    flex-shrink: 1;
+    flex-grow: 1;
+    overflow-y: hidden;
+    position:relative;
 }
-.wegas-mcqview .mcq-choice.spurned .mcq-choice-description {
-    color: #aaa;
+.wegas-mcqview .wegas-mcqview-content .mcq-view-result-layout .mcq-view__results > div {
+    overflow-y: auto;
+    position:absolute;
+    top: 0;
+    bottom: 0;
+    left:0;
+    right:0;
+}
+
+
+
+.wegas-mcqview .wegas-mcqview-content .mcq-choice-result-layout .mcq-view__results {
+    flex-shrink: 1;
+    overflow-y: hidden;
+}
+.wegas-mcqview .wegas-mcqview-content .mcq-choice-result-layout .mcq-view__results > div {
+    height:100%;
+    overflow-y: auto;
+}
+
+
+
+.wegas-mcqview.answerable .wegas-mcqchoice.answerable .wegas-mcqchoice-content:hover .mcq-choice-result-layout {
+    background-color: whitesmoke;
+}
+
+.wegas-mcqview .wegas-mcqchoice.noTitle.noDescription .wegas-mcqchoice-content:hover .mcq-choice-result-layout {
+    background-color: unset;
+}
+
+.wegas-mcqview .wegas-mcqchoice .mcq-choice-result-layout {
+    background-color: white;
+}
+
+.wegas-mcqview .answerable.cbx:not(.horizontal) .wegas-mcqchoice.selectable.noDescription:not(.noTitle) .wegas-mcqchoice-content:hover,
+.wegas-mcqview .answerable .selectable .wegas-mcqchoice-content:hover .mcqchoice__title {
+    background-color: #c7c7c7;
+}
+
+.wegas-mcqview .answerable .wegas-mcqchoice.selectable .wegas-mcqchoice-content:hover{
+    border-color : #c7c7c7;
+    background-color: #f5f5f5;
+}
+.wegas-mcqview .answerable .wegas-mcqchoice.selectable.noTitle.noDescription .wegas-mcqchoice-content:hover{
+    background-color: white;
 }
 
 .wegas-whview .wegas-whview__answers .wegas-input-label,
-.wegas-mcqview .mcq-choice-vertical .mcq-choice-name,
-.wegas-mcqview .mcq-choice-vertical .mcq-choice-description {
+.wegas-mcqview .wegas-mcqchoice .mcqchoice__title ,
+.wegas-mcqview .wegas-mcqchoice .mcqchoice__description,
+.wegas-mcqview .wegas-mcqchoice .mcq-choice-result-layout > div {
     padding-left: 16px;
     padding-right: 20px;
-    min-height: 24px;
 }
 
 .wegas-whview,
@@ -200,152 +181,518 @@
     color: #333333;
 }
 
-.wegas-mcqview .mcq-choice-description {
-    padding-top: 5px;
-    padding-bottom: 5px;
-}
-
-.wegas-mcqview .mcq-question button {
-    display: inline-block;
-    position: relative;
-    z-index: 3;
-    background: #69bd7f;
-    text-transform: uppercase;
-    height: 24px;
-    margin: 2px 5px 4px 0;
-    font-size: 11px;
-    font-weight: bold;
-    padding: 4px 8px 4px 24px;
-    border-radius: 6px;
-    color: white;
-    transition: .3s;
-}
-.wegas-mcqview .mcq-question button:before {
-    content:"\f00c";
-    font-family:"FontAwesome";
-    /*display:block;*/
-    position:absolute;
-    width:24px;
-    height:24px;
-    text-align:center;
-    line-height:24px;
-    font-size:11px;
-    top: 2px;
-    left:0;
-}
-
-.wegas-mcqview .mcq-question button:disabled {
-    visibility: hidden;
-}
-
-.wegas-mcqview.locked .mcq-question button:disabled {
-    visibility: visible;
-}
-
-.wegas-mcqview .mcq-question button:hover,
 .wegas-whview .wegas-whview--submit-button:hover {
     background:#4f8c5f;
     color: rgb(255, 255, 204);
 }
 
-.wegas-mcqview.locked .mcq-question button:hover {
-    background: #69bd7f;
+.wegas-mcqview .wegas-mcqchoice,
+.wegas-whview .wegas-input-body {
+    padding: 5px 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+.wegas-mcqview .wegas-mcqchoice .wegas-mcqchoice-content,
+.wegas-whview .wegas-input-body {
+    border : 1px solid #d8d9dd;
+    border-bottom-width: 3px;
+}
+
+.wegas-mcqview .wegas-mcqchoice.noTitle:not(.noDescription) .mcqchoice__title {
+    display: none;
+}
+.wegas-mcqview .wegas-mcqchoice.noTitle:not(.noDescription) .wegas-mcqchoice-content{
+    /*border: none;*/
+}
+
+.wegas-mcqview .wegas-mcqchoice.noTitle.noDescription .wegas-mcqchoice-content {
+    border :none;
+}
+
+.wegas-mcqview .wegas-mcqchoice.noTitle.noDescription .mcqchoice__title {
+    display: none;
+}
+
+
+.wegas-mcqview .answerable .wegas-mcqchoice:not(.selectable):not(.hasReplies) .wegas-mcqchoice-content,
+.wegas-mcqview-content:not(.answerable) .wegas-mcqchoice:not(.hasReplies) .wegas-mcqchoice-content {
+    background: #eee;
+    color: #aaa;
+    border-color: #d0d0d0;
+}
+
+
+/*.wegas-mcqview .answerable .wegas-mcqchoice:not(.selectable).noDescription:not(.noTitle) > div,*/
+.wegas-mcqview-content:not(.answerable) .wegas-mcqchoice:not(.hasReplies).noDescription:not(.noTitle) > div,
+.wegas-mcqview .answerable .wegas-mcqchoice:not(.selectable):not(.hasReplies) .wegas-mcqchoice-content .mcqchoice__title,
+.wegas-mcqview-content:not(.answerable) .wegas-mcqchoice:not(.hasReplies) .wegas-mcqchoice-content .mcqchoice__title
+{
+    background: #d0d0d0;
+}
+
+.mcq-view__choice_header {
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__choice_header,
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__choices,
+.mcq-view__choice_header {
+    background-color : #4e4e4e;
     color: white;
 }
 
-.wegas-mcqview .mcq-choices-vertical-submit .numberOfReplies {
-    color: #999;
-    padding: 0 5px 7px;
-    display: inline-block;
-    vertical-align: bottom;
-}
-.wegas-mcqview .mcq-choices-vertical .mcq-checkbox-container,
-.wegas-mcqview .mcq-choices .mcq-checkbox-container {
-    position: absolute;
-    width: 100%;
-    bottom: 0;
-}
-.wegas-mcqview .mcq-checkbox {
-    -webkit-transform: scale(1.4);
-    -o-transform: scale(1.4);
-    transform: scale(1.4);
-    -moz-transform: scale(1.1); /* blurred, don't zoom more */
-    -ms-transform: scale(1.3);
-    cursor: pointer;
-}
-.wegas-mcqview .mcq-choices-horizontal .mcq-checkbox { /* For checkboxes and radio boxes presented horizontally (tabular) */
-    text-align: center;
-    margin-top: 5px;
+.mcq-view__choice_header .mcq-view__invite {
+    flex-grow: 1;
+    padding: 10px;
 }
 
+.mcq-view__choice_expander {
+}
+
+.mcq-view__choice_expander span:before {
+    font-family: "FontAwesome";
+    content: "\f0d7"; /* fa-caret */
+    font-size: 26px;
+    padding-right: 10px;
+}
+
+.show_choices .mcq-view__choice_expander span:before {
+    content: "\f00d"; /* fa-close */
+    padding-left: 6px;
+}
+
+.wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] {
+    /*overflow-y : hidden;*/
+    display:flex;
+    flex-direction: column;
+}
+
+
+/* Hide possible choices */
+.wegas-mcqview-content[data-displayResult='dialogue'][data-nbselectablechoices="0"].show_choices .mcq-view__choices,
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__choices {
+    display: none;
+}
+
+/* show possible choices when toggled */
+.wegas-mcqview-content[data-displayResult='dialogue'].show_choices .mcq-view__choices {
+    display: block;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0;
+    padding-bottom: 1em;
+}
+
+.wega-mcqview-content[data-displayResult='dialogue'].show_choices .mcq-view__pendings {
+    display: none;
+}
+
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__results-title,
+.wegas-mcqview-content .mcq-view__pendings,
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcqchoice__submit,
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcqchoice__summary,
+.wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice:not(.selectable) {
+    display: none;
+}
+
+.wegas-mcqview-content[data-displayResult='dialogue']:not(.cbx) .wegas-mcqchoice.noDescription .mcqchoice__title {
+    max-width: 100%;
+}
+
+/* choice with a title and a description: only show the title */
+.wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice:not(.noTitle):not(.noDescription) .mcqchoice__description {
+    display:none;
+}
+
+
+/* but display the description as soon as the choise is preselected */
+.wegas-mcqview-content[data-displayResult='dialogue'].hasPendingReplies .wegas-mcqchoice:not(.noTitle):not(.noDescription).hasPendingReplies .mcqchoice__description {
+    display: block;
+}
+
+/* left lines */
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__question-description,
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-reply-feedback .mcq-reply-content {
+    text-align: left;
+    border: 1px solid #CCC;
+    padding: 1em;
+    background-color: #C7EDFA;
+    margin: 5px 20% 15px 5px;
+}
+
+/* right lines */
+.wegas-mcqview-content[data-displayResult='dialogue'] .mcq-reply-choice {
+    padding: 1em;
+    border: 1px solid #999;
+    background-color: #0981A9;
+    margin: 1px 5px 8px 20%;
+    color: white;
+}
+
+.wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__choices > .wegas-flexlist-content {
+    /*flex-direction: row;*/
+    /*flex-wrap: wrap;*/
+    /*justify-content: flex-end;*/
+}
+
+.wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice-content {
+    cursor:pointer;
+    border: none;
+}
+
+.wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice {
+    padding:0;
+    text-align: right;
+    max-width: 80%;
+    margin-left: auto;
+}
+
+.wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice > div {
+    /*height: 100%;*/
+    /*box-sizing: border-box;*/
+}
+
+.wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] .mcq-view__history {
+    flex-grow: 1;
+}
+
+.wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice.noDescription:not(.noTitle) > div,
+.wegas-mcqview-content[data-displayResult='dialogue']  .wegas-mcqchoice .mcqchoice__title {
+    background-color: #4e4e4e;
+    /*color: white;*/
+}
 
 /**
- * Choice replies
+ * SUBMIT BUTTON
  */
-.wegas-mcqview .mcq-replies-section {
-    margin-top: 15px;
-}
-.wegas-mcqview .mcq-replies {
-    /* padding: 0 10px; */
+.wegas-mcqview-content[data-displayResult='dialogue'].hasPendingReplies.show_choices .mcq-view__submit {
+    display: block;
+    background-color : #4e4e4e;
+    height: 32px;
 }
 
-.wegas-mcqview .mcq-replies-title {
+
+.wegas-mcqview .wegas-mcqview-content[data-displayResult='dialogue'] .wegas-mcqchoice.hasPendingReplies.noDescription:not(.noTitle) > div,
+.wegas-mcqview-content[data-displayResult='dialogue']  .wegas-mcqchoice.hasPendingReplies .mcqchoice__title,
+.wegas-mcqview .answerable[data-displayResult='dialogue']:not(.cbx):not(.horizontal) .wegas-mcqchoice.hasPendingReplies .wegas-mcqchoice-content {
+    background-color: #7F7F7F;
+}
+
+
+.wegas-mcqview-content .mcq-reply-feedback .mcq-reply-typing {
+    display: none;
+}
+
+.wegas-mcqview-content[data-displayResult='dialogue'] .typing .mcq-reply-feedback .mcq-reply-content {
+    display: none;
+}
+
+.wegas-mcqview-content[data-displayResult='dialogue'] .typing .mcq-reply-feedback .mcq-reply-typing{
+    display : block;
+    height: 18px;
+    opacity: 0.5;
+    padding: 1em;
+    margin: 5px 20% 15px 5px;
+}
+
+.wegas-mcqview .answerable[data-displayResult='dialogue'] .wegas-mcqchoice.selectable.noTitle.noDescription .wegas-mcqchoice-content:after {
+    font-family: "FontAwesome";
+    content: "\f0e5";
+    position: absolute;
+    right: 20px;
+    color: #636363;
+}
+
+.wegas-mcqview .answerable[data-displayResult='dialogue'] .wegas-mcqchoice.selectable.noTitle.noDescription .wegas-mcqchoice-content:hover,
+.wegas-mcqview .answerable[data-displayResult='dialogue']:not(.cbx):not(.horizontal) .wegas-mcqchoice.selectable.noDescription:not(.noTitle) .wegas-mcqchoice-content:hover,
+.answerable[data-displayResult='dialogue'] .selectable .wegas-mcqchoice-content:hover .mcqchoice__title,
+.answerable[data-displayResult='dialogue'].cbx:not(.horizontal) .wegas-mcqchoice.selectable.noDescription:not(.noTitle) .wegas-mcqchoice-content:hover,
+.answerable[data-displayResult='dialogue'] .wegas-mcqchoice.selectable .wegas-mcqchoice-content:hover,
+.answerable[data-displayResult='dialogue'] .wegas-mcqchoice-content:hover {
+    background-color: #5c5c5c;
+    color:white;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+ * MCQ
+ */
+.wegas-mcqview.wegas-mcqview-disabled {
+    opacity: 1;/* revert default disabled behaviour from wegas-app */
+}
+
+.wegas-mcqview .cbx.horizontal .mcq-view__choices .wegas-flexlist-content {
+    flex-direction: row;
+}
+
+.wegas-mcqview .cbx.horizontal .mcq-view__choices .wegas-mcqchoice {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.wegas-mcqview .wegas-mcqchoice .wegas-mcqchoice-content{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.wegas-mcqview .cbx.horizontal .wegas-mcqchoice .wegas-mcqchoice-content{
+    text-align:center;
+    justify-content: center;
+}
+
+
+
+.wegas-mcqview-content:not(.cbx) .wegas-mcqchoice:not(.noDescription) .mcqchoice__description {
+    width: 100%;
+    max-width: 100%;
+}
+
+.wegas-mcqview-content:not(.cbx) .wegas-mcqchoice:not(.noDescription) .mcqchoice__submit {
+    min-width: calc(100% - 31px);
+    text-align: right;
+}
+
+/* Choice without description are displayed on one line only
+ * create space for submit
+ */
+.wegas-mcqview-content:not(.cbx) .wegas-mcqchoice.noDescription .mcqchoice__title {
+    /* space for submit button */
+    box-sizing: border-box;
+    width: min-content;
+}
+
+
+.wegas-mcqview .cbx:not(.horizontal) .wegas-mcqchoice.noDescription .mcqchoice__title,
+.wegas-mcqview .cbx:not(.horizontal) .wegas-mcqchoice .mcqchoice__description {
+    /* space for radio button or checkbox*/
+    max-width: calc(100% - 32px);
+    box-sizing: border-box;
+}
+
+.wegas-mcqview .wegas-mcqchoice .mcq-choice-result-layout,
+.wegas-mcqview .wegas-mcqchoice .mcqchoice__title,
+.wegas-mcqview .cbx.horizontal .wegas-mcqchoice .mcqchoice__description {
+    /* wrap checkbox / radio button */
+    flex-grow: 1;
+    width: 100%;
+}
+
+/* no description but a title : hide description */
+.wegas-mcqview .wegas-mcqchoice.noDescription:not(.noTitle) .mcqchoice__description{
+    display: none;
+}
+
+.wegas-mcqview .cbx.horizontal .wegas-mcqchoice > div{
+    /*height: 100%;*/
+}
+
+.wegas-mcqview .cbx.horizontal .wegas-mcqchoice .mcqchoice__description{
+    /*min-height: calc(100% - 55px) !important;*/
+}
+
+.wegas-mcqview .cbx.horizontal .wegas-mcqchoice.noDescription:not(.noTitle) .mcqchoice__description{
+    display: block;
+    min-height: 0px;
+    padding:0px;
+}
+
+.wegas-mcqview .answerable:not(.cbx):not(.horizontal) .wegas-mcqchoice.selectable.noDescription:not(.noTitle) .wegas-mcqchoice-content:hover {
+    background: #c7c7c7;
+}
+
+.wegas-mcqview .wegas-mcqchoice.noDescription:not(.noTitle) > div {
+    background: #d8d9dd;
+}
+.wegas-mcqview .cbx.horizontal .wegas-mcqchoice.noDescription:not(.noTitle) > div {
+    background: none;
+}
+
+
+/* align submit to the right by flex-growing the description */
+.wegas-mcqview .wegas-mcqchoice .mcqchoice__description {
+    flex-grow: 1;
+    padding-top: 9px;
+    padding-bottom: 9px;
+    box-sizing: border-box;
+}
+
+.wegas-mcqview .wegas-mcqchoice .mcqchoice__submit {
+    flex-grow: 0;
+}
+
+.wegas-mcqview .wegas-mcqchoice .mcqchoice__summary{
+    flex-grow: 0;
+    padding:7px;
+    color: #999;
+}
+.wegas-mcqview .cbx .mcq-view__submit {
+    height:24px;
+    text-align: right;
+    padding-right: 16px;
+    padding-top: 10px;
+}
+
+.wegas-mcqview .answerable .mcq-view__submit span:focus,
+.wegas-mcqview .answerable content .wegas-mcqchoice .mcqchoice__submit span:focus,
+.wegas-mcqview .answerable .mcq-view__submit span:hover,
+.wegas-mcqview .answerable .wegas-mcqchoice .mcqchoice__submit span:hover {
+    background: #4f8c5f;
+    color: #ffc;
+}
+
+.wegas-mcqview .mcq-view__submit span,
+.wegas-mcqview-content .wegas-mcqchoice .mcqchoice__submit span {
+    background: #69bd7f;
+    text-transform: uppercase;
+    height: 24px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: #fff;
+    transition: .3s;
+}
+
+.wegas-mcqview .mcq-view__submit span:before,
+.wegas-mcqview-content .wegas-mcqchoice .mcqchoice__submit span:before {
+    content: "\f00c";
+    font-family: "FontAwesome";
+    padding-left: 2px;
+    padding-right: 4px;
+}
+
+.wegas-mcqview-content:not(.answerable) .mcq-view__submit,
+.wegas-mcqview-content:not(.cbx) .mcq-view__submit,
+.wegas-mcqview .cbx .wegas-mcqchoice .mcqchoice__submit span {
+    display:none;
+}
+.wegas-mcqview-content:not(.answerable):not(.cbx) .mcqchoice__submit,
+.wegas-mcqview-content:not(.cbx) .wegas-mcqchoice:not(.selectable) .mcqchoice__submit {
+    visibility:hidden;
+}
+
+
+.wegas-mcqview .cbx .wegas-mcqchoice .mcqchoice__submit:after {
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: 15pt;
+    content: "\f10c";
+    color: #333333;
+}
+
+.wegas-mcqview .cbx .wegas-mcqchoice.hasReplies .mcqchoice__submit:after {
+    content: "\f05d";
+}
+
+.wegas-mcqview .cbx.checkbox .wegas-mcqchoice .mcqchoice__submit:after {
+    content: "\2610";
+}
+
+.wegas-mcqview .cbx.checkbox .wegas-mcqchoice.hasReplies .mcqchoice__submit:after {
+    content: "\2611";
+}
+
+.wegas-mcqview-content:not(.showSummary):not(.cbx) .wegas-mcqchoice .mcqchoice__submit {
+    flex-grow: 1;
+    text-align: right;
+    padding-right: 10px;
+    height: 24px;
+}
+
+.wegas-mcqview-content:not(.showSummary) .wegas-mcqchoice .mcqchoice__summary,
+.wegas-mcqview .cbx .wegas-mcqchoice .mcqchoice__summary{
+    display: none;
+}
+
+.wegas-mcqview .cbx .mcqchoice__submit{
+    cursor: default;
+    opacity: 0.4;
+}
+
+.wegas-mcqview .answerable:not(.cbx) .selectable .mcqchoice__submit span,
+.wegas-mcqview .answerable .mcq-view__submit,
+.wegas-mcqview .answerable.cbx:not(.checkbox) .wegas-mcqchoice:not(.hasReplies) .mcqchoice__submit,
+.wegas-mcqview .answerable.cbx.checkbox:not(.maximumReached) .mcqchoice__submit,
+.wegas-mcqview .answerable.cbx.checkbox.maximumReached .hasReplies .mcqchoice__submit {
+    cursor: pointer;
+    opacity: 1;
+}
+
+.wegas-mcqview .locked.answerable:not(.cbx) .selectable .mcqchoice__submit span,
+.wegas-mcqview .locked.answerable.cbx .mcq-view__submit,
+.wegas-mcqview .locked.answerable.cbx:not(.checkbox) .wegas-mcqchoice:not(.hasReplies) .mcqchoice__submit,
+.wegas-mcqview .locked.answerable.cbx.checkbox:not(.maximumReached) .mcqchoice__submit,
+.wegas-mcqview .locked.answerable.cbx.checkbox.maximumReached .hasReplies .mcqchoice__submit {
+    cursor: wait;
+}
+
+.wegas-mcqview .answerable.cbx .hasReplies .mcqchoice__submit {
+    opacity: 1;
+}
+
+
+/*
+ * Replies
+ */
+.wegas-mcqview .mcq-view__results-title > div:not(:empty){
     font-weight: bold;
     font-size: 13px;
     margin-bottom: 6px;
     border-bottom: 1px solid lightgray;
 }
 
-.wegas-mcqview .mcq-replies .mcq-reply:first-child {
-    color: black;
-    font-style: normal;
-}
-.wegas-mcqview .mcq-replies .mcq-reply:last-child {
-    border-bottom: none;
-}
-
-.wegas-mcqview .mcq-reply {
+.wegas-mcqview-content:not([data-displayResult='dialogue']) .mcq-view__results .wegas-mcqview__result {
     margin: 0 10px 6px 10px;
-    color: #999;
-    font-style: italic;
     border-bottom: 1px solid lightgray;
     padding-bottom: 6px;
 }
 
-.wegas-mcqview .mcq-reply-title {
+/* std question: most recent reply is normal black, olders are italic grey, except for dialogue like dialogues */
+.wegas-mcqview-content:not(.cbx):not([data-displayResult='dialogue']) .mcq-view__results .wegas-mcqview__result,
+.wegas-mcqview-content:not(.cbx):not([data-displayResult='dialogue']) .mcq-view__results .wegas-mcqview__result {
+    color: #999;
+    font-style: italic;
+}
+
+.wegas-mcqview-content:not(.cbx) .mcq-view__results .wegas-mcqview__result:first-child {
+    color: black;
+    font-style: normal;
+}
+
+.wegas-mcqview .mcq-view__results .wegas-mcqview__result:last-child {
+    border-bottom: none;
+}
+
+.wegas-mcqview .mcq-view__results .mcq-reply-title {
     font-weight: bold;
 }
-
-
-.wegas-mcqview .mcq-question .yui3-button {
-    vertical-align: middle;
-}
-.wegas-mcqview .mcq-choices .mcq-checkbox-container {
-    position: relative;
-    bottom: -2px;
-}
-
-.wegas-mcqview .numberOfReplies {
-    line-height: normal !important;
-}
-
-@-moz-document url-prefix() {
-    .mcq-checkbox[type='checkbox'][disabled]{
-        opacity :0.3;
-    }
-}
-
-.mcq-checkbox[type='checkbox'],
-.mcq-checkbox[type='radio'] {
-    margin-bottom:8px;
-}
-
-
 
 /*
  * WhQuestion
  */
-
 .wegas-whview__answers{
     /* max-width: 50%; */
     min-width: 30%;
@@ -445,9 +792,9 @@
     max-width:100%;
 }
 
-.wegas-whview .wegas-light-picture img {
+/*.wegas-whview .wegas-light-picture img {
     cursor: zoom-in;
-}
+}*/
 
 .wegas-whview__answers__input-answer {
     margin: 5px;
@@ -527,16 +874,6 @@
     border: none;
     color: #333333;
 }
-
-.wegas-whview .wegas-input-body {
-    border : 1px solid #d8d9dd;
-    border-bottom-width:  3px;
-    padding: 5px 16px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-
 .wegas-whview .wegas-text-input-editor .readonly {
     border: none;
     background-color: transparent;
@@ -564,4 +901,3 @@
 .wegas-whview .wegas-string-input ul.wegas-string-input-checkboxes li:first-child {
     margin-left: 0;
 }
-

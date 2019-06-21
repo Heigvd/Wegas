@@ -23,8 +23,8 @@ const CHART_BAR_OPT = {
 };
 const DIFF_BAR_OPT = CHART_BAR_OPT;
 /* Object.assign({}, CHART_BAR_OPT, {
-    low: -100,
-}); */
+ low: -100,
+ }); */
 const inlineStyle = {
     display: 'inline-block',
     whiteSpace: 'normal',
@@ -46,7 +46,7 @@ function inlineSvgStyle(node) {
         currentNode.setAttribute(
             'style',
             getComputedStyle(currentNode).cssText
-        );
+            );
         currentNode = tw.nextNode();
     }
     return node;
@@ -87,7 +87,7 @@ class Graph extends React.Component {
                 series: [],
             },
             CHART_BAR_OPT
-        );
+            );
         this.diffChart = new Chartist.Bar(
             this.refs.diffs,
             {
@@ -95,7 +95,7 @@ class Graph extends React.Component {
                 series: [],
             },
             DIFF_BAR_OPT
-        );
+            );
     }
     componentDidUpdate() {
         if (!this.props.question) {
@@ -116,7 +116,7 @@ class Graph extends React.Component {
 
     genAll() {
         const windowHandler = window.open();
-        const { groups, snapshot, logId } = this.props;
+        const {groups, snapshot, logId} = this.props;
         const tmpChart = new Chartist.Bar(
             this.refs.tmpChart,
             {
@@ -124,7 +124,7 @@ class Graph extends React.Component {
                 series: [],
             },
             CHART_BAR_OPT
-        );
+            );
         const tmpDiff = new Chartist.Bar(
             this.refs.tmpDiff,
             {
@@ -132,7 +132,7 @@ class Graph extends React.Component {
                 series: [],
             },
             DIFF_BAR_OPT
-        );
+            );
         let promiseChain = Promise.resolve();
         JSON.search(snapshot, '//*[@class="QuestionDescriptor"]/name').forEach(
             question => {
@@ -160,25 +160,26 @@ class Graph extends React.Component {
                         })
                         .then(([chart, diff]) => {
                             const container = document.createElement('div');
+                            const labelQ = JSON.search(
+                                snapshot,
+                                `//*[@class='QuestionDescriptor'][name="${question}"]/label`
+                                )[0];
                             const label =
                                 JSON.search(
                                     snapshot,
                                     `//*[name="${question}"]/ancestor::*[@class="ListDescriptor"]`
-                                ).reduce(
-                                    (pre, cur) =>
-                                        `${pre}${
-                                            cur.label.translations.def
-                                        } → `,
-                                    ''
+                                    ).reduce(
+                                (pre, cur) =>
+                                `${pre}${
+                                    cur.label.translations[Object.keys(cur.label.translations)[0]]
+                                    } → `,
+                                ''
                                 ) +
-                                JSON.search(
-                                    snapshot,
-                                    `//*[@class='QuestionDescriptor'][name="${question}"]/label`
-                                )[0].translations.def;
+                                labelQ.translations[Object.keys(labelQ.translations)[0]];
                             container.setAttribute(
                                 'style',
                                 'white-space:nowrap'
-                            );
+                                );
                             container.innerHTML = `<div>${label}</div>`;
                             container.appendChild(chart);
                             container.appendChild(diff);
@@ -202,12 +203,12 @@ class Graph extends React.Component {
 
     render() {
         const legends = this.props.groups.map((val, index) => (
-            <span
-                className={`color ct-series-${String.fromCharCode(97 + index)}`}
-                key={index}
-                style={legendStyle}
-            >{`Group ${index + 1}`}</span>
-        ));
+                <span
+                    className={`color ct-series-${String.fromCharCode(97 + index)}`}
+                    key={index}
+                    style={legendStyle}
+                    >{`Group ${index + 1}`}</span>
+                ));
         return (
             <div ref="box">
                 <span className="legend">{legends}</span>
@@ -218,7 +219,7 @@ class Graph extends React.Component {
                 <div ref="tmpChart" style={noDisplay} />
                 <div ref="tmpDiff" style={noDisplay} />
             </div>
-        );
+            );
     }
 }
 Graph.propTypes = {

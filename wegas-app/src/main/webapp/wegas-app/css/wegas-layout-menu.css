@@ -1,0 +1,101 @@
+.wegas-layout-menu > .wegas-layout-menu-content {
+    display: none;
+}
+
+.wegas-layout-menu > .wegas-layout-menu-label {
+    cursor: pointer;
+}
+
+/* menu & select */
+.wegas-layout-menu-menu > .wegas-layout-menu-content,
+.wegas-layout-menu-select > .wegas-layout-menu-content{
+    position: fixed;
+    z-index: 100;
+}
+
+.wegas-layout-menu-open > .wegas-layout-menu-content {
+    display: flex;
+    flex-direction: column;
+}
+
+/*
+ * Inline menu
+ * do not display the label and display all items in a row
+*/
+.wegas-layout-menu.wegas-layout-menu-inline > .wegas-layout-menu-label {
+    display: none;
+}
+
+
+.wegas-layout-menu-inline > .wegas-layout-menu-content {
+    display: flex;
+    flex-direction: row;
+}
+
+.wegas-layout-menu-select > .wegas-layout-menu-label {
+    position: relative;
+}
+
+.wegas-layout-menu > .wegas-layout-menu-label .overlay {
+    display:none;
+}
+
+.wegas-layout-menu-select > .wegas-layout-menu-label .overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: block;
+    z-index: 99;
+}
+
+.wegas-layout-menu-select > .wegas-layout-menu-label,
+.wegas-layout-menu-select > .wegas-layout-menu-label .clone {
+    display: inline-block;
+}
+
+/**
+ * VISUAL STYLES
+ */
+.wegas-layout-menu-menu > .wegas-layout-menu-content,
+.wegas-layout-menu-select > .wegas-layout-menu-content{
+    background-color: white;
+    white-space: nowrap;
+    background-color: rgba(255,255,255,0.95);
+    box-shadow: 0px 0px 1px 0px black;
+}
+
+.wegas-layout-menu > .wegas-layout-menu-content > * {
+    padding :2px;
+}
+
+.wegas-layout-menu > .wegas-layout-menu-content > *:hover {
+    background-color: whitesmoke;
+}
+
+.wegas-layout-menu-select > .wegas-layout-menu-label > div {
+    display: inline-block;
+}
+
+.wegas-layout-menu-select > .wegas-layout-menu-label:before {
+    font-family: "FontAwesome";
+    content : "\f0c9";
+}
+
+.wegas-layout-menu > .wegas-layout-menu-content >.wegas-layout-menu .wegas-layout-menu-label {
+    padding-right: 20px;
+}
+
+.wegas-layout-menu > .wegas-layout-menu-content >.wegas-layout-menu .wegas-layout-menu-label .clone:after {
+    font-family: "FontAwesome";
+    content: "\f0d7"; /* fa fa-caret-down */
+    padding-top: 3px;
+    padding-left: 3px;
+}
+
+.wegas-layout-menu:not(.wegas-layout-menu-inline) > .wegas-layout-menu-content >.wegas-layout-menu .wegas-layout-menu-label .clone:after {
+    content: "\f0da"; /* fa fa-caret-right */
+    position: absolute;
+    right: 2px;
+}

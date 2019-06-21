@@ -7,11 +7,13 @@
  */
 package com.wegas.resourceManagement.persistence;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.FlatVariableSelectView.TaskFlatSelector;
+import com.wegas.editor.View.View;
 import java.util.Collection;
 import javax.persistence.Transient;
 
@@ -31,23 +33,12 @@ public abstract class AbstractAssignement extends AbstractEntity {
         super();
     }
 
-    @JsonIgnore
     @Transient
-    private String deserialisedTaskName;
+    @WegasEntityProperty(
+            optional =false, nullable =false,
+            view = @View(label = "Task", value = TaskFlatSelector.class))
+    private String taskDescriptorName;
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof AbstractAssignement) {
-            AbstractAssignement other = (AbstractAssignement) a;
-            this.setTaskDescriptorName(other.getTaskDescriptorName());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + (a != null ? a.getClass().getSimpleName() : "NULL") + ") is not possible");
-        }
-    }
 
     /**
      *
@@ -57,7 +48,7 @@ public abstract class AbstractAssignement extends AbstractEntity {
         if (this.getTaskInstance() != null) {
             return this.getTaskInstance().findDescriptor().getName();
         } else {
-            return this.deserialisedTaskName;
+            return this.taskDescriptorName;
         }
     }
 
@@ -70,7 +61,12 @@ public abstract class AbstractAssignement extends AbstractEntity {
      * @param taskName taskinstance name
      */
     public void setTaskDescriptorName(String taskName) {
-        this.deserialisedTaskName = taskName;
+        this.taskDescriptorName = taskName;
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return this.getResourceInstance();
     }
 
     @Override

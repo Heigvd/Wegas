@@ -158,6 +158,52 @@
         .form {
             margin: 0px;
             padding: 0px;
+
+            .combobox {
+                background-color: white;
+                border:1px solid #dfdfdf;
+
+                .tool.tool--search{
+                    border-radius:0;
+                }
+
+                .combobox__choices {
+                    margin-top: 5px;
+                    padding: 0 5px;
+                    max-height: 300px;
+                    overflow-y : auto;
+
+                    input {
+                        display: none;
+                    }
+
+                    .combobox__choice{
+                        &:hover {
+                            background-color: #f0f0f0;
+                        }
+
+                        &.selected {
+                            background-color: #c1c1c1;
+                        }
+                    }
+                }
+
+                label {
+                    cursor: pointer;
+                    display: inline-block;
+                    width: 100%;
+                }
+
+                &.combobox-multiselect {
+                    input {
+                        display:inline-block;
+                    }
+                    label {
+                        width: calc(100% - 15px)
+                    }
+                }
+
+            }
         }
         .view__login-form {
             padding: 10px;
@@ -185,6 +231,21 @@
             padding: 0px 48px;
         }
 
+    }
+
+    &.view--admin-content{
+        .admin-tools {
+            h4 {
+                font-weight: bolder;
+            }
+            > div {
+                margin-bottom: 40px;
+            }
+
+            .admin-actions li:hover {
+                text-decoration: underline;
+            }
+        }
     }
 
     &.view--admin-content,
@@ -261,7 +322,7 @@
                 content:"\f046";
             }
 
-            @media screen and (max-width: 1015px) {
+            @media screen and (max-width: 880px) {
                 clear: both;
                 width: 100%;
                 float: left;
@@ -337,149 +398,152 @@
                 float: right;
             }
 
-    &.view--admin-content,
-    &.view--played-sessions-list,
-    &.view--managed-sessions-list,
-    &.view--scenarios-list,
-    &.view--history-list {
-        @include make-xs-column(12, 96px);
-        /*@include make-md-column(9, 96px); */ /* hack to occupy 100% width */
-        height: 100%;
+            &.view--admin-content,
+            &.view--played-sessions-list,
+            &.view--managed-sessions-list,
+            &.view--scenarios-list,
+            &.view--history-list {
+                @include make-xs-column(12, 96px);
+                /*@include make-md-column(9, 96px); */ /* hack to occupy 100% width */
+                height: 100%;
 
-        h3 {
-            @include make-xs-column(12);
-            /* @include make-md-column(6); */
-            box-sizing: border-box;
-            padding: 0px;
-            font-weight: normal;
+                h3 {
+                    @include make-xs-column(12);
+                    /* @include make-md-column(6); */
+                    box-sizing: border-box;
+                    padding: 0px;
+                    font-weight: normal;
 
-            i {
-                padding-right: 8px;
-            }
+                    i {
+                        padding-right: 8px;
+                    }
 
-            @media screen /* and (max-width: $screen-md)*/ {
-                width: auto;
-                float: left;
-            }
+                    @media screen /* and (max-width: $screen-md)*/ {
+                        width: auto;
+                        float: left;
+                    }
 
-            @media screen and (max-width: 819px) {
-                i + span {
-                    display: none;
+                    @media screen and (max-width: 819px) {
+                        i + span {
+                            display: none;
+                        }
+                    }
+                }
+
+                .view__tools {
+                    margin: 28px 0 8px 0;
+                    padding: 0px;
+                    float: right;
+                    width: 50%;
+                    max-width: 320px;
+
+                    @media screen and (max-width: 750px) {
+                        clear: both;
+                        width: 100%;
+                        float: left;
+                        margin: 4px 0 12px 0px;
+                    }
+                }
+
+                .view__options {
+                    padding: 40px 15px 15px 0;
+                    float: right;
+                    text-transform: uppercase;
+                    font-size: 12px;
+                    cursor: pointer;
+
+                    label {
+                        color: #999;
+                    }
+
+                    label:hover {
+                        color: #333;
+                    }
+
+                    @media screen and (max-width: 980px) {
+                        clear: both;
+                        width: 100%;
+                        float: left;
+                        padding-top: 15px;
+                    }
+                }
+
+                .view__list {
+                    @include make-xs-column(12);
+                    height: calc(100% - 90px);
+                    padding: 8px 0px 0px 0px;
+                    box-sizing: border-box;
+                    overflow-x: hidden;
+                    overflow-y: auto;
+
+                    &.ng-enter,
+                    &.ng-leave {
+                        transition: .3s;
+                    }
+
+                    &.ng-enter.ng-enter-active,
+                    &.ng-leave {
+                        visibility: visible;
+                        opacity: 1;
+
+                    }
+
+                    &.ng-leave.ng-leave-active,
+                    &.ng-enter {
+                        visibility: hidden;
+                        opacity: 0;
+                    }
+
+                    &.ng-enter {
+                        transition-delay: .3s;
+                    }
+
+                    &.view__list--no-content {
+                        padding: 16px 0px 32px 0px;
+                        font-style: italic;
+                    }
+                    &.view__list--loading {
+                        @include loading-message();
+                        overflow-y:hidden;
+                    }
+                    &.view__list--with-archive {
+                        height: calc(100% - 160px);
+                    }
+                }
+                .view__no-group {
+                    @include make-xs-column(12);
+                    height: calc(100% - 82px);
+                    padding: 8px 16px 32px 16px;
+                    box-sizing: border-box;
+                    overflow-x: hidden;
+                    overflow-y: auto;
+                }
+
+                .view__archives {
+                    @include make-xs-column(12);
+                    height: 80px;
+                    padding: 16px 0px;
+                    clear: both;
+                    box-sizing: border-box;
+                    .button {
+                        float: right;
+                    }
                 }
             }
         }
-
-        .view__tools {
-            margin: 28px 0 8px 0;
-            padding: 0px;
-            float: right;
-            width: 50%;
-            max-width: 320px;
-
-            @media screen and (max-width: 750px) {
-                clear: both;
-                width: 100%;
-                float: left;
-                margin: 4px 0 12px 0px;
-            }
-        }
-
-        .view__options {
-            padding: 40px 15px 15px 0;
-            float: right;
-            text-transform: uppercase;
-            font-size: 12px;
-            cursor: pointer;
-
-            label {
-                color: #999;
-            }
-
-            label:hover {
-                color: #333;
-            }
-
-            @media screen and (max-width: 980px) {
-                clear: both;
-                width: 100%;
-                float: left;
-                padding-top: 15px;
-            }
-        }
-
-        .view__list {
-            @include make-xs-column(12);
-            height: calc(100% - 90px);
-            padding: 8px 0px 0px 0px;
-            box-sizing: border-box;
-            overflow-x: hidden;
-            overflow-y: auto;
-
-            &.ng-enter,
-            &.ng-leave {
-                transition: .3s;
-            }
-
-            &.ng-enter.ng-enter-active,
-            &.ng-leave {
-                visibility: visible;
-                opacity: 1;
-
-            }
-
-            &.ng-leave.ng-leave-active,
-            &.ng-enter {
-                visibility: hidden;
-                opacity: 0;
-            }
-
-            &.ng-enter {
-                transition-delay: .3s;
-            }
-
-            &.view__list--no-content {
-                padding: 16px 0px 32px 0px;
-                font-style: italic;
-            }
-            &.view__list--loading {
-                @include loading-message();
-                overflow-y:hidden;
-            }
-            &.view__list--with-archive {
-                height: calc(100% - 160px);
-            }
-        }
-        .view__no-group {
-            @include make-xs-column(12);
-            height: calc(100% - 82px);
-            padding: 8px 16px 32px 16px;
-            box-sizing: border-box;
-            overflow-x: hidden;
-            overflow-y: auto;
-        }
-
-        .view__archives {
-            @include make-xs-column(12);
-            height: 80px;
-            padding: 16px 0px;
-            clear: both;
-            box-sizing: border-box;
-            .button {
-                float: right;
-            }
-        }
-    }    }
     }
 
-    &.view--scenarios-list,
-    &.view--managed-sessions-list {
-        @media screen and (max-width: 519px) {
-            .view__list {
-                height: calc(100% - 132px);
-                &.view__list--with-archive {
-                    height: calc(100% - 212px);
-                }
-            }
+    &.view--managed-sessions-list,
+    &.view--scenarios-list {
+        display: flex;
+        height: 100%;
+        flex-direction: column;
+
+        .view__list {
+            flex-grow: 1;
+            flex-shrink:1;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
     }
 
@@ -616,6 +680,51 @@
         margin-top: 48px;
         padding: 0px 32px;
         text-align: right;
+    }
+
+    .view__public-lang {
+        position: relative;
+        max-width: 380px;
+        margin: 0 auto;
+        text-align: right;
+        margin-top: -48px;
+
+        .action {
+            height: 48px;
+            .button {
+                margin: 0;
+            }
+        }
+
+        li {
+            float: right;
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+        .subactions {
+            display: none;
+            position: absolute;
+            top: 46px;
+            right: 0;
+            width: 120px;
+            padding: 0;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,.5);
+            z-index: 100;
+
+            &.subactions--show {
+                display: block;
+            }
+        }
+        .subaction .button {
+            width: 100%;
+            padding: 0 12px;
+            height: 32px;
+            line-height: 32px;
+            margin: 0;
+        }
     }
 
     .view__login-form {
@@ -872,6 +981,20 @@
     }
 }
 
+
+.modeler {
+    @extend .centered-page;
+    min-height: 50%;
+    .view {
+        &.view--menu {
+            border-color: $modeler-color;
+            transition: .3s;
+        }
+    }
+}
+
+
+
 .admin {
     @extend .centered-page;
     .view {
@@ -911,36 +1034,36 @@
         /* NB: everything below should be removed when this layout becomes definitive */
 
         /*
-        position: relative;
-        height: auto;
-        transition: none;
+            position: relative;
+            height: auto;
+            transition: none;
 
-        .view__first-subtitle {
+            .view__first-subtitle {
             max-width: 200%;
             width: 200%;
             padding: 0;
             margin: 20px -40% 20px;
-        }
-        .view__login-form {
+            }
+            .view__login-form {
             margin: auto;
-        }
-        #wegas-icon-title {
+            }
+            #wegas-icon-title {
             display: none;
-        }
-        .link--simple-primary {
+            }
+            .link--simple-primary {
             display: block;
             margin: 20px auto 30px !important;
             text-decoration: none;
 
             #create-account {
-                display: block;
-                margin: 0 auto;
-                font-weight: normal;
+            display: block;
+            margin: 0 auto;
+            font-weight: normal;
             }
             #create-account:hover {
-                background-color: lightgray;
+            background-color: lightgray;
             }
-        }
+            }
         */
     }
 }

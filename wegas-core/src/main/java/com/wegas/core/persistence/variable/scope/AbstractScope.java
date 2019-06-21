@@ -15,6 +15,7 @@ import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -90,6 +91,22 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     //@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
     private String broadcastScope = PlayerScope.class.getSimpleName();
 
+    public static AbstractScope build(String atClass, String broadcastScope) {
+        AbstractScope scope;
+        switch (atClass) {
+            case "PlayerScope":
+                scope = new PlayerScope();
+                break;
+            case "GameModelScope":
+                scope = new GameModelScope();
+                break;
+            default:
+                scope = new TeamScope();
+        }
+        scope.setBroadcastScope(broadcastScope);
+        return scope;
+    }
+
     /**
      * @param key
      * @param v
@@ -157,6 +174,7 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     /**
      *
      * @return {@link #getVariableInstance(Player)} with the current player
+     *
      * @deprecated
      */
     @Deprecated
@@ -294,6 +312,11 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     }
 
     @Override
+    public WithPermission getMergeableParent() {
+        return this.getVariableDescriptor();
+    }
+
+    @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getVariableDescriptor().getGameModel().getRequieredUpdatePermission();
     }
@@ -312,9 +335,5 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
         logger.error("LOOKUP OCCURS: {}", this);
         Helper.printWegasStackTrace(new Exception());
         return RequestFacade.lookup().getPlayer();
-    }
-
-    @Override
-    public void merge(AbstractEntity other) {
     }
 }

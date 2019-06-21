@@ -6,6 +6,7 @@
             {
                 "useBuiltIns": "usage",
                 "debug": false,
+                "corejs": 2,
                 "modules": false,
                 "loose": true,
                 "targets": {
@@ -15,7 +16,9 @@
                         "last 2 Firefox versions"
                     ]
                 },
-                "exclude": ["transform-regenerator"]
+                "exclude": [
+                    "transform-regenerator"
+                ]
             }
         ]
     ],

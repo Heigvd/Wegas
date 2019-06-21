@@ -13,10 +13,10 @@
 .wegas-list,
 .wegas-choicelist,
 .wegas-pageloader{
-    -webkit-transition: padding-top 0.7s;
+    /*-webkit-transition: padding-top 0.7s;
     -o-transition: padding-top 0.7s;
     -moz-transition: padding-top 0.7s;
-    transition: padding-top 0.7s;
+    transition: padding-top 0.7s;*/
 }
 .wegas-pageeditor-designmode > .wegas-pageloader-content > .wegas-widget-editable {
     box-shadow: 1px 0 0 darkgray, -1px 0 0 darkgray;
@@ -173,7 +173,8 @@ body > .wegas-pageloader {
 .yui3-skin-sam .wegas-icon-fullscreen{
     background-position: 0 -1394px;
 }
-.wegas-pageeditor-editbutton {
+.wegas-pageeditor-editbutton,
+.wegas-button-pagerefresh {
     margin-left: 0.5em;
 }
 /** Icons **/

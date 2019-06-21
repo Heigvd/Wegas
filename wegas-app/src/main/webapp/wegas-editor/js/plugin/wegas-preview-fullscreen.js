@@ -46,9 +46,9 @@ YUI.add("wegas-preview-fullscreen", function(Y) {
 
                 /** Refresh **/
                 this.refreshButton = host.toolbar.add({
-                    label: "<span class='wegas-icon wegas-icon-pagerefresh'></span>Refresh",
-                    cssClass: "wegas-advanced-feature"
+                    label: "<span class='wegas-icon wegas-icon-pagerefresh'></span>Refresh"
                 }).item(0);
+                this.refreshButton.get("boundingBox").addClass("wegas-button-pagerefresh");
                 this.refreshButton.after("click", function(e) {
                     this.get("host").reload();
                 }, this);

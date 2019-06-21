@@ -11,12 +11,14 @@ import com.wegas.core.Helper;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.messaging.ejb.MessageFacade;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
@@ -52,6 +54,7 @@ public class InboxDescriptorController {
      * Get all message from the given inbox instance
      *
      * @param instanceId inbox instance identifier
+     *
      * @return given inbox all messages
      */
     @GET
@@ -67,6 +70,7 @@ public class InboxDescriptorController {
      * Get a message
      *
      * @param messageId message id
+     *
      * @return the message
      */
     @GET
@@ -83,6 +87,7 @@ public class InboxDescriptorController {
      *
      * @param messageId if of message to edit
      * @param message   new message version
+     *
      * @return the new message version
      */
     @PUT
@@ -99,17 +104,20 @@ public class InboxDescriptorController {
      * Mark message as read
      *
      * @param messageId id of message to mark as read
+     * @param playerId
+     *
      * @return inbox instance which contains the read message
      */
     @PUT
-    @Path("Message/Read/{messageId : [1-9][0-9]*}")
-    public InboxInstance readMessage(@PathParam("messageId") Long messageId) {
+    @Path("Message/Read/{messageId : [1-9][0-9]*}/{playerId : [1-9][0-9]*}")
+    public InboxInstance readMessage(@PathParam("messageId") Long messageId,
+            @PathParam("playerId") Long playerId) {
 
         Message update = messageFacade.find(messageId);
 
         update.setUnread(false);
         if (!Helper.isNullOrEmpty(update.getToken())) {
-            requestFacade.commit();
+            requestFacade.commit(playerId);
         }
         return update.getInboxInstance();
     }
@@ -117,12 +125,15 @@ public class InboxDescriptorController {
     /**
      * Mark all messages as read
      *
-     * @param id id of inbox instance to read messages from
+     * @param id       id of inbox instance to read messages from
+     * @param playerId
+     *
      * @return inbox instance which contains read messages
      */
     @PUT
-    @Path("{inboxInstanceId : [1-9][0-9]*}/ReadAll")
-    public InboxInstance readAllMessages(@PathParam("inboxInstanceId") Long id) {
+    @Path("{inboxInstanceId : [1-9][0-9]*}/ReadAll/{playerId : [1-9][0-9]*}")
+    public InboxInstance readAllMessages(@PathParam("inboxInstanceId") Long id,
+            @PathParam("playerId") Long playerId) {
 
         InboxInstance inbox = (InboxInstance) variableInstanceFacade.find(id);
         boolean commit = false;
@@ -132,7 +143,7 @@ public class InboxDescriptorController {
             commit = commit || !Helper.isNullOrEmpty(message.getToken());
         }
         if (commit) {
-            requestFacade.commit();
+            requestFacade.commit(playerId);
         }
         return inbox;
     }
@@ -141,6 +152,7 @@ public class InboxDescriptorController {
      * Delete a message
      *
      * @param messageId id of message to delete
+     *
      * @return InboxInstance which does not contains the message anymore
      */
     @DELETE

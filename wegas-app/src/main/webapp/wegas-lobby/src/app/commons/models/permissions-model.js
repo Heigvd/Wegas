@@ -186,26 +186,33 @@ angular.module('wegas.models.permissions', [])
             return deferred.promise;
         };
 
-        model.updateScenarioPermissions = function(scenarioId, userId, canCreate, canDuplicate, canEdit) {
+        model.updateScenarioPermissions = function(scenarioId, userId, canCreate, canDuplicate, canEdit, canTranslate) {
             var deferred = $q.defer();
             // Calculating new permission as wegas see them
-            var permissions = "";
+            var permissions = [];
             if (canEdit) {
-                permissions = "View,Edit,Delete,Duplicate,Instantiate";
+                permissions = ["View", "Edit", "Delete", "Duplicate", "Instantiate"];
             } else {
-                if (canCreate && canDuplicate) {
-                    permissions = "Instantiate,Duplicate";
-                } else if (canCreate) {
-                    permissions = "Instantiate";
-                } else if (canDuplicate) {
-                    permissions = "Duplicate";
-                } else {
-                    // No permissions means ok.
-                    deferred.resolve(Responses.success("Permissions updated.", true));
+                if (canCreate) {
+                    permissions.push("Instantiate");
                 }
+                if (canDuplicate) {
+                    permissions.push("Duplicate");
+                }
+                if (canTranslate) {
+                    for (var lang in canTranslate) {
+                        if (canTranslate[lang]) {
+                            permissions.push("Translate-" + lang);
+                        }
+                    }
+                }
+
+                /*if (permission.length == 0)
+                 deferred.resolve(Responses.success("Permissions updated.", true));
+                 }*/
             }
 
-            var url = "rest/Extended/User/ShareGameModel/" + scenarioId + "/" + permissions + "/" + userId;
+            var url = "rest/Extended/User/ShareGameModel/" + scenarioId + "/" + permissions.join(",") + "/" + userId;
             // Updating permissions
             $http.post(ServiceURL + url, null, {
                 "headers": {

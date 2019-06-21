@@ -10,11 +10,19 @@
  */
 YUI.add('wegas-mcq-entities', function(Y) {
     "use strict";
-    var STRING = "string", HIDDEN = "hidden", ARRAY = "array",
-        SELF = "self", BOOLEAN = "boolean", BUTTON = "Button", OBJECT = "object",
-        HTML = "html", SCRIPT = "script", NUMBER = "number",
+    var STRING = "string",
+        HIDDEN = "hidden",
+        ARRAY = "array",
+        SELF = "self",
+        BOOLEAN = "boolean",
+        BUTTON = "Button",
+        OBJECT = "object",
+        HTML = "html",
+        SCRIPT = "script",
+        NUMBER = "number",
         NULLSTRING = ["null", STRING],
-        Wegas = Y.Wegas, persistence = Wegas.persistence,
+        Wegas = Y.Wegas,
+        persistence = Wegas.persistence,
         VERSION_ATTR_DEF,
         SELFARG,
         IDATTRDEF;
@@ -40,6 +48,52 @@ YUI.add('wegas-mcq-entities', function(Y) {
      * QuestionDescriptor mapper
      */
     persistence.QuestionDescriptor = Y.Base.create("QuestionDescriptor", persistence.VariableDescriptor, [persistence.VariableContainer], {
+        isAnyChoiceAnswerable: function() {
+            var qInstance = this.getInstance();
+            if (this.get("cbx")) {
+                // only active and not yet validated CBX are answerable
+                return qInstance.get("active") && !qInstance.get("validated");
+            } else {
+
+                if (!qInstance.get('active') || qInstance.get('validated')) {
+                    // not active or manually validated
+                    return false;
+                } else {
+                    var qReplies = qInstance.getValidatedReplies();
+
+                    if (qReplies) {
+                        if (this.get('maxReplies')) {
+                            // is maximum reached?
+                            if (qReplies.length >= this.get("maxReplies")) {
+                                // yes -> not answerable
+                                return false;
+                            }
+                        }
+
+                        // no qMax || not yet reached
+                        //   -> find any answerable choice
+                        var choices = this.get("items"),
+                            choice, choiceI;
+                        for (var i in choices) {
+                            choice = choices[i];
+                            choiceI = choice.getInstance();
+                            if (choiceI.get("active")) {
+                                if (choice.get("maxReplies")) {
+                                    if (choiceI.getValidatedReplies().length < choice.get("maxReplies")) {
+                                        // found an answerable choice !
+                                        return true;
+                                    }
+                                } else {
+                                    // no limit -> answerable
+                                    return true;
+                                }
+                            }
+                        }
+                        return false;
+                    }
+                }
+            }
+        },
         getRepliesByStartTime: function(startTime) {
             return this.getInstance().getRepliesByStartTime(startTime);
         },
@@ -145,7 +199,12 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     },
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
-                    descriptorId: IDATTRDEF,
+                    refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
+                    parentId: IDATTRDEF,
+                    parentType: {
+                        type: "string",
+                        view: {type: HIDDEN}
+                    },
                     unread: {
                         value: true,
                         type: BOOLEAN,
@@ -183,57 +242,48 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }
                 },
                 view: {
-                    className: 'wegas-advanced-feature'
+                    className: 'wegas-advanced-feature',
+                    label: "pictures"
                 }
             }
         },
-        EDITMENU: [{
-                type: "EditEntityButton"
-            },
-            {
-                type: BUTTON,
-                label: "Add",
-                plugins: [{
-                        fn: "WidgetMenu",
-                        cfg: {
-                            children: [{
-                                    type: BUTTON,
-                                    label: "<span class='fa fa-check-square-o'></span> Standard",
-                                    plugins: [{
-                                            fn: "AddEntityChildAction",
-                                            cfg: {
-                                                targetClass: "SingleResultChoiceDescriptor"
+        EDITMENU: {
+            addBtn: {
+                index: 1,
+                maxVisibility: "PROTECTED",
+                cfg: {
+                    type: BUTTON,
+                    label: "Add",
+                    plugins: [{
+                            fn: "WidgetMenu",
+                            cfg: {
+                                children: [{
+                                        type: BUTTON,
+                                        label: "<span class='fa fa-check-square-o'></span> Standard",
+                                        plugins: [{
+                                                fn: "AddEntityChildAction",
+                                                cfg: {
+                                                    targetClass: "SingleResultChoiceDescriptor"
+                                                }
+                                            }]
+                                    }, {
+                                        type: BUTTON,
+                                        label: "<span class='fa fa-check-square-o'></span> Conditional results",
+                                        plugins: [{
+                                                fn: "AddEntityChildAction",
+                                                cfg: {
+                                                    targetClass: "ChoiceDescriptor"
+                                                }
                                             }
-                                        }]
-                                }, {
-                                    type: BUTTON,
-                                    label: "<span class='fa fa-check-square-o'></span> Conditional results",
-                                    plugins: [{
-                                            fn: "AddEntityChildAction",
-                                            cfg: {
-                                                targetClass: "ChoiceDescriptor"
-                                            }
-                                        }]
-                                }]
+                                        ]
+                                    }
+                                ]
+                            }
                         }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Duplicate",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
-            }, {
-                type: BUTTON,
-                label: 'Search for usages',
-                plugins: [
-                    {
-                        fn: 'SearchEntityAction'
-                    }
-                ]
-            }],
+                    ]
+                }
+            }
+        },
         /**
          * Defines methods available in wysiwyge script editor
          */
@@ -244,6 +294,17 @@ YUI.add('wegas-mcq-entities', function(Y) {
             desactivate: {
                 label: "deactivate",
                 arguments: [SELFARG]
+            },
+            setValidated: {
+                label: 'validate',
+                arguments: [
+                    SELFARG,
+                    {
+                        type: BOOLEAN,
+                        value: true,
+                        required: true
+                    }
+                ]
             },
             isReplied: {
                 label: "has been replied",
@@ -266,14 +327,40 @@ YUI.add('wegas-mcq-entities', function(Y) {
      * QuestionInstance mapper
      */
     Wegas.persistence.QuestionInstance = Y.Base.create("QuestionInstance", Wegas.persistence.VariableInstance, [], {
+        getValidatedReplies: function() {
+            return Y.Array.filter(this.get('replies'), function(reply) {
+                return reply.get("validated");
+            });
+        },
         getRepliesByStartTime: function(startTime) {
-            var i, ret = [], replies = this.get("replies");
+            var i,
+                ret = [],
+                replies = this.get("replies");
             for (i = 0; i < replies.length; i = i + 1) {
                 if (replies[i].get("startTime") === startTime) {
                     ret.push(replies[i]);
                 }
             }
             return ret;
+        },
+        isUnread: function() {
+            if (this.get("active")) {
+                if (this.get("unread")) {
+                    return true;
+                } else {
+                    var choices, i, ci,
+                        qDesc;
+                    qDesc = this.getDescriptor();
+                    choices = qDesc.get("items");
+                    for (i in choices) {
+                        ci = choices[i].getInstance();
+                        if (ci.get("active") && ci.get("unread")) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
     }, {
         ATTRS: {
@@ -296,7 +383,10 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 value: [],
                 "transient": true,
                 getter: function() {
-                    var replies = [], choices, i, qDesc;
+                    var replies = [],
+                        choices,
+                        i,
+                        qDesc;
                     qDesc = this.getDescriptor();
                     choices = qDesc.get("items");
                     for (i in choices) {
@@ -344,7 +434,12 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         },
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
-                        descriptorId: IDATTRDEF,
+                        refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
+                        parentId: IDATTRDEF,
+                        parentType: {
+                            type: "string",
+                            view: {type: HIDDEN}
+                        },
                         unread: {
                             type: BOOLEAN,
                             value: true,
@@ -432,38 +527,25 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }
                 }
             },
-            EDITMENU: [{
-                    type: "EditEntityButton"
-                },
-                {
-                    type: BUTTON,
-                    label: "Add",
-                    plugins: [{
-                            fn: "EditEntityArrayFieldAction",
-                            cfg: {
-                                targetClass: "Result",
-                                method: "POST",
-                                attributeKey: "results",
-                                showEditionAfterRequest: true
+            EDITMENU: {
+                addBtn: {
+                    index: 1,
+                    cfg: {
+                        type: BUTTON,
+                        label: "Add",
+                        plugins: [{
+                                fn: "EditEntityArrayFieldAction",
+                                cfg: {
+                                    targetClass: "Result",
+                                    method: "POST",
+                                    attributeKey: "results",
+                                    showEditionAfterRequest: true
+                                }
                             }
-                        }]
-                }, {
-                    type: BUTTON,
-                    label: "Duplicate",
-                    plugins: [{
-                            fn: "DuplicateEntityAction"
-                        }]
-                }, {
-                    type: "DeleteEntityButton"
-                }, {
-                    type: BUTTON,
-                    label: 'Search for usages',
-                    plugins: [
-                        {
-                            fn: 'SearchEntityAction'
-                        }
-                    ]
-                }],
+                        ]
+                    }
+                }
+            },
             METHODS: {
                 activate: {
                     arguments: [SELFARG]
@@ -480,7 +562,8 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 setCurrentResult: {
                     label: "set current result",
                     arguments: [
-                        SELFARG, {
+                        SELFARG,
+                        {
                             type: STRING,
                             view: {
                                 type: "entityarrayfieldselect",
@@ -547,7 +630,12 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         },
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
-                        descriptorId: IDATTRDEF,
+                        refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
+                        parentId: IDATTRDEF,
+                        parentType: {
+                            type: "string",
+                            view: {type: HIDDEN}
+                        },
                         unread: {
                             type: BOOLEAN,
                             value: true,
@@ -609,6 +697,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                     type: HIDDEN
                                 }
                             },
+                            refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                             version: {
                                 type: NUMBER,
                                 optional: true,
@@ -681,7 +770,11 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                 },
                                 index: 5,
                             },
-                            choiceDescriptorId: IDATTRDEF,
+                            parentId: IDATTRDEF,
+                            parentType: {
+                                type: "string",
+                                view: {type: HIDDEN}
+                            },
                             files: {
                                 optional: true,
                                 value: [],
@@ -711,26 +804,9 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 }
             },
             EDITORNAME: "Choice",
-            EDITMENU: [{
-                    type: "EditEntityButton"
-                },
-                {
-                    type: BUTTON,
-                    label: "Duplicate",
-                    plugins: [{
-                            fn: "DuplicateEntityAction"
-                        }]
-                }, {
-                    type: "DeleteEntityButton"
-                }, {
-                    type: BUTTON,
-                    label: 'Search for usages',
-                    plugins: [
-                        {
-                            fn: 'SearchEntityAction'
-                        }
-                    ]
-                }],
+            EDITMENU: {
+                addBtn: null // force addBtn to null
+            },
             METHODS: {
                 activate: {
                     arguments: [SELFARG]
@@ -766,7 +842,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
      */
     persistence.Result = Y.Base.create("Result", persistence.Entity, [], {
         getChoiceDescriptor: function() {
-            return Wegas.Facade.Variable.cache.findById(this.get("choiceDescriptorId"));
+            return Wegas.Facade.Variable.cache.findById(this.get("parentId"));
         },
         getLabel: function() {
             return this.get("label");
@@ -798,15 +874,16 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 index: -1,
                 type: STRING,
                 visible: function(val, formVal) {
-                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
-                    return parent ? parent.get("@class") === "ChoiceDescriptor" : false;
+                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.parentId);
+                    return parent ? parent.get("@class") === "ChoiceDescriptor" : true;
                 }
             }),
             name: {
-                value: "",
-                type: STRING,
+                //value: "",
+                type: ["null", STRING],
                 optional: true,
                 index: -1,
+                minLength: 1,
                 view: {
                     className: "wegas-advanced-feature",
                     label: "Script alias",
@@ -841,7 +918,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 index: 12,
                 borderTop: true,
                 visible: function(val, formVal) {
-                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
+                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.parentId);
                     return parent ? parent.getParent().get("cbx") : false;
                 },
                 type: HTML
@@ -855,7 +932,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }
                 },
                 visible: function(val, formVal) {
-                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
+                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.parentId);
                     return parent ? parent.getParent().get("cbx") : false;
                 },
                 view: {
@@ -864,11 +941,10 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 },
                 index: 13
             },
-            choiceDescriptorId: {
-                type: NUMBER,
-                view: {
-                    type: HIDDEN
-                }
+            parentId: IDATTRDEF,
+            parentType: {
+                type: "string",
+                view: {type: HIDDEN}
             },
             files: {
                 optional: true,
@@ -887,49 +963,60 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 }
             }
         },
-        EDITMENU: [{
-                type: BUTTON,
-                label: "Edit",
-                plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            attributeKey: "results"
-                        }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Duplicate",
-                plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            method: "copy",
-                            attributeKey: "results"
-                        }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Delete",
-                plugins: [{
-                        fn: "EditEntityArrayFieldAction",
-                        cfg: {
-                            method: "delete",
-                            attributeKey: "results"
-                        }
-                    }]
-            }, {
-                type: BUTTON,
-                label: 'Search for usages',
-                plugins: [
-                    {
-                        fn: 'SearchEntityAction'
-                    }
-                ]
-            }]
+        EDITMENU: {
+            editBtn: {
+                index: -1,
+                cfg: {
+                    type: BUTTON,
+                    label: "Edit",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                attributeKey: "results"
+                            }
+                        }]
+                }
+            },
+            copyBtn: {
+                index: 10,
+                cfg: {
+                    type: BUTTON,
+                    label: "Duplicate",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                method: "copy",
+                                attributeKey: "results"
+                            }
+                        }]
+                }
+            },
+            deleteBtn: {
+                index: 20,
+                cfg: {
+                    type: BUTTON,
+                    label: "Delete",
+                    plugins: [{
+                            fn: "EditEntityArrayFieldAction",
+                            cfg: {
+                                method: "delete",
+                                attributeKey: "results"
+                            }
+                        }]
+                }
+            }
+        }
     });
     /**
      * MCQ ChoiceInstance mapper
      */
-    persistence.ChoiceInstance = Y.Base.create("ChoiceInstance", persistence.VariableInstance, [], {}, {
+    persistence.ChoiceInstance = Y.Base.create("ChoiceInstance", persistence.VariableInstance, [], {
+        getValidatedReplies: function() {
+            return Y.Array.filter(this.get('replies'), function(reply) {
+                return reply.get("validated");
+            });
+        }
+    }, {
         ATTRS: {
             "@class": {
                 value: "ChoiceInstance"
@@ -999,13 +1086,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
             "@class": {
                 value: "Reply"
             },
-            choiceDescriptorId: {
-                type: STRING,
-                optional: true,
-                view: {
-                    type: HIDDEN
-                }
-            },
             unread: {
                 type: BOOLEAN,
                 value: true,
@@ -1025,6 +1105,12 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     label: 'Is ignored'
                 }
             },
+            validated: {
+                type: BOOLEAN,
+                view: {
+                    label: 'is validated'
+                }
+            },
             resultName: {
                 type: STRING,
                 view: {
@@ -1039,18 +1125,21 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             answer: {
                 type: OBJECT,
+                "transient": true,
                 view: {
                     type: HIDDEN
                 }
             },
             ignorationAnswer: {
                 type: OBJECT,
+                "transient": true,
                 view: {
                     type: HIDDEN
                 }
             },
             files: {
                 type: ARRAY,
+                "transient": true,
                 view: {
                     type: HIDDEN
                 }
@@ -1096,7 +1185,12 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     },
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
-                    descriptorId: IDATTRDEF,
+                    refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
+                    parentId: IDATTRDEF,
+                    parentType: {
+                        type: "string",
+                        view: {type: HIDDEN}
+                    },
                     validated: {
                         value: false,
                         type: BOOLEAN,
@@ -1108,69 +1202,64 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         view: {
                             label: 'Active from start'
                         }
+                    },
+                    unread: {
+                        type: BOOLEAN,
+                        value: true,
+                        view: {
+                            type: HIDDEN
+                        }
                     }
                 },
                 index: 3
             }
         },
-        EDITMENU: [{
-                type: "EditEntityButton"
-            },
-            {
-                type: BUTTON,
-                label: "Add",
-                plugins: [{
-                        fn: "WidgetMenu",
-                        cfg: {
-                            children: [
-                                {
-                                    type: BUTTON,
-                                    label: '<span class="wegas-icon-numberdescriptor"></span> Number',
-                                    plugins: [{
-                                            fn: "AddEntityChildAction",
-                                            cfg: {
-                                                targetClass: "NumberDescriptor"
-                                            }
-                                        }]
-                                }, {
-                                    type: BUTTON,
-                                    label: '<span class="fa fa-paragraph"></span> Text',
-                                    plugins: [{
-                                            fn: "AddEntityChildAction",
-                                            cfg: {
-                                                targetClass: "TextDescriptor"
-                                            }
-                                        }]
-                                }, {
-                                    type: BUTTON,
-                                    label: '<span class="fa fa-font"></span> String',
-                                    plugins: [{
-                                            fn: "AddEntityChildAction",
-                                            cfg: {
-                                                targetClass: "StringDescriptor"
-                                            }
-                                        }]
-                                }
-                            ]
+        EDITMENU: {
+            addBtn: {
+                index: 1,
+                maxVisibility: "PROTECTED",
+                cfg: {
+                    type: BUTTON,
+                    label: "Add",
+                    plugins: [{
+                            fn: "WidgetMenu",
+                            cfg: {
+                                children: [
+                                    {
+                                        type: BUTTON,
+                                        label: '<span class="wegas-icon-numberdescriptor"></span> Number',
+                                        plugins: [{
+                                                fn: "AddEntityChildAction",
+                                                cfg: {
+                                                    targetClass: "NumberDescriptor"
+                                                }
+                                            }]
+                                    }, {
+                                        type: BUTTON,
+                                        label: '<span class="fa fa-paragraph"></span> Text',
+                                        plugins: [{
+                                                fn: "AddEntityChildAction",
+                                                cfg: {
+                                                    targetClass: "TextDescriptor"
+                                                }
+                                            }]
+                                    }, {
+                                        type: BUTTON,
+                                        label: '<span class="fa fa-font"></span> String',
+                                        plugins: [{
+                                                fn: "AddEntityChildAction",
+                                                cfg: {
+                                                    targetClass: "StringDescriptor"
+                                                }
+                                            }]
+                                    }
+                                ]
+                            }
                         }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Duplicate",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
-            }, {
-                type: BUTTON,
-                label: 'Search for usages',
-                plugins: [
-                    {
-                        fn: 'SearchEntityAction'
-                    }
-                ]
-            }],
+                    ]
+                }
+            }
+        },
         /**
          * Defines methods available in wysiwyge script editor
          */
@@ -1219,6 +1308,10 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             validated: {
                 value: false,
+                type: BOOLEAN
+            },
+            unread: {
+                value: true,
                 type: BOOLEAN
             }
         }

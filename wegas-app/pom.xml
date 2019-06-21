@@ -78,7 +78,13 @@
     </profiles>
 
     <dependencies>
-
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wenerator-maven-plugin</artifactId>
+            <version>${project.version}</version>
+            <!-- <type>jar</type> -->
+            <scope>compile</scope>
+        </dependency>
         <!-- Project dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -249,11 +255,7 @@
         <dependency>
             <groupId>net.sf.jtidy</groupId>
             <artifactId>jtidy</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>eclipselink</artifactId>
-            <scope>test</scope>
+            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.htmlunit</groupId>
@@ -272,6 +274,26 @@
         <finalName>Wegas</finalName>
 
         <plugins>
+            <plugin>
+                <groupId>com.wegas</groupId>
+                <artifactId>wenerator-maven-plugin</artifactId>
+                <version>${project.version}</version>
+                <executions>
+                    <execution>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>schema</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <output>${project.build.directory}/generated/schema</output>
+                    <typings>${project.build.directory}/generated/typings</typings>
+                    <pkg>
+                        <param>com.wegas</param>
+                    </pkg>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -395,7 +417,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>gulp</id>
+                        <id>yarn run build</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>exec</goal>

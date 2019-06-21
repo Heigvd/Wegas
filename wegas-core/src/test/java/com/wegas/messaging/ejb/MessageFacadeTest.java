@@ -15,7 +15,7 @@ import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
-import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
+import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.rest.ScriptController;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.messaging.persistence.InboxInstance;
@@ -67,6 +67,7 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         this.exec(player, "Variable.find(gameModel, \"inbox\").sendDatedMessage(self, \"from3\", \"date\", \"subject\", \"body\");");
 
         this.exec(player, "Variable.find(gameModel, \"inbox\").sendMessage(self, \"from4\", \"subject\", \"body\", [\"att\"]);");
+        //NPE
         this.exec(player, "Variable.find(gameModel, \"inbox\").sendMessage(self, \"from5\", \"date\", \"subject\", \"body\", \"token\", [\"att1\"]);");
         this.exec(player, "Variable.find(gameModel, \"inbox\").sendDatedMessage(self, \"from6\", \"date\", \"subject\", \"body\", [\"att\"]);");
 
@@ -102,7 +103,7 @@ public class MessageFacadeTest extends AbstractArquillianTest {
 
         // Create a trigger
         TriggerDescriptor trigger = new TriggerDescriptor();
-        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(
                 new Script("print(\"sending\");var inbox = Variable.find(" + inbox.getId() + "); inbox.sendMessage(self, \"test\", \"test\", \"test\");"));
@@ -134,7 +135,7 @@ public class MessageFacadeTest extends AbstractArquillianTest {
 
         // Create a trigger
         TriggerDescriptor trigger = new TriggerDescriptor();
-        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setPostTriggerEvent(
                 new Script("Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg1\");\n"
                         + "Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg2\");\n"));
@@ -169,7 +170,7 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.create(scenario.getId(), inbox);
         // Create a trigger
         TriggerDescriptor trigger = new TriggerDescriptor();
-        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setTriggerEvent(new Script("Variable.find(gameModel,'testnumber').getValue(self) > 0"));
         trigger.setOneShot(false);
         trigger.setDisableSelf(false);
@@ -178,7 +179,7 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.create(scenario.getId(), trigger);
 
         TriggerDescriptor trig = new TriggerDescriptor();
-        trig.setDefaultInstance(new TriggerInstance());
+        trig.setDefaultInstance(new StateMachineInstance());
         trig.setTriggerEvent(new Script("Variable.find(gameModel,'testnumber').getValue(self) > 0"));
         trig.setOneShot(false);
         trig.setDisableSelf(false);

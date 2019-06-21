@@ -8,13 +8,32 @@
 package com.wegas.core.security.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.View.Textarea;
+import com.wegas.editor.View.View;
 import java.util.*;
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Cacheable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.QueryHint;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 
@@ -52,6 +71,9 @@ public class Role extends AbstractEntity implements PermissionOwner {
      */
     @Basic(optional = false)
     @Column(length = 100)
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "Name"))
     private String name;
 
     /**
@@ -59,6 +81,9 @@ public class Role extends AbstractEntity implements PermissionOwner {
      */
     @Basic(optional = false)
     @Column(length = 255)
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "Description", value = Textarea.class))
     private String description;
 
     /**
@@ -66,6 +91,9 @@ public class Role extends AbstractEntity implements PermissionOwner {
      */
     //@ElementCollection(fetch = FetchType.EAGER)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "role")
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(label = "Permissions"))
     private List<Permission> permissions = new ArrayList<>();
 
     /**
@@ -91,18 +119,6 @@ public class Role extends AbstractEntity implements PermissionOwner {
      */
     public Role(String name) {
         this.name = name;
-    }
-
-    @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof Role) {
-            Role r = (Role) other;
-            this.setName(r.getName());
-            this.setDescription(r.getDescription());
-            this.setPermissions(ListUtils.mergeLists(this.getPermissions(), r.getPermissions()));
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
-        }
     }
 
     @Override
@@ -246,5 +262,20 @@ public class Role extends AbstractEntity implements PermissionOwner {
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         return null;
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return null;
+    }
+
+    @Override
+    public boolean belongsToProtectedGameModel() {
+        return false;
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return Visibility.INHERITED;
     }
 }

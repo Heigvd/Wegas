@@ -13,87 +13,103 @@ YUI.add('wegas-sendmail', function(Y) {
     'use strict';
     var Wegas = Y.Wegas,
         CONTENTBOX = "contentBox",
-        inputEx = Y.inputEx,
         SendMail = Y.Base.create("wegas-sendmail", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
-            BOUNDING_TEMPLATE: '<div class="wegas-form"></div>',
+            BOUNDING_TEMPLATE: '<div class="wegas-sendmail"></div>',
             renderUI: function() {
                 var cb = this.get(CONTENTBOX),
                     emailsList = this.get("emails") || "(Hidden list of e-mails)",
                     cfg = {
-                        type: "group",
-                        parentEl: cb,
-                        fields: [
-                            {
-                                name: "@class",
-                                type: "hidden",
-                                value: "Email"
+                        type: "object",
+                        properties: {
+                            "@class": {
+                                type: "string",
+                                value: "Email",
+                                view: {
+                                    type: "hidden"
+                                }
                             },
-                            {
-                                name: "from",
-                                label: "From",
-                                type: "uneditable",
-                                value: Y.Wegas.Facade.User.get("currentUser").get("accounts")[0].get("email")
+                            "from": {
+                                type: "string",
+                                value: Y.Wegas.Facade.User.get("currentUser").get("accounts")[0].get("email"),
+                                view: {
+                                    label: "From",
+                                    readOnly: true
+                                }
                             },
-                            {
-                                name: "to",
-                                label: "To",
-                                type: "hidden",
+                            "to": {
+                                type: "string",
                                 value: Y.Array.map(this.get("players"), function(e) {
                                     return e.toObject();
-                                })
+                                }),
+                                view: {
+                                    type: "hidden",
+                                    readOnly: true
+                                }
                             },
-                            {
-                                // This field must be deleted before sending the request:
-                                name: "dummy",
-                                label: "To",
-                                type: "uneditable",
-                                value: emailsList
-                            },
-                            {
+                            "dummy": {
                                 type: "string",
-                                name: "subject",
-                                label: "Subject",
-                                required: true
-                            }, {
-                                type: "html",
-                                name: "body",
-                                label: "Body",
-                                required: true
+                                value: emailsList,
+                                view: {
+                                    readOnly: true,
+                                    label: "To"
+                                }
+                            },
+                            "subject": {
+                                type: "string",
+                                minLength: 1,
+                                view: {
+                                    label: "Subject"
+                                }
+                            },
+                            "body": {
+                                type: "string",
+                                minLength: 1,
+                                view: {
+                                    type: "html",
+                                    label: "Body"
+                                }
                             }
-                        ]
+                        }
                     };
-                inputEx.use(cfg, Y.bind(function() {
-                    this._form = new inputEx(cfg);
-                }, this));
+
+                this.form = new Y.Wegas.RForm({
+                    values: {},
+                    cfg: cfg,
+                    buttons: []
+                });
+                this.form.render(this.get("contentBox"));
+
                 cb.append('<div><div class="results wegas-advanced-feature"></div><div class="status"></div></div>');
             },
             setStatus: function(status) {
                 this.get("contentBox").one(".status").setHTML(status);
             },
             setErrorStatus: function(errorMsg) {
-                this.get("contentBox").one(".status").setHTML('<span style="color:red; font-weight:bold">'+errorMsg+'</span>');
+                this.get("contentBox").one(".status").setHTML('<span style="color:red; font-weight:bold">' + errorMsg + '</span>');
             },
             send: function() {
-                if (!this.validate()) {
-                    this.setErrorStatus("Please complete these fields: "+this.invalidFields());
+                if (!this.form.validate().length) {
+                    this.setErrorStatus("Please complete these fields");
                     var ctx = this;
-                    setTimeout(function(){ ctx.setStatus("") }, 5000);
+                    setTimeout(function() {
+                        ctx.setStatus("");
+                    }, 5000);
                     return;
                 }
                 this.setStatus("");
                 Wegas.Panel.confirm("This will send a real mail", Y.bind(function() {
                     this.setStatus("Sending...");
 
-                    var form = this._form.getValue();
-                    if (form.dummy) {
-                        delete form.dummy;
+                    var data = this.form.getValue();
+                    if (data.dummy) {
+                        // delete data.dummy;
                     }
                     Wegas.Facade.User.sendRequest({
                         request: "/SendMail",
                         cfg: {
                             method: "POST",
                             updateEvent: false,
-                            data: form,
+                            data: data,
                             headers: {
                                 "Managed-Mode": true
                             }
@@ -109,7 +125,7 @@ YUI.add('wegas-sendmail', function(Y) {
                                 try {
                                     var errorMsg = JSON.parse(request.data.response).events[0].exceptions[0].message;
                                     this.setErrorStatus(errorMsg);
-                                } catch(e) {
+                                } catch (e) {
                                     this.setErrorStatus('Something went wrong');
                                 }
                             }, this)
@@ -117,36 +133,19 @@ YUI.add('wegas-sendmail', function(Y) {
                     }, this);
                 }, this));
             },
-            validate: function() {
-                var inputs = this._form.inputs, i, valid = true;
-                for (i = 0; i < inputs.length; i += 1) {
-                    valid = valid && inputs[i].validate();
-                }
-                return valid;
-            },
-            invalidFields: function() {
-                var inputs = this._form.inputs, i, list = "";
-                for (i = 0; i < inputs.length; i += 1) {
-                    if (!inputs[i].validate()){
-                        list += ', '+inputs[i].labelEl.textContent;
-                    }
-                }
-                return list.substr(2);
-            },
             destructor: function() {
-                this._form.destroy();
-                this._form = null;
+                this.form && this.form.destroy();
             }
         },
-        {
-            ATTRS: {
-                players: {
-                    type: "array"
-                },
-                emails: {
-                    type: "string"
+            {
+                ATTRS: {
+                    players: {
+                        type: "array"
+                    },
+                    emails: {
+                        type: "string"
+                    }
                 }
-            }
-        });
+            });
     Wegas.SendMail = SendMail;
 });

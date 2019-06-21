@@ -26,7 +26,7 @@ import javax.faces.context.ResponseWriter;
  */
 public class UIHelper {
 
-    public static final String CSS_CLASS_PREFIX = "wegas-pdf-";
+    public static final String CSS_CLASS_PREFIX = " wegas-pdf-";
 
     public static final String CSS_CLASS_COLUMN = CSS_CLASS_PREFIX + "column";
     public static final String CSS_CLASS_COLUMNS = CSS_CLASS_PREFIX + "columns";
@@ -69,6 +69,8 @@ public class UIHelper {
     public static final String CSS_CLASS_VARIABLE_TITLE = CSS_CLASS_PREFIX + "variable-title";
 
     public static final String CSS_CLASS_INDENT_CODE = CSS_CLASS_PREFIX + "indent-code";
+
+    public static final String CSS_CLASS_INLINE_DIV = CSS_CLASS_PREFIX + "inline-div";
 
     public static final String TEXT_ACTIVE = "Active";
     public static final String TEXT_CONDITION = "Condition";
@@ -123,7 +125,7 @@ public class UIHelper {
     /**
      * Start a div with the specified CSS class.
      *
-     * @see endDiv to end the div
+     * @see #endDiv to end the div
      *
      * @param wr
      * @param cssClass
@@ -137,7 +139,7 @@ public class UIHelper {
     /**
      * Start the specified element with specified Css Classes and id
      *
-     * @see endElement for the closing tag
+     * @see ResponseWriter#endElement for the closing tag
      *
      * @param wr
      * @param elem
@@ -182,7 +184,7 @@ public class UIHelper {
     /**
      * start a span with the specified CSS classes
      *
-     * @see endSpan
+     * @see #endSpan
      * @param wr
      * @param cssClass
      *
@@ -557,40 +559,40 @@ public class UIHelper {
             List<Attachment> attachments) throws IOException {
 
         UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_CONTAINER);
-        printText(context, writer, TEXT_SEND_MESSAGE, CSS_CLASS_MESSAGE_TITLE);
+        //printText(context, writer, TEXT_SEND_MESSAGE, CSS_CLASS_MESSAGE_TITLE);
         UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_HEADER);
         UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_HEADER_FIRSTLINE);
 
-        UIHelper.startSpan(writer, CSS_CLASS_MESSAGE_FROM);
+        UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_FROM + CSS_CLASS_INLINE_DIV);
         //printText(context, writer, unescapeAndTrimQuotes(from), CSS_CLASS_PROPERTY_VALUE);
         UIHelper.printProperty(context, writer, UIHelper.TEXT_FROM, unescapeAndTrimQuotes(from));
-        UIHelper.endSpan(writer);
+        UIHelper.endDiv(writer);
 
         if (destination != null && destination.length() > 0) {
-            UIHelper.startSpan(writer, CSS_CLASS_MESSAGE_TO);
+            UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_TO + CSS_CLASS_INLINE_DIV);
             UIHelper.printProperty(context, writer, UIHelper.TEXT_DESTINATION, unescapeAndTrimQuotes(destination));
-            UIHelper.endSpan(writer);
+            UIHelper.endDiv(writer);
         }
 
         if (date != null && !date.isEmpty()) {
-            UIHelper.startSpan(writer, CSS_CLASS_MESSAGE_DATE);
+            UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_DATE + CSS_CLASS_INLINE_DIV);
             UIHelper.printProperty(context, writer, UIHelper.TEXT_DATE, unescapeAndTrimQuotes(date));
             //printText(context, writer, unescapeAndTrimQuotes(date), CSS_CLASS_PROPERTY_VALUE);
-            UIHelper.endSpan(writer);
+            UIHelper.endDiv(writer);
         }
 
         UIHelper.endDiv(writer); // </div class="firstline">
 
-        UIHelper.startSpan(writer, CSS_CLASS_MESSAGE_SUBJECT);
+        UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_SUBJECT + CSS_CLASS_INLINE_DIV);
         //printText(context, writer, unescapeAndTrimQuotes(subject), CSS_CLASS_PROPERTY_VALUE);
         UIHelper.printProperty(context, writer, UIHelper.TEXT_SUBJECT, unescapeAndTrimQuotes(subject));
-        UIHelper.endSpan(writer);
+        UIHelper.endDiv(writer);
 
         UIHelper.endDiv(writer); // </div class="header">
 
         if (attachments != null && attachments.size() > 0) {
             for (Attachment a : attachments) {
-                UIHelper.printProperty(context, writer, UIHelper.TEXT_ATTACHMENTS, a.getFile().translateOrEmpty((Player)null));
+                UIHelper.printProperty(context, writer, UIHelper.TEXT_ATTACHMENTS, a.getFile().translateOrEmpty((Player) null));
             }
         }
 

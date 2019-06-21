@@ -26,7 +26,7 @@ public interface ResourceFacadeI {
      *
      * @return the new resource occupation
      */
-    Occupation addOccupation(Long resourceInstanceId, Boolean editable, double time);
+    Occupation addOccupation(Long resourceInstanceId, Boolean editable, Integer time);
 
     /**
      * Assign a resource to a task
@@ -104,7 +104,7 @@ public interface ResourceFacadeI {
      *
      * @return assigned resource containing assignment in the new order
      */
-    ResourceInstance moveAssignment(final Long assignmentId, final int index);
+    ResourceInstance moveAssignment(final Long assignmentId, final Integer index);
 
     /**
      * plan a taskInstance at a specific period

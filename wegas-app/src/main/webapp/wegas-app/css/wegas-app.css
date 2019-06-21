@@ -108,6 +108,28 @@ font {
 }
 
 
+/*
+ * The Wegas Font
+ */
+@font-face {
+    font-family: "wegas-icons-font";
+    src: url(../../assets/fonts/wegas-icons-font/wegas-icons-font.eot?v=28042016);
+    src: url(../../assets/fonts/wegas-icons-font/wegas-icons-font.eot?#iefix&v=28042016) format("embedded-opentype"),url(../../assets/fonts/wegas-icons-font/wegas-icons-font.woff2?v=28042016) format("woff2"),url(../../assets/fonts/wegas-icons-font/wegas-icons-font.woff?v=28042016) format("woff"),url(../../asserts/fonts/wegas-icons-font/wegas-icons-font.ttf?v=28042016) format("truetype"),url(../../assets/fonts/wegas-icons-font/wegas-icons-font.svg#wegas-icons-font?v=28042016) format("svg");
+    font-weight: 400;
+    font-style: normal
+}
+
+.wegas-font:before {
+    font-family: "wegas-icons-font";
+    font-style: normal
+}
+
+.wegas-font.wegas-teacher:before {
+    content: "m";
+}
+
+
+
 /* App loading */
 
 .wegas-loading-app {
@@ -119,6 +141,7 @@ font {
     margin-top: -50px;
     margin-left: -40px;
     background: transparent url(../../wegas-app/images/wegas-logowhite-80.png) no-repeat;
+    z-index: 10000;
 }
 
 .wegas-loading-app > div {
@@ -251,10 +274,13 @@ font {
 
 /** Hide all advanced feature while in std mode */
 .wegas-forbidden-feature,
-.wegas-stdmode .wegas-advanced-feature {
+body:not(.wegas-internalmode) .wegas-internal-feature,
+.wegas-stdmode .wegas-advanced-feature,
+body:not(.wegas-modeler-mode) .wegas-model-feature {
     display: none !important;
 }
 
+.wegas-internal-feature,
 .wegas-advanced-feature {
     font-style: italic;
 }
@@ -542,6 +568,25 @@ font {
     height: 100px;
 }
 
+.wegas-line-origin {
+    transform: scale(1); /* hack to reset the origin */
+}
+
+
+.wegas-line {
+    stroke: black;
+    stroke-width: 1px;
+    fill: none;
+}
+
+.wegas-line svg{
+    overflow: visible;
+}
+
+svg #triangleEnd,
+svg #triangleStart{
+    fill: black;
+}
 
 /* Chat widget */
 
@@ -569,13 +614,13 @@ font {
     padding-top: 30px;
 }
 
-.wegas-chat .inputEx-fieldWrapper {
+.wegas-chat .input-wrapper {
     position: absolute;
     bottom: 0px;
     left: 5px;
 }
 
-.wegas-chat div.inputEx-Field input {
+.wegas-chat .input-wrapper input {
     padding: 3px !important;
 }
 
@@ -639,7 +684,12 @@ font {
 
 /* Need to revert yui 3 base styles so lists are display correctly */
 
-#tinymce ul, .wegas-inbox .yui3-tab-panel ul, .wegas-mcqtabview .yui3-tab-panel ul, .wegas-text-content ul, .wegas-template-content ul {
+#tinymce ul,
+.mce-content-body ul, /* in tinymce inline editor*/
+.wegas-inbox .yui3-tab-panel ul,
+.wegas-mcqtabview .yui3-tab-panel ul,
+.wegas-text-content ul,
+.wegas-template-content ul {
     list-style-type: disc;
     padding: 0 2em;
     margin: 0.1em 0em;
@@ -680,6 +730,20 @@ font {
     border: none;
 }
 
+/*
+ * Wegas skin for menu
+ */
+.yui3-menu {
+    box-shadow: none;
+}
+
+.yui3-menu .yui3-button {
+    font-size: 13px;
+}
+
+.yui3-menu .yui3-button:hover {
+    background: #A7CEF6;
+}
 
 /* Onclick pointer style */
 
@@ -728,6 +792,34 @@ font {
     /*background-color: hotpink !important;*/
 }
 
+.wegas-banner-area {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+}
+
+.wegas-banner-area .wegas-banner {
+    text-align:center;
+    padding: 10px;
+    font-weight: bold;
+}
+
+.wegas-banner-area .wegas-banner-icon {
+    padding-right: 10px;
+}
+
+.wegas-banner-area .wegas-banner.alert {
+    background-color:red;
+    color:white;
+}
+
+.wegas-banner-area .wegas-banner.warning{
+    background-color:orange;
+    color:white;
+}
+
 .wegas-notification-area {
     position: fixed;
     top: 5px;
@@ -749,26 +841,56 @@ font {
 }
 
 .wegas-notification-area .wegas-notification {
+    display: flex;
     border: 1px solid;
-    border-radius: 3px;
+    border-radius: 0px;
     padding: 16px;
     background-color: #616161;
     color: white;
-    animation: fadein 1s 1;
+    animation: fadein 0.5s 1;
     z-index: 999;
     width: 250px;
-    text-align: center;
+    box-sizing: border-box;
+    /*text-align: center;*/
 }
 
+.wegas-notification-area .wegas-notification.fadeout,
+.wegas-notification-area .wegas-notification.fadeout > div{
+    animation: fadeout 1s 1;
+    opacity: 0;
+    height:0;
+    overflow: hidden;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+@keyframes fadeout {
+    from {
+        opacity: 1;
+        padding-top:16px;
+        padding-bottom:16px;
+    }
+    to {
+        opacity: 0;
+        height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+}
+
+.wegas-notification-area .wegas-notification .wegas-notification-icon {
+    padding-right: 10px;
+}
 
 .wegas-notification-area .wegas-notification .wegas-notification-message {
-    width: calc(100% - 40px);
-    display: inline-block;
+    flex-grow: 1;
+    flex-shrink: 1;
 }
 
 /* I18N */
 
-.wegas-translation .tools{
+.wegas-translation .tools,
+.wegas-translation .tools > span{
     display:none;
 }
 
@@ -799,6 +921,11 @@ font {
     font-weight:600;
 }
 
+.question-history .replies {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
 .question-history .replies .replyDiv {
     border-top: solid 1px #bbb;
     color: #bbb;
@@ -821,7 +948,12 @@ font {
     padding-left: 24px;
 }
 
-.question-history .replies .replyDiv:first-child {
+.question-history .replies .replyDiv:last-child {
     border-top: none;
     color: black;
+}
+
+.wegas-light-picture img[height],
+.wegas-light-picture img[width] {
+    cursor: zoom-in;
 }

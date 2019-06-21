@@ -16,6 +16,7 @@ YUI.add("wegas-i18n-mcq-de", function(Y) {
         mcq: {
             result: "Ergebnis",
             results: "Ergebnissen",
+            noQuestionSelected: "Wählen Sie eine Frage auf der linken Seite aus.",
             empty: "Zur Zeit sind keine Fragen verfügbar",
             submit: "einreichen",
             answered : "beantwortet",
@@ -24,7 +25,8 @@ YUI.add("wegas-i18n-mcq-de", function(Y) {
             noReply: "Bitte wählen Sie eine Antwort aus!",
             notEnoughReply: "Bitte wählen Sie mindestens {{min}} Antworten aus!",
             maximumReached: "Sie können nicht mehr als {{max}}} Antworten auswählen",
-            conflict: "Ihre Anfrage wurde nicht berücksichtigt, weil einer Ihrer Teamkollegen die gleiche Operation zur gleichen Zeit versucht hat.<br />"
+            conflict: "Ihre Anfrage wurde nicht berücksichtigt, weil einer Ihrer Teamkollegen die gleiche Operation zur gleichen Zeit versucht hat.<br />",
+            possibleChoices: 'Wahlen zu Verfügung: #'
         }
     });
 });

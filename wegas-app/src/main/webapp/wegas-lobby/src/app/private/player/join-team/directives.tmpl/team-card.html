@@ -1,18 +1,14 @@
 <div class="card__illustration illustration illustration--icon" illustration="ICON_grey_group_wif"></div>
-<div class="card__description card__description--two-lines">
+<div class="card__description">
     <div class="line line--primary">{{team.name}}</div>
-    <div class="line">{{team.players.length}} {{'PLAYER-MODALE-JOIN-TEAM-NUMBER-PLAYER' | translate}}<span ng-if="team.players.length > 1">s</span></div>
+    <div class="line">
+        {{team.players.length}} {{'PLAYER-MODALE-JOIN-TEAM-NUMBER-PLAYER' | translate}}<span ng-if="team.players.length > 1">s</span><span ng-if="team.players.length > 0">:&nbsp;</span>
+        <span class="line" ng-repeat="(ind,player) in team.players">{{player.name}}<span ng-if="ind+1 < team.players.length">,&nbsp;&nbsp;</span></span>
+    </div>
 </div>
 <div class="card__actions">
-    <a ng-if="team.players.length > 0" class="button button--small button--default-reverse button--eye" ng-class="{true: 'button--eye-slash', false:'button--eye'}[showPlayers]" ng-click="tooglePlayersVisibility()">
-      <span class="button__label">{{'PLAYER-MODALE-JOIN-TEAM-HIDE-TOGGLE' | translate: hideToggle}}</span>
-    </a> 
-    <a  class="button button--small button--join-team button--info" 
+    <a  class="button button--small button--join-team button--info"
         ng-click="join(team.id)">
       <span class="button__label">{{'PLAYER-MODALE-JOIN-TEAM-JOIN-BTN' | translate}}</span>
-    </a>   
-</div>
-<div ng-if="showPlayers" class="card__list">
-	<h4>{{'PLAYER-MODALE-JOIN-TEAM-PLAYERS-LIST' | translate}} : </h4>
-	<p><span class="card__list__player" ng-repeat="player in team.players">{{player.name}}</span></p>
+    </a>
 </div>

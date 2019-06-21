@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-layout-list', function (Y) {
+YUI.add('wegas-layout-list', function(Y) {
     "use strict";
 
     var BOUNDINGBOX = 'boundingBox',
@@ -37,7 +37,7 @@ YUI.add('wegas-layout-list', function (Y) {
          * @description set class of the contentbox (vertical or horizontal)
          * add class with "clear:both" style after the contentbox.
          */
-        syncUI: function () {
+        syncUI: function() {
             var cb = this.get(CONTENTBOX);
 
             if (this.get('direction') === 'vertical') {
@@ -49,53 +49,95 @@ YUI.add('wegas-layout-list', function (Y) {
             }
             this.get(BOUNDINGBOX).append('<div style="clear:both"></div>');
         },
-        getEditorLabel: function () {
+        getEditorLabel: function() {
             return Y.Wegas.Helper.stripHtml(this.get("name"));
         }
     }, {
-            /** @lends Y.Wegas.List */
-            EDITORNAME: "Folder",
-            CSS_PREFIX: "wegas-list",
-            /**
-             * @field
-             * @static
-             * @description
-             * <p><strong>Attributes</strong></p>
-             * <ul>
-             *    <li>defaultChildType: default value for children. Transient.</li>
-             *    <li>children: list of widget. Transient.</li>
-             *    <li>direction: string-helper to add class and set style of the
-             *     list (vertical or horizontal). Vertical by default</li>
-             * </ul>
-             */
-            ATTRS: {
-                direction: {
-                    value: 'vertical',
-                    type: "string",
-                    view: {
-                        type: 'select',
-                        choices: ['vertical', 'horizontal']
-                    }
-                },
-                name: {
-                    value: "folder",
-                    type: "string"
+        /** @lends Y.Wegas.List */
+        EDITORNAME: "Folder",
+        CSS_PREFIX: "wegas-list",
+        /**
+         * @field
+         * @static
+         * @description
+         * <p><strong>Attributes</strong></p>
+         * <ul>
+         *    <li>defaultChildType: default value for children. Transient.</li>
+         *    <li>children: list of widget. Transient.</li>
+         *    <li>direction: string-helper to add class and set style of the
+         *     list (vertical or horizontal). Vertical by default</li>
+         * </ul>
+         */
+        ATTRS: {
+            name: {
+                value: "List",
+                type: "string",
+                view: {
+                    label: "Name"
                 }
-
-                /**
-                 * Prevent widgetchild selection to be propagated through the hierarchy
-                 */
-                //selected: {
-                //    value: 2,
-                //    readonly: true
-                //}
+            },
+            direction: {
+                value: 'vertical',
+                type: "string",
+                view: {
+                    label: "Direction",
+                    type: 'select',
+                    choices: ['vertical', 'horizontal']
+                }
             }
 
-        });
+            /**
+             * Prevent widgetchild selection to be propagated through the hierarchy
+             */
+            //selected: {
+            //    value: 2,
+            //    readonly: true
+            //}
+        }
+
+    });
     Y.Wegas.List = List;
 
 
-    FlexList = Y.Base.create("wegas-flexlist", Y.Wegas.List, [], {});
+    FlexList = Y.Base.create("wegas-flexlist", Y.Wegas.List, [], {
+        syncUI: function() {
+            var cb = this.get(CONTENTBOX);
+
+            if (this.get('direction') === 'vertical') {
+                cb.addClass(this.getClassName('vertical'));
+                cb.removeClass(this.getClassName('horizontal'));
+            } else {
+                cb.addClass(this.getClassName('horizontal'));
+                cb.removeClass(this.getClassName('vertical'));
+            }
+
+        }
+    }, {
+        EDITORNAME: "Flex layout",
+        // Redefine visibility and default value of some inherited attributes:
+        ATTRS: {
+            name: {
+                value: "Flex List",
+                type: "string",
+                view: {
+                    label: "Layout name",
+                    // Hide in case this is a page:
+                    className: "wegas-advanced-feature"
+                }
+            },
+            direction: {
+                value: 'vertical',
+                type: "string",
+                view: {
+                    label: "Direction",
+                    type: 'select',
+                    choices: ['vertical', 'horizontal'],
+                    // Hide in case this is a page:
+                    className: "wegas-advanced-feature"
+                }
+            }
+        }
+    });
     Y.Wegas.FlexList = FlexList;
 
 });

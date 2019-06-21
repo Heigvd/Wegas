@@ -16,105 +16,41 @@ YUI.add('wegas-mcq-tabview', function(Y) {
     var CONTENTBOX = 'contentBox',
         Wegas = Y.Wegas,
         MCQTabView;
-    /**
-     * @name Y.Wegas.MCQTabView
-     * @extends Y.Widget
-     * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
-     * @class Class to view and reply to questions and choices.
-     * @constructor
-     * @description  Display and allow to reply at questions and choice sent
-     *  to the current player
-     */
-    MCQTabView = Y.Base.create("wegas-mcqtabview", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
+
+    MCQTabView = Y.Base.create("wegas-mcqtabview", Y.Wegas.ResponsibeTabView, [], {
         /** @lends Y.Wegas.MCQTabView# */
         // *** Lifecycle Methods *** //
-        CONTENT_TEMPLATE: null,
-        /**
-         * @function
-         * @private
-         * @description Set variable with initials values.
-         */
-        initializer: function() {
-            /**
-             * datasource from Y.Wegas.Facade.Variable
-             */
-            this.dataSource = Wegas.Facade.Variable;
-            this.tabView = new Y.TabView();
-            /**
-             * Reference to each used functions
-             */
-            this.handlers = {};
-            this.isRemovingTabs = false;
-        },
-        /**
-         * @function
-         * @private
-         * @description Render the TabView widget in the content box.
-         */
-        renderUI: function() {
-            var cb = this.get(CONTENTBOX);
-            this.tabView.render(cb);
-            this.tabView.get("boundingBox").addClass("horizontal-tabview");
-            cb.append("<div style='clear:both'></div>");
-        },
-        /**
-         * @function
-         * @private
-         * @description bind function to events.
-         * When submit button is clicked, send the selected choice
-         * When datasource is updated, do syncUI;
-         */
-        bindUI: function() {
-            this.tabView.after("selectionChange", this.onTabSelected, this);
-            this.handlers.response = this.dataSource.after("update", this.syncUI, this);
-            /*
-             // This code does not refresh the display when a question list is to be replaced by another list:
-             this.handlers.response = this.dataSource.after("updatedInstance", function(e) {
-             // Easy test to possibly avoid entering the loop:
-             if (e.entity.get("@class") !== "QuestionInstance") return;
-             var questions = this.get("variable.evaluated");
-             // Check for null and undefined:
-             if (questions == null) return;
-             if (!Y.Lang.isArray(questions)) {
-             questions = [questions];
-             }
-             for (var i=0; i<questions.length; i++) {
-             var q = questions[i];
-             if (q.getInstance().get("id") === e.entity.get("id")) {
-             this.syncUI();
-             return;
-             }
-             }
-             }, this);
-             */
-        },
-        updateTab: function(tab, question) {
-            var label;
+        //CONTENT_TEMPLATE: null,
+        getTabLabel: function(question) {
             if (question instanceof Wegas.persistence.QuestionDescriptor) {
-                label = this.getMcqTabLabel(tab, question);
+                return this.getMcqTabLabel(question);
             } else if (question instanceof Wegas.persistence.WhQuestionDescriptor) {
-                label = this.getWhTabLabel(tab, question);
+                return  this.getWhTabLabel(question);
             }
-            tab.set("label", label);
         },
-        getWhTabLabel: function(tab, question) {
+        getWhTabLabel: function(question) {
             var questionInstance = question.getInstance(),
                 label = (questionInstance.get("validated") ? "" : (question.get("maxReplies") === 1) ? Y.Wegas.I18n.t('mcq.unanswered') : Y.Wegas.I18n.t('mcq.notDone'));
 
-            return  '<div class="'
-                + (this.get("highlightUnanswered") && !questionInstance.get("validated") ? "unread" : "")
-                + '"><div class="index-label">'
+            var unreadLabel = "";
+
+            return  '<div class="index-mcq '
+                + (questionInstance.get("unread") ? "unread " : "")
+                + (!questionInstance.get("validated") ? "answerable " : "")
+                + (this.get("highlightUnanswered") && !questionInstance.get("validated") ? "unanswered " : "") + '">'
+                + '<div class="index-unread">' + unreadLabel + '</div>'
+                + '<div class="index-label">'
                 + (I18n.t(question.get("label"))) + "</div>"
                 + '<div class="index-status">' + label + "</div>"
                 + '</div>';
 
         },
-        getMcqTabLabel: function(tab, question) {
+        getMcqTabLabel: function(question) {
             var questionInstance = question.getInstance(),
                 choiceDescriptor,
                 label = null, cbxType = question.get("cbx"),
                 validatedCbx = (cbxType ? questionInstance.get('validated') : false),
-                nbReplies = questionInstance.get("replies").length,
+                nbReplies = questionInstance.getValidatedReplies().length,
                 highlightUnanswered = (this.get("highlightUnanswered") && (cbxType ? !validatedCbx : (nbReplies === 0)));
 
             /*
@@ -132,7 +68,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     } else { // Find the last selected replies
                         choiceDescriptor = questionInstance.get("replies")[questionInstance.get("replies").length - 1 ].getChoiceDescriptor();
                         label = I18n.t(choiceDescriptor.get("label"));
-                        label = (label.length >= 15) ? label.substr(0, 15) + "..." : label;
+                        //label = (label.length >= 15) ? label.substr(0, 15) + "..." : label;
                     }
                 }
             }
@@ -145,7 +81,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     // Find the last selected replies
                     choiceDescriptor = questionInstance.get("replies")[questionInstance.get("replies").length - 1 ].getChoiceDescriptor();
                     label = I18n.t(choiceDescriptor.get("label"));
-                    label = (label.length >= 15) ? label.substr(0, 15) + "..." : label;
+                    //label = (label.length >= 15) ? label.substr(0, 15) + "..." : label;
                 } else {
                     label = questionInstance.get("replies").length + "x";
                 }
@@ -155,28 +91,22 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 label = (question.get("maxReplies") === 1) ? Y.Wegas.I18n.t('mcq.unanswered') : Y.Wegas.I18n.t('mcq.notDone');
             }
 
-            return  '<div class="'
-                + (highlightUnanswered ? "unread" : "")
-                + '"><div class="index-label">'
-                + I18n.t(question.get("label")) + "</div>"
+            var unreadLabel = "";
+
+            return  '<div class="index-mcq '
+                + (question.isAnyChoiceAnswerable() ? "answerable " : "")
+                + (questionInstance.get("unread") ? "unread " : "")
+                + (highlightUnanswered ? "unanswered " : "") + '">'
+                + '<div class="index-unread">' + unreadLabel + '</div>'
+                + '<div class="index-label">' + I18n.t(question.get("label")) + "</div>"
                 + '<div class="index-status">' + label + "</div>"
                 + '</div>';
         },
-        createTab: function(question) {
-            var tab = new Y.Wegas.Tab();
-            tab.loaded = false;
-            tab.cQuestion = question;
-            tab.set("content", "<div class=\"wegas-loading-div\"><div>");
-            this.updateTab(tab, question);
-            return tab;
-        },
-        updateTabs: function(questions) {
-            var question, questionInstance, oldTab, newTab, tabs, toRemove, index, queue,
-                oldIndex, selectedTab, lastSelection;
-            tabs = this.tabView._items;
-            toRemove = tabs.slice(0);
+        getEntities: function() {
+            var questions, question, questionInstance, queue,
+                entities = [];
+            questions = this.get("variable.evaluated");
 
-            selectedTab = this.tabView.get('selection');
 
             if (!Y.Lang.isArray(questions)) {
                 queue = [questions];
@@ -184,117 +114,46 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 queue = questions;
             }
 
-            index = 0;
             while (question = queue.shift()) {
                 if (question instanceof Wegas.persistence.QuestionDescriptor
                     || question instanceof Wegas.persistence.WhQuestionDescriptor) {
-                    oldTab = Y.Array.find(tabs, function(item) {
-                        return item.cQuestion && item.cQuestion.get("id") === question.get("id");
-                    });
                     questionInstance = question.getInstance();
 
                     if (questionInstance.get("active")) {
-                        if (oldTab) {
-                            // Simple Update
-                            this.updateTab(oldTab, question);
-                            oldIndex = toRemove.indexOf(oldTab);
-                            if (oldIndex >= 0) {
-                                toRemove.splice(oldIndex, 1);
-                            }
-                        } else {
-                            // Just activated
-                            newTab = this.createTab(question);
-                            this.tabView.add(newTab, index);
-                        }
-                        index++;
+                        entities.push(question);
                     }
                 } else if (question instanceof Wegas.persistence.ListDescriptor) {
                     queue = queue.concat(question.get("items"));
                 }
             }
-
-            /*
-             * Remove tabs which are to be no longer displayed
-             */
-            while (question = toRemove.shift()) {
-                if (selectedTab === question) {
-                    selectedTab = null;
-                }
-                question.remove();
-            }
-
-            if (this.tabView.size()) { // There might be no active question to select
-                lastSelection = (selectedTab) ? selectedTab.get('index') : 0;
-                if (lastSelection >= this.tabView.size()) { // Can occur when questions list has changed during event
-                    lastSelection = 0;
-                }
-                this.tabView.selectChild(lastSelection);
-            }
-
+            return entities;
         },
-        /**
-         * @function
-         * @private
-         * @description * Update the TabView with active
-         * choice/questions and relatives reply.
-         * Display a message if there is no message.
-         */
-        syncUI: function() {
-            var questions = this.get("variable.evaluated"),
-                selectedTab, lastSelection;
-
-            this.updateTabs(questions);
-
-            this.hideOverlay();
-
-            if (this.tabView.isEmpty()) {
-                this.get("contentBox").addClass("empty");
-                this.tabView.add(new Y.Tab({
-                    label: "",
-                    content: "<center><i><br /><br /><br />" + Y.Wegas.I18n.t('mcq.empty') + "</i></center>"
-                }));
-                this.tabView.selectChild(0);
-            } else {
-                this.get("contentBox").removeClass("empty");
+        getWidget: function(entity) {
+            if (entity instanceof Wegas.persistence.QuestionDescriptor) {
+                return new Y.Wegas.MCQView({
+                    variable: {
+                        "name": entity.get("name")
+                    },
+                    submitVar: this.get("submitVar"),
+                    displayResult: this.get("displayResult")
+                });
+            } else if (entity instanceof Wegas.persistence.WhQuestionDescriptor) {
+                return new Y.Wegas.WhView({
+                    variable: {
+                        "name": entity.get("name")
+                    },
+                    submitVar: this.get("submitVar")
+                });
             }
         },
-        /**
-         * @function
-         * @param e description
-         * @private
-         * @description Display selected question's description on current tab.
-         */
-        onTabSelected: function(e) {
-            var widget,
-                question;
-            if (e.newVal && e.newVal.cQuestion
-                && !this.isRemovingTabs && !e.newVal.loaded) {
-                this.destroyWidget(e.prevVal);
-                e.newVal.loaded = true;
-                question = e.newVal.cQuestion;
-
-                if (question instanceof Wegas.persistence.QuestionDescriptor) {
-                    widget = new Y.Wegas.MCQView({
-                        variable: {
-                            "name": question.get("name")
-                        }
-                    });
-                } else if (question instanceof Wegas.persistence.WhQuestionDescriptor) {
-                    widget = new Y.Wegas.WhView({
-                        variable: {
-                            "name": question.get("name")
-                        }
-                    });
-                }
-
-                e.newVal.add(widget);
-            }
+        getBackToMenuLabel: function() {
+            return I18n.t('global.mcqBackToMenu');
         },
-        destroyWidget: function(prevVal) {
-            if (prevVal && prevVal.loaded) {
-                prevVal.loaded = false;
-                prevVal.destroyAll();
-            }
+        getNoContentMessage: function() {
+            return Y.Wegas.I18n.t('mcq.empty');
+        },
+        getNothingSelectedInvite: function() {
+            return Y.Wegas.I18n.t('mcq.noQuestionSelected');
         },
         getEditorLabel: function() {
             var variable = this.get("variable.evaluated");
@@ -302,19 +161,6 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 return variable.getEditorLabel();
             }
             return Wegas.MCQTabView.EDITORNAME;
-        },
-        /**
-         * @function
-         * @private
-         * @description Destroy TabView and detach all functions created
-         *  by this widget
-         */
-        destructor: function() {
-            var i;
-            this.tabView.destroy();
-            for (i in this.handlers) {
-                this.handlers[i].detach();
-            }
         }
     }, {
         EDITORNAME: "Question display",
@@ -350,6 +196,40 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 view: {
                     label: "Higlight Unanswered",
                     className: "wegas-advanced-feature"
+                }
+            },
+            displayResult: {
+                value: 'bottom',
+                type: 'string',
+                view: {
+                    type: 'select',
+                    choices: [
+                        {
+                            value: 'bottom'
+                        }, {
+                            value: 'inline'
+                        }, {
+                            value: 'dialogue'
+                        }, {
+                            value: 'no'
+                        }
+                    ],
+                    className: 'wegas-advanced-feature',
+                    label: "Template"
+                }
+
+            },
+            submitVar: {
+                type: "object",
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                view: {
+                    type: 'variableselect',
+                    label: 'Submit button text',
+                    className: 'wegas-advanced-feature',
+                    classFilter: [
+                        "TextDescriptor", "StringDescriptor", // use the value
+                        "ListDescriptor" // use the label
+                    ]
                 }
             }
         }

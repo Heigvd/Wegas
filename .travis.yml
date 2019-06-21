@@ -1,13 +1,11 @@
 language: java
-sudo: false
 dist: trusty
 jdk:
   - openjdk8
 addons:
   postgresql: "9.6"
   ssh_known_hosts: 
-  - dev.albasim.ch
-  - rancher.albasim.ch
+  - rancher01.albasim.ch
 services: postgresql
 cache:
   directories:
@@ -20,9 +18,7 @@ branches:
   - master
 env:
   global:
-  - NODE_VERSION=9.5 CC=clang CXX=clang++ YARN_VERSION=1.6.0
-install:
-  - mvn -B -P release-profile generate-resources
+  - NODE_VERSION=10 CC=clang CXX=clang++ YARN_VERSION=1.10.1
 before_install:
   - echo "MAVEN_OPTS='-Xms800m -Xmx800m'" > ~/.mavenrc
   - echo -e "machine github.com\n  login $GIT_USER\n  password $GIT_TOKEN" >> ~/.netrc
@@ -31,13 +27,13 @@ before_install:
   - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version $YARN_VERSION
   - export PATH="$HOME/.yarn/bin:$PATH"
   - perl -pi -e "s/(wegas.build.number)=/\$1=$TRAVIS_BUILD_NUMBER/;s/(wegas.build.branch)=/\$1=$TRAVIS_BRANCH/;s/(wegas.build.pr_branch)=/\$1=$TRAVIS_PULL_REQUEST_BRANCH/;s/(wegas.build.pr_number)=/\$1=$TRAVIS_PULL_REQUEST/;" wegas-core/src/main/resources/wegas.properties
-before_script:
   - psql -c 'create database wegas_test;' -U postgres
   - psql -c "create user \"user\" with superuser password '1234';" -U postgres
-script:
+install:
   - mvn -B -P release-profile install
+script:
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo \"$TRAVIS_BRANCH\"; else echo \"${TRAVIS_PULL_REQUEST}_${TRAVIS_PULL_REQUEST_BRANCH}\"; fi)
 after_success:
 - openssl aes-256-cbc -K $encrypted_fb8fa6aea355_key -iv $encrypted_fb8fa6aea355_iv -in .id_rsa.enc -out .id_rsa -d; chmod 400 .id_rsa;
-  scp -B -i .id_rsa wegas-app/target/Wegas.war "$RANCHER_USER@rancher.albasim.ch:autodeploy/Wegas_${BRANCH}_${TRAVIS_BUILD_NUMBER}.war";
+  scp -B -i .id_rsa wegas-app/target/Wegas.war "$RANCHER_USER@rancher01.albasim.ch:autodeploy/Wegas_${BRANCH}_${TRAVIS_BUILD_NUMBER}.war";
   rm -f .id_rsa;

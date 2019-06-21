@@ -8,8 +8,12 @@
 package com.wegas.core.persistence.variable.primitive;
 
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.persistence.annotations.Param;
+import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.View;
 import javax.persistence.Entity;
 import jdk.nashorn.api.scripting.JSObject;
 
@@ -30,7 +34,7 @@ public class TextDescriptor extends VariableDescriptor<TextInstance>
      */
     @Override
     public void setValue(Player p, String value) {
-        this.getInstance(p).setValue(value);
+        this.getInstance(p).setValue(value, p.getLang());
     }
 
     /**
@@ -38,7 +42,10 @@ public class TextDescriptor extends VariableDescriptor<TextInstance>
      * @param p
      * @param value
      */
-    public void setValue(Player p, TranslatableContent value) {
+    @Scriptable
+    public void setValue(
+            Player p,
+            @Param(view = @View(label = "", value = I18nHtmlView.class)) TranslatableContent value) {
         this.getInstance(p).setValue(value);
     }
 
@@ -51,7 +58,6 @@ public class TextDescriptor extends VariableDescriptor<TextInstance>
         this.getInstance(p).setValue(value);
     }
 
-
     /**
      *
      * @param p
@@ -59,6 +65,7 @@ public class TextDescriptor extends VariableDescriptor<TextInstance>
      * @return value of player instance
      */
     @Override
+    @Scriptable(label = "value")
     public String getValue(Player p) {
         return this.getInstance(p).getValue();
     }

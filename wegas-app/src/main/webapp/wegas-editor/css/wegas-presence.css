@@ -8,33 +8,28 @@
 
 .yui3-skin-sam .yui3-wegas-editorchat {
     z-index: 200;
-    position: relative;
+    display: flex;
     /*background-color: #D3ECF6;*/
     /*border: 1px solid #D3ECF6;*/
 }
 
-.yui3-skin-sam .yui3-wegas-editorchat .conversation {
-    position: relative;
+.yui3-skin-sam .wegas-editorchat-conversation {
     background-color: #D3ECF6;
     color: black;
+    border-radius: 5px;
+    box-shadow: 0 0 1px 1px #c3c3c3;
+    padding: 0px 3px;
 }
 
 .yui3-skin-sam .yui3-wegas-editorchat .editorchat-footer {
     color: #4c4c4c;
     cursor: pointer;
-    padding: 0 10px 3px;
-    float: right;
-    background-color: #D3ECF6;
     user-select: none;
+    display:flex;
+    align-items: center;
 }
 
-.yui3-skin-sam .yui3-wegas-editorchat .closed + .editorchat-footer {
-    color: #4c4c4c;
-    background: transparent;
-    margin-top: 9px;
-}
-
-.yui3-skin-sam .yui3-wegas-editorchat .msgs .notification {
+.yui3-skin-sam .wegas-editorchat-conversation .msgs .notification {
     /*color: white;*/
     text-align: center;
     font-style: italic;
@@ -42,7 +37,7 @@
     margin: 5px 0;
 }
 
-.yui3-skin-sam .yui3-wegas-editorchat .conversation .msgs {
+.yui3-skin-sam .wegas-editorchat-conversation .msgs {
     width: 33em;
     float: left;
     min-height: 200px;
@@ -51,7 +46,7 @@
     overflow-y: auto;
 }
 
-.yui3-skin-sam .yui3-wegas-editorchat .msg {
+.yui3-skin-sam .wegas-editorchat-conversation .msg {
     box-sizing: border-box;
     background-color: white;
     color: #000B11;
@@ -62,27 +57,22 @@
     border-radius: 5px;
 }
 
-.yui3-skin-sam .yui3-wegas-editorchat .msg.me {
+.yui3-skin-sam .wegas-editorchat-conversation .msg.me {
     margin-left: 35px;
     margin-right: 5px;
 }
 
-.yui3-skin-sam .yui3-wegas-editorchat .sender {
+.yui3-skin-sam .wegas-editorchat-conversation .sender {
     font-weight: bolder;
     border-bottom: 1px solid #000B11;
 }
 
-.yui3-skin-sam .yui3-wegas-editorchat .content {
+.yui3-skin-sam .wegas-editorchat-conversation .content {
     padding: 5px 0;
     white-space: pre-line;
 }
 
-.yui3-skin-sam .yui3-wegas-editorchat .closed {
-    height: 0px;
-    overflow: hidden;
-}
-
-.yui3-skin-sam .yui3-wegas-editorchat .conversation .input {
+.yui3-skin-sam .wegas-editorchat-conversation .input {
     padding: 4px 2px 3px 2px;
     width: 100%;
     background-color: white;
@@ -91,6 +81,12 @@
     border-radius: 5px;
     border: 2px solid #D07000;
 }
+
+.yui3-skin-sam .chat-icon {
+    font-size:18px;
+    padding-top: 5px;
+}
+
 .yui3-skin-sam .chat-icon.disabled{
     opacity: 0.3
 }
@@ -115,6 +111,7 @@
 
 .yui3-skin-sam .yui3-wegas-editorchat .editorchat-footer .user-list {
     margin-left: 5px;
+    padding-top: 5px;
 }
 
 .yui3-skin-sam .yui3-wegas-editorchat .editorchat-footer .user-list > span {

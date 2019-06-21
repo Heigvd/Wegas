@@ -32,7 +32,7 @@ YUI.add('wegas-object-entities', function(Y) {
         SELFARG = {
             type: 'identifier',
             value: 'self',
-            view: { type: HIDDEN }
+            view: {type: HIDDEN}
         },
         VERSION_ATTR_DEF = {
             type: NUMBER,
@@ -83,8 +83,13 @@ YUI.add('wegas-object-entities', function(Y) {
                         }
                     },
                     id: IDATTRDEF,
+                    parentId: IDATTRDEF,
+                    parentType: {
+                        type: "string",
+                        view: {type: HIDDEN}
+                    },
                     version: VERSION_ATTR_DEF,
-                    descriptorId: IDATTRDEF,
+                    refId: persistence.Entity.ATTRS_DEF.REF_ID,
                     properties: {
                         type: "object",
                         additionalProperties: {
@@ -118,23 +123,23 @@ YUI.add('wegas-object-entities', function(Y) {
                 arguments: [SELFARG]
             },
             getProperty: {
-                label: "property",  // "property equals"
+                label: "property", // "property equals"
                 returns: STRING,
                 arguments: [SELFARG, {
-                    view: { label: NAME },
-                    type: STRING
-                }]
+                        view: {label: NAME},
+                        type: STRING
+                    }]
             },
             setProperty: {
                 label: "set property",
                 arguments: [SELFARG, {
-                    view: { label: NAME },
-                    required: true,
-                    type: STRING
-                }, {
-                    view: { label: VALUE },
-                    type: STRING
-                }]
+                        view: {label: NAME},
+                        required: true,
+                        type: STRING
+                    }, {
+                        view: {label: VALUE},
+                        type: STRING
+                    }]
             }
         }
     });

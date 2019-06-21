@@ -34,9 +34,22 @@ YUI.add("wegas-simpledialogue", function(Y) {
             }, '.dialogue .response .responseElements li', this);
         },
         syncUI: function() {
-            this.currentDialogue = this.get("dialogueVariable.evaluated");
+            var dial = this.get("dialogueVariable.evaluated");
+            Y.Wegas.Facade.Variable.cache.getWithView(dial, "Extended", {
+                on: {
+                    success: Y.bind(function(e) {
+                        this.displayDialogue(e.response.entity);
+                    }, this)
+                }
+            });
+        },
+        displayDialogue: function(currentDialogue) {
+            this.currentDialogue = currentDialogue;
             this.set("disabled", !this.currentDialogue.getInstance().get("enabled"));
-            this.get(CONTENTBOX).one('.dialogue .response .responseElements').empty();
+            var responseElements = this.get(CONTENTBOX).one('.dialogue .response .responseElements');
+            if (responseElements) {
+                responseElements.empty();
+            }
             if (!this.currentDialogue) {
                 this.get(CONTENTBOX).one('.dialogue .talk').insert("Dialog variable could not be found");
                 return;
@@ -60,7 +73,9 @@ YUI.add("wegas-simpledialogue", function(Y) {
         },
         displayText: function(textParts) {
             textParts = (textParts === null || Y.Lang.isUndefined(textParts)) ? "" : textParts;
-            this.get(CONTENTBOX).one('.dialogue .talk').setHTML("<p>" + textParts + "</p>");
+            if (textParts) {
+                this.get(CONTENTBOX).one('.dialogue .talk').setHTML("<p>" + textParts + "</p>");
+            }
         },
         displayResponse: function(availableActions) {
             var i,
@@ -70,7 +85,7 @@ YUI.add("wegas-simpledialogue", function(Y) {
                 return;
             }
 
-            if (availableActions.length === 0){
+            if (availableActions.length === 0) {
                 this.get(CONTENTBOX).one('.dialogue .response').addClass("empty");
             } else {
                 this.get(CONTENTBOX).one('.dialogue .response').removeClass("empty");

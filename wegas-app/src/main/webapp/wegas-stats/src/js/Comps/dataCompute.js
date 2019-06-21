@@ -7,11 +7,15 @@ function genLabel(questionName, snapshot) {
         question.items.forEach(function(choice) {
             if (choice.results.length) {
                 choice.results.forEach(function(result) {
-                    labels.push(JSON.search(snapshot, `//*[name="${choice.name}"]`)[0].label.translations.def +
-                        (result.label.translations.def ? ` (${result.label.translations.def})` : ''));
+                    const lang = Object.keys(result.label.translations)[0];
+                    labels.push(JSON.search(snapshot, `//*[name="${choice.name}"]`)[0].label.translations[lang] +
+                        (result.label.translations[lang] ? ` (${result.label.translations[lang]})` : ''));
                 });
             } else {
-                labels.push(JSON.search(snapshot, `//*[name="${choice.name}"]`)[0].label.translations.def);
+                const label = JSON.search(snapshot, `//*[name="${choice.name}"]`)[0].label;
+                const lang = Object.keys(label.translations)[0];
+
+                labels.push(label.translations[lang]);
             }
         });
     }
@@ -28,7 +32,7 @@ function questionSerie(questionName, questionData, snapshot) {
         choices.set(choice.name, new Map());
         if (choice.results.length) {
             choice.results.forEach(function(result) {
-                choices.get(choice.name).set(result.label.translations.def, 0);
+                choices.get(choice.name).set(result.name, 0);
             });
         } else {
             choices.get(choice.name).set('', 0);
@@ -52,7 +56,7 @@ function questionSerie(questionName, questionData, snapshot) {
     };
 }
 
-function computeData({ question, snapshot, logId, groups }) {
+function computeData( { question, snapshot, logId, groups }) {
     const data = {
         labels: genLabel(question, snapshot),
         series: [],

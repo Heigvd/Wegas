@@ -168,29 +168,38 @@ code {
     width: 324px;
 }
 
-.yui3-skin-sam .wegas-inbox .yui3-tab:hover, .yui3-skin-sam .wegas-inbox .yui3-tab-selected {
-    background: rgba(255, 255, 255, 0.2);
+.yui3-skin-sam .wegas-inbox .yui3-tab,
+.yui3-skin-sam .wegas-inbox .yui3-tab:focus,
+.yui3-skin-sam .wegas-inbox .yui3-tab:hover,
+.yui3-skin-sam .wegas-inbox .yui3-tab-selected {
+    background: rgba(255, 255, 255, 0.2) !important;
     opacity: 1;
     color: black;
 }
 
-.yui3-skin-sam .horizontal-tabview .yui3-tab-panel, .yui3-skin-sam .wegas-inbox .msg-body, .yui3-skin-sam .wegas-inbox .msg-header {
+.yui3-skin-sam .horizontal-tabview .yui3-tab-panel,
+.yui3-skin-sam .wegas-inbox .wegas-message-body,
+.yui3-skin-sam .wegas-inbox .wegas-message-attachments,
+.yui3-skin-sam .wegas-inbox .wegas-message-header {
     background: transparent;
     border: none;
     text-align: justify;
 }
 
-.yui3-skin-sam .wegas-inbox .msg-header {
+.yui3-skin-sam .wegas-inbox .wegas-message-header {
     font-weight: bold;
 }
 
-.wegas-inbox .yui3-tab .yui3-tab-label, .wegas-inbox .yui3-tab .yui3-tab-label:hover {
+.wegas-inbox .yui3-tab .yui3-tab-label,
+.wegas-inbox .yui3-tab .yui3-tab-label:hover {
     color: white !important;
     background: none !important;
     box-shadow: none !important;
 }
 
-.wegas-inbox .yui3-tab-selected .yui3-tab-label, .wegas-inbox .yui3-tab-selected .yui3-tab-label:focus, .wegas-inbox .yui3-tab-selected .yui3-tab-label:hover {
+.wegas-inbox .yui3-tab-selected .yui3-tab-label,
+.wegas-inbox .yui3-tab-selected .yui3-tab-label:focus, 
+.wegas-inbox .yui3-tab-selected .yui3-tab-label:hover {
     color: white !important;
     background: none;
     font-weight: bold;
@@ -561,6 +570,7 @@ code {
 .movable {
     position: absolute;
     top: 360px;
+    z-index: 30;
     background-color: #2A2A2A;
     /*    min-height: 360px;*/
     /*    background: url(../../wegas-proggame/images/blackboard_Game.png);*/
@@ -650,6 +660,13 @@ code {
     outline-color: transparent;
 }
 
+.wegas-proggame-level .script-error{
+    background: red;
+    border-radius: 2px;
+    border: 1px solid white;
+    font-family: monospace;
+    padding: 5px;
+}
 
 /* Ace styles */
 

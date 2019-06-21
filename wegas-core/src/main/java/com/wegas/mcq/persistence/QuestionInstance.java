@@ -9,12 +9,15 @@ package com.wegas.mcq.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.ValueGenerators.False;
+import com.wegas.editor.ValueGenerators.True;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +28,7 @@ import javax.persistence.Entity;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-public class QuestionInstance extends VariableInstance {
+public class QuestionInstance extends VariableInstance implements ReadableInstance {
 
     private static final long serialVersionUID = 1L;
     //private static final Logger logger = LoggerFactory.getLogger(QuestionInstance.class);
@@ -33,38 +36,31 @@ public class QuestionInstance extends VariableInstance {
     /**
      *
      */
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = True.class,
+            view = @View(label = "Active"))
     private Boolean active = true;
     /**
      *
      */
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = True.class,
+            view = @View(label = "Unread", value = Hidden.class))
     private Boolean unread = true;
     /**
      * False until the user has clicked on the global question-wide "submit"
      * button.
      */
     @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = False.class,
+            view = @View(label = "Validated", value = Hidden.class))
     private Boolean validated = FALSE;
-
-    /**
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof QuestionInstance) {
-            QuestionInstance other = (QuestionInstance) a;
-            super.merge(a);
-            this.setActive(other.getActive());
-            this.setUnread(other.getUnread());
-            Boolean v = other.getValidated();
-            this.setValidated(v);
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
-    }
 
     /**
      * @return the active
      */
+    @Override
     public Boolean getActive() {
         return active;
     }
@@ -72,6 +68,7 @@ public class QuestionInstance extends VariableInstance {
     /**
      * @param active the active to set
      */
+    @Override
     public void setActive(Boolean active) {
         this.active = active;
     }
@@ -89,19 +86,31 @@ public class QuestionInstance extends VariableInstance {
         return Helper.copyAndSort(this.getReplies(p), new EntityComparators.CreateTimeComparator<>());
     }
 
-    public List<Reply> getReplies(Player p) {
+    /**
+     * get all, only validated or only not validated replies
+     *
+     * @param p
+     * @param validatedFilter true : only validated, false: only not validated; null:both
+     *
+     * @return
+     */
+    public List<Reply> getReplies(Player p, Boolean validatedFilter) {
         List<Reply> replies = new ArrayList<>();
         QuestionDescriptor qD = (QuestionDescriptor) this.findDescriptor();
 
         for (ChoiceDescriptor cd : qD.getItems()) {
             if (this.isDefaultInstance()) {
-                replies.addAll(cd.getDefaultInstance().getReplies());
+                replies.addAll(cd.getDefaultInstance().getReplies(validatedFilter));
             } else {
-                replies.addAll(cd.getInstance(p).getReplies());
+                replies.addAll(cd.getInstance(p).getReplies(validatedFilter));
             }
         }
 
         return replies;
+    }
+
+    public List<Reply> getReplies(Player p) {
+        return this.getReplies(p, null);
     }
 
     @JsonIgnore
@@ -116,13 +125,15 @@ public class QuestionInstance extends VariableInstance {
     /**
      * @return the unread
      */
-    public Boolean getUnread() {
+    @Override
+    public Boolean isUnread() {
         return this.unread;
     }
 
     /**
      * @param unread the unread to set
      */
+    @Override
     public void setUnread(Boolean unread) {
         this.unread = unread;
     }
@@ -138,6 +149,7 @@ public class QuestionInstance extends VariableInstance {
     /**
      *
      */
+    @Deprecated
     public void desactivate() {
         this.deactivate();
     }
@@ -159,7 +171,7 @@ public class QuestionInstance extends VariableInstance {
     /**
      * @return The validation status of the question
      */
-    public Boolean getValidated() {
+    public Boolean isValidated() {
         return this.validated;
     }
 
@@ -177,7 +189,7 @@ public class QuestionInstance extends VariableInstance {
         QuestionDescriptor qd = (QuestionDescriptor) this.findDescriptor();
         Integer maxReplies = qd.getMaxReplies();
         // the question must be selectable
-        boolean selectable = (qd.getCbx() && !this.getValidated()) // a not yet validated cbx question
+        boolean selectable = (qd.getCbx() && !this.isValidated()) // a not yet validated cbx question
                 || maxReplies == null // OR number of answers is unlimited
                 || this.getReplies().size() < maxReplies; // OR maximum number not reached
         if (selectable) {

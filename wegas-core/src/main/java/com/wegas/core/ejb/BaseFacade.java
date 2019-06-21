@@ -9,9 +9,9 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.persistence.AbstractEntity;
-import java.io.IOException;
 import java.util.List;
-import javax.persistence.*;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import org.slf4j.Logger;
@@ -106,19 +106,16 @@ public abstract class BaseFacade<T extends AbstractEntity> extends WegasAbstract
 
     /**
      *
-     * Duplicate an entity by serializing it using the "Export" view and
-     * serializing it back.
+     * Duplicate an entity by cloning it.and {@link AbstractFacade#create} it
      *
-     * @param entityId
+     * @param entityId of of entity to duplicate
      *
-     * @throws IOException
-     * @return a copy of entity identified by entityId
+     * @return a copy of entity identified by entityId,
      */
     @Override
-    public T duplicate(final Long entityId) throws IOException {
-        final T oldEntity = this.find(entityId);                                      // Retrieve the entity to duplicate
-        final T newEntity = (T) oldEntity.duplicate();
-        this.create(newEntity);                                                 // Store it in db
+    public T duplicate(final Long entityId) throws CloneNotSupportedException {
+        final T newEntity = (T) this.find(entityId).duplicate();
+        this.create(newEntity);
         return newEntity;
     }
 
@@ -130,6 +127,14 @@ public abstract class BaseFacade<T extends AbstractEntity> extends WegasAbstract
     @Override
     public void remove(final Long entityId) {
         this.remove(this.find(entityId));
+    }
+
+    public void removeAbstractEntity(AbstractEntity entity) {
+        this.getEntityManager().remove(entity);
+    }
+
+    public void persistAbstractEntity(AbstractEntity entity) {
+        this.getEntityManager().persist(entity);
     }
 
     /**

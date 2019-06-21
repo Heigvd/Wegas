@@ -10,6 +10,9 @@ package com.wegas.core.ejb;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.content.*;
 import com.wegas.core.jcr.content.ContentConnector.WorkspaceType;
+import com.wegas.core.jcr.jta.JCRConnectorProvider;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.variable.ModelScoped;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.jcr.ItemExistsException;
 import javax.jcr.LoginException;
 import javax.jcr.PathNotFoundException;
@@ -33,6 +37,11 @@ import org.slf4j.LoggerFactory;
 @Stateless
 @LocalBean
 public class JCRFacade {
+
+    @Inject JCRConnectorProvider jCRConnectorProvider;
+
+    @Inject
+    private GameModelFacade gameModelFacade;
 
     /**
      *
@@ -55,26 +64,31 @@ public class JCRFacade {
      * @throws WegasErrorMessage when deleting a non empty directory without
      *                           force=true
      */
-    public Object delete(Long gameModelId,
+    public Object delete(GameModel gameModel,
             WorkspaceType workspaceType,
             String absolutePath,
             String force) {
 
         final Boolean recursive = !force.equals("");
         logger.debug("Asking delete for node ({}), force {}", absolutePath, recursive);
-        try (final ContentConnector connector = new ContentConnector(gameModelId, workspaceType)) {
+        try {
+            ContentConnector connector = this.getContentConnector(gameModel, workspaceType);
             AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(absolutePath, connector);
             if (descriptor.exist()) {
-                descriptor.sync();
-                if (descriptor instanceof DirectoryDescriptor && ((DirectoryDescriptor) descriptor).isRootDirectory()) {
-                    return Response.notModified("Unable to erase Root Directory").build();
+                if (!descriptor.belongsToProtectedGameModel() || descriptor.getVisibility() == ModelScoped.Visibility.PRIVATE) {
+                    descriptor.sync();
+                    if (descriptor instanceof DirectoryDescriptor && ((DirectoryDescriptor) descriptor).isRootDirectory()) {
+                        return Response.notModified("Unable to erase Root Directory").build();
+                    }
+                    try {
+                        descriptor.delete(recursive);
+                    } catch (ItemExistsException e) {
+                        throw WegasErrorMessage.error(absolutePath + " is not empty, preventing removal");
+                    }
+                    return descriptor;
+                } else {
+                    return Response.status(403).build();
                 }
-                try {
-                    descriptor.delete(recursive);
-                } catch (ItemExistsException e) {
-                    throw WegasErrorMessage.error(absolutePath + " is not empty, preventing removal");
-                }
-                return descriptor;
             } else {
                 return Response.notModified("Path" + absolutePath + " does not exist").build();
             }
@@ -85,17 +99,19 @@ public class JCRFacade {
     }
 
     /**
-     * @param gameModelId
+     * @param gameModel
      * @param workspaceType
      * @param directory
      *
      * @return list of directory content
      */
-    public List<AbstractContentDescriptor> listDirectory(Long gameModelId,
+    public List<AbstractContentDescriptor> listDirectory(GameModel gameModel,
             WorkspaceType workspaceType,
             String directory) {
         logger.debug("Asking listing for directory (/{})", directory);
-        try (final ContentConnector connector = new ContentConnector(gameModelId, workspaceType)) {
+
+        try {
+            ContentConnector connector = jCRConnectorProvider.getContentConnector(gameModel, workspaceType);
             AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(directory, connector);
             if (!dir.exist() || dir instanceof FileDescriptor) {
                 return null;
@@ -112,8 +128,35 @@ public class JCRFacade {
         return new ArrayList<>();
     }
 
+    public FileDescriptor createFile(Long gameModelId, WorkspaceType wType, String name, String path, String mediaType,
+            String note, String description, InputStream file, final Boolean override) throws RepositoryException {
+        return this.createFile(gameModelFacade.find(gameModelId), wType, name, path, mediaType, note, description, file, override);
+    }
+
+    private boolean isPathAvailable(GameModel gameModel, WorkspaceType wType, String path, String name) throws RepositoryException {
+        if (gameModel.isModel()) {
+            for (GameModel scen : gameModelFacade.getImplementations(gameModel)) {
+                ContentConnector connector = jCRConnectorProvider.getContentConnector(scen, wType);
+                AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(path + "/" + name, connector);
+                if (descriptor.exist()) {
+                    return false;
+                }
+            }
+            return true;
+        } else if (gameModel.isScenarioBasedOnModel()) {
+            // Path should not exists in the model
+            GameModel model = gameModel.getBasedOn();
+            ContentConnector contentConnector = jCRConnectorProvider.getContentConnector(model, wType);
+            AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(path + "/" + name, contentConnector);
+
+            return !descriptor.exist();
+        } else {
+            return true;
+        }
+    }
+
     /**
-     * @param gameModelId
+     * @param gameModel
      * @param wType
      * @param name
      * @param path
@@ -127,7 +170,7 @@ public class JCRFacade {
      *
      * @throws RepositoryException
      */
-    public FileDescriptor createFile(Long gameModelId, WorkspaceType wType, String name, String path, String mediaType,
+    public FileDescriptor createFile(GameModel gameModel, WorkspaceType wType, String name, String path, String mediaType,
             String note, String description, InputStream file, final Boolean override) throws RepositoryException {
 
         logger.debug("File name: {}", name);
@@ -137,25 +180,41 @@ public class JCRFacade {
         if (name.equals("") || !matcher.matches()) {
             throw WegasErrorMessage.error(name + " is not a valid filename.  Letters, numbers, whitespace or \".-_\" only.");
         }
-        try (final ContentConnector connector = this.getContentConnector(gameModelId, wType)) {
+
+        try {
+            ContentConnector connector = jCRConnectorProvider.getContentConnector(gameModel, wType);
 
             AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
-            FileDescriptor detachedFile = new FileDescriptor(name, path, connector);
 
-            if (!detachedFile.exist() || override) {                                        //Node should not exist
-                detachedFile.setNote(note == null ? "" : note);
-                detachedFile.setDescription(description);
-                //TODO : check allowed mime-types
-                try {
-                    detachedFile.setBase64Data(file, mediaType);
-                    logger.info("{} ({}) uploaded", name, mediaType);
-                    return detachedFile;
-                } catch (IOException ex) {
-                    logger.error("Error reading uploaded file :", ex);
-                    throw WegasErrorMessage.error("Error reading uploaded file");
+            if (!dir.belongsToProtectedGameModel() || dir.getVisibility() != ModelScoped.Visibility.INTERNAL) {
+                FileDescriptor detachedFile = new FileDescriptor(name, path, connector);
+
+                if (!detachedFile.exist()) {
+                    // new file, set visibility to private
+                    detachedFile.setVisibility(gameModel.isModel() ? ModelScoped.Visibility.INHERITED : ModelScoped.Visibility.PRIVATE);
+                    if (!isPathAvailable(gameModel, wType, path, name)) {
+                        throw WegasErrorMessage.error(detachedFile.getPath() + name + " already exists in the model cluster");
+                    }
+                    // check name
+                }
+
+                if (!detachedFile.exist() || override) { //Node should not exist
+                    detachedFile.setNote(note == null ? "" : note);
+                    detachedFile.setDescription(description);
+                    //TODO : check allowed mime-types
+                    try {
+                        detachedFile.setBase64Data(file, mediaType);
+                        logger.info("{} ({}) uploaded", name, mediaType);
+                        return detachedFile;
+                    } catch (IOException ex) {
+                        logger.error("Error reading uploaded file :", ex);
+                        throw WegasErrorMessage.error("Error reading uploaded file");
+                    }
+                } else {
+                    throw WegasErrorMessage.error(detachedFile.getPath() + name + " already exists");
                 }
             } else {
-                throw WegasErrorMessage.error(detachedFile.getPath() + name + " already exists");
+                throw WegasErrorMessage.error("Path " + path + "is readonly");
             }
         } catch (RepositoryException ex) {
             ex.printStackTrace();
@@ -164,7 +223,25 @@ public class JCRFacade {
     }
 
     /**
+     *
      * @param gameModelId
+     * @param wType
+     * @param name
+     * @param path
+     * @param note
+     * @param description
+     *
+     * @return
+     *
+     * @throws RepositoryException
+     */
+    public DirectoryDescriptor createDirectory(Long gameModelId, WorkspaceType wType, String name, String path, String note, String description) throws RepositoryException {
+        return this.createDirectory(gameModelFacade.find(gameModelId), wType, name, path, note, description);
+    }
+
+    /**
+     * @param gameModel
+     * @param wType
      * @param name
      * @param path
      * @param note
@@ -174,7 +251,7 @@ public class JCRFacade {
      *
      * @throws RepositoryException
      */
-    public DirectoryDescriptor createDirectory(Long gameModelId, WorkspaceType wType, String name, String path, String note, String description) throws RepositoryException {
+    public DirectoryDescriptor createDirectory(GameModel gameModel, WorkspaceType wType, String name, String path, String note, String description) throws RepositoryException {
 
         //logger.debug("Directory name: {}", name);
         Pattern pattern = Pattern.compile(FILENAME_REGEXP);
@@ -182,27 +259,37 @@ public class JCRFacade {
         if (name.equals("") || !matcher.matches()) {
             throw WegasErrorMessage.error(name + " is not a valid filename.");
         }
-        ContentConnector connector = this.getContentConnector(gameModelId, wType);
-        AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
-        if (dir.exist()) {                                                      // Directory has to exist
-            DirectoryDescriptor detachedFile = new DirectoryDescriptor(name, path, connector);
+        ContentConnector connector = this.getContentConnector(gameModel, wType);
 
-            if (!detachedFile.exist()) {                                        // Node should not exist
-                detachedFile.setNote(note == null ? "" : note);
-                detachedFile.setDescription(description);
-                detachedFile.sync();
-                logger.info("Directory {} created at {}", detachedFile.getName(), detachedFile.getPath());
-                return detachedFile;
+        AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
+        if (dir.exist()) {
+            if (!dir.belongsToProtectedGameModel() || dir.getVisibility() != ModelScoped.Visibility.INTERNAL) {
+
+                if (isPathAvailable(gameModel, wType, path, name)) {
+                    DirectoryDescriptor detachedFile = new DirectoryDescriptor(name, path, connector);
+
+                    if (!detachedFile.exist()) {
+                        detachedFile.setNote(note == null ? "" : note);
+                        detachedFile.setDescription(description);
+                        detachedFile.sync();
+                        logger.info("Directory {} created at {}", detachedFile.getName(), detachedFile.getPath());
+                        return detachedFile;
+                    } else {
+                        throw WegasErrorMessage.error(detachedFile.getPath() + name + " already exists");
+                    }
+                } else {
+                    throw WegasErrorMessage.error(path + "/" + name + " already exists in the model cluster");
+                }
             } else {
-                throw WegasErrorMessage.error(detachedFile.getPath() + name + " already exists");
+                throw WegasErrorMessage.error("Path " + path + "is readonly");
             }
         } else {
-            throw WegasErrorMessage.error(path + " directory does not exist already exists");
+            throw WegasErrorMessage.error(path + " directory does not exists");
         }
     }
 
     /**
-     * @param gameModelId
+     * @param gameModel
      * @param wType
      * @param path
      *
@@ -210,14 +297,26 @@ public class JCRFacade {
      *
      * @throws RepositoryException
      */
-    public boolean directoryExists(Long gameModelId, WorkspaceType wType, String path) throws RepositoryException {
-        ContentConnector connector = this.getContentConnector(gameModelId, wType);
+    public boolean directoryExists(GameModel gameModel, WorkspaceType wType, String path) throws RepositoryException {
+        ContentConnector connector = this.getContentConnector(gameModel, wType);
         AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
         return dir.exist();
     }
 
     /**
+     *
      * @param gameModelId
+     * @param wType
+     * @param path
+     *
+     * @return
+     */
+    public InputStream getFile(Long gameModelId, WorkspaceType wType, String path) {
+        return this.getFile(gameModelFacade.find(gameModelId), wType, path);
+    }
+
+    /**
+     * @param gameModel
      * @param wType
      * @param path
      *
@@ -225,14 +324,14 @@ public class JCRFacade {
      *
      * @throws WegasErrorMessage when the requested file doesn't exists
      */
-    public InputStream getFile(Long gameModelId, WorkspaceType wType, String path) {
+    public InputStream getFile(GameModel gameModel, WorkspaceType wType, String path) {
         logger.debug("Asking file (/{})", path);
 
         InputStream ret = null;
         AbstractContentDescriptor fileDescriptor = null;
         ContentConnector connector = null;
         try {
-            connector = this.getContentConnector(gameModelId, wType);
+            connector = this.getContentConnector(gameModel, wType);
             fileDescriptor = DescriptorFactory.getDescriptor(path, connector);
         } catch (PathNotFoundException e) {
             logger.debug("Asked path does not exist: {}", e.getMessage());
@@ -242,13 +341,57 @@ public class JCRFacade {
         }
         if (fileDescriptor instanceof FileDescriptor) {
             ret = new BufferedInputStream(((FileDescriptor) fileDescriptor).getBase64Data(), 512);
-            connector.save();
         }
         return ret;
     }
 
-    private ContentConnector getContentConnector(long gameModelId, WorkspaceType wType) throws RepositoryException {
-        return new ContentConnector(gameModelId, wType);
+    /**
+     *
+     * @param gameModelId
+     * @param wType
+     * @param path
+     *
+     * @return
+     *
+     * @throws IOException
+     */
+    public byte[] getFileBytes(Long gameModelId, WorkspaceType wType, String path) throws IOException {
+        return this.getFileBytes(gameModelFacade.find(gameModelId), wType, path);
+    }
+
+    /**
+     * @param gameModel
+     * @param wType
+     * @param path
+     *
+     * @return the file content
+     *
+     * @throws java.io.IOException
+     *
+     * @throws WegasErrorMessage   when the requested file doesn't exists
+     */
+    public byte[] getFileBytes(GameModel gameModel, WorkspaceType wType, String path) throws IOException {
+        logger.debug("Asking file bytes (/{})", path);
+
+        try {
+            ContentConnector connector = this.getContentConnector(gameModel, wType);
+            AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(path, connector);
+
+            if (descriptor instanceof FileDescriptor) {
+                return ((FileDescriptor) descriptor).getBytesData();
+            }
+
+        } catch (PathNotFoundException e) {
+            logger.debug("Asked path does not exist: {}", e.getMessage());
+            throw WegasErrorMessage.error("Directory " + path + " doest not exist");
+        } catch (RepositoryException e) {
+            logger.error("Need to check those errors", e);
+        }
+        return new byte[]{};
+    }
+
+    private ContentConnector getContentConnector(GameModel gameModel, WorkspaceType workspaceType) throws RepositoryException {
+        return jCRConnectorProvider.getContentConnector(gameModel, workspaceType);
     }
 
 }

@@ -7,8 +7,11 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.ValueGenerators.False;
+import com.wegas.editor.View.View;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +28,10 @@ public class BooleanInstance extends VariableInstance {
     /**
      *
      */
-    private boolean val;
+    @Column(name = "val")
+    @WegasEntityProperty(proposal = False.class, optional = false, nullable = false,
+            view = @View(label = "Value"))
+    private boolean value;
 
     /**
      *
@@ -38,31 +44,21 @@ public class BooleanInstance extends VariableInstance {
      * @param value
      */
     public BooleanInstance(boolean value) {
-        this.val = value;
+        this.value = value;
     }
 
     /**
      * @return the value
      */
     public boolean getValue() {
-        return val;
+        return value;
     }
 
     /**
      * @param value the value to set
      */
     public void setValue(boolean value) {
-        this.val = value;
+        this.value = value;
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        super.merge(a);
-        BooleanInstance other = (BooleanInstance) a;
-        this.setValue(other.getValue());
-    }
 }

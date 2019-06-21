@@ -7,19 +7,22 @@
  */
 package com.wegas.mcq.persistence.wh;
 
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.ValueGenerators.False;
+import com.wegas.editor.ValueGenerators.True;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import static java.lang.Boolean.FALSE;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import com.wegas.mcq.persistence.ReadableInstance;
 
 /**
  * @author Maxence
  */
 @Entity
-public class WhQuestionInstance extends VariableInstance {
+public class WhQuestionInstance extends VariableInstance implements ReadableInstance {
 
     private static final long serialVersionUID = 1L;
     //private static final Logger logger = LoggerFactory.getLogger(QuestionInstance.class);
@@ -27,37 +30,32 @@ public class WhQuestionInstance extends VariableInstance {
     /**
      *
      */
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = True.class,
+            view = @View(label = "Active"))
     private Boolean active = true;
+
+    /**
+     *
+     */
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = True.class,
+            view = @View(label = "Unread", value= Hidden.class))
+    private Boolean unread = true;
     /**
      * False until the user has clicked on the global question-wide "submit"
      * button.
      */
     @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = False.class,
+            view = @View(label = "Validated", value= Hidden.class))
     private Boolean validated = FALSE;
-
-    /**
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof WhQuestionInstance) {
-            WhQuestionInstance other = (WhQuestionInstance) a;
-            super.merge(a);
-            this.setActive(other.getActive());
-            this.setValidated(other.isValidated());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
-    }
-
-    @Override
-    public void revive(Beanjection beans) {
-        super.revive(beans);
-    }
 
     /**
      * @return the active
      */
+    @Override
     public Boolean getActive() {
         return active;
     }
@@ -65,6 +63,7 @@ public class WhQuestionInstance extends VariableInstance {
     /**
      * @param active the active to set
      */
+    @Override
     public void setActive(Boolean active) {
         this.active = active;
     }
@@ -81,6 +80,16 @@ public class WhQuestionInstance extends VariableInstance {
      */
     public Boolean isValidated() {
         return this.validated;
+    }
+
+    @Override
+    public Boolean isUnread() {
+        return unread;
+    }
+
+    @Override
+    public void setUnread(Boolean unread) {
+        this.unread = unread;
     }
 
     // ~~~ Sugar ~~~

@@ -13,7 +13,7 @@
 YUI.add('wegas-pusher-connector', function(Y) {
     "use strict";
 
-    var PusherDataSource, Wegas = Y.Wegas, pusherInstance;
+    var PusherDataSource;
 
     /**
      * PusherDataSource singleton for each applicationKey
@@ -22,7 +22,7 @@ YUI.add('wegas-pusher-connector', function(Y) {
      * @param {Object} config, requires applicationKey
      * @returns {Instance}
      */
-    PusherDataSource = Y.Base.create("PusherDataSource", Wegas.DataSource, [], {
+    PusherDataSource = Y.Base.create("PusherDataSource", Y.Wegas.DataSource, [], {
         /* @lends Y.Wegas.util.PusherDataSource# */
 
         /*
@@ -42,11 +42,12 @@ YUI.add('wegas-pusher-connector', function(Y) {
                 "Game": "private-Game-",
                 "GameModel": "private-GameModel-"
             };
+            this.pusherInstance = null;
             this.pusherInit(cfg);
             //this.pusher = new Pusher('732a1df75d93d028e4f9');
         },
         pusherInit: function(cfg) {
-            if (!window.Pusher || pusherInstance) {
+            if (!window.Pusher || this.pusherInstance) {
                 //Y.later(100, this.pusherInit, this, cfg);
                 return;
             }
@@ -54,38 +55,38 @@ YUI.add('wegas-pusher-connector', function(Y) {
                 Pusher.log = Y.log;                                                            // Enable pusher logging
                 document.WEB_SOCKET_DEBUG = true;                                              // Flash fallback logging
             }
-            pusherInstance = new Pusher(cfg.applicationKey, {
+            this.pusherInstance = new Pusher(cfg.applicationKey, {
                 authEndpoint: Y.Wegas.app.get("base") + "rest/Pusher/auth",
                 encrypted: true,
                 cluster: cfg.cluster
             });
-            pusherInstance.connection.bind('error', function(err) {
+            this.pusherInstance.connection.bind('error', function(err) {
                 if (err.data && err.data.code === 4004) {
                     Y.log("Pusher daily limit", "error", "Y.Wegas.util.PusherConnector");
                 }
             });
-            pusherInstance.connection.bind("state_change", function(state) {
+            this.pusherInstance.connection.bind("state_change", function(state) {
                 this._set("status", state.current);
-                Y.Wegas.app.set("socketId", pusherInstance.connection.socket_id); // Store current socket id into app
+                Y.Wegas.app.set("socketId", this.pusherInstance.connection.socket_id); // Store current socket id into app
             }, this);
-            this._set("status", pusherInstance.connection.state);
+            this._set("status", this.pusherInstance.connection.state);
 
-            pusherInstance.subscribe(this.channel_prefix.GameModel +
-                Wegas.Facade.GameModel.get("currentGameModelId")).bind_all(Y.bind(this.eventReceived, this));
-            pusherInstance.subscribe(this.channel_prefix.Game +
-                Wegas.Facade.Game.get("currentGameId")).bind_all(Y.bind(this.eventReceived, this));
+            this.pusherInstance.subscribe(this.channel_prefix.GameModel +
+                Y.Wegas.Facade.GameModel.get("currentGameModelId")).bind_global(Y.bind(this.eventReceived, this));
+            this.pusherInstance.subscribe(this.channel_prefix.Game +
+                Y.Wegas.Facade.Game.get("currentGameId")).bind_global(Y.bind(this.eventReceived, this));
 
             if (this.get("mode") === "FULL") {
-                pusherInstance.subscribe(this.channel_prefix.Team +
-                    Wegas.Facade.Game.get("currentTeamId")).bind_all(Y.bind(this.eventReceived, this));
-                pusherInstance.subscribe(this.channel_prefix.Player +
-                    Wegas.Facade.Game.get("currentPlayerId")).bind_all(Y.bind(this.eventReceived, this));
+                this.pusherInstance.subscribe(this.channel_prefix.Team +
+                    Y.Wegas.Facade.Game.get("currentTeamId")).bind_global(Y.bind(this.eventReceived, this));
+                this.pusherInstance.subscribe(this.channel_prefix.Player +
+                    Y.Wegas.Facade.Game.get("currentPlayerId")).bind_global(Y.bind(this.eventReceived, this));
             }
 
-            pusherInstance.subscribe(this.channel_prefix.Global).bind_all(Y.bind(this.eventReceived, this));
+            this.pusherInstance.subscribe(this.channel_prefix.Global).bind_global(Y.bind(this.eventReceived, this));
 
-            pusherInstance.subscribe(this.channel_prefix.User +
-                Y.Wegas.Facade.User.get("currentUserId")).bind_all(Y.bind(this.eventReceived, this));
+            this.pusherInstance.subscribe(this.channel_prefix.User +
+                Y.Wegas.Facade.User.get("currentUserId")).bind_global(Y.bind(this.eventReceived, this));
         },
         Utf8ArrayToStr: function(array) {
             // http://www.onicos.com/staff/iz/amuse/javascript/expert/utf.txt
@@ -136,8 +137,9 @@ YUI.add('wegas-pusher-connector', function(Y) {
 
             return out;
         },
-        gunzip: function(data) {
-            var ba, i, compressed, zlib, inflated;
+        gunzip: function(b64Data) {
+            var data, ba, i, compressed, zlib, inflated;
+            data = atob(b64Data);
             ba = [];
             for (i = 0; i < data.length; i += 1) {
                 ba.push(data.charCodeAt(i));
@@ -173,7 +175,7 @@ YUI.add('wegas-pusher-connector', function(Y) {
          * @returns {*|EventHandle}
          */
         subscribe: function(channel) {
-            return pusherInstance.subscribe(channel);
+            return this.pusherInstance.subscribe(channel);
         },
         /**
          * @function
@@ -184,16 +186,20 @@ YUI.add('wegas-pusher-connector', function(Y) {
          * @returns {undefined}
          */
         triggerCustomEvent: function(channel, data, event) {
-            var id;
+            var id,
+                prefix;
             if (channel === "Game") {
-                id = Wegas.Facade.Game.get("currentGameId");
+                id = Y.Wegas.Facade.Game.get("currentGameId");
+                prefix = "private-";
             } else if (channel === "Team") {
-                id = Wegas.Facade.Game.get("currentTeamId");
+                id = Y.Wegas.Facade.Game.get("currentTeamId");
+                prefix = "private-";
             } else {
-                id = Wegas.Facade.Game.get("currentPlayerId");
+                id = Y.Wegas.Facade.Game.get("currentPlayerId");
+                prefix = "";
             }
             this.sendRequest({
-                request: "Send/" + channel + "/" + id + "/" + event,
+                request: "Send/" + prefix + channel + "/" + id + "/" + event,
                 cfg: {
                     method: "POST",
                     headers: {
@@ -204,6 +210,12 @@ YUI.add('wegas-pusher-connector', function(Y) {
                 }
             });
         },
+        resume: function() {
+            this.pusherInstance.connect();
+        },
+        disconnect: function() {
+            this.pusherInstance.disconnect();
+        },
         /*
          * life cycle method
          * @private
@@ -211,7 +223,7 @@ YUI.add('wegas-pusher-connector', function(Y) {
          * @returns {undefined}
          */
         destructor: function() {
-            this.pusher.disconnect();
+            this.pusherInstance.disconnect();
             //delete this.constructor.INSTANCES[this.get("applicationKey")];
         }
     }, {
@@ -235,6 +247,6 @@ YUI.add('wegas-pusher-connector', function(Y) {
             }
         }
     });
-    Wegas.PusherDataSource = PusherDataSource;
+    Y.Wegas.PusherDataSource = PusherDataSource;
     //new PusherConnectorFactory({applicationKey: "732a1df75d93d028e4f9"});
 });

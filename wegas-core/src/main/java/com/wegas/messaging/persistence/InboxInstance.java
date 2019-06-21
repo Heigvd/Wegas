@@ -10,13 +10,15 @@ package com.wegas.messaging.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.EntityComparators;
-import com.wegas.core.persistence.ListUtils;
-import com.wegas.core.persistence.variable.Searchable;
+import com.wegas.core.persistence.game.GameModelLanguage;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.CascadeType;
@@ -30,7 +32,7 @@ import jdk.nashorn.api.scripting.JSObject;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-public class InboxInstance extends VariableInstance implements Searchable {
+public class InboxInstance extends VariableInstance {
 
     /**
      *
@@ -59,6 +61,12 @@ public class InboxInstance extends VariableInstance implements Searchable {
 
      */
     @JsonManagedReference("inbox-message")
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(
+                    label = "Messages",
+                    value = Hidden.class
+            ))
     private List<Message> messages = new ArrayList<>();
 
     /**
@@ -98,19 +106,9 @@ public class InboxInstance extends VariableInstance implements Searchable {
         this.messages.add(0, message);
     }
 
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof InboxInstance) {
-            super.merge(a);
-            InboxInstance other = (InboxInstance) a;
-            this.setMessages(ListUtils.mergeLists(this.getMessages(), other.getMessages()));
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
-    }
-
     /**
      * @param message
+     *
      * @return
      */
     public Message sendMessage(Message message) {
@@ -190,7 +188,15 @@ public class InboxInstance extends VariableInstance implements Searchable {
      * @return The sent message
      */
     public Message sendMessage(final String from, final String subject, final String body, final String date, String token, final List<String> attachments) {
-        return this.sendMessage(new Message(from, subject, body, date, token, attachments));
+        VariableDescriptor desc = this.findDescriptor();
+        String lang = "en";
+        if (desc != null && desc.getGameModel() != null) {
+            List<GameModelLanguage> languages = desc.getGameModel().getRawLanguages();
+            if (languages != null && !languages.isEmpty()) {
+                lang = languages.get(0).getCode();
+            }
+        }
+        return this.sendMessage(new Message(from, subject, body, date, token, attachments, lang));
     }
 
     /**
@@ -214,7 +220,15 @@ public class InboxInstance extends VariableInstance implements Searchable {
         msg.setSubject(TranslatableContent.merger(null, subject));
         msg.setBody(TranslatableContent.merger(null, body));
         msg.setDate(TranslatableContent.merger(null, date));
-        msg.setAttachments(ListUtils.mergeLists(msg.getAttachments(), attachments));
+
+        List<Attachment> atts = new ArrayList<>();
+        for (Attachment att : attachments) {
+            try {
+                atts.add((Attachment) att.duplicate());
+            } catch (CloneNotSupportedException ex) {
+            }
+        }
+        msg.setAttachments(atts);
 
         this.sendMessage(msg);
         return msg;
@@ -302,18 +316,6 @@ public class InboxInstance extends VariableInstance implements Searchable {
     public boolean isTokenMarkedAsRead(String token) {
         Message message = this.getMessageByToken(token);
         return message != null && !message.getUnread();
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        if (messages != null) {
-            for (Message m : messages) {
-                if (m.containsAll(criterias)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     @Override

@@ -97,7 +97,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
             case "Lobby":
             case "Instance":
                 //rmf.setView(this.stringToView(firstPathSeg));
-                view = this.stringToView(firstPathSeg);
+                view = Views.stringToView(firstPathSeg);
                 newUri = newUri.replace(firstPathSeg + "/", "");
                 break;
 
@@ -118,40 +118,11 @@ public class ViewRequestFilter implements ContainerRequestFilter {
         if (cr.getUriInfo().getQueryParameters().get("view") != null) {
             // If the view is given through a query parameter
             //rmf.setView(this.stringToView(cr.getUriInfo().getQueryParameters().get("view").get(0)));
-            view = this.stringToView(cr.getUriInfo().getQueryParameters().get("view").get(0));
+            view = Views.stringToView(cr.getUriInfo().getQueryParameters().get("view").get(0));
         }
 
         // Propadate new view to ObjectWriter
         ObjectWriterInjector.set(new JsonViewModifier(view));
-    }
-
-    /**
-     *
-     * @param str
-     *
-     * @return Views.Class matching str or public
-     */
-    public Class stringToView(String str) {
-        switch (str) {
-            case "Extended":
-                return Views.Extended.class;
-
-            case "Export":
-                return Views.Export.class;
-
-            case "Instance":
-                return Views.Instance.class;
-
-            case "Lobby":
-                return Views.Lobby.class;
-
-            case "Editor":
-                return Views.Editor.class;
-
-            case "Public":
-            default:
-                return Views.Public.class;
-        }
     }
 
     private static class JsonViewModifier extends ObjectWriterModifier {

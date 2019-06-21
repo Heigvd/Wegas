@@ -560,9 +560,10 @@ div.inputEx-RadioField-choice input[type="radio"] {
 
 /* Uneditable field */
 .inputEx-uneditableField .inputEx-Field {
-    border: 1px solid lightgray;
-    padding: 2px;
-    background: #fafafa;
+    /*border: 1px solid lightgray;*/
+    /*padding: 2px;*/
+    /*background: #fafafa;*/
+    padding-top: 3.9px;
 }
 
 /* Sendmail widget in the trainer dashboard */

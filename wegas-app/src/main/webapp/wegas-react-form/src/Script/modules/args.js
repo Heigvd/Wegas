@@ -1,6 +1,6 @@
 import React from 'react';
 import { types, print, parse, visit } from 'recast';
-import { isEqual } from 'lodash-es';
+import { isEqual, cloneDeep  } from 'lodash-es';
 import ArgForm from './ArgForm';
 
 const {builders: b, namedTypes: n} = types;
@@ -130,6 +130,61 @@ export function matchSchema(ast, schema) {
             return false;
     }
 }
+
+
+export function getReadOnlySchema(args) {
+    let clone = cloneDeep(args);
+    _turnSchemaReadOnly(clone);
+    return clone;
+};
+    
+const _turnSchemaReadOnly = (args) =>{
+    if (Array.isArray(args)){
+        args.forEach(arg => {
+            _turnSchemaReadOnly(arg);
+        });
+    } else {
+        // object
+        if (args && args.props && args.props.schema){
+            args.props.schema.view = {
+                ...args.props.schema.view,
+                readOnly: true
+            };
+        }
+
+        if (args.view){
+            args.view.readOnly = true;
+        }
+
+        if (args && args.props && args.props.schema.type === "array"  && args.props.schema.items){
+            for (let k  in args.props.schema.items){
+                _turnSchemaReadOnly(args.props.schema.items[k]);
+            }
+        }
+
+        if (args && args.props && args.props.schema.type === "object"  && args.props.schema.properties){
+            for (let k  in args.props.schema.properties){
+                _turnSchemaReadOnly(args.props.schema.properties[k]);
+            }
+        }
+        
+        if (args && args.type === "object"){
+            if (args.additionalProperties && args.additionalProperties.view){
+                args.additionalProperties.view = {
+                    ...args.additionalProperties.view,
+                    readOnly:true
+                };
+            }
+
+            if (args.view){
+                args.view.readOnly = true;
+            }
+        }
+    }
+    
+    return args;
+};
+    
 /**
  * Create a Form for an AST node
  * @param {Object} astValue The AST node

@@ -3,59 +3,66 @@
 </div>
 <div id="trainer-sessions-list"
      class="view view--managed-sessions-list view--middle">
-    <h3>{{'TRAINER-INDEX-LIST-TITLE' | translate}}</h3>
-    <a class="button button--small button--success-reverse non-collapsible-expander-button" expander>
-        <span class="button__label"><i class="fa fa-plus-circle same-color-larger">&nbsp;</i>{{'TRAINER-INDEX-ADD-TITLE' | translate}}</span>
-    </a>
-    <div id="searchField" class="view__tools">
-        <div class="tool tool--search tool--open">
-            <a class="tool__link"></a>
-            <input
-                class="tool__input"
-                ng-model="search"
-                type="text"
-                ng-change="trainerIndexCtrl.filterSessions(search);"
-                ng-init="trainerIndexCtrl.filterSessions(search);"
-            />
+
+    <div class="view__header">
+        <h3>{{'TRAINER-INDEX-LIST-TITLE'| translate}}</h3>
+        <a class="button button--small button--success-reverse non-collapsible-expander-button" expander>
+            <span class="button__label"><i class="fa fa-plus-circle same-color-larger">&nbsp;</i>{{'TRAINER-INDEX-ADD-TITLE'| translate}}</span>
+        </a>
+
+        <div ng-if="(!trainerIndexCtrl.loading && trainerIndexCtrl.rawSessions.length)">
+            <div id="searchField" class="view__tools">
+                <div class="tool tool--search tool--open">
+                    <a class="tool__link"></a>
+                    <input
+                        class="tool__input"
+                        ng-model="search"
+                        type="text"
+                        ng-change="trainerIndexCtrl.filterSessions(search);"
+                        ng-init="trainerIndexCtrl.filterSessions(search);"
+                        />
+                </div>
+            </div>
+        </div>
+        <div ng-if="user.isAdmin" class="view__options"
+             title="{{'TRAINER-INDEX-ME-FIRST-TOOLTIP'| translate}}"
+             ng-click="trainerIndexCtrl.toggleMeFirst();"
+             ng-init="trainerIndexCtrl.initMeFirst();"
+             >
+            <span class="checkbox" id="mefirst">
+            </span>
+            {{'TRAINER-INDEX-ME-FIRST-TITLE'| translate}}
         </div>
     </div>
-    <div ng-if="user.isAdmin" class="view__options"
-         title="{{'TRAINER-INDEX-ME-FIRST-TOOLTIP' | translate}}"
-         ng-click="trainerIndexCtrl.toggleMeFirst();"
-         ng-init="trainerIndexCtrl.initMeFirst();"
-    >
-        <span class="checkbox" id="mefirst">
-        </span>
-        {{'TRAINER-INDEX-ME-FIRST-TITLE' | translate}}
-    </div>
-	<div
-		ng-if="(!trainerIndexCtrl.loading && trainerIndexCtrl.sessions.length)"
-		ng-class="{true:'view__list--with-archive', false:''}[trainerIndexCtrl.nbArchives > 0]"
+    <div
+        ng-if="(!trainerIndexCtrl.loading && trainerIndexCtrl.sessions.length)"
         id = "trainer-sessions-list-container"
         class="view__list"
         style="padding-bottom: 10px;"
-		search="trainerIndexCtrl.search"
-		archive="trainerIndexCtrl.archiveSession"
-		edit-access="trainerIndexCtrl.editAccess"
+        search="trainerIndexCtrl.search"
+        archive="trainerIndexCtrl.archiveSession"
+        edit-access="trainerIndexCtrl.editAccess"
         filterSessions="trainerIndexCtrl.filterSessions"
         sessions="trainerIndexCtrl.sessions"
         user="trainerIndexCtrl.user"
         username="trainerIndexCtrl.username"
-		trainer-sessions-list
+        trainer-sessions-list
         repeat-auto-load >
-	</div>
-    <div ng-if="(trainerIndexCtrl.search.length != 0) && (trainerIndexCtrl.sessions.length == 0)"
-         class="view__list view__list--with-archive">
-        {{'TRAINER-INDEX-LIST-NO-SESSION' | translate}} "{{trainerIndexCtrl.search}}"
     </div>
-    <div ng-if="(!trainerIndexCtrl.loading) && (trainerIndexCtrl.nbArchives > 0)" class="view__archives">
-		<a class="button button--small button--default button--archive" ui-sref=".archives">
-			<span ng-if="trainerIndexCtrl.nbArchives == 1" class="button__label">{{trainerIndexCtrl.nbArchives}} {{'TRAINER-INDEX-ARCHIVE-BTN' | translate}}</span>
-            <span ng-if="trainerIndexCtrl.nbArchives > 1" class="button__label">{{trainerIndexCtrl.nbArchives}} {{'TRAINER-INDEX-ARCHIVES-BTN' | translate}}</span>
-		</a>
-	</div>
-	<div ng-if="trainerIndexCtrl.loading"
-		class="view__list view__list--loading"
-                content-loading="{{'COMMONS-SESSIONS-LOADING' | translate}}">
-	</div>
+    <div ng-if="(trainerIndexCtrl.search.length != 0) && (trainerIndexCtrl.sessions.length == 0)"
+         class="view__list">
+        {{'TRAINER-INDEX-LIST-NO-SESSION'| translate}} "{{trainerIndexCtrl.search}}"
+    </div>
+    <div class="view__footer">
+        <div ng-if="(!trainerIndexCtrl.loading) && (trainerIndexCtrl.nbArchives > 0)" class="view__archives">
+            <a class="button button--small button--default button--archive" ui-sref=".archives">
+                <span ng-if="trainerIndexCtrl.nbArchives == 1" class="button__label">{{trainerIndexCtrl.nbArchives}} {{'TRAINER-INDEX-ARCHIVE-BTN'| translate}}</span>
+                <span ng-if="trainerIndexCtrl.nbArchives > 1" class="button__label">{{trainerIndexCtrl.nbArchives}} {{'TRAINER-INDEX-ARCHIVES-BTN'| translate}}</span>
+            </a>
+        </div>
+    </div>
+    <div ng-if="trainerIndexCtrl.loading"
+         class="view__list view__list--loading"
+         content-loading="{{'COMMONS-SESSIONS-LOADING'| translate}}">
+    </div>
 </div>

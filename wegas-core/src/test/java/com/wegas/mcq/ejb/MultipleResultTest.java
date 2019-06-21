@@ -37,6 +37,7 @@ public class MultipleResultTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(MultipleResultTest.class);
 
+
     @Test
     public void testSelectAndValidateChoice() {
         // Create a 1reply-question
@@ -50,7 +51,7 @@ public class MultipleResultTest extends AbstractArquillianTest {
         choice1.setDefaultInstance(new ChoiceInstance());
         choice1.setName("choice1");
 
-        Result r1 = new Result("choice1 result");
+        Result r1 = wegasFactory.createResult("choice1 result");
         choice1.addResult(r1);
 
         variableDescriptorFacade.createChild(question.getId(), choice1);
@@ -60,7 +61,7 @@ public class MultipleResultTest extends AbstractArquillianTest {
         choice2.setDefaultInstance(new ChoiceInstance());
         choice2.setName("choice2");
 
-        Result r2 = new Result("choice2 result");
+        Result r2 = wegasFactory.createResult("choice2 result");
         choice1.addResult(r2);
         variableDescriptorFacade.createChild(question.getId(), choice2);
 

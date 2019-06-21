@@ -35,9 +35,11 @@ angular.module('private.admin.who', [
         ctrl.sync = function() {
             ctrl.syncing = true;
             var req = WegasPusher.syncMembers();
-            req.success(function(){
+            req.success(function() {
                 ctrl.updateWhoList();
-                $timeout(function(){ ctrl.syncing = false; }, 250); // The spinner should be visible at least 1/4 sec.
+                $timeout(function() {
+                    ctrl.syncing = false;
+                }, 250); // The spinner should be visible at least 1/4 sec.
             });
         };
 
@@ -62,27 +64,31 @@ angular.module('private.admin.who', [
             });
         };
         ctrl.getConnectionDate = function(user) {
-            var d =new Date(user.connectionDate);
+            var d = new Date(user.connectionDate);
             return d.toLocaleString();
         };
 
         ctrl.getLastActivityDate = function(user) {
-            var d =new Date(user.lastActivityDate);
+            var d = new Date(user.lastActivityDate);
             return d.toLocaleString();
         };
 
-        $rootScope.$on('wegaspusher:update-members', function(e, data) {
-            ctrl.message = "";
-            ctrl.who = data;
-            if (!$rootScope.$$phase) {
-                $scope.$apply();
-            }
-            // ctrl.updateWhoList();
-        });
+        ctrl.handlers = {
+            detachUpdateMembers: $rootScope.$on('wegaspusher:update-members', function(e) {
+                ctrl.message = "";
+                ctrl.updateWhoList();
+            }),
 
-        $rootScope.$on('wegaspusher:service-error', function(e, msg) {
-            ctrl.message = msg;
-            ctrl.updateWhoList();
+            detachServiceError: $rootScope.$on('wegaspusher:service-error', function(e, msg) {
+                ctrl.message = msg;
+                ctrl.updateWhoList();
+            })
+        };
+
+        $scope.$on("$destroy", function() {
+            for (var key in ctrl.handlers) {
+                ctrl.handlers[key]();
+            }
         });
 
         // Required e.g. when closing the profile edition window:

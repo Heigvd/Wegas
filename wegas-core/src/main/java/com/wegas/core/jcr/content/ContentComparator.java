@@ -25,8 +25,12 @@ public class ContentComparator implements Comparator<AbstractContentDescriptor>,
             return 1;
         } else if (t1 instanceof FileDescriptor && t instanceof DirectoryDescriptor) {
             return -1;
-        } else {
+        } else if (t != null && t1 != null) {
             return t.getName().compareTo(t1.getName());
+        } else if (t != null) {
+            return 1;
+        } else {
+            return -1;
         }
     }
 }

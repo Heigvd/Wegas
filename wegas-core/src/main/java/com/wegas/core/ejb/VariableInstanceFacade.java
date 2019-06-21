@@ -17,6 +17,8 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
+import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
@@ -89,6 +91,9 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
     private ReviewingFacade reviewingFacade;
 
     @Inject QuestionDescriptorFacade questionDescriptorFacade;
+
+    @Inject
+    private ScriptEventFacade scriptEvent;
 
     private Beanjection beans = null;
 
@@ -364,12 +369,44 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
             entity.getPlayer().getPrivateInstances().remove(entity);
         } else if (entity.getTeam() != null) {
             entity.getTeam().getPrivateInstances().remove(entity);
+        } else {
+            entity.getGameModel().getPrivateInstances().remove(entity);
         }
-        /*
-         * else {
-         * nothing to do for GameModelScoped instance nor for default one
-         * }
-         */
+    }
+
+    public void fireNumberChange(NumberInstance aThis, double previousValue) {
+        Player p = requestManager.getPlayer();
+
+        if (p == null) {
+            p = aThis.getEffectiveOwner().getAnyLivePlayer();
+        }
+
+        scriptEvent.fire(p, "numberUpdate", new NumberUpdate(aThis, previousValue));
+    }
+
+    public static class NumberUpdate {
+
+        private final NumberDescriptor descriptor;
+        private final NumberInstance instance;
+        private final double previousValue;
+
+        public NumberUpdate(NumberInstance number, double previous) {
+            this.instance = number;
+            this.descriptor = (NumberDescriptor) number.findDescriptor();
+            this.previousValue = previous;
+        }
+
+        public NumberDescriptor getDescriptor() {
+            return descriptor;
+        }
+
+        public NumberInstance getInstance() {
+            return instance;
+        }
+
+        public double getPreviousValue() {
+            return previousValue;
+        }
     }
 
     /**

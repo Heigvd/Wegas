@@ -13,17 +13,17 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
-import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.Searchable;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.I18nFileView;
+import com.wegas.editor.View.View;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
             @Index(columnList = "file_id")
         }
 )
-public class Attachment extends AbstractEntity implements Serializable, Searchable {
+public class Attachment extends AbstractEntity implements Serializable {
 
     @Id
     @GeneratedValue
@@ -67,8 +67,10 @@ public class Attachment extends AbstractEntity implements Serializable, Searchab
     /**
      * URI
      */
-    @JsonDeserialize(using = TranslationDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty(
+            optional =false, nullable =false,
+            view= @View(label = "File", value = I18nFileView.class))
     private TranslatableContent file;
 
     @Override
@@ -113,17 +115,17 @@ public class Attachment extends AbstractEntity implements Serializable, Searchab
         return null;
     }
 
-    @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof Attachment) {
-            Attachment o = (Attachment) other;
-            this.setFile(TranslatableContent.merger(this.getFile(), o.getFile()));
+    /*@Override
+    public boolean isProtected() {
+        if (this.getMessage() != null) {
+            return this.getMessage().isProtected();
         }
-    }
+        return false;
+    }*/
 
     @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(getFile(), criterias);
+    public WithPermission getMergeableParent() {
+        return this.getMessage();
     }
 
     public static class ListDeserializer extends StdDeserializer<List<Attachment>> {
@@ -155,7 +157,7 @@ public class Attachment extends AbstractEntity implements Serializable, Searchab
                     if (currentToken == JsonToken.VALUE_STRING) {
                         String strItem = p.getText();
                         Attachment item = new Attachment();
-                        item.setFile(TranslatableContent.build("def", strItem));
+                        item.setFile(TranslatableContent.build("en", strItem));
                         items.add(item);
                     } else if (currentToken == JsonToken.START_OBJECT) {
                         Attachment item = JacksonMapperProvider.getMapper().readValue(p, Attachment.class);
@@ -174,7 +176,7 @@ public class Attachment extends AbstractEntity implements Serializable, Searchab
                 TypeDeserializer typeDeserializer) throws IOException {
             JsonToken currentToken = p.currentToken();
             if (currentToken == JsonToken.VALUE_STRING) {
-                return TranslatableContent.build("def", p.getText());
+                return TranslatableContent.build("en", p.getText());
             }
             return super.deserializeWithType(p, ctxt, typeDeserializer);
         }

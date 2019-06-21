@@ -10,17 +10,26 @@ package com.wegas.core.persistence.variable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.primitive.*;
 import com.wegas.core.persistence.variable.scope.*;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.Zero;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.View;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.wh.WhQuestionInstance;
@@ -104,7 +113,6 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "TaskInstance", value = TaskInstance.class),
     @JsonSubTypes.Type(name = "ObjectInstance", value = ObjectInstance.class),
     @JsonSubTypes.Type(name = "PeerReviewInstance", value = PeerReviewInstance.class),
-
     @JsonSubTypes.Type(name = "BurndownInstance", value = BurndownInstance.class)
 })
 @OptimisticLocking(cascade = true)
@@ -117,6 +125,14 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
+    @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
+            sameEntityOnly = true, view = @View(
+                    index = -999,
+                    label = "Version",
+                    value = ReadOnlyNumber.class,
+                    featureLevel = ADVANCED
+            ))
+    @JsonView(Views.IndexI.class)
     private Long version;
 
     public Long getVersion() {
@@ -181,8 +197,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     private Team team;
 
     @Override
-    public VariableInstance clone() {
-        return (VariableInstance) super.clone();
+    public VariableInstance duplicate() throws CloneNotSupportedException {
+        return (VariableInstance) super.duplicate();
     }
 
     /**
@@ -306,6 +322,11 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     @JsonView(Views.IndexI.class)
+    @WegasExtraProperty(view = @View(
+            index = -500,
+            label = "Scope Key",
+            value = ReadOnlyNumber.class
+    ))
     public Long getScopeKey() {
         if (this.getTeamScope() != null) {
             return this.getTeam().getId();
@@ -341,14 +362,15 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * Get instance descriptor's id through its scope for regular instance or
-     * the default descriptor's id for default instances
+     * Get instance descriptor through its scope for regular instance or
+     * the default descriptor id for default instances
      *
      * @return descriptor id
      */
-    @JsonView(Views.IndexI.class)
-    public Long getDescriptorId() {
-        return this.findDescriptor().getId();
+    @Override
+    public <T extends Mergeable> T getSerialisedParent() {
+        // Special case: direct parent (the scope) is not known by the client
+        return (T) this.findDescriptor();
     }
 
     /**
@@ -481,10 +503,25 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof VariableInstance) {
-            VariableInstance instance = (VariableInstance) other;
-            this.setVersion(instance.getVersion());
+    public WithPermission getMergeableParent() {
+        if (this.isDefaultInstance() && this.getDefaultDescriptor() != null) {
+            return this.getDefaultDescriptor();
+        } else {
+            return this.getScope();
+        }
+    }
+
+    @Override
+    public boolean belongsToProtectedGameModel() {
+        return this.isDefaultInstance() && this.getDefaultDescriptor() != null && this.getDefaultDescriptor().belongsToProtectedGameModel();
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        if (this.isDefaultInstance() && this.getDefaultDescriptor() != null) {
+            return this.getDefaultDescriptor().getVisibility();
+        } else {
+            return Visibility.INHERITED;
         }
     }
 

@@ -8,19 +8,20 @@
 package com.wegas.mcq.persistence.wh;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.PrimitiveDescriptorI;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -53,11 +54,14 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      *
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = EmptyI18n.class,
+            view = @View(label = "Description", value = I18nHtmlView.class))
     private TranslatableContent description;
 
     @OneToMany(mappedBy = "parentWh", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @OrderColumn(name = "whd_items_order")
+    @WegasEntityProperty(includeByDefault = false, view = @View(label = "items", value = Hidden.class), notSerialized = true)
     private List<VariableDescriptor> items = new ArrayList<>();
 
     /**
@@ -86,15 +90,9 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
         return this.items;
     }
 
-    /**
-     * @param items
-     */
     @Override
-    public void setItems(List<VariableDescriptor> items) {
+    public void resetItemsField() {
         this.items = new ArrayList<>();
-        for (VariableDescriptor vd : items) {
-            this.addItem(vd);
-        }
     }
 
     /**
@@ -122,22 +120,8 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
         }
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof WhQuestionDescriptor) {
-            super.merge(a);
-            WhQuestionDescriptor other = (WhQuestionDescriptor) a;
-            this.setDescription(TranslatableContent.merger(this.getDescription(), other.getDescription()));
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
-    }
+    // ~~~ Sugar for scripts ~~~
 
-// ~~~ Sugar for scripts ~~~
     /**
      *
      * @param p
@@ -153,6 +137,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      *
      * @return the player instance active status
      */
+    @Scriptable
     public boolean isActive(Player p) {
         WhQuestionInstance instance = this.getInstance(p);
         return instance.getActive();
@@ -162,6 +147,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      *
      * @param p
      */
+    @Scriptable
     public void activate(Player p) {
         this.setActive(p, true);
     }
@@ -170,10 +156,12 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      *
      * @param p
      */
+    @Scriptable
     public void deactivate(Player p) {
         this.setActive(p, false);
     }
 
+    @Scriptable
     public void reopen(Player p) {
         this.getInstance(p).setValidated(false);
     }
@@ -184,6 +172,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      *
      * @return true if the player has already answers this question
      */
+    @Scriptable(label = "has been replied")
     public boolean isReplied(Player p) {
         WhQuestionInstance instance = this.getInstance(p);
         return instance.isValidated();
@@ -196,14 +185,9 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      *
      * @return true if the player has not yet answers this question
      */
+    @Scriptable(label = "has not been replied")
     public boolean isNotReplied(Player p) {
         return !this.isReplied(p);
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(getDescription(), criterias)
-                || super.containsAll(criterias);
     }
 
     // This method seems to be unused:

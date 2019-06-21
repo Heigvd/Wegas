@@ -26,7 +26,13 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
             delete: "supprimer",
             dunno: "Je ne sais pas",
             variableNotFound: "Impossible de trouver la variable \"{{name}}\"",
-            logout: "déconnexion"
+            logout: "déconnexion",
+            statistics: "Statistiques",
+            peerReview: "Eval. croisées",
+            backToMenu: "retour au menu",
+            mcqBackToMenu: "retour à la liste de questions",
+            ok: "OK",
+            cancel: "Annuler"
         },
         i18n:{
             manager: {
@@ -46,14 +52,14 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
         },
         inbox: {
             deleteEmailConfirmation: "Êtes-vous sûr de vouloir supprimer le message {{subject}} de manière définitive ?",
-            noMessages: "Nous n'avez pas de messages",
+            noMessages: "Vous n'avez pas de messages",
             noMessageSelected: "Sélectionnez un message sur la gauche"
         }
     }, {base: {
             prefix: "",
             suffix: "",
             decimalPlaces: "",
-            thousandsSeparator: "&nbsp;",
+            thousandsSeparator: " ",
             decimalSeparator: ","
         },
         extra: {

@@ -10,7 +10,22 @@ package com.wegas.core.persistence.game;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.security.util.WegasPermission;
+import java.util.Collection;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.ValueGenerators.Zero;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.View;
+import com.wegas.editor.View.VisibilitySelectView;
 import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.*;
@@ -20,7 +35,6 @@ import javax.persistence.*;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @Table(indexes = {
     @Index(columnList = "clientscriptlibrary_gamemodel_id"),
@@ -28,11 +42,11 @@ import javax.persistence.*;
     @Index(columnList = "csslibrary_gamemodel_id"),
     @Index(columnList = "csslibrary_gamemodel_id, scriptlibrary_gamemodel_id, clientscriptlibrary_gamemodel_id, contentKey", unique = true)
 })
-public class GameModelContent implements Serializable {
+public class GameModelContent extends AbstractEntity implements Serializable, ModelScoped, NamedEntity {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
 
@@ -48,11 +62,17 @@ public class GameModelContent implements Serializable {
     @JsonIgnore
     private GameModel clientscriptlibrary_GameModel;
 
+    @WegasEntityProperty(
+            nullable = false,
+            view = @View(label = "Key", value = ReadOnlyString.class))
     private String contentKey;
 
     /**
      *
      */
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Content Type", value = ReadOnlyString.class))
     private String contentType;
     /**
      *
@@ -61,7 +81,26 @@ public class GameModelContent implements Serializable {
     @Basic(optional = false, fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     //@Column(columnDefinition = "text")
     //@JsonView({Views.Export.class})
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Content", value = Hidden.class))
     private String content = "";
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL,
+            nullable = false,
+            view = @View(
+                    label = "Visibility",
+                    value = VisibilitySelectView.class
+            ))
+    private Visibility visibility = Visibility.PRIVATE;
+
+    @Version
+    @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
+            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
+    @Column(columnDefinition = "bigint default '0'::bigint")
+    private Long version;
 
     /**
      *
@@ -184,6 +223,29 @@ public class GameModelContent implements Serializable {
     }
 
     @JsonIgnore
+    public String getLibraryType() {
+        if (this.clientscriptlibrary_GameModel != null) {
+            return "ClientScript";
+        } else if (this.scriptlibrary_GameModel != null) {
+            return "ServerScript";
+        } else {
+            return "CSS";
+        }
+    }
+
+    @Override
+    @JsonIgnore
+    public String getName() {
+        return this.getContentKey();
+    }
+
+    @Override
+    @JsonIgnore
+    public void setName(String name) {
+        // no implementation
+    }
+
+    @JsonIgnore
     public GameModel getScriptlibrary_GameModel() {
         return scriptlibrary_GameModel;
     }
@@ -193,8 +255,26 @@ public class GameModelContent implements Serializable {
         this.scriptlibrary_GameModel = scriptlibrary_GameModel;
     }
 
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
+    @Override
+    public Visibility getVisibility() {
+        return this.visibility;
+    }
+
+    @Override
+    public void setVisibility(Visibility visibility) {
+        this.visibility = visibility;
+    }
+
     @JsonIgnore
-    private GameModel getGameModel() {
+    public GameModel getGameModel() {
         if (this.clientscriptlibrary_GameModel != null) {
             return clientscriptlibrary_GameModel;
         } else if (this.scriptlibrary_GameModel != null) {
@@ -215,4 +295,18 @@ public class GameModelContent implements Serializable {
         return hash;
     }
 
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getGameModel().getRequieredReadPermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getGameModel().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return this.getGameModel();
+    }
 }

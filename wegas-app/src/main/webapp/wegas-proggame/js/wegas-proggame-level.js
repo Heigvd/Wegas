@@ -16,15 +16,11 @@ YUI.add('wegas-proggame-level', function(Y) {
         ARRAY = "array",
         NUMBER = "number",
         STRING = "string",
-        BOOLEAN = "boolean",
         TEXT = "text",
         ACE = "ace",
         CLICK = "click",
         ID = "id",
         LABEL = "label",
-        GROUP = "group",
-        _X = "x",
-        _Y = "y",
         INFO = "info",
         STATE = "state",
         IDLE = "idle",
@@ -80,7 +76,6 @@ YUI.add('wegas-proggame-level', function(Y) {
                 label = this.get(LABEL).split("-");
             cb.one(".proggame-title h1").setHTML(label[0]); // Display level name
             cb.one(".proggame-title h2").setHTML(label[1]); // Display level name
-
             this.display = new Wegas.ProgGameDisplay(Y.mix(this.toObject(), { // Render canvas display widget
                 plugins: [] // @fixme here proggamedipslay parameters should be in a separate attr
             }, true)).render(cb.one(".terrain"));
@@ -179,16 +174,14 @@ YUI.add('wegas-proggame-level', function(Y) {
 
             this.idleHandler = Y.later(10000, this, this.doIdleAnimation, [], true); // While in idle mode, launch idle animation every 10 secs
             cb.delegate(CLICK, function() { // End level screen: restart button
-                this.doNextLevel(function() {
-                    this.resetUI();
-                    this.set(STATE, IDLE);
-                }, true);
+                this.resetUI();
+                this.set(STATE, IDLE);
             }, ".proggame-levelend-restart", this);
             cb.delegate(CLICK, function() { // End level screen: next level button:
                 this.doNextLevel(function() {
                     this.mainEditorTab.aceField.setValue("");
                     this.fire("gameWon"); // trigger open page plugin
-                }, false);
+                }.bind(this));
             }, ".proggame-levelend-nextlevel", this);
         //            this.handlers.response = Wegas.Facade.Variable.after("update", this.syncUI, this); // If data changes, refresh
         },
@@ -272,22 +265,38 @@ YUI.add('wegas-proggame-level', function(Y) {
         },
         sendRunRequest: function(code, interpreterCfg) {
             interpreterCfg = interpreterCfg || {};
+            var level = Y.Wegas.Facade.Page.cache.editable ? JSON.stringify(this.get('root').get('@pageId')) : Y.JSON.stringify(this.toObject());
             Wegas.Facade.Variable.sendRequest({
                 request: "/ProgGame/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
                     data: "run(" +
                         "function (name) {" + code + "\n}, " + // Player's code
-                        Y.JSON.stringify(this.toObject()) +
+                        level +
                         ", " + // the current level
                         Y.JSON.stringify(interpreterCfg) +
                         ");"
                 },
                 on: {
                     success: Y.bind(this.onServerReply, this),
-                    failure: Y.bind(function() {
+                    failure: Y.bind(function (e) {
                         this.set(STATE, IDLE);
-                        alert("Your script contains an error.");
+                        var events = e.response.results.events;
+                        var exceptionEvent = Y.Array.find(events, function(e) {
+                            return e.get('@class') === 'ExceptionEvent';
+                        });
+                        if (
+                            exceptionEvent &&
+                            exceptionEvent.get('val.exceptions')[0].get('val')['@class'] ===
+                                'WegasScriptException'
+                        ) {
+                            this.set("error", exceptionEvent.get('val.exceptions')[0].get('val').message);
+                            Y.Wegas.Alerts.showNotification(
+                                "Your script contains an error.",
+                                { timeout: 1e3 }
+                            );
+                        }
+                        // alert("Your script contains an error.");
                     }, this)
                 }
             });
@@ -324,7 +333,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             }
 
             if (this.get(STATE) === IDLE) {
-                var enemy = this.display.getEntity("Enemy");
+                var enemy = this.display.getEntity("Enemy") || this.display.getEntity("NPC");
                 enemy.say(texts[Math.floor(Math.random() * texts.length)], 3500, false, true);
                 enemy.wave(7);
             }
@@ -407,25 +416,17 @@ YUI.add('wegas-proggame-level', function(Y) {
             }
             if (line) {
                 this.cLine = line;
+                /*global require */
                 var Range = require('ace/range').Range;
                 this.marker = session.addMarker(new Range(line, 0, line, 200), "proggame-currentline", TEXT);
                 session.addGutterDecoration(line, "proggame-currentgutterline");
             }
         },
-        doNextLevel: function(fn, retry) {
-            var content;
-            if (Wegas.Facade.Variable.script.localEval("Variable.find(gameModel,\"currentLevel\").getValue(self)") < Wegas.Facade.Variable.script.localEval("Variable.find(gameModel,\"maxLevel\").getValue(self)")) {
-                content = this.get("onWin") + ";Variable.find(gameModel, \"money\").add(self, 0);"; //player don't win points if he already did the lvl
-            } else {
-                content = this.get("onWin") + ";Variable.find(gameModel, \"money\").add(self, 100);";
-            }
-            content += "maxLevel.value = Math.max(maxLevel.value, currentLevel.value);";
-            if (retry) {
-                content += 'Variable.find(gameModel, "currentLevel").setValue(self, ' + this.get("root").get("@pageId") + ')';
-            }
+        doNextLevel: function(fn) {
+            var content = 'Variable.find(gameModel, "currentLevel").setValue(self, ' + this.get("onWin") + ')';
             Wegas.Facade.Variable.script.run(content, {
                 on: {
-                    success: Y.bind(fn, this)
+                    success: fn
                 }
             });
         },
@@ -433,7 +434,8 @@ YUI.add('wegas-proggame-level', function(Y) {
             var _file = file,
                 saveTimer = new Wegas.Timer(),
                 tab = this.editorTabView.add({ //                                // Render tab
-                    label: label
+                    label: label,
+                    children: [{ type: "Text" }]
                 }).item(0),
                 aceField = new Y.inputEx.AceField({ //                           // Render ace editor
                     parentEl: tab.get("panelNode"),
@@ -754,8 +756,6 @@ YUI.add('wegas-proggame-level', function(Y) {
             Y.Wegas.Tutorial(ProgGameLevel.TUTORIAL, {
                 next: "Continuer",
                 skip: "Ignorer le tutoriel"
-            }).then(function(index) {
-                console.log('Im done', index);
             });
         },
         syncFrontUI: function() {
@@ -765,6 +765,9 @@ YUI.add('wegas-proggame-level', function(Y) {
             }
             if (this.findObject("Enemy")) {
                 this.updateUI(this.findObject("Enemy"), cb.one(".enemy-ui"));
+            }
+            if (this.findObject("NPC")) {
+                this.updateUI(this.findObject("NPC"), cb.one(".enemy-ui"));
             }
         },
         updateUI: function(object, el) {
@@ -799,6 +802,12 @@ YUI.add('wegas-proggame-level', function(Y) {
             },
             state: {
                 "transient": true
+            },
+            error:{
+                "transient": true,
+                setter: function(v) {
+                    this.debugTabView.item(0).get("panelNode").append("<div class='script-error'>" + Y.Wegas.Helper.htmlEntities(v) + "</div>");
+                }
             },
             label: {
                 type: STRING,
@@ -931,14 +940,23 @@ YUI.add('wegas-proggame-level', function(Y) {
                 ],
                 validator: Y.Lang.isArray,
                 view: {
+                    type: "matrix",
                     label:"Map matrix",
-                    _type: "proggamemap"
+                    valueToBool: function(v) {
+                        return Boolean(v.y);
+                    },
+                    boolToValue: function(b) {
+                        return { x: 0, y: Number(b) }
+                    }
+                    
                 }
             },
             objects: {
                 type: ARRAY,
                 view:{
                     label:"Objects",
+                    description: "Order defines evaluation order",
+                    sortable: true,
                     highlight: true,
                     choices:[{
                         label: "Trap",
@@ -953,7 +971,8 @@ YUI.add('wegas-proggame-level', function(Y) {
                             components:"NPC",
                             id: "NPC",
                             direction: 4,
-                            collides: false
+                            collides: false,
+                            ai: ""
                         }},{
                         label: "Player",
                         value: {
@@ -1047,214 +1066,19 @@ YUI.add('wegas-proggame-level', function(Y) {
                         },
                         "^collides$":{
                             view:{type:"hidden"}
+                        },
+                        "^ai$":{
+                            view:{
+                                type: "jseditor",
+                                label: "AI",
+                                description: "Has access to the API (and 'this', see serverscript, to cheat a bit)"
+                            }
                         }
                     },
                     additionalProperties:{
                         view: {
                             label: true
                         }
-                    }
-                },
-                _inputex: {
-                    sortable: true,
-                    elementType: {
-                        type: "contextgroup",
-                        contextKey: "components",
-                        fields: [{
-                            name: "Trap",
-                            type: GROUP,
-                            fields: [{
-                                name: ID,
-                                label: "ID",
-                                value: "Trap"
-                            }, {
-                                name: _X,
-                                type: NUMBER,
-                                label: _X
-                            }, {
-                                name: _Y,
-                                type: NUMBER,
-                                label: _Y
-                            }, {
-                                name: "enabled",
-                                label: "Active by default",
-                                type: BOOLEAN,
-                                value: true
-                            }, {
-                                name: "components",
-                                type: HIDDEN,
-                                value: "Trap"
-                            }]
-                        }, {
-                            name: "PC",
-                            type: GROUP,
-                            fields: [{
-                                name: ID,
-                                label: "ID",
-                                value: "Player"
-                            }, {
-                                name: _X,
-                                type: NUMBER,
-                                label: _X
-                            }, {
-                                name: _Y,
-                                type: NUMBER,
-                                label: _Y
-                            }, {
-                                name: "direction",
-                                label: "direction",
-                                type: "select",
-                                choices: [
-                                    {
-                                        value: 2,
-                                        label: "right"
-                                    },
-                                    {
-                                        value: 1,
-                                        label: "down"
-                                    },
-                                    {
-                                        value: 3,
-                                        label: "up"
-                                    },
-                                    {
-                                        value: 4,
-                                        label: "left"
-                                    }]
-                            }, {
-                                name: "collides",
-                                label: "collides",
-                                type: HIDDEN
-                            }, {
-                                name: "components",
-                                type: HIDDEN,
-                                value: "PC"
-                            }]
-                        }, {
-                            name: "NPC",
-                            type: GROUP,
-                            fields: [{
-                                name: ID,
-                                label: "ID",
-                                value: "Enemy"
-                            }, {
-                                name: _X,
-                                type: NUMBER,
-                                label: _X
-                            }, {
-                                name: _Y,
-                                type: NUMBER,
-                                label: _Y
-                            }, {
-                                name: "direction",
-                                label: "direction",
-                                type: "select",
-                                choices: [{
-                                    value: 1,
-                                    label: "down"
-                                },
-                                    {
-                                        value: 2,
-                                        label: "right"
-                                    },
-                                    {
-                                        value: 3,
-                                        label: "up"
-                                    },
-                                    {
-                                        value: 4,
-                                        label: "left"
-                                    }]
-                            }, {
-                                name: "collides",
-                                label: "collides",
-                                type: BOOLEAN
-                            }, {
-                                name: "components",
-                                type: HIDDEN,
-                                value: "NPC"
-                            }]
-                        }, {
-                            name: "Panel",
-                            type: GROUP,
-                            fields: [{
-                                name: ID,
-                                label: "ID",
-                                value: "Panel"
-                            }, {
-                                name: "value",
-                                label: "Value",
-                                type: TEXT,
-                                value: "'Hello World !'"
-                            }, {
-                                name: _X,
-                                type: NUMBER,
-                                label: _X
-                            }, {
-                                name: _Y,
-                                type: NUMBER,
-                                label: _Y
-                            }, {
-                                name: "collides",
-                                label: "collides",
-                                value: false,
-                                type: HIDDEN
-                            }, {
-                                name: "components",
-                                type: HIDDEN,
-                                value: "Panel"
-                            }]
-                        }, {
-                            name: "Door",
-                            type: GROUP,
-                            fields: [{
-                                name: ID,
-                                label: "ID",
-                                value: "Door"
-                            }, {
-                                name: _X,
-                                type: NUMBER,
-                                label: _X
-                            }, {
-                                name: _Y,
-                                type: NUMBER,
-                                label: _Y
-                            }, {
-                                name: "open",
-                                label: "Open by default",
-                                type: BOOLEAN,
-                                value: false
-                            }, {
-                                name: "components",
-                                type: HIDDEN,
-                                value: "Door"
-                            }]
-                        }, {
-                            name: "Controller",
-                            type: GROUP,
-                            fields: [{
-                                name: ID,
-                                label: "ID",
-                                value: "Controller"
-                            }, {
-                                name: _X,
-                                type: NUMBER,
-                                label: _X
-                            }, {
-                                name: _Y,
-                                type: NUMBER,
-                                label: _Y
-                            }, {
-                                name: "enabled",
-                                label: "Enabled by default",
-                                type: BOOLEAN,
-                                value: false
-                            }, {
-                                name: "components",
-                                type: HIDDEN,
-                                value: "Controller"
-                            }]
-                        }]
                     }
                 }
             },
@@ -1277,8 +1101,9 @@ YUI.add('wegas-proggame-level', function(Y) {
             },
             winningCondition: {
                 type: STRING,
-                value: "comparePos(find('Player'), find('Enemy'))",
+                value: "comparePos(find('Player'), find('NPC'))",
                 view: {
+                    type: "jseditor",
                     label: "Winning Condition"
                 }
             },
@@ -1286,25 +1111,42 @@ YUI.add('wegas-proggame-level', function(Y) {
                 type: STRING,
                 optional: true,
                 view: {
+                    type: "jseditor",
                     label: "On Start"
                 }
             },
             onAction: {
                 type: STRING,
                 view: {
+                    type: "jseditor",
                     label: "On Action"
                 }
             },
             onWin: {
                 type: STRING,
                 view: {
-                    label: "On Win"
+                    type: "pageselect",
+                    label: "Next Level"
+                },
+                getter: function(v) {
+                    var r;
+                    if (
+                        typeof v === 'string' &&
+                        (r = v.match(
+                            /Variable.find\(gameModel, "currentLevel"\).setValue\(self, (\d+)\)/
+                        ))
+                    ) {
+                        // old version
+                        return r[1];
+                    }
+                    return v;
                 }
             },
             defaultCode: {
                 type: STRING,
                 value: "//Put your code here...\n",
                 view: {
+                    type: "jseditor",
                     label: "Code input placeholder"
                 }
             },
@@ -1318,8 +1160,11 @@ YUI.add('wegas-proggame-level', function(Y) {
                 }
             },
             maxTurns: {
-                type: STRING,
+                type: NUMBER,
                 value: 1,
+                getter: function (v) {
+                    return Number(v);
+                },
                 view: {
                     label: "Max turns",
                     className: 'wegas-advanced-feature'
@@ -1357,6 +1202,11 @@ YUI.add('wegas-proggame-level', function(Y) {
                 label: "right()",
                 tooltip: "right()\n" +
                     "Your avatar turns to the right without moving."
+            },
+            "npc": {
+                label: "npc&lt;T&gt;(fn:()=>T):T",
+                tooltip: "Ask NPC to execute the given function, it returns the value the function returns.\n\n"+
+                    "Parameters\nfn - The function to execute"
             },
             "Math.PI": {
                 pkg: "Math",

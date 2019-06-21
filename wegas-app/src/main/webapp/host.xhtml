@@ -8,6 +8,7 @@
 
         <ui:define name="app-init">
             <c:set var="extraBodyClass" value="wegas-hostmode"/>
+            <c:set var="wegasMode" value="HOST"/>
         </ui:define>
 
         <ui:define
@@ -28,25 +29,17 @@
         <ui:define name="pusherMode">GAME</ui:define>
 
         <script>//<ui:define name="editorFooter"><![CDATA[
-            Y.namespace("Wegas.Config").Dashboard = {
-                remoteScript: "",
-                columns: []
-            };
+            /*Y.namespace("Wegas.Config").Dashboards = {
+                overview: 'serverscript();"
+            };*/
             Y.namespace("Wegas.Config").CustomImpacts = [];
             Y.Wegas.app.once("render", function() {
                 // Handle switch from host to edit mode
                 Y.use("wegas-button", function() {
                     var editButton = new Y.Wegas.Button({
-                        label: "Edit scenario",
-                        cssClass: "host-switchmode",
-                        "plugins": [{
-                                "fn": "Tooltip",
-                                "cfg": {
-                                    "content": "<p>Edit scenario for this session</p>"
-                                }
-                            }]
-
-                    }).render(".wegas-layout-hd");
+                        "label": "<i class=\"fa fa-magic\" title=\"Edit scenario for this session\"></i>",
+                        cssClass: "host-switchmode"
+                    }).render(".wegas-button-toolbar .wegas-flexlist-content");
 
                     editButton.on("click", function() {
                         window.open(window.location.toString().replace("host.", "edit."), '_blank');
@@ -90,10 +83,8 @@
             Y.Wegas.app.after("render", function() {
                 var g = Y.Wegas.Facade.Game.cache.getCurrentGame();
 
-                Y.one(".wegas-title").setContent("<div>" 
-                    + (g.get("@class") === "DebugGame" ? "This is a scenario, you little hacker !" : g.get("name"))
-                    + "</div>"
-                    + "<div class='subtitle'>" + g.get("gameModelName") + "</div>");// Update the title
+                Y.one(".wegas-title").setContent((g.get("@class") === "DebugGame" ? "This is a scenario, you little hacker !" : g.get("name")));
+                Y.one(".wegas-subtitle").setContent(g.get("gameModelName"));
             });
 
             //]]></ui:define></script>

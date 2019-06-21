@@ -13,8 +13,8 @@ import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.TextDescriptor;
 import com.wegas.core.persistence.variable.primitive.TextInstance;
+import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
-import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionDescriptor;
@@ -41,11 +41,11 @@ public class VariableDescriptorControllerTest extends AbstractArquillianTest {
         login(scenarist);
         TextDescriptor text = new TextDescriptor();
         text.setName("testText");
-        text.setLabel(TranslatableContent.build("def", "testLabel"));
+        text.setLabel(TranslatableContent.build("en", "testLabel"));
         text.setTitle("testTitle");
         text.setComments("testComments");
         TextInstance textInstance = new TextInstance();
-        textInstance.setTrValue(TranslatableContent.build("def", "instance value"));
+        textInstance.setTrValue(TranslatableContent.build("en", "instance value"));
         text.setDefaultInstance(textInstance);
         variableDescriptorFacade.create(gameModel.getId(), text);
         Assert.assertTrue(variableDescriptorController.idsContains(gameModel.getId(), "testTex").contains(text.getId()));
@@ -56,7 +56,7 @@ public class VariableDescriptorControllerTest extends AbstractArquillianTest {
         Assert.assertTrue(variableDescriptorController.idsContains(gameModel.getId(), "instance val").contains(text.getId()));
 
         TriggerDescriptor trigger = new TriggerDescriptor();
-        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(new Script("var imascriptcontent"));
         variableDescriptorFacade.create(gameModel.getId(), trigger);
@@ -74,7 +74,7 @@ public class VariableDescriptorControllerTest extends AbstractArquillianTest {
         Assert.assertTrue(!variableDescriptorController.idsContainsAll(gameModel.getId(), "testnumber2").contains(number.getId()));
 
         TriggerDescriptor trigger = new TriggerDescriptor();
-        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(new Script("var imascriptcontent"));
         variableDescriptorFacade.create(gameModel.getId(), trigger);
@@ -89,10 +89,10 @@ public class VariableDescriptorControllerTest extends AbstractArquillianTest {
 
         ChoiceDescriptor choice = new ChoiceDescriptor();
         choice.setDefaultInstance(new ChoiceInstance());
-        choice.setDescription(TranslatableContent.build("def", "Find me"));
-        Result r = new Result("Reply 1");
+        choice.setDescription(TranslatableContent.build("en", "Find me"));
+        Result r = wegasFactory.createResult("Reply 1");
         choice.addResult(r);
-        Result r2 = new Result("Reply 2");
+        Result r2 = wegasFactory.createResult("Reply 2");
         r2.setImpact(new Script("var imascript"));
         choice.addResult(r2);
         variableDescriptorFacade.createChild(question.getId(), choice);

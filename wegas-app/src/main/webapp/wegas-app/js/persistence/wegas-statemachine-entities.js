@@ -8,7 +8,7 @@
 /**
  * @fileoverview
  */
-/*global YUI*/
+/*global YUI, I18n*/
 YUI.add("wegas-statemachine-entities", function(Y) {
     "use strict";
 
@@ -70,10 +70,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     label: "Current state id",
                     className: "wegas-advanced-feature"
                 }
-            },
-            currentState: {
-                "transient": true,
-                type: STRING
             },
             enabled: {
                 type: BOOLEAN,
@@ -146,7 +142,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         },
         // *** Private methods *** //
         getCurrentState: function() {
-            return this.getInstance().get("currentState");
+            return this.getState(this.getInstance().get("currentStateId"));
         },
         getInitialStateId: function() {
             return this.get("defaultInstance").get("currentStateId");
@@ -181,12 +177,13 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                         }
                     },
                     id: IDATTRDEF,
-                    descriptorId: {
-                        view: {
-                            type: HIDDEN
-                        }
+                    parentId: IDATTRDEF,
+                    parentType: {
+                        type: "string",
+                        view: {type: HIDDEN}
                     },
                     version: VERSION_ATTR_DEF,
+                    refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                     currentStateId: {
                         type: NUMBER,
                         value: 1,
@@ -220,62 +217,24 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 //writeOnce: "initOnly",
                 view: {
                     type: HIDDEN
-                }
+                },
+                maxWritableVisibility: "PRIVATE"
             }
         },
         EDITORNAME: "State Machine",
-        EDITMENU: [{
-                type: "EditEntityButton",
-                plugins: [{
-                        fn: "EditFSMAction"
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Duplicate",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
-            }, {
-                type: BUTTON,
-                label: "Export",
-                plugins: [{
-                        fn: "WidgetMenu",
-                        cfg: {
-                            children: [{
-                                    type: "PrintButton",
-                                    label: "Html"
-                                }, {
-                                    type: "PrintButton",
-                                    label: "Html (Players document)",
-                                    mode: "player"
-                                }, {
-                                    type: "PrintButton",
-                                    label: "Pdf",
-                                    outputType: "pdf"
-                                }, {
-                                    type: "PrintButton",
-                                    label: "Pdf (Players document)",
-                                    outputType: "pdf",
-                                    mode: "player"
-                                }, {
-                                    type: "OpenEntityButton",
-                                    label: "Json",
-                                    url: "rest/Export/GameModel/VariableDescriptor/{id}"
-                                }]
+        EDITMENU: {
+            editBtn: {
+                index: -1,
+                maxVisibility: "INTERNAL",
+                cfg: {
+                    type: "EditEntityButton",
+                    plugins: [{
+                            fn: "EditFSMAction"
                         }
-                    }]
-            }, {
-                type: BUTTON,
-                label: 'Search for usages',
-                plugins: [
-                    {
-                        fn: 'SearchEntityAction'
-                    }
-                ]
+                    ]
+                }
             }
-        ],
+        },
         METHODS: {
             enable: {
                 label: "activate",
@@ -300,6 +259,36 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 localEval: function(self) {
                     return !this.getInstance(self).get("enabled");
                 }
+            },
+            wentThroughState: {
+                label: "went through state",
+                returns: BOOLEAN,
+                arguments: [
+                    SELFARG,
+                    {
+                        type: NUMBER,
+                        view: {
+                            type: "entityarrayfieldselect",
+                            returnAttr: "index",
+                            field: "states"
+                        }
+                    }
+                ]
+            },
+            notWentThroughState: {
+                label: "did not went through state",
+                returns: BOOLEAN,
+                arguments: [
+                    SELFARG,
+                    {
+                        type: NUMBER,
+                        view: {
+                            type: "entityarrayfieldselect",
+                            returnAttr: "index",
+                            field: "states"
+                        }
+                    }
+                ]
             }
         }
     });
@@ -309,21 +298,29 @@ YUI.add("wegas-statemachine-entities", function(Y) {
     persistence.State = Y.Base.create("State", persistence.Entity, [], {
         // *** Lifecycle methods *** //
         initializer: function() {
+        },
+        getEditorLabel: function() {
+            return "#" + this.get("index") + ": " + this.get("label");
         }
-
         // *** Private methods *** //
     }, {
         ATTRS: {
             "@class": {
                 value: "State"
             },
-            stateMachineId: IDATTRDEF,
             version: VERSION_ATTR_DEF,
             label: {
                 type: [NULL, STRING],
                 "transient": false,
                 view: {
                     label: "Label"
+                }
+            },
+            index: {
+                type: [NULL, NUMBER],
+                "transient": true,
+                view: {
+                    label: "hidden"
                 }
             },
             onEnterEvent: {
@@ -346,27 +343,30 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             },
             editorPosition: {
                 valueFn: function() {
-                    return new persistence.Coordinate({
+                    return {
                         x: 30,
                         y: 30
-                    });
+                    };
                 },
                 view: {
                     label: 'Box position',
                     className: 'wegas-advanced-feature'
                 },
                 properties: {
-                    "@class": {
-                        type: STRING,
-                        value: "Coordinate",
-                        view: {type: HIDDEN}
-                    }
+                    x: {
+                        type: "number",
+                        view: {type: "uneditable", label: "x"}
+                    },
+                    y: {
+                        type: "number",
+                        view: {type: "uneditable", label: "y"}
+                    },
                 }
             }
         }
     });
     /*
-     * TransitionDescriptor Entity
+     * Transition Entity
      */
     persistence.Transition = Y.Base.create("Transition", persistence.Entity, [], {}, {
         ATTRS: {
@@ -387,7 +387,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 }
             },
             version: VERSION_ATTR_DEF,
-            stateId: IDATTRDEF,
             stateMachineId: IDATTRDEF,
             preStateImpact: {
                 type: [NULL, OBJECT],
@@ -412,7 +411,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 type: NUMBER,
                 value: 0,
                 view: {
-                    className: 'wegas-advanced-feature'
+                    className: 'wegas-advanced-feature',
+                    label: 'Index'
                 }
             }
         }
@@ -435,26 +435,29 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             },
             defaultInstance: {
                 valueFn: function() {
-                    return new persistence.TriggerInstance();
+                    return new persistence.FSMInstance();
                 },
                 properties: {
                     '@class': {
                         type: STRING,
-                        value: 'TriggerInstance',
+                        value: 'FSMInstance',
                         view: {
                             type: HIDDEN
                         }
                     },
                     version: VERSION_ATTR_DEF,
+                    refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                     currentStateId: {
                         type: NUMBER,
+                        value: 1,
                         view: {
                             label: 'Initial state id',
                             type: HIDDEN
                         }
                     },
-                    descriptorId: {
-                        type: NUMBER,
+                    parentId: IDATTRDEF,
+                    parentType: {
+                        type: "string",
                         view: {type: HIDDEN}
                     },
                     id: IDATTRDEF,
@@ -509,15 +512,10 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 properties: {
                     "@class": {type: "string", value: "Script", view: {type: HIDDEN}},
                     content: {
-                        errored: function(val) {
-                            if (!val) {
-                                return "Required";
-                            }
-                        },
-                        type: STRING
+                        type: STRING,
+                        value: ""
                     }
                 },
-                required: true,
                 index: 4,
                 view: {
                     type: SCRIPT,
@@ -528,38 +526,12 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 "transient": true
             }
         },
-        EDITMENU: [{
-                type: "EditEntityButton"
-            }, {
-                type: BUTTON,
-                label: "Duplicate",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
-            }, {
-                type: BUTTON,
-                label: 'Search for usages',
-                plugins: [
-                    {
-                        fn: 'SearchEntityAction'
-                    }
-                ]
-            }]
-    });
-    /*
-     * TriggerInstance Entity
-     */
-    persistence.TriggerInstance = Y.Base.create("TriggerInstance", persistence.FSMInstance, [], {}, {
-        ATTRS: {
-            "@class": {
-                value: "TriggerInstance"
-            },
-            currentStateId: {
-                type: NUMBER,
-                view: {
-                    type: HIDDEN
+        EDITMENU: {
+            editBtn: {
+                index: -1,
+                maxVisibility: "INTERNAL",
+                cfg: {
+                    type: "EditEntityButton"
                 }
             }
         }
@@ -622,36 +594,25 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             }
         },
         EDITORNAME: "Dialog",
-        EDITMENU: [{
-                type: "EditEntityButton",
-                plugins: [{
-                        fn: "EditFSMAction",
-                        cfg: {
-                            viewerCfg: {
-                                availableStates: [/*"State",*/ "DialogueState"],
-                                availableTransitions: [/*"Transition",*/ "DialogueTransition"]
+        EDITMENU: {
+            editBtn: {
+                index: -1,
+                maxVisibility: "INTERNAL",
+                cfg: {
+                    type: "EditEntityButton",
+                    plugins: [{
+                            fn: "EditFSMAction",
+                            cfg: {
+                                viewerCfg: {
+                                    availableStates: [/*"State",*/ "DialogueState"],
+                                    availableTransitions: [/*"Transition",*/ "DialogueTransition"]
+                                }
                             }
-                        }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Duplicate",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
-            }, {
-                type: BUTTON,
-                label: 'Search for usages',
-                plugins: [
-                    {
-                        fn: 'SearchEntityAction'
-                    }
-                ]
-            }]
+                        }]
+                }
+            }
+        }
     });
-
     /**
      * DialogueTransition Entity
      */
@@ -719,6 +680,9 @@ YUI.add("wegas-statemachine-entities", function(Y) {
          */
         setText: function(a, token) {
             this.set(TEXT, a.join(token));
+        },
+        getEditorLabel: function() {
+            return "#" + this.get("index");
         }
     }, {
         EDITORNAME: "server text",
@@ -727,6 +691,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 value: "DialogueState"
             },
             version: VERSION_ATTR_DEF,
+
             text: Y.Wegas.Helper.getTranslationAttr({
                 label: "Text",
                 index: -1,
@@ -736,22 +701,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 view: {
                     type: HIDDEN
                 }
-            }
-        }
-    });
-    /**
-     * Coordinate embeddable mapper
-     **/
-    persistence.Coordinate = Y.Base.create("Coordinate", persistence.Entity, [], {}, {
-        ATTRS: {
-            "@class": {
-                value: "Coordinate"
-            },
-            x: {
-                value: null
-            },
-            y: {
-                value: null
             }
         }
     });

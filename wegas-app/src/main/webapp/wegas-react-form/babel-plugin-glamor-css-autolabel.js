@@ -1,4 +1,5 @@
 const p = require('path');
+
 function hasLabel(path) {
     return path.node.properties.some(a => {
         if (a.type !== 'ObjectProperty') {
@@ -27,7 +28,7 @@ module.exports = function transform(babel) {
                     let name = '';
                     const filename = p
                         .relative(
-                            this.file.opts.sourceRoot,
+                            this.file.opts.cwd,
                             this.file.opts.filename
                         )
                         .replace(/\//g, '_');

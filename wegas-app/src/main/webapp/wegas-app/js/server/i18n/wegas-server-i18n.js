@@ -11,7 +11,7 @@
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
 
-/*global Variable, gameModel, self */
+/*global Variable, gameModel, self, I18nFacade */
 var i18nOrdinate = (function(module) {
     return module;
 }(i18nOrdinate || {})),
@@ -72,56 +72,42 @@ var i18nOrdinate = (function(module) {
         function foreach(callback, mode) {
             mode = mode || "match";
 
-            var lang, refName, count = 0;
+            var lang;
             if (mode === "internal" || mode === "match") {
                 for (lang in i18nTable) {
                     if (i18nTable.hasOwnProperty(lang)) {
-                        refName = getRefNameByCode(lang);
-                        if (refName || mode === "internal") {
-                            callback(refName, lang);
-                            count++;
+                        var gmLang = self.getGameModel().getLanguageByCode(lang);
+                        if (gmLang || mode === "internal") {
+                            callback(lang);
                         }
                     }
                 }
             } else {
                 // ie mode === gamemodel
-                for (lang in self.getGameModel().getLanguages) {
-                    callback(lang.getRefName(), lang.getCode());
-                    count++;
+                var langs = self.getGameModel().getLanguages();
+                for (var i in langs) {
+                    var lang = langs[i];
+
+                    callback(lang.getCode());
                 }
             }
-
-            if (!count) {
-                callback("def", currentLocale());
-                count++;
-            }
-        }
-
-        /**
-         * 
-         * @param {type} code
-         * @returns {unresolved}
-         */
-        function getRefNameByCode(code) {
-            var lang = self.getGameModel().getLanguageByCode(code);
-            if (lang) {
-                return lang.getRefName();
-            }
-            return null;
         }
 
         /**
          * Guess language to use, according to player preference and available languages
-         * @param {type} refName
+         * @param {type} code
          * @returns {undefined|i18nTable|wegas-server-i18nI18n.currentLocale.gmCodes|String}
          */
-        function currentLocale(refName) {
+        function currentLocale(code) {
             var locale, i,
-                gmCodes = self.getGameModel().getPreferredLanguagesCode(refName || self.getRefName());
+                gmCodes = self.getGameModel().getPreferredLanguagesCode(code || self.getLang());
 
             for (i in gmCodes) {
-                if (i18nTable[gmCodes[i]]) {
-                    return gmCodes[i];
+                if (i18nTable[gmCodes[i].toLowerCase()]) {
+                    return gmCodes[i].toLowerCase();
+                }
+                if (i18nTable[gmCodes[i].toUpperCase()]) {
+                    return gmCodes[i].toUpperCase();
                 }
             }
 
@@ -145,19 +131,19 @@ var i18nOrdinate = (function(module) {
          * 
          * @param {type} key the message identifier
          * @param {type} object contains message arguments to replace {k: value, etc}
-         * @param {string} refName translate to this language, if null, undefined or empty, use the currentLocale
+         * @param {string} code translate to this language, if null, undefined or empty, use the currentLocale
          * @returns {String} the translated string filled with provided arguments
          */
-        function translate(key, object, refName) {
+        function translate(key, object, code) {
             if (typeof key === "string") {
-                return translateKey(key, object, refName);
+                return translateKey(key, object, code);
             } else {
-                return translateObject(key, object, refName);
+                return I18nFacade.interpolate(translateObject(key, object, code), self);
             }
         }
 
-        function translateKey(key, object, refName) {
-            var locale = currentLocale(refName), value, res, i,
+        function translateKey(key, object, code) {
+            var locale = currentLocale(code), value, res, i,
                 value = i18nTable[locale];
             if (value) {
                 res = key.split(".");
@@ -179,9 +165,9 @@ var i18nOrdinate = (function(module) {
             }
         }
 
-        function translateObject(trContent, config, refName) {
-            if (refName) {
-                return trContent.translateOrEmpty(self.getGameModel(), refName);
+        function translateObject(trContent, config, code) {
+            if (code) {
+                return trContent.translateOrEmpty(self.getGameModel(), code);
             } else {
                 return trContent.translateOrEmpty(self);
             }
@@ -193,6 +179,9 @@ var i18nOrdinate = (function(module) {
         }
 
         return {
+            currentLocale: function() {
+                return currentLocale();
+            },
             lang: function() {
                 return currentLocale();
             },
@@ -217,12 +206,11 @@ var i18nOrdinate = (function(module) {
              * 
              * 
              * callback parameters:
-             *  * language refName;
              *  * language code:
              *  
              *  mode may be "gameModel", "internal", or "match":
-             *   gamemodel: call callback for all gamemodel languages (refName and code are defined)
-             *   internal: call callback for internal languages only (the ones in i18nTable, code is defined but refName is not)
+             *   gamemodel: call callback for all gamemodel languages
+             *   internal: call callback for internal languages only (the ones in i18nTable)
              *   match: call callback for langauges which are defined in both set, this is the default setting
              *   
              *   fallback : call def / first language in i18nTable

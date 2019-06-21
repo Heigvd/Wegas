@@ -146,7 +146,7 @@
 .yui3-skin-sam .horizontal-tabview .yui3-tab a.yui3-tab-label  {
     background: none;
     border: none;
-    padding: 6px 0px;
+    /*padding: 6px 0px;*/
     width:100%;
     text-align: left;
 }

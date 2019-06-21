@@ -36,7 +36,7 @@ public class ApplicationStartup extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(ApplicationStartup.class);
 
     @EJB
-    WebsocketFacade websocketFacade;
+    private WebsocketFacade websocketFacade;
 
     @Inject
     private ApplicationLifecycle applicationLifecycle;
@@ -72,7 +72,7 @@ public class ApplicationStartup extends HttpServlet {
          * set the membership listener up
          */
         hzInstance.getCluster().addMembershipListener(applicationLifecycle);
-        hzInstance.getLifecycleService().addLifecycleListener(applicationLifecycle);
+        //hzInstance.getLifecycleService().addLifecycleListener(applicationLifecycle);
 
         /*
          * Inform client webapp is running
@@ -84,9 +84,12 @@ public class ApplicationStartup extends HttpServlet {
 
     @Override
     public void destroy() {
+        logger.error("DESTROY APPLICATION SERVLET");
 
         populatorScheduler.cancelLocalPopulating();
-        
+
+        applicationLifecycle.hZshutdown();
+
         // hZinstance is not in cluster anymore here, no way to detect if this instance is the last one
         int count = applicationLifecycle.countMembers();
         logger.info("Servlet Destroy: {}", count);

@@ -3,23 +3,23 @@ angular.module('wegas.models.scenarios', [])
         "use strict";
         var model = this,
             ServiceURL = window.ServiceURL,
-            getPath = function(status) {
-                return ServiceURL + "rest/Lobby/GameModel/status/" + status;
+            getPath = function(status, type) {
+                return ServiceURL + "rest/Lobby/GameModel/type/" + type + "/status/" + status;
             },
             scenarios = {
                 cache: {},
-                findScenario: function(status, id) {
-                    return _.find(scenarios.cache[status].data, function(s) {
+                findScenario: function(cacheName, id) {
+                    return _.find(scenarios.cache[cacheName].data, function(s) {
                         return +s.id === +id;
                     });
                 },
                 stopWaiting: function(waitFunction) {
                     $interval.cancel(waitFunction);
                 },
-                wait: function(status) {
+                wait: function(cacheName) {
                     var deferred = $q.defer(),
                         waitScenarios = $interval(function() {
-                            if (!scenarios.cache[status].loading) {
+                            if (!scenarios.cache[cacheName].loading) {
                                 scenarios.stopWaiting(waitScenarios);
                                 deferred.resolve(true);
                             }
@@ -27,41 +27,72 @@ angular.module('wegas.models.scenarios', [])
                     return deferred.promise;
                 }
             },
-        /* Cache all scenarios in a list */
-        cacheScenarios = function(status) {
-            var deferred = $q.defer();
-            if (scenarios.cache[status]) {
-                $http.get(getPath(status), {
-                    "headers": {
-                        "managed-mode": "true"
-                    }
-                }).success(function(data) {
-                    if (data.updatedEntities) {
-                        scenarios.cache[status].data = data.updatedEntities;
+            cachePermissions = function(status, type, cacheKey) {
+                var deferred = $q.defer(),
+                    path = ServiceURL + "rest/Lobby/GameModel/permissions/" + type + "/status/" + status;
+
+                if (scenarios.cache[cacheKey]) {
+                    $http.get(path, {
+                        "headers": {
+                            "managed-mode": "true"
+                        }
+                    }).success(function(data) {
+                        if (data.updatedEntities) {
+                            scenarios.cache[cacheKey].data = data.updatedEntities[0];
+                            deferred.resolve(true);
+                        } else {
+                            scenarios.cache[cacheKey].data = [];
+                            deferred.resolve(true);
+                        }
+                    }).error(function(data) {
+                        scenarios.cache[cacheKey].data = [];
                         deferred.resolve(true);
-                    } else {
-                        scenarios.cache[status].data = [];
-                        deferred.resolve(true);
-                    }
-                }).error(function(data) {
-                    scenarios.cache[status].data = [];
+                    });
+                } else {
+                    scenarios.cache[cacheKey] = {
+                        data: [],
+                        loading: false
+                    };
                     deferred.resolve(true);
-                });
-            } else {
-                scenarios.cache[status] = {
-                    data: [],
-                    loading: false
-                };
-                deferred.resolve(true);
-            }
-            return deferred.promise;
-        },
+                }
+                return deferred.promise;
+            },
+            /* Cache all scenarios in a list */
+            cacheScenarios = function(status, type) {
+                var deferred = $q.defer(),
+                    cacheKey = type + ":" + status;
+                if (scenarios.cache[cacheKey]) {
+                    $http.get(getPath(status, type), {
+                        "headers": {
+                            "managed-mode": "true"
+                        }
+                    }).success(function(data) {
+                        if (data.updatedEntities) {
+                            scenarios.cache[cacheKey].data = data.updatedEntities;
+                            deferred.resolve(true);
+                        } else {
+                            scenarios.cache[cacheKey].data = [];
+                            deferred.resolve(true);
+                        }
+                    }).error(function(data) {
+                        scenarios.cache[cacheKey].data = [];
+                        deferred.resolve(true);
+                    });
+                } else {
+                    scenarios.cache[cacheKey] = {
+                        data: [],
+                        loading: false
+                    };
+                    deferred.resolve(true);
+                }
+                return deferred.promise;
+            },
             /* Cache a scenario, passing a scenario list and the scenario to add in parameter */
-            cacheScenario = function(status, scenario) {
+            cacheScenario = function(cacheName, scenario) {
                 var list = null;
-                if (status && scenario) {
-                    if (scenarios.cache[status]) {
-                        list = scenarios.cache[status].data;
+                if (cacheName && scenario) {
+                    if (scenarios.cache[cacheName]) {
+                        list = scenarios.cache[cacheName].data;
                         if (!_.find(list, scenario)) {
                             list.push(scenario);
                         }
@@ -70,12 +101,12 @@ angular.module('wegas.models.scenarios', [])
                 return list;
             },
             /* Uncache a scenario, passing a scenario list and the scenario to remove in parameter */
-            uncacheScenario = function(status, scenario) {
+            uncacheScenario = function(cacheName, scenario) {
                 var list = null,
                     scenarioToUncache = null;
-                if (scenarios.cache[status]) {
+                if (scenarios.cache[cacheName]) {
 
-                    list = scenarios.cache[status].data;
+                    list = scenarios.cache[cacheName].data;
                     scenarioToUncache = _.find(list, scenario);
                     if (scenarioToUncache) {
                         list = _.without(list, scenario);
@@ -91,15 +122,26 @@ angular.module('wegas.models.scenarios', [])
                     for (var cacheName in scenarios.cache) {
                         scenario = scenarios.findScenario(cacheName, scenarioId);
                         if (scenario) {
+                            var permCacheName = "perm" + ":" + scenario.type + ":" + scenario.status;
+                            var perm = scenarios.cache[permCacheName].data[scenario.id];
+
+                            // remove scenario from the previous cache
                             scenarios.cache[cacheName].data = uncacheScenario(cacheName, scenario);
-                        }
-                        if (status === cacheName) {
-                            scenarios.cache[cacheName].data = cacheScenario(cacheName, data);
+                            var newCacheName = cacheName.split(":")[0] + ":" + status;
+                            if (scenarios.cache[newCacheName]) {
+                                // add move it to the new cache
+                                scenarios.cache[newCacheName].data = cacheScenario(newCacheName, data);
+                                permCacheName = "perm" + ":" + scenario.type + ":" + status;
+                                if (scenarios.cache[permCacheName]) {
+                                    scenarios.cache[permCacheName].data[scenario.id] = perm;
+                                }
+                            }
+                            break;
                         }
                     }
                     deferred.resolve(data);
                 }).error(function(data) {
-                    deferred.resolve(false);
+                    deferred.reject(data);
                 });
                 return deferred.promise;
             },
@@ -173,32 +215,85 @@ angular.module('wegas.models.scenarios', [])
                 return deferred.promise;
             };
 
-        /* Ask for all scenarios in a list */
-        model.getScenarios = function(status) {
+        model.hasAnyPermissions = function(gameModel, argPermissions, pMatrix /*optionnal*/) {
+            var permissions;
+            if (typeof argPermissions === "string") {
+                permissions = [argPermissions];
+            } else if (Array.isArray(argPermissions)) {
+                permissions = argPermissions;
+            } else {
+                return false;
+            }
+
+            if (!pMatrix) {
+                var cacheName = "perm:" + gameModel.type + ":" + gameModel.status;
+                pMatrix = scenarios.cache[cacheName] && scenarios.cache[cacheName].data;
+            }
+
+            if (pMatrix) {
+                var perms = pMatrix[gameModel.id];
+                if (perms) {
+                    return permissions.filter(function(reqPerm) {
+                        return perms.filter(function(grantedPerm) {
+                            return grantedPerm === "*" || grantedPerm.toUpperCase().indexOf(reqPerm) >= 0;
+                        }).length > 0;
+                    }).length > 0;
+                }
+            }
+
+            return false;
+        };
+
+        model.getGameModelsByStatusTypeAndPermission = function(type, status, argPermissions) {
             var deferred = $q.defer();
+
+            model.getPermissionsMatrix(status, type).then(function(permResponse) {
+                model.getScenarios(status, type).then(function(gameModelResponse) {
+                    var gameModels = gameModelResponse.data,
+                        pMatrix = permResponse.data;
+
+                    // filter gameModel against requested permisions
+                    var filtered = gameModels.filter(function(gameModel) {
+                        return model.hasAnyPermissions(gameModel, argPermissions, pMatrix);
+                    });
+
+                    $translate('COMMONS-SCENARIOS-FIND-FLASH-SUCCESS').then(function(message) {
+                        deferred.resolve(Responses.success(message, filtered));
+                    });
+                });
+            });
+
+            return deferred.promise;
+        };
+
+        /* Ask for all scenarios in a list */
+        model.getPermissionsMatrix = function(status, type) {
+            var deferred = $q.defer(),
+                eType = type || "SCENARIO",
+                cacheName = "perm:" + eType + ":" + status;
             Auth.getAuthenticatedUser().then(function(user) {
                 if (user) {
-                    if (scenarios.cache[status]) {
-                        if (scenarios.cache[status].loading) {
-                            scenarios.wait(status).then(function() {
+                    if (scenarios.cache[cacheName]) {
+                        if (scenarios.cache[cacheName].loading) {
+                            scenarios.wait(cacheName).then(function() {
                                 $translate('COMMONS-SCENARIOS-FIND-FLASH-SUCCESS').then(function(message) {
-                                    deferred.resolve(Responses.success(message, scenarios.cache[status].data));
+                                    deferred.resolve(Responses.success(message, scenarios.cache[cacheName].data));
                                 });
                             });
                         } else {
                             $translate('COMMONS-SCENARIOS-FIND-FLASH-SUCCESS').then(function(message) {
-                                deferred.resolve(Responses.success(message, scenarios.cache[status].data));
+                                deferred.resolve(Responses.success(message, scenarios.cache[cacheName].data));
                             });
                         }
                     } else {
-                        scenarios.cache[status] = {
+                        scenarios.cache[cacheName] = {
                             data: null,
                             loading: true
                         };
-                        cacheScenarios(status).then(function() {
-                            scenarios.cache[status].loading = false;
+                        cachePermissions(status, eType, cacheName).then(function() {
+                            scenarios.cache[cacheName].loading = false;
                             $translate('COMMONS-SCENARIOS-FIND-FLASH-SUCCESS').then(function(message) {
-                                deferred.resolve(Responses.success(message, scenarios.cache[status].data));
+                                deferred.resolve(Responses.success(message, scenarios.cache[cacheName].data));
                             });
                         });
                     }
@@ -211,14 +306,69 @@ angular.module('wegas.models.scenarios', [])
             return deferred.promise;
         };
 
-        /* Ask for one scenario. */
-        model.getScenario = function(status, id) {
+
+
+        model.getModels = function(status) {
+            return model.getScenarios(status, "MODEL");
+        };
+
+        /* Ask for all scenarios in a list */
+        model.getScenarios = function(status, type) {
             var deferred = $q.defer(),
+                eType = type || "SCENARIO",
+                cacheName = eType + ":" + status;
+            Auth.getAuthenticatedUser().then(function(user) {
+                if (user) {
+                    if (scenarios.cache[cacheName]) {
+                        if (scenarios.cache[cacheName].loading) {
+                            scenarios.wait(cacheName).then(function() {
+                                $translate('COMMONS-SCENARIOS-FIND-FLASH-SUCCESS').then(function(message) {
+                                    deferred.resolve(Responses.success(message, scenarios.cache[cacheName].data));
+                                });
+                            });
+                        } else {
+                            $translate('COMMONS-SCENARIOS-FIND-FLASH-SUCCESS').then(function(message) {
+                                deferred.resolve(Responses.success(message, scenarios.cache[cacheName].data));
+                            });
+                        }
+                    } else {
+                        scenarios.cache[cacheName] = {
+                            data: null,
+                            loading: true
+                        };
+                        cacheScenarios(status, eType).then(function() {
+                            scenarios.cache[cacheName].loading = false;
+                            $translate('COMMONS-SCENARIOS-FIND-FLASH-SUCCESS').then(function(message) {
+                                deferred.resolve(Responses.success(message, scenarios.cache[cacheName].data));
+                            });
+                        });
+                    }
+                } else {
+                    $translate('COMMONS-AUTH-CURRENT-FLASH-ERROR').then(function(message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
+                }
+            });
+            return deferred.promise;
+        };
+
+
+        /* Ask for one model. */
+        model.getModel = function(status, id) {
+            return model.getScenario(status, id, "MODEL");
+        };
+
+        /* Ask for one scenario. */
+        model.getScenario = function(status, id, type) {
+            var deferred = $q.defer(),
+                eType = type || "SCENARIO",
+                cacheName = eType + ":" + status,
                 scenario = null;
-            if (scenarios.cache[status]) {
-                if (scenarios.cache[status].loading) {
-                    scenarios.wait(status).then(function() {
-                        scenario = scenarios.findScenario(status, id);
+            if (scenarios.cache[cacheName]) {
+                if (scenarios.cache[cacheName].loading) {
+                    scenarios.wait(cacheName).then(function() {
+
+                        scenario = scenarios.findScenario(cacheName, id);
                         if (scenario) {
                             $translate('COMMONS-SCENARIOS-GET-FLASH-SUCCESS').then(function(message) {
                                 deferred.resolve(Responses.success(message, scenario));
@@ -230,7 +380,7 @@ angular.module('wegas.models.scenarios', [])
                         }
                     });
                 } else {
-                    scenario = scenarios.findScenario(status, id);
+                    scenario = scenarios.findScenario(cacheName, id);
                     if (scenario) {
                         $translate('COMMONS-SCENARIOS-GET-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, scenario));
@@ -242,8 +392,8 @@ angular.module('wegas.models.scenarios', [])
                     }
                 }
             } else {
-                model.getScenarios(status).then(function() {
-                    scenario = scenarios.findScenario(status, id);
+                model.getScenarios(status, eType).then(function() {
+                    scenario = scenarios.findScenario(cacheName, id);
                     if (scenario) {
                         $translate('COMMONS-SCENARIOS-GET-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, scenario));
@@ -263,7 +413,13 @@ angular.module('wegas.models.scenarios', [])
                 return function success(data) {
                     var gameModel = _.find(data.updatedEntities, {'@class': 'GameModel'});
                     if (gameModel) {
-                        cacheScenario('LIVE', gameModel);
+                        var cacheName = gameModel.type + ':' + gameModel.status;
+                        cacheScenario(cacheName, gameModel);
+                        var pCache = scenarios.cache["perm:" + cacheName];
+                        if (pCache){
+                            // grant all right
+                            pCache.data[gameModel.id] = ["*"];
+                        }
                         $translate('COMMONS-SCENARIOS-COPY-FLASH-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, gameModel));
                         });
@@ -272,7 +428,7 @@ angular.module('wegas.models.scenarios', [])
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
-                }
+                };
             }
             // other return code
             function createError(deferred) {
@@ -284,11 +440,84 @@ angular.module('wegas.models.scenarios', [])
                     $translate('COMMONS-SCENARIOS-COPY-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
-                }
+                };
             }
-            model.createScenario = function(name, templateId) {
+
+            model.releaseScenario = function(scenarioId) {
                 var deferred = $q.defer(),
-                    url = "rest/Lobby/GameModel/" + templateId;
+                    url = "rest/Lobby/GameModel/Release/" + scenarioId;
+                if (scenarioId) {
+                    $http.get(ServiceURL + url, {
+                        "headers": {
+                            "managed-mode": "true"
+                        }
+                    }).success(createSuccess(deferred)).error(createError(deferred));
+
+                    return deferred.promise;
+                }
+                return deferred.promise;
+            };
+
+            model.integrateScenario = function(modelId, scenarioId) {
+                var deferred = $q.defer(),
+                    url = "rest/Lobby/GameModel/" + modelId + "/Integrate/" + scenarioId;
+                if (modelId && scenarioId) {
+                    $http.get(ServiceURL + url, {
+                        "headers": {
+                            "managed-mode": "true"
+                        }
+                    }).success(createSuccess(deferred)).error(createError(deferred));
+
+                    return deferred.promise;
+                }
+                return deferred.promise;
+            };
+
+            model.extractModel = function(name, ids) {
+                var deferred = $q.defer(),
+                    url = "rest/Lobby/GameModel/extractModel/";
+                if (name && ids) {
+                    if (name !== "") {
+                        if (ids.length > 0) {
+                            url += ids.join(",");
+                            $http.post(ServiceURL + url, {
+                                "@class": "GameModel",
+                                "name": name,
+                                "properties": {}
+                            }, {
+                                "headers": {
+                                    "managed-mode": "true"
+                                }
+                            }).success(createSuccess(deferred)).error(createError(deferred));
+                        } else {
+                            $translate('COMMONS-SCENARIOS-NO-TEMPLATE-FLASH-ERROR').then(function(message) {
+                                deferred.resolve(Responses.danger(message, false));
+                            });
+                        }
+                    } else {
+                        $translate('COMMONS-SCENARIOS-EMPTY-NAME-FLASH-ERROR').then(function(message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
+                    }
+                } else {
+                    $translate('COMMONS-SCENARIOS-NO-NAME-TEMPLATE-FLASH-ERROR').then(function(message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
+                }
+                return deferred.promise;
+            };
+
+            model.createModel = function(name, templateId) {
+                return model.abstractCreate(name, "model", templateId);
+            };
+
+            model.createScenario = function(name, templateId) {
+                return model.abstractCreate(name, null, templateId);
+            };
+
+            model.abstractCreate = function(name, restPath, templateId) {
+                var deferred = $q.defer(),
+                    url = "rest/Lobby/GameModel/" + (restPath ? restPath + "/" : "") + templateId;
                 if (name && templateId) {
                     if (name !== "") {
                         if (templateId !== 0) {
@@ -319,15 +548,17 @@ angular.module('wegas.models.scenarios', [])
                 return deferred.promise;
             };
 
-            model.copyScenario = function(scenarioId) {
-                var deferred = $q.defer(),
-                    url = "rest/Lobby/GameModel/" + scenarioId + "/Duplicate";
-                if (scenarioId) {
+            model.copyScenario = function(scenario) {
+                var deferred = $q.defer();
+                if (scenario) {
+                    var url = "rest/Lobby/GameModel/" + scenario.id + "/Duplicate";
                     $http.post(ServiceURL + url, null, {
                         "headers": {
                             "managed-mode": "true"
                         }
-                    }).success(createSuccess(deferred)).error(createError(deferred));
+                    })
+                        .success(createSuccess(deferred))
+                        .error(createError(deferred));
                 } else {
                     $translate('COMMONS-SCENARIOS-NO-COPY-FLASH-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
@@ -353,9 +584,12 @@ angular.module('wegas.models.scenarios', [])
             };
         })();
 
-        model.updateScenario = function(id, infosToSet) {
+        model.updateScenario = function(id, infosToSet, type) {
             var deferred = $q.defer(),
-                scenarioBeforeChange = scenarios.findScenario("LIVE", id);
+                eType = type || "SCENARIO",
+                cacheName = eType + ":LIVE",
+                scenarioBeforeChange = scenarios.findScenario(cacheName, id);
+
             if (id && infosToSet) {
                 if (scenarioBeforeChange) {
                     setScenarioInfos(infosToSet, scenarioBeforeChange).then(function(scenarioSetted) {
@@ -495,7 +729,7 @@ angular.module('wegas.models.scenarios', [])
             }).success(function(data) {
                 if (data.events !== undefined && data.events.length === 0) {
                     var newScenario = data.updatedEntities[0];
-                    cacheScenario("LIVE", newScenario);
+                    cacheScenario(newScenario.type + ":LIVE", newScenario);
                     $translate('COMMONS-SCENARIOS-VERSIONS-RESTORE-FLASH-SUCCESS', {
                         name: newScenario.name
                     }).then(function(message) {
@@ -525,6 +759,17 @@ angular.module('wegas.models.scenarios', [])
         /*  ---------------------------------
          ARCHIVED SCENARIOS SERVICES
          --------------------------------- */
+        model.countArchivedModels = function() {
+            var deferred = $q.defer();
+            $http.get(ServiceURL + "rest/GameModel/type/MODEL/status/BIN/count").success(function(data) {
+                $translate('PRIVATE-ARCHIVES-COUNT').then(function(message) {
+                    deferred.resolve(Responses.info(message, data));
+                });
+            });
+            return deferred.promise;
+        };
+
+
         model.countArchivedScenarios = function() {
             var deferred = $q.defer();
             $http.get(ServiceURL + "rest/GameModel/status/BIN/count").success(function(data) {
@@ -548,7 +793,16 @@ angular.module('wegas.models.scenarios', [])
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
+                }).catch(function(data) {
+                    if (data && data.message) {
+                        deferred.resolve(Responses.danger(data.message, false));
+                    } else {
+                        $translate('COMMONS-SCENARIOS-SUPPRESSION-FLASH-ERROR').then(function(message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
+                    }
                 });
+
             } else {
                 $translate('COMMONS-SCENARIOS-WRONG-OBJECT-FLASH-ERROR').then(function(message) {
                     deferred.resolve(Responses.danger(message, false));
@@ -571,6 +825,14 @@ angular.module('wegas.models.scenarios', [])
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }
+                }).catch(function(data) {
+                    if (data && data.message) {
+                        deferred.resolve(Responses.danger(data.message, false));
+                    } else {
+                        $translate('COMMONS-SCENARIOS-SUPPRESSION-FLASH-ERROR').then(function(message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
+                    }
                 });
             } else {
                 $translate('COMMONS-SCENARIOS-WRONG-OBJECT-FLASH-ERROR').then(function(message) {
@@ -590,7 +852,15 @@ angular.module('wegas.models.scenarios', [])
                             deferred.resolve(Responses.success(message, data));
                         });
                     } else {
-                        $translate('COMMONS-SCENARIOS-SUPRESSION-FLASH-ERROR').then(function(message) {
+                        $translate('COMMONS-SCENARIOS-SUPPRESSION-FLASH-ERROR').then(function(message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
+                    }
+                }).catch(function(data) {
+                    if (data && data.message) {
+                        deferred.resolve(Responses.danger(data.message, false));
+                    } else {
+                        $translate('COMMONS-SCENARIOS-SUPPRESSION-FLASH-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
                     }

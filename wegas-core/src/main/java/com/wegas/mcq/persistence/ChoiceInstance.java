@@ -12,14 +12,20 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.True;
+import com.wegas.editor.View.EntityArrayFiledSelect;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
+import com.wegas.editor.Visible;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.*;
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.BatchFetchType;
@@ -37,7 +43,7 @@ import org.slf4j.LoggerFactory;
 @NamedQueries({
     @NamedQuery(name = "ChoiceInstance.findByResultId", query = "SELECT ci FROM ChoiceInstance ci WHERE ci.currentResult.id = :resultId")
 })
-public class ChoiceInstance extends VariableInstance {
+public class ChoiceInstance extends VariableInstance implements ReadableInstance {
 
     private static final long serialVersionUID = 1L;
 
@@ -46,10 +52,13 @@ public class ChoiceInstance extends VariableInstance {
     /**
      *
      */
+    @WegasEntityProperty(optional = false, nullable = false, proposal = True.class,
+            view = @View(label = "Active from start"))
     private Boolean active = true;
     /**
      *
      */
+    @WegasEntityProperty(optional = false, nullable = false, proposal = True.class, view = @View(label = "Unread", value = Hidden.class))
     private Boolean unread = true;
     /**
      *
@@ -72,18 +81,24 @@ public class ChoiceInstance extends VariableInstance {
     @BatchFetch(BatchFetchType.JOIN)
     @JsonManagedReference
     //@JoinFetch
+    @WegasEntityProperty(view = @View(label = "Replies", value = Hidden.class),
+            proposal = EmptyArray.class, optional = false, nullable = false)
     private List<Reply> replies = new ArrayList<>();
 
     /**
      *
      */
     @Transient
+    @WegasEntityProperty(view = @View(label = "Default result", value = EntityArrayFiledSelect.ResultsSelect.class))
+    @Visible(Result.HasMultipleResult.class)
     private String currentResultName;
 
     @Transient
     /**
      * @deprecated
      */
+    @WegasEntityProperty(view = @View(label = "deprecated current result index", value = Hidden.class))
+    @Deprecated
     private Integer currentResultIndex = null;
 
     public ChoiceInstance() {
@@ -128,7 +143,28 @@ public class ChoiceInstance extends VariableInstance {
      * @param currentResultName
      */
     public void setCurrentResultName(String currentResultName) {
-        this.currentResultName = currentResultName;
+        if (!Objects.equals(this.getCurrentResultName(), currentResultName)) {
+            this.currentResultName = currentResultName;
+
+            if (!Helper.isNullOrEmpty(this.currentResultName)) {
+                ChoiceDescriptor choiceDesc = (ChoiceDescriptor) this.findDescriptor();
+                if (choiceDesc != null) {
+                    try {
+                        Result newResult = choiceDesc.getResultByName(this.currentResultName);
+                        // Result found -> set it and clear the transient name
+                        this.setCurrentResult(newResult);
+                        this.currentResultName = null;
+                    } catch (WegasNoResultException ex) {
+                        // not found, clear currentResult but not currentResultName
+                        this.currentResult = null;
+                    }
+                }
+
+            } else {
+                //Name and currentResult are null
+                this.currentResult = null;
+            }
+        }
     }
 
     /**
@@ -149,58 +185,9 @@ public class ChoiceInstance extends VariableInstance {
     }
 
     /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof ChoiceInstance) {
-            //super.merge(a);
-            super.merge(a);
-            ChoiceInstance other = (ChoiceInstance) a;
-            this.setActive(other.getActive());
-            this.setUnread(other.getUnread());
-
-            this.setReplies(ListUtils.mergeLists(replies, other.getReplies()));
-
-            // Normal
-            this.setCurrentResultName(other.getCurrentResultName());
-
-            // Backward compat
-            this.setCurrentResultIndex(other.getCurrentResultIndex());
-
-            if (this.currentResultIndex == null && this.currentResultName == null) {
-                this.setCurrentResult(null);
-            }
-
-            if (!Helper.isNullOrEmpty(this.currentResultName)) {
-                ChoiceDescriptor choiceDesc = (ChoiceDescriptor) this.findDescriptor();
-                if (choiceDesc != null) {
-                    // if choiceDesc is null, the following will eventually be
-                    // done by with the help of an InstanceReviveEvent
-                    /*Result previousResult = this.getCurrentResult();
-                    if (previousResult != null) {
-                        previousResult.removeChoiceInstance(this);
-                    }
-                     */
-                    try {
-                        Result newResult = choiceDesc.getResultByName(this.currentResultName);
-                        this.setCurrentResult(newResult);
-                        //newResult.addChoiceInstance(this);
-                    } catch (WegasNoResultException ex) {
-                        this.setCurrentResult(null);
-                    }
-                }
-
-            }
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
-    }
-
-    /**
      * @return the active
      */
+    @Override
     public Boolean getActive() {
         return active;
     }
@@ -208,6 +195,7 @@ public class ChoiceInstance extends VariableInstance {
     /**
      * @param active the active to set
      */
+    @Override
     public void setActive(Boolean active) {
         this.active = active;
     }
@@ -215,13 +203,15 @@ public class ChoiceInstance extends VariableInstance {
     /**
      * @return the unread
      */
-    public Boolean getUnread() {
+    @Override
+    public Boolean isUnread() {
         return unread;
     }
 
     /**
      * @param unread the unread to set
      */
+    @Override
     public void setUnread(Boolean unread) {
         this.unread = unread;
     }
@@ -232,6 +222,21 @@ public class ChoiceInstance extends VariableInstance {
     @JsonManagedReference
     public List<Reply> getReplies() {
         return replies;
+    }
+
+    public List<Reply> getReplies(Boolean validatedFilter) {
+        List<Reply> subReplies = new ArrayList<>();
+
+        if (validatedFilter != null) {
+            for (Reply r : replies) {
+                if (validatedFilter.equals(r.isValidated())) {
+                    subReplies.add(r);
+                }
+            }
+        } else {
+            subReplies.addAll(replies);
+        }
+        return subReplies;
     }
 
     /**
@@ -277,7 +282,12 @@ public class ChoiceInstance extends VariableInstance {
     /**
      *
      */
+    @Deprecated
     public void desactivate() {
+        this.deactivate();
+    }
+
+    public void deactivate() {
         this.setActive(false);
     }
 
@@ -294,7 +304,10 @@ public class ChoiceInstance extends VariableInstance {
      */
     public void setCurrentResult(Result currentResult) {
         this.currentResult = currentResult;
-        this.setCurrentResultName(null);
+        if (currentResult != null) {
+            // do not need the name anylonger
+            this.currentResultName = null;
+        }
     }
 
     /*

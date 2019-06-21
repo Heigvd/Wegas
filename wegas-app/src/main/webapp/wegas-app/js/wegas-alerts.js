@@ -19,11 +19,11 @@ YUI.add('wegas-alerts', function(Y) {
     Alerts = {
 
         // Displays the given message to the player (the trainer dashboard is not targeted here).
-        showMessage: function(level, message) {
-            Y.log("Wegas.Alerts.showMessage(" + level + ", " + message + ")");
+        showMessage: function(level, message, timeout) {
+            Y.log("Wegas.Alerts.showMessage(" + level + ", " + message + ", " + timeout + ")");
             var node = this.getDisplayNode();
             if (node) {
-                node.showMessage(level, message);
+                node.showMessage(level, message, timeout);
             } else {
                 if (Y.Wegas.Panel) {
                     Y.Wegas.Panel.alert(message);
@@ -32,24 +32,57 @@ YUI.add('wegas-alerts', function(Y) {
                 }
             }
         },
+        getBannerArea: function() {
+            var bannerArea = Y.one("body > .wegas-banner-area");
+
+            if (!bannerArea) {
+                Y.one("body").prepend("<div class=\"wegas-banner-area\"></div>");
+                bannerArea = Y.one("body > .wegas-banner-area");
+            }
+
+            return bannerArea;
+        },
+        showBanner: function(message, cfg) {
+            var bannerArea = this.getBannerArea();
+            cfg = cfg || {};
+
+            var notif = bannerArea.appendChild("<div class=\"wegas-banner " + (cfg.className || "warning")+ "\">"
+                + (cfg.iconCss ? "<span class=\"wegas-banner-icon " + cfg.iconCss + "\"></span>" : "")
+                + "<span class=\"wegas-banner-message\">" + message + "</span></div>");
+        },
         getNotificationArea: function() {
             var notificationArea = Y.one("body > .wegas-notification-area");
 
             if (!notificationArea) {
                 Y.one("body").prepend("<div class=\"wegas-notification-area\"></div>");
                 notificationArea = Y.one("body > .wegas-notification-area");
+                notificationArea.delegate("click", this.onClose, ".wegas-notification", this);
             }
 
             return notificationArea;
         },
+        onClose: function(e) {
+            this.closeNotification(e.currentTarget);
+        },
+        closeNotification: function(node) {
+            node.addClass("fadeout");
+            Y.later(1000, this, function() {
+                this.getNotificationArea().removeChild(node);
+            });
+        },
         showNotification: function(message, cfg) {
             var notificationArea = this.getNotificationArea();
 
-            notificationArea.append("<div class=\"wegas-notification\"><span class=\"wegas-notification-icon fa fa-bullhorn fa-3x\"></span><span class=\"wegas-notification-message\">" + message + "</span></div>");
+            var timeout = cfg && cfg.timeout;
+            var iconCss = cfg && cfg.iconCss;
 
-            // to be implemented:
-            // cfg.duration : hide the notification after the given delay
-            // cfg.ignorable: hide on click
+            var notif = notificationArea.appendChild("<div class=\"wegas-notification\">"
+                + (cfg.iconCss ? "<span class=\"wegas-notification-icon " + iconCss + "\"></span>" : "")
+                + "<span class=\"wegas-notification-message\">" + message + "</span></div>");
+
+            if (timeout && timeout > 0) {
+                Y.later(timeout, this, this.closeNotification, notif);
+            }
         },
         // Returns the widget node where the alert should be displayed to the player (not to the trainer).
         // Returns undefined if not possible, e.g. if required libraries are not yet loaded.

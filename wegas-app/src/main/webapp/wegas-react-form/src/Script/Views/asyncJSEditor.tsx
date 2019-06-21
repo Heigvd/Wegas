@@ -1,9 +1,15 @@
-import loadAsync from '../../HOC/loadAsyncComp';
-import React from 'react';
-import { AceEditorProps } from 'react-ace/types';
-
-export default loadAsync(() =>
-    import(/* webpackChunkName: "ace-js" */ './JSEditor').then(
-        ({ JSEditor }) => JSEditor
-    )
-) as React.ComponentClass<AceEditorProps>;
+import * as React from 'react';
+import { SimpleLoader } from '../../Components/Loader';
+import { AceEditorProps } from 'react-ace';
+const AsyncJSEditor = React.lazy(() =>
+    import(/* webpackChunkName: "ace-js" */ './JSEditor').then(file => ({
+        default: file.JSEditor,
+    }))
+);
+export default function JSEditor(props: AceEditorProps) {
+    return (
+        <React.Suspense fallback={<SimpleLoader />}>
+            <AsyncJSEditor {...props} />
+        </React.Suspense>
+    );
+}

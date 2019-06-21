@@ -9,13 +9,17 @@ package com.wegas.core.persistence.game;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.wegas.core.Helper;
-import com.wegas.core.persistence.variable.Searchable;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.Mergeable;
+import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.View.SelectView.ScriptLanguageSelector;
+import com.wegas.editor.View.View;
 
 import javax.persistence.Embeddable;
 import javax.persistence.Lob;
 import java.io.Serializable;
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Transient;
 
 /**
  *
@@ -23,19 +27,34 @@ import java.util.List;
  */
 @Embeddable
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class Script implements Serializable, Searchable {
+public class Script implements Serializable, Mergeable {
 
     private static final long serialVersionUID = 1L;
     /**
      *
      */
     @Lob
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            searchable = true, view = @View(label = "Script Content"))
     private String content = "";
     /**
      *
      */
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "Language", value = ScriptLanguageSelector.class)
+    )
+    @Column(name = "lang")
+    private String language = "JavaScript";
+
+    @Transient
     @JsonIgnore
-    private String lang = "JavaScript";
+    private Mergeable parent;
+
+    @Transient
+    @JsonIgnore
+    private String refId;
 
     /**
      *
@@ -57,13 +76,8 @@ public class Script implements Serializable, Searchable {
      * @param content
      */
     public Script(String language, String content) {
-        this.lang = language;
+        this.language = language;
         this.content = content;
-    }
-
-    @Override
-    public Boolean containsAll(final List<String> criterias) {
-        return Helper.insensitiveContainsAll(this.getContent(), criterias);
     }
 
     /**
@@ -84,7 +98,7 @@ public class Script implements Serializable, Searchable {
      * @return the language
      */
     public String getLanguage() {
-        return this.lang;
+        return this.language;
     }
 
     /**
@@ -92,11 +106,35 @@ public class Script implements Serializable, Searchable {
      * @param language
      */
     public void setLanguage(String language) {
-        this.lang = language;
+        this.language = language;
+    }
+
+    @Override
+    public Mergeable getMergeableParent() {
+        return parent;
+    }
+
+    public void setParent(Mergeable parent, String refId) {
+        this.parent = parent;
+        if (parent != null) {
+            this.setRefId(parent.getRefId() + refId);
+        } else {
+            this.setRefId(refId);
+        }
+    }
+
+    @Override
+    public String getRefId() {
+        return refId;
+    }
+
+    @Override
+    public void setRefId(String refId) {
+        this.refId = refId;
     }
 
     @Override
     public String toString() {
-        return "ScriptEntity(" + "language:" + this.lang + ", content:{\n" + this.content + "\n})";
+        return "ScriptEntity(" + "language:" + this.language + ", content:{\n" + this.content + "\n})";
     }
 }

@@ -148,6 +148,33 @@ angular.module('private.trainer.settings.directives', [
                 }
             });
         };
+        ctrl.generateQrCode = function() {
+            var node = document.querySelector(".advanced .qrcode_link .qrcode_thumbnail");
+            var link = document.querySelector(".advanced .qrcode_link a");
+            var url = ctrl.infos.baseUrl + "#/play/" + ctrl.infos.token;
+            if (node) {
+                if (ctrl.qrCode) {
+                    ctrl.qrCode.clear();
+                    ctrl.qrCode.makeCode(url);
+                } else {
+                    ctrl.qrCode = new QRCode(node, url);
+                }
+                link.removeEventListener("click", ctrl._onClick);
+                link.addEventListener("click", ctrl._onClick);
+            }
+        };
+
+        ctrl._onClick = function() {
+            var w = window.open('about:blank');
+            setTimeout(function() { //FireFox seems to require a setTimeout for this to work.
+                var img = document.querySelector(".advanced .qrcode_link .qrcode_thumbnail img");
+                var newImg = w.document.createElement('img');
+                w.document.body.appendChild(newImg);
+                newImg.src = img.src;
+                newImg.title = img.title;
+            }, 0);
+        };
+
 
         ctrl.cancel = function() {
             $scope.close();
@@ -203,9 +230,10 @@ angular.module('private.trainer.settings.directives', [
         "use strict";
         return {
             scope: {
-                activeInfos: "="
+                activeInfos: "=",
             },
             templateUrl: 'app/private/trainer/settings/directives.tmpl/infos-advanced.html',
+            controller: "TrainerSettingsIndexController as settingsIndexCtrl",
             link: function(scope, elem, attrs) {
                 Auth.getAuthenticatedUser().then(function(user) {
                     scope.user = user;

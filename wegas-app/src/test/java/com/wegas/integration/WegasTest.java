@@ -199,6 +199,19 @@ public class WegasTest {
         myGame.getId();
     }
 
+
+    @Test
+    public void testModeliseStateMachine() throws IOException, JSONException {
+        GameModel gm1 = client.postJSONFromFile("/rest/GameModel", "src/test/resources/fsm.json", GameModel.class);
+        GameModel gm2 = client.postJSONFromFile("/rest/GameModel", "src/test/resources/fsm.json", GameModel.class);
+
+        // create model
+        GameModel model = client.postJSON_asString("/rest/GameModel/extractModel/" + gm1.getId() + "," + gm2.getId(),
+                "{\"@class\":\"GameModel\",\"name\":\"ModelFSM\"}", GameModel.class);
+
+        String put = client.put("/rest/GameModel/" + model.getId() + "/Propagate", GameModel.class);
+    }
+
     @Test
     public void createGameTest() throws IOException, JSONException {
         Game myGame = client.postJSON_asString("/rest/GameModel/" + this.artos.getId() + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + this.artos.getId() + "\",\"access\":\"OPEN\",\"name\":\"My Artos Game\"}", Game.class);

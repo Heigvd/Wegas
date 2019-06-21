@@ -1,0 +1,42 @@
+<div class="modal__content__search">
+    <div class="tool tool--search tool--open">
+        <a class="tool__link"></a>
+        <input id="searchFieldModelArchives"
+               name="searchFieldModelArchives"
+               class="tool__input"
+               ng-model="search"
+               type="text"
+        />
+    </div>
+</div><div class="modal__content__list" ng-if="!loading && models.length > 0">
+    <div class="card card--archive card--archive-modeler" ng-repeat="model in models">
+        <div class="card__illustration illustration illustration--icon" illustration="{{model.properties.iconUri}}"></div>
+        <div class="card__description"
+             ng-class="  {true:'card__description--two-lines', false:'card__description--three-lines'}[model.comments == null || model.comments == '']" >
+            <div class="line line--primary">{{model.name}}</div>
+            <div class="line">{{'SCENARIST-CARD-CREATED-ON' | translate}} {{'COMMONS-DATE' | translate: {date: model.createdTime} }}
+                <span>{{'SCENARIST-CARD-CREATED-BY' | translate}}
+                    <span ng-class="{true:'highlighted'}[model.createdByName !== username]">{{model.createdByName}}</span>
+                </span>
+            </div>
+            <div ng-if="!((model.comments == null) || (model.comments == ''))" class="line line--optional">{{model.comments}}</div>
+        </div>
+        <div class="card__actions">
+            <a class="button button--small button--round button--default-reverse button--label-off button--undo" title="{{'MODELER-MODALE-ARCHIVE-MOVE-CURRENT-BTN' | translate}}" ng-click="unarchive(model)">
+                <span class="button__label">{{'MODELER-MODALE-ARCHIVE-MOVE-CURRENT-BTN' | translate}}</span>
+            </a>
+            <a
+                class="button button--small button--round button--default-reverse button--label-off button--trash"
+                title="{{'MODELER-MODALE-ARCHIVE-DELETE-BTN' | translate}}"
+                confirmed-click="delete(model)"
+                ng-confirm-click="{{'MODELER-MODALE-ARCHIVE-DELETE-CONFIRM' | translate}}">
+                <span class="button__label">{{'MODELER-MODALE-ARCHIVE-DELETE-BTN' | translate}}</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="modal__content__empty" ng-if="!loading && models.length == 0">
+    {{'MODELER-MODALE-ARCHIVE-NO-SCENARIO' | translate}}"{{search}}"
+</div>
+<div class="modal__content__loading" ng-if="loading" content-loading="{{'COMMONS-SCENARIOS-LOADING' | translate}}">

@@ -1,0 +1,62 @@
+
+.wegas-qrcode-scanner button {
+    /* padding: 0 1px !important; */
+    margin-bottom: 0.5em;
+}
+
+.wegas-qrcode-scanner button .fa-button-label {
+    padding-left: 8px;
+    white-space: nowrap;
+    vertical-align: 0.1em;
+}
+
+.wegas-qrcode-scanner button:before {
+    font-size: 120%;
+}
+
+.wegas-qrcode-scanner .cameras {
+    display: inline;
+}
+
+.wegas-qrcode-scanner .cameras .camera {
+    display: inline;
+}
+
+.wegas-qrcode-scanner .cameras .camera:before {
+    color: #009900;
+}
+
+.wegas-qrcode-scanner .cameras .camera.inactive:before {
+    color: #999;
+}
+
+.wegas-qrcode-scanner video {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.wegas-qrcode-scanner :not(.scanning) .the_scanner {
+    display: none;
+}
+
+.wegas-qrcode-scanner .scanning .the_scanner {
+    display: inline;
+}
+
+.wegas-qrcode-scanner .scanning .the_scanner .preview-container {
+    /* margin-top: 0.5em; */
+}
+
+.wegas-qrcode-scanner .initiator:before {
+    color: #009900;
+}
+
+.wegas-qrcode-scanner .scanning .initiator:before {
+    content : "\f05e";
+    color: red;
+}
+
+.error-details {
+    margin-top: 0.5em;
+    font-style: italic;
+}

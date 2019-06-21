@@ -9,8 +9,9 @@ YUI.add('wegas-scripteval', function(Y) {
     "use strict";
 
     var ScriptEval, Variable,
-        Wegas = Y.Wegas;
-
+        Wegas = Y.Wegas,
+        Promise = Y.Promise;
+    
     ScriptEval = Y.Base.create("ScriptEval", Y.Plugin.Base, [], {
         /**
          *
@@ -79,6 +80,80 @@ YUI.add('wegas-scripteval', function(Y) {
             }));
         },
         /**
+         * Serialize a function which can be eval(uated)
+         * Global scope and closure are lost.
+         * Native functions can't be serialized
+         * @template Arguments
+         * @template ReturnValue
+         * @param {(...args:Arguments[]) => ReturnValue} fn function to serialize
+         * @param {...Arguments} args additional arguments to pass to the function (serialized)
+         * @returns {string} serialized function call
+         */
+        serializeFn: function (fn, args) {
+            var boundaryMarker = '\u2029'; // Char which shouldn't be used...
+            var serialArgs = JSON.stringify(
+                Array.prototype.slice.call(arguments, 1),
+                function(key, value) {
+                    if (typeof value === 'function') {
+                        return (
+                            boundaryMarker +
+                            value.toString() +
+                            boundaryMarker
+                        );
+                    } else if (typeof value === 'string') {
+                        // In case boundaryMarker is really used... escape it
+                        return value.replace(
+                            new RegExp(boundaryMarker, 'g'),
+                            '\\u2029'
+                        );
+                    }
+                    return value;
+                }
+            ).replace(
+                // rewrite string function as function
+                new RegExp(
+                    '"' + boundaryMarker + '(.*)' + boundaryMarker + '"',
+                    'g'
+                ),
+                function(m, g1) {
+                    return JSON.parse('"' + g1 + '"');
+                }
+            );
+            return '(' + fn.toString() + ').apply(null,' + serialArgs + ')';
+        },
+        /**
+         * Serialize a function and executs it on the server.
+         * Global scope and closure are lost.
+         * Native functions can't be serialized.
+         * 
+         * Server global variables are available in function's body
+         * function can optionally take some arguments which are serialized along 
+         * @template Arguments
+         * @template ReturnValue
+         * @param {(...args:Arguments[]) => ReturnValue} fn function to execute on server
+         * @param {...Arguments} _args additional arguments passed to the function
+         * @returns {PromiseLike<ReturnValue>} server return value;
+         */
+        remoteFnEval: function(fn, _args) {
+            if (typeof fn !== 'function') {
+                throw new TypeError('First argument must be a function');
+            }
+            var args = arguments;
+            return new Promise(function (resolve, reject) {
+                this.remoteEval(
+                    '[' + this.serializeFn.apply(this, args) + ']', // Wrap into an array to be sure to have if as first element
+                    {
+                        on: {
+                            success: function (res) {
+                                resolve(res.response.entity);
+                            },
+                            failure: reject,
+                        },
+                    }
+                );
+            }.bind(this));
+        },
+        /**
          * Sugar
          */
         run: function(script, cfg, player, contextId) {
@@ -117,8 +192,9 @@ YUI.add('wegas-scripteval', function(Y) {
         _buildContext: function(player) {
             this.context = {
                 window: undefined,
-                Y: undefined,
+                Y: Y,
                 YUI: undefined,
+                PageLoader: Y.Wegas.PageLoader,
                 VariableDescriptorFacade: Variable,
                 Variable: Variable,
                 self: player,

@@ -27,6 +27,7 @@
 
         <context-service object-type="system-all" description="context service" jndi-name="concurrent/__defaultContextService"></context-service>
         <managed-executor-service keep-alive-seconds="300" core-pool-size="1" task-queue-capacity="20000" object-type="system-all" maximum-pool-size="200" hung-after-seconds="300" jndi-name="concurrent/__defaultManagedExecutorService" long-running-tasks="true"></managed-executor-service>
+        <managed-executor-service jndi-name="timeoutExecutorService" object-type="system-all" core-pool-size="5"/>
         <managed-scheduled-executor-service keep-alive-seconds="300" core-pool-size="1" object-type="system-all" hung-after-seconds="300" jndi-name="concurrent/__defaultManagedScheduledExecutorService" long-running-tasks="true"></managed-scheduled-executor-service>
         <managed-thread-factory object-type="system-all" description="thread factory" jndi-name="concurrent/__defaultManagedThreadFactory"></managed-thread-factory>
     </resources>
@@ -34,6 +35,7 @@
         <server config-ref="server-config" name="server">
             <resource-ref ref="jdbc/__default"></resource-ref>
             <resource-ref ref="jdbc/wegas_dev"></resource-ref>
+            <resource-ref ref="timeoutExecutorService"/>
         </server>
     </servers>
     <configs>

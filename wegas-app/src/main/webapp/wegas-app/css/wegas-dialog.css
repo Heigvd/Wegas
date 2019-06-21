@@ -6,15 +6,21 @@
  * Licensed under the MIT License
  */
 .wegas-simpledialogue,
-.wegas-historydialog {
+.wegas-historydialog,
+.wegas-mcq-selector {
     width: 100%;
     max-height: 100%;
     overflow-y: auto;
     min-width: 150px;
 }
 
+.wegas-mcq-selector {
+    height: calc( 100% - 80px);
+}
+
 .wegas-simpledialogue .talk,
-.wegas-historydialog .talk {
+.wegas-historydialog .talk,
+.wegas-mcq-selector .talk {
     text-align: left;
     border: 1px solid #CCC;
     padding: 1em;
@@ -22,14 +28,28 @@
     margin: 5px 20% 15px 5px;
 }
 
+.wegas-simpledialogue .talk:empty,
+.wegas-historydialog .talk:empty,
+.wegas-mcq-selector .talk:empty {
+    display: none;
+}
+
 .wegas-simpledialogue .response,
-.wegas-historydialog .response {
+.wegas-historydialog .response,
+.wegas-mcq-selector .response {
     text-align: right;
+}
+
+.wegas-simpledialogue .response:empty,
+.wegas-historydialog .response:empty,
+.wegas-mcq-selector .response:empty {
+    display: none;
 }
 
 .wegas-simpledialogue .dialogue .response li,
 .wegas-historydialog .dialogue .response li,
-.wegas-historydialog .history .response {
+.wegas-historydialog .history .response,
+.wegas-mcq-selector .response li {
     padding: 1em;
     border: 1px solid #999;
     background-color: #0981A9;
@@ -38,7 +58,8 @@
 }
 
 .wegas-simpledialogue .dialogue .response li,
-.wegas-historydialog .dialogue .response li {
+.wegas-historydialog .dialogue .response li,
+.wegas-mcq-selector .response li {
     cursor: pointer;
     -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 2px 20px rgba(255, 255, 255, 0.30) inset, 0 1px 2px rgba(0, 0, 0, 0.15);
     -moz-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 2px 20px rgba(255, 255, 255, 0.30) inset, 0 1px 2px rgba(0, 0, 0, 0.15);
@@ -50,6 +71,64 @@
 }
 
 .wegas-simpledialogue .response li:hover,
-.wegas-historydialog .response li:hover {
+.wegas-historydialog .response li:hover,
+.wegas-mcq-selector .response li:hover {
     background: #3794B3;
+}
+
+.wegas-mcq-selector .wegas-selector-list {
+    border: 1px solid gray;
+    box-shadow: 2px 2px 2px grey;
+    overflow: auto;
+    z-index: 999;
+    max-height: calc( 100% - 40px );
+    position: absolute;
+    background: white;
+}
+
+.wegas-mcq-selector .wegas-selector-item {
+    cursor: pointer;
+    padding: 5px 20px 5px 5px;
+    box-sizing: border-box;
+}
+
+.wegas-mcq-selector .talk .wegas-mcq-selector-descr {
+    width: 95%;
+}
+
+.wegas-mcq-selector .response li.wegas-mcq-selector-descr {
+    padding-right: 25px;
+}
+
+.wegas-mcq-selector .response li.wegas-mcq-selector-descr::after,
+.wegas-mcq-selector .talk .wegas-mcq-selector-descr::after,
+.wegas-mcq-selector .wegas-selector-item.wegas-mcq-selector-descr::after {
+    content: "🛈";
+    right: 4px;
+    display: inline-block;
+    position: absolute;
+    color: gray;
+}
+
+.wegas-mcq-selector .talk .wegas-mcq-selector-descr::after {
+    right: 22%;
+}
+
+.wegas-mcq-selector .response li.wegas-mcq-selector-descr::after {
+    color: #ddd;
+    right: 12px;
+}
+
+.wegas-mcq-selector .wegas-selector-item:hover {
+    background-color: #C7EDFA;
+}
+
+.wegas-tooltip-content {
+    font-size: 14px !important;
+    padding: 10px !important;
+}
+
+.wegas-selector-submit {
+    border: 1px solid #ddd;
+    margin-left: 10px;
 }

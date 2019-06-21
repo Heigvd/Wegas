@@ -37,7 +37,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         CONTENT_TEMPLATE: "<div class=\"wegas-editor-variabletreeview\"></div>",
         // ** Lifecycle methods ** //
         renderUI: function() {
-            var searchVal, searchRE, savedState, req, checkReq;
+            //var searchVal, searchRE, savedState, req, 
+            var checkReq;
             this._timer = new Y.Wegas.Timer({
                 duration: 300
             });
@@ -96,9 +97,11 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 }
                 this.treeView.filter.set("searchVal", this.searchRE);
                 this.treeView.filter.set("testFn", searchFn);
+                Y.Wegas.app.fire("newSearchVal");
             }, this);
             this._validateBttn = new Y.ToggleButton({
                 render: this.toolbar.get("header"),
+                cssClass: "wegas-findbugs-button",
                 label: scriptCheckLabel,
                 on: {
                     pressedChange: Y.bind(function(e) {
@@ -176,7 +179,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
 
                 this.handlers.push(ds.after("rootUpdate", this.syncUI, this));
                 this.handlers.push(ds.after("updatedDescriptor", this.updateDescriptor, this));
-                this.handlers.push(instanceDs.after("updatedInstance", this.updateInstance, this));
+                this.handlers.push(instanceDs.after("*:updatedInstance", this.updateInstance, this));
                 //this.handlers.push(instanceDs.after("addedInstance", this.updateInstance, this));
                 //this.handlers.push(ds.after("added", this.addEntity, this));
                 this.handlers.push(ds.after("delete", this.deleteEntity, this));
@@ -190,6 +193,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     this.treeView.deselectAll();
                     if (cur) {
                         this.currentSelection = e.entity.get("id");
+                        cur.expandParents();
                         cur.set("selected", 2);
                     }
                 }, this));
@@ -248,20 +252,22 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             });
         },
         updateDescriptor: function(e) {
-            var oldElement, entity, parent, index, newElement;
-            entity = e.entity;
-            oldElement = this.findNode(entity);
-            if (oldElement) {
-                parent = oldElement.get("parent");
-                index = parent.indexOf(oldElement);
-                newElement = this.genTreeViewElement(entity);
-                oldElement.remove();
-                parent.add(newElement, index);
+            if (!this.get("bypassSyncEvents")) {
+                var oldElement, entity, parent, index, newElement;
+                entity = e.entity;
+                oldElement = this.findNode(entity);
+                if (oldElement) {
+                    parent = oldElement.get("parent");
+                    index = parent.indexOf(oldElement);
+                    newElement = this.genTreeViewElement(entity);
+                    oldElement.remove();
+                    parent.add(newElement, index);
+                }
+                //oldElement.set("label", e.entity.getEditorLabel());
             }
-            //oldElement.set("label", e.entity.getEditorLabel());
         },
         updateInstance: function(e) {
-            var descriptor = Y.Wegas.Facade.Variable.cache.find("id", e.entity.get("descriptorId"));
+            var descriptor = Y.Wegas.Facade.Variable.cache.find("id", e.entity.get("parentId"));
             if (descriptor) {
                 this.updateDescriptor({
                     entity: descriptor
@@ -282,11 +288,15 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
          * @private
          */
         genTreeViewElement: function(entity) {
+            if (!entity) {
+                // This happens when many variables are created in a batch by a script.
+                return;
+            }
             var children,
                 elClass = entity.get(CLASS),
                 collapsed = !this.isNodeExpanded(entity),
                 selected = (this.currentSelection === entity.get(ID)) ? 1 : 0,
-                text = entity.getEditorLabel(),
+                text = entity.getEditorLabel() + "<i class='scriptalias wegas-internal-feature'> (" + entity.get("name") + ")</i>",
                 node,
                 /* + "  <span class='treeview-sub'>" + el.getType().replace("Descriptor", "") + "</span>"
                  tooltip = entity.getType().replace("Descriptor", "") + ": " + entity.getEditorLabel(),*/
@@ -379,6 +389,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     children = Y.Array.map(entity.get("results"), function(result) {
                         return {
                             label: result.getEditorLabel(),
+
                             selected: (result.get(ID) === this.currentSelection) ? 2 : 0,
                             data: {
                                 entity: result,
@@ -482,7 +493,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 if (instances.hasOwnProperty(i)) {
                     instance = instances[i];
                     label = '';
-                    switch (el.get("scope").get(CLASS)) {
+                    switch (el.get("scopeType")) {
                         case 'PlayerScope':
                             player = Wegas.Facade.Game.cache.getPlayerById(i);
                             if (!player) {
@@ -613,6 +624,10 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         }
     }, {
         ATTRS: {
+            bypassSyncEvents: {
+                type: "boolean",
+                value: false
+            }
         }
     });
     Wegas.VariableTreeView = VariableTreeView;

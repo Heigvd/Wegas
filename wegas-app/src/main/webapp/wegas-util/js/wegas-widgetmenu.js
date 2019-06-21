@@ -58,8 +58,8 @@ YUI.add('wegas-widgetmenu', function(Y) {
             node.delegate(this.get("event"), function(e) {                      // Target event listener
                 e.halt(true);                                                   // Prevent event from bubbling
                 //Y.Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
-                    this.show(e.target);
-                    this.fire("menuOpen", {domEvent: e});                        // Notify the parent the menu has been
+                this.show(e.target);
+                this.fire("menuOpen", {domEvent: e});                        // Notify the parent the menu has been
                 //}, this));                                                       // opened
             }, this.get("selector"), this);
 
@@ -86,7 +86,7 @@ YUI.add('wegas-widgetmenu', function(Y) {
             var menu = this.getMenu();
             node = node || this.get("targetNode");
             menu.attachTo(node);                                                // Get a menu instance and attach it to
-                                                                                // the target node
+            // the target node
             menu.focus();
         },
         // *** Private methods *** //
@@ -102,7 +102,7 @@ YUI.add('wegas-widgetmenu', function(Y) {
                     parent = host.get("parent"),
                     menu;
                 cfg.zIndex = WidgetMenu.menuIndex;                              // Better exemple for this at
-                                                                                // http://yuilibrary.com/yui/docs/overlay/overlay-stack.html
+                // http://yuilibrary.com/yui/docs/overlay/overlay-stack.html
                 WidgetMenu.menuIndex += 1;
                 cfg.children = this.get("children");
 
@@ -148,7 +148,7 @@ YUI.add('wegas-widgetmenu', function(Y) {
                 getter: function() {
                     var host = this.get(HOST),
                         node = (host instanceof Y.Widget) ?
-                            host.get(BOUNDINGBOX) : host;
+                        host.get(BOUNDINGBOX) : host;
                     return node;
                 }
             },
@@ -194,85 +194,85 @@ YUI.add('wegas-widgetmenu', function(Y) {
      */
     Menu = Y.Base.create("menu", Y.Widget,
         [Y.WidgetParent, Y.WidgetPosition, Y.WidgetPositionAlign, Y.WidgetPositionConstrain, Y.WidgetStack], {
-            /** @lends Y.Wegas.Menu# */
-            CONTENT_TEMPLATE: null,
-            // *** Lifecycle methods *** //
-            initializer: function() {
-                this.publish("cancelMenuTimer", {
-                    emitFacade: true
-                });
-            },
-            renderUI: function() {
-                var bb = this.get(BOUNDINGBOX);
+        /** @lends Y.Wegas.Menu# */
+        CONTENT_TEMPLATE: null,
+        // *** Lifecycle methods *** //
+        initializer: function() {
+            this.publish("cancelMenuTimer", {
+                emitFacade: true
+            });
+        },
+        renderUI: function() {
+            var bb = this.get(BOUNDINGBOX);
 
-                bb.on("clickoutside", this.clickOutside, this);
-                bb.on("click", this.hide, this);
-                bb.on("mouseenter", this.cancelMenuTimer, this);
-                bb.on("mouseleave", this.startMenuHideTimer, this);
-            },
-            hide: function() {
-                if (this.get("visible")) {
-                    this.get(BOUNDINGBOX).transition({
-                        duration: 0.1,
-                        easing: 'ease-out',
-                        opacity: 0
-                    }, Y.bind(Menu.superclass.hide, this));
-                }
-            },
-            show: function() {
-                if (!this.get("visible")) {
-                    Menu.superclass.show.call(this);
-                    this.get(BOUNDINGBOX).transition({
-                        duration: 0.1,
-                        easing: 'ease-out',
-                        opacity: 1
-                    });
-                }
-            },
-            // *** Public methods *** //
-            /**
-             *
-             *  Displays the menu next to the provided node and add mouseenter and
-             *  mouseleave callbacks to the node
-             *
-             * @function
-             */
-            attachTo: function(node) {
-                this.currentNode = node;
-
-                this.set("align", {
-                    node: node,
-                    points: this.get("points")
-                });
-                this.cancelMenuTimer();
-                this.show();
-
-                //node.on("mouseenter", this.show, this);
-                //node.on("mouseleave", this.hide, this);
-            },
-            // *** Private methods *** //
-            clickOutside: function(e) {
-                if (this.currentNode !== e.target) {
-                    this.hide();
-                }
-            },
-            startMenuHideTimer: function(fireEvent) {
-                //console.log("startMenuHideTimer",this.get("contentBox").one("button").getHTML());
-                this.cancelMenuTimer();
-                this.timer = Y.later(200, this, this.hide);
-
-                if (!!fireEvent) {
-                    this.fire("timerStarted");
-                }
-            },
-            cancelMenuTimer: function() {
-                //console.log("cancelMenuTimer", this.get("contentBox").one("button").getHTML());
-                if (this.timer) {
-                    this.timer.cancel();
-                }
-                this.fire("timerCanceled");
+            bb.on("clickoutside", this.clickOutside, this);
+            bb.on("click", this.hide, this);
+            bb.on("mouseenter", this.cancelMenuTimer, this);
+            bb.on("mouseleave", this.startMenuHideTimer, this);
+        },
+        hide: function() {
+            if (this.get("visible")) {
+                this.get(BOUNDINGBOX).transition({
+                    duration: 0.1,
+                    easing: 'ease-out',
+                    opacity: 0
+                }, Y.bind(Menu.superclass.hide, this));
             }
         },
+        show: function() {
+            if (!this.get("visible")) {
+                Menu.superclass.show.call(this);
+                this.get(BOUNDINGBOX).transition({
+                    duration: 0.1,
+                    easing: 'ease-out',
+                    opacity: 1
+                });
+            }
+        },
+        // *** Public methods *** //
+        /**
+         *
+         *  Displays the menu next to the provided node and add mouseenter and
+         *  mouseleave callbacks to the node
+         *
+         * @function
+         */
+        attachTo: function(node) {
+            this.currentNode = node;
+
+            this.set("align", {
+                node: node,
+                points: this.get("points")
+            });
+            this.cancelMenuTimer();
+            this.show();
+
+            //node.on("mouseenter", this.show, this);
+            //node.on("mouseleave", this.hide, this);
+        },
+        // *** Private methods *** //
+        clickOutside: function(e) {
+            if (this.currentNode !== e.target) {
+                this.hide();
+            }
+        },
+        startMenuHideTimer: function(fireEvent) {
+            //console.log("startMenuHideTimer",this.get("contentBox").one("button").getHTML());
+            this.cancelMenuTimer();
+            this.timer = Y.later(200, this, this.hide);
+
+            if (!!fireEvent) {
+                this.fire("timerStarted");
+            }
+        },
+        cancelMenuTimer: function() {
+            //console.log("cancelMenuTimer", this.get("contentBox").one("button").getHTML());
+            if (this.timer) {
+                this.timer.cancel();
+            }
+            this.fire("timerCanceled");
+        }
+    },
         {
             /** @lends Y.Wegas.Menu */
             ATTRS: {

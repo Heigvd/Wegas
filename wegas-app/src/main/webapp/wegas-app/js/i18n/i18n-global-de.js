@@ -24,10 +24,16 @@ YUI.add("wegas-i18n-global-de", function(Y) {
             and: "und",
             description: "Beschreibung",
             details: "Details",
-            delete: "lôschen",
-            dunno: "Ich weiss es nicht",
-            variableNotFound: "Kann Variable \"{{name}}\" nicht finden",
-            logout: "abmelden"
+            delete: "löschen",
+            dunno: "Ich weiss nicht",
+            variableNotFound: "Variable \"{{name}}\" nicht gefunden",
+            logout: "abmelden",
+            statistics: "Statistiken",
+            peerReview: "Peer-Review",
+            backToMenu: "zurück zum Menü",
+            mcqBackToMenu: "zurück zur Frageliste",
+            ok: "OK",
+            cancel: "Abbrechen"
         },
         i18n: {
             manager: {

@@ -10,6 +10,8 @@ package com.wegas.core.rest.exception;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasUniqueConstraintException;
+import java.sql.BatchUpdateException;
+import java.sql.SQLException;
 import javax.ejb.EJBException;
 import javax.enterprise.event.ObserverException;
 import javax.persistence.OptimisticLockException;
@@ -75,6 +77,8 @@ public abstract class AbstractExceptionMapper {
                 sb.append(cv.getMessage());
             }
             return Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(sb.toString())).build();
+        } else if (exception instanceof SQLException && ((SQLException)exception).getNextException() != null){
+            return processException(((SQLException)exception).getNextException());
         } else {
             if (exception != null) {
                 logger.error(exception.getLocalizedMessage());

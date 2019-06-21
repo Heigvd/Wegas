@@ -7,187 +7,176 @@
  */
 /**
  * @fileoverview
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Maxence 
  */
 YUI.add('wegas-inbox-list', function(Y) {
     'use strict';
     var CONTENTBOX = 'contentBox',
-        Micro = Y.Template.Micro,
-        Wegas = Y.Wegas,
         InboxList;
-    /**
-     * @name Y.Wegas.InboxList
-     * @extends Y.Widget
-     * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
-     * @class  class to manage e-mail
-     * @constructor
-     * @description Display and allow to manage e-mail sent to the current player
-     */
+
+
     InboxList = Y.Base.create(
         'wegas-inbox-list',
         Y.Widget,
-        [Y.WidgetChild, Wegas.Widget, Wegas.Editable],
+        [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Parent],
         {
-            /** @lends Y.Wegas.InboxList# */
-            // ** Private fields ** //
-            /**
-             * Holds compiled templates. Add templates in scope variable TEMPLATES
-             *
-             * define tab and content Templates, add new ones :
-             * TEMPLATES:{TEMPLATE_NAME:{tab:'template', content:'template'}}
-             *
-             * specify the one to use in "template" ATTRS
-             * !!COMPILED!! Template may be added after initialization in
-             * Y.Wegas.InboxList.prototype.TEMPLATES['name'] =
-             * {tab: Y.Template.Micro.compile(tab_text_template),
-             * content: Y.Template.Micro.compile(content_text_template)}
-             */
-            TEMPLATES: {
-                "default": Micro.compile("<div class='msg msg-toggled'><div class='msg-header'>"
-                    + "<div class='msg-subject'><%= I18n.t(this.get('subject')) %></div>"
-                    + "<% var date =I18n.t(this.get('date')); if (date) { %><div class='msg-date'><%= date %></div><% } %>"
-                    + "<div style=\"clear: both;\"></div>"
-                    + "<% var from = I18n.t(this.get('from')); if (from) { %><div class='msg-from'><%= from %></div><% } %>"
-                    + "<% if (this.get('attachments') && this.get('attachments').length) {%>"
-                    + "<div class='msg-attachment'><% Y.Array.each(this.get('attachments'), function(a){ var file=I18n.t(a.get('file')); %><a href='<%= file %>' data-file='<%= file %>' target='_blank'><%= file.split('/').pop() %></a>;<% }); %></div>"
-                    + "<% } %><div style=\"clear: both;\"></div></div>"
-                    + "<div class='msg-body'><div class='msg-body-content'><%== I18n.t(this.get('body')) %></div></div>"
-                    + "<a href='#' class='msg-showmore'>More...</a>"
-                    + "</div>"),
-
-                clean: Micro.compile("<div class='msg-cleanlist'>"
-                    + "<div class='msg-icon'><i class='fa fa-2x fa-envelope<%= this.get('unread') ? '' : '-open'%>-o'></i></div>"
-                    + "<div class='msg-clean--header'>"
-                    + "<div class='msg-firstLine'>"
-                    + "<span class='msg-subject'><%== I18n.t(this.get('subject')) %></span>"
-                    + "<% var date =I18n.t(this.get('date')); if (date) { %><span class='msg-date'><%= date %></span><% } %>"
-                    + "</div>"
-                    + "<div style=\"clear: both;\"></div>"
-                    + "<% var from = I18n.t(this.get('from')); if (from) { %><div class='msg-from'><%= from %></div><% } %>"
-                    + "</div>"
-                    + "<% if (this.get('attachments') && this.get('attachments').length) {%>"
-                    + "<div class='msg-attachment'><% Y.Array.each(this.get('attachments'), function(a){ var file=I18n.t(a.get('file'));%><a href='<%= file %>' data-file='<%= file %>' target='_blank'><%= file.split('/').pop() %></a>;<% }); %></div>"
-                    + "<% } %>"
-                    + "<div style=\"clear: both;\"></div>"
-                    + "<div class='msg-body'> <%== I18n.t(this.get('body')) %></div>"
-                    + "</div>"
-                )
+            initializer: function() {
+                this.handlers = {};
+                this.messages = {};
+                this.errorMessage;
             },
-            // *** Lifecycle Methods *** //
-            /**
-             * @function
-             * @private
-             * @description bind function to events.
-             * When dataSource is updated, do syncUI
-             */
-            bindUI: function() {
-                this.dataUpdatedHandler = Wegas.Facade.Instance.after(
-                    'updatedInstance',
-                    this.onUpdatedInstance,
-                    this
-                ); // Sync view on cache update
-
-                this.get(CONTENTBOX).delegate(
-                    'click',
-                    function(e) {
-                        // Whenever a collapsed message is clicked,
-                        e.currentTarget.toggleClass('msg-toggled'); // open it
-                    },
-                    '.msg-toggled'
-                );
-            },
-            onUpdatedInstance: function(e) {
-                if (
-                    e.entity.get('id') ===
-                    this.get('variable.evaluated').getInstance().get('id')
-                ) {
-                    this.syncUI();
+            destructor: function() {
+                for (var k in this.handlers) {
+                    this.handlers[k].detach();
                 }
             },
-            /**
-             * @function
-             * @private
-             * Re-select the current selected msg;
-             */
+            renderUI: function() {
+                this.destroyAll();
+            },
+
+            bindUpdatedInstance: function() {
+                if (this.handlers.onInstanceUpdate) {
+                    this.handlers.onInstanceUpdate.detach();
+                }
+                var inbox = this.get('variable.evaluated');
+                if (inbox) {
+                    this.handlers.onInstanceUpdate = Y.Wegas.Facade.Instance.after(inbox.getInstance().get("id") + ':updatedInstance', this.syncUI, this);
+                }
+            },
+            bindUI: function() {
+                this.bindUpdatedInstance();
+                this.after("variableChange", this.bindUpdatedInstance, this);
+                this.get(CONTENTBOX).delegate('click', this.toggleExpand, '.wegas-message__collapsed', this);
+                this.get(CONTENTBOX).delegate('click', this.toggleCollapse, '.wegas-message__expanded .wegas-message-header', this);
+            },
+            toggleCollapse: function(e) {
+                Y.later(0, this, function() {
+                    var msg = e.currentTarget.ancestor(".wegas-message__expanded");
+                    msg.addClass('wegas-message__collapsed');
+                    msg.removeClass('wegas-message__expanded');
+                });
+            },
+            toggleExpand: function(e) {
+                // Whenever a collapsed message is clicked,
+                if (this.get("collapsed")) {
+                    this.get("contentBox").all(".wegas-message").each(function(msg) {
+                        msg.removeClass("wegas-message__expanded");
+                        msg.addClass("wegas-message__collapsed");
+                    });
+
+
+                    var message = Y.Widget.getByNode(e.currentTarget).getMessage();
+                    if (message && message.get('unread')) {
+                        Y.Wegas.Facade.Variable.sendRequest({request: '/Inbox/Message/Read/' + message.get('id') + "/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
+                            cfg: {
+                                method: 'PUT'
+                            }
+                        });
+                    }
+                }
+
+                Y.later(0, this, function() {
+                    e.currentTarget.removeClass('wegas-message__collapsed'); // open it
+                    e.currentTarget.addClass('wegas-message__expanded'); // open it
+                });
+            },
+            removeErrorMessage: function() {
+                this.errorMessage && this.errorMessage.destroy();
+                this.errorMessage = null;
+            },
+            setErrorMessage: function(message) {
+                this.removeErrorMessage();
+                this.errorMessage = new Y.Wegas.Text({
+                    content: '<center><em>' + message + '</em></center>',
+                    editable: false
+                });
+                this.add(this.errorMessage);
+            },
             syncUI: function() {
-                var inboxDescriptor = this.get('variable.evaluated'),
+                var cb = this.get("contentBox"),
+                    inboxDescriptor = this.get('variable.evaluated'),
                     inboxInstance = inboxDescriptor.getInstance();
-                if (!inboxDescriptor) {
-                    this.get(CONTENTBOX).setHTML(
-                        '<center><em>Unable to find inbox variable</em></center>'
-                    );
+
+                if (this.get('destroyed')) {
                     return;
                 }
-                this.get("contentBox").addClass("wegas-inbox-list--" + this.get("template"));
-                this.showOverlay();
+                // toggle template classes
+                for (var k in Y.Wegas.InboxList.ATTRS.template.view.choices) {
+                    var template = Y.Wegas.InboxList.ATTRS.template.view.choices[k].value;
+                    this.get("contentBox").toggleClass("wegas-inbox-list--" + template, this.get("template") === template);
+                }
+                this.get("contentBox").toggleClass("wegas-inbox-list--collapsed", this.get("collapsed"));
 
-                Wegas.Facade.Variable.cache.getWithView(inboxInstance, "Extended", {
-                    on: {
-                        success: Y.bind(function(e) {
-                            if (this.get('destroyed')) {
-                                return;
-                            }
-                            this._updateView(e.response.entity, e.response.entity.get("messages"));
-                            this.hideOverlay();
-                        }, this)
-                    }
-                });
-            },
-            /**
-             * @function
-             * @private
-             * @description Destroy all eventHandlers created by this widget
-             */
-            destructor: function() {
-                this.dataUpdatedHandler.detach();
-            },
-            // *** Private Methods *** //
-            /**
-             * @private
-             * @param {Array of entity} entities
-             * @returns {undefined}
-             */
-            _updateView: function(inboxInstance, entities) {
-                var cb = this.get(CONTENTBOX), readMessages = false;
-                cb.setContent("");
-                if (entities.length === 0) {
-                    cb.setHTML('<center><em>Empty</em></center>');
-                }
-                if (this.get("chronological")) {
-                    entities.reverse();
-                }
-                Y.Array.each(entities, function(entity) {
-                    cb.append(this.TEMPLATES[this.get("template")](entity));
-                    if (entity.get('unread')) {
-                        readMessages = true;
-                    }
-                }, this);
-                if (readMessages) {
-                    Y.Wegas.Facade.Variable.sendRequest({// Send reqest to mark as read
-                        request: "/Inbox/" + inboxInstance.get("id") + "/ReadAll",
-                        cfg: {
-                            method: 'PUT'
+                if (!inboxDescriptor) {
+                    this.setErrorMessage('Unable to find inbox variable');
+                } else {
+                    var readMessages = false,
+                        messages = inboxInstance.get("messages").slice(0);
+
+                    if (messages.length === 0) {
+                        cb.setHTML('<center><em>Empty</em></center>');
+                    } else {
+                        this.removeErrorMessage();
+                        if (this.get("chronological")) {
+                            messages.reverse();
                         }
-                    });
-                }
+                        for (var i in messages) {
+                            var message = messages[i];
+                            if (this.messages[message.get("id")]) {
+                                if (this.item(i) !== this.messages[message.get("id")]) {
+                                    //this.remove(this.messages[message.get("id")]);
+                                    this.messages[message.get("id")].remove();
+                                    this.add(this.messages[message.get("id")], i);
+                                }
+                                // mark as read !
+                                this.messages[message.get("id")].syncUI();
+                            } else {
+                                this.messages[message.get("id")] = new Y.Wegas.MessageDisplay({
+                                    variable: this.get("variable"),
+                                    messageId: message.get("id"),
+                                    editable: false
+                                });
+                                this.add(this.messages[message.get("id")], +i);
+                            }
+                            readMessages = readMessages || message.get("unread");
+                        }
 
-                cb.all('.msg').each(function(m) {
-                    /*
-                     * If the content is bigger than the available height (max-height style)
-                     *  add msg-body-toggled class and content of the read more menu
-                     */
-                    if (
-                        parseInt(m.one('.msg-body').getStyle('maxHeight')) >
-                        parseInt(
-                            m
-                                .one('.msg-body-content')
-                                .getComputedStyle('height')
-                        )
-                    ) {
-                        m.removeClass('msg-toggled');
+                        if (readMessages && !this.get("collapsed")) {
+                            Y.Wegas.Facade.Variable.sendRequest({// Send reqest to mark as read
+                                request: "/Inbox/" + inboxInstance.get("id") + "/ReadAll" + "/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
+                                cfg: {
+                                    method: 'PUT'
+                                }
+                            });
+                        }
+
+                        for (var i in this.messages) {
+                            var m = this.messages[i];
+                            var bb = m.get("boundingBox");
+                            if (this.get("collapsed")) {
+                                if (bb.hasClass("wegas-message__expanded")) {
+                                    bb.removeClass("wegas-message__collapsed");
+                                } else if (bb.hasClass("wegas-message__expanded")) {
+                                    bb.removeClass("wegas-message__collapsed");
+                                } else {
+                                    bb.addClass("wegas-message__collapsed");
+                                }
+                            } else {
+                                /*
+                                 * If the content is bigger than the available height (max-height style)
+                                 *  add msg-body-toggled class and content of the read more menu
+                                 */
+                                var body = bb.one('.wegas-message-body');
+                                var maxHeight = parseInt(body.getStyle('maxHeight')),
+                                    effectiveHeight = parseInt(body.getDOMNode().getBoundingClientRect().height);
+                                bb.toggleClass("wegas-message__collapsed", maxHeight < effectiveHeight);
+                                bb.toggleClass("wegas-message__expanded", maxHeight >= effectiveHeight);
+                            }
+                        }
                     }
-                });
-            },
+                }
+            }
+            ,
             getEditorLabel: function() {
                 var variable = this.get('variable.evaluated');
                 if (variable) {
@@ -218,7 +207,7 @@ YUI.add('wegas-inbox-list', function(Y) {
                  */
                 variable: {
                     type: 'object',
-                    getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                    getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     view: {
                         type: 'variableselect',
                         label: 'variable',
@@ -237,7 +226,7 @@ YUI.add('wegas-inbox-list', function(Y) {
                         choices: [
                             {
                                 value: 'default'
-                            },{
+                            }, {
                                 value: 'clean'
                             }
                         ],
@@ -252,9 +241,16 @@ YUI.add('wegas-inbox-list', function(Y) {
                     view: {
                         label: "chronological"
                     }
+                },
+                collapsed: {
+                    value: false,
+                    type: "boolean",
+                    view: {
+                        label: "collapse"
+                    }
                 }
             }
         }
     );
-    Wegas.InboxList = InboxList;
+    Y.Wegas.InboxList = InboxList;
 });

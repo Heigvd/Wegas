@@ -11,12 +11,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.View;
 import java.util.*;
 import javax.persistence.*;
 
@@ -101,11 +106,6 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
         return id;
     }
 
-    @Override
-    public void merge(AbstractEntity a) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
     /**
      * @return all user's players
      */
@@ -170,6 +170,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
      *
      * @return main account name or unnamed if user doesn't have any account
      */
+    @WegasExtraProperty(optional= false, nullable = true, view = @View(label = "Name", value = ReadOnlyString.class))
     public String getName() {
         if (this.getMainAccount() != null) {
             return this.getMainAccount().getName();
@@ -265,5 +266,20 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     public Collection<WegasPermission> getRequieredCreatePermission() {
         //Sign-Up
         return null;
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return null;
+    }
+
+    @Override
+    public boolean belongsToProtectedGameModel() {
+        return false;
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return Visibility.INHERITED;
     }
 }

@@ -9,7 +9,15 @@ package com.wegas.core.persistence.game;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.ValueGenerators.False;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.SelectView.FreeForAllSelector;
+import com.wegas.editor.View.View;
 import java.io.Serializable;
 import javax.persistence.*;
 
@@ -19,74 +27,94 @@ import javax.persistence.*;
  */
 @Embeddable
 @JsonIgnoreProperties(value = {"imageUri"})
-public class GameModelProperties implements Serializable {
+public class GameModelProperties implements Serializable, Mergeable {
+
+    @Override
+    public String getRefId() {
+        return "GameModelProperties";
+    }
+
+    @Override
+    public void setRefId(String refId) {
+    }
 
     private static final long serialVersionUID = 1L;
     /**
      *
      */
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = False.class,
+            view = @View(label = "Game is played", value = FreeForAllSelector.class))
     private Boolean freeForAll = false;
     /**
      *
      */
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = False.class,
+            view = @View(label = "Guest allowed?"))
     private Boolean guestAllowed = false;
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Pages URI"))
     private String pagesUri = "";
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Stylesheets URI"))
     private String cssUri = "";
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Websockets", value = Hidden.class))
     private String websocket = "";
 
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Log ID"))
     private String logID = "";
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "ServerSripts URI"))
     private String scriptUri = "";
 
     /**
      *
      */
     @JsonView({Views.ExtendedI.class})
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "ClientSripts URI"))
     private String clientScriptUri = "";
     /**
      *
      */
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Icon"))
     private String iconUri = "";
 
     /**
      *
      */
     public GameModelProperties() {
-    }
-
-    /**
-     *
-     * @param other
-     */
-    public void merge(GameModelProperties other) {
-        this.setFreeForAll(other.getFreeForAll());
-        this.setGuestAllowed(other.getGuestAllowed());
-        this.setPagesUri(other.getPagesUri());
-        this.setIconUri(other.getIconUri());
-        this.setWebsocket(other.getWebsocket());
-        this.setLogID(other.getLogID());
-        this.setCssUri(other.getCssUri());
-        this.setScriptUri(other.getScriptUri());
-        this.setClientScriptUri(other.getClientScriptUri());
     }
 
     /**
@@ -224,6 +252,21 @@ public class GameModelProperties implements Serializable {
      */
     public void setClientScriptUri(String clientScriptUri) {
         this.clientScriptUri = clientScriptUri;
+    }
+
+    @Override
+    public <T extends Mergeable> T getMergeableParent() {
+        return null;
+    }
+
+    @Override
+    public boolean belongsToProtectedGameModel() {
+        return false;
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return Visibility.INHERITED;
     }
 
 }

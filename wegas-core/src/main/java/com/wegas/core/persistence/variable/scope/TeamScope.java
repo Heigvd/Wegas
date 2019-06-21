@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable.scope;
 
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -68,17 +69,18 @@ public class TeamScope extends AbstractScope<Team> {
     protected void propagate(Team t, boolean create) {
         VariableDescriptor vd = this.getVariableDescriptor();
         if (create) {
-            VariableInstance newInstance = vd.getDefaultInstance().clone();
-            //t.setPrivateInstance(ListUtils.cloneAdd(t.getPrivateInstances(), newInstance));
-            t.getPrivateInstances().add(newInstance);
-            this.setVariableInstance(t, newInstance);
+            try {
+                VariableInstance newInstance = vd.getDefaultInstance().duplicate();
+                //t.setPrivateInstance(ListUtils.cloneAdd(t.getPrivateInstances(), newInstance));
+                t.getPrivateInstances().add(newInstance);
+                this.setVariableInstance(t, newInstance);
 
-            //vif.create(newInstance);  //<----
+                //vif.create(newInstance);  //<----
+            } catch (CloneNotSupportedException ex) {
+                throw WegasErrorMessage.error("Clone VariableInstance ERROR : " + ex);
+            }
         } else {
-            VariableInstance vi = this.getVariableInstance(t);
-            Long version = vi.getVersion();
-            vi.merge(vd.getDefaultInstance());
-            vi.setVersion(version);
+            this.getVariableInstance(t).merge(vd.getDefaultInstance());
         }
     }
 

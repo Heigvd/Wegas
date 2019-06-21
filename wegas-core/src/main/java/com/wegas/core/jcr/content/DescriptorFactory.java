@@ -7,10 +7,13 @@
  */
 package com.wegas.core.jcr.content;
 
-import org.slf4j.LoggerFactory;
-
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -22,7 +25,8 @@ public class DescriptorFactory {
     /**
      * @param node
      * @param contentConnector
-     * @return 
+     *
+     * @return
      */
     public static AbstractContentDescriptor getDescriptor(Node node, ContentConnector contentConnector) {
         AbstractContentDescriptor abstractContentDescriptor = null;
@@ -33,11 +37,37 @@ public class DescriptorFactory {
             if (contentConnector.isRoot(node)) {
                 abstractContentDescriptor = new DirectoryDescriptor("/", contentConnector);     //Root Node
             } else {
-                mimeType = node.getProperty(WFSConfig.WFS_MIME_TYPE).getString();
-                abstractContentDescriptor
-                        = DirectoryDescriptor.MIME_TYPE.equals(mimeType)
-                        ? new DirectoryDescriptor(nodePath, contentConnector)
-                        : new FileDescriptor(nodePath, mimeType, node.getProperty(WFSConfig.WFS_LAST_MODIFIED).getDate(), node.getProperty(WFSConfig.WFS_DATA).getBinary().getSize(), contentConnector);
+                try {
+                    Property mimeTypeProperty = node.getProperty(WFSConfig.WFS_MIME_TYPE);
+                    if (mimeTypeProperty != null) {
+                        mimeType = mimeTypeProperty.getString();
+                    }
+                } catch (RepositoryException ex) {
+                    mimeType = "application/octet-stream";
+                }
+                switch (mimeType) {
+                    case DirectoryDescriptor.MIME_TYPE:
+                        abstractContentDescriptor = new DirectoryDescriptor(nodePath, contentConnector);
+                        break;
+                    default:
+                        Calendar date;
+                        try {
+                            Property dateProperty = node.getProperty(WFSConfig.WFS_LAST_MODIFIED);
+                            date = dateProperty.getDate();
+                        } catch (RepositoryException ex) {
+                            date = new GregorianCalendar(1970, 1, 1, 0, 0);
+                        }
+                        long size = 0l;
+                        try {
+                            Property lengthProperty = node.getProperty(WFSConfig.WFS_DATA);
+                            if (lengthProperty != null) {
+                                size = lengthProperty.getBinary().getSize();
+                            }
+                        } catch (RepositoryException ex) {
+                        }
+
+                        abstractContentDescriptor = new FileDescriptor(nodePath, mimeType, date, size, contentConnector);
+                }
             }
             if (abstractContentDescriptor.exist()) {
                 abstractContentDescriptor.getContentFromRepository();
@@ -51,16 +81,18 @@ public class DescriptorFactory {
     /**
      * @param absolutePath
      * @param contentConnector
-     * @return 
+     *
+     * @return
+     *
      * @throws RepositoryException
      */
     public static AbstractContentDescriptor getDescriptor(String absolutePath, ContentConnector contentConnector) throws RepositoryException {
         AbstractContentDescriptor abstractContentDescriptor = new AbstractContentDescriptor(absolutePath, contentConnector) {
         };
         Node node;
-
-        node = contentConnector.getNode(abstractContentDescriptor.fileSystemAbsolutePath);
-        if (node == null) {
+        try {
+            node = contentConnector.getNode(abstractContentDescriptor.fileSystemAbsolutePath);
+        } catch (PathNotFoundException ex) {
             return new DirectoryDescriptor(absolutePath, contentConnector);     //return a directory (inexistant)
         }
         return getDescriptor(node, contentConnector);

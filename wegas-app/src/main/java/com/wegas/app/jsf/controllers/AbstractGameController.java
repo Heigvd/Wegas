@@ -7,15 +7,15 @@
  */
 package com.wegas.app.jsf.controllers;
 
-import com.sun.faces.util.Util;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.LibraryFacade;
 import com.wegas.core.exception.internal.WegasForbiddenException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.rest.ComboController;
+import com.wegas.core.security.util.BlacklistFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,8 @@ import java.util.Locale;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,17 +36,14 @@ public class AbstractGameController implements Serializable {
     private static final long serialVersionUID = -1511995063657626077L;
     private static final Logger logger = LoggerFactory.getLogger(AbstractGameController.class);
 
+    final static public String MediaTypeCss = "text/css; charset=UTF-8";
+    final static public String MediaTypeJs = "application/javascript; charset=UTF-8";
+
     /**
      *
      */
     @ManagedProperty("#{param.id}")
     protected Long playerId;
-
-    /**
-     *
-     */
-    @EJB
-    private ComboController comboController;
 
     /**
      *
@@ -57,16 +56,16 @@ public class AbstractGameController implements Serializable {
      */
     protected Player currentPlayer = null;
 
-    public Locale calculateLocale(FacesContext context) {
-        Util.notNull("context", context);
-        Locale locale;
+//    public Locale calculateLocale(FacesContext context) {
+//        Util.notNull("context", context);
+//        Locale locale;
 
 //        if (context.getViewRoot() != null) {
-        locale = context.getViewRoot().getLocale();
+//        locale = context.getViewRoot().getLocale();
 //        }
 
 //        if (locale != null) {
-        return locale;
+//        return locale;
 //        }
 //        /**
 //         * *******************
@@ -91,7 +90,37 @@ public class AbstractGameController implements Serializable {
 //            }
 //        }
 //        return locale;
+//    }
+
+    public String getCombinedFile(List<String> fileList, String mediaType) throws IOException, WegasForbiddenException {
+        StringBuilder acc = new StringBuilder();
+        ServletContext context = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+
+        for (String fileName : fileList) {
+            if (BlacklistFilter.isBlacklisted(fileName)) {
+                throw new WegasForbiddenException("Trying to access a blacklisted content");
+            }
+            try {
+                InputStream fis = context.getResourceAsStream(fileName);
+                String content = IOUtils.toString(fis, Helper.getWegasProperty("encoding"));
+                //String content = new Scanner(fis, Helper.getWegasProperty("encoding"))
+                //.useDelimiter("\\A").next();                                  // Use a fake delimiter to read all lines at once
+
+                if (mediaType.equals(MediaTypeCss)) {                     // @hack for css files, we correct the path
+                    String dir = fileName.substring(0, fileName.lastIndexOf('/') + 1);
+                    content = content.replaceAll("url\\(\"?\'?([^:\\)\"\']+)\"?\'?\\)",
+                            "url(" + context.getContextPath()
+                            + dir + "$1)");                                     //Regexp to avoid rewriting protocol guess they contain ':' (http: data:)
+                }
+                acc.append(content).append("\n");
+            } catch (NullPointerException e) {
+                logger.error("Resource not found : {}", fileName);
+            }
+        }
+        return acc.toString();
     }
+
+
 
     public String getStaticClientScripts() throws IOException, WegasForbiddenException {
         String clientScriptUri = this.getCurrentGameModel().getProperties().getClientScriptUri();
@@ -103,7 +132,7 @@ public class AbstractGameController implements Serializable {
                 files.add(s);
             }
         }
-        return comboController.getCombinedFile(files, ComboController.MediaTypeJs);
+        return this.getCombinedFile(files, MediaTypeJs);
     }
 
     public String getClientScripts() {

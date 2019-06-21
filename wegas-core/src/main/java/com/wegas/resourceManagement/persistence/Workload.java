@@ -9,10 +9,12 @@ package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.View;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.*;
@@ -46,21 +48,33 @@ public class Workload extends AbstractEntity implements Serializable {
     /**
      * period number
      */
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(label = "Period number"))
     private Long periodNumber;
 
     /**
      * workload to do before doing the period
      */
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(label = "Workload"))
     private Double workload;
 
     /**
      * effective workload spent during the last period
      */
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(label = "Spent"))
     private Double spentWorkload;
 
     /**
      * Period subdivision step
      */
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(label = "Last worked step"))
     private Integer lastWorkedStep;
 
     public Long getPeriodNumber() {
@@ -109,16 +123,8 @@ public class Workload extends AbstractEntity implements Serializable {
     }
 
     @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof Workload) {
-            Workload o = (Workload) other;
-            this.setPeriodNumber(o.getPeriodNumber());
-            this.setWorkload(o.getWorkload());
-            this.setSpentWorkload(o.getSpentWorkload());
-            this.setLastWorkedStep(o.getLastWorkedStep());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
-        }
+    public WithPermission getMergeableParent() {
+        return this.getIteration();
     }
 
     @Override

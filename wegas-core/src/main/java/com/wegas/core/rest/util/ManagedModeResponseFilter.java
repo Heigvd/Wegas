@@ -76,9 +76,9 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         Map<String, List<AbstractEntity>> updatedEntitiesMap = requestManager.getAllUpdatedEntities();
         Map<String, List<AbstractEntity>> destroyedEntitiesMap = requestManager.getDestroyedEntities();
 
-        boolean isManaged= managedMode != null && !managedMode.toLowerCase().equals("false");
+        boolean isManaged = managedMode != null && !managedMode.toLowerCase().equals("false");
 
-        if (isManaged){
+        if (isManaged) {
             ManagedResponse serverResponse = new ManagedResponse();
             /* 
              * returnd entities are not to propagate through websockets
@@ -103,16 +103,19 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
                 if (response.getEntity() instanceof WegasRuntimeException) {
                     wrex = (WegasRuntimeException) response.getEntity();
+                    requestManager.addException(wrex);
                 } else if (response.getEntity() instanceof Exception) {
                     wrex = new WegasWrappedException((Exception) response.getEntity());
-                } else {
+                    requestManager.addException(wrex);
+                } else if (requestManager.getExceptionCounter() == 0) {
                     wrex = WegasErrorMessage.error("Something went wrong");
+                    requestManager.addException(wrex);
                 }
-                requestManager.addException(wrex);
 
                 // Set response http status code to 400
                 if (response.getStatusInfo().getStatusCode() < 400) {
                     response.setStatus(HttpStatus.SC_BAD_REQUEST);
+                    requestManager.setStatus(response.getStatusInfo());
                 }
                 rollbacked = true;
             } else {
@@ -182,11 +185,10 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 }
             }
 
-
             if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty())) {
                 requestManager.markPropagationStartTime();
                 String socketId = requestManager.getSocketId();
-                if (!isManaged || socketId == null || !socketId.matches("^[\\d\\.]+$")){
+                if (!isManaged || socketId == null || !socketId.matches("^[\\d\\.]+$")) {
                     socketId = null;
                 }
                 websocketFacade.onRequestCommit(updatedEntitiesMap, destroyedEntitiesMap,

@@ -8,11 +8,12 @@
 package com.wegas.core.persistence.variable.primitive;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.ValueGenerators.EmptyMap;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Access;
@@ -26,7 +27,6 @@ import javax.persistence.Entity;
  */
 @Entity
 @Access(AccessType.FIELD)
-
 /*@Table(indexes = {
  @Index(columnList = "properties.objectinstance_id")
  })*/
@@ -38,6 +38,9 @@ public class ObjectInstance extends VariableInstance implements Propertable {
      */
     @ElementCollection
     @JsonIgnore
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyMap.class,
+            view = @View(label = "Instance properties"))
     private List<VariableProperty> properties = new ArrayList<>();
 
     @Override
@@ -46,20 +49,4 @@ public class ObjectInstance extends VariableInstance implements Propertable {
         return this.properties;
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a != null) {
-            if (a instanceof ObjectInstance) {
-                super.merge(a);
-                ObjectInstance other = (ObjectInstance) a;
-                this.setProperties(other.getProperties());
-            } else {
-                throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-            }
-        }
-    }
 }

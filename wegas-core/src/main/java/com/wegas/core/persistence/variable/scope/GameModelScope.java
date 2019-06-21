@@ -9,6 +9,7 @@ package com.wegas.core.persistence.variable.scope;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -45,13 +46,15 @@ public class GameModelScope extends AbstractScope<GameModel> {
         VariableDescriptor vd = this.getVariableDescriptor();
         VariableInstance vi = this.getVariableInstance();
         if (vi == null) {
-            VariableInstance clone = vd.getDefaultInstance().clone();
-            gameModel.getPrivateInstances().add(clone);
-            this.setVariableInstance(gameModel, clone);
+            try {
+                VariableInstance clone = vd.getDefaultInstance().duplicate();
+                gameModel.getPrivateInstances().add(clone);
+                this.setVariableInstance(gameModel, clone);
+            } catch (CloneNotSupportedException ex) {
+                throw WegasErrorMessage.error("Clone VariableInstance ERROR : " + ex);
+            }
         } else {
-            Long version = vi.getVersion();
             vi.merge(vd.getDefaultInstance());
-            vi.setVersion(version);
         }
     }
 
@@ -74,7 +77,6 @@ public class GameModelScope extends AbstractScope<GameModel> {
     }
 
     /**
-     * Return the instance which is accessible by the player
      *
      * @param player the player who request the instance
      *

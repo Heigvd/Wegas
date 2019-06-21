@@ -150,9 +150,21 @@ $color-bg-hover: #eee;
         }
     }
 
+    .button--translate{
+        &:before, &:hover:before, &:active:before, &:visited:before{
+            color:$scenarist-color;
+        }
+    }
+
     .button--scenarist{
         &:before, &:hover:before, &:active:before, &:visited:before{
             color:$scenarist-color;
+        }
+    }
+
+    .button--modeler{
+        &:before, &:hover:before, &:active:before, &:visited:before{
+            color:$modeler-color;
         }
     }
 

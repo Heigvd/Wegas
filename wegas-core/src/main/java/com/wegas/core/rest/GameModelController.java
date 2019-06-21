@@ -7,21 +7,30 @@
  */
 package com.wegas.core.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.ModelFacade;
 import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipInputStream;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.jcr.RepositoryException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -45,6 +54,15 @@ public class GameModelController {
     @EJB
     private GameModelFacade gameModelFacade;
 
+    /**
+     *
+     */
+    @Inject
+    private ModelFacade modelFacade;
+
+    /**
+     *
+     */
     @Inject
     private RequestManager requestManager;
 
@@ -62,6 +80,93 @@ public class GameModelController {
         return gm;
     }
 
+    private List<Long> getIdsFromString(String ids) {
+        List<Long> scenarioIds = new ArrayList<>();
+
+        for (String id : ids.split(",")) {
+            scenarioIds.add(Long.parseLong(id));
+        }
+
+        return scenarioIds;
+    }
+
+    /**
+     * Create a model
+     *
+     * @param ids      comma separated list of gameModel id to base the new model on
+     * @param template
+     *
+     * @return a brand new model, not yet propagated
+     *
+     * @throws IOException
+     */
+    @POST
+    @Path("extractModel/{ids}")
+    public GameModel createModel(@PathParam("ids") String ids, GameModel template) throws IOException {
+
+        GameModel model = modelFacade.createModelFromCommonContentFromIds(template.getName(), getIdsFromString(ids));
+
+        return model;
+    }
+
+    @GET
+    @Path("{modelId: [1-9][0-9]*}/Integrate/{scenarioId: [1-9][0-9]*}")
+    public GameModel integrate(@PathParam("modelId") Long modelId,
+            @PathParam("scenarioId") Long scenarioId) throws IOException, RepositoryException {
+
+        GameModel model = gameModelFacade.find(modelId);
+        GameModel scenario = gameModelFacade.find(scenarioId);
+
+        ArrayList<GameModel> scenarios = new ArrayList<>(1);
+        scenarios.add(scenario);
+        modelFacade.integrateScenario(model, scenarios);
+
+        return model;
+    }
+
+    @GET
+    @Path("Release/{scenarioId: [1-9][0-9]*}")
+    public GameModel release(@PathParam("scenarioId") Long scenarioId) throws IOException, RepositoryException {
+        return modelFacade.releaeScenario(scenarioId);
+    }
+
+    /**
+     * Create a model
+     *
+     * @param modelId model to propagate
+     *
+     * @return the model
+     *
+     * @throws java.io.IOException
+     *
+     */
+    @PUT
+    @Path("{modelId : [1-9][0-9]*}/Propagate")
+    public GameModel propagateModel(@PathParam("modelId") Long modelId) throws IOException, RepositoryException {
+        return modelFacade.propagateModel(modelId);
+    }
+
+    /**
+     *
+     * Duplicate model
+     *
+     * @param templateGameModelId id of the gameModel to duplicate
+     * @param gm                  template to fetch the new name in
+     *
+     * @return the new game model
+     */
+    @POST
+    @Path("model/{templateGameModelId : [1-9][0-9]*}")
+    public GameModel templateCreateModel(@PathParam("templateGameModelId") Long templateGameModelId, GameModel gm) throws CloneNotSupportedException {
+        // logger.info(Level.INFO, "POST GameModel");
+
+        GameModel duplicate = gameModelFacade.createModelWithDebugGame(templateGameModelId);
+        // restore original name
+        duplicate.setName(gm.getName());
+
+        return duplicate;
+    }
+
     /**
      *
      * Duplicate and set new gameModel name
@@ -70,15 +175,13 @@ public class GameModelController {
      * @param gm                  template to fetch the new name in
      *
      * @return the new game model
-     *
-     * @throws IOException
      */
     @POST
     @Path("{templateGameModelId : [1-9][0-9]*}")
-    public GameModel templateCreate(@PathParam("templateGameModelId") Long templateGameModelId, GameModel gm) throws IOException {
+    public GameModel templateCreate(@PathParam("templateGameModelId") Long templateGameModelId, GameModel gm) throws CloneNotSupportedException {
         // logger.info(Level.INFO, "POST GameModel");
 
-        GameModel duplicate = gameModelFacade.duplicateWithDebugGame(templateGameModelId);
+        GameModel duplicate = gameModelFacade.createScenarioWithDebugGame(templateGameModelId);
         // restore original name
         duplicate.setName(gm.getName());
 
@@ -98,7 +201,6 @@ public class GameModelController {
      * @throws IOException
      */
     @POST
-
     @Path("{templateGameModelId : [1-9][0-9]*}/UpdateFromPlayer/{playerId: [1-9][0-9]*}")
     public GameModel updateFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
             @PathParam("playerId") Long playerId) throws IOException {
@@ -126,7 +228,6 @@ public class GameModelController {
      * @throws IOException
      */
     @POST
-
     @Path("{templateGameModelId : [1-9][0-9]*}/CreateFromPlayer/{playerId: [1-9][0-9]*}")
     public GameModel createFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
             @PathParam("playerId") Long playerId) throws IOException {
@@ -148,15 +249,45 @@ public class GameModelController {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public GameModel upload(@FormDataParam("file") InputStream file,
-            @FormDataParam("file") FormDataBodyPart details) throws IOException {
+            @FormDataParam("file") FormDataBodyPart details) throws IOException, RepositoryException {
 
-        ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
-        GameModel gm = mapper.readValue(file, GameModel.class);                 // and deserialize file
+        GameModel gameModel;
 
-        gm.setName(gameModelFacade.findUniqueName(gm.getName()));               // Find a unique name for this new game
+        if (details.getMediaType().equals(MediaType.APPLICATION_JSON_TYPE)) {
+            gameModel = JacksonMapperProvider.getMapper().readValue(file, GameModel.class);
+            gameModel.setName(gameModelFacade.findUniqueName(gameModel.getName(), GameModel.GmType.SCENARIO));
+            gameModel.setType(GameModel.GmType.SCENARIO);
+            gameModelFacade.createWithDebugGame(gameModel);
+            return gameModel;
+        } else if (details.getContentDisposition().getFileName().endsWith(".wgz")) {
+            try (ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
+                return gameModelFacade.unzip(zip);
+            }
+        } else {
+            throw new WegasIncompatibleType("Unknown file type");
+        }
+    }
 
-        gameModelFacade.createWithDebugGame(gm);
-        return gm;
+    /**
+     * @param gameModelId
+     *
+     * @return ZIP export which contains the game model and its files
+     *
+     */
+    @GET
+    @Path("{gameModelId : [1-9][0-9]*}.wgz")
+    public Response exportZIP(@PathParam("gameModelId") Long gameModelId) throws RepositoryException, UnsupportedEncodingException {
+
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gameModel);
+
+        StreamingOutput output = gameModelFacade.zip(gameModelId);
+        String filename = URLEncoder.encode(gameModelFacade.find(gameModelId).getName().replaceAll("\\" + "s+", "_") + ".wgz", StandardCharsets.UTF_8.displayName());
+
+        return Response.ok(output, "application/zip").
+                header("content-disposition",
+                        "attachment; filename="
+                        + filename).build();
     }
 
     /**
@@ -175,9 +306,9 @@ public class GameModelController {
     @GET
     @Produces(MediaType.APPLICATION_JSON + "; charset=utf-8") // @hack force utf-8 charset
     @Path("{entityId : [1-9][0-9]*}/{filename: .*\\.json}")
-    public Response downloadJSON(@PathParam("entityId") Long entityId, @PathParam("filename") String filename) {
+    public Response downloadJSON(@PathParam("entityId") Long entityId, @PathParam("filename") String filename) throws UnsupportedEncodingException {
         return Response.ok(this.get(entityId))
-                .header("Content-Disposition", "attachment; filename=" + filename).build();
+                .header("Content-Disposition", "attachment; filename=" + URLEncoder.encode(filename, StandardCharsets.UTF_8.displayName())).build();
     }
 
     /**
@@ -200,12 +331,11 @@ public class GameModelController {
      *
      * @return game model Copy
      *
-     * @throws IOException
      */
     @POST
     @Path("{entityId: [1-9][0-9]*}/Duplicate")
-    public GameModel duplicate(@PathParam("entityId") Long entityId) throws IOException {
-        return gameModelFacade.duplicateWithDebugGame(entityId);
+    public GameModel duplicate(@PathParam("entityId") Long entityId) throws CloneNotSupportedException {
+        return gameModelFacade.duplicateGameModel(entityId);
     }
 
     /**
@@ -245,9 +375,24 @@ public class GameModelController {
                     gameModelFacade.delete(gm);
                 }
                 break;
-
+            case SUPPRESSED:
+                // nothing to do since this status does not exists
+                break;
         }
         return gm;
+    }
+
+    /**
+     * Get GameModel permission matrix
+     *
+     * @param status
+     *
+     */
+    @GET
+    @Path("permissions/{type: [A-Z]*}/status/{status: [A-Z]*}")
+    public Map<Long, List<String>> getPermissionsMatrix(@PathParam("status") final GameModel.Status status,
+            @PathParam("type") final GameModel.GmType type) {
+        return gameModelFacade.getPermissionMatrix(type, status);
     }
 
     /**
@@ -260,7 +405,24 @@ public class GameModelController {
     @GET
     @Path("status/{status: [A-Z]*}")
     public Collection<GameModel> findByStatus(@PathParam("status") final GameModel.Status status) {
-        return gameModelFacade.findByStatusAndUser(status);
+        return gameModelFacade.findByTypeStatusAndUser(GameModel.GmType.SCENARIO, status);
+    }
+
+    /**
+     *
+     * Get all gameModel of given type with given status
+     *
+     * @param type
+     * @param status
+     *
+     * @return all gameModels of type with given status the user has access too
+     */
+    @GET
+    @Path("type/{type: [A-Z]*}/status/{status: [A-Z]*}")
+    public Collection<GameModel> findByTypeAndStatus(
+            @PathParam("type") final GameModel.GmType type,
+            @PathParam("status") final GameModel.Status status) {
+        return gameModelFacade.findByTypeStatusAndUser(type, status);
     }
 
     /**
@@ -275,6 +437,23 @@ public class GameModelController {
     @Path("status/{status: [A-Z]*}/count")
     public int countByStatus(@PathParam("status") final GameModel.Status status) {
         return this.findByStatus(status).size();
+    }
+
+    /**
+     * count gameModel with given status
+     *
+     * @param type
+     * @param status
+     *
+     * @return the number of gameModel with the given status the current user
+     *         has access too
+     */
+    @GET
+    @Path("type/{type: [A-Z]*}/status/{status: [A-Z]*}/count")
+    public int countByTypeAndStatus(
+            @PathParam("type") final GameModel.GmType type,
+            @PathParam("status") final GameModel.Status status) {
+        return this.findByTypeAndStatus(type, status).size();
     }
 
     /**
@@ -310,7 +489,7 @@ public class GameModelController {
     @DELETE
     public Collection<GameModel> deleteAll() {
         Collection<GameModel> games = new ArrayList<>();
-        for (GameModel gm : gameModelFacade.findByStatus(GameModel.Status.BIN)) {
+        for (GameModel gm : gameModelFacade.findByTypeAndStatus(GameModel.GmType.SCENARIO, GameModel.Status.BIN)) {
             if (requestManager.canDeleteGameModel(gm)) {
                 gameModelFacade.delete(gm);
                 games.add(gm);
@@ -325,4 +504,12 @@ public class GameModelController {
     public void deleteForceAll() {
         gameModelFacade.removeGameModels();
     }
+
+    @POST
+    @Path("{gameModelId: [1-9][0-9]*}/FindAndReplace")
+    public String findAndReplace(@PathParam("gameModelId") Long gameModelId,
+            FindAndReplacePayload payload) {
+        return gameModelFacade.findAndReplace(gameModelId, payload);
+    }
+
 }

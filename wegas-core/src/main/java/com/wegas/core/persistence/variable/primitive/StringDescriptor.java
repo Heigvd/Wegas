@@ -9,17 +9,27 @@ package com.wegas.core.persistence.variable.primitive;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.annotations.WegasEntity;
+import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.annotations.Param;
+import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.View.ArrayView;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import jdk.nashorn.api.scripting.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +41,7 @@ import org.slf4j.LoggerFactory;
 /*@Table(indexes = {
  @Index(columnList = "allowedvalues.stringdescriptor_variabledescriptor_id")
  })*/
+@WegasEntity(callback = StringDescriptor.StringDescriptorMergeCallback.class)
 public class StringDescriptor extends VariableDescriptor<StringInstance>
         implements PrimitiveDescriptorI<String>, Enumeration {
 
@@ -41,6 +52,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      */
     //@NotNull
     //@Pattern(regexp = "^\\w*$")
+    @WegasEntityProperty(view = @View(label ="Pattern", value = Hidden.class))
     private String validationPattern;
 
     /**
@@ -48,6 +60,10 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      */
     @OneToMany(mappedBy = "parentString", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonDeserialize(using = EnumItem.ListDeserializer.class)
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(label= "Allowed Values", value = ArrayView.HighlightAndSortable.class))
+    //@WegasEntityProperty(callback = EnumItem.EnumItemMergeCallback.class)
     private List<EnumItem> allowedValues = new ArrayList<>();
 
     /**
@@ -62,32 +78,6 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      */
     public StringDescriptor(String name) {
         this.name = name;
-    }
-
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof StringDescriptor) {
-            StringDescriptor other = (StringDescriptor) a;
-            this.setValidationPattern(other.getValidationPattern());
-
-            super.merge(a);
-
-            // make sure to use getCategories to sort them
-            this.setAllowedValues(ListUtils.mergeLists(this.getAllowedValues(), other.getAllowedValues()));
-
-            Helper.setNameAndLabelForLabelledEntityList(this.getAllowedValues(), "item", this.getGameModel());
-
-            /*String value = this.getDefaultInstance().getValue();
-            if (!this.isValueAllowed(value)) {
-                throw WegasErrorMessage.error("Value \"" + value + "\" not allowed !");
-            }*/
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
     }
 
     /**
@@ -137,10 +127,13 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
     @Override
     public void registerItem(EnumItem item) {
         item.setParentString(this);
+        if (item.getLabel() != null) {
+            item.getLabel().setParentDescriptor(this);
+        }
     }
 
     /*
-     * SUGARY 
+     * SUGARY
      */
     /**
      *
@@ -149,6 +142,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      * @return value of player instance
      */
     @Override
+    @Scriptable(label = "value")
     public String getValue(Player p) {
         return this.getInstance(p).getValue();
     }
@@ -160,6 +154,26 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      */
     @Override
     public void setValue(Player p, String value) {
+        this.getInstance(p).setValue(value, p.getLang());
+    }
+
+    /**
+     *
+     * @param p
+     * @param value
+     */
+    @Scriptable
+    public void setValue(Player p,
+            @Param(view = @View(label = "", value = I18nHtmlView.class)) TranslatableContent value) {
+        this.getInstance(p).setValue(value);
+    }
+
+    /**
+     *
+     * @param p
+     * @param value
+     */
+    public void setValue(Player p, JSObject value) {
         this.getInstance(p).setValue(value);
     }
 
@@ -170,6 +184,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      *
      * @return
      */
+    @Scriptable(label = "selected value is")
     public boolean isValueSelected(Player p, String value) {
         StringInstance instance = this.getInstance(p);
 
@@ -181,6 +196,18 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
             }
         }
         return false;
+    }
+
+    /**
+     *
+     * @param p
+     * @param value
+     *
+     * @return
+     */
+    @Scriptable(label = "selected value is not")
+    public boolean isNotSelectedValue(Player p, String value) {
+        return !this.isValueSelected(p, value);
     }
 
     public boolean isValueAllowed(String value) {
@@ -200,9 +227,16 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
         return true;
     }
 
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return super.containsAll(criterias)
-                || this.itemsContainsAll(criterias);
+    public static class StringDescriptorMergeCallback implements WegasCallback {
+
+        @Override
+        public void postUpdate(Mergeable entity, Object ref, Object identifier) {
+            if (entity instanceof StringDescriptor) {
+                StringDescriptor sd = (StringDescriptor) entity;
+                // set names and labels unique
+                Helper.setNameAndLabelForLabelledEntityList(sd.getAllowedValues(), "item", sd.getGameModel());
+            }
+        }
+
     }
 }

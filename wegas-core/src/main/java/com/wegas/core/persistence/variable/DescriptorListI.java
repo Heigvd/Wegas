@@ -9,8 +9,14 @@ package com.wegas.core.persistence.variable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.persistence.WithId;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,14 +25,7 @@ import java.util.List;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  * @param <T>
  */
-public interface DescriptorListI<T extends VariableDescriptor> {
-
-    /**
-     * useful ?
-     *
-     * @return id of the entity
-     */
-    Long getId();
+public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
 
     /**
      * @return the variableDescriptors
@@ -41,7 +40,7 @@ public interface DescriptorListI<T extends VariableDescriptor> {
      */
     @JsonIgnore
     public GameModel getGameModel();
-    
+
     /**
      * Return children ids
      * DO NOT OVERRIDE, NEVER!
@@ -49,6 +48,10 @@ public interface DescriptorListI<T extends VariableDescriptor> {
      * @return list of children's id
      */
     @JsonView(Views.IndexI.class)
+    @WegasExtraProperty(view = @View(value = Hidden.class, label = ""),
+            proposal = EmptyArray.class,
+            optional = false, nullable = false
+    )
     default List<Long> getItemsIds() {
         List<Long> ids = new LinkedList<>();
         for (T t : this.getItems()) {
@@ -71,7 +74,22 @@ public interface DescriptorListI<T extends VariableDescriptor> {
      *
      * @param items new list of children
      */
-    void setItems(List<T> items);
+    default void setItems(List<T> items) {
+        // a new list prevent eclipselink making sh*t with items (like replacing some by null...)
+        List<T> newItems = new ArrayList<>();
+        newItems.addAll(items);
+
+        this.resetItemsField();
+
+        for (T item : newItems) {
+            this.addItem(item);
+        }
+    }
+
+    /**
+     * Re-init items fields to an empty new list
+     */
+    void resetItemsField();
 
     /**
      * Update child in order to maintain cache integrity.
@@ -90,19 +108,24 @@ public interface DescriptorListI<T extends VariableDescriptor> {
     }
 
     /**
-     * Add a new child
+     * Add a new child. Register the new child within the gameModel (global variable descriptor list)
+     * and within its parent.
      *
      * @param index new child position, null means last position
      * @param item  the new child to add
      */
     default void addItem(Integer index, T item) {
+        List<T> items = this.getItems();
+
         if (this.getGameModel() != null) {
             this.getGameModel().addToVariableDescriptors(item);
         }
-        if (index != null) {
-            this.getItems().add(index, item);
-        } else {
-            this.getItems().add(item);
+        if (!items.contains(item)) {
+            if (index != null) {
+                items.add(index, item);
+            } else {
+                items.add(item);
+            }
         }
         this.setChildParent(item);
     }

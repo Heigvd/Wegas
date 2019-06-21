@@ -10,6 +10,7 @@ package com.wegas.app.pdf.uicomponent;
 import com.wegas.app.pdf.helper.UIHelper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -65,10 +66,18 @@ public class UIGameModel extends UIComponentBase {
 
     private boolean editorMode;
     private boolean defaultValues;
+    private I18nFacade i18nFacade;
 
     @Override
     public String getFamily() {
         return "com.wegas.app.pdf.uicomponent.GameModel";
+    }
+
+    private I18nFacade getI18nFacade() {
+        if (i18nFacade == null) {
+            i18nFacade = I18nFacade.lookup();
+        }
+        return i18nFacade;
     }
 
     @Override
@@ -166,7 +175,7 @@ public class UIGameModel extends UIComponentBase {
                             break;
                         } else {
                             current = (VariableDescriptor) parent;
-                            path.add(current.getLabel().translateOrEmpty(player));
+                            path.add(getI18nFacade().interpolate(current.getLabel().translateOrEmpty(player), player));
                         }
                     }
                 }

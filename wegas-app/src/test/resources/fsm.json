@@ -1,0 +1,115 @@
+{
+    "@class": "GameModel",
+    "pages": {},
+    "name": "testStateMachine",
+    "languages": [{
+            "@class": "GameModelLanguage",
+            "code": "def",
+            "lang": "default",
+            "indexOrder": 0,
+            "active": true
+        }],
+    "description": null,
+    "type": "SCENARIO",
+    "comments": null,
+    "createdTime": 1535372214019,
+    "items": [{
+            "@class": "FSMDescriptor",
+            "comments": null,
+            "defaultInstance": {
+                "@class": "FSMInstance",
+                "currentStateId": 1,
+                "enabled": true,
+                "transitionHistory": [],
+                "currentState": {
+                    "@class": "State",
+                    "version": 3,
+                    "editorPosition": {
+                        "@class": "Coordinate",
+                        "x": 30,
+                        "y": 29
+                    },
+                    "label": "A",
+                    "onEnterEvent": null,
+                    "transitions": [{
+                            "@class": "Transition",
+                            "version": 1,
+                            "index": 0,
+                            "nextStateId": 2,
+                            "preStateImpact": null,
+                            "triggerCondition": {
+                                "@class": "Script",
+                                "content": "Event.fired(\"x\");"
+                            }
+                        }]
+                }
+            },
+            "visibility": "INHERITED",
+            "editorTag": "",
+            "label": {
+                "@class": "TranslatableContent",
+                "translations": {
+                    "def": "fsm"
+                }
+            },
+            "name": "fsm",
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "version": 2,
+            "states": {
+                "2": {
+                    "@class": "State",
+                    "version": 3,
+                    "editorPosition": {
+                        "@class": "Coordinate",
+                        "x": 459,
+                        "y": 224
+                    },
+                    "label": "B",
+                    "onEnterEvent": null,
+                    "transitions": []
+                },
+                "1": {
+                    "@class": "State",
+                    "version": 3,
+                    "editorPosition": {
+                        "@class": "Coordinate",
+                        "x": 30,
+                        "y": 29
+                    },
+                    "label": "A",
+                    "onEnterEvent": null,
+                    "transitions": [{
+                            "@class": "Transition",
+                            "version": 1,
+                            "index": 0,
+                            "nextStateId": 2,
+                            "preStateImpact": null,
+                            "triggerCondition": {
+                                "@class": "Script",
+                                "content": "Event.fired(\"x\");"
+                            }
+                        }]
+                }
+            }
+        }],
+    "scriptLibrary": {},
+    "cssLibrary": {},
+    "clientScriptLibrary": {},
+    "properties": {
+        "freeForAll": false,
+        "guestAllowed": false,
+        "pagesUri": "",
+        "cssUri": "",
+        "websocket": "",
+        "logID": null,
+        "scriptUri": "",
+        "clientScriptUri": "",
+        "iconUri": ""
+    },
+    "createdByName": "Admin ",
+    "template": true,
+    "protected": true
+}

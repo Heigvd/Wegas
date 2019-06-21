@@ -54,36 +54,19 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             });
         },
-        _sendInitialRequest: function(queue, cfg) {
-            var uri = queue.shift();
-            if (!Y.Lang.isUndefined(uri)) {
-                this.sendRequest(Y.mix(cfg || {}, {
-                    request: uri,
-                    cfg: {
-                        initialRequest: true
-                    },
-                    on: {
-                        success: Y.bind(this._sendInitialRequest, this, queue, cfg)
-                    }
-                }));
-            }
-        },
         /**
          * @function
          * @private
          */
         sendInitialRequest: function(cfg) {
             //            this.cache && this.cache.clear();
-            var queue, uri;
             if (!Y.Lang.isUndefined(this.get("initialRequest"))) { // Use this condition to allow empty strings (e.g. ")
-                if (!Y.Lang.isArray(this.get("initialRequest"))) {
-                    queue = [this.get("initialRequest")];
-                } else {
-                    queue = this.get("initialRequest");
-                }
-                this._sendInitialRequest(queue, cfg);
-
-                return;
+                return this.sendRequest(Y.mix(cfg || {}, {
+                    request: this.get("initialRequest"),
+                    cfg: {
+                        initialRequest: true
+                    }
+                }));
             } else if (!Y.Lang.isUndefined(this.get("initialFullRequest"))) {
                 return this.sendRequest(Y.mix(cfg || {}, {
                     cfg: {
@@ -209,9 +192,13 @@ YUI.add('wegas-datasource', function(Y) {
                     updatedDs[dsid] = ds;
                     events = collector[dsid].events;
                     for (eventName in events) {
+                        var eName = eventName;
                         if (events.hasOwnProperty(eventName) && events[eventName].length > 0) {
                             for (i in events[eventName]) {
-                                ds.fire(eventName, events[eventName][i]);
+                                if (eventName === "updatedInstance") {
+                                    eName = events[eventName][i].entity.get("id") + ":" + eventName;
+                                }
+                                ds.fire(eName, events[eventName][i]);
                             }
                         }
                     }
@@ -365,7 +352,8 @@ YUI.add('wegas-datasource', function(Y) {
                 };
                 response.data = host.data; // Provides with a pointer to the datasource current content
                 payload.response = response;
-                Y.log("Response received: " + host.get('source') /* + e.cfg.request*/, "log", "Wegas.DataSource");
+                //Y.log("Response received: " + host.get('source') /* + e.cfg.request*/, "log", "Wegas.DataSource");
+                Y.log("Response received: " + host.get('source') + e.request, "log", "Wegas.DataSource");
 
                 Wegas.Editable.use(payload.response.results, // Lookup dependencies
                     Y.bind(function(payload) {
@@ -654,10 +642,13 @@ YUI.add('wegas-datasource', function(Y) {
                     onFindFn(found, val);
                 }
             } else {
-                found = this.doFind(key, val, onFindFn, this.getCache());
+                found = this.doFind(key, val, onFindFn);
             }
 
             return found;
+        },
+        findByFn: function(fn) {
+            return this.doFind(null, null, null, fn);
         },
         /**
          * Retrieves an entity from the cache
@@ -693,9 +684,9 @@ YUI.add('wegas-datasource', function(Y) {
          *  @param {function(Object, any):void} onFindFn callback function with found entity and needle
          *  @return {Object} Found entity if any
          */
-        doFind: function doFind(key, needle, onFindFn) {
+        doFind: function doFind(key, needle, onFindFn, testFunction) {
             var ret,
-                testFn = this.get("testFn"),
+                testFn = testFunction || this.get("testFn"),
                 walkEntity = this.walkEntity.bind(this),
                 findFn = function findFn(stack) {
                     Y.Array.find(stack, function find(item) { // @fixme speedup
@@ -705,7 +696,7 @@ YUI.add('wegas-datasource', function(Y) {
                         }
                         return walkEntity(item, findFn);
                     });
-                }
+                };
             findFn(this.getCache());
             if (ret !== undefined && onFindFn) {
                 onFindFn(ret, needle);
@@ -887,7 +878,7 @@ YUI.add('wegas-datasource', function(Y) {
         },
         generateRequest: function(data) {
             if (data[CLASS].indexOf("Instance") > -1) {
-                return '/' + data.descriptorId + '/VariableInstance/' + data.id;
+                return '/' + data.parentId + '/VariableInstance/' + data.id;
             } else {
                 return "/" + data.id;
             }
@@ -973,10 +964,10 @@ YUI.add('wegas-datasource', function(Y) {
             });
         },
         findParentDescriptor: function(entity) {
-            if (entity.get("parentDescriptorType") === "GameModel") {
-                return Y.Wegas.Facade.GameModel.cache.find("id", entity.get("parentDescriptorId"));
+            if (entity.get("parentType") === "GameModel") {
+                return Y.Wegas.Facade.GameModel.cache.find("id", entity.get("parentId"));
             } else {
-                return this.find("id", entity.get("parentDescriptorId"));
+                return this.find("id", entity.get("parentId"));
             }
         },
         move: function(entity, parentEntity, index, localOnly) {
@@ -994,7 +985,7 @@ YUI.add('wegas-datasource', function(Y) {
                         failure: Y.bind(function(entity, parentEntity) {
                             Y.log("Error moving item", "error");
                             // Rollback move since TV was too optimistic
-                            if (parentEntity.get("@class") === "GameModel" || entity.getParent().get("@class") === "GameModel") {
+                            if (!parentEntity || parentEntity.get("@class") === "GameModel" || entity.getParent().get("@class") === "GameModel") {
                                 this.get(HOST).fire("rootUpdate");
                             } else {
                                 this.get(HOST).fire("updatedDescriptor", {entity: parentEntity});
@@ -1093,7 +1084,7 @@ YUI.add('wegas-datasource', function(Y) {
          VariableInstanceCache.superclass.put.call(this, data, cfg);
          },*/
         generateRequest: function(data) {
-            return "/" + data.descriptorId + "/VariableInstance/" + data.id;
+            return "/" + data.parentId + "/VariableInstance/" + data.id;
         },
         /**
          * @function
@@ -1103,7 +1094,7 @@ YUI.add('wegas-datasource', function(Y) {
             var scope, scopeKey, descriptorId, index, ds, dsid;
             ds = this.get("host");
             dsid = ds._yuid;
-            descriptorId = +entity.get("descriptorId");
+            descriptorId = +entity.get("parentId");
             scopeKey = +entity.get("scopeKey");
             scope = this.find("descriptorId", descriptorId);
             eventsCollector = eventsCollector || {};
@@ -1263,6 +1254,13 @@ YUI.add('wegas-datasource', function(Y) {
             if (entity.get && entity.get(ITEMS)) {
                 return entity.get(ITEMS);
             }
+
+            switch (entity["@class"]) {
+                case "Game":
+                    return entity.teams;
+                case "Team":
+                    return entity.players;
+            }
             return null;
         },
         addToCache: function(entity) {
@@ -1383,8 +1381,12 @@ YUI.add('wegas-datasource', function(Y) {
      */
     UserCache = Y.Base.create("wegas-cache", WegasCache, [], {
         _getChildren: function(entity) {
-            if (entity.get("accounts")) {
-                return entity.get("accounts");
+            if (entity instanceof Y.Wegas.persistence.User) {
+                if (entity.get("accounts")) {
+                    return entity.get("accounts");
+                }
+            } else if (entity["@class"] === "User") {
+                return entity.accounts;
             }
             return null;
         },
@@ -1442,18 +1444,30 @@ YUI.add('wegas-datasource', function(Y) {
          * @private
          */
         initializer: function() {
-            var endsWith = function(str, suffix) {
-                return str.indexOf(suffix, str.length - suffix.length) !== -1;
-            };
             this.get(HOST).data = {};
             this.index = null;
-            this.editable = endsWith(this.get(HOST).get("source"), "/");
+            this.editable = undefined;//endsWith(this.get(HOST).get("source"), "/");
             this.pageQuery = {};
             this.doBefore("_defResponseFn", this.beforeResponse, this);
             /* Publishing */
             this.publish("pageUpdated");
             this.publish("forcePageUpdate");
             this.publish("forceIndexUpdate");
+        },
+        arePagesHardcoded: function() {
+            var endsWith = function(str, suffix) {
+                return str.indexOf(suffix, str.length - suffix.length) !== -1;
+            };
+
+            return !endsWith(this.get(HOST).get("source"), "/");
+        },
+        isEditable: function() {
+            if (this.editable === undefined) {
+                var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
+                // neither static pages nor the ones which come from a model are editable
+                this.editable = !this.arePagesHardcoded() && !gm.dependsOnModel();
+            }
+            return this.editable;
         },
         /**
          * Server requests methods
@@ -1690,12 +1704,14 @@ YUI.add('wegas-datasource', function(Y) {
             }, this));
         },
         forceUpdate: function(pageId) {
-            this.get(HOST).data["" + pageId] = undefined;
-            this.getPage(pageId, Y.bind(function() {
-                this.fire("forcePageUpdate", {
-                    pageId: pageId
-                });
-            }, this));
+            Y.later(1000, this, function() {
+                this.get(HOST).data["" + pageId] = undefined;
+                this.getPage(pageId, Y.bind(function() {
+                    this.fire("forcePageUpdate", {
+                        pageId: pageId
+                    });
+                }, this));
+            });
         },
         /**
          *
@@ -1705,7 +1721,7 @@ YUI.add('wegas-datasource', function(Y) {
          */
         getPage: function(pageId, callback) {
             var page = null;
-            if (pageId === "default" && !this.editable) {
+            if (pageId === "default" && this.arePagesHardcoded()) {
                 pageId = 1;
             }
             if (this.getCache(pageId)) {

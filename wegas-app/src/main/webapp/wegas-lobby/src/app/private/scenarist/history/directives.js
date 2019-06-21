@@ -22,7 +22,13 @@ angular
                         } else {
                             response.data.forEach(function(version) {
                                 version.date = new Date(version.dataLastModified);
-                                version.author = version.name.split("by ")[1].split(".")[0];
+                                var splitted = version.name.split("by ");
+
+                                if (splitted.length > 1) {
+                                    version.author = splitted[1].split(".")[0];
+                                } else {
+                                    version.author = "anonymous";
+                                }
                             });
                             ctrl.versions = response.data;
                         }
@@ -95,6 +101,29 @@ angular
                         $jsonElement.addClass('disabled').attr('href', '#');
                     } else {
                         var url = window.ServiceURL + "rest/Export/GameModel/" + n.id + "/" + n.name + ".json";
+                        $jsonElement.removeClass('disabled').attr('href', url);
+                    }
+                    scope.scenario = n;
+                });
+
+
+            }
+        };
+    })
+    .directive('scenaristHistoryDownloadWgz', function(ScenariosModel) {
+        "use strict";
+        return {
+            scope: {
+                scenario: "="
+            },
+            link: function(scope, element, attrs, parentCtrl) {
+                var $jsonElement = element;
+
+                scope.$watch("scenario", function(n, o) {
+                    if (_.contains([false, undefined], n)) {
+                        $jsonElement.addClass('disabled').attr('href', '#');
+                    } else {
+                        var url = window.ServiceURL + "rest/Export/GameModel/" + n.id + ".wgz";
                         $jsonElement.removeClass('disabled').attr('href', url);
                     }
                     scope.scenario = n;

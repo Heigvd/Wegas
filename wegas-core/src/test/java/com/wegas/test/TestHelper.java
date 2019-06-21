@@ -8,6 +8,13 @@
 package com.wegas.test;
 
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.rest.util.JacksonMapperProvider;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -167,7 +174,7 @@ public class TestHelper {
      */
     @SafeVarargs
     public static <E> List<E> toList(E... element) {
-        return Arrays.stream(element).collect(Collectors.toList());
+        return Arrays.asList(element);
     }
 
     /**
@@ -184,5 +191,20 @@ public class TestHelper {
     public static <K, V> Map<K, V> toMap(List<K> keys, List<V> values) {
         assert keys.size() == values.size();
         return keys.stream().collect(Collectors.toMap(Function.identity(), k -> values.get(keys.indexOf(k))));
+    }
+
+    public static String readFile(String path) {
+        byte[] buffer;
+        try {
+            buffer = Files.readAllBytes(Paths.get(path));
+        } catch (IOException ex) {
+            return null;
+        }
+        return Charset.defaultCharset().decode(ByteBuffer.wrap(buffer)).toString();
+    }
+
+    public static GameModel loadGameModelFromFile(String path) throws IOException {
+        String pmg = TestHelper.readFile(path);
+        return JacksonMapperProvider.getMapper().readValue(pmg, GameModel.class);
     }
 }

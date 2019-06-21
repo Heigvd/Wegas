@@ -17,10 +17,10 @@
 }
 
 .wegas-hastoolbar>.wegas-toolbar-sibling {
-    position: absolute;
-    top: 10px;
-    left: 0;
-    padding:62px 0 0 0;
+    /*position: absolute;*/
+    /*top: 10px;*/
+    /*left: 0;*/
+    /*padding:62px 0 0 0;*/
     overflow: auto;
     height: 100% !important;
     width:100%;
@@ -188,85 +188,41 @@
     background-color:#f1f1f1;
     color:#676767 !important;
 }
-.yui3-skin-sam .wegas-title {
+
+.yui3-skin-sam .wegas-title,
+.yui3-skin-sam .wegas-subtitle {
     font-weight: normal;
     font-size: 18px;
     line-height:50px;
-    text-shadow: none;
     color: #fff;
     margin: 0px;
     padding:0px;
-    display:block !important;
-    float:left !important;
 }
 
-.yui3-skin-sam .wegas-title div:first-child{
-    float: left;
-    display: block;
-    position: relative;
+.yui3-skin-sam .wegas-title {
     width: auto;
-    max-width: 500px;
+    flex-shrink : 1;
     overflow: hidden;
-    height: 50px;
-    text-shadow: none;
-    line-height: 50px;
     margin: 0;
     text-overflow: ellipsis;
     padding: 0 12px;
     white-space: nowrap;
     color: #000;
-    box-sizing:border-box;
     font-size: 16px;
     font-weight: 600;
 }
 
-.yui3-skin-sam .wegas-title div.subtitle {
+.yui3-skin-sam .wegas-subtitle {
     color: #727272;
+    flex-shrink : 1;
     font-style: italic;
     font-size: 16px;
     padding: 0px 16px 0px 0px;
     margin: 0;
-    width: auto;
-    max-width: 500px;
     overflow: hidden;
     box-sizing: border-box;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: 50px;
-    font-weight: 100;
-    text-shadow: none;
-    float: left;
-}
-
-
-@media screen and (max-width: 1399px) {
-    .yui3-skin-sam .wegas-title div:first-child{
-        max-width: 450px;
-    }
-
-    .yui3-skin-sam .wegas-title div.subtitle {
-        max-width: 400px;
-    }
-}
-
-@media screen and (max-width: 1249px) {
-    .yui3-skin-sam .wegas-title div:first-child{
-        max-width: 300px;
-    }
-
-    .yui3-skin-sam .wegas-title div.subtitle {
-        max-width: 300px;
-    }
-}
-
-@media screen and (max-width: 999px) {
-    .yui3-skin-sam .wegas-title div:first-child{
-        max-width: 200px;
-    }
-
-    .yui3-skin-sam .wegas-title div.subtitle {
-        max-width: 200px;
-    }
 }
 
 .yui3-skin-sam .wegas-layout-hd .yui3-button {
@@ -274,104 +230,13 @@
     margin: 0px;
     height: 50px;
 }
-.yui3-skin-sam .wegas-layout-hd .yui3-button.host-switchmode:before{
-    content: "";
-    width: 32px;
-    height: 50px;
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    background-image: url(../../wegas-editor/images/scenarist.png);
-    background-size:100%;
-    background-position:left center;
-    background-repeat:no-repeat;
-    transition:.2s;
-}
-
-.yui3-skin-sam .wegas-layout-hd .yui3-button.host-switchmode{
-    width: 40px;
-    height: 50px;
-    padding: 0 0px 0 40px;
-    text-indent:1000px;
-    position: relative;
-    box-sizing: border-box;
-    display: block;
-    overflow:hidden;
-}
-.yui3-skin-sam .wegas-layout-hd .yui3-button.host-switchmode:hover:before{
-    background-image: url(../../wegas-editor/images/scenarist_hover.png);
-    background-size:100%;
-    background-position:left center;
-    background-repeat:no-repeat;
-}
-.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login{
-    width: 48px;
-    height: 48px;
-    overflow: hidden;
-    text-indent: -1000px;
-    padding: 0px;
-    margin: 0px;
-    background:none;
-}
-.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login:before{
-    display:block;
-    position:absolute;
-    top:0px;
-    left:0px;
-    width:48px;
-    height:48px;
-    content:"\f08b";
-    font-family: "FontAwesome";
-    font-size: 24px;
-    line-height: 48px;
-    text-indent: 0;
-    cursor:pointer;
-    background: none !important;
-}
-.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login:hover:before{
-    background:none;
-    color:#82c3ec;
-}
-
-@media screen and (max-width: 799px) {
-    .yui3-skin-sam .wegas-title div:first-child{
-        max-width: 150px;
-    }
-
-    .yui3-skin-sam .wegas-title div.subtitle {
-        max-width: 150px;
-    }
-
-    .yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login{
-        max-width: 164px;
-    }
+.yui3-skin-sam.wegas-hostmode .wegas-layout-hd .wegas-button-toolbar button:hover {
+    color: #5bc4ec;
 }
 
 @media screen and (max-width: 599px) {
-    .yui3-skin-sam .wegas-title div:first-child{
-        max-width:180px;
-    }
-
-    .yui3-skin-sam .wegas-title div.subtitle {
+    .yui3-skin-sam .wegas-subtitle {
         display:none
-    }
-
-    .yui3-skin-sam .wegas-layout-hd .yui3-button.host-switchmode{
-        max-width: 40px;
-        padding: 0px 20px 0px 40px;
-        text-indent:80px;
-        text-overflow: none;
-    }
-    .yui3-skin-sam .wegas-layout-hd .yui3-button.host-switchmode:before{
-        margin:0px 14px;
-    }
-
-    .yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-login{
-        margin-left: 0px;
-        max-width: 40px;
-        text-indent:80px;
-        text-overflow: none;
-        background-position:center;
     }
 }
 
@@ -757,6 +622,10 @@
 }
 
 
+.yui3-skin-sam.wegas-hostmode .yui3-widget-ft span:first-child, .modal--content-basics .wegas-toolbar,
+.yui3-skin-sam.wegas-hostmode .yui3-widget-ft span:first-child, .wegas-sendmail-content .wegas-toolbar{
+    display:none;
+}
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-ft span:first-child, .wegas-sendmail-content .status{
     display:block;

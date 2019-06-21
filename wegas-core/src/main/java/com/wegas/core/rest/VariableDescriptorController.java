@@ -15,8 +15,8 @@ import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -168,6 +168,30 @@ public class VariableDescriptorController {
         return variableDescriptorFacade.update(entityId, entity);
     }
 
+    @PUT
+    @Path("{id: [1-9][0-9]*}/visibility/{visibility: [A-Z]*}")
+    public VariableDescriptor resetVisibilities(@PathParam("id") Long vdId, 
+            @PathParam("visibility") ModelScoped.Visibility visibility) {
+        return variableDescriptorFacade.resetVisibility(vdId, visibility);
+    }
+
+    @PUT
+    @Path("{id: [1-9][0-9]*}/changeScope/{scopeType: GameModelScope|TeamScope|PlayerScope}")
+    public VariableDescriptor changeScopeRecursivly(@PathParam("id") Long vdId,
+            @PathParam("scopeType") String scopeType) {
+        return variableDescriptorFacade.changeScopeRecursively(vdId, scopeType);
+    }
+
+    @PUT
+    @Path("{id: [1-9][0-9]*}/ConvertToList")
+    public VariableDescriptor convertToList(@PathParam("id") Long vdId,
+            @PathParam("scopeType") String scopeType) {
+        return variableDescriptorFacade.convertToList(vdId);
+    }
+
+
+
+
     /**
      * @param descriptorId
      * @param index
@@ -184,7 +208,6 @@ public class VariableDescriptorController {
      * @param index
      */
     @PUT
-
     @Path("{descriptorId: [1-9][0-9]*}/Move/{parentDescriptorId: [1-9][0-9]*}/{index: [0-9]*}")
     public void move(@PathParam("descriptorId") Long descriptorId,
             @PathParam("parentDescriptorId") Long parentDescriptorId,
@@ -199,11 +222,10 @@ public class VariableDescriptorController {
      *
      * @return the new descriptor
      *
-     * @throws IOException
      */
     @POST
     @Path("{entityId: [1-9][0-9]*}/Duplicate")
-    public VariableDescriptor duplicate(@PathParam("entityId") Long entityId) throws IOException {
+    public VariableDescriptor duplicate(@PathParam("entityId") Long entityId) throws CloneNotSupportedException {
 
         VariableDescriptor duplicate = variableDescriptorFacade.duplicate(entityId);
 
@@ -264,18 +286,11 @@ public class VariableDescriptorController {
     @POST
     @Path("contains")
     @Consumes(MediaType.TEXT_PLAIN)
-    public List<Long> idsContains(@PathParam("gameModelId") Long gameModelId, String criteria) {
+    public Set<Long> idsContains(@PathParam("gameModelId") Long gameModelId, String criteria) {
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
 
-        Set<VariableDescriptor> vars = gm.getVariableDescriptors();
-        List<Long> matches = new ArrayList<>();
-        for (VariableDescriptor d : vars) {
-            if (d.contains(criteria)) {
-                matches.add(d.getId());
-            }
-        }
-        return matches;
+        return gameModelFacade.findMatchingDescriptorIds(gameModelId, criteria);
     }
 
     /**
@@ -288,19 +303,13 @@ public class VariableDescriptorController {
     @POST
     @Path("containsAll")
     @Consumes(MediaType.TEXT_PLAIN)
-    public List<Long> idsContainsAll(@PathParam("gameModelId") Long gameModelId, String criteria) {
+    public Set<Long> idsContainsAll(@PathParam("gameModelId") Long gameModelId, String criteria) {
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
 
-        Set<VariableDescriptor> vars = gm.getVariableDescriptors();
-        List<Long> matches = new ArrayList<>();
         List<String> criterias = new ArrayList<>(Arrays.asList(criteria.trim().split("[ ,]+")));
         criterias.remove("");
-        for (VariableDescriptor d : vars) {
-            if (d.containsAll(criterias)) {
-                matches.add(d.getId());
-            }
-        }
-        return matches;
+
+        return gameModelFacade.findMatchingDescriptorIds(gameModelId, criterias);
     }
 }

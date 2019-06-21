@@ -11,11 +11,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
@@ -53,6 +55,7 @@ public class GameAdmin extends AbstractEntity {
     private Long id;
 
     @Lob
+    @WegasEntityProperty
     private String comments;
 
     @OneToOne
@@ -66,6 +69,7 @@ public class GameAdmin extends AbstractEntity {
 
     @Enumerated(value = EnumType.STRING)
     @Column(length = 24)
+    @WegasEntityProperty
     private Status status = Status.TODO;
 
     private String prevName;
@@ -146,16 +150,6 @@ public class GameAdmin extends AbstractEntity {
         return this.creator;
     }
 
-    @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof GameAdmin) {
-            GameAdmin o = (GameAdmin) other;
-            this.setStatus(o.getStatus());
-            this.setComments(o.getComments());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
-        }
-    }
 
     @JsonIgnore
     public void populate() {
@@ -318,6 +312,21 @@ public class GameAdmin extends AbstractEntity {
     @JsonIgnore
     private Integer getPrevTeamCount() {
         return prevTeamCount;
+    }
+
+    @Override
+    public boolean belongsToProtectedGameModel() {
+        return false;
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return null;
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return Visibility.INHERITED;
     }
 
     /**

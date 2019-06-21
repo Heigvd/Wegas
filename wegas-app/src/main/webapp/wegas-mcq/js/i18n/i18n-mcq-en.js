@@ -17,6 +17,7 @@ YUI.add("wegas-i18n-mcq-en", function(Y) {
         mcq: {
             result: "Result",
             results: "Results",
+            noQuestionSelected: "Select an item on the left",
             empty: "No questions available yet",
             submit: "submit",
             answered : "answered",
@@ -25,7 +26,8 @@ YUI.add("wegas-i18n-mcq-en", function(Y) {
             noReply: "Please select an answer first.",
             notEnoughReply: "Please select at least {{min}} answers",
             maximumReached: "You can't select more than {{max}} answers",
-            conflict: "Your request has been cancelled because one of your team mates made the same request at the same time."
+            conflict: "Your request has been cancelled because one of your team mates made the same request at the same time.",
+            possibleChoices: 'Choices at your disposal: #'
         }
     });
 });

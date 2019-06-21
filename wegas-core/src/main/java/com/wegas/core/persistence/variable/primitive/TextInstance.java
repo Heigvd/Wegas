@@ -9,14 +9,14 @@ package com.wegas.core.persistence.variable.primitive;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.Searchable;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.game.GameModelLanguage;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.primitive.utils.StringInstanceCustomizer;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +27,7 @@ import javax.persistence.Index;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import jdk.nashorn.api.scripting.JSObject;
+import org.eclipse.persistence.annotations.Customizer;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -35,7 +36,8 @@ import jdk.nashorn.api.scripting.JSObject;
     @Index(columnList = "trvalue_id")
 })
 @Entity
-public class TextInstance extends VariableInstance implements Searchable {
+@Customizer(StringInstanceCustomizer.class)
+public class TextInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
 
@@ -44,8 +46,8 @@ public class TextInstance extends VariableInstance implements Searchable {
     /**
      *
      */
-    @JsonDeserialize(using = TranslationDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty(view = @View(label = "Value", value = I18nHtmlView.class))
     private TranslatableContent trValue;
 
     /**
@@ -99,27 +101,29 @@ public class TextInstance extends VariableInstance implements Searchable {
      */
     @JsonProperty
     public void setValue(String value) {
-        this.setTrValue(TranslatableContent.merger(this.getTrValue(), TranslatableContent.build("def", value)));
+        VariableDescriptor desc = this.findDescriptor();
+        String lang = "en";
+        if (desc != null && desc.getGameModel() != null) {
+            List<GameModelLanguage> languages = desc.getGameModel().getRawLanguages();
+            if (languages != null && !languages.isEmpty()) {
+                lang = languages.get(0).getCode();
+            }
+        }
+
+        this.setValue(value, lang);
     }
 
     /**
-     * @param a
+     * Used for player input.
+     * <p>
+     * Set the lang translation to value. erase all others
+     *
+     * @param value the value
+     * @param lang  the language
      */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a != null) {
-            if (a instanceof TextInstance) {
-                TextInstance vi = (TextInstance) a;
-                super.merge(a);
-                this.setTrValue(TranslatableContent.merger(this.getTrValue(), vi.getTrValue()));
-            } else {
-                throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-            }
-        }
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(getTrValue(), criterias);
+    @JsonProperty
+    public void setValue(String value, String lang) {
+        VariableDescriptor desc = this.findDescriptor();
+        this.setTrValue(TranslatableContent.merger(this.getTrValue(), TranslatableContent.build(lang, value)));
     }
 }

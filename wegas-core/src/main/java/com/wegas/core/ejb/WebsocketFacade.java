@@ -7,7 +7,6 @@
  */
 package com.wegas.core.ejb;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.hazelcast.core.HazelcastInstance;
@@ -22,6 +21,7 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.JacksonMapperProvider;
@@ -43,7 +43,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
@@ -60,6 +59,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,6 +98,8 @@ public class WebsocketFacade {
 
     private static final String UPTODATE_KEY = "onlineUsersUpTpDate";
     private static final String LOCKNAME = "WebsocketFacade.onlineUsersLock";
+
+    private static final int MAX_PUSHER_BODY_SIZE = 10240;
 
     public enum WegasStatus {
         DOWN,
@@ -183,16 +185,24 @@ public class WebsocketFacade {
     public void sendLock(String channel, String token) {
         if (this.pusher != null) {
             logger.info("send lock  \"{}\" to \"{}\"", token, channel);
-            pusher.trigger(channel, "LockEvent",
-                    "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"lock\"}", null);
+            try {
+                pusher.trigger(channel, "LockEvent",
+                        parseJSON("{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"lock\"}"), null);
+            } catch (IOException ex) {
+                logger.error("Fail to send lockEvent");
+            }
         }
     }
 
     public void sendUnLock(String channel, String token) {
         if (this.pusher != null) {
             logger.info("send unlock  \"{}\" to \"{}\"", token, channel);
-            pusher.trigger(channel, "LockEvent",
-                    "{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"unlock\"}", null);
+            try {
+                pusher.trigger(channel, "LockEvent",
+                        parseJSON("{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"unlock\"}"), null);
+            } catch (IOException ex) {
+                logger.error("Fail to send unlockEvent");
+            }
         }
     }
 
@@ -203,8 +213,12 @@ public class WebsocketFacade {
      */
     public void sendLifeCycleEvent(String channel, WegasStatus status, final String socketId) {
         if (this.pusher != null) {
-            pusher.trigger(channel, "LifeCycleEvent",
-                    "{\"@class\": \"LifeCycleEvent\", \"status\": \"" + status.toString() + "\"}", socketId);
+            try {
+                pusher.trigger(channel, "LifeCycleEvent",
+                        parseJSON("{\"@class\": \"LifeCycleEvent\", \"status\": \"" + status.toString() + "\"}"), socketId);
+            } catch (IOException ex) {
+                logger.error("Fails to parse json");
+            }
         }
     }
 
@@ -225,8 +239,12 @@ public class WebsocketFacade {
      */
     public void sendPopup(String channel, String message, final String socketId) {
         if (this.pusher != null) {
-            pusher.trigger(channel, "CustomEvent",
-                    "{\"@class\": \"CustomEvent\", \"type\": \"popupEvent\", \"payload\": {\"content\": \"<p>" + message + "</p>\"}}", socketId);
+            try {
+                pusher.trigger(channel, "CustomEvent",
+                        parseJSON("{\"@class\": \"CustomEvent\", \"type\": \"popupEvent\", \"payload\": {\"content\": \"<p>" + message + "</p>\"}}"), socketId);
+            } catch (IOException ex) {
+                logger.error("Fails to send custom event");
+            }
         }
     }
 
@@ -312,7 +330,7 @@ public class WebsocketFacade {
                      * only id and class name are propagated
                      */
                     for (AbstractEntity ae : toPropagate) {
-                        refreshed.add(new DestroyedEntity(ae.getId(), ae.getJSONClassName()));
+                        refreshed.add(new DestroyedEntity(ae));
                     }
                     event = eventClass.getDeclaredConstructor(List.class).newInstance(refreshed);
                 } else {
@@ -332,7 +350,7 @@ public class WebsocketFacade {
      *
      * @param data
      *
-     * @return gzipped data
+     * @return gzipped data, base64 encoded
      *
      * @throws IOException
      */
@@ -345,17 +363,9 @@ public class WebsocketFacade {
         osw.flush();
         osw.close();
 
-        byte[] ba = baos.toByteArray();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < ba.length; i++) {
-            // @hack convert to uint array
-            /*
-             * Sending a byte[] through pusher result takes lot of place cause
-             * json is like "data: [31, 8, -127, ...]", full text
-             */
-            sb.append(Character.toString((char) Byte.toUnsignedInt(ba[i])));
-        }
-        return new GzContent(channel, name, sb.toString(), socketId);
+        String b64 = Base64.getEncoder().encodeToString(baos.toByteArray());
+
+        return new GzContent(channel, name, b64, socketId);
     }
 
     private static class GzContent {
@@ -391,18 +401,11 @@ public class WebsocketFacade {
     }
 
     private int computeLength(GzContent gzip) {
+        String data = gzip.getData();
 
-        try {
-            ObjectMapper mapper = JacksonMapperProvider.getMapper();
-            String writeValueAsString = mapper.writeValueAsString(gzip);
-            logger.error(writeValueAsString);
-            logger.error("LENGTH SHOULD BE: {}", writeValueAsString.length());
-
-            return writeValueAsString.length();
-        } catch (JsonProcessingException ex) {
-            logger.error("FAILS TO COMPUTE LENGTH");
-            return 0;
-        }
+        // "=" are converted to \u003d => + 5 chars for each "="
+        // + two "
+        return data.length() + StringUtils.countMatches(data, "=") * 5 + 2;
     }
 
     /**
@@ -418,19 +421,28 @@ public class WebsocketFacade {
             //if (eventName.matches(".*\\.gz$")) {
             GzContent gzip = gzip(audience, eventName, clientEvent.toJson(), socketId);
             String content = gzip.getData();
-            //int computedLength = computeLength(gzip);
 
-            //if (computedLength > 10240) {
-            //    logger.error("413 MESSAGE TOO BIG");
-            // wooops pusher error (too big)
-            //    this.fallback(clientEvent, audience, socketId);
-            //} else {
-            Result result = pusher.trigger(audience, eventName, content, socketId);
+            int computedLength = computeLength(gzip);
 
-            if (result.getHttpStatus() == 403) {
-                logger.error("403 QUOTA REACHED");
-            } else if (result.getHttpStatus() == 413) {
-                logger.error("413 MESSAGE TOO BIG");
+            logger.trace("computedLength: " + computedLength);
+            if (computedLength < MAX_PUSHER_BODY_SIZE) {
+
+                //if (computedLength > 10240) {
+                //    logger.error("413 MESSAGE TOO BIG");
+                // wooops pusher error (too big)
+                //    this.fallback(clientEvent, audience, socketId);
+                //} else {
+                Result result = pusher.trigger(audience, eventName, content, socketId);
+
+                if (result.getHttpStatus() == 403) {
+                    logger.error("403 QUOTA REACHED");
+                } else if (result.getHttpStatus() == 413) {
+                    logger.error("413 MESSAGE TOO BIG NOT DETECTED!!!!");
+                    this.fallback(clientEvent, audience, socketId);
+                }
+
+            } else {
+                logger.error("413 MESSAGE TOO BIG (Detected)");
                 this.fallback(clientEvent, audience, socketId);
             }
             //}
@@ -451,6 +463,17 @@ public class WebsocketFacade {
             GameModel gameModel = gameModelFacade.find(gameModelId);
             pusher.trigger(gameModel.getChannel(), "PageUpdate", pageId, socketId);
         }
+    }
+
+    public void gameModelContentUpdate(GameModelContent content, String socketId) {
+        if (pusher != null) {
+            pusher.trigger(content.getGameModel().getChannel(), "LibraryUpdate-" + content.getLibraryType(), content.getContentKey(), socketId);
+        }
+    }
+
+    public final Object parseJSON(String json) throws IOException {
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();
+        return mapper.readValue(json, Object.class);
     }
 
     public final String toJson(Object o) throws IOException {
@@ -475,7 +498,11 @@ public class WebsocketFacade {
                         this.propagate(new EntityUpdatedEvent(entry.getValue()), entry.getKey(), null);
                     }
 
-                    pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update", toJson(newPlayer.getTeam()));
+                    pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update",
+                            parseJSON(
+                                    // serialise with jackson to exlude unneeded properties
+                                    toJson(newPlayer.getTeam()
+                                    )));
                 } catch (IOException ex) {
                     logger.error("Error while propagating player");
                 }
@@ -697,7 +724,7 @@ public class WebsocketFacade {
                 updateOnlineUserMetric();
 
             } catch (IOException ex) {
-                java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
+                logger.error("InitOnlineUser", ex);
             }
         }
     }
@@ -744,7 +771,7 @@ public class WebsocketFacade {
                 }
 
             } catch (IOException ex) {
-                java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
+                logger.error("SyncOnlineUser", ex);
             }
         }
     }
@@ -754,13 +781,7 @@ public class WebsocketFacade {
      * disconnect
      */
     private void propagateOnlineUsers() {
-        try {
-            ObjectMapper mapper = JacksonMapperProvider.getMapper();
-            String users = mapper.writeValueAsString(getLocalOnlineUsers());
-            pusher.trigger(WebsocketFacade.ADMIN_CHANNEL, "online-users", users);
-        } catch (JsonProcessingException ex) {
-            java.util.logging.Logger.getLogger(WebsocketFacade.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        Result trigger = pusher.trigger(WebsocketFacade.ADMIN_CHANNEL, "online-users", "");
     }
 
     public void clearOnlineUsers() {

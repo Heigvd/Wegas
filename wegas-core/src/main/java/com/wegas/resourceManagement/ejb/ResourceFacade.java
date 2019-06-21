@@ -27,7 +27,8 @@ import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.resourceManagement.persistence.WRequirement;
-import java.util.List;
+import java.util.Collection;
+import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -168,7 +169,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
      * @return assigned resource containing assignment in the new order
      */
     @Override
-    public ResourceInstance moveAssignment(final Long assignmentId, final int index) {
+    public ResourceInstance moveAssignment(final Long assignmentId, final Integer index) {
         final Assignment assignment = this.findAssignment(assignmentId);
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(assignment.getResourceInstance().getId());
         resourceInstance.moveAssignment(assignment, index);
@@ -286,7 +287,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
     @Override
     public Occupation addOccupation(Long resourceInstanceId,
             Boolean editable,
-            double time) {
+            Integer time) {
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
         Occupation newOccupation = new Occupation(time);
         newOccupation.setEditable(editable);
@@ -320,7 +321,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
     @Override
     public TaskInstance plan(Player player, Long taskInstanceId, Integer period) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
-        List<Integer> plannedPeriods = ti.getPlannification();
+        Collection<Integer> plannedPeriods = ti.getPlannification();
         if (!plannedPeriods.contains(period)) {
             plannedPeriods.add(period);
         }
@@ -397,36 +398,34 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
 
         /**
          * Transform task name into real TaskDescriptor
+         * New predecessor's names : be sure they're registered
          */
         if (task.getImportedPredecessorNames() != null) {
+            Set<String> predecessorNames = task.getImportedPredecessorNames();
             /**
              * New predecessor's names : be sure they're registered
              */
-            for (String predecessorName : task.getImportedPredecessorNames()) {
-                TaskDescriptor predecessor;
-                try {
-                    predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
+            task.getPredecessors().clear();
 
-                    if (!task.getPredecessorNames().contains(predecessorName)) {
-                        task.addPredecessor(predecessor);
-                    }
+            for (String predecessorName : predecessorNames) {
+                try {
+                    TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
+                    //if (!task.getPredecessorNames().contains(predecessorName)) {
+                    task.addPredecessor(predecessor);
+                    //}
                 } catch (WegasNoResultException ex) {
-                    throw WegasErrorMessage.error("Predecessor " + predecessorName + " not found");
+                    throw WegasErrorMessage.error("Unable to restore task predecessor : " + task + " -> " + predecessorName);
                 }
             }
             /**
              * Old predecessor's names : make sure to remove oldies
+             * for (String predecessorName : task.getPredecessorNames()) {
+             * TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
+             * if (!task.getImportedPredecessorNames().contains(predecessorName)) {
+             * task.removePredecessor(predecessor);
+             * }
+             * }
              */
-            for (String predecessorName : task.getPredecessorNames()) {
-                try {
-                    TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
-                    if (!task.getImportedPredecessorNames().contains(predecessorName)) {
-                        task.removePredecessor(predecessor);
-                    }
-                } catch (WegasNoResultException ex) {
-                    throw WegasErrorMessage.error("Predecessor " + predecessorName + " not found");
-                }
-            }
         }
         //this.setPredecessors(ListUtils.updateList(this.getPredecessors(), other.getPredecessors()));
     }

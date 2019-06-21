@@ -10,17 +10,32 @@ package com.wegas.core.jcr.content;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.slf4j.LoggerFactory;
-
+import com.wegas.core.Helper;
+import com.wegas.core.jcr.tools.JCRDescriptorCallback;
+import com.wegas.core.jcr.tools.JCRDescriptorFactory;
+import com.wegas.core.persistence.annotations.WegasEntity;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
+import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.View;
+import com.wegas.editor.View.VisibilitySelectView;
+import java.io.Serializable;
+import java.util.zip.ZipEntry;
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import java.util.zip.ZipEntry;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-abstract public class AbstractContentDescriptor {
+@WegasEntity(factory = JCRDescriptorFactory.class, callback = JCRDescriptorCallback.class)
+abstract public class AbstractContentDescriptor implements ModelScoped, Mergeable, Serializable {
+
+    private static final long serialVersionUID = 7654657575516817326L;
 
     @JsonIgnore
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractContentDescriptor.class);
@@ -29,7 +44,9 @@ abstract public class AbstractContentDescriptor {
      * @param name
      * @param path
      * @param mimeType
-     * @return 
+     *
+     * @return
+     *
      * @throws RepositoryException
      */
     @JsonCreator
@@ -44,13 +61,43 @@ abstract public class AbstractContentDescriptor {
     @JsonIgnore
     private boolean synched = false;
     /**
+     * MIME type
+     */
+    @WegasEntityProperty(view = @View(label = "MIME type", value = ReadOnlyString.class),
+            optional = false, nullable = false)
+    protected String mimeType;
+
+    /**
+     * node name
+     */
+    private String name;
+
+    /**
      *
      */
-    protected String mimeType;
-    private String name;
     private String path;
+
+    /**
+     * Some internal comment
+     */
+    @WegasEntityProperty(view = @View(label = "Note"),
+            optional = false, nullable = false, proposal = EmptyString.class)
     private String note = "";
+
+    /**
+     * Some public comment
+     */
+    @WegasEntityProperty(view = @View(label = "Description"),
+            optional = false, nullable = false, proposal = EmptyString.class)
     private String description = "";
+
+    /**
+     * The so-called visibility
+     */
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL,
+            nullable = false,
+            view = @View(label = "", value = VisibilitySelectView.class))
+    private ModelScoped.Visibility visibility = ModelScoped.Visibility.PRIVATE;
     /**
      *
      */
@@ -60,7 +107,7 @@ abstract public class AbstractContentDescriptor {
      *
      */
     @JsonIgnore
-    protected ContentConnector connector;
+    private ContentConnector connector;
 
     /**
      * @param absolutePath
@@ -107,6 +154,31 @@ abstract public class AbstractContentDescriptor {
         this.mimeType = mimeType;
     }
 
+    @JsonIgnore
+    public ContentConnector.WorkspaceType getWorkspaceType() throws RepositoryException {
+        return this.getConnector().getWorkspaceType();
+    }
+
+    @JsonIgnore
+    protected ContentConnector getConnector() throws RepositoryException {
+        if (this.connector != null) {
+            return connector;
+        } else {
+            throw new RepositoryException("No Connector available");
+        }
+    }
+
+    @Override
+    //@JsonIgnore
+    public String getRefId() {
+        return this.getFullPath() + "::" + this.getClass().getSimpleName();
+    }
+
+    @Override
+    //@JsonIgnore
+    public void setRefId(String refId) {
+    }
+
     /**
      * @return true is this is a directory
      */
@@ -124,6 +196,8 @@ abstract public class AbstractContentDescriptor {
     /**
      * @return the name
      */
+    @WegasExtraProperty(view = @View(label = "Filename"),
+            nullable = false, optional = false)
     public String getName() {
         return name;
     }
@@ -133,11 +207,16 @@ abstract public class AbstractContentDescriptor {
      */
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
+        try {
+            getConnector().setMimeType(fileSystemAbsolutePath, mimeType);
+        } catch (RepositoryException ex) {
+        }
     }
 
     /**
      * @return path
      */
+    @WegasExtraProperty(view = @View(label = "Path"), optional = false, nullable = false)
     public String getPath() {
         return path;
     }
@@ -154,7 +233,6 @@ abstract public class AbstractContentDescriptor {
         return p;
     }
 
-
     /**
      * @return note
      */
@@ -167,6 +245,10 @@ abstract public class AbstractContentDescriptor {
      */
     public void setNote(String note) {
         this.note = note == null ? "" : note;
+        try {
+            getConnector().setNote(fileSystemAbsolutePath, this.note);
+        } catch (RepositoryException ex) {
+        }
     }
 
     /**
@@ -181,6 +263,30 @@ abstract public class AbstractContentDescriptor {
      */
     public void setDescription(String description) {
         this.description = description == null ? "" : description;
+        try {
+            getConnector().setDescription(fileSystemAbsolutePath, this.description);
+        } catch (RepositoryException ex) {
+        }
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public Visibility getVisibility() {
+        return visibility;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public void setVisibility(Visibility visibility) {
+        this.visibility = visibility;
+        try {
+            getConnector().setVisibility(fileSystemAbsolutePath, this.visibility.toString());
+        } catch (RepositoryException ex) {
+        }
     }
 
     /**
@@ -192,21 +298,27 @@ abstract public class AbstractContentDescriptor {
     }
 
     /**
-     * @return truc if node exists
+     * @return true if node exists
+     *
      * @throws RepositoryException
      */
     @JsonIgnore
     public boolean exist() throws RepositoryException {
-        return connector.nodeExist(fileSystemAbsolutePath);
+        if (connector != null) {
+            return connector.nodeExist(fileSystemAbsolutePath);
+        } else {
+            return false;
+        }
     }
 
     /**
      * @return true is this has children
+     *
      * @throws RepositoryException
      */
     @JsonIgnore
     public boolean hasChildren() throws RepositoryException {
-        return connector.getNode(fileSystemAbsolutePath).hasNodes();
+        return getConnector().getNode(fileSystemAbsolutePath).hasNodes();
     }
 
     /**
@@ -231,12 +343,14 @@ abstract public class AbstractContentDescriptor {
 
     /**
      * @param file
+     *
      * @return the child
+     *
      * @throws RepositoryException
      */
     @JsonIgnore
     public AbstractContentDescriptor addChild(AbstractContentDescriptor file) throws RepositoryException {
-        Node parent = connector.getNode(fileSystemAbsolutePath);
+        Node parent = getConnector().getNode(fileSystemAbsolutePath);
         parent.addNode(file.getName());
         file.setContentToRepository();
         return file;
@@ -245,19 +359,21 @@ abstract public class AbstractContentDescriptor {
     /**
      * @return node size
      */
+    @WegasExtraProperty(view = @View(label = "File size"), optional =false, nullable =false)
     public Long getBytes() {
         return 0L;
     }
 
     /**
      * @param force
+     *
      * @throws RepositoryException
      */
     @JsonIgnore
     public void delete(boolean force) throws RepositoryException {
         if (this.exist()) {
             if (!this.hasChildren() || force) {
-                connector.deleteNode(fileSystemAbsolutePath);
+                getConnector().deleteNode(fileSystemAbsolutePath);
             } else {
                 throw new ItemExistsException("Save the children ! Preventing collateral damage !");
             }
@@ -269,9 +385,17 @@ abstract public class AbstractContentDescriptor {
      */
     @JsonIgnore
     public void getContentFromRepository() throws RepositoryException {
-        this.mimeType = connector.getMimeType(fileSystemAbsolutePath);
-        this.note = connector.getNote(fileSystemAbsolutePath);
-        this.description = connector.getDescription(fileSystemAbsolutePath);
+        ContentConnector myConnector = getConnector();
+        this.mimeType = myConnector.getMimeType(fileSystemAbsolutePath);
+        this.note = myConnector.getNote(fileSystemAbsolutePath);
+        this.description = myConnector.getDescription(fileSystemAbsolutePath);
+        Visibility visib;
+        try {
+            visib = ModelScoped.Visibility.valueOf(myConnector.getVisibility(fileSystemAbsolutePath));
+        } catch (IllegalArgumentException ex) {
+            visib = Visibility.PRIVATE;
+        }
+        this.visibility = visib;
     }
 
     /**
@@ -279,10 +403,13 @@ abstract public class AbstractContentDescriptor {
      */
     @JsonIgnore
     public void setContentToRepository() throws RepositoryException {
-        connector.setMimeType(fileSystemAbsolutePath, mimeType);
-        connector.setNote(fileSystemAbsolutePath, note);
-        connector.setDescription(fileSystemAbsolutePath, description);
-        connector.save();
+        ContentConnector myConnector = getConnector();
+
+        myConnector.setMimeType(fileSystemAbsolutePath, mimeType);
+        myConnector.setNote(fileSystemAbsolutePath, note);
+        myConnector.setDescription(fileSystemAbsolutePath, description);
+        myConnector.setVisibility(fileSystemAbsolutePath, visibility.toString());
+        //connector.save();
     }
 
     /**
@@ -291,12 +418,12 @@ abstract public class AbstractContentDescriptor {
     @JsonIgnore
     public void saveToRepository() throws RepositoryException {
         String parentPath = this.getPath();
-        AbstractContentDescriptor parent = DescriptorFactory.getDescriptor(parentPath, connector);
+        AbstractContentDescriptor parent = DescriptorFactory.getDescriptor(parentPath, getConnector());
         parent.addChild(this);
     }
 
     /**
-     * @return 
+     * @return
      */
     @JsonIgnore
     protected ZipEntry getZipEntry() {
@@ -347,6 +474,35 @@ abstract public class AbstractContentDescriptor {
 
     @Override
     public String toString() {
-        return "AbstractContentDescriptor{" + "mimeType=" + mimeType + ", name=" + name + ", path=" + path + ", fileSystemAbsolutePath=" + fileSystemAbsolutePath + ", note=" + note + ", description=" + description + "}";
+        return "AbstractContentDescriptor{" + "mimeType=" + mimeType + ", name=" + name + ", path=" + path + ", fsAbsPath=" + fileSystemAbsolutePath + ", note=" + note + ", desc=" + description + "}";
+    }
+
+    @Override
+    public boolean belongsToProtectedGameModel() {
+        return this.connector.getGameModel().belongsToProtectedGameModel();
+    }
+
+    @Override
+    public Mergeable getMergeableParent() {
+        try {
+            if (path.equals("/") && Helper.isNullOrEmpty(name)) {
+                return this.connector.getGameModel();
+            } else {
+                AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(path, connector);
+                return descriptor;
+            }
+        } catch (RepositoryException ex) {
+            return this.connector.getGameModel();
+        }
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        try {
+            AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(path, connector);
+            return descriptor.getVisibility();
+        } catch (RepositoryException ex) {
+            return Visibility.INHERITED;
+        }
     }
 }

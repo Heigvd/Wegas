@@ -5,10 +5,23 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-.wegas-text-input .mce-tinymce, .wegas-review-evaluation-content .mce-tinymce {
+.wegas-text-input .mce-tinymce,
+.wegas-review-evaluation-content .mce-tinymce {
     padding-bottom:12px;
-    resize:both;
     overflow:auto;
+}
+
+.wegas-text-input .wegas-text-input-content[data-resize='both'] .mce-tinymce,
+.wegas-review-evaluation-content .mce-tinymce {
+    resize: both;
+}
+
+.wegas-text-input .wegas-text-input-content[data-resize='true'] .mce-tinymce {
+    resize: vertical;
+}
+
+.wegas-text-input .wegas-text-input-content[data-resize='false'] .mce-tinymce {
+    resize: none;
 }
 
 .wegas-text-input .mce-tinymce{

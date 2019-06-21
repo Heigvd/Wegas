@@ -7,13 +7,11 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
-import com.wegas.core.persistence.AbstractEntity;
-import java.util.List;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.View;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
@@ -23,25 +21,29 @@ import javax.persistence.OneToOne;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-public class DialogueTransition extends Transition {
+public class DialogueTransition extends AbstractTransition {
 
     private static final long serialVersionUID = 1L;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(label = "Text", value = I18nHtmlView.class))
     private TranslatableContent actionText;
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(getActionText(), criterias)
-                || super.containsAll(criterias);
-    }
 
     /**
      * @return the actionText
      */
     public TranslatableContent getActionText() {
         return actionText;
+    }
+
+    @Override
+    public void setState(AbstractState state) {
+        super.setState(state);
+        if (state != null) {
+            this.setActionText(actionText);
+        }
     }
 
     /**
@@ -51,17 +53,6 @@ public class DialogueTransition extends Transition {
         this.actionText = actionText;
         if (this.actionText != null && this.getState() != null) {
             this.actionText.setParentDescriptor(getState().getStateMachine());
-        }
-    }
-
-    @Override
-    public void merge(AbstractEntity o) {
-        if (o instanceof DialogueTransition) {
-            DialogueTransition other = (DialogueTransition) o;
-            this.setActionText(TranslatableContent.merger(this.getActionText(), ((DialogueTransition) other).getActionText()));
-            super.merge(other);
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + o.getClass().getSimpleName() + ") is not possible");
         }
     }
 }

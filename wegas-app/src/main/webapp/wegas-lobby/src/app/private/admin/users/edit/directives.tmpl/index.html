@@ -41,6 +41,10 @@
             {{'ADMIN-USERS-NONLOCAL-HOMEORG'| translate}}: {{adminUsersEditIndexCtrl.user.account.homeOrg}}<br/>
             {{'ADMIN-USERS-NONLOCAL-EMAIL'| translate}}: {{adminUsersEditIndexCtrl.user.account.email}}
         </div>
+        <div class="form__row">
+            <input class="input" type="text" ng-model="adminUsersEditIndexCtrl.user.account.comment"
+                   placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-COMMENT'| translate}}" autocomplete="off">
+        </div>
         <div class="form__row">&nbsp;
             {{'ADMIN-USERS-MODALE-AGREED'| translate}}: {{ adminUsersEditIndexCtrl.user.account.agreedTime === null ? ('ADMIN-USERS-MODALE-AGREED-NOTYET' | translate) : (adminUsersEditIndexCtrl.user.account.agreedTime | date:"dd.MM.yyyy HH:mm:ss")}}<br/>
             <hr/>

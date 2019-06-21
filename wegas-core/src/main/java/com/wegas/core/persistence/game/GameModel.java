@@ -10,15 +10,23 @@ package com.wegas.core.persistence.game;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.jcr.content.ContentConnector;
+import com.wegas.core.jcr.jta.JCRClient;
+import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.variable.DescriptorListI;
+import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
@@ -26,12 +34,22 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.ValueGenerators.GmProperties;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.INTERNAL;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.Textarea;
+import com.wegas.editor.View.View;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.jcr.RepositoryException;
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
-import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -42,11 +60,12 @@ import org.apache.shiro.SecurityUtils;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NamedQueries({
     @NamedQuery(name = "GameModel.findIdById", query = "SELECT gm.id FROM GameModel gm WHERE gm.id = :gameModelId"),
-    @NamedQuery(name = "GameModel.findByStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status ORDER BY a.name ASC"),
+    @NamedQuery(name = "GameModel.findByTypeAndStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status AND a.type = :type ORDER BY a.name ASC"),
     @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.root.id = :containerId"),
-    @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name"),
-    @NamedQuery(name = "GameModel.countByName", query = "SELECT count(gm.id) FROM GameModel gm WHERE gm.name = :name"),
-    @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm"),
+    @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name AND a.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO"),
+    @NamedQuery(name = "GameModel.countByName", query = "SELECT count(gm.id) FROM GameModel gm WHERE gm.name = :name AND gm.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO"),
+    @NamedQuery(name = "GameModel.countModelByName", query = "SELECT count(gm.id) FROM GameModel gm WHERE gm.name = :name AND gm.type = com.wegas.core.persistence.game.GameModel.GmType.MODEL"),
+    @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm WHERE gm.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO"),
     @NamedQuery(name = "GameModel.findAllInstantiations", query = "SELECT gm FROM GameModel gm where gm.basedOn.id = :id")
 })
 @Table(
@@ -55,18 +74,18 @@ import org.apache.shiro.SecurityUtils;
             @Index(columnList = "basedon_id")
         }
 )
-public class GameModel extends AbstractEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner, Broadcastable, NamedEntity {
+public class GameModel extends AbstractEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner, Broadcastable, NamedEntity, JCRClient {
+
+    private static final Logger logger = LoggerFactory.getLogger(GameModel.class);
 
     private static final long serialVersionUID = 1L;
 
     @Transient
-    private Boolean canView = null;
+    private Boolean onGoingPropagation = false;
+
     @Transient
-    private Boolean canEdit = null;
-    @Transient
-    private Boolean canInstantiate = null;
-    @Transient
-    private Boolean canDuplicate = null;
+    @JsonIgnore
+    private JCRConnectorProvider jcrProvider;
 
     /**
      *
@@ -81,9 +100,22 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @Basic(optional = false)
     @Pattern(regexp = "^.*\\S+.*$", message = "GameModel name cannot be empty")// must at least contains one non-whitespace character
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Name"))
     private String name;
 
+    @Basic(optional = false)
+    @Column(columnDefinition = "int not null default 1")
+    @WegasEntityProperty(initOnly = true,
+            optional = false, nullable = false,
+            view = @View(label = "UI Version", value = ReadOnlyNumber.class))
+    private Integer UIVersion;
+
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @WegasEntityProperty(includeByDefault = false,
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(label = "Languages", value = Hidden.class))
     private List<GameModelLanguage> languages = new ArrayList<>();
 
     /**
@@ -92,14 +124,21 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Lob
     //@Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
+    @WegasEntityProperty(sameEntityOnly = true,
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Description"))
     private String description;
 
     /**
      *
      */
-    @Enumerated(value = EnumType.STRING)
     @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
+    @Enumerated(value = EnumType.STRING)
     private Status status = Status.LIVE;
+
+    @Column(length = 24, columnDefinition = "character varying(24) default 'SCENARIO'::character varying")
+    @Enumerated(value = EnumType.STRING)
+    private GmType type = GmType.SCENARIO;
 
     /**
      *
@@ -107,6 +146,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Lob
     //@Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
+    @WegasEntityProperty(sameEntityOnly = true,
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Comments", value = Textarea.class))
     private String comments;
 
     /**
@@ -130,17 +172,15 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @JsonIgnore
     private GameModel basedOn;
 
-    /*
-     *
-     *
-     * @JsonIgnore private Boolean template = true;
-     */
+    @Column(name = "basedon_id", insertable = false, updatable = false, columnDefinition = "bigint")
+    private Long basedOnId;
+
     /**
      *
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
-    private Set<VariableDescriptor> variableDescriptors = new HashSet<>();
+    private Collection<VariableDescriptor> variableDescriptors = new LinkedList<>();
 
     /**
      * A list of Variable Descriptors that are at the root level of the
@@ -150,6 +190,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @OneToMany(mappedBy = "root", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @OrderColumn(name = "gm_items_order")
     //@JsonManagedReference
+    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private List<VariableDescriptor> items = new ArrayList<>();
 
     /**
@@ -173,6 +214,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @OneToMany(mappedBy = "scriptlibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
+    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private List<GameModelContent> scriptLibrary = new ArrayList<>();
 
     /**
@@ -180,6 +222,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @OneToMany(mappedBy = "csslibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
+    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private List<GameModelContent> cssLibrary = new ArrayList<>();
 
     /**
@@ -187,12 +230,14 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @OneToMany(mappedBy = "clientscriptlibrary_GameModel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.ExportI.class})
+    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private List<GameModelContent> clientScriptLibrary = new ArrayList<>();
 
     /**
      *
      */
     @Embedded
+    @WegasEntityProperty(optional = false, nullable = false, proposal = GmProperties.class)
     private GameModelProperties properties = new GameModelProperties();
 
     /**
@@ -200,6 +245,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * the same time.
      */
     @Transient
+
+    @WegasEntityProperty(includeByDefault = false, protectionLevel = ModelScoped.ProtectionLevel.ALL, notSerialized = true)
     @JsonView({Views.ExportI.class})
     private Map<String, JsonNode> pages;
 
@@ -243,6 +290,11 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     public void setBasedOn(GameModel srcGameModel) {
         this.basedOn = srcGameModel;
+        if (this.basedOn != null) {
+            this.basedOnId = this.basedOn.getId();
+        } else {
+            this.basedOnId = null;
+        }
     }
 
     /**
@@ -256,10 +308,15 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     /**
      *
+     * @return
      */
-    public void propagateGameModel() {
-        //this.variableDescriptors.clear();
-        this.propagateGameModel(this);
+    @WegasExtraProperty(view = @View(label = "based on", value = Hidden.class, featureLevel = INTERNAL))
+    public Long getBasedOnId() {
+        return this.basedOnId;
+    }
+
+    public void setBasedOnId(Long id) {
+        // jsonIgnore
     }
 
     /**
@@ -285,6 +342,14 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
+     * Make sure all variableDescriptors in the gameModel are registered in the gamemodel variableDescriptors list
+     */
+    public void propagateGameModel() {
+        //this.variableDescriptors.clear();
+        this.propagateGameModel(this);
+    }
+
+    /**
      * Make sur all descriptor (in the given list, deep) a registered within the main descriptor list
      *
      * @param list base list to fetch new descriptor from
@@ -298,99 +363,15 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         }
     }
 
-    @Override
-    public void merge(AbstractEntity n) {
-        if (n instanceof GameModel) {
-            GameModel other = (GameModel) n;
-            this.setName(other.getName());
-            this.setDescription(other.getDescription());                            // Set description first, since fetching this lazy loaded attribute will cause an entity refresh
-            this.setComments(other.getComments());
-            this.getProperties().merge(other.getProperties());
-            //this.setLanguages(ListUtils.mergeLists(this.getLanguages(), other.getLanguages())); // Note For Modeler-> not in default merge
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + n.getClass().getSimpleName() + ") is not possible");
-        }
-    }
-
     /**
      *
      */
     @PrePersist
     public void prePersist() {
+        if (this.getUIVersion() == null) {
+            this.setUIVersion(1);
+        }
         this.setCreatedTime(new Date());
-    }
-
-    /**
-     * For serialization
-     *
-     * @return true if current user has view permission on this
-     */
-    @JsonView(Views.LobbyI.class)
-    public Boolean getCanView() {
-        if (canView != null) {
-            return canView;
-        } else {
-            Helper.printWegasStackTrace(new Exception());
-            return true; // by design, non readable gameModel will throws an exception
-        }
-    }
-
-    /**
-     * @return true if current user has edit permission on this
-     */
-    @JsonView(Views.LobbyI.class)
-    public Boolean getCanEdit() {
-        if (canEdit != null) {
-            return canEdit;
-        } else {
-            // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
-            Helper.printWegasStackTrace(new Exception());
-            return SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + this.id);
-        }
-    }
-
-    /**
-     * @return true if current user has duplicate permission on this
-     */
-    @JsonView(Views.LobbyI.class)
-    public Boolean getCanDuplicate() {
-        if (canDuplicate != null) {
-            return canDuplicate;
-        } else {
-            // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
-            Helper.printWegasStackTrace(new Exception());
-            return SecurityUtils.getSubject().isPermitted("GameModel:Duplicate:gm" + this.id);
-        }
-    }
-
-    /**
-     * @return true if current user has instantiate permission on this
-     */
-    @JsonView(Views.LobbyI.class)
-    public Boolean getCanInstantiate() {
-        if (canInstantiate != null) {
-            return canInstantiate;
-        } else {
-            // I DO NOT LIKE VERY MUCH USING SHIRO WITHIN ENTITIES...
-            Helper.printWegasStackTrace(new Exception());
-            return SecurityUtils.getSubject().isPermitted("GameModel:Instantiate:gm" + this.id);
-        }
-    }
-
-    public void setCanView(Boolean canView) {
-        this.canView = canView;
-    }
-
-    public void setCanEdit(Boolean canEdit) {
-        this.canEdit = canEdit;
-    }
-
-    public void setCanInstantiate(Boolean canInstantiate) {
-        this.canInstantiate = canInstantiate;
-    }
-
-    public void setCanDuplicate(Boolean canDuplicate) {
-        this.canDuplicate = canDuplicate;
     }
 
     @Override
@@ -415,10 +396,20 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         this.name = name;
     }
 
+    public Integer getUIVersion() {
+        return UIVersion;
+    }
+
+    public void setUIVersion(Integer UIVersion) {
+        this.UIVersion = UIVersion;
+    }
+
     /**
      * @return Current GameModel's status
      */
-    @JsonIgnore
+    @WegasExtraProperty(
+            optional = true, nullable = false,
+            view = @View(label = "Type", value = ReadOnlyString.class))
     public Status getStatus() {
         return status;
     }
@@ -428,8 +419,11 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      *
      * @param status status to set
      */
-    @JsonIgnore
     public void setStatus(Status status) {
+        if (status == Status.DELETE) {
+            logger.error("SET GM {} STATUS TO DELETE", this);
+            Helper.printWegasStackTrace(WegasErrorMessage.error("Setting gm status to DELETE"));
+        }
         this.status = status;
     }
 
@@ -439,7 +433,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * @return all variable descriptors
      */
     @JsonIgnore
-    public Set<VariableDescriptor> getVariableDescriptors() {
+    public Collection<VariableDescriptor> getVariableDescriptors() {
         return variableDescriptors;
     }
 
@@ -622,6 +616,23 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         this.properties = properties;
     }
 
+    @JsonIgnore
+    public Map<String, Map<String, GameModelContent>> getLibraries() {
+        Map<String, Map<String, GameModelContent>> libraries = new HashMap<>();
+
+        libraries.put("Script", this.getScriptLibrary());
+        libraries.put("ClientScript", this.getClientScriptLibrary());
+        libraries.put("CSS", this.getCssLibrary());
+
+        return libraries;
+    }
+
+    public void setLibraries(Map<String, Map<String, GameModelContent>> libraries) {
+        this.setScriptLibrary(libraries.get("Script"));
+        this.setClientScriptLibrary(libraries.get("ClientScript"));
+        this.setCssLibrary(libraries.get("CSS"));
+    }
+
     /**
      * @return the cssLibrary
      */
@@ -709,6 +720,21 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
+     * Add or update a client script.
+     *
+     * @param clientScript
+     */
+    public void setClientScript(GameModelContent clientScript) {
+        GameModelContent cs = this.getClientScript(clientScript.getContentKey());
+        if (cs != null) {
+            cs.setContent(clientScript.getContent());
+        } else {
+            clientScript.setClientscriptlibrary_GameModel(this);
+            clientScriptLibrary.add(clientScript);
+        }
+    }
+
+    /**
      * @param key
      *
      * @return the clientScript matching the key or null
@@ -718,12 +744,42 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
+     * Add or update a client script.
+     *
+     * @param script
+     */
+    public void setScript(GameModelContent script) {
+        GameModelContent s = this.getScript(script.getContentKey());
+        if (s != null) {
+            s.setContent(script.getContent());
+        } else {
+            script.setScriptlibrary_GameModel(this);
+            scriptLibrary.add(script);
+        }
+    }
+
+    /**
      * @param key
      *
      * @return the clientScript matching the key or null
      */
     public GameModelContent getCss(String key) {
         return this.getGameModelContent(cssLibrary, key);
+    }
+
+    /**
+     * Add or update a stylesheet.
+     *
+     * @param css
+     */
+    public void setCss(GameModelContent css) {
+        GameModelContent stylesheet = this.getCss(css.getContentKey());
+        if (stylesheet != null) {
+            stylesheet.setContent(css.getContent());
+        } else {
+            css.setCsslibrary_GameModel(this);
+            cssLibrary.add(css);
+        }
     }
 
     public GameModelContent getGameModelContent(List<GameModelContent> list, String key) {
@@ -749,14 +805,25 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     public Map<String, JsonNode> getPages() {
         // do not even try to fetch pages from repository if the gamemodel define a pagesURI
         if (Helper.isNullOrEmpty(getProperties().getPagesUri())) {
-            try (final Pages pagesDAO = new Pages(this.id)) {
-                return pagesDAO.getPagesContent();
-            } catch (RepositoryException ex) {
-                return new HashMap<>();
+            if (this.pages != null) {
+                // pages have been set but not yet save to repository
+                return this.pages;
+            } else if (this.getId() != null) {
+                try {
+                    Pages pagesDAO = this.jcrProvider.getPages(this);
+                    try {
+                        return pagesDAO.getPagesContent();
+                    } finally {
+                        if (!pagesDAO.getManaged()) {
+                            pagesDAO.rollback();
+                        }
+                    }
+                } catch (RepositoryException ex) {
+                    logger.error("getPages() EXCEPTION {}", ex);
+                }
             }
-        } else {
-            return new HashMap<>();
         }
+        return new HashMap<>();
     }
 
     /**
@@ -764,7 +831,12 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     public final void setPages(Map<String, JsonNode> pageMap) {
         this.pages = pageMap;
+
         if (this.id != null) {
+            // no id means not persisted
+            // no id means no JCR repository
+            // no repository means no store
+            // let @PostPersist storePaged
             this.storePages();
         }
     }
@@ -776,11 +848,23 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     @Override
+    public void resetItemsField() {
+        this.items = new ArrayList<>();
+    }
+
+    @Override
     public void setItems(List<VariableDescriptor> items) {
+        DescriptorListI.super.setItems(items);
+
+        this.variableDescriptors.clear();
+        this.propagateGameModel();
+
+        /*
         this.items = new ArrayList<>();
         for (VariableDescriptor vd : items) {
             this.addItem(vd);
         }
+         */
     }
 
     @Override
@@ -792,16 +876,18 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @PostPersist
     private void storePages() {
         if (this.pages != null) {
-            try (final Pages pagesDAO = new Pages(this.id)) {
+            try {
+                Pages pagesDAO = this.jcrProvider.getPages(this);
                 pagesDAO.delete();                                              // Remove existing pages
-                // Pay Attention: this.pages != this.getPages() !
+                // Pay Attention: this.pages != this.getPages() ! 
                 // this.pages contains deserialized pages, getPages() fetchs them from the jackrabbit repository
                 for (Entry<String, JsonNode> p : this.pages.entrySet()) {       // Add all pages
                     pagesDAO.store(new Page(p.getKey(), p.getValue()));
                 }
-
+                // As soon as repository is up to date, clear local pages
+                this.pages = null;
             } catch (RepositoryException ex) {
-                System.err.println("Failed to create repository for GameModel " + this.id);
+                logger.error("Failed to create repository for GameModel " + this.id);
             }
         }
 
@@ -862,13 +948,24 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         // Here so game deserialization works
     }
 
+    @WegasExtraProperty(
+            optional = true, nullable = false,
+            view = @View(label = "Type", value = ReadOnlyString.class))
+    public GmType getType() {
+        return type;
+    }
+
+    public void setType(GmType type) {
+        this.type = type;
+    }
+
     @JsonIgnore
     public List<GameModelLanguage> getRawLanguages() {
         return this.languages;
     }
 
     public List<GameModelLanguage> getLanguages() {
-        return Helper.copyAndSort(this.languages, new EntityComparators.OrderComparator<>());
+        return Helper.copyAndSortModifiable(this.languages, new EntityComparators.OrderComparator<>());
     }
 
     public void setLanguages(List<GameModelLanguage> languages) {
@@ -881,15 +978,18 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
+     * Find a language of the gameModel which match the given name
      *
-     * @param code
+     * @param code language code to find
      *
-     * @return
+     * @return the language with matching code or null
+     *
      */
     public GameModelLanguage getLanguageByCode(String code) {
         if (code != null) {
-            for (GameModelLanguage lang : this.getLanguages()) {
-                if (code.equals(lang.getCode())){
+            String CODE = code.toUpperCase();
+            for (GameModelLanguage lang : this.getRawLanguages()) {
+                if (CODE.equals(lang.getCode())) {
                     return lang;
                 }
             }
@@ -898,41 +998,37 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
-     * get list of language refName, sorted according to player preferences if such a player is provided;
+     * Find a language of the gameModel which match the given name
+     *
+     * @param name language display name to find
+     *
+     * @return the language with matching lang or null
+     */
+    public GameModelLanguage getLanguageByName(String name) {
+        if (name != null) {
+            String theName = name.toLowerCase();
+            for (GameModelLanguage lang : this.getRawLanguages()) {
+                if (theName.equals(lang.getLang().toLowerCase())) {
+                    return lang;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * get list of language code, sorted according to player preferences if such a player is provided;
      *
      * @param player may be null
      *
      * @return list
      */
-    public List<String> getPreferredLanguagesRefName(Player player) {
+    public List<String> getPreferredLanguagesCodes(Player player) {
         List<GameModelLanguage> sortedLanguages = getLanguages();
         ArrayList<String> langs = new ArrayList<>(sortedLanguages.size());
 
         for (GameModelLanguage gml : sortedLanguages) {
-            if (player != null && gml.getRefName().equals(player.getRefName())) {
-                langs.add(0, gml.getRefName());
-            } else {
-                langs.add(gml.getRefName());
-            }
-        }
-
-        return langs;
-    }
-
-    /**
-     * get list of language code, the given one first
-     *
-     *
-     * @param preferredRefName preferred refName, may be null or empty
-     *
-     * @return list
-     */
-    public List<String> getPreferredLanguagesCode(String preferredRefName) {
-        List<GameModelLanguage> sortedLanguages = getLanguages();
-        ArrayList<String> langs = new ArrayList<>(sortedLanguages.size());
-
-        for (GameModelLanguage gml : sortedLanguages) {
-            if (gml.getRefName().equals(preferredRefName)) {
+            if (player != null && gml.getCode().equals(player.getLang())) {
                 langs.add(0, gml.getCode());
             } else {
                 langs.add(gml.getCode());
@@ -943,21 +1039,22 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
-     * get list of language refName, the given one first
+     * get list of language code, the given one first
      *
      *
-     * @param preferredRefName preferred refName, may be null or empty
+     * @param preferredCode preferred code, may be null or empty
      *
      * @return list
      */
-    public List<String> getPreferredLanguagesRefName(String preferredRefName) {
+    public List<String> getPreferredLanguagesCode(String preferredCode) {
         List<GameModelLanguage> sortedLanguages = getLanguages();
         ArrayList<String> langs = new ArrayList<>(sortedLanguages.size());
+
         for (GameModelLanguage gml : sortedLanguages) {
-            if (gml.getRefName().equals(preferredRefName)) {
-                langs.add(0, gml.getRefName());
+            if (gml.getCode().equals(preferredCode.toUpperCase())) {
+                langs.add(0, gml.getCode());
             } else {
-                langs.add(gml.getRefName());
+                langs.add(gml.getCode());
             }
         }
 
@@ -968,13 +1065,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * @return the template
      */
     public Boolean getTemplate() {
-        return status != Status.PLAY;
+        return type == GmType.MODEL || type == GmType.SCENARIO;
     }
 
-    /**
-     * @param template the template to set public void setTemplate(Boolean
-     *                 template) { this.template = template; }
-     */
     /**
      * TODO: select game.* FROM GAME where dtype like 'DEBUGGAME' and
      * gamemodelid = this.getId()
@@ -1007,8 +1100,70 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     @Override
+    public boolean belongsToProtectedGameModel() {
+        return this.isProtected();
+    }
+
+    /**
+     * Is this scenario protected ?
+     * A scenario is protected if it depends on a model (but the protection is disabled if the instances propagation
+     * is ongoing)
+     *
+     * @return
+     */
+    public boolean isProtected() {
+        // only scenarios which are based on a model are protected
+        // but do no protect a gameModel when the propagation process is ongoing
+        return (this.isScenario() && this.getBasedOnId() != null && !this.onGoingPropagation);
+    }
+
+    /**
+     * Inform the game model the propagation process in ongoing
+     *
+     * @param onGoingPropagation
+     */
+    public void setOnGoingPropagation(Boolean onGoingPropagation) {
+        this.onGoingPropagation = onGoingPropagation;
+    }
+
+    @JsonIgnore
+    public boolean isModel() {
+        return this.getType().equals(GmType.MODEL);
+    }
+
+    @JsonIgnore
+    public boolean isScenario() {
+        return this.getType().equals(GmType.SCENARIO);
+    }
+
+    @JsonIgnore
+    public boolean isReference() {
+        return this.getType().equals(GmType.REFERENCE);
+    }
+
+    @JsonIgnore
+    public boolean isPlay() {
+        return this.getType().equals(GmType.PLAY);
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return null;
+    }
+
+    @JsonIgnore
+    public boolean isScenarioBasedOnModel() {
+        return this.isScenario() && this.getBasedOn() != null;
+    }
+
+    @Override
+    public Visibility getInheritedVisibility() {
+        return Visibility.INHERITED;
+    }
+
+    @Override
     public Collection<WegasPermission> getRequieredCreatePermission() {
-        if (this.getStatus() == Status.PLAY) {
+        if (this.isPlay()) {
             return WegasMembership.TRAINER;
         } else {
             return WegasMembership.SCENARIST;
@@ -1017,12 +1172,31 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     @Override
     public WegasPermission getAssociatedReadPermission() {
-        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.GAMEMODEL);
+        return GameModel.getAssociatedReadPermission(this.getId());
+    }
+
+    public static WegasPermission getAssociatedReadPermission(long id) {
+        return new WegasEntityPermission(id, WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.GAMEMODEL);
     }
 
     @Override
     public WegasPermission getAssociatedWritePermission() {
-        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAMEMODEL);
+        return GameModel.getAssociatedWritePermission(this.getId());
+    }
+
+    public static WegasPermission getAssociatedWritePermission(long id) {
+        return new WegasEntityPermission(id, WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAMEMODEL);
+    }
+
+    /**
+     * The permission which is required to translate a specific language within the game model
+     *
+     * @param lang the language to translate. no languages means "the permission to translate at least one language no matter which one"
+     *
+     * @return
+     */
+    public WegasPermission getAssociatedTranslatePermission(String lang) {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.TRANSLATE, WegasEntityPermission.EntityType.GAMEMODEL, lang);
     }
 
     /**
@@ -1037,9 +1211,40 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         return map;
     }
 
+    public enum GmType {
+        /**
+         * A model
+         */
+        MODEL,
+        /**
+         * Model reference
+         */
+        REFERENCE,
+        /**
+         * Model implementation
+         */
+        SCENARIO,
+        /**
+         * Private COPY for games
+         */
+        PLAY
+    }
+
+    @Override
+    public void inject(JCRConnectorProvider jcrProvider) {
+        this.jcrProvider = jcrProvider;
+    }
+
+    @JsonIgnore
+    public ContentConnector getConnector(ContentConnector.WorkspaceType wType) throws RepositoryException {
+        if (jcrProvider != null) {
+            return jcrProvider.getContentConnector(this, wType);
+        }
+        return null;
+    }
+
     /**
      * <ul>
-     * <li>PLAY: {@link Status#PLAY}
      * <li>LIVE: {@link Status#LIVE}</li>
      * <li>BIN: {@link Status#BIN}</li>
      * <li>DELETE: {@link Status#DELETE}</li>
@@ -1047,10 +1252,6 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * </ul>
      */
     public enum Status {
-        /**
-         * Not a template game model but one linked to an effective game
-         */
-        PLAY,
         /**
          * Template GameModel
          */
@@ -1075,4 +1276,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      in.defaultReadObject();
      this.pages = new HashMap<>();
      }*/
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getType() + ", " + getName() + ")";
+    }
 }

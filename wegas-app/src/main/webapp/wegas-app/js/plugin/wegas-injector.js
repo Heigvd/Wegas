@@ -90,10 +90,13 @@ YUI.add("wegas-injector", function(Y) {
                     this.instantiateGallery(gallery, index);
                 } else if (isNodeValid && link) {
                     e.halt(true);
-                    this.instantiateGallery([{
-                            srcUrl: link,
-                            description: e.target.get("title")
-                        }]);
+                    if (e.target._node.naturalWidth > e.target._node.width ||
+                        e.target._node.naturalHeight > e.target._node.height) {
+                        this.instantiateGallery([{
+                                srcUrl: link,
+                                description: e.target.get("title")
+                            }]);
+                    }
                 }
             }, '.wegas-light-picture', this));
         },

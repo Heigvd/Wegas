@@ -5,7 +5,7 @@ const absolute = css({ position: 'absolute', zIndex: 1 });
 
 const coverStyle = css({
     position: 'fixed',
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: 'rgba(0,0,0,0.1)',
     top: 0,
     left: 0,
     right: 0,

@@ -16,31 +16,68 @@
 /**
  * Tabview List
  */
-.wegas-mcqtabview .unread {
+.wegas-mcqtabview .unanswered {
     font-weight:bold;
 }
 
+.wegas-mcqtabview .index-mcq:not(.answerable) {
+    font-style: italic;
+}
+
+.wegas-mcqtabview .index-mcq.unread .index-unread:before {
+    content: "new";
+    transform: rotate(-45deg);
+    position: absolute;
+    font-size: 7pt;
+    left: -1px;
+    color: green;
+}
+
+.wegas-mcqtabview .index-mcq:not(.unread) .index-unread {
+    display: none;
+}
+
+.wegas-mcqtabview .horizontal-tabview .yui3-tabview-content.smallscreen.open .menutitle .tablabel > div,
+.yui3-skin-sam .wegas-mcqtabview a .tablabel > div {
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .yui3-skin-sam .wegas-mcqtabview  .index-label {
-    float:left;
     padding-left:8px;
 }
 
 .yui3-skin-sam .wegas-mcqtabview .index-status {
-    float:right;
-    padding-right:8px;
+    flex-grow: 1;
+    text-align: right;
+    padding-right: 8px;
+    text-overflow: ellipsis;
+    padding-left: 20px;
+    white-space: nowrap;
+    overflow: hidden;
 }
 .yui3-skin-sam .wegas-mcqtabview .horizontal-tabview,
 .yui3-skin-sam .wegas-mcqtabview .horizontal-tabview .yui3-tabview-content{
     height:100%;
 }
-.yui3-skin-sam .wegas-mcqtabview .horizontal-tabview ul.yui3-tabview-list,
-.yui3-skin-sam .wegas-mcqtabview .horizontal-tabview div.yui3-tabview-panel{
+.yui3-skin-sam .wegas-mcqtabview .horizontal-tabview .yui3-tabview-content:not(.smallscreen) ul.yui3-tabview-list{
     height:100%;
     overflow-x: hidden;
     overflow-y: auto;
     min-height: 100px;
-    padding-bottom: 2px !important;
+    /*padding-bottom: 2px !important;*/
 }
+
+.yui3-skin-sam .wegas-mcqtabview .horizontal-tabview .yui3-tabview-content:not(.smallscreen) div.yui3-tabview-panel,
+.yui3-skin-sam .wegas-mcqtabview .horizontal-tabview .yui3-tabview-content:not(.smallscreen) div.yui3-tabview-panel > div > .panel-inner, 
+.yui3-skin-sam .wegas-mcqtabview .horizontal-tabview .yui3-tabview-content:not(.smallscreen) div.yui3-tabview-panel > div{
+    height:100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    min-height: 100px;
+    /*padding-bottom: 2px !important;*/
+}
+
 .wegas-mcqtabview .yui3-tabview-list .yui3-tab {
     width: calc(100% - 4px);
     display: block;
@@ -61,4 +98,10 @@
 .wegas-mcqtabview .yui3-tabview-list .yui3-tab.yui3-tab-selected {
     background: #d8d9dd;
     border-top: none;
+}
+
+
+.yui3-skin-sam .horizontal-tabview .yui3-tabview-content.smallscreen .wegas-whview .wegas-whview__title,
+.yui3-skin-sam .horizontal-tabview .yui3-tabview-content.smallscreen .wegas-mcqview .mcq-view__question-title {
+    display: none;
 }

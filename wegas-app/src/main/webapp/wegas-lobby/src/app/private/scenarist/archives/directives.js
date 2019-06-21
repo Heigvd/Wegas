@@ -63,7 +63,7 @@ angular.module('private.scenarist.archives.directives', [])
 
         ctrl.updateScenarios = function() {
             ctrl.loading = true;
-            ScenariosModel.getScenarios("BIN").then(function(response) {
+            ScenariosModel.getGameModelsByStatusTypeAndPermission("SCENARIO", "BIN", "EDIT").then(function(response){
                 ctrl.loading = false;
                 if (response.isErroneous()) {
                     response.flash();

@@ -5,12 +5,11 @@ import Impact, { ErrorCatcher } from './Impact';
 import { methodDescriptor, extractMethod } from './method';
 import { methodDescriptor as globalMethodDescriptor } from './globalMethod';
 import ConditionOperator from './ConditionOperator';
-import { renderForm, valueToAST } from './args';
+import { renderForm, valueToAST, getReadOnlySchema } from './args';
 import { containerStyle } from '../Views/conditionImpactStyle';
 
 const b = types.builders;
-const isCallExpression = types.namedTypes.CallExpression.check;
-const isExpressionStatement = types.namedTypes.ExpressionStatement.check;
+const nT = types.namedTypes;
 /**
  * return a default value for the given type
  * @param {string} type the type for which a default value is required
@@ -37,7 +36,7 @@ function defaultValue(type) {
  */
 function getMethodDescriptor(node) {
     const { global, method, variable, member } = extractMethod(
-        isCallExpression(node) ? node : node.left
+        nT.CallExpression.check(node) ? node : node.left
     );
     return global
         ? globalMethodDescriptor(member, method)
@@ -45,14 +44,14 @@ function getMethodDescriptor(node) {
 }
 function isBoolCallFn(node) {
     const descr = getMethodDescriptor(node);
-    return isCallExpression(node) && descr && descr.returns === 'boolean';
+    return nT.CallExpression.check(node) && descr && descr.returns === 'boolean';
 }
 class Condition extends React.Component {
     constructor(props) {
         super(props);
         const { node } = props;
         const descr = getMethodDescriptor(node);
-        if (isCallExpression(node)) {
+        if (nT.CallExpression.check(node)) {
             if (isBoolCallFn(node)) {
                 this.state = { node: { left: node } };
             } else {
@@ -74,7 +73,7 @@ class Condition extends React.Component {
     componentWillReceiveProps(nextProps) {
         const { node } = nextProps;
         const descr = getMethodDescriptor(node);
-        if (isCallExpression(node)) {
+        if (nT.CallExpression.check(node)) {
             if (isBoolCallFn(node)) {
                 this.setState({ node: { left: node } });
             } else {
@@ -148,7 +147,7 @@ class Condition extends React.Component {
         let container;
         if (descr && typeof descr.returns !== 'string') {
             const { method } = extractMethod(
-                isCallExpression(node) ? node : node.left
+                nT.CallExpression.check(node) ? node : node.left
             );
             throw Error(
                 `Method '${method}' is not comparable. Missing 'returns' description`
@@ -157,7 +156,7 @@ class Condition extends React.Component {
         if (node.right) {
             if (!descr) {
                 const { method } = extractMethod(
-                    isCallExpression(node) ? node : node.left
+                    nT.CallExpression.check(node) ? node : node.left
                 );
                 throw Error(`Method '${method}' not found`);
             }
@@ -169,6 +168,20 @@ class Condition extends React.Component {
                     layout: 'extraShortInline',
                 },
             };
+            let argsForm = renderForm(
+                node.right,
+                schema,
+                v =>
+                    this.setState(
+                        ({ node: n }) => ({ node: { ...n, right: v } }),
+                        this.check
+                    ),
+                undefined,
+                'right'
+            );
+            if (this.props.view.readOnly) {
+                argsForm = getReadOnlySchema(argsForm);
+            }
             container = [
                 <div key="operator" className={containerStyle}>
                     <ConditionOperator
@@ -182,30 +195,21 @@ class Condition extends React.Component {
                             )
                         }
                         type={descr.returns}
+                        readOnly={this.props.view.readOnly}
                     />
                 </div>,
-                renderForm(
-                    node.right,
-                    schema,
-                    v =>
-                        this.setState(
-                            ({ node: n }) => ({ node: { ...n, right: v } }),
-                            this.check
-                        ),
-                    undefined,
-                    'right'
-                ),
+                argsForm,
             ];
         }
         const isBoolCall =
-            isCallExpression(node) && descr.returns === 'boolean';
+            nT.CallExpression.check(node) && descr.returns === 'boolean';
         return (
             <div>
                 <Impact
                     {...this.props}
                     node={isBoolCall ? node : node.left}
                     onChange={v => {
-                        if (isCallExpression(v)) {
+                        if (nT.CallExpression.check(v)) {
                             this.setState(({ node: n }) => {
                                 const des = getMethodDescriptor(v);
                                 if (des && des.returns === 'boolean') {
@@ -213,7 +217,7 @@ class Condition extends React.Component {
                                 }
                                 return { node: { ...n, left: v } };
                             }, this.check);
-                        } else if (isExpressionStatement(v)) {
+                        } else if (nT.ExpressionStatement.check(v)) {
                             this.props.onChange(v.expression);
                         } else {
                             this.props.onChange(v);

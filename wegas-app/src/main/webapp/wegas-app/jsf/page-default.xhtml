@@ -28,11 +28,13 @@
         <link rel="icon" type="image/ico" href="#{request.contextPath}/favicon.ico" />
         <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,700i" rel="stylesheet"/>
 
-        <!-- Warning against IE when user arrives directly without visiting the lobby -->
+        <!-- Warn against IE when user arrives directly without visiting the lobby -->
         <script type="application/javascript">
-            if (navigator.appName == 'Microsoft Internet Explorer' || !!(navigator.userAgent.match(/Trident/) || navigator.userAgent.match(/rv:11/)) || (typeof $ !== "undefined" &amp;&amp; typeof $.browser !== "undefined" &amp;&amp; $.browser.msie == 1)){
-            alert("Your browser (Internet Explorer) is unfortunately not supported. Please switch to another browser.");
-            document.title = "Game Aborted";
+            var isIE = /*@cc_on!@*/false || !!document.documentMode;
+            if (isIE){
+                alert("Your browser (Internet Explorer) is not supported. Please switch to another browser.");
+                alert("Ce navigateur (Internet Explorer) est trop vieux. Veuillez changer.");
+                document.title = "Game Aborted";
             }
         </script>
 
@@ -40,15 +42,18 @@
         <ui:fragment rendered="#{wegasConfig.useYUICDN}">
                 <!-- CDN  -->
                 <ui:fragment rendered="#{request.scheme == 'http'}">
-                    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.17.2/build/cssreset/cssreset-min.css&amp;3.17.2/build/cssgrids/cssgrids-min.css" />
+                    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.17.2/build/cssreset/cssreset-min.css" />
+                    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.17.2/build/cssgrids/cssgrids-min.css" />
                 </ui:fragment>
                 <ui:fragment rendered="#{request.scheme == 'https'}">
-                    <link rel="stylesheet" type="text/css" href="https://yui-s.yahooapis.com/combo?3.17.2/build/cssreset/cssreset-min.css&amp;3.17.2/build/cssgrids/cssgrids-min.css" />
+                    <link rel="stylesheet" type="text/css" href="https://yui-s.yahooapis.com/3.17.2/build/cssreset/cssreset-min.css" />
+                    <link rel="stylesheet" type="text/css" href="https://yui-s.yahooapis.com/3.17.2/build/cssgrids/cssgrids-min.css" />
                 </ui:fragment>
             </ui:fragment>
         <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
                 <!-- Self hosted -->
-                <link rel="stylesheet" type="text/css" href="#{request.contextPath}/rest/combo/?/lib/yui3/build/cssreset/cssreset-min.css&amp;/lib/yui3/build/cssgrids/cssgrids-min.css" />
+                <link rel="stylesheet" type="text/css" href="#{request.contextPath}/lib/yui3/build/cssreset/cssreset-min.css" />
+                <link rel="stylesheet" type="text/css" href="#{request.contextPath}/lib/yui3/build/cssgrids/cssgrids-min.css" />
             </ui:fragment>
 
         <!-- Those styles are placed here, since they should be above any other in the CSS cascading
@@ -65,7 +70,8 @@
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-app/css/wegas-app-print.css" />
         </ui:fragment>
         <ui:fragment rendered="#{!requestController.debugMode()}">
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/rest/combo/?/wegas-app/css/wegas-app-min.css&amp;/wegas-app/css/wegas-app-print-min.css" />
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-app/css/wegas-app.css" />
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-app/css/wegas-app-print.css" />
         </ui:fragment>
 
         <ui:insert name="head"/>

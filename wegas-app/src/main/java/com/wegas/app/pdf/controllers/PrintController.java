@@ -11,9 +11,6 @@ import com.wegas.app.jsf.controllers.*;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.exception.client.WegasNotFoundException;
-import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -21,12 +18,10 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.inject.Inject;
-import org.apache.shiro.SecurityUtils;
 
 /**
  *
@@ -137,7 +132,7 @@ public class PrintController {
         if (this.gameModelId != null) {
             GameModel gameModel = gameModelFacade.find(this.gameModelId);
             if (gameModel != null) {
-                if (gameModel.getTemplate()) {
+                if (gameModel.isScenario() || gameModel.isModel()){
                     // use the debug player from the debug game
                     currentPlayer = gameModel.getAnyLivePlayer();
                 } else {

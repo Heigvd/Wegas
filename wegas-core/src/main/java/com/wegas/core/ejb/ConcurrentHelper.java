@@ -9,6 +9,7 @@ package com.wegas.core.ejb;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
+import com.wegas.core.Helper;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,6 +42,9 @@ public class ConcurrentHelper {
 
     private static final String MAIN_LOCK_NAME = "ConcurrentHelper.lock";
 
+    // effectiveTokens
+    private static final List<String> myLocks = new ArrayList<>();
+
     @Inject
     private Cache<String, RefCounterLock> locks;
 
@@ -53,14 +57,26 @@ public class ConcurrentHelper {
         //ILock lock = instance.getLock("token");
         private static final long serialVersionUID = -5239056583611653597L;
 
-        public int counter;
-        public String token;
-        public String audience;
+        private int counter;
+        private final String token;
+        private final String audience;
 
         public RefCounterLock(String lockName, String audience) {
             this.token = lockName;
             this.audience = audience;
             counter = 0;
+        }
+
+        public int getCounter() {
+            return counter;
+        }
+
+        public String getToken() {
+            return token;
+        }
+
+        public String getAudience() {
+            return audience;
         }
 
         @Override
@@ -69,6 +85,14 @@ public class ConcurrentHelper {
         }
     }
 
+    /**
+     * Compute effective token according to token and audience.
+     *
+     * @param token
+     * @param audience null means internal
+     *
+     * @return audience||internal :: token
+     */
     private String getEffectiveToken(String token, String audience) {
         if (audience != null && !audience.isEmpty()) {
             return audience + "::" + token;
@@ -77,16 +101,31 @@ public class ConcurrentHelper {
         }
     }
 
+    /**
+     * get effective lock
+     *
+     * @param lock
+     *
+     * @return
+     */
     private ILock getLock(RefCounterLock lock) {
         String effectiveToken = getEffectiveToken(lock.token, lock.audience);
         logger.info("GET HZ LOCK {}", effectiveToken);
         return hzInstance.getLock(effectiveToken);
     }
 
+    /**
+     * Helper is a cluster wide singleton. Lock it
+     * <p>
+     */
     private void mainLock() {
         hzInstance.getLock(MAIN_LOCK_NAME).lock();
     }
 
+    /**
+     * Helper is a cluster wide singleton.
+     * Unlock it
+     */
     private void mainUnlock() {
         hzInstance.getLock(MAIN_LOCK_NAME).unlock();
     }
@@ -106,7 +145,7 @@ public class ConcurrentHelper {
     //@Lock(LockType.READ)
     public boolean tryLock(String token, String audience) {
         String effectiveToken = getEffectiveToken(token, audience);
-        logger.info("try to lock \"{}\" as \"{}\"", token,  effectiveToken);
+        logger.info("try to lock \"{}\" as \"{}\"", token, effectiveToken);
 
         boolean r = false;
         this.mainLock();
@@ -120,6 +159,8 @@ public class ConcurrentHelper {
             lock = locks.get(effectiveToken);
 
             if (this.getLock(lock).tryLock()) {
+                myLocks.add(effectiveToken);
+                logger.info("MyLock TryLock:" +  effectiveToken);
                 logger.info("LOCKED: {}", lock);
                 r = true; // Successful
                 lock.counter++;
@@ -144,7 +185,7 @@ public class ConcurrentHelper {
      * The method will return only when the lock will be held by the calling
      * thread.
      *
-     * @param token lock identifier
+     * @param token    lock identifier
      * @param audience
      */
     //@Lock(LockType.READ)
@@ -162,6 +203,8 @@ public class ConcurrentHelper {
             lock = locks.get(effectiveToken);
             lock.counter++;
             locks.put(effectiveToken, lock);
+            logger.info("MyLock Lock:" +  effectiveToken);
+            myLocks.add(effectiveToken);
             logger.info("LOCKED: {}", lock);
             if (audience != null && lock.counter == 1) { //just locked
                 websocketFacade.sendLock(audience, token);
@@ -181,14 +224,21 @@ public class ConcurrentHelper {
      * @param lock  the lock to unlock
      * @param token lock identifier
      */
-    private void unlock(RefCounterLock lock, String token, String audience) {
+    private void unlock(RefCounterLock lock, String token, String audience, boolean force) {
         String effectiveToken = getEffectiveToken(token, audience);
         logger.info("UNLOCK: {}", lock);
-        this.getLock(lock).unlock();
+        ILock theLock = this.getLock(lock);
+        if (force) {
+            theLock.forceUnlock();
+        } else {
+            theLock.unlock();
+        }
         logger.info("UNLOCKED");
         lock.counter--;
+        logger.info("MyLock unlock:" +  effectiveToken);
+        myLocks.remove(effectiveToken);
         if (lock.counter == 0) {
-            if (audience != null && !audience.equals("internal")) {
+            if (!Helper.isNullOrEmpty(audience) && !audience.equals("internal")) {
                 websocketFacade.sendUnLock(audience, token);
             }
             this.getLock(lock).destroy();
@@ -206,7 +256,7 @@ public class ConcurrentHelper {
      * @param token lock identifier
      */
     //@javax.ejb.Lock(LockType.READ)
-    public void unlock(String token, String audience) {
+    public void unlock(String token, String audience, boolean force) {
         String effectiveToken = getEffectiveToken(token, audience);
         this.mainLock();
         try {
@@ -215,7 +265,7 @@ public class ConcurrentHelper {
             //RefCounterLock lock = locks.getOrDefault(token, null);
             if (lock != null) {
                 //synchronized (this) {
-                this.unlock(lock, token, audience);
+                this.unlock(lock, token, audience, force);
                 //}
             }
         } finally {
@@ -226,11 +276,11 @@ public class ConcurrentHelper {
     /**
      * Force to completely release the lock
      *
-     * @param token lock identifier
+     * @param token    lock identifier
      * @param audience
      */
     //@javax.ejb.Lock(LockType.READ)
-    public void unlockFull(String token, String audience) {
+    public void unlockFull(String token, String audience, boolean force) {
         String effectiveToken = getEffectiveToken(token, audience);
         logger.info("UNLOCK FULL: \"{}\" for \"{}\"", token, audience);
         this.mainLock();
@@ -241,7 +291,7 @@ public class ConcurrentHelper {
             if (lock != null) {
                 while (this.getLock(lock).isLockedByCurrentThread()) {
                     //while (lock.sem.getHoldCount() > 0) {
-                    this.unlock(lock, token, audience);
+                    this.unlock(lock, token, audience, force);
                 }
             }
         } finally {
@@ -249,6 +299,13 @@ public class ConcurrentHelper {
         }
     }
 
+    /**
+     * Returns all tokens locked own by any audience in the list
+     *
+     * @param audiences
+     *
+     * @return list of locked tokens
+     */
     //@javax.ejb.Lock(LockType.READ)
     public Collection<String> getTokensByAudiences(List<String> audiences) {
         Collection<String> tokens = new ArrayList<>();
@@ -263,4 +320,47 @@ public class ConcurrentHelper {
 
     }
 
+    /**
+     * Get all locked tokens
+     *
+     * @return
+     */
+    public List<RefCounterLock> getAllLockedTokens() {
+        List<RefCounterLock> tokens = new ArrayList<>();
+
+        Iterator<Cache.Entry<String, RefCounterLock>> iterator = this.locks.iterator();
+        while (iterator.hasNext()) {
+            Cache.Entry<String, RefCounterLock> entry = iterator.next();
+            tokens.add(entry.getValue());
+        }
+        return tokens;
+    }
+
+    /**
+     * Release all locks locked by this cluster instance
+     */
+    public void releaseLocalLocks() {
+        logger.info("RELEASE ALL LOCKS");
+        this.mainLock();
+        try {
+            // avoid concurrent modification exception
+            ArrayList<String> effectiveTokens = new ArrayList<>(myLocks);
+            for (String eToken : effectiveTokens) {
+                logger.info(" * " + eToken);
+                RefCounterLock lock = locks.get(eToken);
+                if (lock != null) {
+                    logger.info("   * " + lock);
+                    this.unlock(lock.token, lock.audience, true);
+                }
+            }
+
+        } finally {
+            this.mainUnlock();
+        }
+        logger.info("ALL LOCKS UNLOCKED");
+    }
+
+    public List<String> getMyLocks() {
+        return new ArrayList<>(myLocks);
+    }
 }

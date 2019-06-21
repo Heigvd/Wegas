@@ -1,4 +1,20 @@
 <span class="view__first-subtitle" ng-bind-html="message"> </span>
+<div class="view__public-lang">
+    <div class="action action--language" ng-if="languages.length > 1">
+        <a class="button button--default-reverse button--language"
+           title="{{'CHOOSE-LANGUAGE-BTN'| translate}}">
+            <span class="button__label">{{currentLanguage}}</span>
+        </a>
+        <ul class="subactions">
+            <li class="subaction" ng-repeat="language in languages">
+                <a class="button button--default-reverse"
+                   ng-class="{'button--active': language.key == currentLanguage}"
+                   ng-click="changeLanguage(language.key)">{{language.name}}
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
 <form id="login-form" class="view__login-form view--reverse-middle form" ng-submit="login()">
     <div class="row">
         <h1 id="wegas-icon-title" class="view__first-header">{{'WEGAS-TITLE' | translate}}</h1>

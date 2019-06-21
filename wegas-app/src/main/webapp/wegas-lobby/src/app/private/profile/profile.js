@@ -2,6 +2,7 @@ angular
     .module('private.profile', [
         'ngSanitize',
         'private.profile.directives',
+        'private.modeler',
         'private.scenarist',
         'private.trainer',
         'private.player',
@@ -39,6 +40,14 @@ angular
                     'workspace@wegas.private': {
                         controller: 'ScenaristCtrl as scenaristCtrl',
                         templateUrl: 'app/private/scenarist/scenarist.tmpl.html'
+                    }
+                }
+            })
+            .state('wegas.private.profile.modeler', {
+                views: {
+                    'workspace@wegas.private': {
+                        controller: 'ModelerCtrl as modelerCtrl',
+                        templateUrl: 'app/private/modeler/modeler.tmpl.html'
                     }
                 }
             })

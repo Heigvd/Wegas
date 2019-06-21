@@ -36,6 +36,7 @@
         <connector-resource pool-name="jms/__defaultConnectionFactory-Connection-Pool" object-type="system-all-req" jndi-name="jms/__defaultConnectionFactory"></connector-resource>
         <context-service object-type="system-all" jndi-name="concurrent/__defaultContextService"></context-service>
         <managed-executor-service object-type="system-all" jndi-name="concurrent/__defaultManagedExecutorService"></managed-executor-service>
+        <managed-executor-service jndi-name="timeoutExecutorService" object-type="system-all" core-pool-size="5"/>
         <managed-scheduled-executor-service object-type="system-all" jndi-name="concurrent/__defaultManagedScheduledExecutorService"></managed-scheduled-executor-service>
         <managed-thread-factory object-type="system-all" jndi-name="concurrent/__defaultManagedThreadFactory"></managed-thread-factory>
     </resources>
@@ -46,6 +47,7 @@
             <resource-ref ref="jdbc/__default"></resource-ref>
             <resource-ref ref="jms/__defaultConnectionFactory"></resource-ref>
             <resource-ref ref="concurrent/__defaultContextService"></resource-ref>
+            <resource-ref ref="timeoutExecutorService"></resource-ref>
             <resource-ref ref="concurrent/__defaultManagedExecutorService"></resource-ref>
             <resource-ref ref="concurrent/__defaultManagedScheduledExecutorService"></resource-ref>
             <resource-ref ref="concurrent/__defaultManagedThreadFactory"></resource-ref>

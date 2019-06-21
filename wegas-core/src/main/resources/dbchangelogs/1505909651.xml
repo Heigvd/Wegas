@@ -31,8 +31,8 @@
         <dropForeignKeyConstraint baseTableName="team" constraintName="fk_team_parentgame_id"/>
 
         <renameColumn tableName="team" 
-            oldColumnName="parentgame_id"
-            newColumnName="gameteams_id"/>
+                      oldColumnName="parentgame_id"
+                      newColumnName="gameteams_id"/>
 
         <addUniqueConstraint columnNames="name, gameteams_id" constraintName="unq_team_0" deferrable="false" disabled="false" initiallyDeferred="false" tableName="team"/>
         <addForeignKeyConstraint baseColumnNames="gameteams_id" baseTableName="team" constraintName="fk_team_gameteams_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="gameteams"/>
@@ -41,5 +41,11 @@
         <createIndex indexName="index_team_gameteams_id" tableName="team" unique="false">
             <column name="gameteams_id"/>
         </createIndex>
+    </changeSet>
+
+    <changeSet author="maxence" id="1505909657174-1c">
+        <addColumn tableName="gameteams">
+            <column name="refid" type="varchar(255)"/>
+        </addColumn>
     </changeSet>
 </databaseChangeLog>

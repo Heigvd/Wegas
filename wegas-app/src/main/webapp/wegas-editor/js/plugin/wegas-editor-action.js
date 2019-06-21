@@ -12,8 +12,14 @@
 YUI.add('wegas-editor-action', function(Y) {
     "use strict";
 
-    var Linkwidget, Plugin = Y.Plugin, Action = Plugin.Action, Wegas = Y.Wegas,
-        CONTENTBOX = "contentBox", OpenTabAction, OpenTabActionSec, OnDeleteListener;
+    var Linkwidget,
+        Plugin = Y.Plugin,
+        Action = Plugin.Action,
+        Wegas = Y.Wegas,
+        CONTENTBOX = "contentBox",
+        OpenTabAction,
+        OpenTabActionSec,
+        OnDeleteListener;
 
     /**
      *  @name Y.Plugin.ResetAction
@@ -42,8 +48,8 @@ YUI.add('wegas-editor-action', function(Y) {
 
             // Make the button spin around for a while as a visual feedback:
             if (btn && (childNodes = btn
-                    .get('contentBox')
-                    .get('childNodes'))) {
+                .get('contentBox')
+                .get('childNodes'))) {
                 // The icon is a child element of the button:
                 icon = childNodes.get('items')[0];
                 if (icon) {
@@ -54,12 +60,13 @@ YUI.add('wegas-editor-action', function(Y) {
             // Ask confirmation when editing the scenario of a real game
             if (!editGame || confirm("This action will reset all players in the game you're editing the scenario for. Do you really want to continue?")) {
                 this.showOverlay();
+                Y.Wegas.app.fire("beforeReset");
                 Wegas.Facade.Variable.sendRequest({
                     request: '/Reset/',
                     on: {
                         success: cb,
-                        failure: cb,
-                    },
+                        failure: cb
+                    }
                 });
             }
         }
@@ -83,8 +90,14 @@ YUI.add('wegas-editor-action', function(Y) {
         execute: function() {
             var label = this.get("label") || this.get("host").get("label"),
                 isEditor = (label === Wegas.TabView.getEditorTabLabel()),
-                targetTabView = !isEditor ? Wegas.TabView.getNonEditorTabViewId() : this.get("tabSelector"),
+                targetTabView,
                 previouslySelectedTabId;
+
+            if (Y.Wegas.Config.EditorAdvancedTabs) {
+                targetTabView = this.get("tabSelector");
+            } else {
+                targetTabView = !isEditor ? Wegas.TabView.getNonEditorTabViewId() : this.get("tabSelector");
+            }
 
             if (!this.get("id")) {
                 this.set("id", label);
@@ -120,12 +133,13 @@ YUI.add('wegas-editor-action', function(Y) {
                 if (previouslySelectedTabId) {
                     Wegas.TabView.setSelected(Wegas.TabView.getTab(previouslySelectedTabId));
                 }
-                Y.one(targetTabView + " .wegas-plus-tab").hide();
-                Y.one(Wegas.TabView.getOppositeTabView(targetTabView) + " .wegas-plus-tab").show();
+                if (!Y.Wegas.Config.EditorAdvancedTabs) {
+                    Y.one(targetTabView + " .wegas-plus-tab").hide();
+                    Y.one(Wegas.TabView.getOppositeTabView(targetTabView) + " .wegas-plus-tab").show();
+                }
                 Wegas.TabView.setDefaultEditorTabView(targetTabView);
             }
-
-            newTab.set("selected", 2);
+            newTab.set("selected", 1);
         }
     }, {
         /** @lends Y.Plugin.OpenTabAction */
@@ -228,7 +242,8 @@ YUI.add('wegas-editor-action', function(Y) {
          * @private
          */
         execute: function() {
-            var params, entity = this.get("entity");
+            var params,
+                entity = this.get("entity");
 
             if (entity instanceof Wegas.persistence.GameModel) {
                 params = "gameModelId=" + entity.get("id");
@@ -277,7 +292,8 @@ YUI.add('wegas-editor-action', function(Y) {
          * @private
          */
         execute: function() {
-            var params, entity = this.get("entity");
+            var params,
+                entity = this.get("entity");
 
             if (entity instanceof Wegas.persistence.GameModel) {
                 params = "gameModelId=" + entity.get("id");
@@ -387,13 +403,12 @@ YUI.add('wegas-editor-action', function(Y) {
      * @name Y.Wegas.Linkwidget
      * @extends Y.Widget
      * @class  Allows to display the player link in a menu.
-     * the link is in a textField. For this field inputEx is used.
      * @constructor
      * @param Object Will be used to fill attributes field
      */
     Linkwidget = Y.Base.create("wegas-playerlink-buttons", Y.Widget, [Wegas.Widget, Wegas.Editable, Y.WidgetChild], {
         /** @lends Y.Wegas.Linkwidget# */
-        CONTENT_TEMPLATE: '<div><div class="playerlink-label"><p>Link</p><div></div>',
+        CONTENT_TEMPLATE: '<div><div class="playerlink-label"><p>Link</p></div><div class="input-wrapper"><input></div></div>',
         /**
          * 1) Add a <div class="playerlink-label"><p>Player link</p><div> node fordisplay a label in the menu
          * 2) Add the inputeExStringField
@@ -403,12 +418,9 @@ YUI.add('wegas-editor-action', function(Y) {
          */
         renderUI: function() {
             var cb = this.get(CONTENTBOX);
-            this.textField = new Y.inputEx.StringField({
-                parentEl: cb
-            });
             cb.on("click", function(e) {
                 e.halt(true);
-                this.textField.el.select();
+                this.get("contentBox").one("input").select();
             }, this);
         },
         /**
@@ -418,11 +430,9 @@ YUI.add('wegas-editor-action', function(Y) {
          */
         syncUI: function() {
             var game = this.get("entity") || Wegas.Facade.Game.cache.getCurrentGame(),
-                url = Wegas.app.get("base") + "game.html?token=" + game.get("token");
-            this.textField.setValue(url);
-        },
-        destructor: function() {
-            this.textField.destroy();
+                url = Wegas.app.get("base") + "game.html?token=" + game.get("token"),
+                input = this.get(CONTENTBOX).one("input").getDOMNode();
+            input.value = url;
         }
     }, {
         /** @lends Y.Wegas.Linkwidget */
@@ -442,67 +452,6 @@ YUI.add('wegas-editor-action', function(Y) {
         }
     });
     Wegas.Linkwidget = Linkwidget;
-
-    /**
-     * DEPRECATED Class for display the player link in menu's
-     *
-     * @name Y.Wegas.Linkwidget
-     * @extends Y.Widget
-     * @class  Allows to display the player link in a menu.
-     * the link is in a textField. For this field inputEx is used.
-     * @constructor
-     * @param Object Will be used to fill attributes field
-     */
-    /*
-    var JoinOrResumeButton = Y.Base.create("button", Wegas.Button, [], {
-        renderUI: function() {
-            JoinOrResumeButton.superclass.renderUI.apply(this);
-
-            var entity = this.get("entity"),
-                findInTeam = function(team) {
-                    return Y.Array.find(team.get("players"), function(p) {
-                        return p.get("userId") === Wegas.Facade.User.get("currentUserId");
-                    });
-                },
-                findInGame = function(game) {
-                    return game && Y.Array.find(game.get("teams"), findInTeam);
-                };
-
-            if (entity instanceof Wegas.persistence.Team) { // 1st case: clicked on an team
-                if (findInTeam(Wegas.Facade.RegisteredGames.cache.findById(entity.get("id")))) {
-                    this.set("label", "Open as Player")
-                        .plug(OpenGameAction, {
-                            url: "game-play.html?"
-                        });
-                    return;
-                } else if (findInGame(Wegas.Facade.RegisteredGames.cache.findById(entity.get("gameId")))) {
-                    this.set("disabled", true);
-                    return;
-                }
-            } else if (findInGame(Wegas.Facade.RegisteredGames.cache.findById(entity.get("id")))) {
-                this.set("label", "Open as Player")
-                    .plug(OpenGameAction, {
-                        entity: entity,
-                        url: "game-play.html?"
-                    });
-                return;
-            }
-            this.plug(OpenTabAction, {
-                tabSelector: "#rightTabView",
-                emptyTab: true,
-                wchildren: [{
-                        type: "JoinTeam",
-                        entity: this.get("entity")
-                    }]
-            });
-        }
-    }, {
-        ATTRS: {
-            entity: {}
-        }
-    });
-    Wegas.JoinOrResumeButton = JoinOrResumeButton;
-    */
 
     /**
      *  @name Y.Plugin.LeaveGameAction
@@ -593,16 +542,19 @@ YUI.add('wegas-editor-action', function(Y) {
                 } else {
                     if (inFormEntity instanceof Y.Wegas.persistence.VariableInstance) {
                         // Care about the descriptor
-                        inFormEntity = Y.Wegas.Facade.Variable.cache.find("id", inFormEntity.get("descriptorId"));
+                        inFormEntity = Y.Wegas.Facade.Variable.cache.find("id", inFormEntity.get("parentId"));
                     }
 
                     if (Y.Wegas.persistence.FSMDescriptor && entity instanceof Y.Wegas.persistence.FSMDescriptor) {
-                        if (inFormEntity.get("@class") === "Transition" || inFormEntity.get("@class") === "State") {
+                        if (inFormEntity.get("@class") === "Transition"){
                             removeTab = inFormEntity.get("stateMachineId") === entity.get("id");
+                        } else if (inFormEntity.get("@class") === "State") {
+                            removeTab = inFormEntity.get("parentId") === entity.get("id");
                         }
+
                     } else if (entity.get("@class") === "ChoiceDescriptor") {
                         if (inFormEntity.get("@class") === "Result") {
-                            removeTab = inFormEntity.get("choiceDescriptorId") === entity.get("id");
+                            removeTab = inFormEntity.get("parentId") === entity.get("id");
                         }
                     }
                 }
@@ -625,7 +577,8 @@ YUI.add('wegas-editor-action', function(Y) {
          * @description Detach all functions created by this widget.
          */
         destructor: function() {
-            var event, handler;
+            var event,
+                handler;
             for (event in this.handlers) {
                 if (this.handlers.hasOwnProperty(event)) {
                     handler = this.handlers[event];
@@ -644,4 +597,21 @@ YUI.add('wegas-editor-action', function(Y) {
     });
     Plugin.OnDeleteListener = OnDeleteListener;
 
+    var ToggleAdvancedTabsMode = Y.Base.create(
+        'ToggleAdvancedTabsMode',
+        Action,
+        [],
+        {
+            execute: function() {
+                Y.Wegas.Config.EditorAdvancedTabs = !Y.Wegas.Config.EditorAdvancedTabs;
+                Y.all(".wegas-plus-tab").show();
+            }
+        },
+        {
+            NS: 'toggleadvancedtabsmode',
+            ATTRS: {
+            }
+        }
+    );
+    Plugin.ToggleAdvancedTabsMode = ToggleAdvancedTabsMode;
 });

@@ -42,7 +42,9 @@ gulp.task("compress-css", ["submodule"], function () {
         "!**/node_modules/**",
         "!target/Wegas/wegas-lobby/**",
         "!target/Wegas/wegas-react-form/**",
+        "!target/Wegas/2/**",
         "!target/Wegas/wegas-stats/**/*.css",
+        "!target/**/dist/**",
         "!**/*-min.css"],
         {
             base: "target/Wegas"
@@ -72,9 +74,11 @@ gulp.task("compress-js", ["submodule"], function () {
         "!**/*-min.js",
         "!**/gulpfile.js",
         "!**/node_modules/**",
+        "!target/**/dist/**",
         "!target/Wegas/wegas-lobby/**",
         "!target/Wegas/wegas-react-form/**",
         "!target/Wegas/wegas-stats/**",
+        "!target/Wegas/2/**",
         "!target/Wegas/scripts/*.js"],
         {
             base: "target/Wegas"
@@ -107,8 +111,8 @@ gulp.task('yarn install', function () {
             'package.json': 'yarn'
         },
         yarn: ['--frozen-lockfile', '--production=false']
-    }))
-})
+    }));
+});
 gulp.task('clear', function (done) {
     "use strict";
     return cache.clearAll(done);

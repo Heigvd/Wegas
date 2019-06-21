@@ -18,11 +18,8 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.InstanceOwner;
-import com.wegas.core.persistence.game.DebugGame;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.game.*;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.aai.AaiRealm;
 import com.wegas.core.security.ejb.AccountFacade;
@@ -36,28 +33,6 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.ResourceBundle;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.naming.NamingException;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.script.ScriptContext;
-import javax.ws.rs.core.Response;
 import jdk.nashorn.api.scripting.ScriptUtils;
 import jdk.nashorn.internal.runtime.ScriptObject;
 import org.apache.shiro.SecurityUtils;
@@ -69,6 +44,22 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ThreadContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.naming.NamingException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.script.ScriptContext;
+import javax.ws.rs.core.Response;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -180,7 +171,7 @@ public class RequestManager implements RequestManagerI {
     private RequestEnvironment env = RequestEnvironment.STD;
 
     /**
-     * Default view is {@link Views#Public}
+     * Default view is {@link Views.Public}
      */
     private Class view = Views.Public.class;
 
@@ -445,7 +436,6 @@ public class RequestManager implements RequestManagerI {
      * in the destroyed one</li>
      * </ul>
      *
-     *
      * @param audience  entity audience
      * @param entity    the entity to register
      * @param container the container to register the entity in
@@ -686,6 +676,11 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
+    @Override
+    public void sendNotification(Object payload) {
+        this.sendCustomEvent("notificationEvent", payload);
+    }
+
     /**
      * how many exception have been registered ?
      * it number of event within {@link #events} which are instanceof
@@ -814,7 +809,6 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     *
      * @param token token to lock
      */
     @Override
@@ -835,7 +829,6 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     *
      * @param token  token to lock
      * @param target scope to inform about the lock
      */
@@ -861,7 +854,6 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     *
      * @param token  token to release
      * @param target scope to inform about the lock
      */
@@ -869,7 +861,7 @@ public class RequestManager implements RequestManagerI {
     public void unlock(String token, InstanceOwner target) {
         String audience = getAudienceToLock(target);
         logger.debug("UNLOCK \"{}\" for \"{}\"", token, audience);
-        concurrentHelper.unlock(token, audience);
+        concurrentHelper.unlock(token, audience, false);
         if (lockedToken.containsKey(token)) {
             List<String> audiences = lockedToken.get(token);
 
@@ -1028,8 +1020,8 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Lifecycle callback. Telease all locks after the request and log the
-     * request sumary
+     * Lifecycle callback. Release all locks after the request and log the
+     * request summary
      */
     @PreDestroy
     public void preDestroy() {
@@ -1038,7 +1030,7 @@ public class RequestManager implements RequestManagerI {
             logger.debug("PreDestroy Unlock: key: {}", entry.getKey());
             for (String audience : entry.getValue()) {
                 logger.debug("->ConcurrentHelper unlockFull for {}", audience);
-                concurrentHelper.unlockFull(entry.getKey(), audience);
+                concurrentHelper.unlockFull(entry.getKey(), audience, false);
             }
         }
 
@@ -1255,7 +1247,11 @@ public class RequestManager implements RequestManagerI {
 
         if (game instanceof DebugGame) {
             // when checked against a DebugGame, must have scenarist rights
-            return this.hasGameModelPermission(game.getGameModel(), superPermission);
+            if (superPermission) {
+                return this.hasGameModelPermission(game.getGameModel(), (WegasEntityPermission) game.getGameModel().getAssociatedWritePermission());
+            } else {
+                return this.hasGameModelPermission(game.getGameModel(), (WegasEntityPermission) game.getGameModel().getAssociatedReadPermission());
+            }
         } else {
             return !(game.isPersisted() || gameFacade.isPersisted(game.getId())) // game is a new one (only exists wihin this very transaction)
                     || this.hasDirectGameEditPermission(game) //has edit right on  the game
@@ -1273,12 +1269,12 @@ public class RequestManager implements RequestManagerI {
      * A superPermission (write) is permitted if <ul>
      * <li>The game model is not yet persisted</li>
      * <li>OR shiro EDIT permission on the gameModel is permitted</li>
-     * <li>OR the gameModel is a {@link PLAY} one and currentUser has superPermission on the underlying game</li>
+     * <li>OR the gameModel is a {@link GameModel.Status#PLAY} one and currentUser has superPermission on the underlying game</li>
      * </ul>
      * <p/>
      * A "normal" (readonly) permission is permitted if <ul>
      * <li>any of the superPermission condition</li>
-     * <li>OR the gameModel is a {@link PLAY} one and currentUser has read on the underlying game</li>
+     * <li>OR the gameModel is a {@link GameModel.Status#PLAY} one and currentUser has read on the underlying game</li>
      * <li>OR the currentUser is a trainer/scenarist and has shiro Instantiate or Duplicate permission</li>
      * <li>OR the currentUser has shiro View permission</li>
      * </ul>
@@ -1288,17 +1284,17 @@ public class RequestManager implements RequestManagerI {
      *
      * @return true if permitted
      */
-    private boolean hasGameModelPermission(GameModel gameModel, boolean superPermission) {
-        // not yet persisted means the gameModel is being created right kown
-        if (!(gameModel.isPersisted() || gameModelFacade.isPersisted(gameModel.getId())) || hasDirectGameModelEditPermission(gameModel)) {
+    private boolean hasGameModelPermission(GameModel gameModel, WegasEntityPermission thePerm) {
+        if (!(gameModel.isPersisted() || gameModelFacade.isPersisted(gameModel.getId())) // not yet persisted means the gameModel is being created right kown
+                || hasDirectGameModelEditPermission(gameModel)) {
             return true;
-        } else if (gameModel.getStatus().equals(GameModel.Status.PLAY)) {
+        } else if (gameModel.isPlay()) {
             /**
              * GameModel permission against a "PLAY" gameModel.
              */
             for (Game game : gameModel.getGames()) {
                 // has permission to at least on game of the game model ?
-                if (this.hasGamePermission(game, superPermission)) {
+                if (this.hasGamePermission(game, thePerm.getLevel() == WegasEntityPermission.Level.READ ? false : true)) {
                     return true;
                 }
             }
@@ -1308,14 +1304,22 @@ public class RequestManager implements RequestManagerI {
              * GameModel permission against a true gameModel.
              */
             long id = gameModel.getId();
-            if (!superPermission) {
+            if (thePerm.getLevel() == WegasEntityPermission.Level.READ) {
                 if ((this.hasRole("Trainer") || this.hasRole("Scenarist"))
-                        && (this.isPermitted("GameModel:Instantiate:gm" + id) || this.isPermitted("GameModel:Duplicate:gm" + id))) {
+                        && (this.isPermitted("GameModel:Instantiate:gm" + id)
+                        || this.isPermitted("GameModel:Duplicate:gm" + id)
+                        || this.isPermitted("GameModel:Translate-:gm" + id))) {
                     //For scenarist and trainer, instantiate and duplicate means read
                     return true;
                 }
                 // fallback: View means View
                 return this.isPermitted("GameModel:View:gm" + id);
+            } else if (thePerm.getLevel() == WegasEntityPermission.Level.TRANSLATE) {
+                if ((this.hasRole("Trainer") || this.hasRole("Scenarist"))
+                        && (this.isPermitted("GameModel:Translate-" + thePerm.getPayload() + ":gm" + id))) {
+                    return true;
+                }
+                return false;
             } else {
                 return false;
             }
@@ -1336,20 +1340,24 @@ public class RequestManager implements RequestManagerI {
         switch (perm.getType()) {
             case GAMEMODEL:
                 GameModel gameModel = gameModelFacade.find(perm.getId());
-                return this.hasGameModelPermission(gameModel, perm.getLevel() == WegasEntityPermission.Level.WRITE);
+                return this.hasGameModelPermission(gameModel, perm);
             case GAME:
                 Game game = gameFacade.find(perm.getId());
-                return this.hasGamePermission(game, perm.getLevel() == WegasEntityPermission.Level.WRITE);
+                return this.hasGamePermission(game, perm.getLevel() == WegasEntityPermission.Level.WRITE) 
+                        || this.hasGameModelTranslateRight(game.getGameModel());
             case TEAM:
                 Team team = teamFacade.find(perm.getId());
                 return team != null && ((currentUser != null && (playerFacade.isInTeam(team.getId(), currentUser.getId()) // Current logged User is linked to a player who's member of the team
                         || currentUser.equals(team.getCreatedBy()) // or current user is the team creator
                         )
-                        || this.hasGamePermission(team.getGame(), perm.getLevel() == WegasEntityPermission.Level.WRITE))); // or read (or write for superP) right one the game
+                        || this.hasGamePermission(team.getGame(), perm.getLevel() == WegasEntityPermission.Level.WRITE)) // or read (or write for superP) right one the game
+                        || this.hasGameModelTranslateRight(team.getParentGameModel()));
             case PLAYER:
                 Player player = playerFacade.find(perm.getId());
                 // Current player belongs to current user || current user is the teacher or scenarist (test user)
-                return player != null && ((currentUser != null && currentUser.equals(player.getUser())) || this.hasGamePermission(player.getGame(), perm.getLevel() == WegasEntityPermission.Level.WRITE));
+                return player != null && ((currentUser != null && currentUser.equals(player.getUser()))
+                        || this.hasGamePermission(player.getGame(), perm.getLevel() == WegasEntityPermission.Level.WRITE)
+                        || this.hasGameModelTranslateRight(player.getGameModel()));
             case USER:
                 User find = userFacade.find(perm.getId());
                 return currentUser != null && currentUser.equals(find);
@@ -1437,7 +1445,7 @@ public class RequestManager implements RequestManagerI {
      *
      * @throws WegasAccessDenied permissions is not null and no permission in permissions is permitted
      */
-    private void assertUserHasPermission(Collection<WegasPermission> permissions, String type, AbstractEntity entity) throws WegasAccessDenied {
+    private void assertUserHasPermission(Collection<WegasPermission> permissions, String type, WithPermission entity) throws WegasAccessDenied {
         log("HAS  PERMISSION: {} / {} / {}", type, permissions, entity);
         logIndent++;
         if (!hasAnyPermission(permissions)) {
@@ -1456,7 +1464,7 @@ public class RequestManager implements RequestManagerI {
      *
      * @throws WegasAccessDenied currentUser do NOT have the permission
      */
-    public void assertCreateRight(AbstractEntity entity) {
+    public void assertCreateRight(WithPermission entity) {
         this.assertUserHasPermission(entity.getRequieredCreatePermission(), "Create", entity);
     }
 
@@ -1467,7 +1475,7 @@ public class RequestManager implements RequestManagerI {
      *
      * @throws WegasAccessDenied currentUser do NOT have the permission
      */
-    public void assertReadRight(AbstractEntity entity) {
+    public void assertReadRight(WithPermission entity) {
         this.assertUserHasPermission(entity.getRequieredReadPermission(), "Read", entity);
     }
 
@@ -1478,7 +1486,7 @@ public class RequestManager implements RequestManagerI {
      *
      * @throws WegasAccessDenied currentUser do NOT have the permission
      */
-    public void assertUpdateRight(AbstractEntity entity) {
+    public void assertUpdateRight(WithPermission entity) {
         this.assertUserHasPermission(entity.getRequieredUpdatePermission(), "Update", entity);
     }
 
@@ -1489,7 +1497,7 @@ public class RequestManager implements RequestManagerI {
      *
      * @throws WegasAccessDenied currentUser do NOT have the permission
      */
-    public void assertDeleteRight(AbstractEntity entity) {
+    public void assertDeleteRight(WithPermission entity) {
         this.assertUserHasPermission(entity.getRequieredDeletePermission(), "Delete", entity);
     }
 
@@ -1544,6 +1552,14 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
+     * {@inheritDoc }
+     */
+    @Override
+    public boolean hasGameModelTranslateRight(final GameModel gameModel) {
+        return this.hasPermission(gameModel.getAssociatedTranslatePermission(""));
+    }
+
+    /**
      * Can the currentUser acts as a member of the given team
      *
      * @param team the team the currentUser want to use
@@ -1581,15 +1597,33 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * has the currentUser the right to restore the given gameModel from the bin
+     * has the currentUser the right to instantiate the given gameModel
      *
-     * @param gameModel the game model to restore
+     * @param gameModel the game model to instantiate
      *
-     * @return whether or not the user can move gameModel from the bin
+     * @return whether or not the user can instantiate the gameModel
+     */
+    public boolean canInstantiateGameModel(final GameModel gameModel) {
+        GameModel theOne;
+        if (gameModel.isPlay() && gameModel.getBasedOnId() != null) {
+            theOne = gameModel.getBasedOn();
+        } else {
+            theOne = gameModel;
+        }
+        String id = "gm" + theOne.getId();
+        return this.isPermitted("GameModel:Instantiate:" + id);
+    }
+
+    /**
+     * has the currentUser the right to duplicate the given gameModel
+     *
+     * @param gameModel the game model to duplicate
+     *
+     * @return whether or not the user can duplicate gameModel
      */
     public boolean canDuplicateGameModel(final GameModel gameModel) {
         GameModel theOne;
-        if (gameModel.getStatus().equals(GameModel.Status.PLAY) && gameModel.getBasedOn() != null) {
+        if (gameModel.isPlay() && gameModel.getBasedOnId() != null) {
             theOne = gameModel.getBasedOn();
         } else {
             theOne = gameModel;
@@ -1660,6 +1694,17 @@ public class RequestManager implements RequestManagerI {
     public void assertCanReadGameModel(final GameModel gameModel) {
         if (!hasGameModelReadRight(gameModel)) {
             throw new WegasAccessDenied(gameModel, "Read", gameModel.getRequieredReadPermission().toString(), this.getCurrentUser());
+        }
+    }
+
+    /**
+     * Assert currentUser has the right to instantiate gameModel
+     *
+     * @param gameModel the GameModel to check right against
+     */
+    public void assertCanInstantiateGameModel(final GameModel gameModel) {
+        if (!canInstantiateGameModel(gameModel)) {
+            throw new WegasAccessDenied(gameModel, "Duplicate", "Not allowed to duplicate the scenario", this.getCurrentUser());
         }
     }
 
@@ -1760,8 +1805,7 @@ public class RequestManager implements RequestManagerI {
      *
      * @return
      */
-    public static RequestManager
-            lookup() {
+    public static RequestManager lookup() {
         try {
             return Helper.lookupBy(RequestManager.class
             );

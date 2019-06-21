@@ -23,14 +23,17 @@ public class NHClassLoader extends ClassLoader {
         "java.lang.System",
         "java.lang.Thread",
         "java.lang.Runtime",
-        "org.apache.shiro"
+        "org.apache.shiro",
+        "org.postgresql",
+        "java.sql",
+        "java.net"
     };
 
     Logger logger = LoggerFactory.getLogger(NHClassLoader.class);
 
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
-        logger.error("Try to load {}", name);
+        logger.trace("Try to load {}", name);
         for (String s : blacklist) {
             if (name.startsWith(s)) {
                 logger.error("{} is blacklisted !", name);
@@ -40,10 +43,10 @@ public class NHClassLoader extends ClassLoader {
 
         try {
             Class<?> loadClass = Thread.currentThread().getContextClassLoader().loadClass(name);
-            logger.error("LOAD {}", loadClass);
+            logger.trace("LOAD {}", loadClass);
             return loadClass;
         } catch (ClassNotFoundException ex) {
-            logger.error("LOAD ERROR {}", name);
+            logger.trace("LOAD ERROR {}", name);
             throw ex;
         }
     }

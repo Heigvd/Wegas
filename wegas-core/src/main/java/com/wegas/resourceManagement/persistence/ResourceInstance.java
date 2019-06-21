@@ -10,14 +10,20 @@ package com.wegas.resourceManagement.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AcceptInjection;
-import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.EmptyMap;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
@@ -45,32 +51,53 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
      */)
     @JsonManagedReference
     @OrderColumn
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            callback = ResourceInstanceMergeCallback.class,
+            view = @View(label = "", value = Hidden.class))
     private List<Assignment> assignments = new ArrayList<>();
     /**
      *
      */
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(
+                    label = "Occupations",
+                    description = "[period]"
+            ))
     private List<Occupation> occupations = new ArrayList<>();
     /**
      *
      */
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            callback = ResourceInstanceMergeCallback.class,
+            view = @View(label = "Activities",
+                    value = Hidden.class
+            ))
     private List<Activity> activities = new ArrayList<>();
     /**
      *
      */
+    @WegasEntityProperty(view = @View(label = "Active"))
     private boolean active = true;
     /**
      *
      */
     @ElementCollection
     @JsonIgnore
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyMap.class,
+            view = @View(label = "Instance properties", featureLevel = ADVANCED))
     private List<VariableProperty> properties = new ArrayList<>();
     /**
      *
      */
+    @WegasEntityProperty(view = @View(label = "Confidence", value = Hidden.class))
     private int confidence;
 
     @JsonIgnore
@@ -82,68 +109,6 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
     @JsonIgnore
     @Transient
     private Beanjection beans;
-
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof ResourceInstance) {
-            ResourceInstance other = (ResourceInstance) a;
-            super.merge(a);
-            this.setActive(other.getActive());
-            if (other.getAssignments() != null) {
-                //ListUtils.mergeLists(this.getAssignments(), other.getAssignments());
-                this.setAssignments(
-                        ListUtils.mergeLists(this.getAssignments(), other.getAssignments(), new ListUtils.Updater() {
-                            @Override
-                            public void addEntity(AbstractEntity entity) {
-                            }
-
-                            @Override
-                            public void removeEntity(AbstractEntity entity) {
-                                if (entity instanceof Assignment) {
-                                    Assignment assignment = (Assignment) entity;
-                                    TaskInstance parent = (TaskInstance) beans.getVariableInstanceFacade().find(assignment.getTaskInstance().getId());
-                                    if (parent != null) {
-                                        parent.removeAssignment(assignment);
-                                    }
-                                }
-                            }
-                        }));
-            }
-            if (other.getActivities() != null) {
-                this.setActivities(ListUtils.mergeLists(this.getActivities(), other.getActivities(), new ListUtils.Updater() {
-                    @Override
-                    public void addEntity(AbstractEntity entity) {
-                        // activity.taskInstance is revived in ResourceFacade.revive
-                    }
-
-                    @Override
-                    public void removeEntity(AbstractEntity entity) {
-                        Activity activity = (Activity) entity;
-                        TaskInstance tdParent = (TaskInstance) beans.getVariableInstanceFacade().find(activity.getTaskInstance().getId());
-                        if (tdParent != null) {
-                            tdParent.removeActivity(activity);
-                        }
-                        if (activity.getRequirement() != null) {
-                            activity.getRequirement().removeActivity(activity);
-                        }
-                    }
-                }));
-            }
-            if (other.getOccupations() != null) {
-                //this.setOccupations(ListUtils.mergeLists(this.getOccupations(), other.getOccupations(), new UpdaterImpl(this)));
-                this.setOccupations(ListUtils.mergeLists(this.occupations, other.occupations));
-            }
-            this.setProperties(other.getProperties());
-            //this.setProperties(other.getProperties());
-            this.setConfidence(other.getConfidence());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
-    }
 
     /**
      * @return the assignments
@@ -353,6 +318,30 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
         Assignment assignment = this.assignments.remove(currentPosition.intValue());
         this.assignments.add(nextPosition, assignment);
         return this.assignments;
+    }
+
+    public static class ResourceInstanceMergeCallback implements WegasCallback {
+
+        @Override
+        public Object remove(Object entity, Mergeable container, Object identifier) {
+            if (entity instanceof Assignment) {
+                Assignment assignment = (Assignment) entity;
+                TaskInstance parent = (TaskInstance) VariableInstanceFacade.lookup().find(assignment.getTaskInstance().getId());
+                if (parent != null) {
+                    parent.removeAssignment(assignment);
+                }
+            } else if (entity instanceof Activity) {
+                Activity activity = (Activity) entity;
+                TaskInstance tdParent = (TaskInstance) VariableInstanceFacade.lookup().find(activity.getTaskInstance().getId());
+                if (tdParent != null) {
+                    tdParent.removeActivity(activity);
+                }
+                if (activity.getRequirement() != null) {
+                    activity.getRequirement().removeActivity(activity);
+                }
+            }
+            return null;
+        }
     }
 
     /*

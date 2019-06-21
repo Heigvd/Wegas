@@ -8,8 +8,8 @@
 package com.wegas.core.security.jparealm;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.Helper;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.security.persistence.AbstractAccount;
 import javax.persistence.*;
 import org.apache.shiro.crypto.RandomNumberGenerator;
@@ -36,6 +36,7 @@ public class JpaAccount extends AbstractAccount {
      *
      */
     @Transient
+    @WegasEntityProperty(ignoreNull = true)
     private String password;
     /**
      *
@@ -44,25 +45,18 @@ public class JpaAccount extends AbstractAccount {
     @Column(length = 255)
     @JsonIgnore
     private String passwordHex;
+
+    @Column(columnDefinition = "boolean default false")
+    private Boolean verified = false;
+
+    @JsonIgnore
+    private String token;
+
     /**
      *
      */
     @JsonIgnore
     private String salt;
-
-    @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof JpaAccount) {
-            super.merge(other);
-            JpaAccount a = (JpaAccount) other;
-            if (a.getPassword() != null && !a.getPassword().isEmpty()) {                                          // Only update the password if it is set
-                this.setPassword(a.getPassword());
-                this.setPasswordHex(null);                                          // Force jpa update
-            }
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + other.getClass().getSimpleName() + ") is not possible");
-        }
-    }
 
     /**
      *
@@ -103,6 +97,9 @@ public class JpaAccount extends AbstractAccount {
      */
     public void setPassword(String password) {
         this.password = password;
+        if (!Helper.isNullOrEmpty(password)) {
+            this.setPasswordHex(null); //force JPA update (password is JPA transient)
+        }
     }
 
     /**
@@ -133,4 +130,20 @@ public class JpaAccount extends AbstractAccount {
         this.salt = salt;
     }
 
+    @Override
+    public Boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(Boolean verified) {
+        this.verified = verified;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 }

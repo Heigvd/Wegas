@@ -13,17 +13,19 @@ import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -32,7 +34,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.shiro.SecurityUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 
@@ -100,13 +102,11 @@ public class GameController {
      *
      * @return the new game with its debug team filtered out
      *
-     * @throws IOException
+     * @throws java.lang.CloneNotSupportedException
+     *
      */
     @POST
-    public Game create(@PathParam("gameModelId") Long gameModelId, Game game) throws IOException {
-        // Special instantiate permission is not handled by automatic permission system
-        SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
-
+    public Game create(@PathParam("gameModelId") Long gameModelId, Game game) throws CloneNotSupportedException {
         gameFacade.publishAndCreate(gameModelId, game);
         //@Dirty: those lines exist to get a new game pointer. Cache is messing with it
         // removing debug team will stay in cache as this game pointer is new. work around
@@ -131,9 +131,6 @@ public class GameController {
     @Path("ShadowCreate")
     @Deprecated
     public Game shadowCreate(@PathParam("gameModelId") Long gameModelId, Game entity) throws IOException {
-        // Special instantiate permission is not handled by automatic permission system
-        SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
-
         gameFacade.create(gameModelId, entity);
         return gameFacade.getGameWithoutDebugTeam(entity);
     }
@@ -146,11 +143,12 @@ public class GameController {
      *
      * @return the new game with its debug team
      *
-     * @throws IOException
+     * @throws java.lang.CloneNotSupportedException
+     *
      */
     @POST
     @Path("{gmId : [1-9][0-9]*}")
-    public Game createBis(@PathParam("gmId") Long gameModelId, Game entity) throws IOException {
+    public Game createBis(@PathParam("gmId") Long gameModelId, Game entity) throws CloneNotSupportedException {
         return this.create(gameModelId, entity);
     }
 
@@ -220,6 +218,51 @@ public class GameController {
     @Path("status/{status: [A-Z]*}/count")
     public int countByStatus(@PathParam("status") final Game.Status status) {
         return findByStatus(status).size();
+    }
+
+    public static StringBuilder appendCSVField(StringBuilder sb, String value) {
+        if (value != null) {
+            sb.append(StringEscapeUtils.escapeCsv(value));
+        }
+        return sb;
+    }
+
+    @GET
+    @Path("{gameId : [1-9][0-9]*}/ExportMembers")
+    public Response forward(@PathParam("gameId") Long gameId) throws UnsupportedEncodingException {
+        Game game = gameFacade.find(gameId);
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("\"Team Name\", \"Team Notes\", \"Team Creation Date\", \"Team Status\",");
+        sb.append("\"Player Name\", \"Player email\", \"Email verified\", \"Player Join Time\", \"Player Language\", \"Player Status\"");
+        sb.append(System.lineSeparator());
+
+        for (Team t : game.getTeams()) {
+            if (t instanceof DebugTeam == false) {
+                for (Player p : t.getPlayers()) {
+                    appendCSVField(sb, t.getName()).append(",");
+                    appendCSVField(sb, t.getNotes()).append(",");
+                    appendCSVField(sb, t.getCreatedTime().toString()).append(",");
+                    appendCSVField(sb, t.getStatus().name()).append(",");
+                    appendCSVField(sb, p.getName()).append(",");
+                    if (p.getUser() != null) {
+                        appendCSVField(sb, p.getUser().getMainAccount().getEmail()).append(",");
+                        appendCSVField(sb, Boolean.TRUE.equals(p.getUser().getMainAccount().isVerified()) ? "yes" : "no").append(",");
+                    } else {
+                        sb.append(",").append(",");
+                    }
+                    appendCSVField(sb, p.getJoinTime().toString()).append(",");
+                    appendCSVField(sb, game.getGameModel().getLanguageByCode(p.getLang()).getLang()).append(",");
+                    appendCSVField(sb, p.getStatus().name()).append(System.lineSeparator());
+                }
+            }
+        }
+
+        String filename = URLEncoder.encode(game.getName().replaceAll("\\" + "s+", "_") + ".csv", StandardCharsets.UTF_8.displayName());
+
+        return Response.ok(sb.toString(), "text/csv")
+                .header("Content-Disposition", "attachment; filename="
+                        + filename).build();
     }
 
     /**

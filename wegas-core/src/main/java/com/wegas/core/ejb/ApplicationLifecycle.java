@@ -8,8 +8,6 @@
 package com.wegas.core.ejb;
 
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.LifecycleEvent;
-import com.hazelcast.core.LifecycleListener;
 import com.hazelcast.core.Member;
 import com.hazelcast.core.MemberAttributeEvent;
 import com.hazelcast.core.MembershipEvent;
@@ -34,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 @Singleton
 @LocalBean
-public class ApplicationLifecycle implements MembershipListener, LifecycleListener {
+public class ApplicationLifecycle implements MembershipListener/*, LifecycleListener*/ {
 
     private static final Gauge hazelCastSize = Gauge.build().name("cluster_size").help("Number of hazelcast members").register();
     private static final Gauge internalSize = Gauge.build().name("internalcluster_size").help("Number of hazelcast members in locallist").register();
@@ -77,6 +75,9 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
     @Inject
     private WebsocketFacade websocketFacade;
 
+    @Inject
+    private ConcurrentHelper concurrentHelper;
+
     public void addMember(String member) {
         if (!this.clusterMembers.contains(member)) {
             internalSize.inc();
@@ -108,7 +109,7 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
      * @param memberUUID new instance uuid
      */
     public void instanceDown(@Observes @Inbound(eventName = LIFECYCLE_DOWN) String memberUUID) {
-        logger.info("REMOVE MEMBER {}",  memberUUID);
+        logger.info("REMOVE MEMBER {}", memberUUID);
         this.removeMember(memberUUID);
         //logger.error("EVENTRECEIVED: {} -> {} ", event.getMember(), event.isUp());
         logClusterInfo(null);
@@ -128,7 +129,7 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
     /**
      * Return the current numnber of member, base on the local list of members
      *
-     * @return  size of the local list of members
+     * @return size of the local list of members
      */
     public int countMembers() {
         return clusterMembers.size();
@@ -190,19 +191,46 @@ public class ApplicationLifecycle implements MembershipListener, LifecycleListen
         return clusterMembers;
     }
 
-    @Override
+    /*@Override
     public void stateChanged(LifecycleEvent event) {
+        logger.error("LifecycleEvent: {}", event);
         if (event.getState() == LifecycleEvent.LifecycleState.SHUTTING_DOWN) {
-            /*
-             * Inform other instance this instance is shutting down
-             * This mechanism has the same purpose as MembershipListener.memberRemoved,
-             * but occurs sooner.
-             * It's usefull when all instances are stopped at the exact same time.
-             */
-            this.sendInstanceDownEvent(this.hzInstance.getCluster().getLocalMember().getUuid());
+            //this.hZshutdown();
+        }
+    }*/
+
+    public void hZshutdown() {
+        try {
+            concurrentHelper.releaseLocalLocks();
+        } catch (Exception ex) {
+            logger.error("Error While Releasing locks: {}", ex);
         }
 
-        logClusterInfo("LifecycleEvent: " + event.getState());
+        /*
+         * Inform other instance this instance is shutting down
+         * This mechanism has the same purpose as MembershipListener.memberRemoved,
+         * but occurs sooner.
+         * It's usefull when all instances are stopped at the exact same time.
+         */
+        try {
+            this.sendInstanceDownEvent(this.hzInstance.getCluster().getLocalMember().getUuid());
+        } catch (Exception ex) {
+            logger.error("Error while sending downEvent: {}", ex);
+        }
+
+        try {
+            logClusterInfo("PreHzShutdown: ");
+        } catch (Exception ex) {
+            logger.error("Log Cluster error: {}", ex);
+        }
+        try {
+            String shutdownHook = System.getProperty("hazelcast.shutdownhook.enabled", "true");
+            if ("false".equals(shutdownHook)) {
+                hzInstance.shutdown();
+            }
+        } catch (Exception ex) {
+            logger.error("HzShutdown Error: {}", ex);
+        }
     }
 
     public void sendWegasReadyEvent() {

@@ -61,6 +61,16 @@ public interface RequestManagerI {
     boolean hasGameModelWriteRight(final GameModel gameModel);
 
     /**
+     * Check if the currentUser can translate at least one language of the gameModel
+     *
+     * @param gameModel the gameModel to check rights against
+     *
+     * @return true if the current user can translate the gameModel
+     *
+     */
+    boolean hasGameModelTranslateRight(final GameModel gameModel);
+
+    /**
      * Check if the currentUser can write the game
      *
      * @param game the game to check rights against
@@ -105,6 +115,13 @@ public interface RequestManagerI {
      * @param payload object associated with that event
      */
     void sendCustomEvent(String type, Object payload);
+
+    /**
+     * Shortcut to sendCustomEvent("notificationEvent", payload);
+     * <p>
+     * @param payload {content: "the message", timeout : 0}
+     */
+    void sendNotification(Object payload);
 
     /**
      * Try to Lock the token. Non-blocking. Return true if token has been

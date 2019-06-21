@@ -1,0 +1,914 @@
+{
+    "@class": "GameModel",
+    "pages": {
+        "1": {
+            "type": "AbsoluteLayout",
+            "children": [{
+                    "type": "NumberTemplate",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "25px",
+                                    "left": "33px",
+                                    "zIndex": "10",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "",
+                                    "height": ""
+                                }
+                            }
+                        }],
+                    "variable": {
+                        "@class": "Script",
+                        "content": "Variable.find(gameModel, \"aNumber\");\n"
+                    },
+                    "data": {
+                        "label": "sdfsfs"
+                    }
+                }],
+            "@name": null,
+            "@index": 0
+        }
+    },
+    "name": "MyLittleScenario",
+    "description": "",
+    "comments": null,
+    "createdTime": 1493294133049,
+    "scriptLibrary": {},
+    "cssLibrary": {},
+    "clientScriptLibrary": {},
+    "properties": {
+        "freeForAll": false,
+        "guestAllowed": false,
+        "pagesUri": "",
+        "cssUri": "",
+        "websocket": "",
+        "logID": null,
+        "scriptUri": "",
+        "clientScriptUri": "",
+        "imageUri": "",
+        "iconUri": ""
+    },
+    "items": [{
+            "@class": "ListDescriptor",
+            "comments": "",
+            "defaultInstance": {
+                "@class": "ListInstance",
+                "version": 1,
+                "scopeKey": null
+            },
+            "label": "ListDescriptor",
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "title": null,
+            "name": "private",
+            "version": 18,
+            "items": [{
+                    "@class": "QuestionDescriptor",
+                    "comments": "",
+                    "defaultInstance": {
+                        "@class": "QuestionInstance",
+                        "version": 1,
+                        "active": true,
+                        "unread": true,
+                        "validated": false,
+                        "scopeKey": null
+                    },
+                    "label": "aQuestion",
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": "",
+                    "name": "aQuestion",
+                    "version": 2,
+                    "description": "",
+                    "allowMultipleReplies": false,
+                    "cbx": false,
+                    "tabular": false,
+                    "items": [{
+                            "@class": "SingleResultChoiceDescriptor",
+                            "comments": "",
+                            "defaultInstance": {
+                                "@class": "ChoiceInstance",
+                                "version": 1,
+                                "active": true,
+                                "unread": false,
+                                "replies": [],
+                                "currentResultName": null,
+                                "scopeKey": null
+                            },
+                            "label": "aSingleResultChoiceDescriptor",
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "title": "",
+                            "name": "aSingleResultChoiceDescriptor",
+                            "version": 1,
+                            "results": [{
+                                    "@class": "Result",
+                                    "version": 1,
+                                    "name": "result",
+                                    "label": "New Result",
+                                    "answer": "",
+                                    "ignorationAnswer": "",
+                                    "files": [],
+                                    "impact": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "ignorationImpact": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    }
+                                }],
+                            "description": "",
+                            "duration": 1,
+                            "cost": 0
+                        }, {
+                            "@class": "ChoiceDescriptor",
+                            "comments": "",
+                            "defaultInstance": {
+                                "@class": "ChoiceInstance",
+                                "version": 3,
+                                "active": true,
+                                "unread": false,
+                                "replies": [],
+                                "currentResultName": null,
+                                "scopeKey": null
+                            },
+                            "label": "aChoiceDescriptor",
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "title": "",
+                            "name": "aChoiceDescriptor",
+                            "version": 1,
+                            "results": [{
+                                    "@class": "Result",
+                                    "version": 2,
+                                    "name": "aResult",
+                                    "label": "aResult",
+                                    "answer": "",
+                                    "ignorationAnswer": "",
+                                    "files": [],
+                                    "impact": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "ignorationImpact": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    }
+                                }, {
+                                    "@class": "Result",
+                                    "version": 1,
+                                    "name": "aSecondResult",
+                                    "label": "aSecondResult",
+                                    "answer": "",
+                                    "ignorationAnswer": "",
+                                    "files": [],
+                                    "impact": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "ignorationImpact": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    }
+                                }],
+                            "description": "",
+                            "duration": 1,
+                            "cost": 0
+                        }],
+                    "pictures": []
+                }, {
+                    "@class": "TextDescriptor",
+                    "comments": "",
+                    "defaultInstance": {
+                        "@class": "TextInstance",
+                        "version": 2,
+                        "value": "<p>fdssfdsf</p>",
+                        "scopeKey": null
+                    },
+                    "label": "aText",
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null,
+                    "name": "aText",
+                    "version": 3
+                }, {
+                    "@class": "NumberDescriptor",
+                    "comments": "",
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "version": 1,
+                        "history": [],
+                        "value": 0.0,
+                        "scopeKey": null
+                    },
+                    "label": "aNumber",
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null,
+                    "name": "aNumber",
+                    "version": 3,
+                    "minValue": null,
+                    "maxValue": null,
+                    "historySize": 20,
+                    "defaultValue": 0.0
+                }, {
+                    "@class": "TriggerDescriptor",
+                    "comments": "",
+                    "defaultInstance": {
+                        "@class": "TriggerInstance",
+                        "version": 1,
+                        "currentStateId": 1,
+                        "enabled": true,
+                        "transitionHistory": [],
+                        "scopeKey": null,
+                        "currentState": {
+                            "@class": "State",
+                            "version": 4,
+                            "editorPosition": null,
+                            "label": null,
+                            "onEnterEvent": null,
+                            "transitions": [{
+                                    "@class": "Transition",
+                                    "version": 1,
+                                    "index": 0,
+                                    "nextStateId": 2,
+                                    "preStateImpact": null,
+                                    "triggerCondition": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    }
+                                }]
+                        }
+                    },
+                    "label": "aTrigger",
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null,
+                    "name": "aTrigger",
+                    "version": 4,
+                    "states": {
+                        "2": {
+                            "@class": "State",
+                            "version": 4,
+                            "editorPosition": null,
+                            "label": null,
+                            "onEnterEvent": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"aNumber\").add(self, 1);\n",
+                                "language": "JavaScript"
+                            },
+                            "transitions": [{
+                                    "@class": "Transition",
+                                    "version": 1,
+                                    "index": 0,
+                                    "nextStateId": 1,
+                                    "preStateImpact": null,
+                                    "triggerCondition": {
+                                        "@class": "Script",
+                                        "content": "true",
+                                        "language": "javascript"
+                                    }
+                                }]
+                        },
+                        "1": {
+                            "@class": "State",
+                            "version": 4,
+                            "editorPosition": null,
+                            "label": null,
+                            "onEnterEvent": null,
+                            "transitions": [{
+                                    "@class": "Transition",
+                                    "version": 1,
+                                    "index": 0,
+                                    "nextStateId": 2,
+                                    "preStateImpact": null,
+                                    "triggerCondition": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    }
+                                }]
+                        }
+                    },
+                    "oneShot": false,
+                    "disableSelf": true,
+                    "triggerEvent": {
+                        "@class": "Script",
+                        "content": "",
+                        "language": "JavaScript"
+                    },
+                    "postTriggerEvent": {
+                        "@class": "Script",
+                        "content": "Variable.find(gameModel, \"aNumber\").add(self, 1);\n",
+                        "language": "JavaScript"
+                    }
+                }, {
+                    "@class": "FSMDescriptor",
+                    "comments": "",
+                    "defaultInstance": {
+                        "@class": "FSMInstance",
+                        "version": 1,
+                        "currentStateId": 1,
+                        "enabled": true,
+                        "transitionHistory": [],
+                        "scopeKey": null,
+                        "currentState": {
+                            "@class": "State",
+                            "version": 8,
+                            "editorPosition": {
+                                "@class": "Coordinate",
+                                "x": 30,
+                                "y": 30
+                            },
+                            "label": null,
+                            "onEnterEvent": null,
+                            "transitions": [{
+                                    "@class": "Transition",
+                                    "version": 2,
+                                    "index": 0,
+                                    "nextStateId": 2,
+                                    "preStateImpact": {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"aNumber\").setValue(self, 1000);\n",
+                                        "language": "JavaScript"
+                                    },
+                                    "triggerCondition": {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"aBoolean\").getValue(self);\n",
+                                        "language": "JavaScript"
+                                    }
+                                }]
+                        }
+                    },
+                    "label": "aStateMachine",
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null,
+                    "name": "aStateMachine",
+                    "version": 3,
+                    "states": {
+                        "3": {
+                            "@class": "State",
+                            "version": 3,
+                            "editorPosition": {
+                                "@class": "Coordinate",
+                                "x": 434,
+                                "y": 313
+                            },
+                            "label": null,
+                            "onEnterEvent": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"anInbox\").sendMessage(self, \"John\", \"Today\", \"Some dummy mail\", \"<p>Quio derent hosce versus mature censunto,<br />Profanum vulgus et inscium ne attrectato:<br />Omnesque Barbari, Psychologi, Sociologi, Politici, Economici, Flici procul sunto,<br />Qui aliter facit, is rite sacer esto</p>\", \"\", []);\n",
+                                "language": "JavaScript"
+                            },
+                            "transitions": []
+                        },
+                        "2": {
+                            "@class": "State",
+                            "version": 7,
+                            "editorPosition": {
+                                "@class": "Coordinate",
+                                "x": 615,
+                                "y": 45
+                            },
+                            "label": null,
+                            "onEnterEvent": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"aText\").setValue(self, \"<p>Coucou,</p>\");\n",
+                                "language": "JavaScript"
+                            },
+                            "transitions": [{
+                                    "@class": "Transition",
+                                    "version": 1,
+                                    "index": 0,
+                                    "nextStateId": 3,
+                                    "preStateImpact": null,
+                                    "triggerCondition": null
+                                }]
+                        },
+                        "1": {
+                            "@class": "State",
+                            "version": 8,
+                            "editorPosition": {
+                                "@class": "Coordinate",
+                                "x": 30,
+                                "y": 30
+                            },
+                            "label": null,
+                            "onEnterEvent": null,
+                            "transitions": [{
+                                    "@class": "Transition",
+                                    "version": 2,
+                                    "index": 0,
+                                    "nextStateId": 2,
+                                    "preStateImpact": {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"aNumber\").setValue(self, 1000);\n",
+                                        "language": "JavaScript"
+                                    },
+                                    "triggerCondition": {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"aBoolean\").getValue(self);\n",
+                                        "language": "JavaScript"
+                                    }
+                                }]
+                        }
+                    }
+                }, {
+                    "@class": "InboxDescriptor",
+                    "comments": "",
+                    "defaultInstance": {
+                        "@class": "InboxInstance",
+                        "version": 1,
+                        "messages": [],
+                        "unreadCount": 0,
+                        "scopeKey": null
+                    },
+                    "label": "anInbox",
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null,
+                    "name": "anInbox",
+                    "version": 1,
+                    "description": null,
+                    "capped": false
+                }, {
+                    "@class": "StringDescriptor",
+                    "comments": "",
+                    "defaultInstance": {
+                        "@class": "StringInstance",
+                        "version": 1,
+                        "value": "",
+                        "scopeKey": null
+                    },
+                    "label": "aString",
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null,
+                    "name": "aString",
+                    "version": 1,
+                    "validationPattern": null,
+                    "allowedValues": []
+                }, {
+                    "@class": "StringDescriptor",
+                    "comments": "",
+                    "defaultInstance": {
+                        "@class": "StringInstance",
+                        "version": 1,
+                        "value": "",
+                        "scopeKey": null
+                    },
+                    "label": "anEnumeration",
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null,
+                    "name": "anEnumeration",
+                    "version": 1,
+                    "validationPattern": null,
+                    "allowedValues": ["first", "second", "third"]
+                }, {
+                    "@class": "BooleanDescriptor",
+                    "comments": "",
+                    "defaultInstance": {
+                        "@class": "BooleanInstance",
+                        "version": 1,
+                        "value": true,
+                        "scopeKey": null
+                    },
+                    "label": "aBoolean",
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null,
+                    "name": "aBoolean",
+                    "version": 2
+                }, {
+                    "@class": "ObjectDescriptor",
+                    "comments": "",
+                    "defaultInstance": {
+                        "@class": "ObjectInstance",
+                        "version": 1,
+                        "properties": {},
+                        "scopeKey": null
+                    },
+                    "label": "anObject",
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null,
+                    "name": "anObject",
+                    "version": 1,
+                    "description": "",
+                    "properties": {}
+                }, {
+                    "@class": "DialogueDescriptor",
+                    "comments": "",
+                    "defaultInstance": {
+                        "@class": "FSMInstance",
+                        "version": 1,
+                        "currentStateId": 1,
+                        "enabled": true,
+                        "transitionHistory": [],
+                        "scopeKey": null,
+                        "currentState": {
+                            "@class": "DialogueState",
+                            "version": 1,
+                            "editorPosition": {
+                                "@class": "Coordinate",
+                                "x": 30,
+                                "y": 30
+                            },
+                            "label": null,
+                            "onEnterEvent": null,
+                            "transitions": [],
+                            "text": null
+                        }
+                    },
+                    "label": "aDialogue",
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": "",
+                    "name": "aDialogue",
+                    "version": 1,
+                    "states": {
+                        "1": {
+                            "@class": "DialogueState",
+                            "version": 1,
+                            "editorPosition": {
+                                "@class": "Coordinate",
+                                "x": 30,
+                                "y": 30
+                            },
+                            "label": null,
+                            "onEnterEvent": null,
+                            "transitions": [],
+                            "text": null
+                        }
+                    },
+                    "content": null
+                }, {
+                    "@class": "ResourceDescriptor",
+                    "comments": "",
+                    "defaultInstance": {
+                        "@class": "ResourceInstance",
+                        "version": 1,
+                        "assignments": [],
+                        "occupations": [],
+                        "activities": [],
+                        "active": true,
+                        "properties": {},
+                        "confidence": 0,
+                        "scopeKey": null
+                    },
+                    "label": "aResource",
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": "",
+                    "name": "aResource",
+                    "version": 1,
+                    "description": "",
+                    "properties": {}
+                }, {
+                    "@class": "TaskDescriptor",
+                    "comments": "",
+                    "defaultInstance": {
+                        "@class": "TaskInstance",
+                        "version": 1,
+                        "active": true,
+                        "plannification": [],
+                        "properties": {},
+                        "requirements": [],
+                        "scopeKey": null
+                    },
+                    "label": "aTask",
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": "",
+                    "name": "aTask",
+                    "version": 1,
+                    "description": "",
+                    "index": "1",
+                    "properties": {},
+                    "predecessorNames": []
+                }, {
+                    "@class": "TaskDescriptor",
+                    "comments": "",
+                    "defaultInstance": {
+                        "@class": "TaskInstance",
+                        "version": 1,
+                        "active": true,
+                        "plannification": [],
+                        "properties": {},
+                        "requirements": [],
+                        "scopeKey": null
+                    },
+                    "label": "aSecondTask",
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": "",
+                    "name": "aSecondTask",
+                    "version": 3,
+                    "description": "",
+                    "index": "1",
+                    "properties": {},
+                    "predecessorNames": ["aTask"]
+                }, {
+                    "@class": "PeerReviewDescriptor",
+                    "comments": "",
+                    "defaultInstance": {
+                        "@class": "PeerReviewInstance",
+                        "version": 1,
+                        "reviewState": "NOT_STARTED",
+                        "toReview": [],
+                        "reviewed": [],
+                        "scopeKey": null
+                    },
+                    "label": "aPeerReview",
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null,
+                    "name": "aPeerReview",
+                    "version": 2,
+                    "toReviewName": "aText",
+                    "includeEvicted": false,
+                    "description": "",
+                    "feedback": {
+                        "@class": "EvaluationDescriptorContainer",
+                        "evaluations": []
+                    },
+                    "fbComments": {
+                        "@class": "EvaluationDescriptorContainer",
+                        "evaluations": []
+                    },
+                    "maxNumberOfReview": 3
+                }, {
+                    "@class": "BurndownDescriptor",
+                    "comments": "",
+                    "defaultInstance": {
+                        "@class": "BurndownInstance",
+                        "version": 1,
+                        "iterations": [],
+                        "scopeKey": null
+                    },
+                    "label": "aBurndown",
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": "",
+                    "name": "aBurndown",
+                    "version": 1,
+                    "description": ""
+                }],
+            "allowedTypes": [],
+            "addShortcut": ""
+        }, {
+            "@class": "ListDescriptor",
+            "comments": "",
+            "defaultInstance": {
+                "@class": "ListInstance",
+                "version": 1,
+                "scopeKey": null
+            },
+            "label": "Scopes",
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "title": null,
+            "name": "scopes",
+            "version": 4,
+            "items": [{
+                    "@class": "ListDescriptor",
+                    "comments": "",
+                    "defaultInstance": {
+                        "@class": "ListInstance",
+                        "version": 1,
+                        "scopeKey": null
+                    },
+                    "label": "PlayerScoped",
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null,
+                    "name": "playerScoped",
+                    "version": 4,
+                    "items": [{
+                            "@class": "TextDescriptor",
+                            "comments": "",
+                            "defaultInstance": {
+                                "@class": "TextInstance",
+                                "version": 1,
+                                "value": "",
+                                "scopeKey": null
+                            },
+                            "label": "text_ps_ps",
+                            "scope": {
+                                "@class": "PlayerScope",
+                                "broadcastScope": "PlayerScope"
+                            },
+                            "title": null,
+                            "name": "text_ps_ps",
+                            "version": 2
+                        }, {
+                            "@class": "TextDescriptor",
+                            "comments": "",
+                            "defaultInstance": {
+                                "@class": "TextInstance",
+                                "version": 1,
+                                "value": "",
+                                "scopeKey": null
+                            },
+                            "label": "text_ps_ts",
+                            "scope": {
+                                "@class": "PlayerScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "title": null,
+                            "name": "text_ps_ts",
+                            "version": 2
+                        }, {
+                            "@class": "TextDescriptor",
+                            "comments": "",
+                            "defaultInstance": {
+                                "@class": "TextInstance",
+                                "version": 1,
+                                "value": "",
+                                "scopeKey": null
+                            },
+                            "label": "text_ps_gs",
+                            "scope": {
+                                "@class": "PlayerScope",
+                                "broadcastScope": "GameScope"
+                            },
+                            "title": null,
+                            "name": "text_ps_gs",
+                            "version": 2
+                        }],
+                    "allowedTypes": [],
+                    "addShortcut": ""
+                }, {
+                    "@class": "ListDescriptor",
+                    "comments": "",
+                    "defaultInstance": {
+                        "@class": "ListInstance",
+                        "version": 1,
+                        "scopeKey": null
+                    },
+                    "label": "TeamScoped",
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null,
+                    "name": "teamScoped",
+                    "version": 3,
+                    "items": [{
+                            "@class": "TextDescriptor",
+                            "comments": "",
+                            "defaultInstance": {
+                                "@class": "TextInstance",
+                                "version": 1,
+                                "value": "",
+                                "scopeKey": null
+                            },
+                            "label": "text_ts_ts",
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "title": null,
+                            "name": "text_ps_ts_2",
+                            "version": 2
+                        }, {
+                            "@class": "TextDescriptor",
+                            "comments": "",
+                            "defaultInstance": {
+                                "@class": "TextInstance",
+                                "version": 1,
+                                "value": "",
+                                "scopeKey": null
+                            },
+                            "label": "text_ts_gs",
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "GameScope"
+                            },
+                            "title": null,
+                            "name": "text_ts_gs",
+                            "version": 2
+                        }],
+                    "allowedTypes": [],
+                    "addShortcut": ""
+                }, {
+                    "@class": "ListDescriptor",
+                    "comments": "",
+                    "defaultInstance": {
+                        "@class": "ListInstance",
+                        "version": 1,
+                        "scopeKey": null
+                    },
+                    "label": "Game & GameModel Scoped ",
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null,
+                    "name": "gGmScoped",
+                    "version": 3,
+                    "items": [{
+                            "@class": "TextDescriptor",
+                            "comments": "",
+                            "defaultInstance": {
+                                "@class": "TextInstance",
+                                "version": 1,
+                                "value": "",
+                                "scopeKey": null
+                            },
+                            "label": "text_gs_gs",
+                            "scope": {
+                                "@class": "GameScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "title": null,
+                            "name": "text_gs_gs",
+                            "version": 2
+                        }, {
+                            "@class": "TextDescriptor",
+                            "comments": "",
+                            "defaultInstance": {
+                                "@class": "TextInstance",
+                                "version": 1,
+                                "value": "",
+                                "scopeKey": null
+                            },
+                            "label": "text_gms_gs",
+                            "scope": {
+                                "@class": "GameModelScope",
+                                "broadcastScope": "GameScope"
+                            },
+                            "title": null,
+                            "name": "text_gms_gs",
+                            "version": 2
+                        }],
+                    "allowedTypes": [],
+                    "addShortcut": ""
+                }],
+            "allowedTypes": [],
+            "addShortcut": ""
+        }],
+    "template": true,
+    "createdByName": "Maxence Laurent"
+}

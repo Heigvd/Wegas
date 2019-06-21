@@ -27,14 +27,14 @@ YUI.add('wegas-layout-resizable', function(Y) {
             Y.WidgetChild],
         {
             CONTENT_TEMPLATE: '<div>' +
-                              '<div class="wegas-layout-hd"></div>' +
-                              '<div class="wegas-layout-bd"><div>' +
-                              '<div class="wegas-layout-left"></div>' +
-                              '<div class="wegas-layout-center wegas-layout-column"></div>' +
-                              '<div class="wegas-layout-right wegas-layout-column"></div>' +
-                              '</div></div>' +
-                              '<div class="wegas-layout-ft"></div>' +
-                              '</div>',
+                '<div class="wegas-layout-hd"></div>' +
+                '<div class="wegas-layout-bd"><div>' +
+                '<div class="wegas-layout-left"></div>' +
+                '<div class="wegas-layout-center wegas-layout-column"></div>' +
+                '<div class="wegas-layout-right wegas-layout-column"></div>' +
+                '</div></div>' +
+                '<div class="wegas-layout-ft"></div>' +
+                '</div>',
             HANDLEBAR_WIDTH: 4,
             LEFT_COL_WIDTH: "300px",
             CENTER_COL_MIN_WIDTH: 30,
@@ -55,8 +55,8 @@ YUI.add('wegas-layout-resizable', function(Y) {
                 this.handlers = [];
                 this.widgets = [];
                 if (this.get("left") === undefined && this.get("right") === undefined) {  // We are not opening the editor:
-                    this.set("left", { width: 0 });
-                    this.set("right", { width: 0 });
+                    this.set("left", {width: 0});
+                    this.set("right", {width: 0});
                     var center = this.get("center");
                     center.width = '100%';
                     this.set("center", center);
@@ -95,8 +95,16 @@ YUI.add('wegas-layout-resizable', function(Y) {
              */
             bindUI: function() {
                 Y.on("windowresize", Y.bind(this.syncUI, this));                    // Sync the layout whenever the
-                                                                                    // windows is resized
-                Y.on('domready', this.syncUI, this);
+                // windows is resized
+                Y.once('domready', this.selectPreview, this);
+            },
+            selectPreview: function() {
+                this.syncUI();
+                var previewTab = Y.Wegas.TabView.getTab(Y.Wegas.TabView.getPreviewTabLabel());
+                if (previewTab) {
+                    previewTab.deselectAll();
+                    previewTab.set("selected", 1);
+                }
             },
             /**
              * @function
@@ -104,11 +112,56 @@ YUI.add('wegas-layout-resizable', function(Y) {
              * @description call functions "syncCenterNode" and "_syncUIStdMod";
              */
             syncUI: function() {
+                var justInit = false;
                 if (!this.initialLeft) {
                     this.initialLeft = this.initializeInitLeft();
+                    justInit = true;
+
                 }
                 this.lastEditorAdjustments();
                 this.syncCenterNode();
+                if (justInit) {
+                    this.makeLeftMinimizable();
+                }
+            },
+            makeLeftMinimizable: function() {
+                var tabView = Y.Widget.getByNode(".wegas-layout-left #leftTabView");
+                if (tabView) {
+                    var minBtn = new Y.Wegas.Button({
+                        label: "<i class='fa fa-window-minimize'></i>",
+                        cssClass: "wegas-minimize-tab"
+                    });
+
+                    this.handlers.push(Y.after("edit-entity:edit", function(e) {
+                        this.getPosition("left").toggleClass("hasFocus", false);
+                    }, this));
+                    this.get("contentBox").on("click", function(e) {
+                        var left = this.getPosition("left");
+                        if (left.hasClass("minimized")) {
+                            if ((e.target.hasClass("wegas-layout-left") || e.target.ancestor(".wegas-layout-left"))) {
+                                if ((!e.target.hasClass("wegas-minimize-tab") && !e.target.ancestor(".wegas-minimize-tab"))) {
+                                    left.toggleClass("hasFocus", true);
+                                } else {
+                                    left.toggleClass("hasFocus", false);
+                                }
+                            } else {
+                                left.toggleClass("hasFocus", false);
+                            }
+                        } else {
+                            left.toggleClass("hasFocus", false);
+                        }
+                    }, this);
+                    minBtn.on("click", this.toggleMin, this);
+                    tabView.add(minBtn);
+                }
+            },
+            toggleMin: function(e) {
+                var left = this.getPosition("left");
+                left.toggleClass("minimized");
+
+                left.toggleClass("hasFocus", false);
+                this.syncCenterNode();
+                //Y.later(0, this, this.syncCenterNode());
             },
             /**
              * @function
@@ -150,16 +203,16 @@ YUI.add('wegas-layout-resizable', function(Y) {
                 }
                 // For the initial view, hide the + menu of the Attributes tabView
                 TabView.showPlusMenu(TabView.getOppositeTabView(preferredEditorTabView));
-                editorTab.set("selected", 2);
-                TabView.getTab(TabView.getPreviewTabLabel()).set("selected", 2);
+                editorTab.set("selected", 1);
+                //TabView.getTab(TabView.getPreviewTabLabel()).set("selected", 2);
             },
             // Return as an object a safe set of "left" attributes for the three columns
             initializeInitLeft: function() {
                 var cfg = {
-                        left : '0px',
-                        center : this.getPosition('left').getComputedStyle('width'),
-                        right : this.getPosition('right').getComputedStyle('left')
-                    };
+                    left: '0px',
+                    center: this.getPosition('left').getComputedStyle('width'),
+                    right: this.getPosition('right').getComputedStyle('left')
+                };
                 return cfg;
             },
             /**
@@ -192,9 +245,9 @@ YUI.add('wegas-layout-resizable', function(Y) {
                     return 'center';
                 } else if (position.indexOf('right') >= 0) {
                     return 'right';
-                } else if(position.indexOf('left') >= 0) {
+                } else if (position.indexOf('left') >= 0) {
                     return 'left';
-                } else if(position.indexOf('top') >= 0) {
+                } else if (position.indexOf('top') >= 0) {
                     return 'top';
                 }
             },
@@ -227,7 +280,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                 if (parseInt(target.getStyle("width"), 10) < 70) {                  // If is hidden
                     target.setStyle("left", this.initialLeft[position]);            // Reset left value
                     var width = parseInt(this.oldWidth[position]) || this.get(position + ".width") || 430;
-                        target.setStyle("width", width + "px");
+                    target.setStyle("width", width + "px");
                     if (position === 'center') {
                         var rightNode = this.getPosition('right'),
                             rightWidth = parseInt(rightNode.getComputedStyle('width'));
@@ -256,7 +309,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                             if (parseInt(cfg.width) >= windowWidth) {
                                 cfg.width = this.LEFT_COL_WIDTH;
                             }
-                        } else if  (position === "center" && this.editorCfg.centerWidth) {
+                        } else if (position === "center" && this.editorCfg.centerWidth) {
                             cfg.width = this.editorCfg.centerWidth;
                             if (parseInt(cfg.width) + parseInt(this.get("left").width) >= windowWidth) {
                                 cfg.width = this.CENTER_COL_WIDTH;
@@ -331,7 +384,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                         left: 'auto',
                         width: rightWidth
                     });
-                    if(parseInt(centerWidth) < this.CENTER_COL_MIN_WIDTH){
+                    if (parseInt(centerWidth) < this.CENTER_COL_MIN_WIDTH) {
 
                         if (e && e.currentTarget.handle === 'l') {  // Left handle of right column has been moved
                             var windowWidth = parseInt(window.innerWidth || document.documentElement.clientWidth);
@@ -359,7 +412,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                     }
                 }
                 // if (rightWidth === '0px' || rightWidthStyle === '0px') {  }
-                this.savePosition(leftWidth, centerNode.getComputedStyle("width"), rightWidth);
+                this.savePosition(leftNode.getStyle("width"), centerNode.getComputedStyle("width"), rightWidth);
                 Y.Wegas.app.fire("layout:resize");
             },
             // Save column config to localStorage:
@@ -460,7 +513,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
             this.hidePosition("center");
             this.oldRight = this.getPosition("right").getComputedStyle("width");
             this.getPosition("right").setStyles({
-                "left": parseInt(this.getPosition("left").getStyle("width"), 10) -8,
+                "left": parseInt(this.getPosition("left").getStyle("width"), 10) - 8,
                 "width": "auto"
             });
             this.__h = this.resizeRight.after(["resize", "end"], function(e) {

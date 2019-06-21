@@ -41,14 +41,26 @@ YUI.add('wegas-app', function(Y) {
          */
         initializer: function() {
             /**
-             * @name render
+             * @name render after app rendering
              * @event
              */
             this.publish("render");
+
             /**
-             * @name render
-             * private
+             * Fired just before resetting the scenario
              */
+            this.publish("beforeReset");
+
+            /**
+             * @name render after render event
+             * @event
+             */
+            this.publish("ready", {
+                fireOnce: true
+            });
+
+            this.publish("newSearchVal");
+
             this.dataSources = {};
 
             this._pendingRequests = 0;
@@ -83,7 +95,7 @@ YUI.add('wegas-app', function(Y) {
                 events = [], event,
                 requestCounter = 0, //                                          // Request counter 
                 onRequest = function() { // When a response to initial requests is received
-                    var playerRefName, playerLanguage;
+                    var playerCode, playerLanguage;
                     requestCounter -= 1;
                     Y.one(".wegas-loading-app-current").setAttribute("style", "width:" + ((1 - requestCounter / totalRequests) * 100) + "%");
 
@@ -92,26 +104,45 @@ YUI.add('wegas-app', function(Y) {
                             event.detach();
                         }
                         this.plug(Y.Plugin.LockManager);
+                        this.plug(Y.Plugin.IdleMonitor);
+                        this.idlemonitor.on("idle", Y.bind(this.goIdle, this));
+                        this.idlemonitor.on("resume", Y.bind(this.resume, this));
+
+                        // various idle settings
+                        //this.idlemonitor.set("timeout", 900000);  // 15 minutes
+                        this.idlemonitor.set("timeout", 1800000);  // 30 minutes
+                        //this.idlemonitor.set("timeout", 2700000);  // 45 minutes
+                        //this.idlemonitor.set("timeout", 3600000);  // 1 hour
+                        
+                        this.idlemonitor.set("resolution", 60000); // check each minute
+                        //this.idlemonitor.set("resolution", 300000); // check each five minutes
+
+                        this.idlemonitor.start();
+
                         this.fire("preRender");
 
-                        playerRefName = Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("refName");
-                        playerLanguage = I18n.findLanguageByRefName(playerRefName);
+                        playerCode = Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("lang");
+                        playerLanguage = I18n.findLanguageByCode(playerCode);
                         if (playerLanguage && playerLanguage.get("active")) {
-                            I18n.setRefName(playerRefName);
+                            I18n.setCode(playerCode);
 
                             Y.later(10, this, function() { // Let the loading div update
-                                this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
-                                    .render(); // and render it
-                                this.fire("render"); // Fire a render event for some eventual post processing
+                                    this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
+                                        .render(); // and render it
+                                this.fire("render"); // Fire a render event for some post processing
+                                this.fire("ready"); // Fire a ready event for some eventual post processing
+                                Y.log("Ready");
                                 Y.one(".wegas-loading-app").remove();
                             });
                         } else {
-                            I18n.resetPlayerRefName(Y.bind(function(newRefName) {
-                                I18n.setRefName(newRefName);
+                            I18n.resetPlayerCode(Y.bind(function(newCode) {
+                                I18n.setCode(newCode);
                                 Y.later(10, this, function() { // Let the loading div update
                                     this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
                                         .render(); // and render it
-                                    this.fire("render"); // Fire a render event for some eventual post processing
+                                    this.fire("render"); // Fire a render event for some post processing
+                                    this.fire("ready"); // Fire a ready event for some eventual post processing
+                                    Y.log("Ready");
                                     Y.one(".wegas-loading-app").remove();
                                 });
                             }, this));
@@ -151,12 +182,132 @@ YUI.add('wegas-app', function(Y) {
 
             // Post render events
             this.on("render", function() { // When the first page is rendered,
+
+                var gm = Y.Wegas.Facade.Game.cache.getCurrentGame();
+                var extraTabs;
+
+                Y.Array.find(["#centerTabView", "#rightTabView"], function(item) {
+                    var parent = Y.Widget.getByNode(item);
+                    if (parent && parent.extratabs) {
+                        extraTabs = parent.extratabs;
+                        return true;
+                    }
+                    return false;
+                }, this);
+
+                if (extraTabs) {
+                    if (gm.get("properties").logID) {
+                        extraTabs._addTab({
+                            label: I18n.t("global.statistics"),
+                            children: [{
+                                    type: "Statistics"
+                                }]
+                        });
+                    }
+
+                    Y.Array.each(Y.Wegas.Facade.Variable.cache.findAll("@class", "PeerReviewDescriptor"),
+                        function(prd) {
+                            extraTabs._addTab({
+                                label: I18n.t("global.peerReview"),
+                                children: [{
+                                        "type": "ReviewOrchestrator",
+                                        "variable": {
+                                            "@class": "Script",
+                                            "content": "Variable.find(gameModel, \"" + prd.get("name") + "\");\n"
+                                        }
+                                    }]
+                            });
+
+                        }, this);
+                }
+
                 Y.one("body").on("key", function(e) { // Add shortcut to activate developper mode on key '§' pressed
                     e.currentTarget.toggleClass("wegas-stdmode") // Toggle stdmode class on body (hides any wegas-advancedfeature)
                         .toggleClass("wegas-advancedmode");
                     Y.config.win.Y = Y; // Allow access to Y instance
                 }, "167", this);
+
+                Y.one("body").on("key", function(e) { // Add shortcut to activate internal mode on key '°' pressed
+                    e.currentTarget.toggleClass("wegas-internalmode");
+                }, "176", this);
             });
+        },
+        resume: function() {
+            if (this.dataSources.Pusher) {
+                var counter = 0, totalRequests = 0,
+                    showLoader = false,
+                    events = [],
+                    tIds = {},
+                    variableTreeViewNode = Y.one(".wegas-editor-variabletreeview"),
+                    variableTreeView,
+                    onResponse = function(response) {
+                        if (tIds[response.tId]) {
+                            delete tIds[response.tId];
+                            counter++;
+                            if (showLoader) {
+                                Y.one(".wegas-loading-app-current").setAttribute("style", "width:" + ((counter / totalRequests) * 100) + "%");
+                            }
+                            var event;
+                            if (Object.keys(tIds).length === 0) {
+                                while ((event = events.shift()) !== undefined) {
+                                    event.detach();
+                                }
+                                Y.Wegas.Facade.Page.cache.forceIndexUpdate();
+                                if (showLoader) {
+                                    Y.one(".wegas-loading-app").remove();
+                                }
+
+                                if (variableTreeView) {
+                                    variableTreeView.set("bypassSyncEvents", false);
+                                    Y.log("Enable TVsync");
+                                    variableTreeView.syncUI();
+                                }
+                            }
+                        }
+                    };
+
+                if (variableTreeViewNode) {
+                    variableTreeView = Y.Widget.getByNode(variableTreeViewNode);
+                    variableTreeView.set("bypassSyncEvents", true);
+                    Y.log("Disable TVsync");
+                }
+
+                // not idle anylonger
+                Y.one("body").toggleClass("idle", false);
+                if (showLoader) {
+                    // but show loader
+                    Y.one("body").prepend("<div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>");
+                }
+                // listen to pusher
+                this.dataSources.Pusher.resume();
+                // and resend initial requests
+                var processedDs = {};
+                for (var dsId in this.dataSources) {
+                    var ds = this.dataSources[dsId];
+                    // since Variable === VariableDescriptor, make sure to process db once only
+                    if (!processedDs[ds._yuid]) {
+                        processedDs[ds._yuid] = true;
+                        if (ds.hasInitialRequest()) {
+                            totalRequests += ds.getInitialRequestsCount();
+                            var tId = ds.sendInitialRequest({
+                                cfg: {
+                                    // do not act as initial request (ie. send update events)
+                                    initialRequest: false
+                                }
+                            });
+                            // store initial request transationId
+                            tIds[tId] = "pending";
+                            events.push(ds.after("response", onResponse, this));
+                        }
+                    }
+                }
+            }
+        },
+        goIdle: function() {
+            if (this.dataSources.Pusher) {
+                Y.one("body").toggleClass("idle", true);
+                this.dataSources.Pusher.disconnect();
+            }
         },
         /**
          * Destructor methods.
@@ -164,10 +315,10 @@ YUI.add('wegas-app', function(Y) {
          * @public
          */
         destructor: function() {
+            this.widget.destroy();
             Y.Object.each(this.dataSources, function(i) {
                 i.destroy();
             });
-            this.widget.destroy();
         },
         // ** Private methods ** //
         /**

@@ -1,0 +1,44 @@
+<div class="card__illustration illustration illustration--icon" illustration="{{model.properties.iconUri}}"></div>
+<div class="card__description">
+    <div class="line line--primary">{{model.name}}</div>
+    <div class="line">{{'SCENARIST-CARD-CREATED-ON'| translate}} {{'COMMONS-DATE'| translate: {date: model.createdTime} }}
+        <span ng-if="(user.isAdmin)">{{'SCENARIST-CARD-CREATED-BY'| translate}}
+            <span ng-class="{true:'highlighted'}[model.createdByName !== username]">{{model.createdByName}}</span>
+        </span>
+    </div>
+    <div ng-if="!((model.comments == null) || (model.comments == ''))" class="line line--optional">{{model.comments}}</div>
+</div>
+<div class="card__actions" ng-if="editable(model)">
+    <a class="button button--small button--round button--default-reverse button--label-off button--settings" title="{{'SCENARIST-CARD-SETTINGS-BTN'| translate}}" ui-sref=".settings({modelId: model.id})">
+        <span class="button__label">{{'SCENARIST-CARD-SETTINGS-BTN'| translate}}</span>
+    </a>
+    <a class="button button--small button--round button--default-reverse button--label-off button--user" title="{{'SCENARIST-CARD-USERS-BTN'| translate}}" ui-sref=".comodelers({modelId: model.id})">
+        <span class="button__label">{{'SCENARIST-CARD-USERS-BTN'| translate}}</span>
+    </a>
+    <a id="dupe-{{model.id}}"
+       class="button button--small button--round button--label-off button--default-reverse glyphicon glyphicon-duplicate"
+       title="{{'MODELER-CARD-DUPLICATE-BTN'| translate}}" ng-click="duplicate(model)">
+        <span class="button__label">{{'MODELER-CARD-DUPLICATE-BTN'| translate}}</span>
+    </a>
+    <a class="button button--small button--round button--default-reverse button--label-off button--plug" title="{{'SCENARIST-INDEX-LIST-TITLE'| translate}}" ui-sref=".instances({modelId: model.id})">
+        <span class="button__label">{{'SCENARIST-INDEX-LIST-TITLE'| translate}}</span>
+    </a>
+    <a class="button button--small button--round button--default-reverse button--label-off button--fork" title="{{'SCENARIST-CARD-VERSIONS-BTN'| translate}}" ui-sref=".history({modelId: model.id})">
+        <span class="button__label">{{'SCENARIST-CARD-VERSIONS-BTN'| translate}}</span>
+    </a>
+    <a id="archive-{{model.id}}"
+       class="button button--small button--round button--default-reverse button--label-off button--archive" title="{{'SCENARIST-CARD-MOVE-ARCHIVE-BTN'| translate}}" ng-click="archive(model)">
+        <span class="button__label">{{'SCENARIST-CARD-MOVE-ARCHIVE-BTN'| translate}}</span>
+    </a>
+    <a class="button button--small button--round button--default button--label-off button--modeler action--button" title="{{'MODELER-CARD-EDIT-BTN'| translate}}" href="{{ServiceURL}}edit.html?gameModelId={{model.id}}" target="_blank">
+        <span class="button__label">{{'MODELER-CARD-EDIT-BTN'| translate}}</span>
+    </a>
+</div>
+<div class="card__actions" ng-if="!editable(model)">
+    <a class="button button--small button--round button--default button--label-off button--translate action--button" 
+       title="{{'MODELER-CARD-TRANSLATE-BTN'| translate}}" 
+       href="{{ServiceURL}}translate.html?gameModelId={{model.id}}" target="_blank">
+        <span class="button__label">{{'MODELER-CARD-TRANSLATE-BTN'| translate}}</span>
+    </a>
+</div>
+

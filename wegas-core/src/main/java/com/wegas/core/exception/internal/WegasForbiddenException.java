@@ -14,6 +14,8 @@ package com.wegas.core.exception.internal;
  */
 public class WegasForbiddenException extends WegasInternalException {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      *
      */

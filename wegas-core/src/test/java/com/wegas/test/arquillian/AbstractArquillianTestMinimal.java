@@ -32,6 +32,7 @@ import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.test.TestHelper;
+import com.wegas.test.WegasFactory;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -114,6 +115,9 @@ public abstract class AbstractArquillianTestMinimal {
 
     @Inject
     private PopulatorScheduler populatorScheduler;
+
+    @Inject
+    protected WegasFactory wegasFactory;
 
     @Rule
     public TestName testName = new TestName();
@@ -238,8 +242,7 @@ public abstract class AbstractArquillianTestMinimal {
                     + "CREATE INDEX IF NOT EXISTS index_questiondescriptor_pictures_questiondescriptor_id on questiondescriptor_pictures (questiondescriptor_id);"
                     + "CREATE INDEX IF NOT EXISTS index_result_files_result_id on result_files (result_id);"
                     + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_taskdescriptor_id_predecessor_id on taskdescriptor_taskdescriptor (taskdescriptor_id,predecessor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_users_roles_roles_id_user_id on users_roles (role_id,user_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_translatablecontent_translations_translatablecontent_id on translatablecontent_translations (translatablecontent_id);";
+                    + "CREATE INDEX IF NOT EXISTS index_users_roles_roles_id_user_id on users_roles (role_id,user_id);";
 
             statement.execute(setupQuery);
         } catch (SQLException ex) {

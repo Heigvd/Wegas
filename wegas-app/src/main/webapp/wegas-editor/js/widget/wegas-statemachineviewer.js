@@ -5,7 +5,7 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-/* global I18n */
+/* global I18n, Promise */
 
 /**
  * @fileoverview
@@ -76,9 +76,10 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             bindUI: function() {
                 var key, cb = this.get(CONTENT_BOX),
                     availableStates = this.get("availableStates");
-                this.events.push(Wegas.Facade.Instance.after("updatedInstance", this.refreshAfterInstanceUpdate, this));
+                this.events.push(Wegas.Facade.Instance.after("*:updatedInstance", this.refreshAfterInstanceUpdate, this));
                 this.events.push(Wegas.Facade.Variable.after("updatedDescriptor", this.rebuildAfterUpdate, this));
 
+                this.events.push(Y.Wegas.app.on("newSearchVal", this.checkSearch, this));
                 cb.on("mousedown", function() {
                     this.one(".scrollable").addClass("mousedown");
                 });
@@ -126,6 +127,18 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 this.btnZoomValue.on(CLICK, function() {
                     this.setZoom(1, false);
                 }, this);
+            },
+            checkSearch: function() {
+                var searchField = Y.one(".wegas-editor-treeview .wegas-filter-input input");
+                if (searchField) {
+                    var searchVal = searchField.get("value").toLowerCase();
+                    for (var stateId in this.nodes) {
+                        this.nodes[stateId].checkSearch(searchVal);
+                        for (var trIndex in this.nodes[stateId]._items) {
+                            this.nodes[stateId]._items[trIndex].checkSearch(searchVal);
+                        }
+                    }
+                }
             },
             syncUI: function() {
                 this.highlightCurrentState();
@@ -179,10 +192,10 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                     Y.log("connectionDetached", "info", "Wegas.StateMachineViewer");
                     if (Y.Widget.getByNode(e.target) === this) { // drop on panel
                         var node = this.onNewState(this.get("availableStates")[0], {
-                            editorPosition: new Wegas.persistence.Coordinate({
+                            editorPosition: {
                                 x: parseInt(Y.one(e.target).getStyle("left")),
                                 y: parseInt(Y.one(e.target).getStyle("top"))
-                            })
+                            }
                         });
                         Y.Widget.getByNode(e.source).addTransition(node);
                         Y.soon(function() {
@@ -286,7 +299,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 jp.setSuspendDrawing(false, true);
                 this.hideOverlay();
                 this.highlightUnusedStates();
-
+                this.checkSearch();
             },
             refreshState: function(entity, id) {
                 var state;
@@ -332,15 +345,16 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 jp.setSuspendDrawing(false, true);
                 this.hideOverlay();
                 this.highlightUnusedStates();
+                this.checkSearch();
             },
             onNewState: function(type, cfg) {
                 var state, region = this.get(CONTENT_BOX).one(".scrollable").get("region"),
                     id;
                 cfg = cfg || {
-                    editorPosition: new Wegas.persistence.Coordinate({
-                        x: parseInt(region.width / 4),
-                        y: parseInt(region.height / 4)
-                    })
+                    editorPosition: {
+                        x: region.width / 4,
+                        y: region.height / 4
+                    }
                 };
 
                 id = this._genNextStateId();
@@ -533,8 +547,16 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 "sm-dialoguestate" : "sm-state");
         },
         syncUI: function() {
+            if (!this.globals) {
+                // global not known yet, request them and, then, resync 
+                var globals = [Y.Wegas.RForm.Script.getGlobals('getter'), Y.Wegas.RForm.Script.getGlobals('condition')];
+                Promise.all(globals).then(Y.bind(function(globalsP) {
+                    this.globals = Y.mix(Y.mix({}, globalsP[0]), globalsP[1]);
+                    this.syncUI();
+                }, this));
+            }
             var label, entity = this.get(ENTITY), x, y,
-                impact = Y.inputEx.WysiwygScript.formatScript(entity.get("onEnterEvent"));
+                impact = Y.Wegas.ScriptHelper.formatScript(entity.get("onEnterEvent"), this.globals);
 
             if (entity instanceof Wegas.persistence.DialogueState) {
                 label = I18n.t(entity.get("text"));
@@ -545,8 +567,8 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             }
             this.get(BOUNDING_BOX).toggleClass("initial-state",
                 this.get(PARENT).get(ENTITY).getInitialStateId() === this.get(SID));
-            x = this.get(ENTITY).get("editorPosition").get("x");
-            y = this.get(ENTITY).get("editorPosition").get("y");
+            x = this.get(ENTITY).get("editorPosition").x;
+            y = this.get(ENTITY).get("editorPosition").y;
             if (x < 0) {
                 x = 0;
             }
@@ -558,48 +580,65 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 left: x + "px",
                 top: y + "px"
             });
+
+            this.get(BOUNDING_BOX).setAttribute("data-index", entity.get("index"));
+
             this.get(BOUNDING_BOX).one(".wegas-state-text").setHTML(label ||
                 "<div style='text-align: center;'><em><br />Empty</em></div>")
                 .set("title", impact ? "<b>Impact</b><br />" + impact : "").plug(Y.Plugin.Tooltip);
         },
+        checkSearch: function(needle) {
+            var state = this.get("entity");
+            var impact = state.get("onEnterEvent");
+            var haystack = "" + state.get("label") + (impact ? impact.get("content") : "");
+            this.get("boundingBox").toggleClass("needle-found", needle && haystack.toLowerCase().indexOf(needle) >= 0);
+        },
         showForm: function(state) {
             Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
-                var form;
+                var form, entity, cfg;
+                var stateMachine = this.get(PARENT).get(ENTITY);
                 state = state || this.get(ENTITY);
-                Plugin.EditEntityAction.destroyEditionTab();
+                //Plugin.EditEntityAction.destroyEditionTab();
                 this.editionHighlight();
 
-                form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
-                form.toolbar.add(new Y.Wegas.Button({
-                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
-                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
-                    on: {
-                        click: Y.bind(function() {
-                            var editor = this.get(PARENT), state = this.get(ENTITY).toObject("id",
-                                "transitions"), newNode;
-                            state.editorPosition = new Wegas.persistence.Coordinate(state.editorPosition);
-                            state.editorPosition.set("x", state.editorPosition.get("x") + 10);
-                            state.editorPosition.set("y", state.editorPosition.get("y") + 10);
-                            newNode = editor.onNewState(this.get(ENTITY).get("@class"), state);
-                            newNode.get(BOUNDING_BOX).simulate(CLICK);
-                        }, this)
-                    }
-                }));
-                form.toolbar.add(new Y.Wegas.Button({
-                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete'), // "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
-                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
-                    on: {
-                        click: Y.bind(this.deleteSelf, this)
-                    }
-                }));
-                if (this.get(PARENT).get(ENTITY).getInitialStateId() !== this.get(SID)) {
+                entity = this.get(ENTITY);
+                cfg = entity.getFormCfg(undefined, stateMachine);
+                form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this), undefined, cfg);
+
+                if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO" &&
+                    stateMachine.get("visibility") !== "PRIVATE") {
+                    Y.log("Edition forbidden");
+                } else {
                     form.toolbar.add(new Y.Wegas.Button({
-                        label: Plugin.EditEntityAction.getStackedIconLabel('fa-flag-checkered', 'Make this the initial state'), // '<span class="wegas-icon state-initial"></span>Initial State',
+                        label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
                         cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                         on: {
-                            click: Y.bind(this.setAsInitial, this)
+                            click: Y.bind(function() {
+                                var editor = this.get(PARENT), state = this.get(ENTITY).toObject("id",
+                                    "transitions"), newNode;
+                                state.editorPosition.x += 10;
+                                state.editorPosition.y += 10;
+                                newNode = editor.onNewState(this.get(ENTITY).get("@class"), state);
+                                newNode.get(BOUNDING_BOX).simulate(CLICK);
+                            }, this)
                         }
                     }));
+                    form.toolbar.add(new Y.Wegas.Button({
+                        label: Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete'), // "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
+                        cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                        on: {
+                            click: Y.bind(this.deleteSelf, this)
+                        }
+                    }));
+                    if (this.get(PARENT).get(ENTITY).getInitialStateId() !== this.get(SID)) {
+                        form.toolbar.add(new Y.Wegas.Button({
+                            label: Plugin.EditEntityAction.getStackedIconLabel('fa-flag-checkered', 'Make this the initial state'), // '<span class="wegas-icon state-initial"></span>Initial State',
+                            cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                            on: {
+                                click: Y.bind(this.setAsInitial, this)
+                            }
+                        }));
+                    }
                 }
             }, this));
         },
@@ -682,7 +721,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             this._dragging = true;
         },
         dragEnd: function(e) {
-            this.get(ENTITY).get("editorPosition").setAttrs({
+            this.get(ENTITY).set("editorPosition", {
                 x: e.pos[0],
                 y: e.pos[1]
             });
@@ -705,7 +744,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 parent.save(Y.bind(function(e) {
                     var stateId = Plugin.EditEntityAction.currentEntity.get("id"),
                         fsmDesc = e.response.entity,
-                        state = Y.Array.find(fsmDesc.get("states"), function(state) {
+                        state = Y.Array.find(Object.values(fsmDesc.get("states")), function(state) {
                             return state.get("id") === stateId;
                         });
 
@@ -803,35 +842,57 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         initializer: function(cfg) {
             this.connection = cfg.connection;
         },
+        checkSearch: function(needle) {
+            var transition = this.get("entity");
+            var condition = transition.get("triggerCondition");
+            var impact = transition.get("preStateImpact");
+
+            var haystack = "" + (condition ? condition.get("content") : "")
+                + (impact ? impact.get("content") : "");
+
+            var labelNode = this.connection.getLabelOverlay();
+            if (needle && haystack.toLowerCase().indexOf(needle) >= 0) {
+                labelNode.addClass("needle-found");
+            } else {
+                labelNode.removeClass("needle-found");
+            }
+        },
         showForm: function(transition) {
             Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
-                var form;
-                Plugin.EditEntityAction.destroyEditionTab();
+                var form, stateMachine, cfg;
+                //Plugin.EditEntityAction.destroyEditionTab();
                 this.editionHighlight();
 
                 transition = transition || this.get(ENTITY);
+                stateMachine = this.get("parent").get("parent").get("entity");
+                cfg = transition.getFormCfg(undefined, stateMachine);
+                form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this), undefined, cfg);
 
-                form = Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
-                form.toolbar.add(new Y.Wegas.Button({
-                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
-                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
-                    on: {
-                        click: Y.bind(function() {
-                            var entity = this.get(ENTITY).toObject("id"), tr;
-                            tr = this.get(PARENT).addTransition(this.getTargetState(),
-                                new Transition({entity: new Wegas.persistence[entity["@class"]](entity)})
-                                );
-                            Y.one(tr.connection.getLabelOverlay().getElement()).simulate(CLICK);
-                        }, this)
-                    }
-                }));
-                form.toolbar.add(new Y.Wegas.Button({
-                    label: Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete'), // "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
-                    cssClass: Plugin.EditEntityAction.getStackedIconClass(),
-                    on: {
-                        click: Y.bind(this.disconnect, this)
-                    }
-                }));
+                if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO" &&
+                    stateMachine.get("visibility") !== "PRIVATE") {
+                    Y.log("Edition forbidden");
+                } else {
+                    form.toolbar.add(new Y.Wegas.Button({
+                        label: Plugin.EditEntityAction.getStackedIconLabel('fa-files-o', 'Duplicate'), // "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
+                        cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                        on: {
+                            click: Y.bind(function() {
+                                var entity = this.get(ENTITY).toObject("id"), tr;
+                                tr = this.get(PARENT).addTransition(this.getTargetState(),
+                                    new Transition({entity: new Wegas.persistence[entity["@class"]](entity)})
+                                    );
+                                Y.one(tr.connection.getLabelOverlay().getElement()).simulate(CLICK);
+                            }, this)
+                        }
+                    }));
+                    form.toolbar.add(new Y.Wegas.Button({
+                        label: Plugin.EditEntityAction.getStackedIconLabel('fa-trash', 'Delete'), // "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
+                        cssClass: Plugin.EditEntityAction.getStackedIconClass(),
+                        on: {
+                            click: Y.bind(this.disconnect, this)
+                        }
+                    }));
+                }
             }, this));
         },
         renderUI: function() {
@@ -879,7 +940,15 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             // "display:none;"); };
         },
         syncUI: function() {
-            this.updateLabel();
+            if (this.globals) {
+                this.updateLabel();
+            } else {
+                var globals = [Y.Wegas.RForm.Script.getGlobals('getter'), Y.Wegas.RForm.Script.getGlobals('condition')];
+                Promise.all(globals).then(Y.bind(function(globalsP) {
+                    this.globals = Y.mix(Y.mix({}, globalsP[0]), globalsP[1]);
+                    this.updateLabel();
+                }, this));
+            }
         },
         disconnect: function(noSave) {
             var target = this.getTargetState(),
@@ -927,8 +996,8 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         },
         updateLabel: function() {
             var entity = this.get(ENTITY),
-                condition = Y.inputEx.WysiwygScript.formatScript(entity.get("triggerCondition")),
-                impact = Y.inputEx.WysiwygScript.formatScript(entity.get("preStateImpact")),
+                condition = Y.Wegas.ScriptHelper.formatScript(entity.get("triggerCondition"), this.globals),
+                impact = Y.Wegas.ScriptHelper.formatScript(entity.get("preStateImpact"), this.globals),
                 label;
 
             if (entity instanceof Wegas.persistence.DialogueTransition) {

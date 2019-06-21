@@ -62,7 +62,7 @@ const indentStyle = css({
 interface ICommonViewProps {
     errorMessage?: string[];
     schema?: {
-        type?: string;
+        type?: string | string[];
     };
     view: {
         description?: string;
@@ -74,12 +74,16 @@ interface ICommonViewProps {
         [propName: string]: undefined | {};
     };
 }
+const nullRx = /null,|,null/;
 export default function commonView<E>(
-    Comp: React.SFC<E> | React.ComponentClass<E>
+    Comp: React.ComponentType<E & ICommonViewProps>
 ): React.SFC<E & ICommonViewProps> {
     function CommonView(props: E & ICommonViewProps) {
         const { errorMessage = [], view = {} } = props;
-        const errors = errorMessage.map(v => <span key={v}>{v}</span>);
+        const errors = errorMessage.map(v => {
+            const cleanError = v.replace(nullRx, '');
+            return <span key={v}>{cleanError}</span>;
+        });
         const layout = view.layout;
         const schema = props.schema;
         const isLiteralNumberInput =
@@ -94,6 +98,7 @@ export default function commonView<E>(
                     [`${extraShortStyle}`]: layout === 'extraShort',
                     [`${extraShortInline}`]: layout === 'extraShortInline',
                     [`${borderTopStyle}`]: view.borderTop,
+                    'hasBorderTop': view.borderTop,
                     [`${indentStyle}`]: view.indent,
                 })}
                 style={view.style}

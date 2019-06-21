@@ -452,10 +452,22 @@ YUI.add("wegas-editor-treeview", function(Y) {
             } else {
                 cfg = this.getAddMenuItems(widget.get("data"));
             }
-            valids = Y.Array.filter(cfg, function(i) {
+
+            valids = cfg && Y.Array.filter(cfg, function(i) {
                 return !i.cssClass || i.cssClass.indexOf(EXCLUDED_CLASS) < 0;
-            })
-            if (valids.length === 1) {
+            });
+            if (!valids) {
+
+                cfg = [{
+                        "type": "Text",
+                        "content": "<i>disabled</i>"
+                    }];
+
+                this.menu.destroyAll();
+                this.menu.add(cfg);
+                this.menu.show();
+                this.menu.set("xy", [e.domEvent.pageX, e.domEvent.pageY]);
+            } else if (valids.length === 1) {
                 button = Wegas.Widget.create(valids[0]);
                 button.fire("click");
                 button.destroy();
@@ -467,9 +479,13 @@ YUI.add("wegas-editor-treeview", function(Y) {
             }
         },
         getAddMenuItems: function(data) {
-            return Y.Array.find(Plugin.EditorTVToolbarMenu.prototype.getMenuItems.call(this, data), function(item) {
+            var item = Y.Array.find(Plugin.EditorTVToolbarMenu.prototype.getMenuItems.call(this, data), function(item) {
                 return item.label && (item.label.indexOf("wegas-icon-new") + item.label.indexOf("wegas-icon-add") > -2); // one of those exist
-            }).plugins[0].cfg.children;
+            });
+
+            if (item && item.plugins) {
+                return item.plugins[0].cfg.children;
+            }
         },
         destructor: function() {
             Y.Array.each(this.handlers, function(i) {

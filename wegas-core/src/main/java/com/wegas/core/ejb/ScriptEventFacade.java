@@ -10,6 +10,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.ejb.statemachine.StateMachineCounter;
 import com.wegas.core.api.ScriptEventFacadeI;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
@@ -23,12 +24,16 @@ import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import java.util.Collection;
 import javax.script.ScriptContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @RequestScoped
 public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEventFacadeI {
+
+    private static final Logger logger = LoggerFactory.getLogger(ScriptEventFacade.class);
 
     /**
      *
@@ -77,41 +82,56 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
      * @param player
      * @param eventName
      * @param param
-     * @throws com.wegas.core.exception.client.WegasScriptException
+     *
+     * @throws com.wegas.core.exception.client.WegasRuntimeException
      */
-    public void fire(Player player, String eventName, Object param) throws WegasScriptException {
+    public void fire(Player player, String eventName, Object param) throws WegasRuntimeException {
         this.doFire(player, eventName, param);
     }
 
     /**
      * @param player
      * @param eventName
-     * @throws com.wegas.core.exception.client.WegasScriptException
+     *
+     * @throws com.wegas.core.exception.client.WegasRuntimeException
      */
-    public void fire(Player player, String eventName) throws WegasScriptException {
+    public void fire(Player player, String eventName) throws WegasRuntimeException {
         this.fire(player, eventName, null);
     }
 
     /**
      * @param eventName
      * @param param
-     * @throws com.wegas.core.exception.client.WegasScriptException
+     *
+     * @throws com.wegas.core.exception.client.WegasRuntimeException
      */
     @Override
-    public void fire(String eventName, Object param) throws WegasScriptException {
+    public void fire(String eventName, Object param) throws WegasRuntimeException {
         this.fire(requestManager.getPlayer(), eventName, param);
     }
 
     /**
      * @param eventName
-     * @throws com.wegas.core.exception.client.WegasScriptException
+     * @param param
+     *
+     * @throws com.wegas.core.exception.client.WegasRuntimeException
      */
     @Override
-    public void fire(String eventName) throws WegasScriptException {
+    public void fireLoaded(String eventName, Object param) throws WegasRuntimeException {
+        this.fire(requestManager.getPlayer(), eventName, param);
+    }
+
+    /**
+     * @param eventName
+     *
+     * @throws com.wegas.core.exception.client.WegasRuntimeException
+     */
+    @Override
+    public void fire(String eventName) throws WegasRuntimeException {
         this.fire(eventName, null);
     }
 
-    private void doFire(Player player, String eventName, Object params) throws WegasScriptException {
+    private void doFire(Player player, String eventName, Object params) throws WegasRuntimeException {
         if (player == null && requestManager.getPlayer() == null) {
             throw WegasErrorMessage.error("An event '" + eventName + "' has been fired without a player defined. A player has to be defined.");
         }
@@ -132,13 +152,24 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
                 ScriptObjectMirror obj = (ScriptObjectMirror) ((Object[]) cb)[0];
 
                 Object scope = (((Object[]) cb).length == 2 ? ((Object[]) cb)[1] : new EmptyObject());
-                obj.call(scope, params);
+
+                try {
+                    obj.call(scope, params);
+                } catch (WegasRuntimeException ex) { // throw our exception as-is
+                    logger.error("ScriptException: {}", ex);
+                    throw ex;
+                } catch (RuntimeException ex) { // Java exception (Java -> JS -> Java -> throw)
+                    logger.error("ScriptException: {}", ex);
+                    throw new WegasScriptException(obj.toString(), ex.getMessage(), ex);
+                }
             }
         }
+
     }
 
     /**
      * @param eventName
+     *
      * @return Object[] array of corresponding parameters fired. Length
      *         correspond to number of times eventName has been fired.
      */
@@ -152,6 +183,7 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
 
     /**
      * @param eventName
+     *
      * @return how many time the event has been fired
      */
     public int firedCount(String eventName) {
@@ -160,7 +192,9 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
 
     /**
      * check if the event has been fired. If it's the case, count this event consumption within eventCounter
+     *
      * @param eventName
+     *
      * @return check if the event has been fired
      */
     @Override

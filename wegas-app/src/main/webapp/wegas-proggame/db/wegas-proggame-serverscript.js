@@ -1,98 +1,250 @@
-var ret = [], objects, level, Wegas,
-    said = "";
+// Types used accross this file
+/* global gameModel, self, Variable*/
+/**
+ * @typedef ObjectsItem
+ * @property {string} id
+ * @property {number} x
+ * @property {number} y
+ * @property {number=} direction
+ * @property {boolean=} collides
+ * @property {string} components
+ *
+ * @typedef Level ProgGame level
+ * @property {string} `@pageId` Level id
+ * @property {"ProgGameLevel"} type
+ * @property {string} label
+ * @property {string} intro
+ * @property {{x:0, y:0|1}[][]} map Matrix of {x, y} where
+ * - y = 1 means a path
+ * - x is unused (history...)
+ * @property {ObjectsItem[]} objects
+ * @property {string[]} api
+ * @property {string} winningCondition
+ * @property {string} onStart
+ * @property {string} onAction
+ * @property {string} onWin
+ * @property {string} defaultCode
+ * @property {number} maxTurns
+ *
+ * @typedef {Object} Config
+ * @property {boolean} debug
+ * @property {unknown[]} breakpoint
+ * @property {unknown[]} watches
+ * @property {number} startStep
+ * @property {number} targetStep
+ * @property {boolean} recordCommands
+ */
 
-Wegas = { //                                                                     // Utilities
-    bind: function(fn, scope) {
-        return function() {
-            fn.call(scope, arguments);
-        };
-    },
-    mix: function(receiver, supplier) {
-        var i;
-        for (i in supplier) {
-            if (supplier.hasOwnProperty(i) && !receiver[i]) {
-                receiver[i] = supplier[i];
-            }
-        }
-        return receiver;
-    },
+/**
+ * @namespace Wegas utilities
+ */
+var Wegas = {
+    //                                                                     // Utilities
     Object: {
         values: function(object) {
-            var ret = [], i;
+            var r = [],
+                i;
             for (i in object) {
-                ret.push(object[i]);
+                r.push(object[i]);
             }
-            return ret;
+            return r;
         },
-        clone: function(o) {
+        /**
+         * Copy direct properties from objects to target
+         * src: https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Object/assign
+         * @template T
+         * @template O
+         * @param {T} target
+         * @param {...O} objects
+         * @returns {T & O}
+         */
+        // eslint-disable-next-line no-unused-vars
+        assign: function assign(target, objects) {
+            // .length of function is 2
+            'use strict';
+            if (target == null) {
+                // TypeError if undefined or null
+                throw new TypeError(
+                    'Cannot convert undefined or null to object'
+                );
+            }
+
+            var to = Object(target);
+
+            for (var index = 1; index < arguments.length; index++) {
+                var nextSource = arguments[index];
+
+                if (nextSource != null) {
+                    // Skip over if undefined or null
+                    for (var nextKey in nextSource) {
+                        // Avoid bugs when hasOwnProperty is shadowed
+                        if (
+                            Object.prototype.hasOwnProperty.call(
+                                nextSource,
+                                nextKey
+                            )
+                        ) {
+                            to[nextKey] = nextSource[nextKey];
+                        }
+                    }
+                }
+            }
+            return to;
+        },
+        /**
+         * Deep clone
+         * @template {{[key: string]: any} | any[]} T
+         * @param {T} o object to clone
+         * @returns {T} clone
+         */
+        clone: function clone(o) {
             var i,
-                newObj = (o instanceof Array) ? [] : {};
+                newObj = o instanceof Array ? [] : {};
             for (i in o) {
-                if (i === 'clone')
-                    continue;
-                if (o[i] && typeof o[i] === "object") {
-                    newObj[i] = Wegas.Object.clone([i]);
-                } else
-                    newObj[i] = o[i];
+                if (i === 'clone') continue;
+                if (o[i] && typeof o[i] === 'object') {
+                    newObj[i] = clone(o[i]);
+                } else newObj[i] = o[i];
             }
             return newObj;
+        },
+    },
+    /**
+     * Get level from database
+     * Works if pages are stored in JCR
+     * @param {string|number} level
+     * @returns {Level}
+     */
+    getLevelPage: function getLevelPage(level) {
+        return JSON.parse(gameModel.getPages()[String(level)]);
+    },
+    /**
+     * Create a double array with variables and corresponding values from given hashmap
+     * @param {{[variables:string]: any}} varValues hashmap variable -> value
+     */
+    scopeValue: function(varValues) {
+        var vars, vals;
+        if (typeof varValues === 'object') {
+            vars = Object.keys(varValues);
+            vals = vars.map(function(k) {
+                return varValues[k];
+            });
         }
-    }
+        return {
+            variables: vars,
+            values: vals,
+        };
+    },
+    /**
+     * Make a function throw when called
+     * @param {(...args:any[])=>any} fn function to mark as evil
+     */
+    evil: function(fn) {
+        var newFn = function() {
+            throw Error(fn.name + ' is Evil');
+        };
+        newFn.prototype = fn.prototype;
+        return Wegas.Object.assign(newFn, fn);
+    },
 };
-function wdebug(msg) {
-   // print(msg);
+/**
+ * print arguments
+ */
+function wdebug() {
+    // print.apply(null, arguments);
 }
+/**
+ * @constructor
+ * @param {Config} cfg
+ */
 function ProgGameSimulation(cfg) {
     this.debug = cfg.debug || false;
     this.breakpoints = cfg.breakpoints || [];
     this.watches = cfg.watches || [];
-    this.startStep = (cfg.startStep === undefined) ? -1 : cfg.startStep;
-    this.targetStep = (cfg.targetStep === undefined) ? 10000000 : cfg.targetStep;
-    this.doRecordCommands = (cfg.doRecordCommands === undefined) ? true : cfg.recordCommands;
+    this.startStep = cfg.startStep === undefined ? -1 : cfg.startStep;
+    this.targetStep = cfg.targetStep === undefined ? 1e7 : cfg.targetStep;
+    this.doRecordCommands =
+        cfg.doRecordCommands === undefined ? true : cfg.recordCommands;
+    this.ret = [];
+    /** @type {ObjectsItem} */
+    this.cObject = null;
+    this.currentStep = -1;
+    /** @type {Level} */
+    this.level;
+    /** @type {Level["api"]} */
+    this.api; //= level.api;
+    /** @type {Level["objects"]} */
+    this.objects; // Shortcut to level objects
+    this.gameOverSent = false;
 }
-Wegas.mix(ProgGameSimulation.prototype, {
+
+ProgGameSimulation.prototype = {
+    /**
+     *
+     * @param {(name: string) => void} playerFn fn containing player's code
+     * @param {Level} level
+     */
     run: function(playerFn, level) {
-        wdebug("Simulation run");
-        this.args = {};
+        wdebug('Simulation run');
+        // convert old version
+        // @TODO remove ...
+        var onWin = level.onWin, r;
+        if (
+            typeof onWin === 'string' &&
+            (r = onWin.match(
+                /Variable.find\(gameModel, "currentLevel"\).setValue\(self, (\d+)\)/
+            ))
+        ) {
+            level.onWin = Number(r[1]);
+        }
         this.ret = [];
         this.cObject = null;
         this.currentStep = -1;
         this.level = level;
         this.api = level.api;
-        this.objects = level.objects; // Shortcut to level objects
+        this.objects = level.objects;
         this.gameOverSent = false;
-
         //"sendCommand({type:'resetLevel', objects: " + JSON.stringify(this.get("objects")) + "});"
-        var o, i, j;
+        var o, i, j, a;
         for (i = 0; i < this.objects.length; i += 1) {
             this.objects[i].defaultActions = this.objects[i].actions;
         }
-        objects = this.objects;
         if (level.onStart) {
             this.doEval(level.onStart);
         }
         this.log('Running...');
         for (i = 0; i < level.maxTurns; i += 1) {
-            //this.log('Turn ' + (i + 1));
-
+            if (level.maxTurns > 1) {
+                this.log('Turn ' + (i + 1));
+            }
             for (j = 0; j < this.objects.length; j += 1) {
-                if (this.checkGameOver()) // If the game is already stopped,
+                if (this.checkGameOver())
+                    // If the game is already stopped,
                     continue; // no need to continue
                 this.cObject = o = this.objects[j]; // Set up a global reference
 
-                if (o.id === "Player") { // If current object is the player,
-                    //this.log('Your turn');
+                if (o.id === 'Player') {
+                    // If current object is the player,
+                    // this.log('Your turn');
                     this.doPlayerEval(playerFn); // run his code
                 }
-                if (o.ai) { // If object has an AI,
-                    //this.log(o.id + ' turn');
-                    this.doEval(o.ai); // run its code
+                if (o.ai) {
+                    // If object has an AI,
+                    // this.log(o.id + ' turn');
+                    var res = {};
+                    for (a in this.api) {
+                        if (this[this.api[a]]) {
+                            res[this.api[a]] = this[this.api[a]].bind(this);
+                        }
+                    }
+                    this.doEval(o.ai, res); // run its code
                 }
             }
 
-        //this.resetActions();                                              // Reset available action at the beginning of each turn
+            //this.resetActions();                                              // Reset available action at the beginning of each turn
         }
-        if (!this.checkGameOver()) { // If the game is still not won,
+        if (!this.checkGameOver()) {
+            // If the game is still not won,
             this.log('You lost.'); // then it's definitely lost
         }
     },
@@ -100,28 +252,47 @@ Wegas.mix(ProgGameSimulation.prototype, {
         for (var i = 0; i < this.objects.length; i++) {
             this.objects[i].actions = this.objects[i].defaultActions;
             this.sendCommand({
-                type: "updated",
-                object: Wegas.Object.clone(this.objects[i])
+                type: 'updated',
+                object: Wegas.Object.clone(this.objects[i]),
             });
         }
     },
     commands: {
-        move: function() {}
+        move: function() {},
     },
+    /**
+     * Queue command
+     * @param {{type: string}} cfg
+     * @returns {boolean} command has been successfully queued
+     */
     sendCommand: function(cfg) {
-        wdebug("Sendcommand " + cfg.type + " current line: " + this.currentStep + ", start line:" + this.startStep + "*" + this.doRecordCommands);
-        if (this.currentStep < this.startStep) { // Debug
-            wdebug("early command dropped");
-            return;
+        wdebug(
+            'Sendcommand ' +
+                cfg.type +
+                ' current line: ' +
+                this.currentStep +
+                ', start line:' +
+                this.startStep +
+                '*' +
+                this.doRecordCommands +
+                ', id:' +
+                cfg.id
+        );
+        if (this.currentStep < this.startStep) {
+            // Debug
+            wdebug('early command dropped');
+            return false;
         }
-        if (this.currentStep > this.targetStep) { // Debug
-            wdebug("late command dropped");
-            return;
+        if (this.currentStep > this.targetStep) {
+            // Debug
+            wdebug('late command dropped');
+            return false;
         }
         if (!this.doRecordCommands) {
             return false;
         }
         this.ret.push(cfg);
+        return true;
     },
     lastCommand: function() {
         return this.ret[this.ret.length - 1];
@@ -130,18 +301,21 @@ Wegas.mix(ProgGameSimulation.prototype, {
         return this.ret;
     },
     beforeAction: function(object) {
-        if (this.checkGameOver())
-            return false;
+        if (this.checkGameOver()) return false;
 
         //if (!this.consumeActions(object, 1)) {
-            //    this.log("Not enough actions.");
-            //    return false;
-            //}
+        //    this.log("Not enough actions.");
+        //    return false;
+        //}
 
         return true;
     },
-    afterAction: function(object) {
-        this.doEval(this.level.onAction);
+    /**
+     *
+     * @param {{[variable:string]: unkown}=} values to pass to the script
+     */
+    afterAction: function(values) {
+        this.doEval(this.level.onAction, values);
     },
     log: function(text) {
         if (text instanceof Object) {
@@ -149,14 +323,8 @@ Wegas.mix(ProgGameSimulation.prototype, {
         }
         this.sendCommand({
             type: 'log',
-            text: text
+            text: text,
         });
-    },
-    pushArg: function(name, val) {
-        this.args[name] = val;
-    },
-    getArgs: function() {
-        return this.args;
     },
     consumeActions: function(object, actions) {
         //if (object.actions - actions < 0) {
@@ -168,84 +336,85 @@ Wegas.mix(ProgGameSimulation.prototype, {
         return true;
     },
     say: function(msg) {
-        if (!this.beforeAction())
-            return;
+        if (!this.beforeAction()) return;
 
         this.doSay({
-            text: "" + msg
+            text: '' + msg,
         });
-        said = msg;
 
-        this.afterAction();
+        this.afterAction({ type: 'say', said: msg });
     },
     doSay: function(cfg) {
-        this.log(this.cObject.id + " says \"" + cfg.text + "\"");
-        this.sendCommand(Wegas.mix(cfg, {
-            type: "say",
-            id: this.cObject.id,
-            delay: 1500
-        }));
+        this.log(this.cObject.id + ' says "' + cfg.text + '"');
+        this.sendCommand(
+            Wegas.Object.assign(cfg, {
+                type: 'say',
+                id: this.cObject.id,
+                delay: 1500,
+            })
+        );
     },
     doOpen: function(object) {
         object.open = true;
         this.sendCommand({
             id: object.id,
-            type: "doorState",
-            state: true
+            type: 'doorState',
+            state: true,
         });
     },
     read: function() {
-        if (this.checkGameOver())
-            return;
-        var panel = this.findAt(this.cObject.x, this.cObject.y),
+        if (this.checkGameOver()) return;
+        var panel = this.findAt(this.cObject.x, this.cObject.y, 'Panel'),
             value;
-
-        if (panel && panel.value) {
-            value = this.doEval("return " + panel.value);
+        if (panel && panel.components === 'Panel') {
+            value = this.doEval('return ' + panel.value);
+            // value = panel.value;
             this.doSay({
-                text: "It's written \"" + value + "\"",
-                think: true
+                text: 'It\'s written "' + value + '"',
+                think: true,
             });
         } else {
             this.doSay({
                 text: "There's nothing to read here.",
-                think: true
+                think: true,
             });
         }
-        this.afterAction();
+        this.afterAction({ type: 'read', panel: panel });
         return value;
     },
     include: function(fileName) {
         var msg,
-            files = Variable.find(gameModel, "files");
+            files = Variable.find(gameModel, 'files');
         if (files) {
             msg = files.getInstance(self).getMessageBySubject(fileName);
             if (msg) {
-                this.log("Including: " + fileName);
-                this.doEval("" + msg.body);
+                this.log('Including: ' + fileName);
+                this.doEval('' + msg.body);
                 return;
             }
         }
-        this.log("Unable to include file: " + fileName);
+        this.log('Unable to include file: ' + fileName);
     },
     move: function() {
-        var i, o,
+        var i,
+            o,
             object = this.cObject,
             moveV = this.dirToVector(object.direction);
-        if (!this.beforeAction(object))
-            return;
+        if (!this.beforeAction(object)) return;
 
         if (!this.consumeActions(object, 1)) {
-            this.log("Not enough actions to move");
+            this.log('Not enough actions to move');
             return;
         }
 
-        if (this.checkCollision(object, object.x + moveV.x, object.y + moveV.y)) {
+        if (
+            this.checkCollision(object, object.x + moveV.x, object.y + moveV.y)
+        ) {
             this.doSay({
-                text: "Something is blocking the way",
-                duration: 800
+                text: 'Something is blocking the way',
+                duration: 800,
             });
-        //this.log("Something is blocking the way");
+            //this.log("Something is blocking the way");
         } else {
             object.x += moveV.x;
             object.y += moveV.y;
@@ -254,11 +423,11 @@ Wegas.mix(ProgGameSimulation.prototype, {
             for (i = 0; i < this.currentCollides.length; i += 1) {
                 o = this.currentCollides[i];
                 switch (o.components) {
-                    case "Trap":
+                    case 'Trap':
                         if (o.enabled) {
                             this.sendCommand({
-                                type: "trap",
-                                id: o.id
+                                type: 'trap',
+                                id: o.id,
                             });
                             this.log('You lost.'); // then it's definitely lost
                             this.doRecordCommands = false;
@@ -274,28 +443,25 @@ Wegas.mix(ProgGameSimulation.prototype, {
             dir: object.direction,
             id: object.id,
             x: object.x,
-            y: object.y
+            y: object.y,
         });
     },
     rotate: function(dir) {
         var object = this.cObject;
 
-        if (!this.beforeAction(object))
-            return;
+        if (!this.beforeAction(object)) return;
 
         if (!this.consumeActions(object, 1)) {
-            this.log("Not enough actions to rotate.");
+            this.log('Not enough actions to rotate.');
             return;
         }
         object.direction += dir;
-        if (object.direction > 4)
-            object.direction = 1;
-        if (object.direction < 1)
-            object.direction = 4;
+        if (object.direction > 4) object.direction = 1;
+        if (object.direction < 1) object.direction = 4;
 
         this.doMove(object); // Send move command
 
-        this.afterAction();
+        this.afterAction({ type: 'rotate', direction: dir });
     },
     right: function() {
         this.rotate(-1);
@@ -306,31 +472,34 @@ Wegas.mix(ProgGameSimulation.prototype, {
     fire: function() {
         var i,
             source = this.cObject;
-        wdebug("fire" + source.actions);
+        wdebug('fire' + source.actions);
 
-        if (this.checkGameOver())
-            return;
+        if (this.checkGameOver()) return;
 
         if (!this.consumeActions(source, 1)) {
-            this.log("Not enough actions to fire.");
+            this.log('Not enough actions to fire.');
             return;
         }
 
         this.sendCommand({
             type: 'fire',
-            object: Wegas.Object.clone(source)
+            id: source.id,
         });
 
         var colidee,
             dirV = this.dirToVector(source.direction);
 
         for (i = 0; i <= source.range; i++) {
-            colidee = this.checkCollision(this.cObject, source.x + (i * dirV.x), source.y + (i * dirV.y));
+            colidee = this.checkCollision(
+                this.cObject,
+                source.x + i * dirV.x,
+                source.y + i * dirV.y
+            );
             if (colidee) {
                 colidee.life = 0;
                 this.sendCommand({
                     type: 'die',
-                    object: Wegas.Object.clone(colidee)
+                    object: Wegas.Object.clone(colidee),
                 });
             }
         }
@@ -346,7 +515,8 @@ Wegas.mix(ProgGameSimulation.prototype, {
         return objects;
     },
     checkCollision: function(source, x, y) {
-        var o, k,
+        var o,
+            k,
             collided = false,
             objects = this.getObjectsAt(x, y);
 
@@ -358,78 +528,130 @@ Wegas.mix(ProgGameSimulation.prototype, {
                 this.currentCollides.push(o);
                 collided = true;
                 switch (o.components) {
-                    case "Door": // Doors
+                    case 'Door': // Doors
                         if (!o.open) {
                             return o;
                         }
                         break;
-                    case "Trap": // Traps do not collide
+                    case 'Trap': // Traps do not collide
                         break;
-                    default: // By default check collision
+                    default:
+                        // By default check collision
                         if (o.collides === undefined || o.collides) {
                             return o;
                         }
-                        break;
                 }
             }
         }
 
-        //if (this.level.map[this.level.map.length - 1 - y][x].y === 0 ? !collided : false) {// It's a XOR
-        if (this.level.map[y][x].y === 0 ? !collided : false) { // It's a XOR
+        if (
+            this.level.map[y] === undefined || // outside map
+            this.level.map[y][x] === undefined || // outside map
+            this.level.map[y][x].y === 0 // no path
+                ? !collided
+                : false
+        ) {
             return true;
         }
         return false;
     },
+    /**
+     * Check if game has ended and execute success if player
+     */
     checkGameOver: function() {
         if (this.gameOverSent) {
             return true;
-        } else if (this.doEval("return " + this.level.winningCondition)) {
+        } else if (this.doEval('return ' + this.level.winningCondition)) {
             this.gameOverSent = true;
-            this.log("You won!");
+            this.log('You won!');
             this.sendCommand({
-                type: "gameWon"
+                type: 'gameWon',
             });
+            var maxLevel = Variable.find(gameModel, 'maxLevel');
+            if (
+                maxLevel.getValue(self) <=
+                Variable.find(gameModel, 'currentLevel').getValue(self)
+            ) {
+                Variable.find(gameModel, 'money').add(self, 100);
+            }
+            maxLevel.setValue(
+                self,
+                Math.max(maxLevel.getValue(self), this.level.onWin)
+            );
             return true;
         }
         return false;
     },
-    doEval: function(code) {
-        var ctx=this,commands = ["comparePos", "find", "doOpen", "lastCommand"], cb = commands.map(function(e){
-            return ctx[e].bind(ctx); 
-        });
+    /**
+     *
+     * @param {string} code code to execute
+     * @param {{[variable:string]: unkown}=} values scope values hashmap
+     */
+    doEval: function(code, values) {
+        wdebug('Eval', code);
+        var ctx = this,
+            argName,
+            commands = ['comparePos', 'find', 'doOpen', 'lastCommand'],
+            cb = commands.map(function(e) {
+                return ctx[e].bind(ctx);
+            });
+        if (typeof values === 'object') {
+            argName = Object.keys(values);
+            commands = commands.concat(argName);
+            cb = cb.concat(
+                argName.map(function(k) {
+                    return values[k];
+                })
+            );
+        }
         try {
-            return (new Function(commands, code))
-                .apply(this, cb);
+            return new Function(commands, code).apply(this, cb);
         } catch (e) {
-            print("[PROGGAME] ERRORED", e);
+            wdebug('[PROGGAME] ERRORED', e);
+            this.log(e.message);
             return null;
         }
     },
     doPlayerEval: function(playerFn) {
-        var scope = {},
-            keys = [],
-            values = [];
-        for (var i in this.api) {
+        wdebug('Player eval');
+        var scope = {
+                // hide global variables to player
+                self: undefined,
+                gameModel: undefined,
+                Variable: undefined,
+                VariableDescriptorFacade: undefined,
+                Instance: undefined,
+                RequestManager: undefined,
+                print: undefined,
+                Wegas: undefined,
+                ProgGameSimulation: undefined,
+                run: undefined,
+                load: undefined,
+                // debugger tool
+                _____debug: this._____debug.bind(this),
+                watches: this.watches,
+                // Prevent bad things. Infinite loop, ...
+                // Function: Wegas.evil(Function),
+                // eval: Wegas.evil(eval),
+            },
+            i;
+        for (i in this.api) {
             if (this[this.api[i]]) {
-                scope[i] = this[this.api[i]].bind(this);
-                keys.push(this.api[i]);
-                values.push(scope[i]);
+                scope[this.api[i]] = this[this.api[i]].bind(this);
             }
         }
-        keys.push("_____debug");
-        values.push(this._____debug.bind(this));
-        keys.push("watches");
-        values.push(this.watches);
-
-        var f = new Function(keys, "(" + playerFn.toString() + ").call({})");
-        f.apply(this, values);
-    // with (this) {
-    //  playerFn.apply(this);                                                           // run fn
-    //(function(that) {
-    //playerFn.apply(this/*, this.getArgs()));                                      // run fn
-    //})(this);
-    //  }
+        var params = Wegas.scopeValue(scope);
+        var f = new Function(
+            params.variables,
+            '(' + playerFn.toString() + ').call({})'
+        );
+        f.apply(null, params.values);
     },
+    /**
+     * Find object with correspondig id
+     *
+     * @param {string} id
+     */
     find: function(id) {
         for (var i = 0; i < this.objects.length; i = i + 1) {
             if (this.objects[i].id === id) {
@@ -438,24 +660,45 @@ Wegas.mix(ProgGameSimulation.prototype, {
         }
         return null;
     },
-    findAt: function(x, y) {
+    /**
+     * Find object at given position which is not the Player
+     *
+     * @param {number} x
+     * @param {number} y
+     * @param {string=} type
+     */
+    findAt: function(x, y, type) {
         for (var i = 0; i < this.objects.length; i = i + 1) {
-            if (this.objects[i].x === x && this.objects[i].y === y
-                && this.objects[i].id !== "Player") {
+            if (
+                this.objects[i].x === x &&
+                this.objects[i].y === y &&
+                this.objects[i].components !== 'PC' &&
+                (!type || this.objects[i].components === type)
+            ) {
                 return this.objects[i];
             }
         }
         return null;
     },
-    findObject: function(id) {
-        return find(id);
-    },
+    /**
+     * Check if 2 objects are at the same position
+     *
+     * @param {ObjectsItem} a object
+     * @param {ObjectsItem} b object
+     */
     comparePos: function(a, b) {
         return a.x === b.x && a.y === b.y;
     },
     _____debug: function(line, scope, vars) {
         this.currentStep += 1;
-        wdebug("____debug line:" + line + ", current step " + this.currentStep + ", startStep: " + this.startStep);
+        wdebug(
+            '____debug line:' +
+                line +
+                ', current step ' +
+                this.currentStep +
+                ', startStep: ' +
+                this.startStep
+        );
         if (this.currentStep > this.startStep) {
             // vars = (function(o) {
             //     var i,
@@ -470,24 +713,24 @@ Wegas.mix(ProgGameSimulation.prototype, {
             //     return ret;
             // })(this);
             //&& line > this.currentStep && // first time considering this line
-            wdebug("halted" + this.breakpoints.indexOf(line) + "*" + line);
-            if (this.breakpoints.indexOf("" + line) > -1) {
+            wdebug('halted' + this.breakpoints.indexOf(line) + '*' + line);
+            if (this.breakpoints.indexOf('' + line) > -1) {
                 this.sendCommand({
-                    type: "breakpoint",
+                    type: 'breakpoint',
                     line: line,
                     step: this.currentStep,
-                    scope: vars
-                //scope: this.genScope(scope)
+                    scope: vars,
+                    //scope: this.genScope(scope)
                 });
                 this.doRecordCommands = false;
             } else {
                 this.sendCommand({
-                    type: "line",
-                    line: line
+                    type: 'line',
+                    line: line,
                 });
             }
         }
-    //this.currentStep = line;
+        //this.currentStep = line;
     },
     _____watch: function() {
         for (var i = 0; i < arguments.length; i += 1) {
@@ -501,51 +744,70 @@ Wegas.mix(ProgGameSimulation.prototype, {
             ret = {};
         for (i = 0; i < this.watches.length; i += 1) {
             try {
-
-                ret[this.watches[i]] = this.doEval("return " + this.watches[i]);
+                ret[this.watches[i]] = this.doEval('return ' + this.watches[i]);
             } catch (e) {
                 // GOTCHA
             }
-        //            ret[this.watches[i]] = true;
+            //            ret[this.watches[i]] = true;
         }
         return ret;
     },
     // *** Utilities *** //
+    /**
+     * Get a normalized vector for a given direction
+     * @param {0|1|2|3} dir direction
+     */
     dirToVector: function(dir) {
         var dirX = 0,
             dirY = 0;
         switch (dir) {
-            case 1:
+            case 1: // down
                 dirY = 1;
                 break;
-            case 2:
+            case 2: // right
                 dirX = 1;
                 break;
-            case 3:
+            case 3: // top
                 dirY = -1;
                 break;
-            case 4:
+            case 4: // left
                 dirX = -1;
                 break;
         }
         return {
             x: dirX,
-            y: dirY
+            y: dirY,
         };
-    }
-});
-
+    },
+};
+/**
+ *
+ * @param {(name: string) => void} playerFn fn containing player's code
+ * @param {Level|string} level
+ * @param {Config} cfg
+ */
+/* exported run */
 function run(playerFn, level, cfg) {
+    /** @type {Level} */
+    var realLevel;
     cfg = cfg || {};
+    if (typeof level !== 'object') {
+        realLevel = Wegas.getLevelPage(level);
+    } else {
+        realLevel = level;
+    }
     var simulation = new ProgGameSimulation(cfg);
-    simulation.run(playerFn, level);
+    simulation.run(playerFn, realLevel);
     return JSON.stringify(simulation.getCommands());
 }
 //node debug
+/* eslint-disable  */
 // var exports;
-// if (exports) {
-//     exports.run = run;
-//     function print() {
+
+// if (module && module.exports) {
+//     module.exports.run = run;
+//     print = function() {
 //         console.log(arguments);
 //     }
 // }
+/* eslint-enable */

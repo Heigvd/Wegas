@@ -15,15 +15,19 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
-import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.Orderable;
-import com.wegas.core.persistence.variable.Searchable;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.I18nStringView;
+import com.wegas.editor.View.View;
 import com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,7 +59,7 @@ import javax.persistence.UniqueConstraint;
             @Index(columnList = "parentstring_id")
         }
 )
-public class EnumItem extends AbstractEntity implements Searchable, LabelledEntity, Orderable {
+public class EnumItem extends AbstractEntity implements LabelledEntity, Orderable {
 
     private static final long serialVersionUID = 1L;
 
@@ -75,6 +79,13 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
     /**
      * Internal identifier
      */
+    @WegasEntityProperty(searchable = true,
+            nullable = false,
+            view = @View(
+                    label = "Script alias",
+                    description = "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character.",
+                    featureLevel = ADVANCED
+            ))
     private String name;
 
     @Column(name = "item_order")
@@ -82,6 +93,13 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
     private Integer order;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(
+                    label = "Label",
+                    description = "Displayed to players",
+                    value = I18nStringView.class
+            ))
     private TranslatableContent label;
 
     @Override
@@ -154,6 +172,15 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
     }
 
     @Override
+    public WithPermission getMergeableParent() {
+        if (this.getParentString() != null) {
+            return getParentString();
+        } else {
+            return getParentEvaluation();
+        }
+    }
+
+    @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         if (this.parentEvaluation != null) {
             return parentEvaluation.getRequieredReadPermission();
@@ -173,21 +200,6 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
         }
 
         return null;
-    }
-
-    @Override
-    public void merge(AbstractEntity other) {
-        if (other instanceof EnumItem) {
-            EnumItem o = (EnumItem) other;
-            this.setName(o.getName());
-            this.setLabel(TranslatableContent.merger(this.getLabel(), o.getLabel()));
-        }
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return Helper.insensitiveContainsAll(getName(), criterias)
-                || Helper.insensitiveContainsAll(getLabel(), criterias);
     }
 
     public static class ListDeserializer extends StdDeserializer<List<EnumItem>> {
@@ -219,7 +231,7 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
                     if (currentToken == JsonToken.VALUE_STRING) {
                         String strItem = p.getText();
                         EnumItem item = new EnumItem();
-                        item.setLabel(TranslatableContent.build("def", strItem));
+                        item.setLabel(TranslatableContent.build("en", strItem));
                         item.setName(strItem);
                         items.add(item);
                     } else if (currentToken == JsonToken.START_OBJECT) {
@@ -239,11 +251,10 @@ public class EnumItem extends AbstractEntity implements Searchable, LabelledEnti
                 TypeDeserializer typeDeserializer) throws IOException {
             JsonToken currentToken = p.currentToken();
             if (currentToken == JsonToken.VALUE_STRING) {
-                return TranslatableContent.build("def", p.getText());
+                return TranslatableContent.build("en", p.getText());
             }
             return super.deserializeWithType(p, ctxt, typeDeserializer);
         }
 
     }
-
 }

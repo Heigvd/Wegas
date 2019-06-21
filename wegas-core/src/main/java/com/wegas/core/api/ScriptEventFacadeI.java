@@ -7,7 +7,7 @@
  */
 package com.wegas.core.api;
 
-import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.exception.client.WegasRuntimeException;
 
 /**
  * Let scripts use events !
@@ -22,18 +22,28 @@ public interface ScriptEventFacadeI {
      * @param eventName event to fire
      * @param param     payload
      *
-     * @throws com.wegas.core.exception.client.WegasScriptException
+     * @throws com.wegas.core.exception.client.WegasRuntimeException
      */
-    void fire(String eventName, Object param) throws WegasScriptException;
+    void fire(String eventName, Object param) throws WegasRuntimeException;
+
+    /**
+     * Fire an event with some payload.
+     *
+     * @param eventName event to fire
+     * @param param     payload
+     *
+     * @throws com.wegas.core.exception.client.WegasRuntimeException
+     */
+    void fireLoaded(String eventName, Object param) throws WegasRuntimeException;
 
     /**
      * Fire an event
      *
      * @param eventName event to fire
      *
-     * @throws com.wegas.core.exception.client.WegasScriptException
+     * @throws com.wegas.core.exception.client.WegasRuntimeException
      */
-    void fire(String eventName) throws WegasScriptException;
+    void fire(String eventName) throws WegasRuntimeException;
 
     /**
      * Has an event been fired?

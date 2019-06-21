@@ -84,6 +84,16 @@ angular.module('wegas.service.wegasTranslations', [])
                             fr: "scénaristes"
                         }
                     },
+                    'modeler': {
+                        singular: {
+                            en: "modeler",
+                            fr: "modeleur"
+                        },
+                        plural: {
+                            en: "modelers",
+                            fr: "modeleurs"
+                        }
+                    },
                     'admin': {
                         singular: {
                             en: "administrator",
@@ -122,6 +132,16 @@ angular.module('wegas.service.wegasTranslations', [])
                         plural: {
                             en: "scenarios",
                             fr: "scénarios"
+                        }
+                    },
+                    'model': {
+                        singular: {
+                            en: "model",
+                            fr: "modèle"
+                        },
+                        plural: {
+                            en: "models",
+                            fr: "modèles"
                         }
                     },
                     'token': {
@@ -343,6 +363,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Error during password generation",
                             'fr': "Erreur durant la génération du mot de passe"
                         },
+                        'COMMONS-AUTH-EMAIL-VERIFY-FLASH-SUCCESS': {
+                            'en': "A validation request has been sent by e-mail.\nWe recommend that you check your spam/junk mail folder.\n ",
+                            'fr': "Une demande de validation a été envoyée par e-mail.\nVérifiez éventuellement dans vos messages indésirables (spam).\n "
+                        },
+                        'COMMONS-AUTH-EMAIL-VERIFY-FLASH-ERROR': {
+                            'en': "Error during email validation request",
+                            'fr': "Erreur durant la requête de vérification de l'adresse e-mail"
+                        },
                         'COMMONS-AUTH-CREATE-ACCOUNT-FLASH-SUCCESS': {
                             'en': "AlbaSim - Wegas",
                             'fr': "AlbaSim - Wegas"
@@ -416,6 +444,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'COMMONS-TEAMS-JOIN-INDIVIDUALLY-FLASH-ERROR': {
                             'en': "Error while joining " + keywords.session.singular.en,
                             'fr': "Erreur durant la tentative de rejoindre la " + keywords.session.singular.fr
+                        },
+                        'COMMONS-TEAMS-JOIN-RETRY': {
+                            'en': "Retry to join the " + keywords.session.singular.en,
+                            'fr': "Tenter de rejoindre la " + keywords.session.singular.fr + " à nouveau"
                         },
                         'COMMONS-TEAMS-JOIN-QUEUED': {
                             'en': "Scheduled for initialization",
@@ -673,7 +705,7 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': startSentence(keywords.scenario.singular.fr) + " trouvé"
                         },
                         'COMMONS-SCENARIOS-GET-FLASH-ERROR': {
-                            'en': "No  " + keywords.scenario.singular.en + " found",
+                            'en': "No " + keywords.scenario.singular.en + " found",
                             'fr': "Aucun " + keywords.scenario.singular.fr + " trouvé"
                         },
                         'COMMONS-SCENARIOS-CREATE-FLASH-SUCCESS': {
@@ -950,6 +982,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': startSentence(keywords.scenarist.singular.en),
                             'fr': startSentence(keywords.scenarist.singular.fr)
                         },
+                        'PRIVATE-WS-MODELER-BTN': {
+                            'en': startSentence(keywords.modeler.singular.en),
+                            'fr': startSentence(keywords.modeler.singular.fr)
+                        },
                         'PRIVATE-WS-ADMIN-BTN': {
                             'en': startSentence(keywords.admin.singular.en),
                             'fr': startSentence(keywords.admin.singular.fr)
@@ -957,6 +993,14 @@ angular.module('wegas.service.wegasTranslations', [])
                         'PRIVATE-WS-PROFILE-BTN': {
                             'en': "Edit profile",
                             'fr': "Editer mon profil"
+                        },
+                        'PRIVATE-WS-VERIFY-TOOLTIP': {
+                            'en': "Click to verify your e-mail address",
+                            'fr': "Cliquez pour vérifier votre adresse e-mail"
+                        },
+                        'PRIVATE-WS-VERIFY-BTN': {
+                            'en': "Unverified e-mail",
+                            'fr': "e-mail non-verifié"
                         },
                         'PRIVATE-WS-UNMODIFIABLE-PROFILE-BTN': {
                             'en': "Your user profile is not modifiable",
@@ -1162,6 +1206,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'PRIVATE-PROFILE-INPUT-PLACEHOLDER-LASTNAME': {
                             'en': "Please enter your last name",
                             'fr': "Veuillez entrer votre nom de famille"
+                        },
+                        'PRIVATE-PROFILE-INPUT-PLACEHOLDER-COMMENT': {
+                            'en': "Admin comments",
+                            'fr': "Remarques administrateur"
                         },
                         'PRIVATE-PROFILE-SAVE-BTN': {
                             'en': "Save changes",
@@ -1448,7 +1496,132 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "No archived " + keywords.session.singular.en + " corresponds to search string ",
                             'fr': "Aucune " + keywords.session.singular.fr + " archivée répondant au critère "
                         },
-
+                        // Private Modeler
+                        'MODELER-INDEX-ADD-TITLE': {
+                            'en': "New " + keywords.model.singular.en,
+                            'fr': "Nouveau " + keywords.model.singular.fr
+                        },
+                        'MODELER-INDEX-EXTRACT-TITLE': {
+                            'en': "Extract " + keywords.model.singular.en,
+                            'fr': "Extraire un " + keywords.model.singular.fr
+                        },
+                        'MODELER-INDEX-ME-FIRST-TITLE': {
+                            'en': "List my " + keywords.model.plural.en + " first",
+                            'fr': "Lister mes " + keywords.model.plural.fr + " en premier"
+                        },
+                        'MODELER-INDEX-ME-FIRST-TOOLTIP': {
+                            'en': startSentence(keywords.model.plural.en) + " are always ordered by creation date, optionally starting with my own",
+                            'fr': "Les " + keywords.model.plural.fr + " sont ordonnés par date de création, en option avec les miens en premier"
+                        },
+                        'MODELER-INDEX-ADD-NAME-INPUT': {
+                            'en': startSentence(keywords.model.singular.en) + " name",
+                            'fr': "Nom du " + keywords.model.singular.fr
+                        },
+                        'MODELER-INDEX-ADD-SCENARIO-INPUT': {
+                            'en': "Based on " + keywords.model.singular.en,
+                            'fr': "Basé sur le " + keywords.model.singular.fr
+                        },
+                        'MODELER-INDEX-ARCHIVE-BTN': {
+                            'en': "Archived " + keywords.model.singular.en,
+                            'fr': startSentence(keywords.model.singular.fr) + " archivé"
+                        },
+                        'MODELER-INDEX-ARCHIVES-BTN': {
+                            'en': "archived " + keywords.model.plural.en,
+                            'fr': keywords.model.plural.fr + " archivés"
+                        },
+                        'MODELER-INDEX-LIST-TITLE': {
+                            'en': startSentence(keywords.model.plural.en),
+                            'fr': startSentence(keywords.model.plural.fr)
+                        },
+                        'MODELER-INDEX-LIST-NO-MODEL': {
+                            'en': "No current " + keywords.model.singular.en + " corresponds to your search string ",
+                            'fr': "Aucun " + keywords.model.singular.fr + " en cours répondant à votre critère de recherche "
+                        },
+                        'MODELER-MODALE-ARCHIVE-TITLE': {
+                            'en': "Archived " + keywords.model.plural.en,
+                            'fr': startSentence(keywords.model.plural.fr) + " archivés"
+                        },
+                        'MODELER-MODALE-ARCHIVE-SEARCH-INPUT': {
+                            'en': "Search " + keywords.model.singular.en,
+                            'fr': "Rechercher un " + keywords.model.singular.fr
+                        },
+                        'MODELER-MODALE-ARCHIVE-MOVE-CURRENT-BTN': {
+                            'en': "Move to current " + keywords.model.plural.en,
+                            'fr': "Déplacer vers les " + keywords.model.plural.fr + " en cours"
+                        },
+                        'MODELER-MODALE-ARCHIVE-DELETE-BTN': {
+                            'en': "Delete " + keywords.model.singular.en,
+                            'fr': "Supprimer le " + keywords.model.singular.fr
+                        },
+                        'MODELER-MODALE-ARCHIVE-DELETE-CONFIRM': {
+                            'en': "Are you sure you want to delete this archived " + keywords.model.singular.en +
+                                " ? This action is irreversible.",
+                            'fr': "Êtes-vous sûr de vouloir supprimer ce " + keywords.model.singular.fr +
+                                " ? Cette action est irréversible."
+                        },
+                        'MODELER-MODALE-ARCHIVE-NO-SCENARIO': {
+                            'en': "No archived " + keywords.model.singular.en + " corresponds to search string ",
+                            'fr': "Aucun " + keywords.model.singular.fr + " archivé répondant au critère "
+                        },
+                        'MODELER-CARD-DUPLICATE-BTN': {
+                            'en': "Duplicate this " + keywords.model.singular.en,
+                            'fr': "Dupliquer ce " + keywords.model.singular.fr
+                        },
+                        'MODELER-CARD-TRANSLATE-BTN': {
+                            'en': "Translate " + keywords.model.singular.en,
+                            'fr': "Traduire le " + keywords.model.singular.fr
+                        },
+                        'MODELER-CARD-EDIT-BTN': {
+                            'en': "Edit " + keywords.model.singular.en,
+                            'fr': "Modifier le " + keywords.model.singular.fr
+                        },
+                        'MODELER-MODALE-USERS-TITLE': {
+                            'en': "Co-" + keywords.modeler.plural.en,
+                            'fr': "Co-" + keywords.modeler.plural.fr
+                        },
+                        'MODELER-MODALE-USERS-EDIT-CHECKBOX': {
+                            'en': "Edit " + keywords.model.singular.en,
+                            'fr': "Modifier le " + keywords.model.singular.fr
+                        },
+                        'MODELER-MODALE-USERS-DUPLICATE-CHECKBOX': {
+                            'en': "Duplicate " + keywords.model.singular.en,
+                            'fr': "Dupliquer le " + keywords.model.singular.fr
+                        },
+                        'MODELER-MODALE-VERSIONS-INTEGRATOR': {
+                            'en': "Select a scenario to integrate",
+                            'fr': "Sélectionnez un scénario à intégrer"
+                        },
+                        'MODELER-MODALE-VERSIONS-INTEGRATOR_BTN': {
+                            'en': "Integrate",
+                            'fr': "Intégrer"
+                        },
+                        'MODELER-MODALE-VERSIONS-AVAILABLE-VERSIONS': {
+                            'en': "Scenarios based on this model",
+                            'fr': "Scénario basé sur ce modèle"
+                        },
+                        'MODELER-MODALE-VERSIONS-NEW-TITLE-BTN': {
+                            'en': "This action will store a new version of the " + keywords.model.singular.en +
+                                ". The new version can later be restored as a new scenario.",
+                            'fr': "Cette action va enregistrer une nouvelle version du " +
+                                keywords.model.singular.fr + ". La nouvelle version peut être restaurée plus tard sous forme de nouveau scénario."
+                        },
+                        'MODELER-MODALE-VERSIONS-DUPLICATE-TITLE-BTN': {
+                            'en': "This will generate a new " + keywords.model.singular.en + " based on this one.",
+                            'fr': "Cette action génère un nouveau " + keywords.model.singular.fr +
+                                " basé sur celui-ci"
+                        },
+                        'MODELER-MODALE-VERSIONS-NO-VERSION': {
+                            'en': "No version available for this " + keywords.model.singular.en + ".",
+                            'fr': "Ce " + keywords.model.singular.fr + " n'a pas encore de version."
+                        },
+                        'MODELER-MODALE-VERSIONS-CREATE-BTN': {
+                            'en': "Create a new " + keywords.model.singular.en + " from this version",
+                            'fr': "Créer un nouveau " + keywords.model.singular.fr + " depuis cette version"
+                        },
+                        'MODELER-INSTANCES-RELEASE-BTN': {
+                            'en': "Release " + keywords.scenario.singular.en,
+                            'fr': "Libérer le " + keywords.scenario.singular.fr
+                        },
                         // Private Scenarist
                         'SCENARIST-INDEX-ADD-TITLE': {
                             'en': "New " + keywords.scenario.singular.en,
@@ -1536,9 +1709,17 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Move to archives",
                             'fr': "Déplacer vers les archives"
                         },
+                        'SCENARIST-CARD-TRANSLATE-BTN': {
+                            'en': "Translate " + keywords.scenario.singular.en,
+                            'fr': "Traduire le " + keywords.scenario.singular.fr
+                        },
                         'SCENARIST-CARD-EDIT-BTN': {
                             'en': "Edit " + keywords.scenario.singular.en,
                             'fr': "Modifier le " + keywords.scenario.singular.fr
+                        },
+                        'SCENARIST-CARD-DETAILS-MODEL': {
+                            'en': startSentence(keywords.model.singular.en),
+                            'fr': startSentence(keywords.model.singular.fr)
                         },
                         'SCENARIST-CARD-CREATED-ON': {
                             'en': "Created on ",
@@ -1568,6 +1749,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Create " + keywords.session.singular.en + " from " + keywords.scenario.singular.en,
                             'fr': "Créer une " + keywords.session.singular.fr + " depuis le " +
                                 keywords.scenario.singular.fr
+                        },
+                        'SCENARIST-MODALE-USERS-TRANSLATE-CHECKBOX': {
+                            'en': "Translate ",
+                            'fr': "Traduire "
                         },
                         'SCENARIST-MODALE-USERS-REMOVE-BTN': {
                             'en': "Remove access for this user",
@@ -1600,6 +1785,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "JSON",
                             'fr': "JSON"
                         },
+                        'SCENARIST-MODALE-VERSIONS-WGZ-BTN': {
+                            'en': "Export",
+                            'fr': "Export"
+                        },
                         'SCENARIST-MODALE-VERSIONS-NO-VERSION': {
                             'en': "No version available for this " + keywords.scenario.singular.en + ".",
                             'fr': "Ce " + keywords.scenario.singular.fr + " n'a pas encore de version."
@@ -1628,9 +1817,45 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Welcome to admin console",
                             'fr': "Bienvenue dans la console d'admin"
                         },
+                        'ADMIN-INDEX-STATUS-TITLE': {
+                            'en': "Status",
+                            'fr': "Status"
+                        },
+                        'ADMIN-INDEX-STATUS-I18N-USAGE': {
+                            'en': "Translation service usage:",
+                            'fr': "Utilisation du service de traduction :"
+                        },
                         'ADMIN-INDEX-ACTIONS-TITLE': {
-                            'en': "Please choose among the actions available in the above menu",
-                            'fr': "Veuillez choisir parmi les actions offertes par le menu ci-dessus"
+                            'en': "Perform an action:",
+                            'fr': "Effectuer une action:"
+                        },
+                        'ADMIN-INDEX-LOCKS-BTN': {
+                            'en': "Locks",
+                            'fr': "Verrous"
+                        },
+                        'ADMIN-INDEX-LOGGERS-BTN': {
+                            'en': "Loggers",
+                            'fr': "Loggers"
+                        },
+                        'ADMIN-INDEX-TRIGGER-POPULATING': {
+                            'en': "Start Populating Team/Player",
+                            'fr': "Déclancher la création des Team/Player"
+                        },
+                        'ADMIN-INDEX-CLEAR-EMCACHE': {
+                            'en': "Clear JPA cache",
+                            'fr': "Vider le cache JPA"
+                        },
+                        'ADMIN-INDEX-CREATE-EMPTY-MODEL': {
+                            'en': "Create an empty model",
+                            'fr': "Créer un nouveau modèle vide"
+                        },
+                        'ADMIN-INDEX-CLEAR-GAMES': {
+                            'en': "Delete games which are candidates for final deletion",
+                            'fr': "Supprimer définitivement les parties qui sont candidates pour une suppression définitive"
+                        },
+                        'ADMIN-INDEX-CLEAR-GAMEMODELS': {
+                            'en': "Delete gameModels which are candidates for final deletion",
+                            'fr': "Supprimer définitivement les gameModels qui sont candidats pour une suppression définitive"
                         },
                         'ADMIN-INDEX-USERS-BTN': {
                             'en': "Users",
@@ -1639,6 +1864,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'ADMIN-INDEX-WHO-BTN': {
                             'en': "Who",
                             'fr': "Qui"
+                        },
+                        'ADMIN-INDEX-ADMIN-BTN': {
+                            'en': "Admin",
+                            'fr': "Admin"
                         },
                         'ADMIN-USERS-LOADING': {
                             'en': "Loading " + keywords.user.plural.en,
@@ -1679,6 +1908,14 @@ angular.module('wegas.service.wegasTranslations', [])
                         'ADMIN-USERS-CARD-TITLE': {
                             'en': "User ",
                             'fr': "Utilisateur "
+                        },
+                        'ADMIN-USERS-UNVERIFIED-ID': {
+                            'en': '✘ unverified identity',
+                            'fr': '✘ identité non-vérifiée',
+                        },
+                        'ADMIN-USERS-VERIFIED-ID': {
+                            'en': '✔ verified identity',
+                            'fr': '✔ identité vérifiée',
                         },
                         'ADMIN-USERS-CARD-EDIT-BTN': {
                             'en': "Edit user",
@@ -1838,6 +2075,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'SCENARIST': {
                             'en': startSentence(keywords.scenarist.singular.en),
                             'fr': startSentence(keywords.scenarist.singular.fr)
+                        },
+                        'MODELER': {
+                            'en': startSentence(keywords.modeler.singular.en),
+                            'fr': startSentence(keywords.modeler.singular.fr)
                         },
                         'ADMIN': {
                             'en': startSentence(keywords.admin.singular.en),

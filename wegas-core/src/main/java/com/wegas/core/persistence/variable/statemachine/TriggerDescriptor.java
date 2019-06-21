@@ -7,31 +7,51 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
-import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.annotations.WegasEntity;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
-
-import javax.persistence.Entity;
-import javax.persistence.Transient;
+import com.wegas.editor.ValueGenerators.EmptyScript;
+import com.wegas.editor.ValueGenerators.False;
+import com.wegas.editor.ValueGenerators.True;
+import com.wegas.editor.View.ScriptView;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.PrePersist;
+import javax.persistence.Transient;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
-public class TriggerDescriptor extends StateMachineDescriptor {
+@WegasEntity(
+        ignoreProperties = {"states"}, // no not merge states inherited from StateMachineDescriptor
+        callback = TriggerDescriptor.MergeTriggerHack.class // but ensure they exist one all transient fields have been set
+)
+@JsonIgnoreProperties(value = {"states"})
+@JsonTypeName(value = "TriggerDescriptor")
+public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerState, Transition> {
 
     private static final long serialVersionUID = 1L;
     /**
      *
      */
     @JsonView(Views.EditorI.class)
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = False.class,
+            view = @View(
+                    index = 601,
+                    label = "Only once",
+                    description = "Allowed to trigger only once"
+            ))
     private Boolean oneShot = false;
 
     /**
@@ -39,25 +59,40 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      */
     @JsonView(Views.EditorI.class)
     @Column(columnDefinition = "boolean default false")
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = True.class,
+            view = @View(
+                    index = 602,
+                    label = "Disable itself",
+                    description = "Disable once triggered. May be rearmed afterwards"
+            ))
     private Boolean disableSelf = true;
     /**
      *
      */
     @Transient
     @JsonView(Views.EditorI.class)
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = EmptyScript.class,
+            view = @View(
+                    index = 603,
+                    label = "Condition",
+                    value = ScriptView.Condition.class
+            ))
     private Script triggerEvent;
     /**
      *
      */
     @Transient
     @JsonView(Views.EditorI.class)
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = EmptyScript.class,
+            view = @View(
+                    index = 603,
+                    label = "Impact",
+                    value = ScriptView.Impact.class
+            ))
     private Script postTriggerEvent;
-
-    /**
-     *
-     */
-    public TriggerDescriptor() {
-    }
 
     /**
      * is the trigger designed to trigger only once ?
@@ -75,7 +110,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      */
     public void setOneShot(Boolean oneShot) {
         this.oneShot = oneShot;
-        this.buildStateMachine();
+        //this.buildStateMachine();
     }
 
     public Boolean isDisableSelf() {
@@ -90,17 +125,32 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      * @return the script to execute when trigger triggers
      */
     public Script getPostTriggerEvent() {
-        try {
-            if (this.getStates().size() == 2) {
-                this.postTriggerEvent = this.getStates().get(2L).getOnEnterEvent();
+        if (this.postTriggerEvent == null) {
+            if (this.getStates() != null && this.getStates().size() > 0) {
+                if (this.getStates().size() == 2) {
+                    this.postTriggerEvent = this.getStates().get(2L).getOnEnterEvent();
+                } else {
+                    // Backward !!!
+                    this.postTriggerEvent = this.getStates().get(1L).getOnEnterEvent();
+                }
             } else {
-                // Backward !!!
-                this.postTriggerEvent = this.getStates().get(1L).getOnEnterEvent();
+                this.postTriggerEvent = null;
             }
-        } catch (NullPointerException e) {
-            this.postTriggerEvent = null;
         }
+        this.touchPostTriggerEvent();
         return postTriggerEvent;
+    }
+
+    private void touchTriggerEvent() {
+        if (this.triggerEvent != null) {
+            this.triggerEvent.setParent(this, "condition");
+        }
+    }
+
+    private void touchPostTriggerEvent() {
+        if (this.postTriggerEvent != null) {
+            this.postTriggerEvent.setParent(this, "impact");
+        }
     }
 
     /**
@@ -110,7 +160,8 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      */
     public void setPostTriggerEvent(Script postTriggerEvent) {
         this.postTriggerEvent = postTriggerEvent;
-        this.buildStateMachine();
+        touchPostTriggerEvent();
+        //this.buildStateMachine();
     }
 
     /**
@@ -119,25 +170,17 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      * @return condition for trigger to triggers
      */
     public Script getTriggerEvent() {
-        try {
-            this.triggerEvent = this.getStates().get(1L).getTransitions().get(0).getTriggerCondition();
-        } catch (NullPointerException e) {
-            this.triggerEvent = null;
+        if (this.triggerEvent == null) {
+            if (this.getStates() != null && this.getStates().size() > 0
+                    && this.getStates().get(1L).getTransitions() != null
+                    && this.getStates().get(1L).getTransitions().size() > 0) {
+                this.triggerEvent = this.getStates().get(1L).getTransitions().get(0).getTriggerCondition();
+            } else {
+                this.triggerEvent = null;
+            }
         }
+        this.touchTriggerEvent();
         return triggerEvent;
-    }
-
-    /**
-     * Override to make this function transient
-     *
-     * @return underlysing statemachine states
-     *
-     * @see StateMachineDescriptor#getStates
-     */
-    @Override
-    @JsonIgnore
-    public Map<Long, State> getStates() {
-        return super.getStates();
     }
 
     /**
@@ -147,44 +190,21 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      */
     public void setTriggerEvent(Script triggerEvent) {
         this.triggerEvent = triggerEvent;
-        this.buildStateMachine();
-    }
-
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof TriggerDescriptor) {
-            TriggerDescriptor entity = (TriggerDescriptor) a;
-
-            this.setOneShot(entity.oneShot);
-            this.setDisableSelf(entity.disableSelf);
-            this.setPostTriggerEvent(entity.postTriggerEvent);
-            this.setTriggerEvent(entity.triggerEvent);
-
-            // HACK Restore Version Number
-            //Long initialStateVersion = this.getStates().get(1L).getVersion();
-            //Long finalStateVersion = this.getStates().get(2L).getVersion();
-            entity.setStates(this.getStates());
-            super.merge(entity);
-
-            entity.buildStateMachine();
-            //this.getStates().get(1L).setVersion(initialStateVersion);
-            //this.getStates().get(2L).setVersion(finalStateVersion);
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
+        this.touchTriggerEvent();
+        //this.buildStateMachine();
     }
 
     /**
      *
      */
+    @PrePersist // to be called by forthcoming revive method (replace PrePersist and merge usage)
     public void buildStateMachine() {
         if (this.getStates().size() < 2 || this.getStates().get(2L).getTransitions().isEmpty()) {
-
             // make sure both initial and final states exists
-            State initial;
-            State finalState;
+            TriggerState initial;
+            TriggerState finalState;
             if (this.getStates().isEmpty()) {
-                initial = new State();
+                initial = new TriggerState();
                 initial.setVersion(1L);
                 this.addState(1L, initial);
             } else {
@@ -193,7 +213,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
 
             if (this.getStates().size() < 2) {
                 // Create the second one
-                finalState = new State();
+                finalState = new TriggerState();
                 finalState.setVersion(1L);
                 this.addState(2L, finalState);
 
@@ -228,21 +248,36 @@ public class TriggerDescriptor extends StateMachineDescriptor {
         // Condition
         if (this.triggerEvent != null) {
             this.getStates().get(1L).getTransitions().get(0).setTriggerCondition(this.triggerEvent);
+            this.triggerEvent = null;
         }
 
         // Impact
         if (this.postTriggerEvent != null) {
             this.getStates().get(2L).setOnEnterEvent(this.postTriggerEvent);
+            this.postTriggerEvent = null;
         }
 
         // Reset transition
         if (this.oneShot != null) {
             this.getStates().get(2L).getTransitions().get(0).setTriggerCondition(new Script("javascript", (this.oneShot ? "false" : "true")));
         }
+
+        this.getDefaultInstance().setCurrentStateId(1l);
     }
 
     @Override
     public String toString() {
-        return "TriggerDescriptor{id=" + this.getId() + ", oneShot=" + oneShot + ", triggerEvent=" + triggerEvent + ", postTriggerEvent=" + postTriggerEvent + '}';
+        return "TriggerDescriptor{id=" + this.getId() + ", oneShot=" + oneShot + ", triggerEvent=" + triggerEvent + ", postTriggerEvent=" + postTriggerEvent + ", states: " + this.getStates().size() + '}';
+    }
+
+    public static class MergeTriggerHack implements WegasCallback {
+
+        @Override
+        public void postUpdate(Mergeable entity, Object ref, Object identifier) {
+            if (entity instanceof TriggerDescriptor) {
+                TriggerDescriptor td = (TriggerDescriptor) entity;
+                td.buildStateMachine();
+            }
+        }
     }
 }

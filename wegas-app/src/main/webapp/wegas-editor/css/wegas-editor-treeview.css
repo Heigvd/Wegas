@@ -139,6 +139,9 @@
 .wegas-editor-variabletreeview .yui3-treeleaf-content-icon {
     color: #4E525E;
 }
+.wegas-editor-variabletreeview .yui3-treenode-content-label .scriptalias {
+    font-size: 0.8em;
+}
 
 .wegas-editor-variabletreeview .yui3-dd-drop > div > .yui3-treenode-content-icon,
 .wegas-editor-variabletreeview .yui3-dd-drop > div > div > .yui3-treeleaf-content-icon {
@@ -242,3 +245,8 @@
     background: #f6f6f6;
 }
 
+
+.wegas-editor-treeview .private-in-model {
+    color: grey;
+    font-style: italic;
+}

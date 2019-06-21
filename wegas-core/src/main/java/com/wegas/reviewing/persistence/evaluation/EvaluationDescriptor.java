@@ -11,17 +11,19 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.WithPermission;
-import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import com.wegas.editor.ValueGenerators.One;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.I18nStringView;
+import com.wegas.editor.View.View;
 import java.util.Collection;
 import java.util.List;
 import javax.persistence.*;
@@ -56,7 +58,7 @@ import javax.persistence.*;
     @JsonSubTypes.Type(value = GradeDescriptor.class)
 })
 public abstract class EvaluationDescriptor<T extends EvaluationInstance>
-        extends AbstractEntity implements LabelledEntity, Searchable {
+        extends AbstractEntity implements LabelledEntity {
 
     @OneToMany(mappedBy = "evaluationDescriptor", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<EvaluationInstance> evaluationInstances;
@@ -73,25 +75,47 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
     /**
      * to sort evaluation descriptor and instance
      */
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = One.class,
+            view = @View(label = "Index"))
     private Integer index;
 
     /**
      * Evaluation internal identifier
      */
+    @WegasEntityProperty(searchable = true,
+            nullable = false,
+            view = @View(
+                    label = "Script alias",
+                    description = "Internal name",
+                    featureLevel = ADVANCED
+            ))
     private String name;
 
     /**
      * Evaluation label as displayed to players
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(
+                    label = "Label",
+                    description = "Displayed to players",
+                    value = I18nStringView.class,
+                    index = -1
+            ))
     private TranslatableContent label;
 
     /**
      * Textual descriptor to be displayed to players
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationDeserializer.class)
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(
+                    label = "Description",
+                    value = I18nHtmlView.class
+            ))
     private TranslatableContent description;
 
     /**
@@ -122,19 +146,6 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
 
     public void setIndex(int index) {
         this.index = index;
-    }
-
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof EvaluationDescriptor) {
-            EvaluationDescriptor o = (EvaluationDescriptor) a;
-            this.setName(o.getName());
-            this.setLabel(TranslatableContent.merger(this.getLabel(), o.getLabel()));
-            this.setDescription(TranslatableContent.merger(this.getDescription(), o.getDescription()));
-            this.setIndex(o.getIndex());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
     }
 
     @Override
@@ -206,6 +217,11 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
      */
     public void setContainer(EvaluationDescriptorContainer container) {
         this.container = container;
+        if (this.container != null) {
+            // revive translatable content link
+            this.setLabel(label);
+            this.setDescription(description);
+        }
     }
 
     @JsonIgnore
@@ -241,24 +257,18 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
         this.evaluationInstances.remove(instance);
     }
 
-    private WithPermission getEffectiveContainer() {
-        return this.getContainer();
+    @Override
+    public WithPermission getMergeableParent() {
+        return getContainer();
     }
 
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getEffectiveContainer().getRequieredUpdatePermission();
+        return this.getMergeableParent().getRequieredUpdatePermission();
     }
 
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getEffectiveContainer().getRequieredReadPermission();
-    }
-
-    @Override
-    public Boolean containsAll(List<String> criterias) {
-        return  Helper.insensitiveContainsAll(getName(), criterias)
-                || Helper.insensitiveContainsAll(getLabel(), criterias)
-                || Helper.insensitiveContainsAll(getDescription(), criterias);
+        return this.getMergeableParent().getRequieredReadPermission();
     }
 }

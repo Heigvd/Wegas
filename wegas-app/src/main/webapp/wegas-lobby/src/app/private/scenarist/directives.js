@@ -9,10 +9,13 @@ angular.module('private.scenarist.directives', [
         ctrl.duplicating = false;
         ctrl.search = '';
         ctrl.scenarios = [];
+        ctrl.rawScenarios = [];
         ctrl.nbArchives = 0;
         ctrl.user = {};
         ctrl.username = '';
         ctrl.mefirst = false;
+
+        ctrl.handlers = {};
 
         var MENU_HEIGHT = 50,
             SEARCH_FIELD_HEIGHT = 72,
@@ -23,12 +26,10 @@ angular.module('private.scenarist.directives', [
 
         var winheight = null,
             maxItemsDisplayed = null,
-            rawScenarios = [],
             isFiltering = false,
             prevFilter = "",
             filtered = [],
             prevSource = null,
-
             // Adjusts layout constants to the current window size.
             checkWindowSize = function() {
                 if (winheight !== $window.innerHeight) {
@@ -53,7 +54,7 @@ angular.module('private.scenarist.directives', [
             },
             // Returns the session list to be displayed now.
             currentList = function() {
-                return isFiltering ? filtered : rawScenarios;
+                return isFiltering ? filtered : ctrl.rawScenarios;
             },
             updateDisplay = function(source) {
                 if (prevSource !== source || maxItemsDisplayed !== ctrl.scenarios.length) {
@@ -70,12 +71,12 @@ angular.module('private.scenarist.directives', [
                 }
                 updateDisplay(list);
             },
-            // Returns an array containing the occurrences of 'needle' in rawScenarios:
-            doSearch = function(needle){
-                var len = rawScenarios.length,
+            // Returns an array containing the occurrences of 'needle' in ctrl.rawScenarios:
+            doSearch = function(needle) {
+                var len = ctrl.rawScenarios.length,
                     res = [];
                 for (var i = 0; i < len; i++) {
-                    var scenario = rawScenarios[i];
+                    var scenario = ctrl.rawScenarios[i];
                     if ((scenario.name && scenario.name.toLowerCase().indexOf(needle) >= 0) ||
                         (scenario.createdByName && scenario.createdByName.toLowerCase().indexOf(needle) >= 0) ||
                         (scenario.comments && scenario.comments.toLowerCase().indexOf(needle) >= 0) ||
@@ -88,11 +89,12 @@ angular.module('private.scenarist.directives', [
             };
 
         /*
-        ** Updates the listing when the user has clicked on the "My scenarios first" checkbox,
-        ** and also during initial page rendering.
+         ** Updates the listing when the user has clicked on the "My scenarios first" checkbox,
+         ** and also during initial page rendering.
          */
         ctrl.setMeFirst = function(mefirst, updateDisplay) {
-            if (mefirst === undefined) return;
+            if (mefirst === undefined)
+                return;
             ctrl.mefirst = mefirst;
             // Update the checkbox in the UI:
             var cbx = $('#mefirst');
@@ -105,7 +107,7 @@ angular.module('private.scenarist.directives', [
             }
             isFiltering = false;
             ctrl.updateScenarios(updateDisplay);
-        }
+        };
 
         // Updates the listing when the user has clicked on the "My scenarios first" checkbox.
         ctrl.toggleMeFirst = function() {
@@ -113,7 +115,7 @@ angular.module('private.scenarist.directives', [
             var config = localStorage.getObject("wegas-config");
             config.commons.myScenariosFirst = ctrl.mefirst;
             localStorage.setObject("wegas-config", config);
-        }
+        };
 
         ctrl.initMeFirst = function() {
             if (ctrl.user) {
@@ -129,22 +131,22 @@ angular.module('private.scenarist.directives', [
                     ctrl.setMeFirst(false, true);
                 }
             }
-        }
+        };
 
         /*
-         ** Filters rawScenarios according to the given search string and puts the result in ctrl.scenarios.
-         ** Hypotheses on input array rawScenarios :
-         ** 1. It contains only scenarios with attribute 'canEdit' = true.
+         ** Filters ctrl.rawScenarios according to the given search string and puts the result in ctrl.scenarios.
+         ** Hypotheses on input array ctrl.rawScenarios :
+         ** 1. It contains only editable scenarios (ie EDIT or TRANSLATE permission)
          ** 2. It's already ordered according to the 'createdTime' attribute,
          **    so that the output automatically follows the same ordering.
          */
         ctrl.filterScenarios = function(search) {
-            if (!search || search.length === 0){
-                if (isFiltering){
+            if (!search || search.length === 0) {
+                if (isFiltering) {
                     isFiltering = false;
                     initMaxItemsDisplayed(); // Reset since we are changing between searching and not searching
                 }
-                updateDisplay(rawScenarios);
+                updateDisplay(ctrl.rawScenarios);
                 return;
             } else { // There is a search going on:
                 var needle = search.toLowerCase();
@@ -169,19 +171,33 @@ angular.module('private.scenarist.directives', [
             if (hideScrollbarDuringInitialRender) {
                 $('#scenarist-scenarios-list').css('overflow-y', 'hidden');
             }
-            ctrl.scenarios = rawScenarios = [];
+            ctrl.scenarios = [];
+            ctrl.rawScenarios = [];
+            ctrl.models = [];
+
             ctrl.loading = true;
-            ScenariosModel.getScenarios('LIVE').then(function(response) {
-                rawScenarios = $filter('filter')(response.data, {canEdit: true}) || [];
+            ctrl.modelLoading = true;
+
+            ScenariosModel.getModels('LIVE').then(function(response) {
+                ctrl.models = response.data;
+                ScenariosModel.getModels('BIN').then(function(response) {
+                    ctrl.models = ctrl.models.concat(response.data);
+                    ctrl.modelLoading = false;
+                });
+            });
+            
+            ScenariosModel.getGameModelsByStatusTypeAndPermission("SCENARIO", "LIVE", ["EDIT", "TRANSLATE"]).then(function(gameModels){
+                ctrl.rawScenarios = gameModels.data;
+
                 if (ctrl.mefirst && ctrl.username.length > 0) {
                     // Prepare a list where "my" scenarios appear first (ordered by creation date, like the rest):
-                    var myScenarios = $filter('filter')(rawScenarios, {createdByName: ctrl.username}) || [],
-                        otherScenarios = $filter('filter')(rawScenarios, {createdByName: '!' + ctrl.username}) || [];
+                    var myScenarios = $filter('filter')(ctrl.rawScenarios, {createdByName: ctrl.username}) || [],
+                        otherScenarios = $filter('filter')(ctrl.rawScenarios, {createdByName: '!' + ctrl.username}) || [];
                     myScenarios = $filter('orderBy')(myScenarios, 'createdTime', true) || [];
                     otherScenarios = $filter('orderBy')(otherScenarios, 'createdTime', true) || [];
-                    rawScenarios = myScenarios.concat(otherScenarios);
+                    ctrl.rawScenarios = myScenarios.concat(otherScenarios);
                 } else {
-                    rawScenarios = $filter('orderBy')(rawScenarios, 'createdTime', true) || [];
+                    ctrl.rawScenarios = $filter('orderBy')(ctrl.rawScenarios, 'createdTime', true) || [];
                 }
                 // At this point, the search variable is not necessarily updated by Angular to reflect the input field:
                 var searchField = document.getElementById('searchField');
@@ -202,6 +218,11 @@ angular.module('private.scenarist.directives', [
             });
         };
 
+        ctrl.getModelName = function(modelId) {
+            var m = $filter('filter')(ctrl.models, {id: modelId});
+            return (m && m.length > 0) ? m[0].name : "";
+        };
+
         ctrl.archiveScenario = function(scenario) {
             $('#archive-' + scenario.id).removeClass('button--archive').addClass('busy-button');
             ScenariosModel.archiveScenario(scenario).then(function(response) {
@@ -217,12 +238,16 @@ angular.module('private.scenarist.directives', [
             });
         };
 
+        ctrl.hasEditPermission = function(gameModel) {
+            return ScenariosModel.hasAnyPermissions(gameModel, "EDIT");
+        };
+
         ctrl.duplicate = function(scenario) {
             if (ctrl.duplicating)
                 return;
             ctrl.duplicating = true;
             $('#dupe-' + scenario.id).addClass('busy-button');
-            ScenariosModel.copyScenario(scenario.id).then(function(response) {
+            ScenariosModel.copyScenario(scenario).then(function(response) {
                 if (response.isErroneous()) {
                     response.flash();
                 } else {
@@ -249,12 +274,12 @@ angular.module('private.scenarist.directives', [
             return deferred.promise;
         };
 
-        $rootScope.$on('entrenchNbArchives', function(e, count) {
+        ctrl.handlers.entrenchNbArchives = $rootScope.$on('entrenchNbArchives', function(e, count) {
             ctrl.nbArchives -= count;
         });
 
         // Listen for updates to individual scenarios or to the list of scenarios:
-        $rootScope.$on('changeScenarios', function(e, hasNewData) {
+        ctrl.handlers.changeScenarios = $rootScope.$on('changeScenarios', function(e, hasNewData) {
             if (hasNewData) {
                 // To be on the safe side, also request an extension of displayed scenarios (parameter 'true'):
                 ctrl.updateScenarios(true);
@@ -262,26 +287,29 @@ angular.module('private.scenarist.directives', [
         });
 
         // Listen for scroll down events and extend the set of visible items without rebuilding the whole list:
-        $rootScope.$on('changeLimit', function(e, hasNewData) {
+        ctrl.handlers.changeLimit = $rootScope.$on('changeLimit', function(e, hasNewData) {
             if (e.currentScope.currentRole === "SCENARIST") {
                 extendDisplayedItems();
-                if ( ! $rootScope.$$phase) {
+                if (!$rootScope.$$phase) {
                     $scope.$apply();
                 }
             }
         });
 
         // This is jQuery code for detecting window resizing:
-        $(window).on("resize.doResize", _.debounce(function (){
-            $scope.$apply(function(){
+        $(window).on("resize.doResize", _.debounce(function() {
+            $scope.$apply(function() {
                 initMaxItemsDisplayed();
                 updateDisplay(currentList());
             });
-        },100));
+        }, 100));
 
         // When leaving, remove the window resizing handler:
-        $scope.$on("$destroy",function (){
+        $scope.$on("$destroy", function() {
             //$(window).off("resize.doResize");
+            for (var key in ctrl.handlers) {
+                ctrl.handlers[key]();
+            }
         });
 
         // Find out if the current user has admin rights and what his "friendly" username is.
@@ -289,7 +317,7 @@ angular.module('private.scenarist.directives', [
             if (user !== false) {
                 ctrl.user = user;
                 if (user.isAdmin) {
-                    UsersModel.getFullUser(user.id).then(function (response) {
+                    UsersModel.getFullUser(user.id).then(function(response) {
                         if (response.isErroneous()) {
                             response.flash();
                         } else {
@@ -324,16 +352,24 @@ angular.module('private.scenarist.directives', [
             scope: false,
             link: function(scope, element, attrs, parentCtrl) {
                 scope.scenariomenu = [];
+                scope.rawscenariomenu = [];
+
                 scope.loadingScenarios = false;
+
                 var loadScenarios = function() {
                     // Reload list from cache each time the window is opened:
                     scope.loadingScenarios = true;
-                    ScenariosModel.getScenarios("LIVE").then(function(response) {
+                    ScenariosModel.getGameModelsByStatusTypeAndPermission("SCENARIO", "LIVE", "DUPLICATE").then(function(response){
                         if (!response.isErroneous()) {
-                            scope.loadingScenarios = false;
-                            var expression = { canDuplicate: true },
-                                filtered = $filter('filter')(response.data, expression) || [];
-                            scope.scenariomenu = $filter('orderBy')(filtered, 'name');
+                            var filtered = response.data;
+                            ScenariosModel.getGameModelsByStatusTypeAndPermission("MODEL", "LIVE", "INSTANTIATE").then(function(response){
+                                if (!response.isErroneous()) {
+                                    scope.loadingScenarios = false;
+                                    var filtered2 = response.data;
+                                    scope.rawscenariomenu = $filter('orderBy')(filtered.concat(filtered2), 'name');
+                                    updateDisplay(scope.rawscenariomenu);
+                                }
+                            });
                         }
                     });
                 };
@@ -341,13 +377,35 @@ angular.module('private.scenarist.directives', [
                 var resetNewScenario = function() {
                     scope.newScenario = {
                         name: '',
-                        templateId: 0
+                        templateId: 0,
+                        search: ''
                     };
                 };
 
                 scope.cancelScenario = function() {
                     resetNewScenario();
                     scope.$emit('collapse');
+                };
+
+                var updateDisplay = function(scenarioList) {
+                    scope.scenariomenu = scenarioList;
+                };
+
+
+                scope.filterScenarios = function(search) {
+                    if (search && search.length > 0) {
+                        var needle = search.toLowerCase();
+                        var filtered = [];
+                        for (var i in scope.rawscenariomenu) {
+                            var scen = scope.rawscenariomenu[i];
+                            if (scen.name.toLowerCase().indexOf(needle) >= 0) {
+                                filtered.push(scen);
+                            }
+                        }
+                        updateDisplay(filtered);
+                    } else {
+                        updateDisplay(scope.rawscenariomenu);
+                    }
                 };
 
                 scope.createScenario = function() {
@@ -373,9 +431,14 @@ angular.module('private.scenarist.directives', [
                     }
                 };
 
-                scope.$on('expand', function() {
+                var onExpand = scope.$on('expand', function() {
                     resetNewScenario();
                     loadScenarios();
+                });
+
+
+                scope.$on("$destroy", function() {
+                    onExpand && onExpand();
                 });
             }
         };
@@ -387,8 +450,11 @@ angular.module('private.scenarist.directives', [
             scope: {
                 scenarios: '=',
                 archive: '=',
+                modelname: '=',
+                modelloading: '=',
                 search: '=',
                 duplicate: '=',
+                editable: "=",
                 duplicating: '=',
                 user: '=',
                 username: '=',
@@ -403,7 +469,10 @@ angular.module('private.scenarist.directives', [
             scope: {
                 scenario: '=',
                 archive: '=',
+                modelname: '=',
+                modelloading: '=',
                 duplicate: '=',
+                editable: "=",
                 duplicating: '=',
                 user: '=',
                 username: '='

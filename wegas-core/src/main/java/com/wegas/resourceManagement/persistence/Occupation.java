@@ -10,10 +10,17 @@ package com.wegas.resourceManagement.persistence;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import com.wegas.editor.ValueGenerators.True;
+import static com.wegas.editor.View.CommonView.LAYOUT.shortInline;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import java.util.Collection;
 import javax.persistence.*;
 
@@ -22,11 +29,10 @@ import javax.persistence.*;
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Entity
-
 @Table(indexes = {
     @Index(columnList = "resourceinstance_id")
 })
-public class Occupation extends AbstractEntity {
+public class Occupation extends AbstractEntity implements NamedEntity {
 
     private static final long serialVersionUID = 5183770682755470296L;
     /**
@@ -40,10 +46,16 @@ public class Occupation extends AbstractEntity {
      *
      */
     @Column(name = "wtime")
-    private double time = 0.0D;
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "Period number", layout = shortInline))
+    private Integer time = 0;
     /**
      *
      */
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = True.class,
+            view = @View(label = "Editable (?!?)", layout = shortInline))
     private Boolean editable = true;
     /**
      *
@@ -51,6 +63,9 @@ public class Occupation extends AbstractEntity {
     @Lob
     @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     @JsonView(Views.ExtendedI.class)
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(label = "Description (!?!)", value = Hidden.class))
     private String description = "";
 
     /**
@@ -72,27 +87,10 @@ public class Occupation extends AbstractEntity {
      *
      * @param time
      */
-    public Occupation(double time) {
+    public Occupation(Integer time) {
         this.time = time;
     }
 
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof Occupation) {
-            Occupation other = (Occupation) a;
-            this.setDescription(other.getDescription());
-            this.setTime(other.getTime());
-            this.setEditable(other.getEditable());
-            //this.setResourceInstance(other.getResourceInstance());
-            //this.setTaskDescriptor(other.getTaskDescriptor());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
-    }
 
     /*
      @PostPersist
@@ -112,16 +110,33 @@ public class Occupation extends AbstractEntity {
     }
 
     /**
+     * Use time as a discriminant
+     *
+     * @return
+     */
+    @JsonIgnore
+    @Override
+    public String getName() {
+        return time.toString();
+    }
+
+    @JsonIgnore
+    @Override
+    public void setName(String name) {
+        this.setTime(Integer.parseInt(name));
+    }
+
+    /**
      * @return the time
      */
-    public double getTime() {
+    public Integer getTime() {
         return time;
     }
 
     /**
      * @param time the time to set
      */
-    public void setTime(double time) {
+    public void setTime(Integer time) {
         this.time = time;
     }
 
@@ -168,6 +183,11 @@ public class Occupation extends AbstractEntity {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public WithPermission getMergeableParent() {
+        return this.getResourceInstance();
     }
 
     @Override

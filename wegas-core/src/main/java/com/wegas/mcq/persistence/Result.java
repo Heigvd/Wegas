@@ -11,23 +11,36 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
+import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Beanjection;
-import com.wegas.core.persistence.variable.Scripted;
-import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import java.util.ArrayList;
+import com.wegas.editor.Visible;
+import com.wegas.core.persistence.annotations.WegasConditions.And;
+import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
+import com.wegas.core.persistence.annotations.WegasConditions.IsTrue;
+import com.wegas.core.persistence.annotations.WegasConditions.Not;
+import com.wegas.core.persistence.annotations.WegasRefs.Field;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import com.wegas.editor.ValueGenerators.EmptyScript;
+import com.wegas.editor.ValueGenerators.Zero;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.I18nStringView;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.ScriptView;
+import com.wegas.editor.View.View;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.*;
 
 /**
@@ -51,12 +64,20 @@ import javax.persistence.*;
 @NamedQueries({
     @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor.id=:choicedescriptorId AND res.name LIKE :name")
 })
-public class Result extends AbstractEntity implements Searchable, Scripted, LabelledEntity {
+public class Result extends AbstractEntity implements LabelledEntity {
 
     private static final long serialVersionUID = 1L;
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = Zero.class,
+            sameEntityOnly = true, view = @View(
+                    index = 0,
+                    label = "Version",
+                    value = ReadOnlyNumber.class,
+                    featureLevel = ADVANCED
+            ))
     private Long version;
 
     public Long getVersion() {
@@ -77,39 +98,66 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     /**
      * Internal Name
      */
+    @WegasEntityProperty(searchable = true,
+            nullable = false,
+            view = @View(
+                    index = 1,
+                    label = "Script alias",
+                    featureLevel = ADVANCED,
+                    description = "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
+            ))
+    @Visible(HasMultipleResult.class)
     private String name;
 
     /**
      * Displayed name
      */
-    @JsonDeserialize(using = TranslationDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(index = 2, label = "Label", value = I18nStringView.class))
+    @Visible(HasMultipleResult.class)
     private TranslatableContent label;
 
     /**
      * Displayed answer when result selected and validated
      */
-    @JsonDeserialize(using = TranslationDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(index = 3, label = "Feedback", value = I18nHtmlView.class))
     private TranslatableContent answer;
 
     /**
      * Displayed answer when MCQ result not selected and validated
      */
-    @JsonDeserialize(using = TranslationDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(
+                    index = 4,
+                    label = "Feedback when ignored",
+                    value = I18nHtmlView.class,
+                    borderTop = true
+            ))
+    @Visible(IsQuestionCbx.class)
     private TranslatableContent ignorationAnswer;
 
     /*
      *
      */
     @ElementCollection
-    private List<String> files = new ArrayList<>();
+    @WegasEntityProperty(view = @View(label = "Files", value = Hidden.class),
+            optional = false, nullable = false, proposal = EmptyArray.class)
+    private Set<String> files = new HashSet<>();
     /**
      *
      */
     @Embedded
     @JsonView(Views.EditorI.class)
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyScript.class,
+            view = @View(label = "Impact", value = ScriptView.Impact.class))
     private Script impact;
     /**
      *
@@ -118,10 +166,14 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     @AttributeOverrides({
         @AttributeOverride(name = "content", column
                 = @Column(name = "ignoration_content")),
-        @AttributeOverride(name = "lang", column
+        @AttributeOverride(name = "language", column
                 = @Column(name = "ignoration_language"))
     })
     @JsonView(Views.EditorI.class)
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyScript.class,
+            view = @View(label = "Impact when ignored", value = ScriptView.Impact.class))
+    @Visible(IsQuestionCbx.class)
     private Script ignorationImpact;
     /**
      *
@@ -131,100 +183,9 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     private ChoiceDescriptor choiceDescriptor;
 
     /**
-     * This link is here so the reference is updated on remove.
-     */
-    /*
-      @OneToOne(mappedBy = "result", cascade = CascadeType.ALL, orphanRemoval = true)
-      @JsonIgnore
-      private CurrentResult currentResult;
-     */
-    /**
-     * This field is here so deletion will be propagated to replies.
-     */
-    /*
-    @OneToOne(mappedBy = "result", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private Replies replies;
-     */
-    /**
      *
      */
     public Result() {
-    }
-
-    /**
-     * @param name
-     */
-    public Result(String name) {
-        this.label = new TranslatableContent();
-        this.label.getModifiableTranslations().put("def", name);
-        this.name = name;
-    }
-
-    /**
-     * @param name
-     * @param label
-     */
-    public Result(String name, TranslatableContent label) {
-        this.name = name;
-        this.label = label;
-    }
-
-    public Result(String name, Script impact) {
-        this(name, impact, null);
-    }
-
-    /**
-     *
-     * @param name
-     * @param impact
-     * @param ignorationImpact
-     */
-    public Result(String name, Script impact, Script ignorationImpact) {
-        this(name);
-        this.impact = impact;
-        this.ignorationImpact = ignorationImpact;
-    }
-
-    @Override
-    public Boolean containsAll(final List<String> criterias) {
-        return Helper.insensitiveContainsAll(this.getName(), criterias)
-                || Helper.insensitiveContainsAll(this.getLabel(), criterias)
-                || Helper.insensitiveContainsAll(this.getAnswer(), criterias)
-                || Helper.insensitiveContainsAll(this.getIgnorationAnswer(), criterias)
-                || (this.getImpact() != null && this.getImpact().containsAll(criterias))
-                || (this.getIgnorationImpact() != null && this.getIgnorationImpact().containsAll(criterias));
-    }
-
-    @Override
-    public List<Script> getScripts() {
-        List<Script> ret = new ArrayList<>();
-        ret.add(this.getImpact());
-        if (this.getIgnorationImpact() != null) {
-            ret.add(this.getIgnorationImpact());
-        }
-        return ret;
-    }
-
-    /**
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof Result) {
-            Result other = (Result) a;
-            this.setVersion(other.getVersion());
-            this.setName(other.getName());
-            this.setLabel(TranslatableContent.merger(this.getLabel(), other.getLabel()));
-            this.setAnswer(TranslatableContent.merger(this.getAnswer(), other.getAnswer()));
-            this.setImpact(other.getImpact());
-            this.setIgnorationAnswer(TranslatableContent.merger(this.getIgnorationAnswer(), other.getIgnorationAnswer()));
-            this.setIgnorationImpact(other.getIgnorationImpact());
-            this.setFiles(other.getFiles());
-            this.setChoiceDescriptor(other.getChoiceDescriptor());
-        } else {
-            throw new WegasIncompatibleType(this.getClass().getSimpleName() + ".merge (" + a.getClass().getSimpleName() + ") is not possible");
-        }
     }
 
     @Override
@@ -245,18 +206,17 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      */
     public void setChoiceDescriptor(ChoiceDescriptor choiceDescriptor) {
         this.choiceDescriptor = choiceDescriptor;
-    }
-
-    /**
-     * @return id from the parent choice descriptor
-     */
-    @JsonView(Views.IndexI.class)
-    public Long getChoiceDescriptorId() {
-        return choiceDescriptor.getId();
-    }
-
-    public void setChoiceDescriptorId(Long id) {
-        // NOTHING TO TO....
+        if (this.choiceDescriptor != null) {
+            if (this.getLabel() != null) {
+                this.getLabel().setParentDescriptor(choiceDescriptor);
+            }
+            if (this.getAnswer() != null) {
+                this.getAnswer().setParentDescriptor(choiceDescriptor);
+            }
+            if (this.getIgnorationAnswer() != null) {
+                this.getIgnorationAnswer().setParentDescriptor(choiceDescriptor);
+            }
+        }
     }
 
     /**
@@ -280,6 +240,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      * @return the impact
      */
     public Script getImpact() {
+        this.touchImpact();
         return impact;
     }
 
@@ -288,6 +249,13 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      */
     public void setImpact(Script impact) {
         this.impact = impact;
+        this.touchImpact();
+    }
+
+    private void touchImpact() {
+        if (this.impact != null) {
+            this.impact.setParent(this, "impact");
+        }
     }
 
     /**
@@ -311,6 +279,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      * @return the impact
      */
     public Script getIgnorationImpact() {
+        this.touchIgnorationImpact();
         return ignorationImpact;
     }
 
@@ -319,6 +288,13 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      */
     public void setIgnorationImpact(Script impact) {
         this.ignorationImpact = impact;
+        this.touchIgnorationImpact();
+    }
+
+    private void touchIgnorationImpact() {
+        if (this.ignorationImpact != null) {
+            this.ignorationImpact.setParent(this, "ign");
+        }
     }
 
     /**
@@ -359,18 +335,18 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     /**
      * @return the files
      */
-    public List<String> getFiles() {
+    public Set<String> getFiles() {
         return files;
     }
 
     /**
      * @param files the files to set
      */
-    public void setFiles(List<String> files) {
+    public void setFiles(Set<String> files) {
         this.files = files;
     }
 
-    /**
+    /*
      * @return the choiceInstances
      *
      * @JsonIgnore
@@ -379,26 +355,27 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
      * }
      */
 
-    /*
+ /*
     public void addChoiceInstance(ChoiceInstance choiceInstance) {
-        if (this.currentResult == null) {
-            this.currentResult = new CurrentResult();
-            this.currentResult.setResult(this);
-        }
-
-        if (!this.currentResult.getChoiceInstances().contains(choiceInstance)) {
-            this.currentResult.getChoiceInstances().add(choiceInstance);
+        CurrentResult cr = this.getCurrentResult();
+        if (!cr.getChoiceInstances().contains(choiceInstance)) {
+            cr.getChoiceInstances().add(choiceInstance);
         }
     }
      */
  /*
     public boolean removeChoiceInstance(ChoiceInstance choiceInstance) {
-        return this.currentResult.remove(choiceInstance);
+        return this.getCurrentResult().remove(choiceInstance);
     }
      */
 
  /*
     public CurrentResult getCurrentResult() {
+        if (this.currentResult == null) {
+            this.currentResult = new CurrentResult();
+            this.currentResult.setResult(this);
+        }
+
         return currentResult;
     }
      */
@@ -414,13 +391,18 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
             replies = new Replies();
             replies.setResult(this);
         }
-        this.replies.add(reply);
+        return replies;
+    }
+
+    public void addReply(Reply reply) {
+
+        this.getReplies().add(reply);
     }
      */
 
  /*
     void removeReply(Reply reply) {
-        this.replies.remove(reply);
+        this.getReplies().remove(reply);
     }
      */
     @Override
@@ -445,8 +427,16 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     }
 
     @Override
+    public WithPermission getMergeableParent() {
+        return getChoiceDescriptor();
+    }
+
+    @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getChoiceDescriptor().getRequieredUpdatePermission();
+        Collection<WegasPermission> perms = this.getMergeableParent().getRequieredUpdatePermission();
+        // see issue #1441
+        perms.add(this.getParentGameModel().getAssociatedTranslatePermission(""));
+        return perms;
     }
 
     @Override
@@ -457,14 +447,27 @@ public class Result extends AbstractEntity implements Searchable, Scripted, Labe
     /*
     @PrePersist
     private void prePersist() {
-        if (replies == null) {
-            replies = new Replies();
-            replies.setResult(this);
-        }
-        if (currentResult == null) {
-            currentResult = new CurrentResult();
-            currentResult.setResult(this);
-        }
+        this.getReplies();
+        this.getCurrentResult();
     }
      */
+    public static class HasMultipleResult extends Not {
+
+        public HasMultipleResult() {
+            // hide the label if the result stands in a singleResultChoiceDescriptor
+            // -> display it only if parent is not a srcd
+            super(new IsDefined(new Field(SingleResultChoiceDescriptor.class, null)));
+        }
+    }
+
+    public static class IsQuestionCbx extends And {
+
+        public IsQuestionCbx() {
+            super(
+                    new IsDefined(new Field(QuestionDescriptor.class, "cbx")),
+                    new IsTrue(new Field(QuestionDescriptor.class, "cbx"))
+            );
+        }
+    }
+
 }

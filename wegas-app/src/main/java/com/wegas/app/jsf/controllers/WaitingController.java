@@ -132,7 +132,7 @@ public class WaitingController extends AbstractGameController {
         if (this.gameModelId != null) {
             GameModel gameModel = gameModelFacade.find(this.gameModelId);
             if (gameModel != null) {
-                if (gameModel.getTemplate()) {
+                if (gameModel.isScenario() || gameModel.isModel()){
                     // use the debug player from the debug game
                     currentPlayer = gameModel.getAnyLivePlayer();
                 } else {

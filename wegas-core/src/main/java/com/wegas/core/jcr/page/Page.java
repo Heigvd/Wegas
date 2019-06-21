@@ -46,7 +46,7 @@ public class Page {
      */
     public Page(String id, JsonNode content) {
         this.id = id;
-        this.setContent(content);
+        this.setContent(content.deepCopy());
     }
 
     /**

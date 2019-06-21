@@ -47,6 +47,10 @@ YUI.add('wegas-text', function(Y) {
                     video.load();
                 });
             },
+            setContent: function(content){
+                this.set("content", content);
+                this.syncUI();
+            },
             getEditorLabel: function() {
                 return this.get(CONTENTBOX).get('text');
             },
