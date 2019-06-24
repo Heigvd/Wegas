@@ -20,12 +20,10 @@ const dropZoneFocus = css({
   zIndex: 1000,
 });
 
-const activeDropableTabStyle = cx(
-  css({
-    width: '100px',
-    backgroundColor: themeVar.successColor,
-  }),
-);
+const activeDropableTabStyle = css({
+  width: '100px',
+  backgroundColor: themeVar.successColor,
+});
 
 const defaultTabStyle = css({
   display: 'inline-block',
@@ -64,11 +62,11 @@ export function Tab(props: TabProps) {
     <div
       className={cx(
         defaultTabStyle,
-        props.className
-          ? props.className
-          : props.active
-          ? primaryDark
-          : primaryLight,
+        {
+          [primaryDark]: props.active !== undefined && props.active,
+          [primaryLight]: !props.active,
+        },
+        props.className,
       )}
       onClick={props.onClick}
     >
@@ -118,13 +116,13 @@ export function DragTab(props: DragTabProps) {
       ref={drag}
       className={cx(
         defaultTabStyle,
-        props.className
-          ? props.className
-          : props.active
-          ? primaryDark
-          : primaryLight,
+        {
+          [primaryDark]: props.active,
+          [primaryLight]: !props.active,
+        },
+        props.className,
       )}
-      onClick={() => props.onClick && props.onClick()}
+      onClick={props.onClick}
     >
       {props.children}
     </div>
