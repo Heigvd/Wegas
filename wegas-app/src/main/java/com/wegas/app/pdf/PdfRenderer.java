@@ -8,7 +8,6 @@
 package com.wegas.app.pdf;
 
 import com.lowagie.text.DocumentException;
-import com.wegas.app.pdf.helper.StringInputStream;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.game.GameModel;
@@ -16,6 +15,7 @@ import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -147,6 +147,10 @@ public class PdfRenderer implements Filter {
                 String title = req.getParameter("title");
                 String content;
 
+                Tidy tidy = new Tidy();
+                tidy.setXmlOut(true);
+                tidy.setTrimEmptyElements(false);
+
                 if (req.getMethod().equalsIgnoreCase("POST")) {
                     // To prevent abuse, check that the user is logged in
                     User user = userFacade.getCurrentUser();
@@ -166,15 +170,15 @@ public class PdfRenderer implements Filter {
                      * convert xhtml from String to XML Document
                      */
                     content = capContent.getContent();
+
+                    tidy.setInputEncoding("UTF-8");
+                    //tidy.setOutputEncoding("UTF-8");
                 }
 
-                Tidy tidy = new Tidy();
-                tidy.setXmlOut(true);
-                tidy.setTrimEmptyElements(false);
+                InputStream iStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
 
                 OutputStream os = new ByteArrayOutputStream();
 
-                InputStream iStream = new StringInputStream(content);
                 tidy.parse(iStream, os);
 
                 if (renderType != null && renderType.equals("pdf")) {
@@ -270,7 +274,7 @@ public class PdfRenderer implements Filter {
                 + "</title>"
                 + "<link rel=\"stylesheet\" type=\"text/css\" href=\"wegas-app/css/wegas-pdf-print.css\" media=\"all\" />"
                 + "<link rel=\"stylesheet\" type=\"text/css\" href=\"wegas-app/css/wegas-pdf-print-page.css\" media=\"print\" />"
-                + "</head><body class='wegas-pdf-content' style=\"font-family:Helvetica, Arial; font-size:12px\">"
+                + "</head><body class='wegas-pdf-content' style=\"font-family:DejaVu Sans, Helvetica, Arial; font-size:12px\">"
                 + body
                 + "</body></html>";
     }
