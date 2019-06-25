@@ -61,7 +61,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
     getFileList(
       absoluteDirectoryPath: string = '',
       recursive?: boolean,
-    ): Promise<IFile[]> {
+    ): Promise<IFileDescriptor[]> {
       return rest(
         FILE_BASE(gameModelId) +
           (recursive ? 'recurseList' : 'list') +
@@ -78,7 +78,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
     deleteFile(
       absolutePath: string,
       force?: boolean,
-    ): Promise<IFile | undefined> {
+    ): Promise<IFileDescriptor | undefined> {
       return rest(
         FILE_BASE(gameModelId) +
           (force ? 'force/' : '') +
@@ -114,7 +114,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
       path: string = '',
       file?: File,
       force: boolean = false,
-    ): Promise<IFile> {
+    ): Promise<IFileDescriptor> {
       const data = new FormData();
       data.append('name', name);
       data.append('file', file as Blob);
@@ -134,7 +134,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
      * Get metata of a specific file/directory
      * @param absolutePath the absolute path of the file (if undefined, takes root (/))
      */
-    getFileMeta(absolutePath: string = ''): Promise<IFile> {
+    getFileMeta(absolutePath: string = ''): Promise<IFileDescriptor> {
       return rest(FILE_BASE(gameModelId) + 'meta' + absolutePath).then(
         (res: Response) => {
           return res.json();
@@ -145,7 +145,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
      * Update file metadata
      * @param file the file to update
      */
-    updateMetadata(file: IFile) {
+    updateMetadata(file: IFileDescriptor) {
       return rest(FILE_BASE(gameModelId) + 'update' + generateGoodPath(file), {
         method: 'PUT',
         body: JSON.stringify(file),
@@ -156,7 +156,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
     /**
      * Delete the whole file tree
      */
-    destruct(): Promise<IFile> {
+    destruct(): Promise<IFileDescriptor> {
       return rest(
         FILE_BASE(gameModelId) +
           'destruct' +

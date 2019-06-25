@@ -9,6 +9,7 @@ import {
   editFileAction,
   generateGoodPath,
   generateAbsolutePath,
+  TMap,
 } from '../../../../data/methods/ContentDescriptor';
 import { css, cx } from 'emotion';
 import { StoreDispatch, StoreConsumer } from '../../../../data/store';
@@ -50,6 +51,8 @@ export const dropZoneStyle = css({
   borderWidth: '2px',
   borderColor: 'red',
 });
+
+type IFileMap = TMap<IFileDescriptor>;
 
 export const gameModelDependsOnModel = () => {
   return (
@@ -109,13 +112,13 @@ interface SetStateAction extends StateAction {
 
 interface InsertFileAction extends StateAction {
   type: 'InsertFile';
-  file: IFile;
+  file: IFileDescriptor;
   openPath?: boolean;
 }
 
 interface UpdateFileAction extends StateAction {
   type: 'UpdateFile';
-  file: IFile;
+  file: IFileDescriptor;
   openPath?: boolean;
 }
 
@@ -240,7 +243,7 @@ const setNodeTree: (
 };
 
 export interface FileBrowserProps {
-  onFileClick?: (files: IFile) => void;
+  onFileClick?: (files: IFileDescriptor) => void;
   selectedFiles?: IFileMap;
 }
 
@@ -271,7 +274,7 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
     [],
   );
 
-  const addNewDirectory = React.useCallback((parentDir: IFile) => {
+  const addNewDirectory = React.useCallback((parentDir: IFileDescriptor) => {
     const newDirName = prompt('Please enter the name of the new directory', '');
     if (newDirName !== null) {
       FileAPI.createFile(newDirName, getAbsoluteFileName(parentDir)).then(
@@ -381,7 +384,8 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
     [insertFiles, insertFile],
   );
 
-  const addNewFile = () => {
+  const addNewFile = (event: React.MouseEvent) => {
+    event.stopPropagation();
     if (uploader.current) {
       uploader.current.click();
     }
@@ -397,16 +401,15 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
   }, []);
 
   const isFileOpen = React.useCallback(
-    (file: IFile) =>
+    (file: IFileDescriptor) =>
       selectedFiles !== undefined &&
       Object.keys(selectedFiles).find(
         key => key.indexOf(getAbsoluteFileName(file)) === 0,
       ) !== undefined,
     [selectedFiles],
   );
-
   const isFileSelected = React.useCallback(
-    (file: IFile) =>
+    (file: IFileDescriptor) =>
       selectedFiles !== undefined &&
       Object.keys(selectedFiles).indexOf(getAbsoluteFileName(file)) > 0,
     [selectedFiles],
@@ -477,14 +480,18 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
   );
 
   const generateFileState = React.useCallback(
-    (fileState: FileTreeState, files: IFile[]) => {
+    (fileState: FileTreeState, files: IFileDescriptor[]) => {
       const newFileState = fileState;
       for (const file of files) {
         newFileState.nodes[getAbsoluteFileName(file)] = isDirectory(file)
           ? {
               file: file,
               childrenIds: [],
-              open: isFileOpen(file),
+              open:
+                isFileOpen(file) ||
+                (fileState !== null &&
+                  fileState.nodes[getAbsoluteFileName(file)] &&
+                  fileState.nodes[getAbsoluteFileName(file)].open),
               selected: isFileSelected(file),
             }
           : { file: file };
@@ -584,7 +591,7 @@ function CFileBrowser(props: CFileBrowserProps) {
   const [selectedFiles, setSelectedFiles] = React.useState<IFileMap>({});
 
   const onFileClick = React.useCallback(
-    async (file: IFile) => {
+    async (file: IFileDescriptor) => {
       dispatch(editFileAction(file, dispatch));
     },
     [dispatch],
@@ -605,7 +612,7 @@ function CFileBrowser(props: CFileBrowserProps) {
   );
 }
 
-export function ConnectedFileFileBrowser() {
+export function ConnectedFileBrowser() {
   return (
     <StoreConsumer
       selector={(state: State) => {
@@ -623,4 +630,4 @@ export function ConnectedFileFileBrowser() {
 
 export const DndConnectedFileBrowser = defaultContextManager<
   React.ComponentType
->(ConnectedFileFileBrowser);
+>(ConnectedFileBrowser);

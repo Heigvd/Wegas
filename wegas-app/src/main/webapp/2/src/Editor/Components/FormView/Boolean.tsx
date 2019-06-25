@@ -11,7 +11,7 @@ export default class BooleanView extends React.Component<BooleanProps> {
     this.props.onChange(event.target.checked);
 
   render() {
-    const { view, errorMessage, value, readOnly } = this.props;
+    const { view, errorMessage, value } = this.props;
     return (
       <CommonViewContainer errorMessage={errorMessage} view={view}>
         <Labeled {...view}>
@@ -23,7 +23,6 @@ export default class BooleanView extends React.Component<BooleanProps> {
                 type="checkbox"
                 readOnly={view.readOnly}
                 onChange={this.onChange}
-                readOnly={readOnly}
               />
               {labelNode}
             </>

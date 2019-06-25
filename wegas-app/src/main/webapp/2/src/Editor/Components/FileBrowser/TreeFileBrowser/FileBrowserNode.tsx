@@ -28,7 +28,7 @@ const hoverRow = css({
 });
 
 export interface FileNode {
-  file: IFile;
+  file: IFileDescriptor;
   selected?: boolean;
   childrenIds?: string[];
   open?: boolean;
@@ -55,10 +55,10 @@ const getIconForFileType = (fileType: string): IconProp => {
 
 interface FileBrowserNodeProps {
   node: FileNode;
-  selected?: boolean;
-  openFolder: (node: FileNode, open?: boolean) => void;
+  // selected?: boolean;
+  // openFolder: (node: FileNode, open?: boolean) => void;
   selectFile: (file: FileNode) => void;
-  addNewDirectory: (file: IFile) => void;
+  addNewDirectory: (file: IFileDescriptor) => void;
   deleteFile: (baseDir: FileNode) => void;
   insertFiles: (files: FileList, path?: string) => void;
   uploadFiles: (
@@ -72,7 +72,7 @@ export function FileBrowserNode(
   const {
     node,
     selected,
-    openFolder,
+    // openFolder,
     selectFile,
     addNewDirectory,
     deleteFile,
@@ -81,9 +81,11 @@ export function FileBrowserNode(
     children,
   } = props;
 
+  const [open, setOpen] = React.useState(node.open);
+
   const uploader = React.useRef<HTMLInputElement>(null);
 
-  const openFile = (file: IFile) => {
+  const openFile = (file: IFileDescriptor) => {
     const win = window.open(
       FileAPI.fileURL(getAbsoluteFileName(file)),
       '_blank',
@@ -108,7 +110,7 @@ export function FileBrowserNode(
     if (isDirectory(node.file)) {
       if (dropZoneProps.isShallowOver && dropZoneProps.canDrop) {
         openTimeout = (setTimeout(
-          () => openFolder(node, true),
+          () => setOpen(true),
           timeoutBeforeExpend,
         ) as unknown) as number;
       }
@@ -116,7 +118,7 @@ export function FileBrowserNode(
         clearTimeout(openTimeout);
       };
     }
-  }, [dropZoneProps, node, openFolder]);
+  }, [dropZoneProps, node]);
 
   const addNewFile = (event: React.MouseEvent) => {
     event.stopPropagation();
@@ -139,7 +141,9 @@ export function FileBrowserNode(
       {isNodeDirectory(node) && (
         <IconButton
           icon={node.open ? 'caret-down' : 'caret-right'}
-          onClick={() => openFolder(node, !node.open)}
+          onClick={() => {
+            setOpen(oldOpen => !oldOpen);
+          }}
           className={css({ float: 'left', height: 'fit-content' })}
           fixedWidth={true}
         />
