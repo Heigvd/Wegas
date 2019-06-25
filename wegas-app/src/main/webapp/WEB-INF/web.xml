@@ -10,9 +10,9 @@
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
-    <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
-    </welcome-file-list>
+    <!--<welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>-->
 
     <!-- Apache Shiro Listener -->
     <!-- shiro filter must be declared before any other filter, to ensure

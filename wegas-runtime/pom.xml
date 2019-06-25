@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.wegas</groupId>
+        <artifactId>wegas-project</artifactId>
+        <version>4.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>wegas-runtime</artifactId>
+    <packaging>jar</packaging>
+    <name>wegas-runtime</name>
+    <dependencies>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wegas-app</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+
+        <!--<dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+        </dependency>-->
+
+        <dependency>
+            <groupId>fish.payara.extras</groupId>
+            <artifactId>payara-micro</artifactId>
+            <version>5.192</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <!--
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <type>jar</type>
+        </dependency>-->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <type>jar</type>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.microprofile</groupId>
+            <artifactId>microprofile</artifactId>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>fish.payara.api</groupId>
+            <artifactId>payara-api</artifactId>
+        </dependency>
+    </dependencies>
+</project>
