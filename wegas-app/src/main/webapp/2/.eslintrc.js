@@ -26,6 +26,7 @@ module.exports = {
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
     'no-console': 'warn',
+    'no-alert': 'error',
     'no-var': 'error',
     'prefer-const': 'error',
     'linebreak-style': ['error', 'unix'],
