@@ -1,6 +1,8 @@
 import { rest } from './rest';
 import { GameModel } from '../data/selectors';
+import { TMap } from '../data/methods/ContentDescriptor';
 
+export type ILibraries = TMap<IGameModelContent>;
 export type LibType = 'CSS' | 'ClientScript' | 'ServerScript';
 export type NewLibErrors = 'NOTNEW' | 'UNKNOWN';
 
@@ -16,7 +18,7 @@ export const LibraryAPIFactory = (gameModelId?: number) => {
         return res.json();
       });
     },
-    getLibrary(libType: LibType, name: string): Promise<ILibrary> {
+    getLibrary(libType: LibType, name: string): Promise<IGameModelContent> {
       return rest(LIBRARY_BASE(libType, gameModelId) + '/' + name).then(
         async (res: Response) => {
           return res.json();
@@ -26,14 +28,19 @@ export const LibraryAPIFactory = (gameModelId?: number) => {
     addLibrary(
       libType: LibType,
       name: string,
-      library?: ILibrary,
-    ): Promise<ILibrary> {
+      content: string,
+      visibility?: IAbstractContentDescriptor['visibility'],
+    ): Promise<IGameModelContent> {
+      const newLib: IGameModelContent = {
+        '@class': 'GameModelContent',
+        content: content,
+        contentType: libType,
+        version: 0,
+        visibility: visibility,
+      };
       return rest(LIBRARY_BASE(libType, gameModelId) + '/' + name, {
         method: 'POST',
-        body: JSON.stringify({
-          '@class': 'GameModelContent',
-          ...library,
-        }),
+        body: JSON.stringify(newLib),
       })
         .then((res: Response) => {
           return res.json();
@@ -46,15 +53,12 @@ export const LibraryAPIFactory = (gameModelId?: number) => {
           }
         });
     },
-    saveLibrary(libType: LibType, name: string, library: ILibrary) {
+    saveLibrary(libType: LibType, name: string, library: IGameModelContent) {
       return rest(
         LIBRARY_BASE(libType, gameModelId) + '/' + name,
         {
           method: 'PUT',
-          body: JSON.stringify({
-            '@class': 'GameModelContent',
-            ...library,
-          }),
+          body: JSON.stringify(library),
         },
         'Editor',
         'application/json',

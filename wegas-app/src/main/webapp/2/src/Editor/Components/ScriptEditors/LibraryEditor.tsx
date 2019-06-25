@@ -2,71 +2,27 @@ import * as React from 'react';
 import { TabLayout } from '../../../Components/Tabs';
 import { Toolbar } from '../../../Components/Toolbar';
 import { IconButton } from '../../../Components/Button/IconButton';
-import { LibraryAPI, NewLibErrors, LibType } from '../../../API/library.api';
+import {
+  LibraryAPI,
+  NewLibErrors,
+  LibType,
+  ILibraries,
+} from '../../../API/library.api';
 import { GameModel } from '../../../data/selectors';
 import { omit } from 'lodash-es';
 import u from 'immer';
-import { themeVar } from '../../../Components/Theme';
-import { css } from 'emotion';
 import { WebSocketEvent, useWebsocket } from '../../../API/websocket';
 import SrcEditor from './SrcEditor';
 import MergeEditor from './MergeEditor';
+import { StyledLabel } from '../../../Components/AutoImport/String/Label';
 
+type IVisibility = IAbstractContentDescriptor['visibility'];
 const visibilities: IVisibility[] = [
   'INTERNAL',
   'PROTECTED',
   'INHERITED',
   'PRIVATE',
 ];
-
-interface StyledLabelProps {
-  /**
-   * value - the value of the text
-   */
-  value?: string;
-  /**
-   * type - changes the style of the text, normal by default
-   */
-  type?: 'normal' | 'warning' | 'error' | 'succes';
-}
-
-/**
- * StyledLabel is a component that creates a styled label with text
- */
-function StyledLabel({ type, value }: StyledLabelProps) {
-  let color = '';
-
-  switch (type) {
-    case 'succes': {
-      color = themeVar.successColor;
-      break;
-    }
-    case 'warning': {
-      color = themeVar.warningColor;
-      break;
-    }
-    case 'error': {
-      color = themeVar.errorColor;
-      break;
-    }
-    case 'normal':
-    default: {
-      color = themeVar.primaryLighterColor;
-      break;
-    }
-  }
-
-  return (
-    <div
-      className={css({
-        color: color,
-        padding: '5px',
-      })}
-    >
-      {value !== undefined ? value : ''}
-    </div>
-  );
-}
 
 interface LibraryStatus {
   /**
@@ -77,11 +33,11 @@ interface LibraryStatus {
    * latestVersionLibrary - the latest version of the library
    * If defined, it means that the current library is outdated
    */
-  latestVersionLibrary?: ILibrary;
+  latestVersionLibrary?: IGameModelContent;
 }
 
 interface ILibraryWithStatus {
-  library: ILibrary;
+  library: IGameModelContent;
   status: LibraryStatus;
 }
 
@@ -127,7 +83,7 @@ interface InsertLibraryAction extends LibraryStateAction {
   /**
    * library - the library to be inserted
    */
-  library: ILibrary;
+  library: IGameModelContent;
   /**
    * focus - should the editor display this lib.
    * Can be set to false when insertion is from external event.
@@ -168,7 +124,7 @@ interface SetLastVersionLibraryAction extends LibraryStateAction {
   /**
    * remoteLibrary - the lastest library
    */
-  latestLibrary: ILibrary;
+  latestLibrary: IGameModelContent;
 }
 
 interface SelectLibraryAction extends LibraryStateAction {
@@ -201,7 +157,7 @@ const setLibraryState = (oldState: ILibrariesState, action: StateAction) =>
         const newLibsKeys = Object.keys(action.libraries);
         newLibsKeys.map(key => {
           oldState.libraries[key] = {
-            library: action.libraries[key],
+            library: action.libraries[key]!!,
             status: {
               isEdited: false,
             },
@@ -309,7 +265,7 @@ const isLibraryOutdated = (
   libraryEntry: ILibraryWithStatus,
 ): libraryEntry is ILibraryWithStatus & {
   status: {
-    latestVersionLibrary: ILibrary;
+    latestVersionLibrary: IGameModelContent;
   };
 } => {
   return libraryEntry.status.latestVersionLibrary !== undefined;
@@ -407,7 +363,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
     ('LibraryUpdate-' + scriptType) as WebSocketEvent,
     (updatedLibraryName: string) => {
       LibraryAPI.getLibrary(scriptType, updatedLibraryName).then(
-        (library: ILibrary) => {
+        (library: IGameModelContent) => {
           dispatchStateAction({
             type: 'SetLastVersionLibrary',
             name: updatedLibraryName,
@@ -425,10 +381,14 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
    * @param library - the library to insert in the database
    */
   const onNewLibrary = React.useCallback(
-    (name: string | null, library?: ILibrary) => {
+    (
+      name: string | null,
+      content: string = '',
+      visibility: IVisibility = 'PRIVATE',
+    ) => {
       if (name !== null) {
-        return LibraryAPI.addLibrary(scriptType, name, library)
-          .then((res: ILibrary) => {
+        return LibraryAPI.addLibrary(scriptType, name, content, visibility)
+          .then((res: IGameModelContent) => {
             dispatchStateAction({
               type: 'InsertLibrary',
               name: name,
@@ -466,10 +426,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
         // Ask for a name and insert content as new library
         libKey = prompt('Please enter a script name');
         if (libKey) {
-          onNewLibrary(libKey, {
-            content: content,
-            visibility: 'PRIVATE',
-          });
+          onNewLibrary(libKey, content);
         }
       } else {
         if (isEditAllowed(librariesState)) {

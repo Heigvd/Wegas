@@ -114,8 +114,8 @@ interface EventMap {
 }
 
 interface ICustomEventData {
-  deletedEntities: IWegasEntity[];
-  updatedEntities: IWegasEntity[];
+  deletedEntities: IAbstractEntity[];
+  updatedEntities: IAbstractEntity[];
   events: any[];
 }
 
