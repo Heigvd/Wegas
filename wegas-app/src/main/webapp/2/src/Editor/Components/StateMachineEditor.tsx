@@ -525,8 +525,8 @@ class State extends React.Component<{
   editState: (id: number) => void;
   deleteState: (id: number) => void;
   moveState: (id: number, pos: [number, number]) => void;
-
   editTransition: (path: [number, number], transition: ITransition) => void;
+  search: RState['global']['search'];
 }> {
   container: Element | null = null;
   componentDidMount() {
@@ -572,7 +572,7 @@ class State extends React.Component<{
             [initialStateStyle]: initialState,
             [currentStateStyle]: currentState,
           },
-          this.isBeingSearched() ? searchHighlighted : undefined,
+          this.isBeingSearched() && searchHighlighted,
         )}
         id={String(this.props.id)}
         ref={n => {
@@ -621,6 +621,7 @@ class Transition extends React.Component<{
   parent: number;
   position: number;
   editTransition: (path: [number, number], transition: ITransition) => void;
+  search: RState['global']['search'];
 }> {
   connection: Connection | null = null;
   isBeingSearched = () => {

@@ -20,7 +20,7 @@ export interface EditorAction<T extends IAbstractEntity> {
   };
 }
 export interface FileActions {
-  save: (entity: IFileConfig) => void;
+  save: (entity: IFileDescriptor) => void;
   more: null;
 }
 export type Edition =
@@ -45,6 +45,11 @@ export type Edition =
       path: (string | number)[];
       config?: Schema<AvailableViews>;
       actions: EditorAction<IAbstractEntity>;
+    }
+  | {
+      type: 'File';
+      file: IFileDescriptor;
+      actions: FileActions;
     };
 export interface GlobalState {
   currentGameModelId: number;

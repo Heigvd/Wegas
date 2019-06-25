@@ -20,7 +20,7 @@ function createAction<T extends string, P>(type: T, payload: P) {
 export const ActionCreator = {
   // ENTITY_UPDATE: (data: NormalizedData) =>
   //   createAction(ActionType.ENTITY_UPDATE, data),
-  FILE_EDIT: (data: { file: IFile; actions: FileActions }) =>
+  FILE_EDIT: (data: { file: IFileDescriptor; actions: FileActions }) =>
     createAction(ActionType.FILE_EDIT, data),
   VARIABLE_EDIT: <T extends IAbstractEntity>(data: {
     id: number;
