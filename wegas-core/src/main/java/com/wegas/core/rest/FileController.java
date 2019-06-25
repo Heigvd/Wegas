@@ -217,7 +217,7 @@ public class FileController {
                         response.header("Content-Type", fileDescriptor.getMimeType());
                         response.header("Description", fileDescriptor.getDescription());
                     }
-                    
+
                     // set a default cacheControl prevent out CacheResponseFilter to set "no-cache, no-store"
                     response.cacheControl(new CacheControl()).lastModified(fileD.getDataLastModified().getTime());
                 }

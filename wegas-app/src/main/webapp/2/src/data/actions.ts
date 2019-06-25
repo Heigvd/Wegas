@@ -1,9 +1,10 @@
 import { normalizeDatas, NormalizedData } from './normalize';
 import { ManagedMode } from '../API/rest';
 import * as ActionType from './actionTypes';
-import { ConfigurationSchema } from '../Editor/editionConfig';
 import { PageIndex } from '../API/pages.api';
 import { FileActions } from './Reducer/globalState';
+import { Schema } from 'jsoninput';
+import { AvailableViews } from '../Editor/Components/FormView';
 
 export { ActionType };
 function createAction<T extends string, P>(type: T, payload: P) {
@@ -21,10 +22,10 @@ export const ActionCreator = {
   //   createAction(ActionType.ENTITY_UPDATE, data),
   FILE_EDIT: (data: { file: IFile; actions: FileActions }) =>
     createAction(ActionType.FILE_EDIT, data),
-  VARIABLE_EDIT: <T extends IWegasEntity>(data: {
+  VARIABLE_EDIT: <T extends IAbstractEntity>(data: {
     id: number;
-    config?: ConfigurationSchema<T>;
-    path?: string[];
+    config?: Schema<AvailableViews>;
+    path?: (string | number)[];
     actions: {
       save?: (entity: T) => void;
       more?: {
@@ -37,7 +38,7 @@ export const ActionCreator = {
   }) => createAction(ActionType.VARIABLE_EDIT, data),
   FSM_EDIT: (data: {
     id: number;
-    config?: ConfigurationSchema<IVariableDescriptor>;
+    config?: Schema<AvailableViews>;
     path?: string[];
     actions: {
       save?: (entity: IFSMDescriptor) => void;
@@ -49,9 +50,10 @@ export const ActionCreator = {
       };
     };
   }) => createAction(ActionType.FSM_EDIT, data),
-  VARIABLE_CREATE: <T extends IWegasEntity>(data: {
+  VARIABLE_CREATE: <T extends IAbstractEntity>(data: {
     '@class': string;
     parentId?: number;
+    parentType?: string;
     actions: {
       save?: (entity: T) => void;
       delete?: (entity: T) => void;
@@ -59,7 +61,10 @@ export const ActionCreator = {
   }) => createAction(ActionType.VARIABLE_CREATE, data),
   CLOSE_EDITOR: () => createAction(ActionType.CLOSE_EDITOR, {}),
   MANAGED_MODE: (data: {
-    deletedEntities: NormalizedData;
+    // Nearly empty shells
+    deletedEntities: {
+      [K in keyof NormalizedData]: { [id: string]: IAbstractEntity }
+    };
     updatedEntities: NormalizedData;
   }) => createAction(ActionType.MANAGED_MODE, data),
   PAGE_EDIT_MODE: (data: boolean) =>
@@ -88,7 +93,7 @@ export type StateActions<
 
 export function managedMode(payload: ManagedMode) {
   return ActionCreator.MANAGED_MODE({
-    deletedEntities: normalizeDatas(payload.deletedEntities as any),
-    updatedEntities: normalizeDatas(payload.updatedEntities as any),
+    deletedEntities: normalizeDatas(payload.deletedEntities),
+    updatedEntities: normalizeDatas(payload.updatedEntities),
   });
 }

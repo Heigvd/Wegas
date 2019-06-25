@@ -10,7 +10,15 @@ package com.wegas.core.persistence.variable.statemachine;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wegas.core.persistence.game.GameModel;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.editor.JSONSchema.JSONObject;
+import com.wegas.editor.Schema;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
+import java.util.HashMap;
+import java.util.Map;
 import javax.persistence.Entity;
 
 /*
@@ -20,27 +28,43 @@ import javax.persistence.Entity;
 @Entity
 @JsonIgnoreProperties(value = {"content"})
 @JsonTypeName("DialogueDescriptor")
-public class DialogueDescriptor extends StateMachineDescriptor {
+@Schema(property = "states", value = DialogueDescriptor.StateProp.class, view = @View(label = "", value = Hidden.class))
+public class DialogueDescriptor extends AbstractStateMachineDescriptor<DialogueState, DialogueTransition> {
 
     private static final long serialVersionUID = 1L;
+
+    public static class StateProp extends JSONObject {
+
+        public StateProp() {
+            Map<Long, AbstractState> states = new HashMap<>();
+            DialogueState state = new DialogueState();
+            state.setVersion(0l);
+
+            state.setText(new TranslatableContent());
+            state.getText().setVersion(0l);
+
+            state.setEditorPosition(new Coordinate());
+            state.getEditorPosition().setX(100);
+            state.getEditorPosition().setY(100);
+
+            state.setOnEnterEvent(new Script());
+
+            states.put(1l, state);
+            this.setValue(states);
+        }
+    }
 
     @Override
     public void revive(GameModel gameModel, Beanjection beans) {
         super.revive(gameModel, beans);
-        for (State s : this.getStates()) {
-            if (s instanceof DialogueState) {
-                DialogueState ds = (DialogueState) s;
-                if (ds.getText() != null) {
-                    ds.getText().setParentDescriptor(this);
-                }
+        for (DialogueState s : this.getInternalStates()) {
+            if (s.getText() != null) {
+                s.getText().setParentDescriptor(this);
             }
 
-            for (Transition t : s.getTransitions()) {
-                if (t instanceof DialogueTransition) {
-                    DialogueTransition dt = (DialogueTransition) t;
-                    if (dt.getActionText() != null) {
-                        dt.getActionText().setParentDescriptor(this);
-                    }
+            for (DialogueTransition t : s.getTransitions()) {
+                if (t.getActionText() != null) {
+                    t.getActionText().setParentDescriptor(this);
                 }
             }
         }

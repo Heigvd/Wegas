@@ -11,6 +11,8 @@ import Html from './Html';
 import { Script } from './Script';
 import { TreeVariableSelect } from './TreeVariableSelect';
 import translatable from './translatable';
+import EntityArrayFieldSelect from './EntityArrayFieldSelect';
+import FlatVariableSelect from './FlatVariableSelect';
 
 const DEFINED_VIEWS = {
   hidden,
@@ -27,13 +29,17 @@ const DEFINED_VIEWS = {
   i18nhtml: translatable(Html),
   script: Script,
   variableselect: TreeVariableSelect,
+  entityarrayfieldselect: EntityArrayFieldSelect,
+  flatvariableselect: FlatVariableSelect,
 };
 setDefaultWidgets(DEFINED_VIEWS);
 
 type ViewTypes = keyof (typeof DEFINED_VIEWS);
 type PropsType<T> = T extends React.ComponentType<infer U>
   ? U
-  : T extends (p: infer P) => any ? P : never;
+  : T extends (p: infer P) => unknown
+  ? P
+  : never;
 type View<P extends ViewTypes> = PropsType<(typeof DEFINED_VIEWS)[P]> extends {
   view: infer V;
 }
@@ -41,5 +47,5 @@ type View<P extends ViewTypes> = PropsType<(typeof DEFINED_VIEWS)[P]> extends {
   : { type?: P };
 
 type ViewMap = { [P in keyof typeof DEFINED_VIEWS]: View<P> };
-type valueof<T> = T[keyof T];
-export type AvailableViews = valueof<ViewMap>;
+
+export type AvailableViews = ValueOf<ViewMap>;

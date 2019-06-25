@@ -9,7 +9,7 @@ package com.wegas.core.security.persistence;
 
 import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.Helper;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Mergeable;
@@ -21,6 +21,9 @@ import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.View;
 import java.util.*;
 import javax.persistence.*;
 
@@ -81,25 +84,26 @@ public abstract class AbstractAccount extends AbstractEntity {
     //@Basic(optional = false)
     @Column(length = 100)
     //@Pattern(regexp = "^\\w+$")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Username"), optional = false, nullable = false)
     private String username = "";
 
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Firstname"), optional = false, nullable = false)
     private String firstname;
 
     /**
      *
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Lastname"), optional = false, nullable = false)
     private String lastname;
 
     /**
      *
      */
-    @WegasEntityProperty(callback = CheckEmailChange.class)
+    @WegasEntityProperty(callback = CheckEmailChange.class, optional = false, nullable = false,
+            view = @View(label = "E-mail"))
     private String email = "";
 
     /**
@@ -115,13 +119,15 @@ public abstract class AbstractAccount extends AbstractEntity {
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
-    @WegasEntityProperty(ignoreNull = true)
+    @WegasEntityProperty(ignoreNull = true, optional = false, nullable = false,
+            view = @View(label = "Agreed time", value = ReadOnlyNumber.class))
     private Date agreedTime = null;
 
     /**
      * Optional remarks only visible to admins
      */
-    @WegasEntityProperty(ignoreNull = true)
+    @WegasEntityProperty(ignoreNull = true, optional = false, nullable = false,
+            proposal = EmptyString.class, view = @View(label = "Comment"))
     private String comment = "";
 
     /**
@@ -367,7 +373,7 @@ public abstract class AbstractAccount extends AbstractEntity {
         public void preUpdate(Mergeable entity, Object ref, Object identifier) {
             if (entity instanceof JpaAccount && "email".equals(identifier)) {
                 JpaAccount account = (JpaAccount) entity;
-                if (!account.getEmail().equals(ref)){
+                if (!account.getEmail().equals(ref)) {
                     // email update detected
                     account.setVerified(false);
                 }

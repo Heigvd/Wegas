@@ -15,7 +15,7 @@ interface Choice {
   };
   children?: Choice[];
 }
-type Choices = (string | Choice)[];
+export type Choices = (string | Choice)[];
 interface ISelectProps extends WidgetProps.BaseProps {
   view: {
     choices: Choices;
@@ -100,6 +100,7 @@ function SelectView(props: ISelectProps) {
                   className={selectStyle}
                   value={value}
                   onChange={onChange}
+                  disabled={props.view.readOnly}
                 >
                   {choices.map(genItems)}
                 </select>

@@ -128,7 +128,6 @@ YUI().use(function(Y) {
                 ws_provides: [
                     "DialogueDescriptor",
                     "TriggerDescriptor",
-                    "TriggerInstance",
                     "FSMDescriptor",
                     "FSMInstance"
                 ]

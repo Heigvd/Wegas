@@ -34,9 +34,9 @@ function COMMON_CONFIG(
 }
 export interface ManagedMode {
   '@class': 'ManagedResponse';
-  deletedEntities: IWegasEntity[];
+  deletedEntities: IAbstractEntity[];
   events: any[];
-  updatedEntities: IWegasEntity[];
+  updatedEntities: IAbstractEntity[];
 }
 type View = 'Editor' | 'Instance' | 'Export';
 

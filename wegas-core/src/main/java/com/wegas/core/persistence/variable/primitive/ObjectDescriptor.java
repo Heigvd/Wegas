@@ -8,11 +8,17 @@
 package com.wegas.core.persistence.variable.primitive;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.persistence.annotations.Param;
+import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.editor.ValueGenerators.EmptyMap;
+import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.View.HtmlView;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.ElementCollection;
@@ -24,7 +30,6 @@ import javax.persistence.Lob;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-
 /*@Table(indexes = {
  @Index(columnList = "properties.objectdescriptor_variabledescriptor_id")
  })*/
@@ -35,14 +40,18 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
      *
      */
     @Lob
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Description", value = HtmlView.class))
     private String description;
     /**
      *
      */
     @ElementCollection
     @JsonIgnore
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyMap.class,
+            view = @View(label = "Descriptor properties"))
     private List<VariableProperty> properties = new ArrayList<>();
 
     @Override
@@ -50,7 +59,6 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
     public List<VariableProperty> getInternalProperties() {
         return this.properties;
     }
-
 
     /**
      * @return the description
@@ -70,8 +78,9 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
      *
      * @param p
      *
-     * @return numner of property in the payer instance
+     * @return number of property in the payer instance
      */
+    @Scriptable
     public int size(Player p) {
         return this.getInstance(p).getProperties().size();
     }
@@ -84,6 +93,7 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
      *
      * @return the value of the property in the player instance
      */
+    @Scriptable
     public String getProperty(Player p, String key) {
         return this.getInstance(p).getProperties().get(key);
     }
@@ -94,7 +104,10 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
      * @param key
      * @param value
      */
-    public void setProperty(Player p, String key, String value) {
+    @Scriptable
+    public void setProperty(Player p,
+            @Param(view = @View(label = "Key")) String key,
+            @Param(view = @View(label = "Value")) String value) {
         this.getInstance(p).setProperty(key, value);
     }
 

@@ -95,7 +95,7 @@ YUI.add('wegas-template', function(Y) {
                             data.value = this.undefinedToEmpty(desc.get('value'));
                         }
 
-                        desc = Y.Wegas.Facade.Variable.cache.findById(desc.get('descriptorId'));
+                        desc = Y.Wegas.Facade.Variable.cache.findById(desc.get('parentId'));
                     } else {
                         data.value = undefined;
                     }
@@ -122,9 +122,6 @@ YUI.add('wegas-template', function(Y) {
                     }
                     data.maxValue = this.undefinedToEmpty(desc.get('maxValue'));
                     data.minValue = this.undefinedToEmpty(desc.get('minValue'));
-                    data.defaultValue = this.undefinedToEmpty(
-                        desc.get('defaultValue')
-                        );
                     data.variable = desc;
                 }
 
@@ -281,7 +278,6 @@ YUI.add('wegas-template', function(Y) {
                 "<div class='wegas-template-box-unit <%= 1+i == +this.value ? ' wegas-template-box-selected' : (2+i == +this.value ? ' wegas-template-box-pred' : '') %>' value='<%= 1+i %>'></div><% } %></div>" +
                 "<span class='wegas-template-box-value'>" +
                 "(<%= I18n.formatNumber(this.value || '{value}') %>" +
-                //+ "<% if(this.defaultValue != ''){ %><%= '/' + (this.defaultValue || '{defaultValue}') %><% } %>"
                 ')</span></div>'
                 )
         },
