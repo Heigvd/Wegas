@@ -2,6 +2,39 @@ import { store } from '../store';
 import { isMatch } from 'lodash-es';
 
 /**
+ * Find a variableDescriptor for an id
+ *
+ * @export
+ * @param {number} id variableDescriptor id
+ * @returns {(Readonly<IVariableInstance> | undefined)}
+ */
+export function select<T extends IVariableInstance = IVariableInstance>(
+  id?: number,
+): Readonly<T> | undefined;
+/**
+ * Find a list of variableInstance for a list of ids
+ *
+ * @export
+ * @param {number[]} id Array of variableInstance ids
+ * @returns {((Readonly<IVariableInstance> | undefined)[])}
+ */
+export function select<T extends IVariableInstance = IVariableInstance>(
+  id: number[],
+): (Readonly<T> | undefined)[];
+export function select<T extends IVariableInstance = IVariableInstance>(
+  id: number | number[] | undefined,
+) {
+  if (id == null) {
+    return;
+  }
+  const state = store.getState();
+  if (Array.isArray(id)) {
+    return id.map(i => state.variableInstances[i] as T);
+  }
+  return state.variableInstances[id] as T;
+}
+
+/**
  * Select first matching VariableInstance
  * @param key the key to search for
  * @param value the value the key should be equal

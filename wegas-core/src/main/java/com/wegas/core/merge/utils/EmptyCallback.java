@@ -7,8 +7,8 @@
  */
 package com.wegas.core.merge.utils;
 
-import com.wegas.core.merge.annotations.WegasEntity;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntity;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 
 /**
  * Since optional annotations require a default value, here is the default value for {@link WegasEntityProperty#callback()  property callback} and {@link WegasEntity#callback() entity callback}

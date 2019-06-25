@@ -10,11 +10,13 @@ package com.wegas.app.pdf.uicomponent;
 import com.wegas.app.pdf.helper.UIHelper;
 import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.statemachine.AbstractState;
+import com.wegas.core.persistence.variable.statemachine.AbstractTransition;
 import com.wegas.core.persistence.variable.statemachine.DialogueState;
 import com.wegas.core.persistence.variable.statemachine.DialogueTransition;
 import com.wegas.core.persistence.variable.statemachine.State;
-import com.wegas.core.persistence.variable.statemachine.Transition;
 import java.io.IOException;
+import java.util.List;
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
@@ -50,7 +52,7 @@ public class UIState extends UIComponentBase {
         super();
     }
 
-    public UIState(State state, Long id, Player player, Boolean editorMode, Boolean defaultValues) {
+    public UIState(AbstractState state, Long id, Player player, Boolean editorMode, Boolean defaultValues) {
         this();
         getAttributes().put("value", state);
         getAttributes().put("stateID", id);
@@ -83,7 +85,7 @@ public class UIState extends UIComponentBase {
         super.encodeBegin(context);
         ResponseWriter writer = context.getResponseWriter();
 
-        State state = (State) getAttributes().get("value");
+        AbstractState state = (AbstractState) getAttributes().get("value");
         Long id = (Long) getAttributes().get("stateID");
         editorMode = (Boolean) getAttributes().get("editorMode");
         this.player = (Player) getAttributes().get("player");
@@ -92,7 +94,9 @@ public class UIState extends UIComponentBase {
         UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
         UIHelper.printText(context, writer, state.getClass().getSimpleName(), UIHelper.CSS_CLASS_VARIABLE_SUBTITLE);
         UIHelper.printProperty(context, writer, UIHelper.TEXT_ID, id.toString());
-        UIHelper.printProperty(context, writer, UIHelper.TEXT_NAME, state.getLabel());
+        if (state instanceof State){
+        UIHelper.printProperty(context, writer, UIHelper.TEXT_NAME, ((State)state).getLabel());
+        }
 
         if (state instanceof DialogueState) {
             UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_TEXT, getI18nFacade().interpolate(((DialogueState) state).getText().translateOrEmpty(player), player), false, editorMode);
@@ -105,7 +109,7 @@ public class UIState extends UIComponentBase {
         if (state.getTransitions().isEmpty()) {
             UIHelper.printText(context, writer, "THERE IS NO TRANSITIONS", UIHelper.CSS_CLASS_ERROR);
         } else {
-            for (Transition t : state.getTransitions()) {
+            for (AbstractTransition t : (List<AbstractTransition>)state.getTransitions()) {
                 encode(context, writer, t);
             }
         }
@@ -114,7 +118,7 @@ public class UIState extends UIComponentBase {
         UIHelper.endDiv(writer);
     }
 
-    public void encode(FacesContext context, ResponseWriter writer, Transition transition) throws IOException {
+    public void encode(FacesContext context, ResponseWriter writer, AbstractTransition transition) throws IOException {
         UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
         UIHelper.printText(context, writer, transition.getClass().getSimpleName(), UIHelper.CSS_CLASS_VARIABLE_SUBTITLE);
 

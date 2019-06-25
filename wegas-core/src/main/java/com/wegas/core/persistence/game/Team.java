@@ -9,17 +9,21 @@ package com.wegas.core.persistence.game;
 
 import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.Helper;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.Textarea;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -35,6 +39,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -83,7 +88,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @NotNull
     @Basic(optional = false)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Name"))
     private String name;
 
     /**
@@ -106,7 +111,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @Lob
     @JsonView(value = Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Notes", value =Textarea.class))
     private String notes;
 
     /**
@@ -129,6 +134,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      * The game this team belongs to
      */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     @JsonIgnore
     private GameTeams gameTeams;
 
@@ -215,6 +221,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @JsonManagedReference(value = "player-team")
     @Override
+    @WegasExtraProperty(optional = false, nullable=false, view=@View(label = "Players", value = Hidden.class))
     public List<Player> getPlayers() {
         return players;
     }

@@ -10,12 +10,15 @@ package com.wegas.core.persistence.variable;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.merge.annotations.WegasEntity;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntity;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -32,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @NamedQuery(name = "ListDescriptor.findDistinctChildrenLabels",
         query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentList.id = :containerId")
 @WegasEntity(callback = ListDescriptor.ValidateAllowedItemsCallback.class)
-public class ListDescriptor extends VariableDescriptor<VariableInstance> implements DescriptorListI<VariableDescriptor> {
+public class ListDescriptor extends VariableDescriptor<ListInstance> implements DescriptorListI<VariableDescriptor> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(ListDescriptor.class);
@@ -42,20 +45,23 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     //@BatchFetch(BatchFetchType.IN)
     @OneToMany(mappedBy = "parentList", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @OrderColumn(name = "ld_items_order")
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private List<VariableDescriptor> items = new ArrayList<>();
 
     /**
      * List of allowed children types
      */
     @ElementCollection
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Allowed types"),
+            optional = false, nullable = false, proposal = EmptyArray.class)
     private Set<String> allowedTypes = new HashSet<>();
 
     /**
      * shortcut to show within (+) treeview button, must match allowedTypes
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(label = "Default child type"))
     private String addShortcut = "";
 
     /**

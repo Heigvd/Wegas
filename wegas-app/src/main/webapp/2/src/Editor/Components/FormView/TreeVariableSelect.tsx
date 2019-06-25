@@ -52,7 +52,7 @@ function genVarItems(
     }
     return {
       label: editorLabel(item),
-      value: item.name,
+      value: item.name!,
       selectable: select,
       items: child,
     };
@@ -161,6 +161,7 @@ export class TreeVSelect extends React.Component<
                 }
                 onChange={this.handleSearch}
                 onFocus={this.inputFocus}
+                readOnly={this.props.view.readOnly}
                 autoComplete="off"
               />
               {this.state.searching && (

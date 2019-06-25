@@ -136,7 +136,11 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
                     refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
-                    descriptorId: IDATTRDEF,
+                    parentId: IDATTRDEF,
+                    parentType: {
+                        type: "string",
+                        view: {type: HIDDEN}
+                    },
                     reviewState: {
                         type: STRING,
                         value: "NOT_STARTED",
@@ -294,7 +298,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
      */
     persistence.EvaluationDescriptorContainer = Y.Base.create("EvaluationDescriptorContainer", persistence.Entity, [], {
         getParentDescriptor: function() {
-            return Wegas.Facade.Variable.cache.findById(this.get("parentDescriptorId"));
+            return Wegas.Facade.Variable.cache.findById(this.get("parentId"));
         }
     }, {
         EDITORNAME: "Evaluations",
@@ -309,13 +313,6 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     return v;
                 },
                 index: 1,
-                view: {
-                    type: HIDDEN
-                }
-            },
-            parentDescriptorId: {
-                type: NUMBER,
-                optional: true,
                 view: {
                     type: HIDDEN
                 }
@@ -383,7 +380,17 @@ YUI.add('wegas-reviewing-entities', function(Y) {
      */
     persistence.EvaluationDescriptor = Y.Base.create("EvaluationDescriptor", persistence.Entity, [], {
         getParentDescriptor: function() {
-            return Wegas.Facade.Variable.cache.findById(this.get("parentDescriptorId"));
+            var evalContainerId = this.get("parentId");
+            return Y.Wegas.Facade.Variable.cache.findByFn(function(item) {
+                if (item instanceof Y.Wegas.persistence.PeerReviewDescriptor) {
+                    if (item.get("feedback") && item.get("feedback").get("id") === evalContainerId) {
+                        return true;
+                    }
+                    if (item.get("fbComments") && item.get("fbComments").get("id") === evalContainerId) {
+                        return true;
+                    }
+                }
+            });
         },
         getEditorLabel: function() {
             return I18n.t(this.get("label"));
@@ -423,20 +430,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     label: "Description",
                     height: '50px'
                 }
-            },
-            parentDescriptorId: {
-                type: NUMBER,
-                optional: true,
-                view: {
-                    type: HIDDEN
-                }
             }
-            /*,
-             container: {
-             type: "EvaluationDescriptorContainer",
-             optional: true,
-             }
-             }*/
         },
         EDITMENU: {
             editBtn: {
@@ -588,6 +582,12 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                             view: {type: HIDDEN}
                         },
                         id: IDATTRDEF,
+                        refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
+                        parentId: IDATTRDEF,
+                        parentType: {
+                            type: "string",
+                            view: {type: HIDDEN}
+                        },
                         name: {
                             type: STRING,
                             view: {

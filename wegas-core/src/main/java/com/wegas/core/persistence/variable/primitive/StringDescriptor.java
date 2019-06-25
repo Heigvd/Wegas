@@ -9,13 +9,20 @@ package com.wegas.core.persistence.variable.primitive;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
-import com.wegas.core.merge.annotations.WegasEntity;
+import com.wegas.core.persistence.annotations.WegasEntity;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.annotations.Param;
+import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.View.ArrayView;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -45,7 +52,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      */
     //@NotNull
     //@Pattern(regexp = "^\\w*$")
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label ="Pattern", value = Hidden.class))
     private String validationPattern;
 
     /**
@@ -53,7 +60,9 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      */
     @OneToMany(mappedBy = "parentString", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonDeserialize(using = EnumItem.ListDeserializer.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(label= "Allowed Values", value = ArrayView.HighlightAndSortable.class))
     //@WegasEntityProperty(callback = EnumItem.EnumItemMergeCallback.class)
     private List<EnumItem> allowedValues = new ArrayList<>();
 
@@ -133,6 +142,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      * @return value of player instance
      */
     @Override
+    @Scriptable(label = "value")
     public String getValue(Player p) {
         return this.getInstance(p).getValue();
     }
@@ -152,7 +162,9 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      * @param p
      * @param value
      */
-    public void setValue(Player p, TranslatableContent value) {
+    @Scriptable
+    public void setValue(Player p,
+            @Param(view = @View(label = "", value = I18nHtmlView.class)) TranslatableContent value) {
         this.getInstance(p).setValue(value);
     }
 
@@ -172,6 +184,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      *
      * @return
      */
+    @Scriptable(label = "selected value is")
     public boolean isValueSelected(Player p, String value) {
         StringInstance instance = this.getInstance(p);
 
@@ -192,6 +205,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      *
      * @return
      */
+    @Scriptable(label = "selected value is not")
     public boolean isNotSelectedValue(Player p, String value) {
         return !this.isValueSelected(p, value);
     }

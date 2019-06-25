@@ -10,7 +10,6 @@ export interface StringInputProps
     {
       rows?: number;
       disabled?: boolean;
-      readOnly?: boolean;
       placeholder?: string;
     } & CommonView &
       LabeledView

@@ -72,8 +72,8 @@ function ReplyDisplay({ reply }: { reply: IReply }) {
       <div
         dangerouslySetInnerHTML={{
           __html: reply.ignored
-            ? TranslatableContent.toString(reply.ignorationAnswer)
-            : TranslatableContent.toString(reply.answer),
+            ? reply.ignorationAnswer ? TranslatableContent.toString(reply.ignorationAnswer) : ''
+            : reply.answer ? TranslatableContent.toString(reply.answer) : '',
         }}
       />
     </div>
@@ -149,7 +149,7 @@ function ChoiceDisplay({
       </div>
       <div
         dangerouslySetInnerHTML={{
-          __html: TranslatableContent.toString(description),
+          __html: description ? TranslatableContent.toString(description) : '',
         }}
       />
       <div className={rightFloatStyle}>
@@ -192,7 +192,7 @@ class QuestionDisplay extends React.Component<{
       <>
         <div
           dangerouslySetInnerHTML={{
-            __html: TranslatableContent.toString(descriptor.description),
+            __html: descriptor.description ? TranslatableContent.toString(descriptor.description) : '', 
           }}
         />
         {choices.map((choice, i) => {

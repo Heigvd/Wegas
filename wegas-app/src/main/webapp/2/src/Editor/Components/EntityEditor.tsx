@@ -1,23 +1,141 @@
 import * as React from 'react';
-import { get } from 'lodash-es';
+import { get, cloneDeep } from 'lodash-es';
 import { Schema } from 'jsoninput';
 import { State } from '../../data/Reducer/reducers';
-import { VariableDescriptor } from '../../data/selectors';
-import getEditionConfig, { ConfigurationSchema } from '../editionConfig';
+import { VariableDescriptor, GameModel, Helper } from '../../data/selectors';
+import getEditionConfig from '../editionConfig';
 import { Actions } from '../../data';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepUpdate } from '../../data/updateUtils';
 import { StoreConsumer } from '../../data/store';
+import { AvailableViews } from './FormView';
 
 interface EditorProps<T> {
   entity?: T;
   update?: (variable: T) => void;
   actions?: {
     label: React.ReactNode;
-    action: (entity: T, path?: string[]) => void;
+    action: (entity: T, path?: (string | number)[]) => void;
   }[];
-  path?: string[];
-  getConfig(entity: T): Promise<ConfigurationSchema<IWegasEntity>>;
+  path?: (string | number)[];
+  getConfig(entity: T): Promise<Schema<AvailableViews>>;
+}
+
+type VISIBILITY = 'INTERNAL' | 'PROTECTED' | 'INHERITED' | 'PRIVATE';
+
+const PROTECTION_LEVELS = [
+  'INTERNAL',
+  'PROTECTED',
+  'INHERITED',
+  'PRIVATE',
+  'ALL',
+] as const;
+type PROTECTION_LEVEL = ValueOf<typeof PROTECTION_LEVELS>;
+
+function getVisibility(
+  defaultValue: VISIBILITY,
+  inheritedValue?: VISIBILITY,
+  entity?: IAbstractEntity,
+): VISIBILITY {
+  if (entity && typeof entity === 'object') {
+    if ('visibility' in entity) {
+      return (entity as any).visibility as VISIBILITY;
+    }
+    if (inheritedValue) {
+      return inheritedValue;
+    }
+    let p = Helper.getParent(entity);
+    while (p) {
+      if ('visibility' in p) {
+        return (p as any).visibility as VISIBILITY;
+      }
+      p = Helper.getParent(p);
+    }
+    return defaultValue;
+  }
+
+  return inheritedValue || defaultValue;
+}
+
+/**
+ * when editing a scenatio which depends on a model, some properties are not editable.
+ * Hence, the schema must be modified to make some views readonly.
+ */
+function _overrideSchema(
+  schema: Schema<AvailableViews>,
+  entity?: IAbstractEntity,
+  inheritedVisibility?: VISIBILITY,
+  inheritedProtectionLevel?: PROTECTION_LEVEL,
+) {
+  const v = getVisibility('PRIVATE', inheritedVisibility, entity);
+  const pl =
+    ('protectionLevel' in schema && schema['protectionLevel']) ||
+    inheritedProtectionLevel ||
+    'PROTECTED';
+
+  const readOnly =
+    PROTECTION_LEVELS.indexOf(v) <= PROTECTION_LEVELS.indexOf(pl);
+
+  if (readOnly) {
+    if (schema.view) {
+      (schema.view as any).readOnly = true;
+    } else {
+      schema.view = {
+        readOnly,
+      };
+    }
+  }
+
+  if ('properties' in schema) {
+    const oSchema = schema as Schema.Object;
+    for (const key in oSchema.properties) {
+      if (oSchema.properties[key]) {
+        if (entity && key in entity) {
+          _overrideSchema(
+            oSchema.properties[key] as any,
+            (entity as any)[key],
+            v,
+            pl,
+          );
+        } else {
+          _overrideSchema(oSchema.properties[key] as any, undefined, v, pl);
+        }
+      }
+    }
+    if (readOnly) {
+      if (oSchema.additionalProperties) {
+        if (oSchema.additionalProperties.view) {
+          (oSchema.additionalProperties.view as any).readOnly = true;
+        } else {
+          (oSchema.additionalProperties.view as any) = {
+            readOnly,
+          };
+        }
+      }
+    }
+  } else if ('items' in schema) {
+    const aSchema = schema as Schema.Array;
+    if (Array.isArray(entity) && entity.length > 0) {
+      _overrideSchema(aSchema.items as any, entity[0], v, pl);
+    } else {
+      _overrideSchema(aSchema.items as any, undefined, v, pl);
+    }
+  }
+
+  return schema;
+}
+
+function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
+  const gameModel = GameModel.selectCurrent();
+  if (gameModel.type === 'SCENARIO') {
+    return _overrideSchema(cloneDeep(schema), entity);
+    /*if (gameModel.basedOnId && gameModel.basedOnId >= 0) {
+      // Editing a scenario which depends on a model -> some properties are read-only
+    } else {
+      return _overrideSchema(cloneDeep(schema), entity);
+    }*/
+  }
+  return schema;
 }
 
 export async function WindowedEditor<T>({
@@ -41,7 +159,7 @@ export async function WindowedEditor<T>({
 
   const [Form, schema] = await Promise.all<
     typeof import('./Form')['Form'],
-    Schema | ConfigurationSchema<IWegasEntity>
+    Schema<AvailableViews>
   >([import('./Form').then(m => m.Form), getConfig(pathEntity)]);
   return (
     <Form
@@ -56,19 +174,19 @@ export async function WindowedEditor<T>({
         };
       })}
       path={path}
-      schema={{ type: 'object', properties: schema }}
+      schema={overrideSchema(entity, schema)}
     />
   );
 }
 const AsyncVariableForm = asyncSFC<EditorProps<{ '@class': string }>>(
   WindowedEditor,
   () => <div>load...</div>,
-  ({ err }) => <span>{err.message}</span>,
+  ({ err }: { err: Error }) => <span>{err.message}</span>,
 );
 
 export default function VariableForm(props: {
   entity?: Readonly<IVariableDescriptor>;
-  path?: string[];
+  path?: (string | number)[];
   config?: Schema;
 }) {
   return (
@@ -83,6 +201,8 @@ export default function VariableForm(props: {
             ...editing,
             entity: {
               '@class': editing['@class'],
+              parentId: editing.parentId,
+              parentType: editing.parentType,
             },
           };
         }
@@ -102,13 +222,13 @@ export default function VariableForm(props: {
         const update =
           'save' in state.actions
             ? state.actions.save
-            : (entity: IWegasEntity) => {
+            : (entity: IAbstractEntity) => {
                 dispatch(Actions.EditorActions.saveEditor(entity));
               };
         const getConfig = (entity: IVariableDescriptor) => {
           return state.config != null
             ? Promise.resolve(state.config)
-            : getEditionConfig(entity);
+            : (getEditionConfig(entity) as Promise<Schema<AvailableViews>>);
         };
 
         return (

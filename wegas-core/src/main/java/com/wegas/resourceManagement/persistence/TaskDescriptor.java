@@ -8,17 +8,23 @@
 package com.wegas.resourceManagement.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.VariableProperty;
+import com.wegas.core.persistence.annotations.Param;
+import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.editor.JSONSchema.ListOfTasksSchema;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import com.wegas.editor.ValueGenerators.EmptyMap;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.View;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,6 +43,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static com.wegas.editor.View.CommonView.LAYOUT.shortInline;
 
 /**
  *
@@ -57,23 +64,28 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     /**
      *
      */
-    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(label = "Description", value = I18nHtmlView.class))
     private TranslatableContent description;
 
     /**
      *
      */
     @Column(length = 24)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "Task Number", layout = shortInline, index = -471))
     private String index;
     /**
      *
      */
     @ElementCollection
     @JsonIgnore
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyMap.class,
+            view = @View(label = "Descriptor properties"))
     private List<VariableProperty> properties = new ArrayList<>();
     /**
      *
@@ -96,7 +108,10 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      */
     @Transient
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(label = "Predecessors"),
+            schema = ListOfTasksSchema.class)
     private Set<String> predecessorNames/*
              * = new ArrayList<>()
              */;
@@ -208,6 +223,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      * @return double castes player instance property
      */
+    @Scriptable(label = "Get number property")
     public double getNumberInstanceProperty(Player p, String key) {
         String value = this.getInstance(p).getProperty(key);
         double parsedValue;
@@ -226,6 +242,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      * @return player instance string property
      */
+    @Scriptable(label = "Get text property")
     public String getStringInstanceProperty(Player p, String key) {
         return this.getInstanceProperty(p, key);
     }
@@ -248,7 +265,10 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      * @param key
      * @param value
      */
-    public void setInstanceProperty(Player p, String key, String value) {
+    @Scriptable(label = "Set property")
+    public void setInstanceProperty(Player p,
+            @Param(view = @View(label = "Key")) String key,
+            @Param(view = @View(label = "Value")) String value) {
         this.getInstance(p).setProperty(key, value);
     }
 
@@ -258,7 +278,10 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      * @param key
      * @param value
      */
-    public void addNumberAtInstanceProperty(Player p, String key, String value) {
+    @Scriptable(label = "Add to property")
+    public void addNumberAtInstanceProperty(Player p,
+            @Param(view = @View(label = "Key")) String key,
+            @Param(view = @View(label = "Value")) String value) {
         try {
             TaskInstance instance = this.getInstance(p);
             double oldValue = instance.getPropertyD(key);
@@ -340,6 +363,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      * @return true if the player instance is active
      */
+    @Scriptable(label = "is active")
     public boolean getActive(Player p) {
         TaskInstance instance = this.getInstance(p);
         return instance.getActive();
@@ -359,6 +383,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      * @param p
      */
+    @Scriptable
     public void activate(Player p) {
         this.setActive(p, true);
     }
@@ -367,7 +392,13 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      *
      * @param p
      */
+    @Deprecated
     public void desactivate(Player p) {
+        this.deactivate(p);
+    }
+
+    @Scriptable
+    public void deactivate(Player p) {
         this.setActive(p, false);
     }
 
@@ -375,7 +406,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
      * @return the exportedPredecessors
      */
     public Set<String> getPredecessorNames() {
-        if (predecessorNames == null){
+        if (predecessorNames == null) {
             Set<String> names = new HashSet<>();
             for (TaskDescriptor t : this.getPredecessors()) {
                 names.add(t.getName());

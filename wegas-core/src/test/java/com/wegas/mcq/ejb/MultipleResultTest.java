@@ -7,7 +7,6 @@
  */
 package com.wegas.mcq.ejb;
 
-import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
@@ -15,7 +14,6 @@ import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.Result;
 import com.wegas.test.TestHelper;
-import com.wegas.test.WegasFactory;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import com.wegas.test.mcq.Answerer;
 import java.util.function.Function;
