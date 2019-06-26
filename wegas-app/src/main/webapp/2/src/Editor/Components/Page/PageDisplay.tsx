@@ -45,7 +45,6 @@ class PageDisplay extends React.Component<PageDisplayProps, PageDisplayState> {
       }
     }
   };
-
   render() {
     const { pageId } = this.props;
     return (
@@ -106,8 +105,7 @@ class PageDisplay extends React.Component<PageDisplayProps, PageDisplayState> {
                     this.editorValue = JSON.stringify(state, null, 2);
                     return (
                       <SrcEditor
-                        key={Number(this.state.jsEditing)}
-                        // key="SrcEditor"
+                        key="SrcEditor"
                         value={this.editorValue}
                         defaultUri="internal://page.json"
                         language="json"
