@@ -1,45 +1,101 @@
 import * as React from 'react';
 import PageLoader from '../../../Components/AutoImport/PageLoader';
 import { State } from '../../../data/Reducer/reducers';
-import SrcEditor from '../SrcEditor';
 import PageEditorHeader from './PageEditorHeader';
 import { Toolbar } from '../../../Components/Toolbar';
 import { Actions } from '../../../data';
 import { StoreDispatch, StoreConsumer } from '../../../data/store';
 import { Theme } from '../../../Components/Theme';
+import SrcEditor from '../ScriptEditors/SrcEditor';
+import { css } from 'emotion';
+import { KeyMod, KeyCode } from 'monaco-editor';
+import { Modal } from '../../../Components/Modal';
+
+const fullHeight = css({
+  height: '100%',
+});
 
 interface PageDisplayProps {
   srcMode: boolean;
   pageId?: string;
   dispatch: StoreDispatch;
 }
-class PageDisplay extends React.Component<PageDisplayProps> {
-  editor?: SrcEditor | null;
+interface PageDisplayState {
+  jsEditing: boolean;
+}
+
+class PageDisplay extends React.Component<PageDisplayProps, PageDisplayState> {
+  readonly state: PageDisplayState = {
+    jsEditing: false,
+  };
+
+  editorValue: string = '';
+  jsContent: string = '';
+  cursorOffset: number = 0;
+  codeInit: number = 0;
+  codeEnd: number = 0;
+
+  onSave = (value: string) => {
+    if (this.props.pageId != null) {
+      try {
+        const p = JSON.parse(value);
+        this.props.dispatch(Actions.PageActions.patch(this.props.pageId, p));
+      } catch (e) {
+        alert(`There's a syntax error in your script : \n${e}`);
+      }
+    }
+  };
+
   render() {
     const { pageId } = this.props;
     return (
       <Toolbar>
         <Toolbar.Header>
-          <PageEditorHeader key="header" pageId={this.props.pageId} />
+          <PageEditorHeader key="header" pageId={pageId} />
         </Toolbar.Header>
         <Toolbar.Content>
           {this.props.srcMode ? (
-            <Toolbar>
+            <Toolbar className={fullHeight}>
               <Toolbar.Header>
-                <button
-                  onClick={() => {
-                    if (this.editor && this.props.pageId != null) {
-                      const p = JSON.parse(this.editor.getValue()!);
-                      this.props.dispatch(
-                        Actions.PageActions.patch(this.props.pageId, p),
-                      );
-                    }
-                  }}
-                >
+                <button onClick={() => this.onSave(this.editorValue)}>
                   Save
                 </button>
               </Toolbar.Header>
               <Toolbar.Content>
+                {this.state.jsEditing && (
+                  <Modal>
+                    <div
+                      style={{
+                        height: '50vh',
+                        width: '50vw',
+                      }}
+                    >
+                      <SrcEditor
+                        value={this.jsContent}
+                        language={'javascript'}
+                        onChange={value => {
+                          this.jsContent = value;
+                        }}
+                        defaultFocus={true}
+                      />
+                      <button
+                        onClick={() => {
+                          this.cursorOffset =
+                            this.codeInit + this.jsContent.length;
+
+                          this.onSave(
+                            this.editorValue.substring(0, this.codeInit) +
+                              this.jsContent +
+                              this.editorValue.substring(this.codeEnd),
+                          );
+                          this.setState({ jsEditing: false });
+                        }}
+                      >
+                        Accept
+                      </button>
+                    </div>
+                  </Modal>
+                )}
                 <StoreConsumer<Readonly<Page> | undefined>
                   selector={s => (pageId ? s.pages[pageId] : undefined)}
                 >
@@ -47,13 +103,56 @@ class PageDisplay extends React.Component<PageDisplayProps> {
                     if (state == null && pageId != null) {
                       dispatch(Actions.PageActions.get(pageId));
                     }
+                    this.editorValue = JSON.stringify(state, null, 2);
                     return (
                       <SrcEditor
-                        ref={n => (this.editor = n)}
-                        key="srcEditor"
-                        value={JSON.stringify(state, null, 2)}
-                        uri="internal://page.json"
+                        key={Number(this.state.jsEditing)}
+                        // key="SrcEditor"
+                        value={this.editorValue}
+                        defaultUri="internal://page.json"
                         language="json"
+                        onChange={val => {
+                          this.editorValue = val;
+                        }}
+                        onSave={this.onSave}
+                        cursorOffset={this.cursorOffset}
+                        defaultFocus={true}
+                        defaultKeyEvents={[
+                          {
+                            keys: KeyMod.Alt | KeyCode.RightArrow,
+                            event: editor => {
+                              const cursorPosition = editor.getPosition();
+                              const model = editor.getModel();
+                              if (cursorPosition && model) {
+                                const editorContent = editor.getValue();
+                                const charPosition = model.getOffsetAt(
+                                  cursorPosition,
+                                );
+
+                                const codeInit =
+                                  charPosition -
+                                  editorContent
+                                    .substring(0, charPosition)
+                                    .split('')
+                                    .reverse()
+                                    .join('')
+                                    .indexOf('"');
+                                const codeEnd =
+                                  charPosition +
+                                  editorContent
+                                    .substr(charPosition)
+                                    .indexOf('"');
+                                this.codeInit = codeInit;
+                                this.codeEnd = codeEnd;
+                                this.jsContent = editorContent.substring(
+                                  codeInit,
+                                  codeEnd,
+                                );
+                                this.setState({ jsEditing: true });
+                              }
+                            },
+                          },
+                        ]}
                       />
                     );
                   }}
