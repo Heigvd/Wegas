@@ -23,11 +23,8 @@ import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { AddMenuParent, AddMenuChoice } from './AddMenu';
 import { editorLabel } from '../../../data/methods/VariableDescriptor';
 import { SearchTool } from '../SearchTool';
-<<<<<<< HEAD
 import { selectContext } from '../LinearTabLayout/LinearLayout';
-=======
 import { useAsync } from '../../../Components/Hooks/useAsync';
->>>>>>> origin/master
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
