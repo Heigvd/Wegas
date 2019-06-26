@@ -16,13 +16,11 @@ const plugins = [
   new MonacoWebpackPlugin({
     languages: ['json', 'css', 'javascript', 'typescript'],
   }),
+  new ForkTsCheckerWebpackPlugin({
+    formatter: 'codeframe',
+  }),
 ];
 if (!isCI) {
-  plugins.push(
-    new ForkTsCheckerWebpackPlugin({
-      formatter: 'codeframe',
-    }),
-  );
   // plugins.push(new BundleAnalyzerPlugin());
 }
 module.exports = {
