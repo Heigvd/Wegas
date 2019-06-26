@@ -55,8 +55,6 @@ const getIconForFileType = (fileType: string): IconProp => {
 
 interface FileBrowserNodeProps {
   node: FileNode;
-  // selected?: boolean;
-  // openFolder: (node: FileNode, open?: boolean) => void;
   selectFile: (file: FileNode) => void;
   addNewDirectory: (file: IFileDescriptor) => void;
   deleteFile: (baseDir: FileNode) => void;
@@ -71,8 +69,6 @@ export function FileBrowserNode(
 ) {
   const {
     node,
-    selected,
-    // openFolder,
     selectFile,
     addNewDirectory,
     deleteFile,
@@ -100,6 +96,7 @@ export function FileBrowserNode(
         items: DataTransferItemList;
       };
       insertFiles(files, getAbsoluteFileName(node.file));
+      setOpen(true);
     }),
   );
 
@@ -122,6 +119,7 @@ export function FileBrowserNode(
 
   const addNewFile = (event: React.MouseEvent) => {
     event.stopPropagation();
+    event.preventDefault();
     if (uploader.current) {
       uploader.current.click();
     }
@@ -135,13 +133,21 @@ export function FileBrowserNode(
         name="file"
         multiple={isNodeDirectory(node)}
         className={hiddenFileBrowserStyle}
-        onChange={uploadFiles(node)}
+        onClick={event => {
+          (event.target as HTMLInputElement).value = '';
+        }}
+        onChange={event => {
+          uploadFiles(node)(event);
+          setOpen(true);
+        }}
       />
 
       {isNodeDirectory(node) && (
         <IconButton
-          icon={node.open ? 'caret-down' : 'caret-right'}
-          onClick={() => {
+          icon={open ? 'caret-down' : 'caret-right'}
+          onClick={event => {
+            event.stopPropagation();
+            event.preventDefault();
             setOpen(oldOpen => !oldOpen);
           }}
           className={css({ float: 'left', height: 'fit-content' })}
@@ -152,11 +158,11 @@ export function FileBrowserNode(
         <div
           ref={dropZone}
           className={cx(
-            isDirectory(node.file) && dropZoneProps.isShallowOver
-              ? dropZoneStyle
-              : '',
+            isDirectory(node.file) &&
+              dropZoneProps.isShallowOver &&
+              dropZoneStyle,
             hoverRow,
-            selected ? selectedRow : '',
+            node.selected ? selectedRow : '',
           )}
           onClick={() => selectFile(node)}
         >
@@ -172,9 +178,11 @@ export function FileBrowserNode(
                   icon={'folder-plus'}
                   tooltip={'Add new directory in folder'}
                   disabled={!isUploadAllowed(node)}
-                  onClick={(e: React.MouseEvent) => {
-                    e.preventDefault();
+                  onClick={event => {
+                    event.stopPropagation();
+                    event.preventDefault();
                     addNewDirectory(node.file);
+                    setOpen(true);
                   }}
                   fixedWidth={true}
                 />
@@ -191,7 +199,11 @@ export function FileBrowserNode(
                 <IconButton
                   icon={'external-link-alt'}
                   tooltip={'Open file'}
-                  onClick={() => openFile(node.file)}
+                  onClick={event => {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    openFile(node.file);
+                  }}
                   fixedWidth={true}
                 />
                 <IconButton
@@ -207,15 +219,16 @@ export function FileBrowserNode(
             <IconButton
               icon={'trash'}
               tooltip={'Delete'}
-              onClick={(e: React.MouseEvent) => {
-                e.preventDefault();
+              onClick={event => {
+                event.stopPropagation();
+                event.preventDefault();
                 deleteFile(node);
               }}
               fixedWidth={true}
             />
           </span>
         </div>
-        {isNodeDirectory(node) && node.open && <div>{children}</div>}
+        {isNodeDirectory(node) && open && <div>{children}</div>}
       </div>
     </div>
   );
