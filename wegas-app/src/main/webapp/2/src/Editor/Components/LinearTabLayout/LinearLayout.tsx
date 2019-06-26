@@ -2,15 +2,12 @@ import * as React from 'react';
 import { css } from 'emotion';
 import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
 import 'react-reflex/styles.css';
-import StateMachineEditor from '../StateMachineEditor';
-import PageDisplay from '../Page/PageDisplay';
-import TreeView from './../Variable/VariableTree';
 import { defaultContextManager } from '../../../Components/DragAndDrop';
-import Editor from './../EntityEditor';
 import { omit } from 'lodash';
 import u from 'immer';
 import { ReparentableRoot } from '../Reparentable';
 import { DnDTabLayout, ComponentMap, filterMap } from './DnDTabLayout';
+import { wlog } from '../../../Helper/wegaslog';
 
 const splitter = css({
   '&.reflex-container.vertical > .reflex-splitter': {
@@ -115,41 +112,6 @@ const makeTabMap = (labels: string[], tabs: ComponentMap) => {
     newTabs[label] = tabs[label];
   }
   return newTabs;
-};
-
-const defaultTabMap: ComponentMap = {
-  Variables: <TreeView />,
-  Page: <PageDisplay />,
-  StateMachine: <StateMachineEditor />,
-  Editor: <Editor />,
-};
-
-const defaultLayoutMap: ManagedLayoutMap = {
-  rootKey: '0',
-  lastKey: '3',
-  isDragging: false,
-  layoutMap: {
-    '0': {
-      type: 'ReflexLayoutNode',
-      vertical: false,
-      children: ['1', '2', '3'],
-    },
-    '1': {
-      type: 'TabLayoutNode',
-      vertical: false,
-      children: ['Variables'],
-    },
-    '2': {
-      type: 'TabLayoutNode',
-      vertical: false,
-      children: ['Page', 'StateMachine'],
-    },
-    '3': {
-      type: 'TabLayoutNode',
-      vertical: false,
-      children: ['Editor'],
-    },
-  },
 };
 
 /**
@@ -296,7 +258,6 @@ const checkAndCleanLonelyLayout = (
  * If found, put the children in the parent parent and remove the parent
  *
  * @param layouts - the current layout disposition
- * @param layoutKey - the key of the layout to check
  *
  * @returns the cleaned layout disposition
  *
@@ -374,16 +335,13 @@ const incrementNumericKey = (key: string, increment: number = 1) => {
   }
 };
 
-/* eslint-disable @typescript-eslint/no-unused-vars*/
-/* eslint-disable no-console */
-// @ts-ignore
 /**
  * logLayouts displays a clean and formatted log of the layout disposition
  *
  * @param layouts
  */
 const logLayouts = (layouts: LayoutMap) => {
-  console.log(
+  wlog(
     'layouts',
     Object.keys(layouts).map(key => {
       const layout = layouts[key];
@@ -397,7 +355,6 @@ const logLayouts = (layouts: LayoutMap) => {
     }),
   );
 };
-/* eslint-enable */
 
 /**
  * insertTab insert a tab in a TabLayout
@@ -670,10 +627,19 @@ interface LinearLayoutProps {
  * MainLinearLayout is a component that allows to chose the position and size of its children
  */
 function MainLinearLayout(props: LinearLayoutProps) {
-  const tabs = props.tabMap ? props.tabMap : defaultTabMap;
+  const tabs = props.tabMap ? props.tabMap : {};
   const [layout, dispatchLayout] = React.useReducer(
     setLayout,
-    props.layoutMap ? props.layoutMap : defaultLayoutMap,
+    props.layoutMap
+      ? props.layoutMap
+      : {
+          isDragging: false,
+          lastKey: '0',
+          layoutMap: {
+            '0': { type: 'ReflexLayoutNode', children: [], vertical: true },
+          },
+          rootKey: '0',
+        },
   );
 
   const onDrop = (layoutKey: string) => (type: DropActionType) => (item: {
@@ -774,7 +740,7 @@ function MainLinearLayout(props: LinearLayoutProps) {
       }
     }
   };
-
+  logLayouts(layout.layoutMap);
   return (
     <selectContext.Provider
       value={(id: string) => {

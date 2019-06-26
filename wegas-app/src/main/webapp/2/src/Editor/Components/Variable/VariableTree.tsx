@@ -181,8 +181,7 @@ function CTree(props: {
                   className={cx(headerStyle, { [editingStyle]: state.editing })}
                   onClick={() => {
                     if (
-                      variable !== undefined &&
-                      variable['@class'] === 'FSMDescriptor' &&
+                      entityIs<IFSMDescriptor>(variable, 'FSMDescriptor') &&
                       select
                     ) {
                       select('StateMachine');
