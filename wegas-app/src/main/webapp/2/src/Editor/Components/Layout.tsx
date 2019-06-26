@@ -40,7 +40,7 @@ export default class AppLayout extends React.Component<
         <div>
           <TreeView />
         </div>
-        <div>
+        <div style={{ display: 'flex' }}>
           <TabLayout tabs={['Page', 'StateMachine', 'Scripts']}>
             <PageDisplay />
             <StateMachineEditor />
