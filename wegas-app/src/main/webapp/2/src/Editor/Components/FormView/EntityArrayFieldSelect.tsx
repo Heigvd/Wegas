@@ -4,7 +4,10 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import { LabeledView } from './labeled';
 import { CommonView } from './commonView';
 import * as VariableDescriptor from '../../../data/selectors/VariableDescriptor';
-import { getInstance, editorLabel } from '../../../data/methods/VariableDescriptor';
+import {
+  getInstance,
+  editorLabel,
+} from '../../../data/methods/VariableDescriptor';
 
 interface IName {
   values: string[];
@@ -37,7 +40,9 @@ function optionNameToString(result: any, name: IName) {
 function EntityArrayFieldSelect(props: IEntityArrayFieldSelectProps) {
   const { field, returnAttr, scope, entity, name, ...restView } = props.view;
 
-  const computedEntity = entity ? VariableDescriptor.first('name', entity) : props.formValue;
+  const computedEntity = entity
+    ? VariableDescriptor.first('name', entity)
+    : props.formValue;
   if (!computedEntity) {
     return null;
   }
@@ -45,7 +50,9 @@ function EntityArrayFieldSelect(props: IEntityArrayFieldSelectProps) {
   const results: unknown =
     scope !== 'instance'
       ? (computedEntity as Record<string, unknown>)[field]
-      : ((getInstance(computedEntity as IVariableDescriptor) as Record<string, unknown>)[field] as unknown);
+      : (((getInstance(
+          computedEntity as IVariableDescriptor,
+        ) as unknown) as Record<string, unknown>)[field] as unknown);
 
   if (results == null) {
     return null;

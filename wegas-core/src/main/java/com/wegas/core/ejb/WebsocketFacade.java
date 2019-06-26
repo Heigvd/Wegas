@@ -165,6 +165,12 @@ public class WebsocketFacade {
         return channels;
     }
 
+    /**
+     * Send lock to other users involved in the locked process
+     *
+     * @param channel the channel involved user listen to
+     * @param token   token to lock
+     */
     public void sendLock(String channel, String token) {
         if (this.pusher != null) {
             logger.info("send lock  \"{}\" to \"{}\"", token, channel);
@@ -177,6 +183,12 @@ public class WebsocketFacade {
         }
     }
 
+    /**
+     * Unlock the lock to involved users.
+     *
+     * @param channel the channel involved user listen to
+     * @param token token to unlock
+     */
     public void sendUnLock(String channel, String token) {
         if (this.pusher != null) {
             logger.info("send unlock  \"{}\" to \"{}\"", token, channel);
@@ -190,6 +202,7 @@ public class WebsocketFacade {
     }
 
     /**
+     *
      * @param channel
      * @param status
      * @param socketId
