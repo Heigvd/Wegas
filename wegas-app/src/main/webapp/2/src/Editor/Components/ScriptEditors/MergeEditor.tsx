@@ -7,7 +7,6 @@ import DiffEditor, {
   ExtendedDiffNavigator,
   DiffEditorLineChanges,
 } from './DiffEditor';
-import u from 'immer';
 
 const diffLabel = css({
   color: themeVar.primaryLighterColor,
