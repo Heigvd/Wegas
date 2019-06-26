@@ -13,10 +13,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.Helper;
 import com.wegas.core.jcr.tools.JCRDescriptorCallback;
 import com.wegas.core.jcr.tools.JCRDescriptorFactory;
-import com.wegas.core.merge.annotations.WegasEntity;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntity;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.View;
+import com.wegas.editor.View.VisibilitySelectView;
 import java.io.Serializable;
 import java.util.zip.ZipEntry;
 import javax.jcr.ItemExistsException;
@@ -58,7 +63,8 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     /**
      * MIME type
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "MIME type", value = ReadOnlyString.class),
+            optional = false, nullable = false)
     protected String mimeType;
 
     /**
@@ -74,19 +80,23 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     /**
      * Some internal comment
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Note"),
+            optional = false, nullable = false, proposal = EmptyString.class)
     private String note = "";
 
     /**
      * Some public comment
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Description"),
+            optional = false, nullable = false, proposal = EmptyString.class)
     private String description = "";
 
     /**
      * The so-called visibility
      */
-    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL)
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL,
+            nullable = false,
+            view = @View(label = "", value = VisibilitySelectView.class))
     private ModelScoped.Visibility visibility = ModelScoped.Visibility.PRIVATE;
     /**
      *
@@ -144,7 +154,6 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
         this.mimeType = mimeType;
     }
 
-
     @JsonIgnore
     public ContentConnector.WorkspaceType getWorkspaceType() throws RepositoryException {
         return this.getConnector().getWorkspaceType();
@@ -187,6 +196,8 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     /**
      * @return the name
      */
+    @WegasExtraProperty(view = @View(label = "Filename"),
+            nullable = false, optional = false)
     public String getName() {
         return name;
     }
@@ -205,6 +216,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     /**
      * @return path
      */
+    @WegasExtraProperty(view = @View(label = "Path"), optional = false, nullable = false)
     public String getPath() {
         return path;
     }
@@ -347,6 +359,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     /**
      * @return node size
      */
+    @WegasExtraProperty(view = @View(label = "File size"), optional =false, nullable =false)
     public Long getBytes() {
         return 0L;
     }

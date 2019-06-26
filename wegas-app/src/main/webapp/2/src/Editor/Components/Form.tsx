@@ -7,10 +7,10 @@ interface EditorProps<T> {
   entity?: T;
   update?: (variable: T) => void;
   actions: {
-    action: (entity: T, path?: string[]) => void;
+    action: (entity: T, path?: (string | number)[]) => void;
     label: React.ReactNode;
   }[];
-  path?: string[];
+  path?: (string | number)[];
   config?: Schema;
 }
 

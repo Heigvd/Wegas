@@ -20,13 +20,7 @@ import java.util.List;
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
-public interface InstanceOwner {
-
-    /**
-     *
-     * @return instance owner must have an id
-     */
-    public Long getId();
+public interface InstanceOwner extends WithId{
 
     /**
      *

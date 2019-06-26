@@ -4,10 +4,15 @@ import { Actions } from '../../../data';
 import { Toolbar } from '../../../Components/Toolbar';
 import { varIsList, entityIs } from '../../../data/entities';
 import { get } from 'lodash-es';
-import { children } from '../../EntitiesConfig/ListDescriptor';
+
 import { Container, Node } from '../Views/TreeView';
 import { moveDescriptor } from '../../../data/Reducer/variableDescriptor';
-import { getEntityActions, getIcon, getLabel } from '../../editionConfig';
+import {
+  getEntityActions,
+  getIcon,
+  getLabel,
+  getChildren,
+} from '../../editionConfig';
 import { StoreDispatch, StoreConsumer } from '../../../data/store';
 import { State } from '../../../data/Reducer/reducers';
 import { css, cx } from 'emotion';
@@ -18,96 +23,165 @@ import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { AddMenuParent, AddMenuChoice } from './AddMenu';
 import { editorLabel } from '../../../data/methods/VariableDescriptor';
 import { SearchTool } from '../SearchTool';
+<<<<<<< HEAD
 import { selectContext } from '../LinearTabLayout/LinearLayout';
+=======
+import { useAsync } from '../../../Components/Hooks/useAsync';
+>>>>>>> origin/master
 
-const items = children.map(i => {
-  const Label = asyncSFC(async () => {
-    const entity = { '@class': i };
-    const [icon, label = ''] = await Promise.all([
-      getIcon(entity),
-      getLabel(entity),
-    ]);
-    return (
-      <>
-        <FontAwesome icon={withDefault(icon, 'question')} fixedWidth />
-        {label}
-      </>
-    );
-  });
-  return {
-    label: <Label />,
-    value: i,
-  };
-});
+const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
+  children =>
+    children.map(i => {
+      const Label = asyncSFC(async () => {
+        const entity = { '@class': i };
+        const [icon, label = ''] = await Promise.all([
+          getIcon(entity),
+          getLabel(entity),
+        ]);
+        return (
+          <>
+            <FontAwesome icon={withDefault(icon, 'question')} fixedWidth />
+            {label}
+          </>
+        );
+      });
+      return {
+        label: <Label />,
+        value: i,
+      };
+    }),
+);
 
 interface TreeProps {
   variables: number[];
   dispatch: StoreDispatch;
 }
-class TreeView extends React.Component<TreeProps, { search: string }> {
-  state = { search: '' };
-  render() {
-    const { variables, dispatch } = this.props;
-    return (
-      <Toolbar>
-        <Toolbar.Header>
-          <input
-            type="string"
-            value={this.state.search}
-            placeholder="Filter"
-            aria-label="Filter"
-            onChange={ev => {
-              this.setState({ search: ev.target.value });
-            }}
-          />
-          <Menu
-            items={items}
-            icon="plus"
-            onSelect={i =>
-              dispatch(Actions.EditorActions.createVariable(i.value))
+function TreeView({ variables, dispatch }: TreeProps) {
+  const [search, setSearch] = React.useState('');
+  const { data } = useAsync(itemsPromise);
+  return (
+    <Toolbar>
+      <Toolbar.Header>
+        <input
+          type="string"
+          value={search}
+          placeholder="Filter"
+          aria-label="Filter"
+          onChange={ev => {
+            setSearch(ev.target.value);
+          }}
+        />
+        <Menu
+          items={data || []}
+          icon="plus"
+          onSelect={i =>
+            dispatch(Actions.EditorActions.createVariable(i.value))
+          }
+        />
+        <SearchTool />
+      </Toolbar.Header>
+      <Toolbar.Content>
+        <Container
+          onDropResult={({ source, target, id }) => {
+            if (
+              source.parent !== target.parent ||
+              source.index !== target.index
+            ) {
+              dispatch(
+                moveDescriptor(
+                  id as IVariableDescriptor,
+                  target.index,
+                  target.parent as IParentDescriptor,
+                ),
+              );
             }
-          />
-          <SearchTool />
-        </Toolbar.Header>
-        <Toolbar.Content>
-          <Container
-            onDropResult={({ source, target, id }) => {
-              if (
-                source.parent !== target.parent ||
-                source.index !== target.index
-              ) {
-                dispatch(
-                  moveDescriptor(
-                    id as IVariableDescriptor,
-                    target.index,
-                    target.parent as IParentDescriptor,
-                  ),
-                );
-              }
-            }}
-          >
-            {({ nodeProps }) => (
-              <div style={{ height: '100%' }}>
-                {variables ? (
-                  variables.map(v => (
-                    <CTree
-                      nodeProps={nodeProps}
-                      key={v}
-                      search={this.state.search}
-                      variableId={v}
-                    />
-                  ))
-                ) : (
-                  <span>Loading ...</span>
-                )}
-              </div>
-            )}
-          </Container>
-        </Toolbar.Content>
-      </Toolbar>
-    );
-  }
+          }}
+        >
+          {({ nodeProps }) => (
+            <div style={{ height: '100%' }}>
+              {variables ? (
+                variables.map(v => (
+                  <CTree
+                    nodeProps={nodeProps}
+                    key={v}
+                    search={search}
+                    variableId={v}
+                  />
+                ))
+              ) : (
+                <span>Loading ...</span>
+              )}
+            </div>
+          )}
+        </Container>
+      </Toolbar.Content>
+    </Toolbar>
+  );
 }
+// class TreeViews extends React.Component<TreeProps, { search: string }> {
+//   state = { search: '' };
+//   render() {
+//     const { variables, dispatch } = this.props;
+//     return (
+//       <Toolbar>
+//         <Toolbar.Header>
+//           <input
+//             type="string"
+//             value={this.state.search}
+//             placeholder="Filter"
+//             aria-label="Filter"
+//             onChange={ev => {
+//               this.setState({ search: ev.target.value });
+//             }}
+//           />
+//           <Menu
+//             items={items}
+//             icon="plus"
+//             onSelect={i =>
+//               dispatch(Actions.EditorActions.createVariable(i.value))
+//             }
+//           />
+//           <SearchTool />
+//         </Toolbar.Header>
+//         <Toolbar.Content>
+//           <Container
+//             onDropResult={({ source, target, id }) => {
+//               if (
+//                 source.parent !== target.parent ||
+//                 source.index !== target.index
+//               ) {
+//                 dispatch(
+//                   moveDescriptor(
+//                     id as IVariableDescriptor,
+//                     target.index,
+//                     target.parent as IParentDescriptor,
+//                   ),
+//                 );
+//               }
+//             }}
+//           >
+//             {({ nodeProps }) => (
+//               <div style={{ height: '100%' }}>
+//                 {variables ? (
+//                   variables.map(v => (
+//                     <CTree
+//                       nodeProps={nodeProps}
+//                       key={v}
+//                       search={this.state.search}
+//                       variableId={v}
+//                     />
+//                   ))
+//                 ) : (
+//                   <span>Loading ...</span>
+//                 )}
+//               </div>
+//             )}
+//           </Container>
+//         </Toolbar.Content>
+//       </Toolbar>
+//     );
+//   }
+// }
 /**
  * test a variable and children's editorLabel against a text
  */
@@ -230,7 +304,7 @@ function CTree(props: {
                         nodeProps={nodeProps}
                         key={r.id}
                         search={props.search}
-                        variableId={r.choiceDescriptorId}
+                        variableId={r.parentId!}
                         subPath={['results', String(index)]}
                       />
                     ))

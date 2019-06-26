@@ -11,11 +11,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.WithPermission;
@@ -23,6 +21,23 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.Visible;
+import com.wegas.core.persistence.annotations.WegasConditions.And;
+import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
+import com.wegas.core.persistence.annotations.WegasConditions.IsTrue;
+import com.wegas.core.persistence.annotations.WegasConditions.Not;
+import com.wegas.core.persistence.annotations.WegasRefs.Field;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import com.wegas.editor.ValueGenerators.EmptyScript;
+import com.wegas.editor.ValueGenerators.Zero;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.I18nStringView;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.ScriptView;
+import com.wegas.editor.View.View;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,7 +70,14 @@ public class Result extends AbstractEntity implements LabelledEntity {
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty(sameEntityOnly = true)
+    @WegasEntityProperty(
+            nullable = false, optional = false, proposal = Zero.class,
+            sameEntityOnly = true, view = @View(
+                    index = 0,
+                    label = "Version",
+                    value = ReadOnlyNumber.class,
+                    featureLevel = ADVANCED
+            ))
     private Long version;
 
     public Long getVersion() {
@@ -76,45 +98,66 @@ public class Result extends AbstractEntity implements LabelledEntity {
     /**
      * Internal Name
      */
-    @WegasEntityProperty(searchable = true)
+    @WegasEntityProperty(searchable = true,
+            nullable = false,
+            view = @View(
+                    index = 1,
+                    label = "Script alias",
+                    featureLevel = ADVANCED,
+                    description = "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
+            ))
+    @Visible(HasMultipleResult.class)
     private String name;
 
     /**
      * Displayed name
      */
-    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(index = 2, label = "Label", value = I18nStringView.class))
+    @Visible(HasMultipleResult.class)
     private TranslatableContent label;
 
     /**
      * Displayed answer when result selected and validated
      */
-    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(index = 3, label = "Feedback", value = I18nHtmlView.class))
     private TranslatableContent answer;
 
     /**
      * Displayed answer when MCQ result not selected and validated
      */
-    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(
+                    index = 4,
+                    label = "Feedback when ignored",
+                    value = I18nHtmlView.class,
+                    borderTop = true
+            ))
+    @Visible(IsQuestionCbx.class)
     private TranslatableContent ignorationAnswer;
 
     /*
      *
      */
     @ElementCollection
-    @WegasEntityProperty
+    @WegasEntityProperty(view = @View(label = "Files", value = Hidden.class),
+            optional = false, nullable = false, proposal = EmptyArray.class)
     private Set<String> files = new HashSet<>();
     /**
      *
      */
     @Embedded
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyScript.class,
+            view = @View(label = "Impact", value = ScriptView.Impact.class))
     private Script impact;
     /**
      *
@@ -127,7 +170,10 @@ public class Result extends AbstractEntity implements LabelledEntity {
                 = @Column(name = "ignoration_language"))
     })
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyScript.class,
+            view = @View(label = "Impact when ignored", value = ScriptView.Impact.class))
+    @Visible(IsQuestionCbx.class)
     private Script ignorationImpact;
     /**
      *
@@ -160,29 +206,17 @@ public class Result extends AbstractEntity implements LabelledEntity {
      */
     public void setChoiceDescriptor(ChoiceDescriptor choiceDescriptor) {
         this.choiceDescriptor = choiceDescriptor;
-        if (this.choiceDescriptor !=null){
-            if (this.getLabel() != null){
-            this.getLabel().setParentDescriptor(choiceDescriptor);
+        if (this.choiceDescriptor != null) {
+            if (this.getLabel() != null) {
+                this.getLabel().setParentDescriptor(choiceDescriptor);
             }
-            if (this.getAnswer() != null){
+            if (this.getAnswer() != null) {
                 this.getAnswer().setParentDescriptor(choiceDescriptor);
             }
-            if (this.getIgnorationAnswer() != null){
+            if (this.getIgnorationAnswer() != null) {
                 this.getIgnorationAnswer().setParentDescriptor(choiceDescriptor);
             }
         }
-    }
-
-    /**
-     * @return id from the parent choice descriptor
-     */
-    @JsonView(Views.IndexI.class)
-    public Long getChoiceDescriptorId() {
-        return choiceDescriptor.getId();
-    }
-
-    public void setChoiceDescriptorId(Long id) {
-        // NOTHING TO TO....
     }
 
     /**
@@ -218,7 +252,7 @@ public class Result extends AbstractEntity implements LabelledEntity {
         this.touchImpact();
     }
 
-    private void touchImpact(){
+    private void touchImpact() {
         if (this.impact != null) {
             this.impact.setParent(this, "impact");
         }
@@ -257,8 +291,8 @@ public class Result extends AbstractEntity implements LabelledEntity {
         this.touchIgnorationImpact();
     }
 
-    private void touchIgnorationImpact(){
-        if (this.ignorationImpact!=null){
+    private void touchIgnorationImpact() {
+        if (this.ignorationImpact != null) {
             this.ignorationImpact.setParent(this, "ign");
         }
     }
@@ -321,7 +355,7 @@ public class Result extends AbstractEntity implements LabelledEntity {
      * }
      */
 
-    /*
+ /*
     public void addChoiceInstance(ChoiceInstance choiceInstance) {
         CurrentResult cr = this.getCurrentResult();
         if (!cr.getChoiceInstances().contains(choiceInstance)) {
@@ -417,4 +451,23 @@ public class Result extends AbstractEntity implements LabelledEntity {
         this.getCurrentResult();
     }
      */
+    public static class HasMultipleResult extends Not {
+
+        public HasMultipleResult() {
+            // hide the label if the result stands in a singleResultChoiceDescriptor
+            // -> display it only if parent is not a srcd
+            super(new IsDefined(new Field(SingleResultChoiceDescriptor.class, null)));
+        }
+    }
+
+    public static class IsQuestionCbx extends And {
+
+        public IsQuestionCbx() {
+            super(
+                    new IsDefined(new Field(QuestionDescriptor.class, "cbx")),
+                    new IsTrue(new Field(QuestionDescriptor.class, "cbx"))
+            );
+        }
+    }
+
 }

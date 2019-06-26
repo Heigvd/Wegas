@@ -29,7 +29,6 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
-import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
 import com.wegas.mcq.persistence.Result;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.messaging.persistence.InboxInstance;
@@ -191,7 +190,7 @@ public class WegasFactory {
         desc.setPostTriggerEvent(new Script("Javascript", impact));
         desc.setTriggerEvent(new Script("Javascript", condition));
 
-        desc.setDefaultInstance(new TriggerInstance());
+        desc.setDefaultInstance(new StateMachineInstance());
 
         this.createDescriptor(gameModel, desc, parent);
 
@@ -250,7 +249,7 @@ public class WegasFactory {
     public StateMachineDescriptor removeState(StateMachineDescriptor fsmD, Long index) {
 
         // remove transition to this state
-        for (Entry<Long, State> entry : fsmD.getStatesAsMap().entrySet()) {
+        for (Entry<Long, State> entry : fsmD.getStates().entrySet()) {
             State state = entry.getValue();
 
             for (Iterator<Transition> it = state.getTransitions().iterator(); it.hasNext();) {
@@ -261,7 +260,7 @@ public class WegasFactory {
             }
         }
 
-        fsmD.getStates().remove(fsmD.getStatesAsMap().get(index));
+        fsmD.getStates().remove(fsmD.getStates().get(index));
 
         StateMachineDescriptor find = (StateMachineDescriptor) variableDescriptorFacade.find(fsmD.getId());
         find.merge(fsmD);
@@ -290,7 +289,7 @@ public class WegasFactory {
         t.setTriggerCondition(new Script(condition));
         t.setPreStateImpact(new Script(impact));
 
-        Map<Long, State> states = find.getStatesAsMap();
+        Map<Long, State> states = find.getStates();
         State fromState = states.get(from);
         fromState.addTransition(t);
 

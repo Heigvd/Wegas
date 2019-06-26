@@ -10,11 +10,14 @@ package com.wegas.reviewing.persistence.evaluation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.View;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,7 +60,9 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
     @OneToMany(mappedBy = "container", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(value = Hidden.class, label = ""))
     @NotNull
     private List<EvaluationDescriptor> evaluations = new ArrayList<>();
 
@@ -85,22 +90,9 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
 
     public void setCommented(PeerReviewDescriptor commented) {
         this.commented = commented;
-        if (this.commented!= null){
+        if (this.commented != null) {
             this.setEvaluations(evaluations);
         }
-    }
-
-    @JsonView(Views.IndexI.class)
-    public Long getParentDescriptorId() {
-        if (feedbacked != null) {
-            return feedbacked.getId();
-        } else if (commented != null) {
-            return commented.getId();
-        }
-        return null;
-    }
-
-    public void setParentDescriptorId(Long id) {
     }
 
     @JsonIgnore

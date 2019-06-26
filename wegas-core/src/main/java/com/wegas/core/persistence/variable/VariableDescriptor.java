@@ -11,16 +11,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasNotFoundException;
-import com.wegas.core.merge.annotations.WegasEntity;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntity;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
@@ -28,6 +25,7 @@ import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.annotations.Errored;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
@@ -35,10 +33,29 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.primitive.*;
 import com.wegas.core.persistence.variable.scope.*;
+import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
+import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasPermission;
+import com.wegas.core.persistence.annotations.WegasConditions.And;
+import com.wegas.core.persistence.annotations.WegasConditions.Equals;
+import com.wegas.core.persistence.annotations.WegasConditions.Or;
+import com.wegas.core.persistence.annotations.WegasRefs.Const;
+import com.wegas.core.persistence.annotations.WegasRefs.Field;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.ValueGenerators.TeamScopeVal;
+import com.wegas.editor.ValueGenerators.Zero;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import static com.wegas.editor.View.CommonView.LAYOUT.shortInline;
+import com.wegas.editor.View.I18nStringView;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.SelectView;
+import com.wegas.editor.View.Textarea;
+import com.wegas.editor.View.View;
+import com.wegas.editor.View.VisibilitySelectView;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
@@ -138,6 +155,8 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class),
     @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class),
     @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptor.class),
+    @JsonSubTypes.Type(name = "TriggerDescriptor", value = TriggerDescriptor.class),
+    @JsonSubTypes.Type(name = "DialogueDescriptor", value = DialogueDescriptor.class),
     @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
     @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class),
     @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class),
@@ -150,7 +169,7 @@ import org.slf4j.LoggerFactory;
 })
 //@MappedSuperclass
 @WegasEntity(callback = VariableDescriptor.VdMergeCallback.class)
-abstract public class VariableDescriptor<T extends VariableInstance>
+public abstract class VariableDescriptor<T extends VariableInstance>
         extends AbstractEntity
         implements LabelledEntity, Broadcastable, AcceptInjection, ModelScoped {
 
@@ -180,7 +199,13 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @Lob
     @JsonView(value = Views.EditorI.class)
     @Column(name = "comments")
-    @WegasEntityProperty(searchable = true)
+    @WegasEntityProperty(searchable = true,
+            optional = false, nullable = false, proposal = EmptyString.class,
+            view = @View(
+                    label = "Comments",
+                    borderTop = true,
+                    value = Textarea.class,
+                    index = 9000))
     private String comments;
 
     /**
@@ -194,7 +219,14 @@ abstract public class VariableDescriptor<T extends VariableInstance>
      */
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
     @JsonView(value = Views.EditorI.class)
-    @WegasEntityProperty(protectionLevel = ProtectionLevel.INTERNAL)
+    @WegasEntityProperty(
+            protectionLevel = ProtectionLevel.INTERNAL,
+            nullable = false,
+            optional = false,
+            view = @View(
+                    label = "Default instance",
+                    index = 500
+            ))
     private VariableInstance defaultInstance;
 
     /**
@@ -227,23 +259,39 @@ abstract public class VariableDescriptor<T extends VariableInstance>
 
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
     @Enumerated(value = EnumType.STRING)
-    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL)
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL,
+            nullable = false,
+            view = @View(label = "Visibility", value = VisibilitySelectView.class,
+                    index = -300))
     private Visibility visibility = Visibility.PRIVATE;
 
     /**
      * a token to prefix the label with. For editors only
      */
     //@JsonView(Views.EditorI.class)
-    @WegasEntityProperty(searchable = true)
-    private String editorTag;
+    @WegasEntityProperty(searchable = true,
+            proposal = EmptyString.class,
+            optional = false, nullable = false,
+            view = @View(
+                    label = "Tag",
+                    description = "Never displayed to players",
+                    index = -480
+            ))
+    private String editorTag = "";
 
     /**
      * Variable descriptor human readable name
      * Player visible
      */
-    @JsonDeserialize(using = TranslationContentDeserializer.class)
     @OneToOne(cascade = CascadeType.ALL /*, orphanRemoval = true*/)
-    @WegasEntityProperty
+    @WegasEntityProperty(searchable = true,
+            nullable = false, optional = false, proposal = EmptyI18n.class,
+            view = @View(
+                    label = "Label",
+                    description = "Displayed to players",
+                    value = I18nStringView.class,
+                    index = -470
+            ))
     private TranslatableContent label;
 
     @Transient
@@ -256,7 +304,14 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @NotNull
     @Basic(optional = false)
     //@CacheIndex
-    @WegasEntityProperty(protectionLevel = ProtectionLevel.INHERITED, searchable = true)
+    @WegasEntityProperty(protectionLevel = ProtectionLevel.INHERITED, searchable = true,
+            nullable = false,
+            view = @View(
+                    featureLevel = ADVANCED,
+                    label = "Script alias",
+                    description = "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character.",
+                    index = -460
+            ))
     protected String name;
 
     //@BatchFetch(BatchFetchType.JOIN)
@@ -265,12 +320,48 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @JoinFetch
     //@JsonView(value = Views.WithScopeI.class)
     //@WegasEntityProperty(callback = VdMergeCallback.class)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private AbstractScope scope;
 
+    @Transient
+    @WegasEntityProperty(
+            proposal = TeamScopeVal.class,
+            nullable = false,
+            view = @View(
+                    label = "One variable for",
+                    value = SelectView.ScopeSelector.class,
+                    layout = shortInline,
+                    index = -400
+            ))
+    @Errored(CheckScope.class)
+    private String scopeType;
+
+    @Transient
+    @WegasEntityProperty(
+            proposal = TeamScopeVal.class,
+            nullable = false,
+            view = @View(
+                    label = "Variable is visible by ",
+                    value = SelectView.BScopeSelector.class,
+                    layout = shortInline,
+                    index = -390
+            ))
+    @Errored(CheckScope.class)
+    private String broadcastScope;
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
-    @WegasEntityProperty(sameEntityOnly = true)
+    @WegasEntityProperty(sameEntityOnly = true,
+            nullable = false, optional = false,
+            proposal = Zero.class,
+            view = @View(
+                    label = "Version",
+                    value = ReadOnlyNumber.class,
+                    featureLevel = ADVANCED,
+                    index = -490,
+                    layout = shortInline
+            )
+    )
     private Long version;
 
     public Long getVersion() {
@@ -370,6 +461,7 @@ abstract public class VariableDescriptor<T extends VariableInstance>
 
     /**
      * Set the root gameModel. Means this descriptor stands at gameModel root level
+     *
      * @param rootGameModel
      */
     public void setRoot(GameModel rootGameModel) {
@@ -433,32 +525,6 @@ abstract public class VariableDescriptor<T extends VariableInstance>
         } else {
             throw new WegasNotFoundException("ORPHAN DESCRIPTOR: " + this); // is somebody expect this exception or return null will do the job ?
         }
-    }
-
-    @JsonView(Views.IndexI.class)
-    public String getParentDescriptorType() {
-        if (this.getRoot() != null) {
-            return "GameModel";
-        } else {
-            return "VariableDescriptor";
-        }
-    }
-
-    public void setParentDescriptorType(String type) {
-        // nothing to do
-    }
-
-    @JsonView(Views.IndexI.class)
-    public Long getParentDescriptorId() {
-        try {
-            return this.getParent().getId();
-        } catch (WegasNotFoundException e) {
-            return null;
-        }
-    }
-
-    public void setParentDescriptorId(Long id) {
-        // nothing to do
     }
 
     /**
@@ -661,6 +727,41 @@ abstract public class VariableDescriptor<T extends VariableInstance>
         }
     }
 
+    @JsonIgnore
+    public String getDeserialisedScopeType() {
+        return this.scopeType;
+    }
+
+    public String getScopeType() {
+        if (this.scope != null) {
+            return this.scope.getJSONClassName();
+        } else {
+            return scopeType;
+        }
+    }
+
+    public void setScopeType(String scopeType) {
+        this.scopeType = scopeType;
+    }
+
+
+    @JsonIgnore
+    public String getDeserialisedBroadcastScopeType() {
+        return this.broadcastScope;
+    }
+
+    public String getBroadcastScope() {
+        if (this.scope != null) {
+            return this.scope.getBroadcastScope();
+        } else {
+            return broadcastScope;
+        }
+    }
+
+    public void setBroadcastScope(String broadcastScope) {
+        this.broadcastScope = broadcastScope;
+    }
+
     @Override
     public Visibility getVisibility() {
         return visibility;
@@ -757,49 +858,6 @@ abstract public class VariableDescriptor<T extends VariableInstance>
      */
     public static class VdMergeCallback implements WegasCallback {
 
-        private AbstractScope cloneScope(AbstractScope scope) {
-            AbstractScope newScope = null;
-            try {
-                if (scope != null) {
-                    newScope = scope.getClass().getDeclaredConstructor().newInstance();
-                    newScope.setBroadcastScope(scope.getBroadcastScope());
-                }
-            } catch (Exception ex) {
-                logger.error("Fails to copy scope {}", newScope);
-            }
-            if (newScope == null) {
-                newScope = new TeamScope();
-                newScope.setBroadcastScope("TeamScope");
-            }
-            return newScope;
-        }
-
-        @Override
-        public void postUpdate(Mergeable entity, Object originalNewValue, Object identifier) {
-            VariableDescriptor vd = (VariableDescriptor) entity;
-
-            if (vd.getGameModel() != null) {
-                if (vd.getVariableDescriptorFacade().findDistinctNames(vd.getGameModel(), vd.getRefId()).contains(vd.getName())) {
-                    throw new WegasConflictException("Name already in use");
-                }
-            }
-
-            AbstractScope scope = vd.getScope();
-            AbstractScope newScope = ((VariableDescriptor) originalNewValue).getScope();
-
-            if (scope != null && newScope != null) {
-                if (!scope.getClass().equals(newScope.getClass())) {
-                    vd.getVariableDescriptorFacade().updateScope(vd, cloneScope(newScope));
-                } else {
-                    scope.setBroadcastScope(newScope.getBroadcastScope());
-                }
-            } else if (scope == null) {
-                newScope = cloneScope(newScope);
-                newScope.setShouldCreateInstance(true);
-                vd.setScope(newScope);
-            }
-        }
-
         @Override
         public void destroy(Mergeable entity, Object identifier) {
             if (entity instanceof VariableDescriptor) {
@@ -868,5 +926,30 @@ abstract public class VariableDescriptor<T extends VariableInstance>
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getGameModel().getRequieredUpdatePermission();
+    }
+
+    public static class CheckScope extends Or {
+
+        private static Field scope = new Field(null, "scopeType");
+        private static Field bScope = new Field(null, "broadcastScope");
+        private static Const ps = new Const("PlayerScope");
+        private static Const ts = new Const("TeamScope");
+        private static Const gs = new Const("GameModelScope");
+
+        public CheckScope() {
+            super(
+                    new And(
+                            new Equals(scope, ts),
+                            new Equals(bScope, ps)
+                    ),
+                    new And(
+                            new Equals(scope, gs),
+                            new Or(
+                                    new Equals(bScope, ps),
+                                    new Equals(bScope, ts)
+                            )
+                    )
+            );
+        }
     }
 }

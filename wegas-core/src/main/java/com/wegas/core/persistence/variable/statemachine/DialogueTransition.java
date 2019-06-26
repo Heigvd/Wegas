@@ -7,10 +7,11 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.View;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
@@ -20,13 +21,14 @@ import javax.persistence.OneToOne;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-public class DialogueTransition extends Transition {
+public class DialogueTransition extends AbstractTransition {
 
     private static final long serialVersionUID = 1L;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize(using = TranslationContentDeserializer.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(label = "Text", value = I18nHtmlView.class))
     private TranslatableContent actionText;
 
     /**
@@ -37,9 +39,9 @@ public class DialogueTransition extends Transition {
     }
 
     @Override
-    public void setState(State state) {
+    public void setState(AbstractState state) {
         super.setState(state);
-        if (state != null){
+        if (state != null) {
             this.setActionText(actionText);
         }
     }
