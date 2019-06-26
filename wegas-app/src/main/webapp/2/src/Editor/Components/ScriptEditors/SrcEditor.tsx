@@ -2,6 +2,17 @@ import { css } from 'emotion';
 import * as React from 'react';
 import { SizedDiv } from '../../../Components/SizedDiv';
 
+interface EditorKeyEvent {
+  /**
+   * keys - the key that fire the event
+   */
+  keys: number;
+  /**
+   * event - the event function to be fired
+   */
+  event: (editor: import('monaco-editor').editor.IStandaloneCodeEditor) => void;
+}
+
 interface EditorProps {
   /**
    * value - the content of the editor
@@ -20,6 +31,11 @@ interface EditorProps {
    */
   language?: 'javascript' | 'css' | 'json';
   /**
+   * cursorOffset - the position of the cursor in the text
+   */
+  cursorOffset?: number;
+
+  /**
    * onChange - this function is fired each time the content of the editor is changed by the user
    */
   onChange?: (value: string) => void;
@@ -36,6 +52,14 @@ interface EditorProps {
    * To apply changes you must rerender the whole editor (i.e : change the key of the componnent)
    */
   defaultUri?: 'internal://page.json';
+  /**
+   * defaultKeyEvents - a list of key event to be caught in the editor
+   */
+  defaultKeyEvents?: EditorKeyEvent[];
+  /**
+   * defaultFocus - force editor to focus on first render
+   */
+  defaultFocus?: boolean;
 }
 
 const overflowHide = css({
@@ -60,7 +84,8 @@ class SrcEditor extends React.Component<EditorProps> {
       nextProps.value !== this.lastValue ||
       nextProps.language !== this.props.language ||
       nextProps.readonly !== this.props.readonly ||
-      nextProps.minimap !== this.props.minimap
+      nextProps.minimap !== this.props.minimap ||
+      nextProps.cursorOffset !== this.props.cursorOffset
     );
   }
 
@@ -75,6 +100,9 @@ class SrcEditor extends React.Component<EditorProps> {
           this.editor.setValue('');
         }
         this.outsideChange = false;
+        if (this.props.defaultFocus) {
+          this.editor.focus();
+        }
       }
       if (this.props.language !== prevProps.language) {
         import('monaco-editor').then(monaco => {
@@ -91,6 +119,12 @@ class SrcEditor extends React.Component<EditorProps> {
       }
       if (this.props.minimap !== prevProps.minimap) {
         this.editor.updateOptions({ minimap: { enabled: this.props.minimap } });
+      }
+      if (this.props.cursorOffset !== prevProps.cursorOffset) {
+        const model = this.editor.getModel();
+        if (model && this.props.cursorOffset) {
+          this.editor.setPosition(model.getPositionAt(this.props.cursorOffset));
+        }
       }
       this.editor.layout();
     }
@@ -139,6 +173,7 @@ class SrcEditor extends React.Component<EditorProps> {
             this.props.onChange(this.lastValue);
           }
         });
+
         this.editor.addCommand(
           monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
           () => {
@@ -147,6 +182,21 @@ class SrcEditor extends React.Component<EditorProps> {
             }
           },
         );
+
+        if (this.props.defaultKeyEvents) {
+          this.props.defaultKeyEvents.map(editorEvent => {
+            if (this.editor) {
+              this.editor.addCommand(editorEvent.keys, () => {
+                if (this.editor) {
+                  editorEvent.event(this.editor);
+                }
+              });
+            }
+          });
+        }
+        if (this.props.defaultFocus) {
+          this.editor.focus();
+        }
       }
     });
   }
@@ -160,6 +210,9 @@ class SrcEditor extends React.Component<EditorProps> {
       return this.editor.getValue();
     }
     return this.lastValue;
+  }
+  getEditor() {
+    return this.editor;
   }
   componentWillUnmount() {
     if (this.editor != null && this.editor.getModel() !== null) {
