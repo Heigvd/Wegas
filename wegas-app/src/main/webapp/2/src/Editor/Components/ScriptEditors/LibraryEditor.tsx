@@ -357,10 +357,9 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
   );
 
   /**
-   * A new pusher event is registered in order to catch external updates on libraries
+   * A callback for websocket event management
    */
-  useWebsocket(
-    ('LibraryUpdate-' + scriptType) as WebSocketEvent,
+  const websocketEventHandler = React.useCallback(
     (updatedLibraryName: string) => {
       LibraryAPI.getLibrary(scriptType, updatedLibraryName).then(
         (library: IGameModelContent) => {
@@ -372,6 +371,15 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
         },
       );
     },
+    [scriptType],
+  );
+
+  /**
+   * A new pusher event is registered in order to catch external updates on libraries
+   */
+  useWebsocket(
+    ('LibraryUpdate-' + scriptType) as WebSocketEvent,
+    websocketEventHandler,
   );
 
   /**
@@ -481,8 +489,6 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
       });
   }, [scriptType]);
 
-  React.useEffect(() => {}, [librariesState]);
-
   const libEntry = librariesState.libraries[librariesState.selected];
 
   return (
@@ -525,10 +531,10 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
               }
               value={getLibraryVisibility(librariesState)}
             >
-              {visibilities.map((visibility, key) => {
+              {visibilities.map(visibility => {
                 return (
                   <option
-                    key={key}
+                    key={visibility}
                     hidden={!isVisibilityAllowed(librariesState, visibility)}
                     value={visibility}
                   >
@@ -582,7 +588,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             }
             onResolved={onSaveLibrary}
           />
-        ) : (
+        ) : librariesState.selected ? (
           <SrcEditor
             value={
               librariesState.selected
@@ -599,6 +605,11 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             language={getScriptLanguage(scriptType)}
             readonly={!isEditAllowed(librariesState)}
             onSave={onSaveLibrary}
+          />
+        ) : (
+          <StyledLabel
+            value="Please create a library by pressing the + button"
+            type={'warning'}
           />
         )}
       </Toolbar.Content>

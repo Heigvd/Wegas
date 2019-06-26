@@ -1,10 +1,11 @@
 import { rest } from './rest';
 import { GameModel } from '../data/selectors';
-import { TMap } from '../data/methods/ContentDescriptor';
 
-export type ILibraries = TMap<IGameModelContent>;
 export type LibType = 'CSS' | 'ClientScript' | 'ServerScript';
 export type NewLibErrors = 'NOTNEW' | 'UNKNOWN';
+export interface ILibraries {
+  [key: string]: IGameModelContent;
+}
 
 const LIBRARY_BASE = (libType: LibType, gameModelId?: number) =>
   `GameModel/${

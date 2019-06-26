@@ -20,7 +20,7 @@ const diffLabel = css({
  * @param text - the text to be splitted
  */
 const textToArray = (text: string): string[] => {
-  return text.split('\n');
+  return text.split(/\r|\n/);
 };
 
 /**
@@ -113,70 +113,6 @@ interface NavState {
   diffs: DiffEditorLineChanges;
 }
 
-/**
- * mergeStateReducer synchronize the component state with the diffNavigator state
- * It also forces the navigator to align on a diff
- */
-const mergeStateReducer = (
-  mutableDiffNavigator: React.MutableRefObject<
-    ExtendedDiffNavigator | undefined
-  >,
-) => (oldState: NavState) => {
-  const diffNavigator = mutableDiffNavigator.current;
-  if (diffNavigator) {
-    const lineChanges = diffNavigator._editor.getLineChanges();
-    if (diffNavigator.nextIdx === -1 && lineChanges && lineChanges.length > 0) {
-      // When the user clicks on a non diff line, the navigator idx is set to -1
-      if (oldState.idx >= 0 && oldState.idx < lineChanges.length) {
-        // If the old state idx is still in range, focus the same diff index
-        diffNavigator.nextIdx = oldState.idx;
-      } else {
-        // If the old idx is out of range, ask the navigator to focus the next diff
-        diffNavigator.next();
-        if (diffNavigator.nextIdx === -1 && lineChanges.length > 0) {
-          //Dummy check, it may occure that even with remaining changes nextIdx is set to -1
-          diffNavigator.nextIdx = 0;
-        }
-      }
-    }
-    return {
-      diffs: lineChanges !== null ? lineChanges : [],
-      idx: diffNavigator.nextIdx,
-    };
-  }
-  return oldState;
-};
-
-interface ValueState {
-  /**
-   * the left content of the editor
-   */
-  originalValue: string;
-  /**
-   * the right content of the editor
-   */
-  modifiedValue: string;
-}
-
-/**
- * valueStateReducer is a simple reducer that allows to modify original and modified values separately
- */
-const valueStateReducer = (
-  oldState: ValueState,
-  action: { type: 'original' | 'modified'; value: string },
-) =>
-  u(oldState, oldState => {
-    switch (action.type) {
-      case 'original':
-        oldState.originalValue = action.value;
-        break;
-      case 'modified':
-        oldState.modifiedValue = action.value;
-        break;
-    }
-    return oldState;
-  });
-
 interface MergeEditorProps {
   /**
    * originalValue - the original content.
@@ -227,39 +163,52 @@ function MergeEditor({
   onBlur,
 }: MergeEditorProps) {
   const diffNavigator = React.useRef<ExtendedDiffNavigator>();
-  const [mergeState, refreshMergeState] = React.useReducer(
-    mergeStateReducer(diffNavigator),
-    {
-      idx: -1,
-      diffs: [],
-    },
-  );
-  const [valueState, dispatchValueState] = React.useReducer(valueStateReducer, {
-    originalValue: originalValue,
-    modifiedValue: modifiedValue,
+  const [mergeState, setMergeState] = React.useState<NavState>({
+    idx: -1,
+    diffs: [],
   });
 
+  /**
+   * This must be a state or it will never update the editor when finalValue is modified
+   */
+  const [finalValue, setFinalValue] = React.useState(originalValue);
+
   React.useEffect(() => {
-    dispatchValueState({ type: 'original', value: originalValue });
+    setFinalValue(originalValue);
   }, [originalValue]);
-  React.useEffect(() => {
-    dispatchValueState({ type: 'modified', value: modifiedValue });
-  }, [modifiedValue]);
-  React.useEffect(() => {
-    onChange && onChange(valueState.modifiedValue);
-  }, [onChange, valueState.modifiedValue]);
 
-  const handleDiffNavigator = (navigator: ExtendedDiffNavigator) =>
-    (diffNavigator.current = navigator);
+  const handleDiffNavigator = React.useCallback(
+    (navigator: ExtendedDiffNavigator) => (diffNavigator.current = navigator),
+    [],
+  );
 
-  const onDiffChange = () => {
-    refreshMergeState({});
-  };
-
-  const onModifiedChange = (value: string) => {
-    dispatchValueState({ type: 'modified', value: value });
-    onChange && onChange(value);
-  };
+  const onDiffChange = React.useCallback(() => {
+    setMergeState(oldState => {
+      const navigator = diffNavigator.current;
+      if (navigator) {
+        const lineChanges = navigator._editor.getLineChanges();
+        if (navigator.nextIdx === -1 && lineChanges && lineChanges.length > 0) {
+          // When the user clicks on a non diff line, the navigator idx is set to -1
+          if (oldState.idx >= 0 && oldState.idx < lineChanges.length) {
+            // If the old state idx is still in range, focus the same diff index
+            navigator.nextIdx = oldState.idx;
+          } else {
+            // If the old idx is out of range, ask the navigator to focus the next diff
+            navigator.next();
+            if (navigator.nextIdx === -1 && lineChanges.length > 0) {
+              //Dummy check, it may occure that even with remaining changes nextIdx is set to -1
+              navigator.nextIdx = 0;
+            }
+          }
+        }
+        return {
+          diffs: lineChanges !== null ? lineChanges : [],
+          idx: navigator.nextIdx,
+        };
+      }
+      return oldState;
+    });
+  }, []);
 
   const onNavigate = (next: boolean) => {
     if (diffNavigator.current) {
@@ -268,29 +217,30 @@ function MergeEditor({
       } else {
         diffNavigator.current.previous();
       }
-      refreshMergeState({});
+      /**
+       * Must be triggered to refresh navigator state (no onNavigatorChanged given by monaco-editor API)
+       */
+      onDiffChange();
     }
   };
 
-  const onSave = (value: string) => {
-    dispatchValueState({ type: 'modified', value: value });
-    if (onResolved) {
-      if (mergeState.diffs.length > 0) {
-        alert('You must resolve all differences before saving');
-      } else {
-        onResolved(value);
+  const onSave = React.useCallback(
+    (value: string) => {
+      if (onResolved) {
+        if (mergeState.diffs.length > 0) {
+          alert('You must resolve all differences before saving');
+        } else {
+          onResolved(value);
+        }
       }
-    }
-  };
+    },
+    [mergeState.diffs.length, onResolved],
+  );
 
   const onKeepOne = (original: boolean) => {
     const change = mergeState.diffs[mergeState.idx];
-    const newContent = original
-      ? valueState.originalValue
-      : valueState.modifiedValue;
-    const oldContent = original
-      ? valueState.modifiedValue
-      : valueState.originalValue;
+    const newContent = original ? finalValue : modifiedValue;
+    const oldContent = original ? modifiedValue : finalValue;
     const newStartLine = original
       ? change.originalStartLineNumber
       : change.modifiedStartLineNumber;
@@ -310,15 +260,15 @@ function MergeEditor({
         ? replaceContent(oldContent, newText, oldStartLine - 1, oldEndLine - 1)
         : insertContent(oldContent, newText, oldStartLine);
     if (original) {
-      dispatchValueState({ type: 'modified', value: savedContent });
+      onChange && onChange(savedContent);
     } else {
-      dispatchValueState({ type: 'original', value: savedContent });
+      setFinalValue(savedContent);
     }
   };
   const onKeepAll = () => {
     const change = mergeState.diffs[mergeState.idx];
     const origText = getTextLines(
-      valueState.originalValue,
+      finalValue,
       change.originalStartLineNumber - 1,
       change.originalEndLineNumber - 1,
     );
@@ -326,7 +276,7 @@ function MergeEditor({
       return onKeepOne(false);
     }
     const modifText = getTextLines(
-      valueState.modifiedValue,
+      modifiedValue,
       change.modifiedStartLineNumber - 1,
       change.modifiedEndLineNumber - 1,
     );
@@ -335,24 +285,23 @@ function MergeEditor({
     }
     const newText =
       (origText ? origText : '') + '\n' + (modifText ? modifText : '');
-    dispatchValueState({
-      type: 'modified',
-      value: replaceContent(
-        valueState.modifiedValue,
-        newText,
-        change.modifiedStartLineNumber - 1,
-        change.modifiedEndLineNumber - 1,
-      ),
-    });
-    dispatchValueState({
-      type: 'original',
-      value: replaceContent(
-        valueState.originalValue,
+    onChange &&
+      onChange(
+        replaceContent(
+          modifiedValue,
+          newText,
+          change.modifiedStartLineNumber - 1,
+          change.modifiedEndLineNumber - 1,
+        ),
+      );
+    setFinalValue(oldValue =>
+      replaceContent(
+        oldValue,
         newText,
         change.originalStartLineNumber - 1,
         change.originalEndLineNumber - 1,
       ),
-    });
+    );
   };
 
   return (
@@ -392,19 +341,19 @@ function MergeEditor({
             icon="save"
             tooltip="Save current state"
             onClick={() => {
-              onSave(valueState.modifiedValue);
+              onSave(modifiedValue);
             }}
           />
         )}
       </Toolbar.Header>
       <Toolbar.Content>
         <DiffEditor
-          originalValue={valueState.originalValue}
-          modifiedValue={valueState.modifiedValue}
+          originalValue={finalValue}
+          modifiedValue={modifiedValue}
           minimap={minimap}
           language={language}
           onModifiedBlur={onBlur}
-          onModifiedChange={onModifiedChange}
+          onModifiedChange={onChange}
           onSave={onSave}
           onDiffChange={onDiffChange}
           handleDiffNavigator={handleDiffNavigator}
