@@ -29,7 +29,7 @@ interface EditorProps {
   /**
    * langauge - the editor language
    */
-  language?: 'javascript' | 'css' | 'json';
+  language?: 'javascript' | 'css' | 'json' | 'typescript';
   /**
    * cursorOffset - the position of the cursor in the text
    */

@@ -54,58 +54,67 @@ class PageDisplay extends React.Component<PageDisplayProps, PageDisplayState> {
         </Toolbar.Header>
         <Toolbar.Content>
           {this.props.srcMode ? (
-            <Toolbar className={fullHeight}>
-              <Toolbar.Header>
-                <button onClick={() => this.onSave(this.editorValue)}>
-                  Save
-                </button>
-              </Toolbar.Header>
-              <Toolbar.Content>
-                {this.state.jsEditing && (
-                  <Modal>
-                    <div
-                      style={{
-                        height: '50vh',
-                        width: '50vw',
-                      }}
-                    >
-                      <SrcEditor
-                        value={this.jsContent}
-                        language={'javascript'}
-                        onChange={value => {
-                          this.jsContent = value;
-                        }}
-                        defaultFocus={true}
-                      />
-                      <button
-                        onClick={() => {
-                          this.cursorOffset =
-                            this.codeInit + this.jsContent.length;
-
-                          this.onSave(
-                            this.editorValue.substring(0, this.codeInit) +
-                              this.jsContent +
-                              this.editorValue.substring(this.codeEnd),
-                          );
-                          this.setState({ jsEditing: false });
-                        }}
-                      >
-                        Accept
+            <StoreConsumer<{
+              content: Readonly<Page> | undefined;
+              editing: boolean;
+            }>
+              selector={s => {
+                return {
+                  content: pageId ? s.pages[pageId] : undefined,
+                  editing: this.state.jsEditing,
+                };
+              }}
+            >
+              {({ state, dispatch }) => {
+                if (state == null && pageId != null) {
+                  dispatch(Actions.PageActions.get(pageId));
+                }
+                this.editorValue = this.editorValue
+                  ? this.editorValue
+                  : JSON.stringify(state.content, null, 2);
+                return (
+                  <Toolbar className={fullHeight}>
+                    <Toolbar.Header>
+                      <button onClick={() => this.onSave(this.editorValue)}>
+                        Save
                       </button>
-                    </div>
-                  </Modal>
-                )}
-                <StoreConsumer<Readonly<Page> | undefined>
-                  selector={s => (pageId ? s.pages[pageId] : undefined)}
-                >
-                  {({ state, dispatch }) => {
-                    if (state == null && pageId != null) {
-                      dispatch(Actions.PageActions.get(pageId));
-                    }
-                    this.editorValue = JSON.stringify(state, null, 2);
-                    return (
+                    </Toolbar.Header>
+                    <Toolbar.Content>
+                      {state.editing && (
+                        <Modal>
+                          <div
+                            style={{
+                              height: '50vh',
+                              width: '50vw',
+                            }}
+                          >
+                            <SrcEditor
+                              value={this.jsContent}
+                              language={'typescript'}
+                              onChange={value => {
+                                this.jsContent = value;
+                              }}
+                              defaultFocus={true}
+                            />
+                            <button
+                              onClick={() => {
+                                this.cursorOffset =
+                                  this.codeInit + this.jsContent.length;
+                                this.editorValue =
+                                  this.editorValue.substring(0, this.codeInit) +
+                                  this.jsContent
+                                    .replace(/"/g, '\\"')
+                                    .replace(/\r?\n/g, '\u2006') +
+                                  this.editorValue.substring(this.codeEnd);
+                                this.setState({ jsEditing: false });
+                              }}
+                            >
+                              Accept
+                            </button>
+                          </div>
+                        </Modal>
+                      )}
                       <SrcEditor
-                        key="SrcEditor"
                         value={this.editorValue}
                         defaultUri="internal://page.json"
                         language="json"
@@ -134,29 +143,29 @@ class PageDisplay extends React.Component<PageDisplayProps, PageDisplayState> {
                                     .split('')
                                     .reverse()
                                     .join('')
-                                    .indexOf('"');
+                                    .search(/"(?!\\)/);
                                 const codeEnd =
                                   charPosition +
                                   editorContent
                                     .substr(charPosition)
-                                    .indexOf('"');
+                                    .search(/(?<!\\)"/);
                                 this.codeInit = codeInit;
                                 this.codeEnd = codeEnd;
-                                this.jsContent = editorContent.substring(
-                                  codeInit,
-                                  codeEnd,
-                                );
+                                this.jsContent = editorContent
+                                  .substring(codeInit, codeEnd)
+                                  .replace(/\\"/g, '"')
+                                  .replace(/\u2006/g, '\r\n');
                                 this.setState({ jsEditing: true });
                               }
                             },
                           },
                         ]}
                       />
-                    );
-                  }}
-                </StoreConsumer>
-              </Toolbar.Content>
-            </Toolbar>
+                    </Toolbar.Content>
+                  </Toolbar>
+                );
+              }}
+            </StoreConsumer>
           ) : (
             <Theme
             // @TODO Load user theme!
