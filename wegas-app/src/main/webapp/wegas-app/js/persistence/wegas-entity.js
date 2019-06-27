@@ -786,6 +786,18 @@ YUI.add('wegas-entity', function(Y) {
             }
         }
     });
+
+
+    persistence.GameModelContent = Base.create('GameModelContent', persistence.Entity, [], {}, {
+        ATTRS: {
+            version: VERSION_ATTR_DEF,
+            visibility: Wegas.persistence.Entity.ATTRS_DEF.VISIBILITY,
+            contentKey: {type: "string"},
+            contentType: {type: "string"},
+            content: {type: "string"}
+        }
+    });
+
     /**
      * Game mapper
      */

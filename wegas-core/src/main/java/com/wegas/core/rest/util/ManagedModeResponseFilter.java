@@ -80,7 +80,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
         if (isManaged) {
             ManagedResponse serverResponse = new ManagedResponse();
-            /* 
+            /*
              * returnd entities are not to propagate through websockets
              * unless they're registered within requestManager's updatedEntities
              */
@@ -92,8 +92,8 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
              * if response entity is kind of exception.
              * it means something went wrong during the process -> Rollback any db changes
              *
-             * Behaviour is to return a managed response with an empty entity list
-             * and to register the exception as a request exception event
+                 * Behaviour is to return a managed response with an empty entity list
+                 * and to register the exception as a request exception event
              */
             if (response.getEntity() instanceof Exception || requestManager.getExceptionCounter() > 0 || response.getStatusInfo().getStatusCode() >= 400) {
 
@@ -119,7 +119,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 }
                 rollbacked = true;
             } else {
-                /* 
+                /*
                  * Request has been processed without throwing a fatal exception
                  * -> Include all returned entities (modified or not) in the managed response
                  */
@@ -149,8 +149,8 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
             if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty())) {
                 /*
-                 * Include all detected updated entites within updatedEntites 
-                 * (the ones which will be returned to the client)
+             * Include all detected updated entites within updatedEntites
+             * (the ones which will be returned to the client)
                  */
                 for (Entry<String, List<AbstractEntity>> entry : updatedEntitiesMap.entrySet()) {
                     String audience = entry.getKey();
@@ -185,17 +185,6 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 }
             }
 
-            if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty())) {
-                requestManager.markPropagationStartTime();
-                String socketId = requestManager.getSocketId();
-                if (!isManaged || socketId == null || !socketId.matches("^[\\d\\.]+$")) {
-                    socketId = null;
-                }
-                websocketFacade.onRequestCommit(updatedEntitiesMap, destroyedEntitiesMap,
-                        socketId);
-                requestManager.markPropagationEndTime();
-            }
-
             // Push events stored in RequestManager
             serverResponse.getEvents().addAll(requestManager.getClientEvents());
 
@@ -209,6 +198,23 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             response.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
         }
+
+        String socketId = requestManager.getSocketId();
+
+        String eSocketId = (!isManaged || socketId == null || !socketId.matches("^[\\d\\.]+$"))
+                ? null : socketId;
+
+        if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty())) {
+            requestManager.markPropagationStartTime();
+            websocketFacade.onRequestCommit(updatedEntitiesMap, destroyedEntitiesMap,
+                    socketId);
+            requestManager.markPropagationEndTime();
+        }
+
+        requestManager.getUpdatedGameModelContent().forEach(gameModelContent
+                -> websocketFacade.gameModelContentUpdate(gameModelContent, eSocketId)
+        );
+
         //requestFacade.flushClear();
         requestManager.markSerialisationStartTime();
     }

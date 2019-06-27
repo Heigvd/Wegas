@@ -55,19 +55,14 @@ export function getParent<T extends IAbstractEntity = IAbstractEntity>(val: IAbs
     switch (discriminant({ '@class': val.parentType })) {
       case 'variableDescriptors':
         return (VariableDescriptor.select(val.parentId) as unknown) as T;
-        break;
       case 'variableInstances':
         return (VariableInstance.select(val.parentId) as unknown) as T;
-        break;
       case 'gameModels':
         return (GameModel.select(val.parentId!) as unknown) as T;
-        break;
       case 'games':
         return (Game.select(val.parentId!) as unknown) as T;
-        break;
       case 'teams':
         return (Team.select(val.parentId!) as unknown) as T;
-        break;
       case 'players':
         return (Player.select(val.parentId!) as unknown) as T;
     }
