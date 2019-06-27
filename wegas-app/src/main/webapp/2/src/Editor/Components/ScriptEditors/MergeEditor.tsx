@@ -19,7 +19,7 @@ const diffLabel = css({
  * @param text - the text to be splitted
  */
 const textToArray = (text: string): string[] => {
-  return text.split(/\r|\n/);
+  return text.split(/\r?\n/);
 };
 
 /**
