@@ -5,7 +5,7 @@ import { getInstance } from '../data/methods/VariableDescriptor';
 
 type instanceOf<D> = D extends IVariableDescriptor<infer U> ? U : never;
 
-export function selectVar<T extends IVariableDescriptor>(name: string) {
+function selectVar<T extends IVariableDescriptor>(name: string) {
   return function():
     | {
         descriptor: T;
