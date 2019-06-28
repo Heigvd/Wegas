@@ -70,7 +70,7 @@ export function VariablesConnect<D extends IVariableDescriptor>(props: {
     <StoreConsumer selector={getVars}>
       {({ state, dispatch }) => {
         for (const name of Object.keys(state)) {
-          if (state === undefined) {
+          if (state[name] === undefined) {
             return <span>Not found: {name}</span>;
           }
         }
