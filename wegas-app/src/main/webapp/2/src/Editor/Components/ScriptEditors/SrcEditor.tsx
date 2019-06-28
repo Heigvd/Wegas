@@ -60,6 +60,10 @@ interface EditorProps {
    * defaultFocus - force editor to focus on first render
    */
   defaultFocus?: boolean;
+  /**
+   * defaultExtraLibs - libraries to add to the editor intellisense
+   */
+  defaultExtraLibs?: { content: string; name?: string }[];
 }
 
 const overflowHide = css({
@@ -138,6 +142,7 @@ class SrcEditor extends React.Component<EditorProps> {
     ]).then(([monaco, t]) => {
       if (this.container != null) {
         this.lastValue = this.props.value;
+        // Next line should be called only in json page editor...
         monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
           validate: true,
           schemas: [
@@ -148,6 +153,16 @@ class SrcEditor extends React.Component<EditorProps> {
             },
           ],
         });
+        // Next line should be called only in typescript editor...
+        if (this.props.defaultExtraLibs && this.props.language) {
+          for (const lib of this.props.defaultExtraLibs) {
+            monaco.languages.typescript.typescriptDefaults.addExtraLib(
+              lib.content,
+              lib.name,
+            );
+          }
+        }
+
         const model = monaco.editor.createModel(
           this.props.value || '',
           this.props.language,

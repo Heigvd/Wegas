@@ -28,6 +28,7 @@ class PageDisplay extends React.Component<PageDisplayProps, PageDisplayState> {
   readonly state: PageDisplayState = {
     jsEditing: false,
   };
+  readonly userLibFile = '../../../Components/AutoImport/Userscript.d.ts';
 
   editorValue: string = '';
   jsContent: string = '';
@@ -95,6 +96,13 @@ class PageDisplay extends React.Component<PageDisplayProps, PageDisplayState> {
                                 this.jsContent = value;
                               }}
                               defaultFocus={true}
+                              defaultExtraLibs={[
+                                {
+                                  content:
+                                    'declare function variable(variableName: string): number | string;\n',
+                                  name: 'Userscript.d.ts',
+                                },
+                              ]}
                             />
                             <button
                               onClick={() => {
