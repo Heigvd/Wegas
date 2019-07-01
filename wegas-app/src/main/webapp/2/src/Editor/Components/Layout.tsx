@@ -7,6 +7,7 @@ import PageDisplay from './Page/PageDisplay';
 import { TabLayout } from '../../Components/Tabs';
 import StateMachineEditor from './StateMachineEditor';
 import { DndConnectedFileBrowser } from './FileBrowser/TreeFileBrowser/FileBrowser';
+import LibraryEditor from './ScriptEditors/LibraryEditor';
 
 const layout = css({
   display: 'grid',
@@ -41,10 +42,11 @@ export default class AppLayout extends React.Component<
           <TreeView />
         </div>
         <div>
-          <TabLayout tabs={['Page', 'StateMachine', 'Files']}>
+          <TabLayout tabs={['Page', 'StateMachine', 'Files', 'Scripts']}>
             <PageDisplay />
             <StateMachineEditor />
             <DndConnectedFileBrowser />
+            <LibraryEditor />
           </TabLayout>
         </div>
         <div>

@@ -1,12 +1,12 @@
 import * as React from 'react';
 import PageLoader from '../../../Components/AutoImport/PageLoader';
 import { State } from '../../../data/Reducer/reducers';
-import SrcEditor from '../SrcEditor';
 import PageEditorHeader from './PageEditorHeader';
 import { Toolbar } from '../../../Components/Toolbar';
 import { Actions } from '../../../data';
 import { StoreDispatch, StoreConsumer } from '../../../data/store';
 import { Theme } from '../../../Components/Theme';
+import SrcEditor from '../ScriptEditors/SrcEditor';
 
 interface PageDisplayProps {
   srcMode: boolean;
@@ -14,7 +14,17 @@ interface PageDisplayProps {
   dispatch: StoreDispatch;
 }
 class PageDisplay extends React.Component<PageDisplayProps> {
-  editor?: SrcEditor | null;
+  editorValue: string = '';
+  onSave = (value: string) => {
+    if (this.props.pageId != null) {
+      try {
+        const p = JSON.parse(value);
+        this.props.dispatch(Actions.PageActions.patch(this.props.pageId, p));
+      } catch (e) {
+        alert(`There's a syntax error in your script : \n${e}`);
+      }
+    }
+  };
   render() {
     const { pageId } = this.props;
     return (
@@ -26,16 +36,7 @@ class PageDisplay extends React.Component<PageDisplayProps> {
           {this.props.srcMode ? (
             <Toolbar>
               <Toolbar.Header>
-                <button
-                  onClick={() => {
-                    if (this.editor && this.props.pageId != null) {
-                      const p = JSON.parse(this.editor.getValue()!);
-                      this.props.dispatch(
-                        Actions.PageActions.patch(this.props.pageId, p),
-                      );
-                    }
-                  }}
-                >
+                <button onClick={() => this.onSave(this.editorValue)}>
                   Save
                 </button>
               </Toolbar.Header>
@@ -47,13 +48,17 @@ class PageDisplay extends React.Component<PageDisplayProps> {
                     if (state == null && pageId != null) {
                       dispatch(Actions.PageActions.get(pageId));
                     }
+                    this.editorValue = JSON.stringify(state, null, 2);
                     return (
                       <SrcEditor
-                        ref={n => (this.editor = n)}
-                        key="srcEditor"
-                        value={JSON.stringify(state, null, 2)}
-                        uri="internal://page.json"
+                        key="SrcEditor"
+                        value={this.editorValue}
+                        defaultUri="internal://page.json"
                         language="json"
+                        onChange={val => {
+                          this.editorValue = val;
+                        }}
+                        onSave={this.onSave}
                       />
                     );
                   }}
