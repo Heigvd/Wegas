@@ -60,7 +60,7 @@ gulp.task('debug-build', ['inject'], function(cb) {
         }))).pipe(print());
 
 
-    return gulp.src(paths.tmp + '/serve/*.jsp')
+    return gulp.src(paths.tmp + '/serve/*.htm')
         .pipe($.useref())
         .pipe(gulp.dest(paths.dist + '/'))
         .pipe($.size({
