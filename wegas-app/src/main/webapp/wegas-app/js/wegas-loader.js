@@ -1144,8 +1144,8 @@ YUI().use(function(Y) {
                 path: "escodegen/escodegen-min.js"
             },
             tinymce: {
-                path: "tinymce/tinymce.min.js"
-                    //fullpath: "//unpkg.com/tinymce@4.7.12/tinymce.js"
+                //path: "tinymce/tinymce.js"
+                    fullpath: "//unpkg.com/tinymce@4.9.4/tinymce.js"
             },
             excanvas: {
                 path: "excanvas/excanvas.compiled.js"
