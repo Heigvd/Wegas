@@ -88,6 +88,10 @@ module.exports = {
       //   use: ['source-map-loader'],
       //   enforce: 'pre',
       // },
+      {
+        test: /\.txt$/i,
+        use: 'raw-loader',
+      },
     ],
   },
   devServer: {

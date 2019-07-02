@@ -10,7 +10,10 @@ interface EditorKeyEvent {
   /**
    * event - the event function to be fired
    */
-  event: (editor: import('monaco-editor').editor.IStandaloneCodeEditor) => void;
+  event: (
+    monaco: typeof import('monaco-editor'),
+    editor: import('monaco-editor').editor.IStandaloneCodeEditor,
+  ) => void;
 }
 
 interface EditorProps {
@@ -203,7 +206,7 @@ class SrcEditor extends React.Component<EditorProps> {
             if (this.editor) {
               this.editor.addCommand(editorEvent.keys, () => {
                 if (this.editor) {
-                  editorEvent.event(this.editor);
+                  editorEvent.event(monaco, this.editor);
                 }
               });
             }
