@@ -5,7 +5,10 @@ import { Modal } from '../../../Components/Modal';
 import SrcEditor from './SrcEditor';
 import { KeyMod, KeyCode } from 'monaco-editor';
 import { StyledLabel } from '../../../Components/AutoImport/String/Label';
-import { tokenToString } from 'typescript';
+import { store } from '../../../data/store';
+// using raw-loader works but you need to put the whole file name and ts doesn't like it
+// @ts-ignore
+import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasEntities.d.ts';
 
 const fullHeight = css({
   height: '100%',
@@ -24,6 +27,7 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
   const jsContent = React.useRef('');
   const jsCodeInit = React.useRef(0);
   const jsCodeEnd = React.useRef(0);
+  const timeout = React.useRef(0);
 
   React.useEffect(() => {
     setEditorContent(content);
@@ -67,28 +71,33 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
           );
         //TODO : find a better way to detect script attributes
         // 1. Find the clicked token
-        const currentTokenIndex = tokens.findIndex((t, i) => {
-          const currentOffset = model.getOffsetAt(cursorPosition);
-          return (
+        const currentOffset = model.getOffsetAt(cursorPosition);
+        const currentTokenIndex = tokens.findIndex(
+          (t, i) =>
             t.token.offset < currentOffset &&
             (i + 1 === tokens.length ||
-              tokens[i + 1].token.offset > currentOffset)
-          );
-        });
+              tokens[i + 1].token.offset > currentOffset),
+        );
         if (currentTokenIndex < 0) throw 'No selection';
-        // 2. Reverse find the first key "script" token
-        let keyTokenIndex = tokens
-          .slice(0, currentTokenIndex + 1)
-          .reverse()
-          .findIndex(
-            (t, i) =>
-              t.token.type === 'string.key.json' &&
-              i + 1 !== tokens.length &&
-              model
-                .getLineContent(t.line)
-                .substring(t.token.offset, tokens[i + 1].token.offset)
-                .indexOf('script') > -1,
-          );
+        // 2. Reverse find the first key "script" token in the 3 previous tokens
+        const beforeTokens = tokens
+          .slice(
+            currentTokenIndex < 3 ? 0 : currentTokenIndex - 3,
+            currentTokenIndex + 1,
+          )
+          .reverse();
+        let keyTokenIndex = beforeTokens.findIndex(
+          (t, i) =>
+            t.token.type === 'string.key.json' &&
+            editorValue
+              .substring(
+                beforeTokens[i - 1]
+                  ? beforeTokens[i - 1].token.offset
+                  : currentOffset + 1,
+                t.token.offset,
+              )
+              .indexOf('script') > -1,
+        );
         if (keyTokenIndex < 0) throw 'No script key';
         keyTokenIndex = currentTokenIndex - keyTokenIndex;
         //3. Find the first string.value.json token from the key token
@@ -101,7 +110,7 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
         jsCodeInit.current = tokens[codeTokenIndex].token.offset;
         jsCodeEnd.current = tokens[codeTokenIndex + 1]
           ? tokens[codeTokenIndex + 1].token.offset -
-            //If line changes between tokens, remove 1 char (\n)
+            //If lines change between tokens, remove 1 char to avoid (\n)
             Number(
               tokens[codeTokenIndex].line !== tokens[codeTokenIndex + 1].line,
             )
@@ -113,7 +122,8 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
       }
     } catch (e) {
       setError(e);
-      setTimeout(() => setError(''), 10000);
+      clearTimeout(timeout.current);
+      timeout.current = window.setTimeout(() => setError(''), 10000);
     }
   };
   const onAcceptJS = () => {
@@ -127,11 +137,45 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
     setEditing(false);
   };
 
+  const variableClasses = Object.values(
+    store.getState().variableDescriptors,
+  ).reduce<{ [variable: string]: any }>((newObject, variable) => {
+    if (variable !== undefined && variable.name !== undefined) {
+      newObject[variable.name] = variable['@class'];
+    }
+    return newObject;
+  }, {});
+
+  const libContent =
+    entitiesSrc +
+    `type Exclude<T, U> = T extends U ? never : T;
+    type Pick<T, K extends keyof T> = {
+      [P in K]: T[P];
+    };
+    interface GameModel{}
+    interface VariableClasses {${Object.keys(variableClasses).reduce(
+      (s, k) => s + k + ':I' + variableClasses[k] + ';\n',
+      '',
+    )}}
+    class Variable {
+      static find: <T extends keyof VariableClasses>(
+        gameModel: GameModel,
+        name: T
+      ) => VariableClasses[T];
+    }
+    interface XX{
+      parent: string;
+    }
+    interface YY extends XX{
+      child: number;
+    }
+    `;
+
   return (
     <Toolbar className={fullHeight}>
       <Toolbar.Header>
         <button onClick={() => onSave(editorContent)}>Save</button>
-        {error && <StyledLabel type={'error'} value={error} />}
+        <StyledLabel type={'error'} value={error} />
       </Toolbar.Header>
       <Toolbar.Content>
         {editing && (
@@ -144,23 +188,14 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
             >
               <SrcEditor
                 value={jsContent.current}
-                language={'typescript'}
+                language={'javascript'}
                 onChange={value => {
                   jsContent.current = value;
                 }}
                 defaultFocus={true}
                 defaultExtraLibs={[
                   {
-                    // content: definitions,
-                    content:
-                      'declare function variable(variableName: string): number | string;\n',
-                    // `interface cls ${JSON.stringify(myClasses)}
-                    //   type gm = {}
-                    //  const gameModel:gm;
-                    //  namespace Variable {
-                    //    export function find(gameModel:gm, name: keyof cls):string
-                    //  }
-                    // `,
+                    content: libContent,
                     name: 'Userscript.d.ts',
                   },
                 ]}

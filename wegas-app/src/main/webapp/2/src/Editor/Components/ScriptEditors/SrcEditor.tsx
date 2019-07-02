@@ -146,23 +146,49 @@ class SrcEditor extends React.Component<EditorProps> {
       if (this.container != null) {
         this.lastValue = this.props.value;
         // Next line should be called only in json page editor...
-        monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-          validate: true,
-          schemas: [
-            {
-              fileMatch: ['page.json'],
-              uri: 'internal://page-schema.json',
-              schema: (t as any).schema,
-            },
-          ],
-        });
-        // Next line should be called only in typescript editor...
-        if (this.props.defaultExtraLibs && this.props.language) {
-          for (const lib of this.props.defaultExtraLibs) {
-            monaco.languages.typescript.typescriptDefaults.addExtraLib(
-              lib.content,
-              lib.name,
-            );
+        if (this.props.language === 'json') {
+          monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+            validate: true,
+            schemas: [
+              {
+                fileMatch: ['page.json'],
+                uri: 'internal://page-schema.json',
+                schema: (t as any).schema,
+              },
+            ],
+          });
+        }
+
+        // Next code should be called only in javascript...
+        if (this.props.language === 'javascript') {
+          monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+            noLib: false,
+            allowNonTsExtensions: true,
+          });
+          if (this.props.defaultExtraLibs && this.props.language) {
+            for (const lib of this.props.defaultExtraLibs) {
+              monaco.languages.typescript.javascriptDefaults.addExtraLib(
+                lib.content,
+                lib.name,
+              );
+            }
+          }
+        }
+
+        // Next code should be called only in typescript...
+        if (this.props.language === 'typescript') {
+          monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+            noLib: false,
+            allowNonTsExtensions: true,
+            allowJs: true,
+          });
+          if (this.props.defaultExtraLibs && this.props.language) {
+            for (const lib of this.props.defaultExtraLibs) {
+              monaco.languages.typescript.typescriptDefaults.addExtraLib(
+                lib.content,
+                lib.name,
+              );
+            }
           }
         }
 
