@@ -11,10 +11,6 @@
   <system-applications></system-applications>
   <applications></applications>
   <resources>
-    <jdbc-resource pool-name="H2Pool" object-type="system-all" jndi-name="jdbc/__default"></jdbc-resource>
-    <jdbc-connection-pool is-isolation-level-guaranteed="false" datasource-classname="org.h2.jdbcx.JdbcDataSource" name="H2Pool" res-type="javax.sql.DataSource">
-      <property name="URL" value="jdbc:h2:${com.sun.aas.instanceRoot}/lib/databases/embedded_default;AUTO_SERVER=TRUE"></property>
-    </jdbc-connection-pool>
     <!-- Wegas-->
     <jdbc-connection-pool max-pool-size="300" datasource-classname="org.postgresql.xa.PGXADataSource" name="jdbc/wegas_dev_pool" res-type="javax.sql.XADataSource">
       <property name="DatabaseName" value="${wegas.db.name}"></property>
@@ -36,7 +32,6 @@
   </resources>
   <servers>
     <server config-ref="server-config" name="server">
-      <resource-ref ref="jdbc/__default"></resource-ref>
       <resource-ref ref="concurrent/__defaultContextService"></resource-ref>
       <resource-ref ref="concurrent/__defaultManagedExecutorService"></resource-ref>
       <resource-ref ref="concurrent/__defaultManagedScheduledExecutorService"></resource-ref>
