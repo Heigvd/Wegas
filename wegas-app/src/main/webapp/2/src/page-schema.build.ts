@@ -134,10 +134,10 @@ export default function() {
   }
 
   function isNodeDefaultExported(node: ts.Node): boolean {
+    const modifier = ts.getCombinedModifierFlags(node as ts.Declaration);
     return (
-      (ts.getCombinedModifierFlags(node as ts.Declaration) &
-        ts.ModifierFlags.ExportDefault) !==
-      0
+      (modifier & ts.ModifierFlags.ExportDefault) ===
+      ts.ModifierFlags.ExportDefault
     );
   }
 
