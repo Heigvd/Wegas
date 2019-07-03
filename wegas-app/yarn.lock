@@ -906,7 +906,7 @@
   resolved "https://registry.yarnpkg.com/@sheerun/mutationobserver-shim/-/mutationobserver-shim-0.3.2.tgz#8013f2af54a2b7d735f71560ff360d3a8176a87b"
   integrity sha512-vTCdPp/T/Q3oSqwHmZ5Kpa9oI7iLtGl3RQaA/NyLHikvcrPxACkkKVr/XzkSPJWXHRhKGzVvb0urJsbMlRxi1Q==
 
-"@tinymce/tinymce-react@^3.1.1":
+"@tinymce/tinymce-react@^3.1.1", "@tinymce/tinymce-react@^3.2.0":
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/@tinymce/tinymce-react/-/tinymce-react-3.2.0.tgz#c15d39db0bae0a63c2555b6f5d50917da921f3d4"
   integrity sha512-HrjZfEvDjZqIPohaTMiQwMqzliPGwEGGcEBdB3RRTjBjXPuvVsd9wwgssCBsuOELmbtooprMXd21AmiarXTWLA==
@@ -8102,7 +8102,6 @@ jsonfile@^3.0.0:
 
 "jsoninput@github:cigit/JSONInput":
   version "0.0.23"
-  uid "64de71f63e78292c0d72e2c1ceb6b3793939b99e"
   resolved "https://codeload.github.com/cigit/JSONInput/tar.gz/64de71f63e78292c0d72e2c1ceb6b3793939b99e"
   dependencies:
     immer "^3.1.2"
@@ -13238,6 +13237,11 @@ tinycolor2@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/tinycolor2/-/tinycolor2-1.4.1.tgz#f4fad333447bc0b07d4dc8e9209d8f39a8ac77e8"
   integrity sha1-9PrTM0R7wLB9TcjpIJ2POaisd+g=
+
+tinymce@^5.0.10:
+  version "5.0.10"
+  resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-5.0.10.tgz#c74d56406ac1a47145fee666fe0fceafd6d98a2d"
+  integrity sha512-iUMP2ROxGx5ICW/gehulIYQ4khfl1fbS/hkJvtqhBcbk1UOytGwMPIfo1FVEqVjeO03SYFhAd0yfDyOyAV+ByQ==
 
 tmp@0.0.24:
   version "0.0.24"

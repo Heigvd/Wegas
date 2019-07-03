@@ -52,6 +52,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.18",
     "@fortawesome/free-solid-svg-icons": "^5.8.2",
     "@fortawesome/react-fontawesome": "0.1.4",
+    "@tinymce/tinymce-react": "^3.2.0",
     "color": "^3.1.1",
     "downshift": "^3.2.10",
     "emotion": "^10.0.9",
@@ -74,7 +75,8 @@
     "resize-observer-polyfill": "^1.5.0",
     "slate": "^0.47.2",
     "slate-html-serializer": "^0.8.4",
-    "slate-react": "^0.22.2"
+    "slate-react": "^0.22.2",
+    "tinymce": "^5.0.10"
   },
   "devDependencies": {
     "@types/babel-generator": "^6.25.2",

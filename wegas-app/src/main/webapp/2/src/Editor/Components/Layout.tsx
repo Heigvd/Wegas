@@ -7,6 +7,7 @@ import PageDisplay from './Page/PageDisplay';
 import { TabLayout } from '../../Components/Tabs';
 import StateMachineEditor from './StateMachineEditor';
 import LibraryEditor from './ScriptEditors/LibraryEditor';
+import { HTMLEditor } from '../../Components/HTMLEditor';
 
 const layout = css({
   display: 'grid',
@@ -41,7 +42,8 @@ export default class AppLayout extends React.Component<
           <TreeView />
         </div>
         <div>
-          <TabLayout tabs={['Page', 'StateMachine', 'Scripts']}>
+          <TabLayout tabs={['HTML', 'Page', 'StateMachine', 'Scripts']}>
+            <HTMLEditor content={'<div>Tadaaaaaa</div>'} />
             <PageDisplay />
             <StateMachineEditor />
             <LibraryEditor />
