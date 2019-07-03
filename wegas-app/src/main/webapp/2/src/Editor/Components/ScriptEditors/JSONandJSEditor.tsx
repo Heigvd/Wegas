@@ -35,7 +35,7 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
 
   const editJS = (
     monaco: typeof import('monaco-editor'),
-    editor: import('monaco-editor').editor.IStandaloneCodeEditor,
+    editor: import('monaco-editor').editor.ICodeEditor,
   ) => {
     try {
       setError('');
@@ -139,7 +139,7 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
 
   const variableClasses = Object.values(
     store.getState().variableDescriptors,
-  ).reduce<{ [variable: string]: any }>((newObject, variable) => {
+  ).reduce<{ [variable: string]: string }>((newObject, variable) => {
     if (variable !== undefined && variable.name !== undefined) {
       newObject[variable.name] = variable['@class'];
     }
@@ -162,14 +162,7 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
         gameModel: GameModel,
         name: T
       ) => VariableClasses[T];
-    }
-    interface XX{
-      parent: string;
-    }
-    interface YY extends XX{
-      child: number;
-    }
-    `;
+    }`;
 
   return (
     <Toolbar className={fullHeight}>
@@ -214,10 +207,18 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
           onSave={onSave}
           cursorOffset={cursorOffset.current}
           defaultFocus={true}
-          defaultKeyEvents={[
+          defaultActions={[
             {
-              keys: KeyMod.Alt | KeyCode.RightArrow,
-              event: editJS,
+              id: 'embeddedJSEditor',
+              label: 'Open embedded JS editor',
+              keybindings: [
+                KeyMod.Alt | KeyCode.RightArrow,
+                KeyMod.chord(
+                  KeyMod.CtrlCmd | KeyCode.KEY_J,
+                  KeyMod.CtrlCmd | KeyCode.KEY_S,
+                ),
+              ],
+              run: editJS,
             },
           ]}
         />

@@ -2,17 +2,25 @@ import { css } from 'emotion';
 import * as React from 'react';
 import { SizedDiv } from '../../../Components/SizedDiv';
 
-interface EditorKeyEvent {
+interface EditorAction {
   /**
-   * keys - the key that fire the event
+   * id - An unique identifier of the contributed action.
    */
-  keys: number;
+  id: string;
   /**
-   * event - the event function to be fired
+   * label - A label of the action that will be presented to the user.
    */
-  event: (
+  label: string;
+  /**
+   * keys - An optional array of keybindings for the action.
+   */
+  keybindings?: number[];
+  /**
+   * run - the function to be fired with the action
+   */
+  run: (
     monaco: typeof import('monaco-editor'),
-    editor: import('monaco-editor').editor.IStandaloneCodeEditor,
+    editor: import('monaco-editor').editor.ICodeEditor,
   ) => void;
 }
 
@@ -58,7 +66,7 @@ interface EditorProps {
   /**
    * defaultKeyEvents - a list of key event to be caught in the editor
    */
-  defaultKeyEvents?: EditorKeyEvent[];
+  defaultActions?: EditorAction[];
   /**
    * defaultFocus - force editor to focus on first render
    */
@@ -218,22 +226,23 @@ class SrcEditor extends React.Component<EditorProps> {
           }
         });
 
-        this.editor.addCommand(
-          monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
-          () => {
+        this.editor.addAction({
+          id: 'onSave',
+          label: 'Save code',
+          keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S],
+          run: () => {
             if (this.editor && this.props.onSave) {
               this.props.onSave(this.editor.getValue());
             }
           },
-        );
+        });
 
-        if (this.props.defaultKeyEvents) {
-          this.props.defaultKeyEvents.map(editorEvent => {
+        if (this.props.defaultActions) {
+          this.props.defaultActions.forEach(action => {
             if (this.editor) {
-              this.editor.addCommand(editorEvent.keys, () => {
-                if (this.editor) {
-                  editorEvent.event(monaco, this.editor);
-                }
+              this.editor.addAction({
+                ...action,
+                run: editor => action.run(monaco, editor),
               });
             }
           });
