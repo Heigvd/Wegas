@@ -8,6 +8,7 @@ import { CommonView, CommonViewContainer } from '../commonView';
 import { Labeled, LabeledView } from '../labeled';
 import { genBlock, genMark } from './plugins/generator';
 import { bulletList } from './plugins/list';
+import { HTMLEditor } from '../../../../Components/HTMLEditor';
 
 const generated = [
   genMark({
@@ -109,7 +110,13 @@ export default class Html extends React.Component<HtmlProps, HtmlState> {
           {({ labelNode }) => (
             <>
               {labelNode}
-              <div>
+              <HTMLEditor
+                value={this.state.rawValue}
+                onChange={val =>
+                  this.onChange({ value: html.deserialize(val) })
+                }
+              />
+              {/* <div>
                 {generated.map(g => (
                   <g.Button
                     key={g.name}
@@ -126,7 +133,7 @@ export default class Html extends React.Component<HtmlProps, HtmlState> {
                 onChange={this.onChange}
                 plugins={plugins}
                 placeholder={this.props.view.placeholder}
-              />
+              /> */}
             </>
           )}
         </Labeled>

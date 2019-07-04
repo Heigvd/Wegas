@@ -13,6 +13,7 @@ import { TreeVariableSelect } from './TreeVariableSelect';
 import translatable from './translatable';
 import EntityArrayFieldSelect from './EntityArrayFieldSelect';
 import FlatVariableSelect from './FlatVariableSelect';
+import { LabeledHTMLEditor } from '../../../Components/HTMLEditor';
 
 const DEFINED_VIEWS = {
   hidden,
@@ -25,8 +26,8 @@ const DEFINED_VIEWS = {
   textarea: Textarea,
   array: ArrayWidget,
   select: Select,
-  html: Html,
-  i18nhtml: translatable(Html),
+  html: LabeledHTMLEditor,
+  i18nhtml: translatable(LabeledHTMLEditor),
   script: Script,
   variableselect: TreeVariableSelect,
   entityarrayfieldselect: EntityArrayFieldSelect,
