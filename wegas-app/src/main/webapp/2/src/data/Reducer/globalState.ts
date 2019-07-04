@@ -19,28 +19,37 @@ export interface EditorAction<T extends IAbstractEntity> {
     };
   };
 }
-type Edition =
+export interface FileActions {
+  save: (entity: IFileDescriptor) => void;
+  more: null;
+}
+export type Edition =
   | {
       type: 'Variable';
       id: number;
       config?: Schema<AvailableViews>;
-      path?: (string|number)[];
+      path?: (string | number)[];
       actions: EditorAction<IAbstractEntity>;
     }
   | {
       type: 'VariableCreate';
       '@class': string;
       parentId?: number;
-      parentType?: string,
+      parentType?: string;
       config?: Schema<AvailableViews>;
       actions: EditorAction<IAbstractEntity>;
     }
   | {
       type: 'Component';
       page: string;
-      path: (string|number)[];
+      path: (string | number)[];
       config?: Schema<AvailableViews>;
       actions: EditorAction<IAbstractEntity>;
+    }
+  | {
+      type: 'File';
+      file: IFileDescriptor;
+      actions: FileActions;
     };
 export interface GlobalState {
   currentGameModelId: number;
@@ -83,6 +92,13 @@ export interface GlobalState {
 const global: Reducer<Readonly<GlobalState>> = u(
   (state: GlobalState, action: StateActions) => {
     switch (action.type) {
+      case ActionType.FILE_EDIT:
+        state.editing = {
+          type: 'File',
+          file: action.payload.file,
+          actions: action.payload.actions,
+        };
+        return;
       case ActionType.VARIABLE_EDIT:
         state.editing = {
           type: 'Variable',
@@ -192,7 +208,7 @@ export default global;
  */
 export function editVariable(
   entity: IVariableDescriptor,
-  path: (string|number)[] = [],
+  path: (string | number)[] = [],
   config?: Schema<AvailableViews>,
   actions: EditorAction<IVariableDescriptor> = {
     more: {
@@ -269,13 +285,13 @@ export function editStateMachine(
  */
 export function createVariable(
   cls: string,
-  parent?: IListDescriptor | IQuestionDescriptor | IChoiceDescriptor ,
+  parent?: IListDescriptor | IQuestionDescriptor | IChoiceDescriptor,
   actions: EditorAction<IAbstractEntity> = {},
 ) {
   return ActionCreator.VARIABLE_CREATE({
     '@class': cls,
     parentId: parent ? parent.id : undefined,
-    parentType: parent ? parent['@class']: undefined,
+    parentType: parent ? parent['@class'] : undefined,
     actions,
   });
 }

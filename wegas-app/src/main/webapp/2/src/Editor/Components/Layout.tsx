@@ -1,26 +1,27 @@
-import * as React from 'react';
-import { css } from 'emotion';
-import Header from './Header';
-import TreeView from './Variable/VariableTree';
-import Editor from './EntityEditor';
-import PageDisplay from './Page/PageDisplay';
-import { TabLayout } from '../../Components/Tabs';
-import StateMachineEditor from './StateMachineEditor';
-import LibraryEditor from './ScriptEditors/LibraryEditor';
-import { HTMLEditor } from '../../Components/HTMLEditor';
+import * as React from "react";
+import { css } from "emotion";
+import Header from "./Header";
+import TreeView from "./Variable/VariableTree";
+import Editor from "./EntityEditor";
+import PageDisplay from "./Page/PageDisplay";
+import { TabLayout } from "../../Components/Tabs";
+import StateMachineEditor from "./StateMachineEditor";
+import { DndConnectedFileBrowser } from "./FileBrowser/TreeFileBrowser/FileBrowser";
+import LibraryEditor from "./ScriptEditors/LibraryEditor";
+import { HTMLEditor } from "../../Components/HTMLEditor";
 
 const layout = css({
-  display: 'grid',
-  gridTemplateRows: 'auto 1fr',
-  height: '100%',
-  gridTemplateColumns: 'auto 1fr auto',
-  '& > div': {
-    boxSizing: 'border-box',
-    borderRight: '1px solid',
-  },
+  display: "grid",
+  gridTemplateRows: "auto 1fr",
+  height: "100%",
+  gridTemplateColumns: "auto 1fr auto",
+  "& > div": {
+    boxSizing: "border-box",
+    borderRight: "1px solid"
+  }
 });
 
-const fullWidth = css({ gridColumnEnd: 'span 3' });
+const fullWidth = css({ gridColumnEnd: "span 3" });
 
 export default class AppLayout extends React.Component<
   {},
@@ -29,7 +30,7 @@ export default class AppLayout extends React.Component<
   constructor(props: {}) {
     super(props);
     this.state = {
-      editable: false,
+      editable: false
     };
   }
   render() {
@@ -42,11 +43,14 @@ export default class AppLayout extends React.Component<
           <TreeView />
         </div>
         <div>
-          <TabLayout tabs={['HTML', 'Page', 'StateMachine', 'Scripts']}>
-            <HTMLEditor content={'<div>Tadaaaaaa</div>'} />
+          <TabLayout
+            tabs={["HTML", "Page", "StateMachine", "Scripts", "Files"]}
+          >
+            <HTMLEditor content={"<div>Tadaaaaaa</div>"} />
             <PageDisplay />
             <StateMachineEditor />
             <LibraryEditor />
+            <DndConnectedFileBrowser />
           </TabLayout>
         </div>
         <div>

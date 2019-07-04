@@ -23,7 +23,12 @@ import 'tinymce/skins/content/default/content.css';
 import 'tinymce/skins/ui/oxide/content.min.css';
 
 import { Editor } from '@tinymce/tinymce-react';
-// import { Modal } from './Modal';
+import { DndFileBrowser } from '../Editor/Components/FileBrowser/TreeFileBrowser/FileBrowser';
+import { Modal } from './Modal';
+import { FileAPI } from '../API/files.api';
+import { getAbsoluteFileName } from '../data/methods/ContentDescriptor';
+
+type CallbackFN = (url: string) => void;
 
 interface HTMLEditorProps {
   /**
@@ -41,6 +46,15 @@ interface HTMLEditorProps {
 }
 
 export function HTMLEditor({ content, onSave, onChange }: HTMLEditorProps) {
+  const [state, setState] = React.useState<{
+    error?: unknown;
+    data?: 'O';
+    status: 'pending' | 'resolved' | 'rejected';
+  }>({ status: 'pending' });
+  const [fileBrowsing, setFileBrowsing] = React.useState<{ fn?: CallbackFN }>(
+    {},
+  );
+
   const config = {
     inline: false,
     browser_spellcheck: true,
@@ -60,15 +74,41 @@ export function HTMLEditor({ content, onSave, onChange }: HTMLEditorProps) {
     relative_urls: false,
     toolbar_items_size: 'small',
     hidden_tootlbar: [2, 3],
-    file_picker_callback: function(callback, value, meta) {
-      callback('jkjkj');
-      // browseFiles(value, meta.filetype, function (fileUrl) {
-      //   callback("jskdjskjd");
-      // });
+    file_picker_callback: (callback: CallbackFN) => {
+      setFileBrowsing({ fn: callback });
     },
   };
 
-  const [fileBrowsing, setFileBrowsing] = React.useState(false);
+  React.useEffect(() => {
+    // Ugly workaround...
+    document
+      .getElementsByClassName('tox tox-silver-sink tox-tinymce-aux')[0]
+      .setAttribute(
+        'style',
+        'visibility:' + fileBrowsing.fn ? 'hidden' : 'visible',
+      );
+  }, [fileBrowsing.fn]);
 
-  return <Editor initialValue={content} init={config} onChange={onChange} />;
+  return (
+    <div>
+      <div style={{ visibility: fileBrowsing.fn ? 'hidden' : 'visible' }}>
+        <Editor initialValue={content} init={config} onChange={onChange} />
+      </div>
+      {fileBrowsing.fn && (
+        <Modal>
+          <DndFileBrowser
+            onFileClick={file => {
+              setFileBrowsing({});
+              file &&
+                fileBrowsing.fn &&
+                fileBrowsing.fn(
+                  document.location.origin +
+                    FileAPI.fileURL(getAbsoluteFileName(file)),
+                );
+            }}
+          />
+        </Modal>
+      )}
+    </div>
+  );
 }

@@ -4,6 +4,7 @@ import { Labeled, LabeledView } from './labeled';
 import { CommonViewContainer, CommonView } from './commonView';
 interface BooleanProps extends WidgetProps.BaseProps<CommonView & LabeledView> {
   value?: boolean;
+  readOnly?: boolean;
 }
 export default class BooleanView extends React.Component<BooleanProps> {
   onChange = (event: React.ChangeEvent<HTMLInputElement>) =>
