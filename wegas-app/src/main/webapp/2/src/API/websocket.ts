@@ -4,6 +4,7 @@ import { store } from '../data/store';
 import { updatePusherStatus } from '../data/Reducer/globalState';
 import { managedMode } from '../data/actions';
 import { Actions } from '../data';
+import * as React from 'react';
 
 const CHANNEL_PREFIX = {
   Admin: 'private-Admin',
@@ -17,17 +18,17 @@ const CHANNEL_PREFIX = {
 function Uint8ArrayToStr(array: Uint8Array) {
   // http://www.onicos.com/staff/iz/amuse/javascript/expert/utf.txt
   /* utf.js - UTF-8 <=> UTF-16 convertion
-     *
-     * Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
-     * Version: 1.0
-     * LastModified: Dec 25 1999
-     * This library is free.  You can redistribute it and/or modify it.
-     */
-  let out, i, len, c;
+   *
+   * Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
+   * Version: 1.0
+   * LastModified: Dec 25 1999
+   * This library is free.  You can redistribute it and/or modify it.
+   */
+  let out, i, c;
   let char2, char3;
 
   out = '';
-  len = array.length;
+  const len = array.length;
   i = 0;
   while (i < len) {
     c = array[i++];
@@ -62,10 +63,13 @@ function Uint8ArrayToStr(array: Uint8Array) {
 
   return out;
 }
-async function processEvent(event: string, data: string | {}) : Promise<{
-    event: string;
-    data: string | {};
-    }>{
+async function processEvent(
+  event: string,
+  data: string | {},
+): Promise<{
+  event: string;
+  data: string | {};
+}> {
   if (event.endsWith('.gz') && typeof data === 'string') {
     const ba = [];
     const d = atob(data);
@@ -73,34 +77,73 @@ async function processEvent(event: string, data: string | {}) : Promise<{
       ba.push(d.charCodeAt(i));
     }
     const compressed = new Uint8Array(ba);
-    
+
     return {
-      event : event.slice(0, -3),
+      event: event.slice(0, -3),
       data: JSON.parse(
-        Uint8ArrayToStr(await import('pako').then(p => p.inflate(compressed)))
+        Uint8ArrayToStr(await import('pako').then(p => p.inflate(compressed))),
       ),
     };
   }
-  return {event, data};
+  return { event, data };
 }
+
+export type WebSocketEvent =
+  | 'EntityUpdatedEvent'
+  | 'EntityDestroyedEvent'
+  | 'CustomEvent'
+  | 'PageUpdate'
+  | 'LibraryUpdate-CSS'
+  | 'LibraryUpdate-ClientScript'
+  | 'LibraryUpdate-ServerScript';
+
+const webSocketEvents: WebSocketEvent[] = [
+  'EntityUpdatedEvent',
+  'EntityDestroyedEvent',
+  'CustomEvent',
+  'PageUpdate',
+  'LibraryUpdate-CSS',
+  'LibraryUpdate-ClientScript',
+  'LibraryUpdate-ServerScript',
+];
+
+interface EventMap {
+  [eventId: string]: ((
+    data: any, //eslint-disable-line @typescript-eslint/no-explicit-any
+  ) => void)[];
+}
+
+interface ICustomEventData {
+  deletedEntities: IAbstractEntity[];
+  updatedEntities: IAbstractEntity[];
+  events: any[];
+}
+
 /**
  *
  *
  * @export
  * @class WebSocketListener
  */
-export default class WebSocketListener {
+class WebSocketListener {
   socketId?: string;
-  status: any;
+  status: any; //eslint-disable-line @typescript-eslint/no-explicit-any
+  events: EventMap = {};
+
   private socket: import('pusher-js').Pusher.PusherSocket | null = null;
   constructor(applicationKey: string, authEndpoint: string, cluster: string) {
+    for (const eventId of webSocketEvents) {
+      this.events[eventId] = [];
+    }
     import('pusher-js').then(Pusher => {
       this.socket = new Pusher.default(applicationKey, {
         cluster,
         authEndpoint,
         encrypted: true,
       });
-      this.socket.connection.bind('state_change', (state: any) => {
+      this.socket.connection.bind('state_change', (
+        state: any, //eslint-disable-line @typescript-eslint/no-explicit-any
+      ) => {
         this.status = state.current;
         this.socketId = this.socket!.connection.socket_id;
         store.dispatch(updatePusherStatus(state.current, this.socketId));
@@ -121,14 +164,48 @@ export default class WebSocketListener {
               //pusher events
               return;
             }
-            this.eventReveived(processed.event, processed.data);
+            this.eventReveived(
+              processed.event as WebSocketEvent,
+              processed.data,
+            );
           },
         ),
       );
     });
   }
-  private eventReveived(event: string, data: any) {
-    console.log(event, data);
+  public bindCallback(
+    eventId: WebSocketEvent,
+    callback: (data: unknown) => void,
+  ) {
+    if (this.events[eventId]) {
+      this.events[eventId].push(callback);
+    } else {
+      console.log('Unknown event');
+    }
+  }
+
+  public unbindCallback(
+    eventId: WebSocketEvent,
+    callback: (data: unknown) => void,
+  ) {
+    if (this.events[eventId]) {
+      this.events[eventId] = this.events[eventId].filter(el => el !== callback);
+    } else {
+      console.log('Unknown event');
+    }
+  }
+
+  private eventReveived(event: WebSocketEvent, data: unknown) {
+    let eventFound = false;
+    // Dispatch outisde managed events
+    if (this.events[event] !== undefined) {
+      eventFound = Object.keys(this.events[event]).length > 0;
+      for (const callback of this.events[event]) {
+        callback(data);
+      }
+    }
+
+    // Dispatch inside managed events... (may be simplified)
     switch (event) {
       case 'EntityUpdatedEvent':
       case 'EntityDestroyedEvent':
@@ -136,19 +213,36 @@ export default class WebSocketListener {
         return store.dispatch(
           managedMode({
             '@class': 'ManagedResponse',
-            deletedEntities: data.deletedEntities,
-            updatedEntities: data.updatedEntities,
-            events: data.events,
+            deletedEntities: (data as ICustomEventData).deletedEntities,
+            updatedEntities: (data as ICustomEventData).updatedEntities,
+            events: (data as ICustomEventData).events,
           }),
         );
       case 'PageUpdate':
-        store.dispatch(Actions.PageActions.get(data));
+        store.dispatch(Actions.PageActions.get(data as string));
         return;
       default:
-        throw Error(`Event [${event}] unchecked`);
+        if (!eventFound) {
+          throw Error(`Event [${event}] unchecked`);
+        }
     }
   }
   destructor() {
     this.socket!.disconnect();
   }
 }
+
+const SingletonWebSocket = new WebSocketListener(
+  PusherApp.applicationKey,
+  PusherApp.authEndpoint,
+  PusherApp.cluster,
+);
+
+export const useWebsocket = (
+  event: WebSocketEvent,
+  cb: (data: unknown) => void,
+) =>
+  React.useEffect(() => {
+    SingletonWebSocket.bindCallback(event, cb);
+    return () => SingletonWebSocket.unbindCallback(event, cb);
+  }, [event, cb]);

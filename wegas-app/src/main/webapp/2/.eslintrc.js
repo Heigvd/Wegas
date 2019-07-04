@@ -28,6 +28,8 @@ module.exports = {
     'no-console': 'warn',
     'no-alert': 'error',
     'no-var': 'error',
+    'no-eval': 'error',
+    'no-implied-eval': 'error',
     'prefer-const': 'error',
     'linebreak-style': ['error', 'unix'],
     'react/no-unescaped-entities': 'off',
