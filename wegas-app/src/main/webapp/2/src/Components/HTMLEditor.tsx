@@ -49,36 +49,41 @@ interface HTMLEditorProps {
   onChange?: (content: string) => void;
 }
 
+let id = 0;
+
 export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
   const [fileBrowsing, setFileBrowsing] = React.useState<{ fn?: CallbackFN }>(
     {},
   );
   const HTMLContent = React.useRef('');
 
-  const config = {
-    inline: false,
-    browser_spellcheck: true,
-    plugins: [
-      `${onSave ? 'save' : ''} autolink link image lists code media table`,
-      'paste advlist',
-    ],
-    toolbar1: `${
-      onSave ? 'save' : ''
-    } | bold italic bullist | link image media code`,
-    toolbar2: `forecolor backcolor underline
+  const config = (toolBarContainerId: string) => {
+    return {
+      theme: 'silver',
+      inline: true,
+      browser_spellcheck: true,
+      plugins: [
+        `${onSave ? 'save' : ''} autolink link image lists code media table`,
+        'paste advlist',
+      ],
+      toolbar1: `${
+        onSave ? 'save' : ''
+      } | bold italic bullist | link image media code`,
+      toolbar2: `forecolor backcolor underline
          alignleft aligncenter alignright alignjustify table`,
-    toolbar3: 'fontsizeselect styleselect',
-    menubar: false,
-    resize: 'both',
-    max_height: 500,
-    statusbar: true,
-    branding: false,
-    relative_urls: false,
-    toolbar_items_size: 'small',
-    hidden_tootlbar: [2, 3],
-    file_picker_callback: (callback: CallbackFN) =>
-      setFileBrowsing({ fn: callback }),
-    save_onsavecallback: () => onSave && onSave(HTMLContent.current),
+      toolbar3: 'fontsizeselect styleselect',
+      menubar: false,
+      resize: 'both',
+      statusbar: true,
+      branding: false,
+      relative_urls: false,
+      toolbar_items_size: 'small',
+      hidden_tootlbar: [2, 3],
+      file_picker_callback: (callback: CallbackFN) =>
+        setFileBrowsing({ fn: callback }),
+      save_onsavecallback: () => onSave && onSave(HTMLContent.current),
+      fixed_toolbar_container: '#' + toolBarContainerId,
+    };
   };
 
   React.useEffect(() => {
@@ -91,15 +96,18 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
     }
   }, [fileBrowsing.fn]);
 
+  const toolBarId = 'externalEditorToolbar' + String(id++);
+
   return (
     <div>
       <div style={{ visibility: fileBrowsing.fn ? 'hidden' : 'visible' }}>
+        <div id={toolBarId} />
         <Editor
           initialValue={value}
-          init={config}
-          onChange={val => {
-            HTMLContent.current = val;
-            onChange && onChange(val);
+          init={config(toolBarId)}
+          onChange={(val: { level: { content: string } }) => {
+            HTMLContent.current = val.level.content;
+            onChange && onChange(val.level.content);
           }}
         />
       </div>
@@ -161,6 +169,7 @@ export class LabeledHTMLEditor extends React.Component<HtmlProps, HtmlState> {
       this.setState({ value });
     }
   };
+
   render() {
     return (
       <CommonViewContainer
@@ -168,7 +177,7 @@ export class LabeledHTMLEditor extends React.Component<HtmlProps, HtmlState> {
         errorMessage={this.props.errorMessage}
       >
         <Labeled {...this.props.view}>
-          {({ labelNode }) => (
+          {({ labelNode, inputId }) => (
             <>
               {labelNode}
               <HTMLEditor value={this.state.value} onChange={this.onChange} />

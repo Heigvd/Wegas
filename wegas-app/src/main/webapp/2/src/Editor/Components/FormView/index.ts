@@ -7,7 +7,6 @@ import Textarea from './Textarea';
 import BooleanView from './Boolean';
 import Select from './Select';
 import ArrayWidget from './Array';
-import Html from './Html';
 import { Script } from './Script';
 import { TreeVariableSelect } from './TreeVariableSelect';
 import translatable from './translatable';
