@@ -37,22 +37,55 @@ sudo docker pull mongo
 sudo docker run -p 27017:27017 --name wegasmongo -d mongo
 sudo docker start wegasmongo
 ```
-###Using payara-micro
+
+* Build the app
+`mvn clean install`
+
+### Using the preconfigured runner
+* (optional) Add your pusher credentials to the file `/wegas-run/lib/classes/wegas-override.properties`
+* Launch the server  
+```shell
+cd wegas-run
+./run.sh
+```
+* Launch the wegas-next client for dev
+```shell
+cd wegas-app/src/main/webapp/2
+yarn start
+```
+* Browse the URL `localhost:3000/Wegas` and enter with user `root` and password `1234`
+
+* Welcome to the Watrix!
+
+### Using payara-micro (Not working now)
 * Install payara micro
 ```shell
 cd wegas-run
-wget https://s3-eu-west-1.amazonaws.com/payara.fish/Payara+Downloads/5.192/payara-micro-5.192.jar
+wget https://s3-eu-west-1.amazonaws.com/payara.fish/Payara+Downloads/5.192/payara-micro-5.192.jar payara-micro.jar
 ```
 * Install postgress JDBC driver
 ```shell
 cd lib
 wget https://jdbc.postgresql.org/download/postgresql-42.2.6.jar
 ```
-###Using payara-standard
-
+### Using payara-standard (Not working now)
+* Install payara-full
+```shell
+sudo wget https://s3-eu-west-1.amazonaws.com/payara.fish/Payara+Downloads/5.192/payara-5.192.zip
+sudo unzip payara-5.192.zip
+sudo rm -rf payara-5.192.zip
+sudo ln payara5/bin/asadmin /usr/bin/
+sudo asadmin start-domain
+```
+* Instal JDBC driver
+```shell
+wget https://jdbc.postgresql.org/download/postgresql-42.2.6.jar payara5/glassfish/domains/domain1/lib
+```
+* Deploy app
+`sudo asadmin deploy wegas-app/target/Wegas/`
 
 ------------------------
-##Troubleshooting
+## Troubleshooting
 * Maven : If your linux dist is too old and maven is < 3.5.2
 ```shell
 sudo tar xzf apache-maven-3.6.0-bin.tar.gz
