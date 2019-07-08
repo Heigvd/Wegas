@@ -1,5 +1,4 @@
-Installing Wegas
-------------------------
+# Installing Wegas (For ubuntu dists)
 * Install git  
 `sudo apt-get -y install git`
 * Clone Wegas and submodules
@@ -38,6 +37,7 @@ sudo docker pull mongo
 sudo docker run -p 27017:27017 --name wegasmongo -d mongo
 sudo docker start wegasmongo
 ```
+###Using payara-micro
 * Install payara micro
 ```shell
 cd wegas-run
@@ -48,8 +48,11 @@ wget https://s3-eu-west-1.amazonaws.com/payara.fish/Payara+Downloads/5.192/payar
 cd lib
 wget https://jdbc.postgresql.org/download/postgresql-42.2.6.jar
 ```
-Troubleshooting
+###Using payara-standard
+
+
 ------------------------
+##Troubleshooting
 * Maven : If your linux dist is too old and maven is < 3.5.2
 ```shell
 sudo tar xzf apache-maven-3.6.0-bin.tar.gz
