@@ -8,7 +8,6 @@ cd Wegas
 git submodule init
 git config submodule.wegas-app/src/main/webapp/wegas-private.url git@github.com:Heigvd/WegasPrivate.git
 git submodule update
-cd ..
 ```
 * Install openJDK >= 1.8.0  
 `sudo apt-get -y install openjdk-8-jdk`
@@ -41,14 +40,6 @@ sudo docker start wegasmongo
 * Build the app
 `mvn clean install`
 
-
-### Using the preconfigured runner
-* (optional) Add your pusher credentials to the file `/wegas-run/lib/classes/wegas-override.properties`
-* Launch the server  
-```shell
-cd wegas-run
-./run.sh
-```
 ------------------------
 ### Using payara-standard
 * Install payara-full
