@@ -3,7 +3,7 @@
 `sudo apt-get -y install git`
 * Clone Wegas and submodules
 ```shell
-git clone git://github.com/Heigvd/Wegas.git Wegas
+git clone git@github.com:Heigvd/Wegas.git Wegas
 cd Wegas
 git submodule init
 git config submodule.wegas-app/src/main/webapp/wegas-private.url git@github.com:Heigvd/WegasPrivate.git
