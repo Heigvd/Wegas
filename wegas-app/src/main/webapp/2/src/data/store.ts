@@ -29,7 +29,9 @@ function storeInit() {
 }
 storeInit();
 
-export const { StoreConsumer, useStore, getDispatch } = createStoreConnector(store);
+export const { StoreConsumer, useStore, getDispatch } = createStoreConnector(
+  store,
+);
 export type ThunkResult<R = void> = ThunkAction<
   R,
   State,
