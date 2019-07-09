@@ -48,12 +48,12 @@ sudo docker start wegasmongo
 wget https://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/4.1.2.181/payara-4.1.2.181.zip -O payara.zip
 unzip payara.zip
 sudo rm -rf payara.zip
+#Setting up config
+cp -r payara41/glassfish/domains/payaradomain/ payara41/glassfish/domains/wegasdomain/
+cp wegas-install/defaultdomain.xml payara41/glassfish/domains/wegasdomain/config/domain.xml
 #Installing jcdb driver
 wget https://jdbc.postgresql.org/download/postgresql-9.4.1212.jar
 mv postgresql-9.4.1212.jar payara41/glassfish/domains/wegasdomain/lib
-#Setting up config
-cp -r payara41/glassfish/domains/payaradomain/ payara41/glassfish/domains/wegasdomain
-cp wegas-install/defaultdomain.xml payara41/glassfish/domains/wegasdomain/config/domain.xml
 #Setting up wegas env variables
 cp wegas-install/defaultwegas-override.properties payara41/glassfish/domains/wegasdomain/lib/classes/wegas-override.properties
 ```
@@ -61,23 +61,29 @@ cp wegas-install/defaultwegas-override.properties payara41/glassfish/domains/weg
 `payara41/glassfish/domains/wegasdomain/lib/classes/wegas-override.properties`
 * Start payara  
 `sudo payara41/bin/asadmin start-domain wegasdomain`
-* Deploy app
-`sudo payara41/bin/asadmin deploy wegas-app/target/Wegas.war`
+* Creating runner  
+```shell
+echo '#!/bin/sh' > run.sh
+echo 'sudo payara41/bin/asadmin deploy --force wegas-app/target/Wegas.war' >> run.sh
+sudo chmod 755 run.sh
+```
 
 ### Using payara-micro (Not working now)
-* Install payara micro
+* Install payara micro  
 ```shell
 cd wegas-run
 wget https://s3-eu-west-1.amazonaws.com/payara.fish/Payara+Downloads/5.192/payara-micro-5.192.jar payara-micro.jar
 ```
-* Install postgress JDBC driver
+* Install postgress JDBC driver  
 ```shell
 cd lib
 wget https://jdbc.postgresql.org/download/postgresql-42.2.6.jar
 ```
 ------------------------
-
-* Launch the wegas-next client for dev purposes
+## Running the app
+* Deploy app  
+`./run.sh`
+* Launch the wegas-next client for dev purposes  
 ```shell
 cd wegas-app/src/main/webapp/2
 yarn start
