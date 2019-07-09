@@ -70,6 +70,8 @@ cp wegas-install/defaultwegas-override.properties payara41/glassfish/domains/weg
 `payara41/glassfish/domains/wegasdomain/lib/classes/wegas-override.properties`
 * Start payara  
 `sudo payara41/bin/asadmin start-domain wegasdomain`
+* Deploy app
+`sudo payara41/bin/asadmin deploy wegas-app/target/Wegas.war`
 
 ### Using payara-micro (Not working now)
 * Install payara micro
@@ -82,9 +84,6 @@ wget https://s3-eu-west-1.amazonaws.com/payara.fish/Payara+Downloads/5.192/payar
 cd lib
 wget https://jdbc.postgresql.org/download/postgresql-42.2.6.jar
 ```
-
-* Deploy app
-`sudo payara41/bin/asadmin deploy wegas-app/target/Wegas.war`
 ------------------------
 
 * Launch the wegas-next client for dev purposes
