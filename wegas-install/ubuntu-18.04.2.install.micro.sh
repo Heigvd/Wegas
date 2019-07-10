@@ -31,24 +31,22 @@ sudo docker start wegasmongo
 
 mvn clean install
 
-wget https://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/4.1.2.181/payara-4.1.2.181.zip -O payara.zip
-unzip payara.zip
-sudo rm -rf payara.zip
+mkdir -p run/lib/classes
+cd run
+wget https://search.maven.org/remotecontent?filepath=fish/payara/extras/payara-micro/4.1.2.181/payara-micro-4.1.2.181.jar -O payara-micro.jar
 
-cp -r payara41/glassfish/domains/payaradomain/ payara41/glassfish/domains/wegasdomain/
-cp wegas-install/defaultfulldomain.xml payara41/glassfish/domains/wegasdomain/config/domain.xml
+cp ../wegas-install/defaultmicrodomain.xml domain.xml
+cp ../wegas-install/defaultwegas-override.properties lib/classes/wegas-override.properties
 
+cd lib
 wget https://jdbc.postgresql.org/download/postgresql-9.4.1212.jar
-mv postgresql-9.4.1212.jar payara41/glassfish/domains/wegasdomain/lib
+cd ..
 
-cp wegas-install/defaultwegas-override.properties payara41/glassfish/domains/wegasdomain/lib/classes/wegas-override.properties
-
-sudo payara41/bin/asadmin start-domain wegasdomain
-
+cd ..
 echo '#!/bin/sh' > run.sh
-echo 'sudo payara41/bin/asadmin deploy --force wegas-app/target/Wegas.war' >> run.sh
+echo 'java -Dhazelcast.shutdownhook.enabled=true -jar run/payara-micro.jar --deploy wegas-app/target/Wegas.war --domainconfig run/domain.xml --addlibs run/lib --systemproperties run/lib/classes/wegas-override.properties --autobindhttp --autobindssl ' >> run.sh
 sudo chmod 755 run.sh
 
-echo "Don't forget to set up pusher credentials in payara41/glassfish/domains/wegasdomain/lib/classes/wegas-override.properties"
+echo "Don't forget to set up pusher credentials in run/lib/classes/wegas-override.properties"
 echo "To run the server simply type [./run.sh]"
 echo "To dev client go to [wegas-app/src/main/webapp/2] and type [yarn start]"

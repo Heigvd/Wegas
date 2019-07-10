@@ -51,3 +51,5 @@ Thumbs.db
 ######################
 payara41
 run.sh
+run
+derby.log
