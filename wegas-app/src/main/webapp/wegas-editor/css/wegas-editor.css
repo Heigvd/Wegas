@@ -1033,8 +1033,6 @@
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--languages .wegas-flexlist-content {
-    display: flex;
-    flex-direction: row;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--languages .wegas-text{
@@ -1048,6 +1046,19 @@
     overflow-y: auto;
     padding-bottom: 25px;
 }
+
+/* SpeedUp hack: firefox & edge are slow without this hack */
+.wegas-i18n-manager .wegas-i18n-manager--editor{
+    position: relative;
+}
+.wegas-i18n-manager .wegas-i18n-manager--editor > div{
+    position:absolute;
+    top: 0;
+    bottom:0;
+    left: 0;
+    right: 0;
+}
+/* end of SpeedUpHack */
 
 .wegas-i18n-manager .wegas-i18n-manager--editor .node,
 .wegas-i18n-manager .wegas-i18n-manager--editor .node > .translatedcontents {
@@ -1168,11 +1179,6 @@
 .wegas-i18n-manager .wegas-i18n-manager--editor .node-name i {
     font-size:14px;
 }
-
-.wegas-i18n-manager .wegas-i18n-manager--editor .node-children {
-    /*padding-left: 0.5em;*/
-}
-
 
 .wegas-i18n-manager .wegas-translation .tools > * {
     display: block;
