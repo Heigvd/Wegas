@@ -50,12 +50,12 @@ unzip payara.zip
 sudo rm -rf payara.zip
 #Setting up config
 cp -r payara41/glassfish/domains/payaradomain/ payara41/glassfish/domains/wegasdomain/
-cp wegas-install/defaultfulldomain.xml payara41/glassfish/domains/wegasdomain/config/domain.xml
+cp .install/defaultfulldomain.xml payara41/glassfish/domains/wegasdomain/config/domain.xml
 #Installing jcdb driver
 wget https://jdbc.postgresql.org/download/postgresql-9.4.1212.jar
 mv postgresql-9.4.1212.jar payara41/glassfish/domains/wegasdomain/lib
 #Setting up wegas env variables
-cp wegas-install/defaultwegas-override.properties payara41/glassfish/domains/wegasdomain/lib/classes/wegas-override.properties
+cp .install/defaultwegas-override.properties payara41/glassfish/domains/wegasdomain/lib/classes/wegas-override.properties
 ```
 * (optional) Insert your pusher credentials in  
 `payara41/glassfish/domains/wegasdomain/lib/classes/wegas-override.properties`
@@ -71,26 +71,26 @@ sudo chmod 755 run.sh
 ### Using payara-micro (Not working now)
 * Install payara micro  
 ```shell
-mkdir -p run/lib/classes
-cd run
+mkdir -p .run/lib/classes
+cd .run
 wget https://search.maven.org/remotecontent?filepath=fish/payara/extras/payara-micro/4.1.2.181/payara-micro-4.1.2.181.jar -O payara-micro.jar
 ```
 * Setting up config  
-`cp ../wegas-install/defaultmicrodomain.xml domain.xml`
+`cp ../.install/defaultmicrodomain.xml domain.xml`
 * Setting up wegas env variables
-cp ../wegas-install/defaultwegas-override.properties lib/classes/wegas-override.properties
+cp ../.install/defaultwegas-override.properties lib/classes/wegas-override.properties
 * Install postgress JDBC driver  
 ```shell
 cd lib
 wget https://jdbc.postgresql.org/download/postgresql-9.4.1212.jar
 cd ..
 ```
-* (optional) Insert your pusher credentials in `lib/classes/wegas-override.properties`
+* (optional) Insert your pusher credentials in `.run/lib/classes/wegas-override.properties`
 * Creating launcher  
 ```shell
 cd ..
 echo '#!/bin/sh' > run.sh
-echo 'java -Dhazelcast.shutdownhook.enabled=true -jar run/payara-micro.jar --deploy wegas-app/target/Wegas.war --domainconfig run/domain.xml --addlibs run/lib --systemproperties run/lib/classes/wegas-override.properties --autobindhttp --autobindssl ' >> run.sh
+echo 'java -Dhazelcast.shutdownhook.enabled=true -jar .run/payara-micro.jar --deploy wegas-app/target/Wegas.war --domainconfig .run/domain.xml --addlibs .run/lib --systemproperties .run/lib/classes/wegas-override.properties --autobindhttp --autobindssl ' >> run.sh
 sudo chmod 755 run.sh
 ```
 
