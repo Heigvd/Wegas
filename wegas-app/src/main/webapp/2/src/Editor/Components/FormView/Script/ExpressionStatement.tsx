@@ -1,6 +1,8 @@
 import generate from '@babel/generator';
 import { parseExpression } from '@babel/parser';
 import {
+  binaryExpression,
+  BinaryExpression,
   booleanLiteral,
   callExpression,
   EmptyStatement,
@@ -8,13 +10,13 @@ import {
   ExpressionStatement,
   expressionStatement,
   identifier,
+  isBinaryExpression,
   isCallExpression,
   isEmptyStatement,
   isExpressionStatement,
   numericLiteral,
   SpreadElement,
   stringLiteral,
-  isBinaryExpression,
 } from '@babel/types';
 import Form from 'jsoninput';
 import * as React from 'react';
@@ -26,15 +28,21 @@ import {
   isVariableCall,
   variableName,
 } from './variableAST';
-import { binaryExpression } from '@babel/types';
-import { BinaryExpression } from '@babel/types';
 
 interface ImpactProps {
   stmt: ExpressionStatement | EmptyStatement;
   onChange: (stmt: ExpressionStatement) => void;
   mode: 'SET' | 'GET';
 }
-
+type parameterType =
+  | 'string'
+  | 'number'
+  | 'boolean'
+  | 'identifier'
+  | 'array'
+  | 'object'
+  | 'null'
+  | undefined;
 interface ExprState {
   variable?: IVariableDescriptor;
   variableSchema: { view: any };
@@ -51,14 +59,11 @@ function astToJSONValue(ast: Expression | SpreadElement) {
       return JSON.parse(generate(ast).code);
   }
 }
-function valueToAST(
-  value: any,
-  type: 'string' | 'number' | 'boolean' | 'identifier' | 'array' | 'object',
-) {
+function valueToAST(value: unknown, type: parameterType) {
   if (value === undefined) {
     return identifier('undefined');
   }
-  if (type === 'identifier') {
+  if (type === 'identifier' && typeof value === 'string') {
     return identifier(value);
   }
   switch (typeof value) {
@@ -78,7 +83,7 @@ function valueToAST(
 
 function argsToDefault(
   args: {
-    type: 'string' | 'number' | 'boolean' | 'identifier' | 'array' | 'object';
+    type: parameterType;
     value?: {};
     const?: string;
   }[],
@@ -90,17 +95,16 @@ async function buildDefaultVariableCallAST(
   mode: 'SET' | 'GET',
 ) {
   const config = await getMethodConfig(variable);
-  const method = Object.keys(config).filter(
-    m =>
-      mode === 'SET'
-        ? config[m].returns === undefined
-        : config[m].returns !== undefined,
+  const method = Object.keys(config).filter(m =>
+    mode === 'SET'
+      ? config[m].returns === undefined
+      : config[m].returns !== undefined,
   )[0];
   if (method != null) {
     return createVariableCallAST(
-      variable.name,
+      variable.name!,
       method,
-      argsToDefault(config[method].arguments),
+      argsToDefault(config[method].parameters),
     );
   }
 }
@@ -118,7 +122,7 @@ function getInfo(stmt: ExpressionStatement) {
 }
 function buildDefaultGlobalCAllAST(method: string, mode: 'SET' | 'GET') {
   const config = getGlobals(mode === 'GET' ? 'condition' : 'impact')[method];
-  return createGlobalCallAST(method, argsToDefault(config.arguments));
+  return createGlobalCallAST(method, argsToDefault(config.parameters));
 }
 function genGlobalItems(mode: 'SET' | 'GET') {
   return Object.entries(
@@ -199,24 +203,24 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
       if (
         oldCfg &&
         newCfg &&
-        oldCfg.arguments.length === newCfg.arguments.length &&
-        !newCfg.arguments.some((a, i) => {
-          return oldCfg.arguments[i].type !== a.type;
+        oldCfg.parameters.length === newCfg.parameters.length &&
+        !newCfg.parameters.some((a, i) => {
+          return oldCfg.parameters[i].type !== a.type;
         })
       ) {
         // Args are identical
         this.props.onChange(
           expressionStatement(
-            createVariableCallAST(variable!.name, value, args),
+            createVariableCallAST(variable!.name!, value, args),
           ),
         );
       } else {
         this.props.onChange(
           expressionStatement(
             createVariableCallAST(
-              variable!.name,
+              variable!.name!,
               value,
-              argsToDefault(newCfg.arguments),
+              argsToDefault(newCfg.parameters),
             ),
           ),
         );
@@ -255,10 +259,10 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
         this.props.onChange(
           expressionStatement(
             createVariableCallAST(
-              variable!.name,
+              variable!.name!,
               method,
               values.map((a, i) =>
-                valueToAST(a, methodsConfig[method].arguments[i].type),
+                valueToAST(a, methodsConfig[method].parameters[i].type),
               ),
             ),
           ),
@@ -272,7 +276,7 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
           expressionStatement(
             callExpression(
               stmt.expression.callee,
-              values.map((a, i) => valueToAST(a, config.arguments[i].type)),
+              values.map((a, i) => valueToAST(a, config.parameters[i].type)),
             ),
           ),
         );
@@ -364,11 +368,10 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
   render() {
     const { mode, stmt } = this.props;
     const { methodsConfig } = this.state;
-    const availableMethods = Object.keys(methodsConfig).filter(
-      m =>
-        mode === 'SET'
-          ? methodsConfig[m].returns === undefined
-          : methodsConfig[m].returns !== undefined,
+    const availableMethods = Object.keys(methodsConfig).filter(m =>
+      mode === 'SET'
+        ? methodsConfig[m].returns === undefined
+        : methodsConfig[m].returns !== undefined,
     );
     if (isEmptyStatement(stmt)) {
       return (
@@ -386,12 +389,9 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
       const variable = variableName(expression.callee.object);
       const method = expression.callee.property.name;
       const args = expression.arguments;
-      const formItems: MethodConfig['1']['arguments'] = methodsConfig[method]
-        ? methodsConfig[method].arguments.map(
-            a =>
-              a.type === 'identifier'
-                ? { ...a, type: 'string' as 'string' }
-                : a,
+      const formItems: MethodConfig['1']['parameters'] = methodsConfig[method]
+        ? methodsConfig[method].parameters.map(a =>
+            a.type === 'identifier' ? { ...a, type: 'string' as 'string' } : a,
           )
         : [];
       return (
@@ -444,12 +444,9 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
       if (config == null) {
         throw Error(`Unknown [${method}]`);
       }
-      const formItems: MethodConfig['1']['arguments'] = config
-        ? config.arguments.map(
-            a =>
-              a.type === 'identifier'
-                ? { ...a, type: 'string' as 'string' }
-                : a,
+      const formItems: MethodConfig['1']['parameters'] = config
+        ? config.parameters.map(a =>
+            a.type === 'identifier' ? { ...a, type: 'string' as 'string' } : a,
           )
         : [];
       return (

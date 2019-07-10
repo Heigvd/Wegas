@@ -15,6 +15,9 @@ import javax.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import javax.ws.rs.ext.ContextResolver;
 
 import org.slf4j.LoggerFactory;
@@ -53,6 +56,11 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
         AnnotationIntrospector pair = AnnotationIntrospector.pair(primary, secondary);
 
         mapper.setAnnotationIntrospector(pair);*/
+
+        SimpleModule customSerialisers =new SimpleModule();
+        customSerialisers.addDeserializer(TranslatableContent.class, new TranslationContentDeserializer());
+
+        mapper.registerModule(customSerialisers);
 
         AnnotationIntrospector jackson = new JacksonAnnotationIntrospector();
         mapper.setAnnotationIntrospector(jackson);

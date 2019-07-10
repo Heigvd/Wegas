@@ -5,96 +5,72 @@ import { shallowIs } from '../Helper/shallowIs';
 function id<T>(x: T) {
   return x;
 }
-export function createReduxContext<S extends Store>(store: S) {
+function refDifferent(a: unknown, b: unknown) {
+  return a !== b;
+}
+function shallowDifferent(a: unknown, b: unknown) {
+  return !shallowIs(a, b);
+}
+export function createStoreConnector<S extends Store>(store: S) {
   type State = ReturnType<S['getState']>;
   type Dispatch = S['dispatch'];
-  const { Consumer, Provider } = React.createContext<{
-    state: State;
-  }>({
-    state: store.getState(),
-  });
 
-  class ReduxStore extends React.Component<
-    {},
-    { state: S; unsub: () => void }
-  > {
-    state = {
-      state: store.getState(),
-      unsub: () => undefined,
-    };
-    componentDidMount() {
-      const unsub = store.subscribe(this.onChange);
-      this.setState({
-        unsub,
-      });
-    }
-    componentWillUnmount() {
-      this.state.unsub();
-    }
-    onChange = () => {
-      this.setState({ state: store.getState() });
-    };
-    render() {
-      return (
-        <Provider
-          value={{
-            state: this.state.state,
-          }}
-        >
-          {this.props.children}
-        </Provider>
-      );
-    }
+  /**
+   * Hook, connect to store. Update if the selectors returns something different, as defined by shouldUpdate.
+   * @param selector Select a specific part of the store
+   * @param shouldUpdate Will update the component if this function returns true.
+   * Default to ref comparing values returned from selector
+   */
+  function useStore<R>(
+    selector: (state: State) => R,
+    shouldUpdate: (oldValue: R, newValue: R) => boolean = refDifferent,
+  ) {
+    const [selected, setSelected] = React.useState(() =>
+      selector(store.getState()),
+    );
+    React.useEffect(() => {
+      const stateUpdater = () => {
+        const value = selector(store.getState());
+        setSelected(v => {
+          if (shouldUpdate(v, value)) {
+            return value;
+          }
+          return v;
+        });
+      };
+      const sub = store.subscribe(stateUpdater);
+      stateUpdater();
+      return sub;
+    }, [selector, shouldUpdate]);
+    return selected;
   }
 
-  class Indirection<R> extends React.Component<{
-    state: R;
-    shouldUpdate: (oldValue: R, newValue: R) => boolean;
-    children: (store: { state: R; dispatch: Dispatch }) => React.ReactNode;
-  }> {
-    static defaultProps = {
-      shouldUpdate: (a: unknown, b: unknown) => !shallowIs(a, b),
-    };
-    shouldComponentUpdate(prevProps: {
-      state: R;
-      shouldUpdate: (oldValue: R, newValue: R) => boolean;
-      dispatch: Dispatch;
-      children: (store: { state: R; dispatch: Dispatch }) => React.ReactNode;
-    }) {
-      return this.props.shouldUpdate(prevProps.state, this.props.state);
-    }
-    render() {
-      return this.props.children({
-        dispatch: store.dispatch,
-        state: this.props.state,
-      });
-    }
+  function getDispatch() {
+    return store.dispatch;
   }
 
   function ReduxConsumer<R = State>(props: {
     selector?: (state: State) => R;
     /**
-     * defaults to shallow comparing selector
+     * defaults to shallow comparing selector's return value
      */
     shouldUpdate?: (oldValue: R, newValue: R) => boolean;
-    children: (store: { state: R; dispatch: Dispatch }) => React.ReactNode;
+    children: (store: {
+      state: R;
+      dispatch: Dispatch;
+    }) => React.ReactElement | null;
   }) {
     const {
       selector = id as (s: State) => State,
       children,
-      shouldUpdate,
+      shouldUpdate = shallowDifferent,
     } = props;
-    return (
-      <Consumer>
-        {({ state }) => {
-          return (
-            <Indirection state={selector(state)} shouldUpdate={shouldUpdate}>
-              {children}
-            </Indirection>
-          );
-        }}
-      </Consumer>
-    );
+    const state = useStore(selector, shouldUpdate);
+    return children({ dispatch: getDispatch(), state });
   }
-  return { StoreProvider: ReduxStore, StoreConsumer: ReduxConsumer };
+  return {
+    StoreConsumer: ReduxConsumer,
+    useStore,
+    getDispatch: getDispatch,
+  };
 }

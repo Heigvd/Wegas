@@ -12,7 +12,7 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
-import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
+import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.Map;
 import javax.ejb.EJB;
@@ -48,19 +48,19 @@ public class ScriptControllerTest extends AbstractArquillianTest {
         Assert.assertEquals(1.0, ((NumberDescriptor) variableDescriptorFacade.find(number.getId())).getInstance(player).getValue(), 0.000001);
 
         TriggerDescriptor trigger = new TriggerDescriptor();
-        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setTriggerEvent(new Script("false and errored"));
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel,'notavar').add(self, 2)"));
         variableDescriptorFacade.create(scenario.getId(), trigger);
 
         TriggerDescriptor trigger2 = new TriggerDescriptor();
-        trigger2.setDefaultInstance(new TriggerInstance());
+        trigger2.setDefaultInstance(new StateMachineInstance());
         trigger2.setTriggerEvent(new Script("true"));
         trigger2.setPostTriggerEvent(new Script("Variable.find(gameModel,'testnumber').add(self, 8)"));
         variableDescriptorFacade.create(scenario.getId(), trigger2);
 
         TriggerDescriptor trigger3 = new TriggerDescriptor();
-        trigger3.setDefaultInstance(new TriggerInstance());
+        trigger3.setDefaultInstance(new StateMachineInstance());
         trigger3.setPostTriggerEvent(new Script("Variable.find(gameModel,'testnumber').add(self, -2)"));
         variableDescriptorFacade.create(scenario.getId(), trigger3);
 

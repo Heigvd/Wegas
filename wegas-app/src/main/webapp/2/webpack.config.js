@@ -1,3 +1,5 @@
+/* eslint-env node */
+/* eslint  @typescript-eslint/no-var-requires: "off" */
 const path = require('path');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
@@ -14,13 +16,11 @@ const plugins = [
   new MonacoWebpackPlugin({
     languages: ['json', 'css', 'javascript', 'typescript'],
   }),
+  new ForkTsCheckerWebpackPlugin({
+    formatter: 'codeframe',
+  }),
 ];
 if (!isCI) {
-  plugins.push(
-    new ForkTsCheckerWebpackPlugin({
-      formatter: 'codeframe',
-    }),
-  );
   // plugins.push(new BundleAnalyzerPlugin());
 }
 module.exports = {
@@ -55,7 +55,7 @@ module.exports = {
                     module: 'commonjs',
                     noEmit: false,
                   },
-                  transpileOnly: !isCI,
+                  transpileOnly: true,
                   instance: 'node',
                   onlyCompileBundledFiles: true,
                 },
@@ -68,7 +68,7 @@ module.exports = {
               compilerOptions: {
                 noEmit: false,
               },
-              transpileOnly: !isCI,
+              transpileOnly: true,
               instance: 'web',
               onlyCompileBundledFiles: true,
             },

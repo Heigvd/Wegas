@@ -11,9 +11,12 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.View;
 import javax.persistence.*;
 
 /**
@@ -32,7 +35,9 @@ public class Activity extends AbstractAssignement {
 
     @Transient
     @JsonIgnore
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(value = ReadOnlyString.class, label = "Requirement name"))
     private String requirementName;
 
     /**
@@ -46,21 +51,27 @@ public class Activity extends AbstractAssignement {
      * worked time ? strange spelling...
      */
     @Column(name = "wtime")
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(value = ReadOnlyNumber.class, label = "time"))
     private double time;
 
     /**
      * Start time
      */
     @Column(name = "stime")
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(value = ReadOnlyNumber.class, label = "Start time"))
     private double startTime;
 
     /**
      *
      */
     @Column(name = "wcompletion")
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(value = ReadOnlyNumber.class, label = "Completion"))
     private double completion;
     /**
      *
@@ -93,7 +104,6 @@ public class Activity extends AbstractAssignement {
         this.completion = 0.0D;
         this.requirement = null;
     }
-
 
     @Override
     public Long getId() {

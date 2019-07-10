@@ -128,7 +128,6 @@ YUI().use(function(Y) {
                 ws_provides: [
                     "DialogueDescriptor",
                     "TriggerDescriptor",
-                    "TriggerInstance",
                     "FSMDescriptor",
                     "FSMInstance"
                 ]
@@ -781,7 +780,7 @@ YUI().use(function(Y) {
             },
             "wegas-gamemodel-i18n": {
                 path: "js/widget/wegas-gamemodel-i18n-min.js",
-                requires: ["wegas-layout-list", "wegas-script-helper", "wegas-tutorial"],
+                requires: ["wegas-layout-list", "wegas-script-helper", "wegas-tutorial", "wegas-react-form"],
                 ws_provides: ["LanguagesManager", "TranslationEditor", "LanguageActivator"]
             },
             "wegas-gamemodel-extractor": {
@@ -1146,7 +1145,7 @@ YUI().use(function(Y) {
             },
             tinymce: {
                 path: "tinymce/tinymce.min.js"
-                    //fullpath: "//unpkg.com/tinymce@4.7.12/tinymce.js"
+                //fullpath: "//unpkg.com/tinymce@4.9.5/tinymce.js"
             },
             excanvas: {
                 path: "excanvas/excanvas.compiled.js"

@@ -200,7 +200,11 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
                     refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
-                    descriptorId: IDATTRDEF,
+                    parentId: IDATTRDEF,
+                    parentType: {
+                        type: "string",
+                        view: {type: HIDDEN}
+                    },
                     unread: {
                         value: true,
                         type: BOOLEAN,
@@ -431,7 +435,11 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
                         refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
-                        descriptorId: IDATTRDEF,
+                        parentId: IDATTRDEF,
+                        parentType: {
+                            type: "string",
+                            view: {type: HIDDEN}
+                        },
                         unread: {
                             type: BOOLEAN,
                             value: true,
@@ -623,7 +631,11 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         id: IDATTRDEF,
                         version: VERSION_ATTR_DEF,
                         refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
-                        descriptorId: IDATTRDEF,
+                        parentId: IDATTRDEF,
+                        parentType: {
+                            type: "string",
+                            view: {type: HIDDEN}
+                        },
                         unread: {
                             type: BOOLEAN,
                             value: true,
@@ -758,7 +770,11 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                 },
                                 index: 5,
                             },
-                            choiceDescriptorId: IDATTRDEF,
+                            parentId: IDATTRDEF,
+                            parentType: {
+                                type: "string",
+                                view: {type: HIDDEN}
+                            },
                             files: {
                                 optional: true,
                                 value: [],
@@ -826,7 +842,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
      */
     persistence.Result = Y.Base.create("Result", persistence.Entity, [], {
         getChoiceDescriptor: function() {
-            return Wegas.Facade.Variable.cache.findById(this.get("choiceDescriptorId"));
+            return Wegas.Facade.Variable.cache.findById(this.get("parentId"));
         },
         getLabel: function() {
             return this.get("label");
@@ -858,7 +874,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 index: -1,
                 type: STRING,
                 visible: function(val, formVal) {
-                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
+                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.parentId);
                     return parent ? parent.get("@class") === "ChoiceDescriptor" : true;
                 }
             }),
@@ -902,7 +918,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 index: 12,
                 borderTop: true,
                 visible: function(val, formVal) {
-                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
+                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.parentId);
                     return parent ? parent.getParent().get("cbx") : false;
                 },
                 type: HTML
@@ -916,7 +932,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }
                 },
                 visible: function(val, formVal) {
-                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.choiceDescriptorId);
+                    var parent = Y.Wegas.Facade.Variable.cache.findById(formVal.parentId);
                     return parent ? parent.getParent().get("cbx") : false;
                 },
                 view: {
@@ -925,11 +941,10 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 },
                 index: 13
             },
-            choiceDescriptorId: {
-                type: NUMBER,
-                view: {
-                    type: HIDDEN
-                }
+            parentId: IDATTRDEF,
+            parentType: {
+                type: "string",
+                view: {type: HIDDEN}
             },
             files: {
                 optional: true,
@@ -1071,13 +1086,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
             "@class": {
                 value: "Reply"
             },
-            choiceDescriptorId: {
-                type: STRING,
-                optional: true,
-                view: {
-                    type: HIDDEN
-                }
-            },
             unread: {
                 type: BOOLEAN,
                 value: true,
@@ -1178,7 +1186,11 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     id: IDATTRDEF,
                     version: VERSION_ATTR_DEF,
                     refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
-                    descriptorId: IDATTRDEF,
+                    parentId: IDATTRDEF,
+                    parentType: {
+                        type: "string",
+                        view: {type: HIDDEN}
+                    },
                     validated: {
                         value: false,
                         type: BOOLEAN,

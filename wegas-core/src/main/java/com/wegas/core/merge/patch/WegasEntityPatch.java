@@ -8,13 +8,12 @@
 package com.wegas.core.merge.patch;
 
 import com.wegas.core.Helper;
-import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.DefaultWegasFactory;
 import com.wegas.core.merge.utils.EmptyCallback;
 import com.wegas.core.merge.utils.LifecycleCollector;
@@ -430,9 +429,8 @@ public final class WegasEntityPatch extends WegasPatch {
 
         if (processCollectedData) {
             // Finalize patch
-            GameModelFacade gmf = GameModelFacade.lookup();
+            //GameModelFacade gmf = GameModelFacade.lookup();
             logger.info("Collect: {}", collector);
-            VariableDescriptorFacade vdf = null;
 
             Map<String, LifecycleCollector.CollectedEntity> deleted = collector.getDeleted();
             Map<Mergeable, Map<Object, LifecycleCollector.OrphanContainer>> orphans = collector.getCollectedOrphans();
@@ -451,17 +449,14 @@ public final class WegasEntityPatch extends WegasPatch {
                     if (value.areOrphansInstanceOf(VariableDescriptor.class)) {
                         logger.info("  RESCUE ORPHAN PHASE I: {}.{} := {}", orphanParent, fieldId, value);
                         Object theOrphans = value.getOrphans();
-                        if (vdf == null) {
-                            vdf = VariableDescriptorFacade.lookup();
-                        }
 
                         if (theOrphans instanceof List) {
                             for (VariableDescriptor orphan : (List<VariableDescriptor>) theOrphans) {
-                                vdf.move(orphan.getId(), 0);
+                                this.getVariableDescriptorFacade().move(orphan.getId(), 0);
                             }
                         } else if (theOrphans instanceof Map) {
                             for (VariableDescriptor orphan : ((Map<Object, VariableDescriptor>) theOrphans).values()) {
-                                vdf.move(orphan.getId(), 0);
+                                this.getVariableDescriptorFacade().move(orphan.getId(), 0);
                             }
                         }
                     }
@@ -484,16 +479,13 @@ public final class WegasEntityPatch extends WegasPatch {
                 }
 
                 if (entity instanceof AbstractEntity) {
-                    if (vdf == null) {
-                        vdf = VariableDescriptorFacade.lookup();
-                    }
-                    vdf.removeAbstractEntity((AbstractEntity) entity);
+                    this.getVariableDescriptorFacade().removeAbstractEntity((AbstractEntity) entity);
                 }
             }
 
-            if (vdf != null) {
-            // what purpose ???
-                vdf.flush();
+            if (this.vdf != null) {
+                // what purpose ???
+                this.vdf.flush();
             }
             for (Entry<Mergeable, Map<Object, OrphanContainer>> entry : orphans.entrySet()) {
                 Mergeable orphanParent = entry.getKey();
