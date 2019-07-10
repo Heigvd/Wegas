@@ -3,12 +3,9 @@ import { GameModel } from '../data/selectors';
 
 export type LibType = 'CSS' | 'ClientScript' | 'ServerScript';
 export type NewLibErrors = 'NOTNEW' | 'UNKNOWN';
-<<<<<<< HEAD
-=======
 export interface ILibraries {
   [key: string]: IGameModelContent;
 }
->>>>>>> origin/master
 
 const LIBRARY_BASE = (libType: LibType, gameModelId?: number) =>
   `GameModel/${
@@ -22,11 +19,7 @@ export const LibraryAPIFactory = (gameModelId?: number) => {
         return res.json();
       });
     },
-<<<<<<< HEAD
-    getLibrary(libType: LibType, name: string): Promise<ILibrary> {
-=======
     getLibrary(libType: LibType, name: string): Promise<IGameModelContent> {
->>>>>>> origin/master
       return rest(LIBRARY_BASE(libType, gameModelId) + '/' + name).then(
         async (res: Response) => {
           return res.json();
@@ -36,16 +29,6 @@ export const LibraryAPIFactory = (gameModelId?: number) => {
     addLibrary(
       libType: LibType,
       name: string,
-<<<<<<< HEAD
-      library?: ILibrary,
-    ): Promise<ILibrary> {
-      return rest(LIBRARY_BASE(libType, gameModelId) + '/' + name, {
-        method: 'POST',
-        body: JSON.stringify({
-          '@class': 'GameModelContent',
-          ...library,
-        }),
-=======
       content: string,
       visibility?: IAbstractContentDescriptor['visibility'],
     ): Promise<IGameModelContent> {
@@ -59,7 +42,6 @@ export const LibraryAPIFactory = (gameModelId?: number) => {
       return rest(LIBRARY_BASE(libType, gameModelId) + '/' + name, {
         method: 'POST',
         body: JSON.stringify(newLib),
->>>>>>> origin/master
       })
         .then((res: Response) => {
           return res.json();
@@ -72,23 +54,12 @@ export const LibraryAPIFactory = (gameModelId?: number) => {
           }
         });
     },
-<<<<<<< HEAD
-    saveLibrary(libType: LibType, name: string, library: ILibrary) {
-=======
     saveLibrary(libType: LibType, name: string, library: IGameModelContent) {
->>>>>>> origin/master
       return rest(
         LIBRARY_BASE(libType, gameModelId) + '/' + name,
         {
           method: 'PUT',
-<<<<<<< HEAD
-          body: JSON.stringify({
-            '@class': 'GameModelContent',
-            ...library,
-          }),
-=======
           body: JSON.stringify(library),
->>>>>>> origin/master
         },
         'Editor',
         'application/json',
