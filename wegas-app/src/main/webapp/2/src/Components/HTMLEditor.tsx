@@ -79,7 +79,7 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
       ],
       toolbar: `${
         onSave ? 'save' : ''
-      } | bold italic underline bullist image | alignleft aligncenter alignright alignjustify link code media table forecolor backcolor styleselect fontsizeselect clientclassselection`,
+      } bold italic underline bullist image | alignleft aligncenter alignright alignjustify link code media table forecolor backcolor styleselect fontsizeselect clientclassselection`,
       toolbar_drawer: 'floating',
       menubar: false,
       resize: 'both',
@@ -87,7 +87,6 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
       branding: false,
       relative_urls: false,
       toolbar_items_size: 'small',
-      hidden_tootlbar: [2, 3],
       file_picker_callback: (callback: CallbackFN) =>
         setFileBrowsing({ fn: callback }),
       save_onsavecallback: () => onSave && onSave(HTMLContent.current),
