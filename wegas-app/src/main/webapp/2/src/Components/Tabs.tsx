@@ -74,7 +74,6 @@ const tabStyle = css(primaryLight, {
   // '&:hover': primary,
 });
 const activeTabStyle = css(tabStyle, primaryDark);
-debugger;
 function Tab(props: {
   active: boolean;
   children: React.ReactChild | null;

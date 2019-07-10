@@ -32,6 +32,14 @@ import {
 } from '../Editor/Components/FormView/commonView';
 import { LabeledView, Labeled } from '../Editor/Components/FormView/labeled';
 import { primary, primaryLight, primaryDark } from './Theme';
+import tinymcetoolbar from '../pictures/tinymcetoolbar.png';
+
+// TODO : make a hook that gets user styles (useUserStyles)
+const userstyles = [
+  { title: 'my custom style 1', block: 'div', classes: 'customStyle1' },
+  { title: 'my custom style 2', block: 'div', classes: 'customStyle2' },
+  { title: 'my custom style 3', block: 'div', classes: 'customStyle3' },
+];
 
 type CallbackFN = (url: string) => void;
 
@@ -41,7 +49,7 @@ interface HTMLEditorProps {
    */
   value?: string;
   /**
-   * onSave - function called when the floppy button is pressed
+   * onSave - function called when the save button is pressed or ctrl+S
    */
   onSave?: (content: string) => void;
   /**
@@ -56,7 +64,9 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
   const [fileBrowsing, setFileBrowsing] = React.useState<{ fn?: CallbackFN }>(
     {},
   );
+  const [editorFocus, setEditorFocus] = React.useState<boolean>(false);
   const HTMLContent = React.useRef('');
+  const HTMLEditor = React.useRef<{ focus: () => void }>();
 
   const config = (toolBarContainerId: string) => {
     return {
@@ -67,12 +77,10 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
         `${onSave ? 'save' : ''} autolink link image lists code media table`,
         'paste advlist',
       ],
-      toolbar1: `${
+      toolbar: `${
         onSave ? 'save' : ''
-      } | bold italic bullist | link image media code`,
-      toolbar2: `forecolor backcolor underline
-         alignleft aligncenter alignright alignjustify table`,
-      toolbar3: 'fontsizeselect styleselect',
+      } | bold italic underline bullist image | alignleft aligncenter alignright alignjustify link code media table forecolor backcolor styleselect fontsizeselect clientclassselection`,
+      toolbar_drawer: 'floating',
       menubar: false,
       resize: 'both',
       statusbar: true,
@@ -84,34 +92,6 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
         setFileBrowsing({ fn: callback }),
       save_onsavecallback: () => onSave && onSave(HTMLContent.current),
       fixed_toolbar_container: '#' + toolBarContainerId,
-      // formats: {
-      //   alignleft: {
-      //     selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-      //     classes: 'left',
-      //   },
-      //   aligncenter: {
-      //     selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-      //     classes: 'center',
-      //   },
-      //   alignright: {
-      //     selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-      //     classes: 'right',
-      //   },
-      //   alignfull: {
-      //     selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-      //     classes: 'full',
-      //   },
-      //   bold: { inline: 'span', classes: 'bold' },
-      //   italic: { inline: 'span', classes: 'italic' },
-      //   underline: { inline: 'span', classes: 'underline', exact: true },
-      //   strikethrough: { inline: 'del' },
-      //   customformat: {
-      //     inline: 'span',
-      //     styles: { color: '#00ff00', fontSize: '20px' },
-      //     attributes: { title: 'My custom format' },
-      //     classes: 'example1',
-      //   },
-      // },
       style_formats: [
         {
           title: 'Headers',
@@ -125,6 +105,13 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
           ],
         },
         {
+          title: 'Containers',
+          items: [
+            { title: 'div', block: 'div' },
+            { title: 'span', block: 'span' },
+          ],
+        },
+        {
           title: 'Wegas styles',
           items: [
             { title: 'primary', block: 'div', classes: primary },
@@ -133,11 +120,8 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
           ],
         },
         {
-          title: 'Containers',
-          items: [
-            { title: 'div', block: 'div' },
-            { title: 'span', block: 'span' },
-          ],
+          title: 'User styles',
+          items: userstyles,
         },
       ],
     };
@@ -158,14 +142,24 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
   return (
     <div>
       <div style={{ visibility: fileBrowsing.fn ? 'hidden' : 'visible' }}>
-        <div id={toolBarId} />
+        <div id={toolBarId}>
+          {!editorFocus && (
+            <img
+              src={tinymcetoolbar}
+              onClick={() => HTMLEditor.current && HTMLEditor.current.focus()}
+            />
+          )}
+        </div>
         <Editor
           initialValue={value}
           init={config(toolBarId)}
+          onInit={editor => (HTMLEditor.current = editor.target)}
           onChange={(val: { level: { content: string } }) => {
             HTMLContent.current = val.level.content;
             onChange && onChange(val.level.content);
           }}
+          onFocus={() => setEditorFocus(true)}
+          onBlur={() => setEditorFocus(false)}
         />
       </div>
       {fileBrowsing.fn && (

@@ -46,11 +46,18 @@ export default class AppLayout extends React.Component<
           <TabLayout
             tabs={['HTML', 'Page', 'StateMachine', 'Scripts', 'Files']}
           >
-            <HTMLEditor
-              value={'<div>Tadaaaaaa</div>'}
-              onChange={val => alert('CHANGE : ' + val)}
-              onSave={val => alert('SAVE : ' + val)}
-            />
+            <>
+              <HTMLEditor
+                value={'<div>Tadaaaaaa</div>'}
+                onChange={val => alert('CHANGE : ' + val)}
+                onSave={val => alert('SAVE : ' + val)}
+              />
+              <HTMLEditor
+                value={'<div>Blablaaaa</div>'}
+                onChange={val => alert('CHANGE : ' + val)}
+                onSave={val => alert('SAVE : ' + val)}
+              />
+            </>
             <PageDisplay />
             <StateMachineEditor />
             <LibraryEditor />

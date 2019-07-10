@@ -58,6 +58,7 @@
     "downshift": "^3.2.10",
     "emotion": "^10.0.9",
     "fast-json-patch": "^2.1.0",
+    "file-loader": "^4.0.0",
     "immer": "3.1.2",
     "immutable": "^3.8.2",
     "jsoninput": "github:cigit/jsoninput",
@@ -78,7 +79,8 @@
     "slate": "^0.47.2",
     "slate-html-serializer": "^0.8.4",
     "slate-react": "^0.22.2",
-    "tinymce": "^5.0.10"
+    "tinymce": "^5.0.10",
+    "url-loader": "^2.0.1"
   },
   "devDependencies": {
     "@types/babel-generator": "^6.25.2",
