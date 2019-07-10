@@ -31,6 +31,7 @@ import {
   CommonViewContainer,
 } from '../Editor/Components/FormView/commonView';
 import { LabeledView, Labeled } from '../Editor/Components/FormView/labeled';
+import { primary, primaryLight, primaryDark } from './Theme';
 
 type CallbackFN = (url: string) => void;
 
@@ -83,6 +84,62 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
         setFileBrowsing({ fn: callback }),
       save_onsavecallback: () => onSave && onSave(HTMLContent.current),
       fixed_toolbar_container: '#' + toolBarContainerId,
+      // formats: {
+      //   alignleft: {
+      //     selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      //     classes: 'left',
+      //   },
+      //   aligncenter: {
+      //     selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      //     classes: 'center',
+      //   },
+      //   alignright: {
+      //     selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      //     classes: 'right',
+      //   },
+      //   alignfull: {
+      //     selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+      //     classes: 'full',
+      //   },
+      //   bold: { inline: 'span', classes: 'bold' },
+      //   italic: { inline: 'span', classes: 'italic' },
+      //   underline: { inline: 'span', classes: 'underline', exact: true },
+      //   strikethrough: { inline: 'del' },
+      //   customformat: {
+      //     inline: 'span',
+      //     styles: { color: '#00ff00', fontSize: '20px' },
+      //     attributes: { title: 'My custom format' },
+      //     classes: 'example1',
+      //   },
+      // },
+      style_formats: [
+        {
+          title: 'Headers',
+          items: [
+            { title: 'h1', block: 'h1' },
+            { title: 'h2', block: 'h2' },
+            { title: 'h3', block: 'h3' },
+            { title: 'h4', block: 'h4' },
+            { title: 'h5', block: 'h5' },
+            { title: 'h6', block: 'h6' },
+          ],
+        },
+        {
+          title: 'Wegas styles',
+          items: [
+            { title: 'primary', block: 'div', classes: primary },
+            { title: 'primaryDark', block: 'div', classes: primaryDark },
+            { title: 'primaryLight', block: 'div', classes: primaryLight },
+          ],
+        },
+        {
+          title: 'Containers',
+          items: [
+            { title: 'div', block: 'div' },
+            { title: 'span', block: 'span' },
+          ],
+        },
+      ],
     };
   };
 
@@ -177,7 +234,7 @@ export class LabeledHTMLEditor extends React.Component<HtmlProps, HtmlState> {
         errorMessage={this.props.errorMessage}
       >
         <Labeled {...this.props.view}>
-          {({ labelNode, inputId }) => (
+          {({ labelNode /*, inputId*/ }) => (
             <>
               {labelNode}
               <HTMLEditor value={this.state.value} onChange={this.onChange} />
