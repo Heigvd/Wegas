@@ -8,7 +8,7 @@ import {
   Outcome,
 } from './DropZone';
 import { FontAwesome } from '../FontAwesome';
-import { defaultContextManager } from '../../../../Components/DragAndDrop';
+import { DefaultDndProvider } from '../../../../Components/DefaultDndProvider';
 
 function noop() {}
 
@@ -85,9 +85,14 @@ function DropPreview({
     />
   );
 }
-export const Container = defaultContextManager<
-  React.ComponentType<ContainerProps>
->(ContextContainer);
+
+export function Container(props: ContainerProps) {
+  return (
+    <DefaultDndProvider>
+      <ContextContainer {...props} />
+    </DefaultDndProvider>
+  );
+}
 
 interface NodeProps {
   id: {};

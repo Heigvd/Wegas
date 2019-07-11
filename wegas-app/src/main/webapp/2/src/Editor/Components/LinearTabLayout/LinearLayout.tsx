@@ -2,7 +2,7 @@ import * as React from 'react';
 import { css } from 'emotion';
 import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
 import 'react-reflex/styles.css';
-import { defaultContextManager } from '../../../Components/DragAndDrop';
+import { DefaultDndProvider } from '../../../Components/DefaultDndProvider';
 import { omit } from 'lodash';
 import u from 'immer';
 import { ReparentableRoot } from '../Reparentable';
@@ -758,6 +758,10 @@ function MainLinearLayout(props: LinearLayoutProps) {
  * DndLinearLayout is a wrapper that calls the MainLinearLayout in the shared HTML5 context
  * Multiple context for react-dnd is not allowed
  */
-export const DndLinearLayout = defaultContextManager<
-  React.ComponentType<LinearLayoutProps>
->(MainLinearLayout);
+export function DndLinearLayout(props: LinearLayoutProps) {
+  return (
+    <DefaultDndProvider>
+      <MainLinearLayout {...props} />
+    </DefaultDndProvider>
+  );
+}
