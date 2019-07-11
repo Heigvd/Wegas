@@ -16,6 +16,7 @@
 YUI.add('wegas-gamemodel-i18n', function(Y) {
     "use strict";
     var LanguagesManager,
+        EditorWidget,
         TranslationEditor,
         GameModelScriptUpgrader,
         GameModelGhostCleaner,
@@ -260,21 +261,13 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 direction: 'horizontal'
             });
 
-            this.editor = new Y.Wegas.Text({
-                cssClass: "wegas-i18n-manager--editor",
+            this.editorLoader = new Y.Wegas.Text({
+                cssClass: "wegas-i18n-manager--editor-loader",
                 content: "loading translation table <i class='fa fa-pulse fa-spinner'></i>"
             });
+
             this.header.add(this.title);
             this.add(this.header);
-
-            if (navigator.userAgent.toLowerCase().indexOf("firefox") >= 0) {
-                this.disclaimer = new Y.Wegas.Text({
-                    cssClass: "wegas-disclaimer",
-                    content: "This page is known to be slow with Firefox. You should use another browser to edit translations!"
-                });
-
-                this.add(this.disclaimer);
-            }
 
             this.toolbar.add(this.helpBtn);
             this.toolbar.add(this.addBtn);
@@ -286,7 +279,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
 
             this.add(this.languagesHeader);
             this.add(this.languages);
-            this.add(this.editor);
+            this.add(this.editorLoader);
 
             this.get("contentBox").addClass("hide-empty-translation");
         },
@@ -366,30 +359,20 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             }));
         },
         bindUI: function() {
-            this.get("contentBox").delegate("click", this.showTutorial, ".help-button i", this);
-            this.get("contentBox").delegate("click", this.toggleShowSettings, ".settings-button i", this);
-            this.get("contentBox").delegate("click", this.toggleShowEmpty, ".hide-empty--button i", this);
-            this.get("contentBox").delegate("click", this.addLanguageClick, ".create-button i", this);
-            this.languagesHeader.get("contentBox").delegate("click", this.languageUp, ".move-up", this);
+            this.handlers.showTuto = this.wegasDelegate("click", this.showTutorial, ".help-button i", this);
+            this.handlers.showSettings = this.wegasDelegate("click", this.toggleShowSettings, ".settings-button i", this);
+            this.handlers.toggleShowEmpty = this.wegasDelegate("click", this.toggleShowEmpty, ".hide-empty--button i", this);
+            this.handlers.addLang = this.wegasDelegate("click", this.addLanguageClick, ".create-button i", this);
+            this.handlers.modeLangUp = this.languagesHeader.wegasDelegate("click", this.languageUp, ".move-up", this);
 
-            this.languagesHeader.get("contentBox")
-                .delegate("change", this.toggleShow, ".language input.language-show", this);
-            this.languages.get("contentBox")
-                .delegate(["input", "change"], this.languageChange, ".language .form input", this);
-            this.languages.get("contentBox")
-                .delegate("click", this.openAutoTranslateMenu, ".wegas-language-i18n-auto", this);
-            this.languages.get("contentBox")
-                .delegate("click", this.openAutoCopyMenu, ".wegas-language-i18n-copy", this);
-            this.languages.get("contentBox").delegate("click", this.saveAll, ".wegas-language-save-all", this);
-            this.languages.get("contentBox")
-                .delegate("click", this.languageSave, ".language:not(.loading) .validate", this);
-            this.languages.get("contentBox")
-                .delegate("click", this.languageCancel, ".language:not(.loading) .cancel", this);
-
-
-            this.editor.get("contentBox").delegate("click", this.toggleCollapse, ".node-name .expander", this);
-            this.editor.get("contentBox")
-                .delegate("click", this.revealInTreeview, ".node-name .reveal-in-treeview", this);
+            this.handlers.toggleShow = this.languagesHeader.wegasDelegate("change", this.toggleShow, ".language input.language-show", this);
+            this.handlers.langInput = this.languages.wegasDelegate("input", this.languageChange, ".language .form input", this);
+            this.handlers.langChange = this.languages.wegasDelegate("change", this.languageChange, ".language .form input", this);
+            this.handlers.autoTranslate = this.languages.wegasDelegate("click", this.openAutoTranslateMenu, ".wegas-language-i18n-auto", this);
+            this.handlers.autoCopy = this.languages.wegasDelegate("click", this.openAutoCopyMenu, ".wegas-language-i18n-copy", this);
+            this.handlers.saveAll = this.languages.wegasDelegate("click", this.saveAll, ".wegas-language-save-all", this);
+            this.handlers.langSave = this.languages.wegasDelegate("click", this.languageSave, ".language:not(.loading) .validate", this);
+            this.handlers.langCancel = this.languages.wegasDelegate("click", this.languageCancel, ".language:not(.loading) .cancel", this);
 
             this.handlers.onRefresh = this.refreshButton.on("click", Y.bind(this.refresh, this));
 
@@ -715,9 +698,25 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     this.ghostCleaner = null;
                 }
             }
+            this.editorLoader.set("content", "");
+            this.editorLoader.syncUI();
 
-            this.editor.set("content", this.genEditorMarkup(this.tree, languagesToEdit));
-            this.editor.syncUI();
+            var newMarkup = this.genEditorMarkup(this.tree, languagesToEdit);
+
+            if (this.eEditor) {
+                this.eEditor.set("content", newMarkup);
+                this.eEditor.syncUI();
+            } else {
+                this.eEditor = new Y.Wegas.Text({
+                    cssClass: "wegas-i18n-manager--editor",
+                    content: newMarkup
+                });
+
+                this.handlers.collapse = this.eEditor.wegasDelegate("click", this.toggleCollapse, ".node-name .expander", this);
+                this.handlers.reveal = this.eEditor.wegasDelegate("click", this.revealInTreeview, ".node-name .reveal-in-treeview", this);
+            }
+
+            this.add(this.eEditor);
             this.markEmpties();
 
             this.refreshButton.get("contentBox").one("i").removeClass("fa-pulse");
@@ -888,11 +887,11 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         },
         updateEditor: function(entity) {
             var newTree = this.genTree(entity);
-            var cb = this.editor.get("contentBox");
+            var cb = this.eEditor.get("contentBox");
             var outdated = false;
 
             function updateTrSpan(trSpan, trReadOnlySpan, tr) {
-                var newTr = tr && tr.translation || "";
+                var newTr = tr && (tr.translation || (tr.get && tr.get("translation"))) || "";
                 var newStatus = tr && tr.status || "";
                 var cfg;
                 if (trSpan) {
@@ -1007,7 +1006,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         },
         _markEmpties: function(parentSelector, childSelector, emptyChildSelector, className) {
             var count = 0;
-            this.editor.get("contentBox").all(parentSelector + ":not(." + className + ")").each(function(parent) {
+            this.eEditor.get("contentBox").all(parentSelector + ":not(." + className + ")").each(function(parent) {
                 if (parent.all(emptyChildSelector).size() === parent.all(childSelector).size()) {
                     if (!parent.hasClass(className)) {
                         parent.addClass(className);
@@ -1199,8 +1198,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     }
                     markup.push("</div>"); // translatedcontent
                 }
-
-
+                //markup.push("</div>"); // node
 
                 markup.push("<div class='node-children'>");
                 for (i in node.children) {
@@ -1208,6 +1206,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     markup.push(this.genEditorMarkup(child, languages, level + 1));
                 }
                 markup.push("</div>"); // children
+
                 markup.push("</div>"); // node
             }
             return markup.join("");
@@ -1376,30 +1375,29 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
 
 
     TranslationEditor = Y.Base.create('wegas-translation-editor', Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
-        onClick: function(e) {
-            //console.log("Click target: " + e.target);
-        },
         initializer: function() {
             this.handlers = {};
-            var hostCB = this.get("host").get("contentBox");
-            hostCB.delegate("focus", this.setupEditor, ".wegas-translation.favorite-lang .wegas-translation--value", this);
-            hostCB.delegate("click", this.selectFile, ".wegas-translation-wegasurl.favorite-lang .wegas-translation--value", this);
-            hostCB.delegate("keydown", this.selectFileOnKeyDown, ".wegas-translation-wegasurl.favorite-lang .wegas-translation--value", this);
+            var host = this.get("host");
 
-            hostCB.delegate("click", this.save, ".wegas-translation.favorite-lang.unsaved .inline-editor-validate", this); // minor 
-            hostCB.delegate("click", this.majorSaveConfirmMenu, ".wegas-translation.favorite-lang .inline-editor-major-validate", this); // major
-            hostCB.delegate("click", this.catchUpSave, ".wegas-translation.favorite-lang .inline-editor-catch_up-validate", this); // catch up
-            hostCB.delegate("click", this.outdateSave, ".wegas-translation.favorite-lang .inline-editor-outdate-validate", this); // outdate
+            this.handlers.focus = host.wegasDelegate("focus", this.setupEditor, ".wegas-translation.favorite-lang .wegas-translation--value", this);
+
+            this.handlers.selectFile = host.wegasDelegate("click", this.selectFile, ".wegas-translation-wegasurl.favorite-lang .wegas-translation--value", this);
+            this.handlers.fileOnKeyDown = host.wegasDelegate("keydown", this.selectFileOnKeyDown, ".wegas-translation-wegasurl.favorite-lang .wegas-translation--value", this);
+
+            this.handlers.stdSave = host.wegasDelegate("click", this.save, ".wegas-translation.favorite-lang.unsaved .inline-editor-validate", this); // minor 
+            this.handlers.majorSave = host.wegasDelegate("click", this.majorSaveConfirmMenu, ".wegas-translation.favorite-lang .inline-editor-major-validate", this); // major
+            this.handlers.catchUpSave = host.wegasDelegate("click", this.catchUpSave, ".wegas-translation.favorite-lang .inline-editor-catch_up-validate", this); // catch up
+            this.handlers.outdateSave = host.wegasDelegate("click", this.outdateSave, ".wegas-translation.favorite-lang .inline-editor-outdate-validate", this); // outdate
 
             this.handlers.clickOut = Y.one("body").on("click", this.clickOut, this);
 
-            hostCB.delegate("key", this.ctrlSave, 'down:83+ctrl', ".wegas-translation.favorite-lang .wegas-translation--value", this);
-            hostCB.delegate("key", this.ctrlSave, 'down:83+meta', ".wegas-translation.favorite-lang .wegas-translation--value", this);
+            this.handlers.ctrlSave = host.wegasDelegateKey("key", this.ctrlSave, 'down:83+ctrl', ".wegas-translation.favorite-lang .wegas-translation--value", this);
+            this.handlers.metaSave = host.wegasDelegateKey("key", this.ctrlSave, 'down:83+meta', ".wegas-translation.favorite-lang .wegas-translation--value", this);
 
-            hostCB.delegate("click", this.openAutoTranslateMenu, ".wegas-translation.favorite-lang .inline-editor-i18n", this); // auto
+            this.handlers.autoTranslateMenu = host.wegasDelegate("click", this.openAutoTranslateMenu, ".wegas-translation.favorite-lang .inline-editor-i18n", this); // auto
 
             //hostCB.delegate("key", this.selectAllInSpan, 'down:65+ctrl', ".wegas-translation-string span[contenteditable]", this);
-            hostCB.delegate("click", this.cancel, ".wegas-translation.favorite-lang.unsaved .inline-editor-cancel", this);
+            this.handlers.cancel = host.wegasDelegate("click", this.cancel, ".wegas-translation.favorite-lang.unsaved .inline-editor-cancel", this, "extra1", "extra2");
             this.contents = {};
             //hostCB.delegate("blur", this.onBlurString, ".wegas-translation-blur.favorite-lang", this);
 
@@ -1420,7 +1418,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         _getCfgFromEvent: function(e) {
             var node;
             if (e.target && e.target.ancestor) {
-                node = e.currentTarget.ancestor(".wegas-translation");
+                node = e.target.ancestor(".wegas-translation");
             } else {
                 node = Y.one("#" + e.target.id).ancestor(".wegas-translation");
             }
@@ -1914,20 +1912,6 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                         toolbar_items_size: 'small',
                         hidden_tootlbar: [2, 3],
                         file_browser_callback: Y.bind(this.onFileBrowserClick, this),
-                        setup: Y.bind(function(editor) {
-                            Y.log("Editor ready");
-                            this.editor = editor;
-                            editor.on('change', Y.bind(this._onHtmlChange, this));
-                            editor.on('keyUp', Y.bind(this._onHtmlChange, this));
-                            editor.on('blur', Y.bind(this._onHtmlBlur, this)); // text input & ctrl-related operations
-                            editor.on('init', Y.bind(function() {
-                                this.editor = editor;
-                                this.editor.fire("focus");
-                                this.editor.focus();
-                            }, this));
-                            //this.editor.focus();
-                            //this.editor.targetElm.click();
-                        }, this),
                         image_advtab: true,
                         content_css: [
                             '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css',
@@ -1968,6 +1952,8 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
 
                     var extraButtons = Y.Wegas.Config.TinyExtraButtons;
 
+                    var initFunctions = [];
+
                     if (extraButtons) {
                         /* config example :
                          Y.namespace("Wegas.Config").TinyExtraButtons = {
@@ -1986,7 +1972,6 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                         toolbar.pop(); // remove addToolbarButton
                         toolbar.push("|");
 
-                        var initFunctions = [];
 
                         for (var name in extraButtons) {
                             var btnCfg = extraButtons[name];
@@ -2023,46 +2008,31 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                             });
                         }
 
-                        tinyConfig.setup = Y.bind(function(editor) {
-                            this.editor = editor;
-                            editor.on('change', Y.bind(this._onHtmlChange, this));
-                            editor.on('keyUp', Y.bind(this._onHtmlChange, this));
-                            editor.on('blur', Y.bind(this._onHtmlBlur, this)); // text input & ctrl-related operations
-                            editor.on('init', Y.bind(function() {
-                                this.editor = editor;
-                                this.editor.fire("focus");
-                                this.editor.focus();
-                            }, this));
-                            //this.editor.focus();
-                            //this.editor.targetElm.click();
-
-
-                            // call each initFunction
-                            for (var i in initFunctions) {
-                                initFunctions[i].function.call(editor, editor,
-                                    initFunctions[i].name, initFunctions[i].config);
-                            }
-                        }, this);
-
                         // rebuild toolbar1
                         toolbar.push("|");
                         toolbar.push("addToolbarButton");
                         tinyConfig.toolbar1 = toolbar.join(" ");
-                        /*} else {
-                         tinyConfig.setup = Y.bind(function(editor) {
-                         this.editor = editor;
-                         editor.on('change', Y.bind(this._onHtmlChange, this));
-                         editor.on('keyUp', Y.bind(this._onHtmlChange, this));
-                         editor.on('blur', Y.bind(this._onHtmlBlur, this)); // text input & ctrl-related operations
-                         editor.on('init', Y.bind(function() {
-                         this.editor = editor;
-                         this.editor.fire("focus");
-                         this.editor.focus();
-                         }, this));
-                         //this.editor.focus();
-                         //this.editor.targetElm.click();
-                         }, this);
-                         */}
+                    }
+
+                    tinyConfig.setup = Y.bind(function(editor) {
+                        this.editor = editor;
+                        editor.on('change', Y.bind(this._onHtmlChange, this));
+                        editor.on('keyUp', Y.bind(this._onHtmlChange, this));
+                        editor.on('blur', Y.bind(this._onHtmlBlur, this)); // text input & ctrl-related operations
+                        editor.on('init', Y.bind(function() {
+                            this.editor = editor;
+                            this.editor.fire("focus");
+                            this.editor.focus();
+                        }, this));
+                        //this.editor.focus();
+                        //this.editor.targetElm.click();
+
+                        // call each initFunction
+                        for (var i in initFunctions) {
+                            initFunctions[i].function.call(editor, editor,
+                                initFunctions[i].name, initFunctions[i].config);
+                        }
+                    }, this);
                     tinyMCE.init(tinyConfig);
                 }
             }

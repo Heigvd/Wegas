@@ -1,8 +1,11 @@
-import * as React from 'react';
-import { themeVar } from '../../Theme';
 import { css } from 'emotion';
-import { VariableConnect } from '../../VariableConnect';
+import * as React from 'react';
 import { TranslatableContent } from '../../../data/i18n';
+import { themeVar } from '../../Theme';
+import {
+  useVariableDescriptor,
+  useVariableInstance,
+} from '../../Hooks/useVariable';
 
 interface StyledLabelProps {
   /**
@@ -62,35 +65,22 @@ interface LabelProps {
    * type - changes the style of the text, normal by default
    */
   type?: 'normal' | 'warning' | 'error' | 'succes';
-  /**
-   * displayLabel - Displays the label of the string before displaying the content
-   * <Label> : <Content>
-   */
-  displayLabel?: boolean;
 }
 
 export default function Label(props: LabelProps) {
+  const descriptor = useVariableDescriptor<IStringDescriptor>(props.variable);
+  const instance = useVariableInstance(descriptor);
+  if (descriptor === undefined || instance === undefined) {
+    return <span>Not found: {props.variable}</span>;
+  }
+  const label = TranslatableContent.toString(descriptor.label) + ': ';
   return (
-    <VariableConnect<IStringDescriptor> name={props.variable}>
-      {({ state }) => {
-        if (state === undefined) {
-          return <span>Not found: {props.variable}</span>;
-        }
-        // debugger;
-        return (
-          <div>
-            {props.displayLabel && (
-              <span>
-                {TranslatableContent.toString(state.descriptor.label) + ': '}
-              </span>
-            )}
-            <StyledLabel
-              value={TranslatableContent.toString(state.instance.trValue)}
-              type={props.type}
-            />
-          </div>
-        );
-      }}
-    </VariableConnect>
+    <div>
+      {label && <span>{label}</span>}
+      <StyledLabel
+        value={TranslatableContent.toString(instance.trValue)}
+        type={props.type}
+      />
+    </div>
   );
 }

@@ -1,8 +1,8 @@
+import { css } from 'emotion';
 import * as React from 'react';
 import { TranslatableContent } from '../../../data/i18n';
-import { VariableConnect } from '../../VariableConnect';
-import { css } from 'emotion';
 import { primary } from '../../Theme';
+import { useVariableDescriptor, useVariableInstance } from '../../Hooks/useVariable';
 
 const boxStyle = css(
   {
@@ -21,19 +21,16 @@ function box(count: number) {
   return ret;
 }
 export default function NumberValue(props: { variable: string }) {
+  const descriptor = useVariableDescriptor<INumberDescriptor>(props.variable);
+  const instance = useVariableInstance(descriptor);
+  if (descriptor === undefined || instance === undefined) {
+    return <span>Not found: {props.variable}</span>;
+  }
+
   return (
-    <VariableConnect<INumberDescriptor> name={props.variable}>
-      {({ state }) => {
-        if (state === undefined) {
-          return <span>Not found: {props.variable}</span>;
-        }
-        return (
-          <div>
-            {TranslatableContent.toString(state.descriptor.label)}
-            <div>{box(state.instance.value)}</div>
-          </div>
-        );
-      }}
-    </VariableConnect>
+    <div>
+      {TranslatableContent.toString(descriptor.label)}
+      <div>{box(instance.value)}</div>
+    </div>
   );
 }
