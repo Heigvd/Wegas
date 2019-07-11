@@ -4080,15 +4080,6 @@ direction@^0.1.5:
   resolved "https://registry.yarnpkg.com/direction/-/direction-0.1.5.tgz#ce5d797f97e26f8be7beff53f7dc40e1c1a9ec4c"
   integrity sha1-zl15f5fib4vnvv9T99xA4cGp7Ew=
 
-dnd-core@^7.4.4:
-  version "7.4.4"
-  resolved "https://registry.yarnpkg.com/dnd-core/-/dnd-core-7.4.4.tgz#9a27d991a1c1e2882fa7888ea6132db04c739db1"
-  integrity sha512-xR8SINDCJG9AmKSjXUMJ1PEl8ih1+xSHH8x4DgBtzScXnEtpCnV1ibDZNV0uyps9VgkXTTbYYzJdF04y0v0e3Q==
-  dependencies:
-    asap "^2.0.6"
-    invariant "^2.2.4"
-    redux "^4.0.1"
-
 dnd-core@^9.1.0:
   version "9.1.0"
   resolved "https://registry.yarnpkg.com/dnd-core/-/dnd-core-9.1.0.tgz#1148c6c456ab2b392024365ef88fee0718d1620b"
@@ -11154,12 +11145,12 @@ react-component-managers@^3.1.0:
     prop-types "^15.6.1"
     spy-on-component "^1.1.0"
 
-react-dnd-html5-backend@^7.4.4:
-  version "7.4.4"
-  resolved "https://registry.yarnpkg.com/react-dnd-html5-backend/-/react-dnd-html5-backend-7.4.4.tgz#3372e5af4af24f680cd75900c782606539c01220"
-  integrity sha512-X/lP92ateY0glHan8mU0JzjBuZL6VHv2Gc/H9OBBxaf/ZCN1oC16MLKdesqG4x1f/NWFTNtuG3W4B99r5gPVog==
+react-dnd-html5-backend@^9.1.0:
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/react-dnd-html5-backend/-/react-dnd-html5-backend-9.1.0.tgz#a0d842306eddb472b85d6c37b9452f99170642af"
+  integrity sha512-qqHn6hDb+1cmdI6UpcNXnmr4w9lizr1ZfofchOCmUJ87fLGFKk8wUHToGoVwl1JYLf1RCww9n9dR7uRcjwZlKg==
   dependencies:
-    dnd-core "^7.4.4"
+    dnd-core "^9.1.0"
 
 react-dnd@^9.2.1:
   version "9.2.1"

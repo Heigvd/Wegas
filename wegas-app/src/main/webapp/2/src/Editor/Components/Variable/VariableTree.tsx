@@ -251,10 +251,7 @@ function CTree(props: {
                 <span
                   className={cx(headerStyle, { [editingStyle]: state.editing })}
                   onClick={() => {
-                    if (
-                      entityIs<IFSMDescriptor>(variable, 'FSMDescriptor') &&
-                      select
-                    ) {
+                    if (entityIs<IFSMDescriptor>(variable, 'FSMDescriptor')) {
                       select('StateMachine');
                     }
                     getEntityActions(variable!).then(({ edit }) =>

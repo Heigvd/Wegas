@@ -68,7 +68,7 @@
     "pusher-js": "^4.3.1",
     "react": "^16.8.6",
     "react-dnd": "^9.2.1",
-    "react-dnd-html5-backend": "^7.4.4",
+    "react-dnd-html5-backend": "^9.1.0",
     "react-dom": "^16.8.6",
     "react-reflex": "^3.0.13",
     "redux": "^4.0.1",

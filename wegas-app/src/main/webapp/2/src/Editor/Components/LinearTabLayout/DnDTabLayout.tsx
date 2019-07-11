@@ -99,16 +99,7 @@ export const dropSpecsFactory = (action: DropAction) => {
     canDrop: () => true,
     drop: action,
     collect: (mon: DropTargetMonitor) => {
-      let isOver: boolean;
-      let canDrop: boolean;
-      try {
-        isOver = mon.isOver();
-        canDrop = mon.canDrop();
-      } catch {
-        isOver = false;
-        canDrop = false;
-      }
-      return { isOver, canDrop };
+      return { isOver: mon.isOver(), canDrop: mon.canDrop() };
     },
   };
 };

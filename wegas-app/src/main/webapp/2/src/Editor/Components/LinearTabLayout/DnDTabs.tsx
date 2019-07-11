@@ -70,7 +70,9 @@ export function Tab(props: TabProps) {
       )}
       onClick={props.onClick}
     >
-      {props.children}
+      <React.Suspense fallback={<div>Loading...</div>}>
+        {props.children}
+      </React.Suspense>
     </div>
   );
 }

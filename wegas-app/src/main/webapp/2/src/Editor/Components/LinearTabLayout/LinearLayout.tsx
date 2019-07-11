@@ -23,9 +23,9 @@ const flex = css({
   flex: '1 1 auto',
 });
 
-export const selectContext = React.createContext<
-  undefined | ((id: string) => void)
->(undefined);
+export const selectContext = React.createContext<(id: string) => void>(
+  () => {},
+);
 
 type LayoutType = 'ReflexLayoutNode' | 'TabLayoutNode';
 
