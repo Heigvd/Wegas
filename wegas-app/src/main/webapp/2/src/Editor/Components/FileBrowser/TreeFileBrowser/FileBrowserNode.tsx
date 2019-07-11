@@ -4,7 +4,7 @@ import {
   getAbsoluteFileName,
   isDirectory,
 } from '../../../../data/methods/ContentDescriptor';
-import { __EXPERIMENTAL_DND_HOOKS_THAT_MAY_CHANGE_AND_BREAK_MY_BUILD__ as dnd } from 'react-dnd';
+import { useDrop } from 'react-dnd';
 import {
   dropSpecs,
   hiddenFileBrowserStyle,
@@ -89,7 +89,7 @@ export function FileBrowserNode(
     win!.focus();
   };
 
-  const [dropZoneProps, dropZone] = dnd.useDrop(
+  const [dropZoneProps, dropZone] = useDrop(
     dropSpecs(item => {
       const { files } = (item as unknown) as {
         files: FileList;
