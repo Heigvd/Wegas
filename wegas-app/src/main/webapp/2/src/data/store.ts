@@ -3,7 +3,7 @@ import thunk, { ThunkMiddleware, ThunkAction } from 'redux-thunk';
 import reducers, { State } from './Reducer/reducers';
 import { Actions } from '.';
 import { StateActions } from './actions';
-import { createReduxContext } from './connectStore';
+import { createStoreConnector } from './connectStore';
 import { Page } from './selectors';
 import '../API/websocket';
 
@@ -29,7 +29,7 @@ function storeInit() {
 }
 storeInit();
 
-export const { StoreConsumer, StoreProvider } = createReduxContext(store);
+export const { StoreConsumer, useStore, getDispatch } = createStoreConnector(store);
 export type ThunkResult<R = void> = ThunkAction<
   R,
   State,

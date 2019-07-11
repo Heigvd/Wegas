@@ -18,8 +18,8 @@ YUI.add("wegas-injector", function(Y) {
      * @name Y.Plugin.Injector
      * @extends Y.Plugin.Base
      * @constructor
-     * @description 
-     * 
+     * @description
+     *
      * + light-picture class nodes : "href"|"src" attribute (url) , "title" attribute (description). <br/>
      *  Create a gallery with all elements with the same data-gallery attribute <br/>
      * + light-gallery class nodes : child nodes with "href"|"src" attribute (url), "title" attribute (description)
@@ -32,7 +32,7 @@ YUI.add("wegas-injector", function(Y) {
         initializer: function() {
             this.handlers = [];
 
-            // Add required events to Y.Node 
+            // Add required events to Y.Node
             Y.mix(Y.Node.DOM_EVENTS, {
                 DOMNodeInserted: true
                     //DOMNodeRemoved: true,
@@ -55,7 +55,9 @@ YUI.add("wegas-injector", function(Y) {
             //}, this);
 
             // Load gallery on .light-gallery click
-            this.handlers.push(Y.one("body").delegate("click", function(e) {
+            this.handlers.push(
+                //Y.one("body").delegate("click", function(e) {
+                Y.Wegas.Widget.wegasDelegate(Y.one("body"), "click", function(e) {
                 var link, gallery = [];
                 e.halt(true);
                 e.target.get("children").each(function() {
@@ -71,12 +73,14 @@ YUI.add("wegas-injector", function(Y) {
             }, '.wegas-light-gallery', this));
 
             // Load gallery on .light-picture click
-            this.handlers.push(Y.one("body").delegate("click", function(e) {
+            this.handlers.push(
+                //Y.one("body").delegate("click", function(e) {
+                Y.Wegas.Widget.wegasDelegate(Y.one("body"), "click", function(e) {
                 var gallery = [], index,
                     isNodeValid = e.target.get("nodeName") === "IMG",
                     link = e.target.get("href") || e.target.get("src");
 
-                if (e.target.hasAttribute("data-gallery")) {                    // Group same data-gallery together 
+                if (e.target.hasAttribute("data-gallery")) {                    // Group same data-gallery together
                     Y.all("[data-gallery='" + e.target.getAttribute("data-gallery") + "']").each(function(item, i) {
                         if (item === e.target) {
                             index = i;
@@ -101,7 +105,7 @@ YUI.add("wegas-injector", function(Y) {
             }, '.wegas-light-picture', this));
         },
         /**
-         * 
+         *
          * @param {Array} gallery
          * @param {number} index
          */

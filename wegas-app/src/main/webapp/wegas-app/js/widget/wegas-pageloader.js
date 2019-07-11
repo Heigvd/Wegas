@@ -219,7 +219,7 @@ YUI.add("wegas-pageloader", function(Y) {
                     Wegas.Facade.Page.cache.getPage(val, Y.bind(function(widgetCfg) { // Retrieve page
                         this.showOverlay();
 
-                        Y.log("Destroy previous widget", "log", "Wegas.PageLoader");
+                        Y.log("Destroy previous widget (page " + widgetCfg["@pageId"] + ")", "log", "Wegas.PageLoader");
                         this.set(WIDGET, null);
                         if (!widgetCfg) {
                             this.get(CONTENTBOX).setContent("<center class=" + pageloaderErrorMessageClass +
@@ -232,7 +232,7 @@ YUI.add("wegas-pageloader", function(Y) {
 
                         Wegas.Widget.use(widgetCfg, Y.bind(function() { // Load the sub-widget dependencies
                             try {
-                                Y.log("Rendering new widget", "log", "Wegas.PageLoader");
+                                Y.log("Rendering new widget (page " + widgetCfg["@pageId"] + ")", "log", "Wegas.PageLoader");
                                 this.get(CONTENTBOX).all("." + pageloaderErrorMessageClass).remove(true);
                                 widgetCfg.editable = true;
                                 var widget = Wegas.Widget.create(widgetCfg); // Render the sub-widget
