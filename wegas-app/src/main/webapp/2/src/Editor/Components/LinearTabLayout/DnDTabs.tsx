@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import {
-  __EXPERIMENTAL_DND_HOOKS_THAT_MAY_CHANGE_AND_BREAK_MY_BUILD__ as dnd,
+  useDrag,
   DropTargetMonitor,
   DropTarget,
   DropTargetConnector,
@@ -103,7 +103,7 @@ interface DragTabProps {
 }
 
 export function DragTab(props: DragTabProps) {
-  const [, drag] = dnd.useDrag({
+  const [, drag] = useDrag({
     item: { label: props.label, type: dndAcceptType },
     begin: () => props.onDrag && props.onDrag(props.label),
   });

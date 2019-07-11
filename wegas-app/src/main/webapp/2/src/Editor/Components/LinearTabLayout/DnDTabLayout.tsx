@@ -1,8 +1,5 @@
 import * as React from 'react';
-import {
-  __EXPERIMENTAL_DND_HOOKS_THAT_MAY_CHANGE_AND_BREAK_MY_BUILD__ as dnd,
-  DropTargetMonitor,
-} from 'react-dnd';
+import { useDrop, DropTargetMonitor } from 'react-dnd';
 import { DnDropTab, Tab, dndAcceptType, DragTab } from './DnDTabs';
 import { IconButton } from '../../../Components/Button/IconButton';
 import { Toolbar } from '../../../Components/Toolbar';
@@ -180,14 +177,12 @@ export function DnDTabLayout({
   }, [components, activeLabel, onSelect]);
 
   // DnD hooks (for dropping tabs on the side of the layout)
-  const [dropLeftProps, dropLeft] = dnd.useDrop(
-    dropSpecsFactory(onDrop('LEFT')),
-  );
-  const [dropRightProps, dropRight] = dnd.useDrop(
+  const [dropLeftProps, dropLeft] = useDrop(dropSpecsFactory(onDrop('LEFT')));
+  const [dropRightProps, dropRight] = useDrop(
     dropSpecsFactory(onDrop('RIGHT')),
   );
-  const [dropTopProps, dropTop] = dnd.useDrop(dropSpecsFactory(onDrop('TOP')));
-  const [dropBottomProps, dropBottom] = dnd.useDrop(
+  const [dropTopProps, dropTop] = useDrop(dropSpecsFactory(onDrop('TOP')));
+  const [dropBottomProps, dropBottom] = useDrop(
     dropSpecsFactory(onDrop('BOTTOM')),
   );
 
