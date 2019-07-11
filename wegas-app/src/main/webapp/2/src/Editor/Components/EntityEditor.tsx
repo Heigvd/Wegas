@@ -138,7 +138,7 @@ function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
   return schema;
 }
 
-export async function WindowedEditor<T>({
+async function WindowedEditor<T>({
   entity,
   update,
   actions = [],
