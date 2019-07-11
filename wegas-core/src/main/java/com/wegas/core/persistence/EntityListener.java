@@ -16,6 +16,7 @@ import com.wegas.core.jcr.jta.JCRClient;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.Beanjection;
@@ -116,6 +117,10 @@ public class EntityListener {
                 logger.debug("Unhandled new broadcastable entity: {}", b);
             }
         }
+
+        if (o instanceof GameModelContent) {
+            requestManager.addUpdatedGameModelContent((GameModelContent) o);
+        }
     }
 
     @PostUpdate
@@ -124,7 +129,7 @@ public class EntityListener {
         if (o instanceof WithPermission) {
             logger.debug("PostUpdate {}", o);
             if (requestManager != null) {
-                requestManager.assertUpdateRight((WithPermission)o);
+                requestManager.assertUpdateRight((WithPermission) o);
             } else {
                 logger.error("PostUpdate NO SECURITY FACADE");
             }
@@ -137,6 +142,10 @@ public class EntityListener {
                 Map<String, List<AbstractEntity>> entities = b.getEntities();
                 requestManager.addUpdatedEntities(entities);
             }
+        }
+
+        if (o instanceof GameModelContent) {
+            requestManager.addUpdatedGameModelContent((GameModelContent) o);
         }
     }
 

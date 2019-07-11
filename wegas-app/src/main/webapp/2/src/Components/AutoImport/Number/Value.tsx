@@ -1,22 +1,21 @@
 import * as React from 'react';
 import { TranslatableContent } from '../../../data/i18n';
-import { VariableConnect } from '../../VariableConnect';
+import {
+  useVariableDescriptor,
+  useVariableInstance,
+} from '../../Hooks/useVariable';
 
 export default function NumberValue(props: { variable: string }) {
+  const descriptor = useVariableDescriptor<INumberDescriptor>(props.variable);
+  const instance = useVariableInstance(descriptor);
+  if (descriptor === undefined || instance === undefined) {
+    return <span>Not found: {props.variable}</span>;
+  }
+  const label = TranslatableContent.toString(descriptor.label);
   return (
-    <VariableConnect<INumberDescriptor> name={props.variable}>
-      {({ state }) => {
-        if (state === undefined) {
-          return <span>Not found: {props.variable}</span>;
-        }
-        return (
-          <div>
-            {TranslatableContent.toString(state.descriptor.label)}
-            <span>: </span>
-            {state.instance.value}
-          </div>
-        );
-      }}
-    </VariableConnect>
+    <div>
+      {label && <span>{label}: </span>}
+      {instance.value}
+    </div>
   );
 }

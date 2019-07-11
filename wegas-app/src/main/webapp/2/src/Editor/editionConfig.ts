@@ -2,7 +2,7 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { Schema } from 'jsoninput';
 import { StateActions } from '../data/actions';
 import { AvailableViews } from './Components/FormView';
-import { formValidation } from './validation';
+import { formValidation } from './formValidation';
 import { entityIs } from '../data/entities';
 import { editStateMachine, editVariable } from '../data/Reducer/globalState';
 
