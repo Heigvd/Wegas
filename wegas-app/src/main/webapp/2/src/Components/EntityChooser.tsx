@@ -21,22 +21,22 @@ const displayStyle = css({
   flex: '1 1 auto',
 });
 
-interface EntityChooserProps<E extends IWegasEntity> {
+interface EntityChooserProps<E extends IAbstractEntity> {
   entities: E[];
   children: React.ComponentType<{
     entity: E;
   }>;
   entityLabel: (entity: E) => React.ReactNode;
 }
-export class EntityChooser<E extends IWegasEntity> extends React.Component<
+export class EntityChooser<E extends IAbstractEntity> extends React.Component<
   EntityChooserProps<E>,
   {
     entity?: E;
   }
 > {
   static getDerivedStateFromProps(
-    nextProps: EntityChooserProps<IWegasEntity>,
-    state: { entity?: IWegasEntity },
+    nextProps: EntityChooserProps<IAbstractEntity>,
+    state: { entity?: IAbstractEntity },
   ) {
     if (state.entity == null) {
       return null;

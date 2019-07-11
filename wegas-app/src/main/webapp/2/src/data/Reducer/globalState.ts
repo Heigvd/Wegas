@@ -3,13 +3,14 @@ import { Actions as ACTIONS, Actions } from '..';
 import { ActionCreator, ActionType, StateActions } from '../actions';
 import { VariableDescriptor } from '../selectors';
 import { ThunkResult, store } from '../store';
-import { ConfigurationSchema } from '../../Editor/editionConfig';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { entityIsPersisted } from '../entities';
 import { Reducer } from 'redux';
+import { Schema } from 'jsoninput';
+import { AvailableViews } from '../../Editor/Components/FormView';
 
-type actionFn<T extends IWegasEntity> = (entity: T, path?: string[]) => void;
-export interface EditorAction<T extends IWegasEntity> {
+type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
+export interface EditorAction<T extends IAbstractEntity> {
   save?: (entity: T) => void;
   more?: {
     [id: string]: {
@@ -22,23 +23,24 @@ type Edition =
   | {
       type: 'Variable';
       id: number;
-      config?: ConfigurationSchema<IWegasEntity>;
-      path?: string[];
-      actions: EditorAction<IWegasEntity>;
+      config?: Schema<AvailableViews>;
+      path?: (string|number)[];
+      actions: EditorAction<IAbstractEntity>;
     }
   | {
       type: 'VariableCreate';
       '@class': string;
       parentId?: number;
-      config?: ConfigurationSchema<IWegasEntity>;
-      actions: EditorAction<IWegasEntity>;
+      parentType?: string,
+      config?: Schema<AvailableViews>;
+      actions: EditorAction<IAbstractEntity>;
     }
   | {
       type: 'Component';
       page: string;
-      path: string[];
-      config?: ConfigurationSchema<IWegasEntity>;
-      actions: EditorAction<IWegasEntity>;
+      path: (string|number)[];
+      config?: Schema<AvailableViews>;
+      actions: EditorAction<IAbstractEntity>;
     };
 export interface GlobalState {
   currentGameModelId: number;
@@ -108,6 +110,7 @@ const global: Reducer<Readonly<GlobalState>> = u(
           type: 'VariableCreate',
           '@class': action.payload['@class'],
           parentId: action.payload.parentId,
+          parentType: action.payload.parentType,
           actions: action.payload.actions,
         };
         return;
@@ -189,8 +192,8 @@ export default global;
  */
 export function editVariable(
   entity: IVariableDescriptor,
-  path: string[] = [],
-  config?: ConfigurationSchema<IVariableDescriptor>,
+  path: (string|number)[] = [],
+  config?: Schema<AvailableViews>,
   actions: EditorAction<IVariableDescriptor> = {
     more: {
       delete: {
@@ -228,7 +231,7 @@ export function editVariable(
 export function editStateMachine(
   entity: IFSMDescriptor,
   path: string[] = [],
-  config?: ConfigurationSchema<IFSMDescriptor>,
+  config?: Schema<AvailableViews>,
 ) {
   return ActionCreator.FSM_EDIT({
     id: entity.id!,
@@ -266,12 +269,13 @@ export function editStateMachine(
  */
 export function createVariable(
   cls: string,
-  parent?: IParentDescriptor,
-  actions: EditorAction<IWegasEntity> = {},
+  parent?: IListDescriptor | IQuestionDescriptor | IChoiceDescriptor ,
+  actions: EditorAction<IAbstractEntity> = {},
 ) {
   return ActionCreator.VARIABLE_CREATE({
     '@class': cls,
     parentId: parent ? parent.id : undefined,
+    parentType: parent ? parent['@class']: undefined,
     actions,
   });
 }
@@ -283,10 +287,10 @@ export function editComponent(page: string, path: string[]) {
  * Save the content from the editor
  *
  * @export
- * @param {IWegasEntity} value
+ * @param {IAbstractEntity} value
  * @returns {ThunkResult}
  */
-export function saveEditor(value: IWegasEntity): ThunkResult {
+export function saveEditor(value: IAbstractEntity): ThunkResult {
   return function save(dispatch, getState) {
     const editMode = getState().global.editing;
     if (editMode == null) {

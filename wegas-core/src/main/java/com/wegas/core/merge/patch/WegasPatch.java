@@ -8,6 +8,7 @@
 package com.wegas.core.merge.patch;
 
 import com.wegas.core.IndentLogger;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.utils.LifecycleCollector;
@@ -91,6 +92,8 @@ public abstract class WegasPatch {
     protected boolean sameEntityOnly;
     protected boolean initOnly;
     protected boolean recursive;
+
+    protected VariableDescriptorFacade vdf;
 
     protected WegasPatch(Object identifier, Integer order,
             Method getter, Method setter,
@@ -410,4 +413,10 @@ public abstract class WegasPatch {
         this.indent(sb, ident);
     }
 
+    protected VariableDescriptorFacade getVariableDescriptorFacade() {
+        if (this.vdf == null) {
+            this.vdf = VariableDescriptorFacade.lookup();
+        }
+        return this.vdf;
+    }
 }

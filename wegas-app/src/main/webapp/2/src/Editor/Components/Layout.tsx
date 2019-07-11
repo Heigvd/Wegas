@@ -1,12 +1,9 @@
 import * as React from 'react';
 import { css } from 'emotion';
 import Header from './Header';
-import TreeView from './Variable/VariableTree';
 import Editor from './EntityEditor';
-import PageDisplay from './Page/PageDisplay';
 import { TabLayout } from '../../Components/Tabs';
-import StateMachineEditor from './StateMachineEditor';
-import { ModalLayout, globalModals, WModals } from './ModalLayout';
+import { ImperativeModals, globalModals, WModals } from './ImperativeModals';
 
 const layout = css({
   display: 'grid',
@@ -33,7 +30,7 @@ export default class AppLayout extends React.Component<
   }
   render() {
     return (
-      <ModalLayout global={true} noDebugger={true}>
+      <ImperativeModals global={true}>
         {(modals: WModals) => {
           return (
             <div className={layout}>
@@ -53,7 +50,7 @@ export default class AppLayout extends React.Component<
                         <button
                           onClick={() =>
                             m.waccept('This is a test accept', res => {
-                              alert('accept answered : ' + res);
+                              console.log('accept answered : ' + res);
                             })
                           }
                         >
@@ -62,7 +59,7 @@ export default class AppLayout extends React.Component<
                         <button
                           onClick={() =>
                             m.wprompt('This is a test prompt', res => {
-                              alert('prompt answered : ' + res);
+                              console.log('prompt answered : ' + res);
                             })
                           }
                         >
@@ -105,7 +102,7 @@ export default class AppLayout extends React.Component<
             </div>
           );
         }}
-      </ModalLayout>
+      </ImperativeModals>
     );
   }
 }

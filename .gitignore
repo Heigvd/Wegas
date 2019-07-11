@@ -5,6 +5,7 @@ wegas-core/target
 wegas-runtime/target/
 wegas-runtime/derby.log
 wegas-resources/target
+wenerator-maven-plugin/target
 doc/Wegas.uml~
 #!target/site*
 #!target/Wegas.war

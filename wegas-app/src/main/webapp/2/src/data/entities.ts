@@ -10,7 +10,7 @@ export function varIsList(variable: any): variable is IParentDescriptor {
  * @param variable Variable to test
  * @param cls Discriminant, class
  */
-export function entityIs<T extends IWegasEntity>(
+export function entityIs<T extends IAbstractEntity>(
   variable: any,
   cls: T['@class'],
 ): variable is T {
@@ -23,7 +23,7 @@ export function entityIs<T extends IWegasEntity>(
  * Test if a given entity is persisted, ie it has an id
  * @param entity entity to test for
  */
-export function entityIsPersisted<T extends IWegasEntity>(
+export function entityIsPersisted<T extends IAbstractEntity>(
   entity: T,
 ): entity is T & { id: number } {
   return typeof entity.id === 'number';

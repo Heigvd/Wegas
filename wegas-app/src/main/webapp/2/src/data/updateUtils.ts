@@ -10,7 +10,7 @@ import produce from 'immer';
  */
 export function deepUpdate(
   entity: unknown,
-  path: string[] = [],
+  path: (string | number)[] = [],
   value: unknown,
 ): unknown {
   if (path.length > 0 && typeof entity === 'object') {

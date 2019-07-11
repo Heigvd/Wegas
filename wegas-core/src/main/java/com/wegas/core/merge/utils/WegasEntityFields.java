@@ -7,8 +7,8 @@
  */
 package com.wegas.core.merge.utils;
 
-import com.wegas.core.merge.annotations.WegasEntity;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntity;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
 import java.beans.IntrospectionException;
 import java.lang.reflect.Field;
@@ -79,7 +79,7 @@ public class WegasEntityFields {
                      */
                     if (wegasProperty != null) {
                         if (!toIgnore.contains(f.getName())) {
-                            fields.add(new WegasFieldProperties(f, wegasProperty));
+                            fields.add(new WegasFieldProperties(f, wegasProperty, theClass));
                         } else {
                             logger.trace("Ignore {}.{}", klass, f);
                         }

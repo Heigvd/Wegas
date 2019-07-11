@@ -9,15 +9,35 @@ package com.wegas.mcq.persistence;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.wegas.core.merge.annotations.WegasEntityProperty;
+import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.persistence.annotations.Errored;
+import com.wegas.core.persistence.annotations.Param;
+import com.wegas.core.persistence.annotations.Scriptable;
+import com.wegas.editor.Visible;
+import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
+import com.wegas.core.persistence.annotations.WegasConditions.IsTrue;
+import com.wegas.core.persistence.annotations.WegasConditions.And;
+import com.wegas.core.persistence.annotations.WegasConditions.LessThan;
+import com.wegas.core.persistence.annotations.WegasRefs.Const;
+import com.wegas.core.persistence.annotations.WegasRefs.Field;
+import com.wegas.core.persistence.annotations.WegasRefs.Self;
+import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.EmptyI18n;
+import com.wegas.editor.ValueGenerators.False;
+import com.wegas.editor.ValueGenerators.One;
+import com.wegas.editor.ValueGenerators.True;
+import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import static com.wegas.editor.View.CommonView.LAYOUT.shortInline;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.NumberView;
+import com.wegas.editor.View.View;
 import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -55,32 +75,71 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      */
     @OneToOne(cascade = CascadeType.ALL)
-    @JsonDeserialize(using = TranslationContentDeserializer.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyI18n.class,
+            view = @View(
+                    index = 1,
+                    label = "Description",
+                    value = I18nHtmlView.class
+            ))
     private TranslatableContent description;
 
     /**
-     * Set this to true when the choice is to be selected with an HTML
+     * Set this to true when the choice is to be selh
      * radio/checkbox
      */
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = False.class,
+            view = @View(
+                    index = 10,
+                    label = "Checkbox answer",
+                    description = "For standard multiple-choice questions"
+            ))
     private Boolean cbx = FALSE;
     /**
      * Determines if choices are presented horizontally in a tabular fashion
      */
     @Column(columnDefinition = "boolean default false")
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = False.class,
+            view = @View(
+                    index = 11,
+                    label = "Tabular layout",
+                    description = "Replies are presented horizontally"
+            ))
+    @Visible(IsCbx.class)
     private Boolean tabular = FALSE;
     /**
-     * Total number of replies allowed. No default value.
+     * Total number of replies allowed. No default value (means infinity).
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            proposal = One.class,
+            view = @View(
+                    index = 21,
+                    label = "Max. number replies",
+                    description = "Optional value",
+                    value = NumberView.WithInfinityPlaceholder.class,
+                    layout = shortInline
+            ))
+    @Errored(CheckMinMaxBounds.class)
+    @Errored(CheckPositiveness.class)
     private Integer maxReplies = null;
     /**
      * Minimal number of replies required. Makes sense only with CBX-type questions. No default value.
      */
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            proposal = One.class,
+            view = @View(
+                    index = 20,
+                    label = "Min. number replies",
+                    description = "Optional value",
+                    value = NumberView.WithOnePlaceholder.class,
+                    layout = shortInline
+            ))
+    @Visible(IsCbx.class)
+    @Errored(CheckPositiveness.class)
+    @Errored(CheckMinMaxBounds.class)
     private Integer minReplies = null;
     /**
      *
@@ -89,7 +148,8 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     //@BatchFetch(BatchFetchType.IN)
     @JsonManagedReference
     @OrderColumn(name = "qd_items_order")
-    @WegasEntityProperty(includeByDefault = false)
+    @WegasEntityProperty(includeByDefault = false,
+            view = @View(label = "Items", value = Hidden.class), notSerialized = true)
     private List<ChoiceDescriptor> items = new ArrayList<>();
     /**
      *
@@ -97,7 +157,13 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @ElementCollection
     //@JsonView(Views.ExtendedI.class)
     //@JsonView(Views.EditorI.class)
-    @WegasEntityProperty
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(
+                    index = 30,
+                    label = "Pictures",
+                    featureLevel = ADVANCED
+            ))
     private Set<String> pictures = new HashSet<>();
 
 // ~~~ Sugar for scripts ~~~
@@ -116,6 +182,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @return the player instance active status
      */
+    @Scriptable
     public boolean isActive(Player p) {
         QuestionInstance instance = this.getInstance(p);
         return instance.getActive();
@@ -125,6 +192,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @param p
      */
+    @Scriptable
     public void activate(Player p) {
         this.setActive(p, true);
     }
@@ -133,7 +201,13 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @param p
      */
+    @Deprecated
     public void desactivate(Player p) {
+        this.deactivate(p);
+    }
+
+    @Scriptable
+    public void deactivate(Player p) {
         this.setActive(p, false);
     }
 
@@ -144,7 +218,8 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * @param p
      * @param value
      */
-    public void setValidated(Player p, boolean value) {
+    @Scriptable(label = "validate")
+    public void setValidated(Player p, @Param(proposal = True.class) boolean value) {
         this.getInstance(p).setValidated(value);
     }
 
@@ -156,6 +231,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @return
      */
+    @Scriptable(label = "is validated")
     public boolean getValidated(Player p) {
         return this.getInstance(p).isValidated();
     }
@@ -305,6 +381,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @return true if the player has already answers this question
      */
+    @Scriptable(label = "has been replied")
     public boolean isReplied(Player p) {
         return !this.isNotReplied(p);
     }
@@ -316,6 +393,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @return true if the player has not yet answers this question
      */
+    @Scriptable(label = "has not been replied")
     public boolean isNotReplied(Player p) {
         QuestionInstance instance = this.getInstance(p);
         // no validated replies at all
@@ -329,6 +407,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      * @return
      */
+    @Scriptable
     public boolean isStillAnswerabled(Player p) {
         if (this.getMaxReplies() != null) {
             QuestionInstance qi = this.getInstance(p);
@@ -347,5 +426,33 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         }
 
         return true;
+    }
+
+    public static class CheckMinMaxBounds extends And {
+
+        public CheckMinMaxBounds() {
+            super(
+                    new IsDefined(new Field(null, "minReplies")),
+                    new IsDefined(new Field(null, "maxReplies")),
+                    new LessThan(new Field(null, "maxReplies"), new Field(null, "minReplies"))
+            );
+        }
+    }
+
+    public static class CheckPositiveness extends And {
+
+        public CheckPositiveness() {
+            super(
+                    new IsDefined(new Self()),
+                    new LessThan(new Self(), new Const(1))
+            );
+        }
+    }
+
+    public static class IsCbx extends IsTrue {
+
+        public IsCbx() {
+            super(new Field(null, "cbx"));
+        }
     }
 }

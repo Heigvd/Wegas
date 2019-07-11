@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Toolbar } from './Toolbar';
 import { css } from 'emotion';
 import { primaryLight, primaryDark } from './Theme';
+
 interface TabLayoutProps {
   active?: number;
   vertical: boolean;
@@ -9,15 +10,31 @@ interface TabLayoutProps {
 }
 export class TabLayout extends React.Component<
   TabLayoutProps,
-  { active: number }
+  { active: number; renderedFlag: number }
 > {
   static defaultProps = {
     vertical: false,
   };
-  readonly state = { active: this.props.active || 0 };
+  readonly state = {
+    active: this.props.active || 0,
+    renderedFlag: this.props.active || 0,
+  };
+
   render() {
-    const active = React.Children.map(this.props.children, (c, i) => {
-      return i === this.state.active ? c : null;
+    const childrens = React.Children.map(this.props.children, (c, i) => {
+      return (
+        (i === this.state.active ||
+          (this.state.renderedFlag & (i + 1)) > 0) && (
+          <div
+            style={{
+              display: i === this.state.active ? 'flex' : 'none',
+              flex: '1 1 auto',
+            }}
+          >
+            {c}
+          </div>
+        )
+      );
     });
     return (
       <Toolbar vertical={this.props.vertical}>
@@ -27,14 +44,21 @@ export class TabLayout extends React.Component<
               <Tab
                 key={i}
                 active={i === this.state.active}
-                onClick={() => this.setState({ active: i })}
+                onClick={() =>
+                  this.setState(oldState => {
+                    return {
+                      active: i,
+                      renderedFlag: oldState.renderedFlag | (i + 1),
+                    };
+                  })
+                }
               >
                 {t}
               </Tab>
             );
           })}
         </Toolbar.Header>
-        <Toolbar.Content>{active}</Toolbar.Content>
+        <Toolbar.Content>{childrens}</Toolbar.Content>
       </Toolbar>
     );
   }
