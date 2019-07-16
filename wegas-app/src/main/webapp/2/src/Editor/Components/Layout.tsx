@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css } from 'emotion';
 import Header from './Header';
-import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
+import { DndLinearLayout, Item, Layout } from './LinearTabLayout/LinearLayout';
 import StateMachineEditor from './StateMachineEditor';
 import PageDisplay from './Page/PageDisplay';
 import TreeView from './Variable/VariableTree';
@@ -61,7 +61,44 @@ export default class AppLayout extends React.Component<
               },
             },
           }}
-        />
+          unusedTabs={[
+            <Item key="Variables" label="Variables">
+              <TreeView />
+            </Item>,
+            <Item key="Page" label="Page">
+              <PageDisplay />
+            </Item>,
+            <Item key="StateMachine" label="StateMachine">
+              <StateMachineEditor />
+            </Item>,
+            <Item key="Editor" label="Editor">
+              <Editor />
+            </Item>,
+          ]}
+        >
+          <Layout>
+            <Layout>
+              <Layout>
+                <Item key="Variables" label="Variables">
+                  <TreeView />
+                </Item>
+              </Layout>
+              <Layout>
+                <Item key="Page" label="Page">
+                  <PageDisplay />
+                </Item>
+                <Item key="StateMachine" label="StateMachine">
+                  <StateMachineEditor />
+                </Item>
+              </Layout>
+              <Layout>
+                <Item key="Editor" label="Editor">
+                  <Editor />
+                </Item>
+              </Layout>
+            </Layout>
+          </Layout>
+        </DndLinearLayout>
       </div>
     );
   }
