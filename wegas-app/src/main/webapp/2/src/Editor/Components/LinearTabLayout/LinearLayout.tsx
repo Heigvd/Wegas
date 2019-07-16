@@ -617,6 +617,8 @@ const setLayout = (layouts: ManagedLayoutMap, action: TabLayoutsAction) =>
       // Check for misorientation after deleting and reordering the layouts
       layouts.layoutMap = checkAndCleanMissOrientedLayouts(layouts.layoutMap);
     }
+    // Saving layout in local storage
+    window.localStorage.setItem('DnDGridLayoutData', JSON.stringify(layouts));
     return layouts;
   });
 
@@ -627,6 +629,108 @@ const defaultLayout: ManagedLayoutMap = {
   },
   rootKey: '0',
 };
+
+const reduceChildren = (
+  tabs: ComponentMap,
+  children?:
+    | null
+    | React.ReactElement<ItemProps | LayoutProps>
+    | React.ReactElement<ItemProps | LayoutProps>[],
+  layoutMap?: ManagedLayoutMap,
+) => {
+  let newLayoutMap: ManagedLayoutMap = layoutMap
+    ? layoutMap
+    : // Deepcopy
+      JSON.parse(JSON.stringify(defaultLayout));
+  const parentLayoutKey = newLayoutMap.lastKey;
+  const parentLayout = newLayoutMap.layoutMap[parentLayoutKey];
+
+  if (children) {
+    let newChildren: React.ReactElement<ItemProps | LayoutProps>[] = [];
+    if (!Array.isArray(children)) {
+      newChildren.push(children);
+    } else {
+      newChildren = children;
+    }
+
+    if (
+      newChildren.every(
+        child =>
+          child.type &&
+          newChildren[0].type &&
+          typeof child.type !== 'string' &&
+          typeof newChildren[0].type !== 'string' &&
+          child.type.name === newChildren[0].type.name &&
+          (child.type.name === 'Layout' || child.type.name === 'Item'),
+      )
+    ) {
+      if (
+        (newChildren as { type: { name: string } }[]).findIndex(
+          child => child.type.name === 'Layout',
+        ) >= 0
+      ) {
+        newChildren.forEach(child => {
+          if (child.props.children) {
+            newLayoutMap = createLayout(
+              newLayoutMap,
+              'ReflexLayoutNode',
+              [],
+              !parentLayout.vertical,
+            );
+            const newReflexLayoutKey = newLayoutMap.lastKey;
+            newLayoutMap.layoutMap = insertChildren(
+              newLayoutMap.layoutMap,
+              parentLayoutKey,
+              newReflexLayoutKey,
+            );
+            newLayoutMap = reduceChildren(
+              tabs,
+              child.props.children,
+              newLayoutMap,
+            );
+          } else {
+            wlog('A layout without children was ignored');
+          }
+        });
+      } else {
+        newLayoutMap.layoutMap[parentLayoutKey].type = 'TabLayoutNode';
+        newLayoutMap.layoutMap[parentLayoutKey].vertical = false;
+        (newChildren as React.ReactElement<ItemProps>[]).forEach(child => {
+          if (!tabs[child.props.label]) {
+            throw Error(
+              `The tab ${
+                child.props.label
+              } doesn't exist. All the used tabs must be given in the tabs props of the LinearLayout`,
+            );
+          }
+          newLayoutMap.layoutMap[parentLayoutKey].children.push(
+            child.props.label,
+          );
+        });
+      }
+    } else {
+      wlog(
+        'You must wrap Items in Layout and you must not have other component than Item and Layout in the LinearLayout',
+      );
+    }
+  }
+  newLayoutMap.layoutMap = checkAndCleanLonelyLayout(
+    newLayoutMap.layoutMap,
+    parentLayoutKey,
+  );
+  newLayoutMap.layoutMap = checkAndCleanMissOrientedLayouts(
+    newLayoutMap.layoutMap,
+  );
+  return newLayoutMap;
+};
+
+const layoutTabMissing = (layout: LayoutMap | null, tabs: ComponentMap) =>
+  !layout ||
+  Object.values(layout).some(
+    item =>
+      item.type === 'TabLayoutNode' &&
+      item.children.some(c => !Object.keys(tabs).includes(c)),
+  );
 
 interface ItemProps {
   label: string;
@@ -653,11 +757,12 @@ export const Layout: TLayout = (props: LayoutProps) => {
 
 interface LinearLayoutProps {
   /**
-   * unusedTabs - The tabs that can be added in the layout
+   * tabs - The tabs that can be used in the layout (You must include all the tabs that you use in the children)
    */
-  unusedTabs?: React.ReactElement<ItemProps>[];
+  tabs: React.ReactElement<ItemProps>[];
   /**
    * children - the layout initial disposition
+   * If a layout is saved in the browser, this won't be taken in account unless the saved layout is reset
    */
   children?:
     | React.ReactElement<ItemProps | LayoutProps>
@@ -670,105 +775,27 @@ interface LinearLayoutProps {
 function MainLinearLayout(props: LinearLayoutProps) {
   const tabs = React.useRef<ComponentMap>({});
 
-  if (props.unusedTabs) {
-    React.Children.forEach(props.unusedTabs, child => {
-      if (
-        child.type &&
-        typeof child.type !== 'string' &&
-        child.type.name === 'Item'
-      ) {
-        tabs.current[child.props.label] = child.props.children;
-      } else {
-        wlog('You must use an Item element to wrap the content of the tab');
-      }
-    });
-  }
+  React.Children.forEach(props.tabs, child => {
+    if (
+      child.type &&
+      typeof child.type !== 'string' &&
+      child.type.name === 'Item'
+    ) {
+      tabs.current[child.props.label] = child.props.children;
+    } else {
+      wlog('You must use an Item element to wrap the content of the tab');
+    }
+  });
 
-  const reduceChildren = React.useCallback(
-    (
-      children?:
-        | null
-        | React.ReactElement<ItemProps | LayoutProps>
-        | React.ReactElement<ItemProps | LayoutProps>[],
-      layoutMap?: ManagedLayoutMap,
-    ) => {
-      let newLayoutMap: ManagedLayoutMap = layoutMap
-        ? layoutMap
-        : // Deepcopy
-          JSON.parse(JSON.stringify(defaultLayout));
-      const parentLayoutKey = newLayoutMap.lastKey;
-      const parentLayout = newLayoutMap.layoutMap[parentLayoutKey];
-
-      if (children) {
-        let newChildren: React.ReactElement<ItemProps | LayoutProps>[] = [];
-        if (!Array.isArray(children)) {
-          newChildren.push(children);
-        } else {
-          newChildren = children;
-        }
-
-        if (
-          newChildren.every(
-            child =>
-              child.type &&
-              newChildren[0].type &&
-              typeof child.type !== 'string' &&
-              typeof newChildren[0].type !== 'string' &&
-              child.type.name === newChildren[0].type.name &&
-              (child.type.name === 'Layout' || child.type.name === 'Item'),
-          )
-        ) {
-          if (
-            (newChildren as { type: { name: string } }[]).findIndex(
-              child => child.type.name === 'Layout',
-            ) >= 0
-          ) {
-            newChildren.forEach(child => {
-              newLayoutMap = createLayout(
-                newLayoutMap,
-                'ReflexLayoutNode',
-                [],
-                !parentLayout.vertical,
-              );
-              const newReflexLayoutKey = newLayoutMap.lastKey;
-              newLayoutMap.layoutMap = insertChildren(
-                newLayoutMap.layoutMap,
-                parentLayoutKey,
-                newReflexLayoutKey,
-              );
-              newLayoutMap = reduceChildren(child.props.children, newLayoutMap);
-            });
-          } else {
-            newLayoutMap.layoutMap[parentLayoutKey].type = 'TabLayoutNode';
-            newLayoutMap.layoutMap[parentLayoutKey].vertical = false;
-            (newChildren as React.ReactElement<ItemProps>[]).forEach(child => {
-              tabs.current[child.props.label] = child.props.children;
-              newLayoutMap.layoutMap[parentLayoutKey].children.push(
-                child.props.label,
-              );
-            });
-          }
-        } else {
-          wlog(
-            'You must wrap Items in Layout and you must not have other component than Item and Layout in the LinearLayout',
-          );
-        }
-      }
-      newLayoutMap.layoutMap = checkAndCleanLonelyLayout(
-        newLayoutMap.layoutMap,
-        parentLayoutKey,
-      );
-      newLayoutMap.layoutMap = checkAndCleanMissOrientedLayouts(
-        newLayoutMap.layoutMap,
-      );
-      return newLayoutMap;
-    },
-    [],
-  );
-
+  const savedLayoutJSON = window.localStorage.getItem('DnDGridLayoutData');
+  const savedLayout = savedLayoutJSON
+    ? (JSON.parse(savedLayoutJSON) as ManagedLayoutMap)
+    : null;
   const [layout, dispatchLayout] = React.useReducer(
     setLayout,
-    reduceChildren(props.children),
+    savedLayout && !layoutTabMissing(savedLayout.layoutMap, tabs.current)
+      ? savedLayout
+      : reduceChildren(tabs.current, props.children),
   );
 
   const onDrop = (layoutKey: string) => (type: DropActionType) => (item: {

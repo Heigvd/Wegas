@@ -28,7 +28,7 @@ export default class AppLayout extends React.Component<
       <div className={layout}>
         <Header />
         <DndLinearLayout
-          unusedTabs={[
+          tabs={[
             <Item key="Variables" label="Variables">
               <TreeView />
             </Item>,
