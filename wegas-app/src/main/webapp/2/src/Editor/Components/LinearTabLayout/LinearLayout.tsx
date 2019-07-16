@@ -8,7 +8,6 @@ import u from 'immer';
 import { ReparentableRoot } from '../Reparentable';
 import { DnDTabLayout, ComponentMap, filterMap } from './DnDTabLayout';
 import { wlog } from '../../../Helper/wegaslog';
-import { jSXAttribute } from 'babel-types';
 
 const splitter = css({
   '&.reflex-container.vertical > .reflex-splitter': {
@@ -654,18 +653,12 @@ export const Layout: TLayout = (props: LayoutProps) => {
 
 interface LinearLayoutProps {
   /**
-   * tabMap - the tabs that can be used in the linearLayout
-   * Be carefull, if a new tabMap is given and the current layoutMap is using these tabs the component will fail
-   */
-  tabMap?: ComponentMap;
-  /**
-   *
+   * unusedTabs - The tabs that can be added in the layout
    */
   unusedTabs?: React.ReactElement<ItemProps>[];
   /**
-   * layoutMap - the layout initial disposition
+   * children - the layout initial disposition
    */
-  layoutMap?: ManagedLayoutMap;
   children?:
     | React.ReactElement<ItemProps | LayoutProps>
     | React.ReactElement<ItemProps | LayoutProps>[];
@@ -675,7 +668,6 @@ interface LinearLayoutProps {
  * MainLinearLayout is a component that allows to chose the position and size of its children
  */
 function MainLinearLayout(props: LinearLayoutProps) {
-  // const tabs = props.tabMap ? props.tabMap : {};
   const tabs = React.useRef<ComponentMap>({});
 
   if (props.unusedTabs) {

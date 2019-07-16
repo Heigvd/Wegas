@@ -28,39 +28,6 @@ export default class AppLayout extends React.Component<
       <div className={layout}>
         <Header />
         <DndLinearLayout
-          tabMap={{
-            Variables: <TreeView />,
-            Page: <PageDisplay />,
-            StateMachine: <StateMachineEditor />,
-            Editor: <Editor />,
-          }}
-          layoutMap={{
-            rootKey: '0',
-            lastKey: '3',
-            isDragging: false,
-            layoutMap: {
-              '0': {
-                type: 'ReflexLayoutNode',
-                vertical: false,
-                children: ['1', '2', '3'],
-              },
-              '1': {
-                type: 'TabLayoutNode',
-                vertical: false,
-                children: ['Variables'],
-              },
-              '2': {
-                type: 'TabLayoutNode',
-                vertical: false,
-                children: ['Page', 'StateMachine'],
-              },
-              '3': {
-                type: 'TabLayoutNode',
-                vertical: false,
-                children: ['Editor'],
-              },
-            },
-          }}
           unusedTabs={[
             <Item key="Variables" label="Variables">
               <TreeView />
@@ -77,26 +44,22 @@ export default class AppLayout extends React.Component<
           ]}
         >
           <Layout>
-            <Layout>
-              <Layout>
-                <Item key="Variables" label="Variables">
-                  <TreeView />
-                </Item>
-              </Layout>
-              <Layout>
-                <Item key="Page" label="Page">
-                  <PageDisplay />
-                </Item>
-                <Item key="StateMachine" label="StateMachine">
-                  <StateMachineEditor />
-                </Item>
-              </Layout>
-              <Layout>
-                <Item key="Editor" label="Editor">
-                  <Editor />
-                </Item>
-              </Layout>
-            </Layout>
+            <Item key="Variables" label="Variables">
+              <TreeView />
+            </Item>
+          </Layout>
+          <Layout>
+            <Item key="Page" label="Page">
+              <PageDisplay />
+            </Item>
+            <Item key="StateMachine" label="StateMachine">
+              <StateMachineEditor />
+            </Item>
+          </Layout>
+          <Layout>
+            <Item key="Editor" label="Editor">
+              <Editor />
+            </Item>
           </Layout>
         </DndLinearLayout>
       </div>
