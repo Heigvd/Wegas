@@ -44,14 +44,14 @@ export const dropZoneStyle = css({
   borderColor: 'red',
 });
 
-const isDirectory = (file: IFileDescriptor) =>
+export const isDirectory = (file: IFileDescriptor) =>
   file.mimeType === 'application/wfs-directory';
 
 const generateAbsolutePath = (path: string, filename: string) => {
   return path.replace(/(\/)$/, '') + '/' + filename;
 };
 
-const generateGoodPath = (file: IFileDescriptor) => {
+export const generateGoodPath = (file: IFileDescriptor) => {
   return generateAbsolutePath(file.path, file.name);
 };
 

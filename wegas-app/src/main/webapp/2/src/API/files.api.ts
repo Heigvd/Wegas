@@ -1,6 +1,6 @@
 import { rest } from './rest';
-import { generateGoodPath } from '../data/methods/ContentDescriptor';
 import { GameModel } from '../data/selectors';
+import { generateGoodPath } from '../Editor/Components/FileBrowser/TreeFileBrowser/FileBrowser';
 
 const FILE_BASE = (gameModelId?: number) =>
   `GameModel/${

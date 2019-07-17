@@ -1,15 +1,13 @@
 import * as React from 'react';
 import { FileAPI } from '../../../../API/files.api';
-import {
-  getAbsoluteFileName,
-  isDirectory,
-} from '../../../../data/methods/ContentDescriptor';
 import { useDrop } from 'react-dnd';
 import {
   dropSpecs,
   hiddenFileBrowserStyle,
   dropZoneStyle,
   isUploadAllowed,
+  generateGoodPath,
+  isDirectory,
 } from './FileBrowser';
 import { IconButton } from '../../../../Components/Button/IconButton';
 import { css, cx } from 'emotion';
@@ -82,10 +80,7 @@ export function FileBrowserNode(
   const uploader = React.useRef<HTMLInputElement>(null);
 
   const openFile = (file: IFileDescriptor) => {
-    const win = window.open(
-      FileAPI.fileURL(getAbsoluteFileName(file)),
-      '_blank',
-    );
+    const win = window.open(FileAPI.fileURL(generateGoodPath(file)), '_blank');
     win!.focus();
   };
 
@@ -95,7 +90,7 @@ export function FileBrowserNode(
         files: FileList;
         items: DataTransferItemList;
       };
-      insertFiles(files, getAbsoluteFileName(node.file));
+      insertFiles(files, generateGoodPath(node.file));
       setOpen(true);
     }),
   );
