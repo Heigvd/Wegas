@@ -5,11 +5,7 @@ import u from 'immer';
 import { IconButton } from '../../../../Components/Button/IconButton';
 import { css, cx } from 'emotion';
 import { StoreDispatch, StoreConsumer } from '../../../../data/store';
-import {
-  Edition,
-  closeEditor,
-  editFileAction,
-} from '../../../../data/Reducer/globalState';
+import { Edition, editFileAction } from '../../../../data/Reducer/globalState';
 import { State } from '../../../../data/Reducer/reducers';
 import { DropTargetMonitor, DragObjectWithType, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
@@ -67,10 +63,6 @@ export const fileURL = (absolutePath: string) => {
     absolutePath
   );
 };
-
-interface IFileMap {
-  [id: string]: IFileDescriptor;
-}
 
 export const gameModelDependsOnModel = () => {
   return (
@@ -248,7 +240,7 @@ const setNodeTree = u(
 
 export interface FileBrowserProps {
   onFileClick?: (files: IFileDescriptor | null) => void;
-  selectedFiles?: IFileMap;
+  selectedFiles?: string[];
 }
 
 export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
@@ -415,52 +407,47 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
     }),
   );
 
-  type RenderNodeType = (node: FileNode | null) => JSX.Element;
-
-  const renderNode: RenderNodeType = React.useCallback(
-    node => {
-      if (node == null || fileState == null) {
-        return <div>Empty...</div>;
-      } else if (node.file.name === '' && node.file.path === '/') {
-        return (
-          <div className={grow}>
-            {isNodeDirectory(node) ? (
-              node.childrenIds.map((nodeKey: string) =>
-                renderNode(fileState.nodes[nodeKey]),
-              )
-            ) : (
-              <div>Empty...</div>
-            )}
-          </div>
-        );
-      } else {
-        return (
-          <FileBrowserNode
-            key={generateGoodPath(node.file)}
-            node={node}
-            selectFile={selectFile}
-            addNewDirectory={addNewDirectory}
-            deleteFile={deleteNode}
-            insertFiles={insertFiles}
-            uploadFiles={uploadFiles}
-          >
-            {isNodeDirectory(node) &&
-              (node.childrenIds.length > 0
-                ? node.childrenIds.map(id => renderNode(fileState.nodes[id]))
-                : 'Empty...')}
-          </FileBrowserNode>
-        );
-      }
-    },
-    [
-      addNewDirectory,
-      deleteNode,
-      insertFiles,
-      fileState,
-      selectFile,
-      uploadFiles,
-    ],
-  );
+  const renderNode = (node: FileNode | null): JSX.Element => {
+    if (node == null || fileState == null) {
+      return <div>Empty...</div>;
+    } else if (node.file.name === '' && node.file.path === '/') {
+      return (
+        <div className={grow}>
+          {isNodeDirectory(node) ? (
+            node.childrenIds.map((nodeKey: string) =>
+              renderNode(fileState.nodes[nodeKey]),
+            )
+          ) : (
+            <div>Empty...</div>
+          )}
+        </div>
+      );
+    } else {
+      return (
+        <FileBrowserNode
+          key={generateGoodPath(node.file)}
+          node={node}
+          onSelectFile={selectFile}
+          onOpen={(node, open) =>
+            dispatchFileStateAction({
+              type: 'OpenFolder',
+              action: open,
+              nodeId: generateGoodPath(node.file),
+            })
+          }
+          addNewDirectory={addNewDirectory}
+          deleteFile={deleteNode}
+          insertFiles={insertFiles}
+          uploadFiles={uploadFiles}
+        >
+          {isNodeDirectory(node) &&
+            (node.childrenIds.length > 0
+              ? node.childrenIds.map(id => renderNode(fileState.nodes[id]))
+              : 'Empty...')}
+        </FileBrowserNode>
+      );
+    }
+  };
 
   React.useEffect(() => {
     FileAPI.getFileMeta().then(rootFile => {
@@ -499,10 +486,10 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
   React.useEffect(() => {
     if (fileState && selectedFiles) {
       Object.keys(fileState.nodes).map(fileKey => {
+        const filePath = generateGoodPath(fileState.nodes[fileKey].file);
         if (
-          Object.keys(selectedFiles).find(selKey =>
-            selKey.startsWith(generateGoodPath(fileState.nodes[fileKey].file)),
-          ) !== undefined
+          selectedFiles.find(selKey => selKey.startsWith(filePath)) !==
+          undefined
         ) {
           dispatchFileStateAction({
             type: 'OpenFolder',
@@ -513,10 +500,7 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
         dispatchFileStateAction({
           type: 'SelectFile',
           nodeId: fileKey,
-          action:
-            Object.keys(selectedFiles).indexOf(
-              generateGoodPath(fileState.nodes[fileKey].file),
-            ) >= 0,
+          action: selectedFiles.includes(filePath),
         });
       });
     }
@@ -585,13 +569,11 @@ interface CFileBrowserProps {
 function CFileBrowser(props: CFileBrowserProps) {
   const { editing, dispatch } = props;
 
-  const [selectedFiles, setSelectedFiles] = React.useState<IFileMap>({});
+  const [selectedFiles, setSelectedFiles] = React.useState<string[]>();
 
   const onFileClick = React.useCallback(
     (file: IFileDescriptor | null) => {
-      if (file === null) {
-        dispatch(closeEditor());
-      } else {
+      if (file != null) {
         dispatch(editFileAction(file, dispatch));
       }
     },
@@ -600,11 +582,9 @@ function CFileBrowser(props: CFileBrowserProps) {
 
   React.useEffect(() => {
     if (editing && editing.type === 'File') {
-      const newSF: IFileMap = {};
-      newSF[generateGoodPath(editing.file)] = editing.file;
-      setSelectedFiles(newSF);
+      setSelectedFiles([generateGoodPath(editing.file)]);
     } else {
-      setSelectedFiles({});
+      setSelectedFiles([]);
     }
   }, [editing]);
 
