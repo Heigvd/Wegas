@@ -164,7 +164,6 @@ class TreeNode extends React.Component<
     });
     const isNode = Array.isArray(children);
     const cont = isNode && expanded && (
-      // @ts-ignore (ignore dummy props missing)
       <DropZone id={id} where="INSIDE" index={0}>
         {({ isOver, boundingRect }) => (
           <div className={childrenContainer}>
@@ -254,7 +253,6 @@ export function Node(props: NodeProps) {
   return (
     <DropContext.Consumer>
       {({ onDropResult }) => {
-        // @ts-ignore (ignore dummy props missing)
         return <DSNode {...props} onDropResult={onDropResult} />;
       }}
     </DropContext.Consumer>
