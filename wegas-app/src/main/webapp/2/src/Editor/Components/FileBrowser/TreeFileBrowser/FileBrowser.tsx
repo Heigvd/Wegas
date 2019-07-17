@@ -15,16 +15,12 @@ import { css, cx } from 'emotion';
 import { StoreDispatch, StoreConsumer } from '../../../../data/store';
 import { Edition, closeEditor } from '../../../../data/Reducer/globalState';
 import { State } from '../../../../data/Reducer/reducers';
-import {
-  __EXPERIMENTAL_DND_HOOKS_THAT_MAY_CHANGE_AND_BREAK_MY_BUILD__ as dnd,
-  DropTargetMonitor,
-  DragObjectWithType,
-} from 'react-dnd';
+import { DropTargetMonitor, DragObjectWithType, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
-import { defaultContextManager } from '../../../../Components/DragAndDrop';
 import { themeVar } from '../../../../Components/Theme';
 import { omit } from 'lodash';
 import { FileNode, isNodeDirectory, FileBrowserNode } from './FileBrowserNode';
+import { DefaultDndProvider } from '../../../../Components/DefaultDndProvider';
 
 const grow = css({
   flex: '1 1 auto',
@@ -402,7 +398,7 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
     [onFileClick],
   );
 
-  const [dropZoneProps, dropZone] = dnd.useDrop(
+  const [dropZoneProps, dropZone] = useDrop(
     dropSpecs(item => {
       const { files } = (item as unknown) as {
         files: FileList;
@@ -629,6 +625,10 @@ export function ConnectedFileBrowser() {
   );
 }
 
-export const DndConnectedFileBrowser = defaultContextManager<
-  React.ComponentType
->(ConnectedFileBrowser);
+export function DndConnectedFileBrowser() {
+  return (
+    <DefaultDndProvider>
+      <ConnectedFileBrowser />
+    </DefaultDndProvider>
+  );
+}
