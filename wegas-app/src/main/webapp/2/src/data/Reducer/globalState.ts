@@ -2,12 +2,13 @@ import u from 'immer';
 import { Actions as ACTIONS, Actions } from '..';
 import { ActionCreator, ActionType, StateActions } from '../actions';
 import { VariableDescriptor } from '../selectors';
-import { ThunkResult, store } from '../store';
+import { ThunkResult, store, StoreDispatch } from '../store';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { entityIsPersisted } from '../entities';
 import { Reducer } from 'redux';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../../Editor/Components/FormView';
+import { FileAPI } from '../../API/files.api';
 
 type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IAbstractEntity> {
@@ -404,3 +405,22 @@ export function searchUsage(
     });
   };
 }
+
+export const editFileAction = (
+  file: IFileDescriptor,
+  dispatch?: StoreDispatch,
+) => {
+  return ActionCreator.FILE_EDIT({
+    file: file,
+    actions: {
+      save: (file: IFileDescriptor) => {
+        FileAPI.updateMetadata(file).then((resFile: IFileDescriptor) => {
+          if (dispatch) {
+            dispatch(editFileAction(resFile));
+          }
+        });
+      },
+      more: null,
+    },
+  });
+};

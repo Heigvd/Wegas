@@ -3,17 +3,13 @@ import { FileAPI } from '../../../../API/files.api';
 import { GameModel } from '../../../../data/selectors';
 import u from 'immer';
 import { IconButton } from '../../../../Components/Button/IconButton';
-import {
-  getAbsoluteFileName,
-  isDirectory,
-  editFileAction,
-  generateGoodPath,
-  generateAbsolutePath,
-  TMap,
-} from '../../../../data/methods/ContentDescriptor';
 import { css, cx } from 'emotion';
 import { StoreDispatch, StoreConsumer } from '../../../../data/store';
-import { Edition, closeEditor } from '../../../../data/Reducer/globalState';
+import {
+  Edition,
+  closeEditor,
+  editFileAction,
+} from '../../../../data/Reducer/globalState';
 import { State } from '../../../../data/Reducer/reducers';
 import { DropTargetMonitor, DragObjectWithType, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
@@ -48,7 +44,20 @@ export const dropZoneStyle = css({
   borderColor: 'red',
 });
 
-type IFileMap = TMap<IFileDescriptor>;
+const isDirectory = (file: IFileDescriptor) =>
+  file.mimeType === 'application/wfs-directory';
+
+const generateAbsolutePath = (path: string, filename: string) => {
+  return path.replace(/(\/)$/, '') + '/' + filename;
+};
+
+const generateGoodPath = (file: IFileDescriptor) => {
+  return generateAbsolutePath(file.path, file.name);
+};
+
+interface IFileMap {
+  [id: string]: IFileDescriptor;
+}
 
 export const gameModelDependsOnModel = () => {
   return (
@@ -185,7 +194,7 @@ const setNodeTree: (
             fileState.nodes[action.file.path] &&
             fileState.nodes[action.file.path].childrenIds
           ) {
-            const absoluteFileName = getAbsoluteFileName(action.file);
+            const absoluteFileName = generateGoodPath(action.file);
             //Needs to be inserted at the good index in order to keep the sort
             const insertionIndex = fileState.nodes[
               action.file.path
@@ -211,7 +220,7 @@ const setNodeTree: (
           break;
         }
         case 'UpdateFile': {
-          fileState.nodes[getAbsoluteFileName(action.file)].file = action.file;
+          fileState.nodes[generateGoodPath(action.file)].file = action.file;
           if (action.openPath && fileState.nodes[action.file.path]) {
             fileState.nodes[action.file.path].open = true;
           }
@@ -227,10 +236,10 @@ const setNodeTree: (
                 fileNodes[targetNode.file.path].childrenIds = fileNodes[
                   targetNode.file.path
                 ].childrenIds!.filter(
-                  id => id !== getAbsoluteFileName(targetNode.file),
+                  id => id !== generateGoodPath(targetNode.file),
                 );
               }
-              if (key === getAbsoluteFileName(action.node.file)) {
+              if (key === generateGoodPath(action.node.file)) {
                 fileNodes = omit(fileNodes, key);
                 fileNodes = recurseRemove(fileNodes, targetNode);
               }
@@ -270,13 +279,12 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
   const addNewDirectory = React.useCallback((parentDir: IFileDescriptor) => {
     const newDirName = prompt('Please enter the name of the new directory', '');
     if (newDirName !== null) {
-      FileAPI.createFile(newDirName, getAbsoluteFileName(parentDir)).then(
-        file =>
-          dispatchFileStateAction({
-            type: 'InsertFile',
-            file: file,
-            openPath: true,
-          }),
+      FileAPI.createFile(newDirName, generateGoodPath(parentDir)).then(file =>
+        dispatchFileStateAction({
+          type: 'InsertFile',
+          file: file,
+          openPath: true,
+        }),
       );
     }
   }, []);
@@ -364,7 +372,7 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
       const target = event.target;
       if (target && target.files && target.files.length > 0) {
         if (isNodeDirectory(targetNode)) {
-          insertFiles(target.files, getAbsoluteFileName(targetNode.file));
+          insertFiles(target.files, generateGoodPath(targetNode.file));
         } else {
           insertFile(
             target.files[0],
@@ -387,7 +395,7 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
 
   const deleteNode = React.useCallback(
     (node: FileNode) => {
-      FileAPI.deleteFile(getAbsoluteFileName(node.file)).then(() => {
+      FileAPI.deleteFile(generateGoodPath(node.file)).then(() => {
         dispatchFileStateAction({
           type: 'RemoveFile',
           node: node,
@@ -429,7 +437,7 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
       } else {
         return (
           <FileBrowserNode
-            key={getAbsoluteFileName(node.file)}
+            key={generateGoodPath(node.file)}
             node={node}
             selectFile={selectFile}
             addNewDirectory={addNewDirectory}
@@ -459,17 +467,17 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
     FileAPI.getFileMeta().then(rootFile => {
       FileAPI.getFileList('', true).then(files => {
         const newFileState: FileTreeState = {
-          rootNode: getAbsoluteFileName(rootFile),
+          rootNode: generateGoodPath(rootFile),
           nodes: {},
           nbUploadingFiles: 0,
         };
-        newFileState.nodes[getAbsoluteFileName(rootFile)] = {
+        newFileState.nodes[generateGoodPath(rootFile)] = {
           file: rootFile,
           childrenIds: [],
           open: true,
         };
         for (const file of files) {
-          newFileState.nodes[getAbsoluteFileName(file)] = isDirectory(file)
+          newFileState.nodes[generateGoodPath(file)] = isDirectory(file)
             ? {
                 file: file,
                 childrenIds: [],
@@ -478,7 +486,7 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
               }
             : { file: file };
           newFileState.nodes[file.path].childrenIds!.push(
-            getAbsoluteFileName(file),
+            generateGoodPath(file),
           );
         }
 
@@ -495,9 +503,7 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
       Object.keys(fileState.nodes).map(fileKey => {
         if (
           Object.keys(selectedFiles).find(selKey =>
-            selKey.startsWith(
-              getAbsoluteFileName(fileState.nodes[fileKey].file),
-            ),
+            selKey.startsWith(generateGoodPath(fileState.nodes[fileKey].file)),
           ) !== undefined
         ) {
           dispatchFileStateAction({
@@ -511,7 +517,7 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
           nodeId: fileKey,
           action:
             Object.keys(selectedFiles).indexOf(
-              getAbsoluteFileName(fileState.nodes[fileKey].file),
+              generateGoodPath(fileState.nodes[fileKey].file),
             ) >= 0,
         });
       });
