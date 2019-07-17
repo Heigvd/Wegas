@@ -1,6 +1,7 @@
 import { rest } from './rest';
 import { GameModel } from '../data/selectors';
 import { generateGoodPath } from '../Editor/Components/FileBrowser/TreeFileBrowser/FileBrowser';
+import { wlog } from '../Helper/wegaslog';
 
 export const FILE_BASE = (gameModelId?: number) =>
   `GameModel/${
@@ -106,6 +107,9 @@ export const FileAPIFactory = (gameModelId?: number) => {
         method: 'PUT',
         body: JSON.stringify(file),
       }).then((res: Response) => {
+        if (res.status === 204) {
+          throw Error(res.statusText);
+        }
         return res.json();
       });
     },

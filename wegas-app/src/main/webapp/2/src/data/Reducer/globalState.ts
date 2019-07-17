@@ -408,17 +408,21 @@ export function searchUsage(
 
 export const editFileAction = (
   file: IFileDescriptor,
-  dispatch?: StoreDispatch,
+  dispatch: StoreDispatch,
+  onFileChange?: (file: IFileDescriptor) => void,
 ) => {
+  const oldName = file.name;
   return ActionCreator.FILE_EDIT({
     file: file,
     actions: {
       save: (file: IFileDescriptor) => {
-        FileAPI.updateMetadata(file).then((resFile: IFileDescriptor) => {
-          if (dispatch) {
-            dispatch(editFileAction(resFile));
-          }
-        });
+        FileAPI.updateMetadata({ ...file, name: oldName }).then(
+          (resFile: IFileDescriptor) => {
+            // Call edit file action again with the new file meta (especially the new name)
+            onFileChange && onFileChange(resFile);
+            dispatch(editFileAction(resFile, dispatch, onFileChange));
+          },
+        );
       },
       more: null,
     },

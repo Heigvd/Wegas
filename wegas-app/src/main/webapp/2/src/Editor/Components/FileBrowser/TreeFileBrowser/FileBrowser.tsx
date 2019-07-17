@@ -5,7 +5,11 @@ import u from 'immer';
 import { IconButton } from '../../../../Components/Button/IconButton';
 import { css, cx } from 'emotion';
 import { StoreDispatch, StoreConsumer } from '../../../../data/store';
-import { Edition, editFileAction } from '../../../../data/Reducer/globalState';
+import {
+  Edition,
+  editFileAction,
+  closeEditor,
+} from '../../../../data/Reducer/globalState';
 import { State } from '../../../../data/Reducer/reducers';
 import { DropTargetMonitor, DragObjectWithType, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
@@ -239,7 +243,10 @@ const setNodeTree = u(
 );
 
 export interface FileBrowserProps {
-  onFileClick?: (files: IFileDescriptor | null) => void;
+  onFileClick?: (
+    file: IFileDescriptor | null,
+    onFileUpdate?: (newFile: IFileDescriptor) => void,
+  ) => void;
   selectedFiles?: string[];
 }
 
@@ -253,7 +260,14 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
   const selectFile = React.useCallback(
     (node: FileNode) => {
       if (onFileClick) {
-        onFileClick(node.file);
+        onFileClick(node.file, updatedFile =>
+          // Allows catching the anwser of the saved event and update filebrowser data
+          dispatchFileStateAction({
+            type: 'UpdateFile',
+            file: updatedFile,
+            openPath: true,
+          }),
+        );
       }
     },
     [onFileClick],
@@ -297,9 +311,7 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
           forceUpload ||
           (!forceUpload &&
             confirm(
-              'This file [' +
-                newFileName +
-                '] already exists, do you want to override it?',
+              `This file [${newFileName}] already exists, do you want to override it?`,
             ))
         ) {
           forceUpload = true;
@@ -310,11 +322,7 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
           if (
             newType !== oldType &&
             !confirm(
-              'You are about to change file type from [' +
-                oldType +
-                '] to [' +
-                newType +
-                ']. Are you sure?',
+              `You are about to change file type from [${oldType}] to [${newType}]. Are you sure?`,
             )
           ) {
             return;
@@ -572,9 +580,15 @@ function CFileBrowser(props: CFileBrowserProps) {
   const [selectedFiles, setSelectedFiles] = React.useState<string[]>();
 
   const onFileClick = React.useCallback(
-    (file: IFileDescriptor | null) => {
-      if (file != null) {
-        dispatch(editFileAction(file, dispatch));
+    (
+      file: IFileDescriptor | null,
+      onFileUpdate: (newFile: IFileDescriptor) => void,
+    ) => {
+      if (file === null) {
+        // Typically occures when selected file is deleted
+        dispatch(closeEditor());
+      } else {
+        dispatch(editFileAction(file, dispatch, onFileUpdate));
       }
     },
     [dispatch],
