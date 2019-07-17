@@ -2,57 +2,13 @@ import { rest } from './rest';
 import { GameModel } from '../data/selectors';
 import { generateGoodPath } from '../Editor/Components/FileBrowser/TreeFileBrowser/FileBrowser';
 
-const FILE_BASE = (gameModelId?: number) =>
+export const FILE_BASE = (gameModelId?: number) =>
   `GameModel/${
     gameModelId === undefined ? GameModel.selectCurrent().id! : gameModelId
   }/File/`;
 
 export const FileAPIFactory = (gameModelId?: number) => {
   return {
-    /**
-     * Get all IFiles as raw XML
-     */
-    getFilesAsRawXML(): Promise<string> {
-      return rest(FILE_BASE(gameModelId) + 'exportRawXML').then(
-        (res: Response) => {
-          return res.json();
-        },
-      );
-    },
-    /**
-     * Get all IFiles as XML
-     */
-    getFilesAsXML(): Promise<string> {
-      return rest(FILE_BASE(gameModelId) + 'exportXML').then(
-        (res: Response) => {
-          return res.json();
-        },
-      );
-    },
-    /**
-     * Get all IFiles as ZIP
-     */
-    getFilesAsZIP(): Promise<string> {
-      return rest(FILE_BASE(gameModelId) + 'exportZIP').then(
-        (res: Response) => {
-          return res.json();
-        },
-      );
-    },
-
-    /**
-     * Import an XML file tree
-     * @param xmlFiles xml to import
-     */
-    importXML(xmlFiles: string) {
-      const data = new FormData();
-      data.append('file', xmlFiles);
-
-      return rest(FILE_BASE(gameModelId) + 'importXML', {
-        method: 'POST',
-        body: data,
-      });
-    },
     /**
      * List all files in a directory
      * @param absoluteDirectoryPath optional directory from where to list files, will return the content of root directory if not set
@@ -166,14 +122,6 @@ export const FileAPIFactory = (gameModelId?: number) => {
       ).then((res: Response) => {
         return res.json();
       });
-    },
-
-    /**
-     * Returns url to read a file
-     * @param absolutePath the absolute path of the file to read
-     */
-    fileURL(absolutePath: string): string {
-      return API_ENDPOINT + FILE_BASE(gameModelId) + 'read' + absolutePath;
     },
   };
 };

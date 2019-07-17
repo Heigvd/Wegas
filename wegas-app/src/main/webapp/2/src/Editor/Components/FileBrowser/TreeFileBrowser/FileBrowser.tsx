@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FileAPI } from '../../../../API/files.api';
+import { FileAPI, FILE_BASE } from '../../../../API/files.api';
 import { GameModel } from '../../../../data/selectors';
 import u from 'immer';
 import { IconButton } from '../../../../Components/Button/IconButton';
@@ -55,6 +55,19 @@ export const generateGoodPath = (file: IFileDescriptor) => {
   return generateAbsolutePath(file.path, file.name);
 };
 
+/**
+ * Returns url to read a file
+ * @param absolutePath the absolute path of the file to read
+ */
+export const fileURL = (absolutePath: string) => {
+  return (
+    API_ENDPOINT +
+    FILE_BASE(GameModel.selectCurrent().id!) +
+    'read' +
+    absolutePath
+  );
+};
+
 interface IFileMap {
   [id: string]: IFileDescriptor;
 }
@@ -102,37 +115,33 @@ export const dropSpecs = (action: DropAction) => ({
   },
 });
 
-interface StateAction {
-  type: string;
+interface UploadAction {
+  type: 'Increment' | 'Decrement';
 }
 
-interface UploadAction extends StateAction {
-  type: 'IncrementUpload' | 'DecrementUpload';
-}
-
-interface SetStateAction extends StateAction {
+interface SetStateAction {
   type: 'SetState';
   state: FileTreeState;
 }
 
-interface InsertFileAction extends StateAction {
+interface InsertFileAction {
   type: 'InsertFile';
   file: IFileDescriptor;
   openPath?: boolean;
 }
 
-interface UpdateFileAction extends StateAction {
+interface UpdateFileAction {
   type: 'UpdateFile';
   file: IFileDescriptor;
   openPath?: boolean;
 }
 
-interface RemoveFileAction extends StateAction {
+interface RemoveFileAction {
   type: 'RemoveFile';
   node: FileNode;
 }
 
-interface SimpleActions extends StateAction {
+interface SimpleActions {
   type: 'OpenFolder' | 'SelectFile';
   nodeId: string;
   action: boolean;
@@ -141,7 +150,6 @@ interface SimpleActions extends StateAction {
 type FileTreeStateActions =
   | SetStateAction
   | SimpleActions
-  | UploadAction
   | InsertFileAction
   | RemoveFileAction
   | UpdateFileAction;
@@ -153,107 +161,90 @@ interface FileTable {
 interface FileTreeState {
   rootNode: string;
   nodes: FileTable;
-  nbUploadingFiles: number;
 }
 
-const setNodeTree: (
-  fileState: FileTreeState | null,
-  action: FileTreeStateActions,
-) => FileTreeState | null = (fileState, action) => {
-  return u(fileState, fileState => {
-    if (fileState === null || action.type === 'SetState') {
-      if (action.type === 'SetState') {
+const setNodeTree = u(
+  (fileState: FileTreeState, action: FileTreeStateActions) => {
+    switch (action.type) {
+      case 'SetState': {
         fileState = action.state;
+        break;
       }
-    } else {
-      switch (action.type) {
-        case 'OpenFolder': {
-          if (fileState.nodes[action.nodeId]) {
-            fileState.nodes[action.nodeId].open = action.action;
-          }
-          break;
+      case 'OpenFolder': {
+        if (fileState.nodes[action.nodeId]) {
+          fileState.nodes[action.nodeId].open = action.action;
         }
-        case 'SelectFile': {
-          if (fileState.nodes[action.nodeId]) {
-            fileState.nodes[action.nodeId].selected = action.action;
-          }
-          break;
+        break;
+      }
+      case 'SelectFile': {
+        if (fileState.nodes[action.nodeId]) {
+          fileState.nodes[action.nodeId].selected = action.action;
         }
-        case 'IncrementUpload': {
-          fileState.nbUploadingFiles += 1;
-          break;
-        }
-        case 'DecrementUpload': {
-          if (fileState.nbUploadingFiles > 0) {
-            fileState.nbUploadingFiles -= 1;
-          }
-          break;
-        }
-        case 'InsertFile': {
-          if (
-            fileState.nodes[action.file.path] &&
-            fileState.nodes[action.file.path].childrenIds
-          ) {
-            const absoluteFileName = generateGoodPath(action.file);
-            //Needs to be inserted at the good index in order to keep the sort
-            const insertionIndex = fileState.nodes[
-              action.file.path
-            ].childrenIds!.findIndex(
-              id =>
-                (isDirectory(action.file) ||
-                  (fileState !== null &&
-                    fileState.nodes[id] !== undefined &&
-                    !isDirectory(fileState.nodes[id].file))) &&
-                id > absoluteFileName,
-            );
-            fileState.nodes[action.file.path].childrenIds!.splice(
-              insertionIndex,
-              0,
-              absoluteFileName,
-            );
-            fileState.nodes[action.file.path].open = action.openPath;
-            fileState.nodes[absoluteFileName] = {
-              file: action.file,
-              childrenIds: isDirectory(action.file) ? [] : undefined,
-            };
-          }
-          break;
-        }
-        case 'UpdateFile': {
-          fileState.nodes[generateGoodPath(action.file)].file = action.file;
-          if (action.openPath && fileState.nodes[action.file.path]) {
-            fileState.nodes[action.file.path].open = true;
-          }
-          break;
-        }
-        case 'RemoveFile': {
-          const recurseRemove: (
-            fileNodes: FileTable,
-            targetNode: FileNode,
-          ) => FileTable = (fileNodes, targetNode) => {
-            for (const key in fileNodes) {
-              if (isNodeDirectory(fileNodes[targetNode.file.path])) {
-                fileNodes[targetNode.file.path].childrenIds = fileNodes[
-                  targetNode.file.path
-                ].childrenIds!.filter(
-                  id => id !== generateGoodPath(targetNode.file),
-                );
-              }
-              if (key === generateGoodPath(action.node.file)) {
-                fileNodes = omit(fileNodes, key);
-                fileNodes = recurseRemove(fileNodes, targetNode);
-              }
-            }
-            return fileNodes;
+        break;
+      }
+      case 'InsertFile': {
+        if (
+          fileState.nodes[action.file.path] &&
+          fileState.nodes[action.file.path].childrenIds
+        ) {
+          const absoluteFileName = generateGoodPath(action.file);
+          //Needs to be inserted at the good index in order to keep the sort
+          const insertionIndex = fileState.nodes[
+            action.file.path
+          ].childrenIds!.findIndex(
+            id =>
+              (isDirectory(action.file) ||
+                (fileState !== null &&
+                  fileState.nodes[id] !== undefined &&
+                  !isDirectory(fileState.nodes[id].file))) &&
+              id > absoluteFileName,
+          );
+          fileState.nodes[action.file.path].childrenIds!.splice(
+            insertionIndex,
+            0,
+            absoluteFileName,
+          );
+          fileState.nodes[action.file.path].open = action.openPath;
+          fileState.nodes[absoluteFileName] = {
+            file: action.file,
+            childrenIds: isDirectory(action.file) ? [] : undefined,
           };
-
-          fileState.nodes = recurseRemove(fileState.nodes, action.node);
         }
+        break;
+      }
+      case 'UpdateFile': {
+        fileState.nodes[generateGoodPath(action.file)].file = action.file;
+        if (action.openPath && fileState.nodes[action.file.path]) {
+          fileState.nodes[action.file.path].open = true;
+        }
+        break;
+      }
+      case 'RemoveFile': {
+        const recurseRemove: (
+          fileNodes: FileTable,
+          targetNode: FileNode,
+        ) => FileTable = (fileNodes, targetNode) => {
+          for (const key in fileNodes) {
+            if (isNodeDirectory(fileNodes[targetNode.file.path])) {
+              fileNodes[targetNode.file.path].childrenIds = fileNodes[
+                targetNode.file.path
+              ].childrenIds!.filter(
+                id => id !== generateGoodPath(targetNode.file),
+              );
+            }
+            if (key === generateGoodPath(action.node.file)) {
+              fileNodes = omit(fileNodes, key);
+              fileNodes = recurseRemove(fileNodes, targetNode);
+            }
+          }
+          return fileNodes;
+        };
+        fileState.nodes = recurseRemove(fileState.nodes, action.node);
       }
     }
     return fileState;
-  });
-};
+  },
+);
 
 export interface FileBrowserProps {
   onFileClick?: (files: IFileDescriptor | null) => void;
@@ -261,10 +252,10 @@ export interface FileBrowserProps {
 }
 
 export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
-  const [fileState, dispatchFileStateAction] = React.useReducer(
-    setNodeTree,
-    null,
-  );
+  const [fileState, dispatchFileStateAction] = React.useReducer(setNodeTree, {
+    rootNode: '',
+    nodes: {},
+  });
   const uploader = React.useRef<HTMLInputElement>(null);
 
   const selectFile = React.useCallback(
@@ -274,6 +265,14 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
       }
     },
     [onFileClick],
+  );
+
+  const [nbUploadingFiles, dispatchUploadingFiles] = React.useReducer(
+    u(
+      (uploadCount: number, action: UploadAction) =>
+        uploadCount + (action.type === 'Increment' ? 1 : -1),
+    ),
+    0,
   );
 
   const addNewDirectory = React.useCallback((parentDir: IFileDescriptor) => {
@@ -332,7 +331,7 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
           return;
         }
       }
-      dispatchFileStateAction({ type: 'IncrementUpload' });
+      dispatchUploadingFiles({ type: 'Increment' });
       FileAPI.createFile(newFileName, path, file, forceUpload)
         .then(file => {
           if (forceUpload) {
@@ -348,11 +347,11 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
               openPath: true,
             });
           }
-          dispatchFileStateAction({ type: 'DecrementUpload' });
+          dispatchUploadingFiles({ type: 'Decrement' });
           onFileClick && onFileClick(file);
         })
         .catch(() => {
-          dispatchFileStateAction({ type: 'DecrementUpload' });
+          dispatchUploadingFiles({ type: 'Decrement' });
         });
     },
     [fileState, onFileClick],
@@ -420,7 +419,7 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
 
   const renderNode: RenderNodeType = React.useCallback(
     node => {
-      if (node === null || fileState === null) {
+      if (node == null || fileState == null) {
         return <div>Empty...</div>;
       } else if (node.file.name === '' && node.file.path === '/') {
         return (
@@ -469,7 +468,6 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
         const newFileState: FileTreeState = {
           rootNode: generateGoodPath(rootFile),
           nodes: {},
-          nbUploadingFiles: 0,
         };
         newFileState.nodes[generateGoodPath(rootFile)] = {
           file: rootFile,
@@ -536,14 +534,14 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
       >
         Drop file here
       </div>
-      {fileState && fileState.nbUploadingFiles > 0 && (
+      {fileState && nbUploadingFiles > 0 && (
         <div
           style={{
             backgroundColor: 'rgba(255, 0, 0, 0.2)',
             width: '100%',
           }}
         >
-          Uploading {fileState.nbUploadingFiles} files
+          Uploading {nbUploadingFiles} files
         </div>
       )}
       {fileState && (

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { FileAPI } from '../../../../API/files.api';
 import { useDrop } from 'react-dnd';
 import {
   dropSpecs,
@@ -8,6 +7,7 @@ import {
   isUploadAllowed,
   generateGoodPath,
   isDirectory,
+  fileURL,
 } from './FileBrowser';
 import { IconButton } from '../../../../Components/Button/IconButton';
 import { css, cx } from 'emotion';
@@ -80,7 +80,7 @@ export function FileBrowserNode(
   const uploader = React.useRef<HTMLInputElement>(null);
 
   const openFile = (file: IFileDescriptor) => {
-    const win = window.open(FileAPI.fileURL(generateGoodPath(file)), '_blank');
+    const win = window.open(fileURL(generateGoodPath(file)), '_blank');
     win!.focus();
   };
 
