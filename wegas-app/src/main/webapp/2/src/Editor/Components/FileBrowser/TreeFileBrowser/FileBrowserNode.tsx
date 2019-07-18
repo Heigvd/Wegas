@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useDrop } from 'react-dnd';
 import {
   dropSpecs,
-  hiddenFileBrowserStyle,
   dropZoneStyle,
   isUploadAllowed,
   generateGoodPath,
@@ -22,6 +21,9 @@ const flex = css({
 });
 const block = css({
   display: 'block',
+});
+const hidden = css({
+  display: 'none',
 });
 
 const selectedRow = css({
@@ -133,7 +135,7 @@ export function FileBrowserNode({
         type="file"
         name="file"
         multiple={isNodeDirectory(node)}
-        className={hiddenFileBrowserStyle}
+        className={hidden}
         onClick={event => {
           (event.target as HTMLInputElement).value = '';
         }}
@@ -173,7 +175,7 @@ export function FileBrowserNode({
             fixedWidth={true}
           />
           <div className={cx(grow)}>{node.file.name}</div>
-          <div>
+          <div className={flex}>
             {isDirectory(node.file) ? (
               <>
                 <IconButton

@@ -6,7 +6,7 @@ import StateMachineEditor from './StateMachineEditor';
 import PageDisplay from './Page/PageDisplay';
 import TreeView from './Variable/VariableTree';
 import Editor from './EntityEditor';
-import { DndConnectedFileBrowser } from './FileBrowser/TreeFileBrowser/FileBrowser';
+import { FileBrowserWithMeta } from './FileBrowser/TreeFileBrowser/FileBrowser';
 import LibraryEditor from './ScriptEditors/LibraryEditor';
 
 const layout = css({
@@ -35,7 +35,7 @@ export default class AppLayout extends React.Component<
             Page: <PageDisplay />,
             StateMachine: <StateMachineEditor />,
             Editor: <Editor />,
-            Files: <DndConnectedFileBrowser />,
+            Files: <FileBrowserWithMeta />,
             Scripts: <LibraryEditor />,
           }}
           layoutMap={{

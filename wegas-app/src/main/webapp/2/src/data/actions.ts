@@ -2,7 +2,6 @@ import { normalizeDatas, NormalizedData } from './normalize';
 import { ManagedMode } from '../API/rest';
 import * as ActionType from './actionTypes';
 import { PageIndex } from '../API/pages.api';
-import { FileActions } from './Reducer/globalState';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../Editor/Components/FormView';
 
@@ -20,8 +19,6 @@ function createAction<T extends string, P>(type: T, payload: P) {
 export const ActionCreator = {
   // ENTITY_UPDATE: (data: NormalizedData) =>
   //   createAction(ActionType.ENTITY_UPDATE, data),
-  FILE_EDIT: (data: { file: IFileDescriptor; actions: FileActions }) =>
-    createAction(ActionType.FILE_EDIT, data),
   VARIABLE_EDIT: <T extends IAbstractEntity>(data: {
     id: number;
     config?: Schema<AvailableViews>;

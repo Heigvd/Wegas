@@ -179,7 +179,7 @@ async function WindowedEditor<T>({
     />
   );
 }
-const AsyncVariableForm = asyncSFC<EditorProps<{ '@class': string }>>(
+export const AsyncVariableForm = asyncSFC<EditorProps<{ '@class': string }>>(
   WindowedEditor,
   () => <div>load...</div>,
   ({ err }: { err: Error }) => <span>{err.message}</span>,

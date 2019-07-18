@@ -4,32 +4,28 @@ import { GameModel } from '../../../../data/selectors';
 import u from 'immer';
 import { IconButton } from '../../../../Components/Button/IconButton';
 import { css, cx } from 'emotion';
-import { StoreDispatch, StoreConsumer } from '../../../../data/store';
-import {
-  Edition,
-  editFileAction,
-  closeEditor,
-} from '../../../../data/Reducer/globalState';
-import { State } from '../../../../data/Reducer/reducers';
 import { DropTargetMonitor, DragObjectWithType, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { themeVar } from '../../../../Components/Theme';
 import { omit } from 'lodash';
 import { FileNode, isNodeDirectory, FileBrowserNode } from './FileBrowserNode';
 import { DefaultDndProvider } from '../../../../Components/DefaultDndProvider';
+import { AsyncVariableForm } from '../../EntityEditor';
+import getEditionConfig from '../../../editionConfig';
+import { Schema } from 'jsoninput';
+import { AvailableViews } from '../../FormView';
+import { node } from 'prop-types';
+import { wlog } from '../../../../Helper/wegaslog';
 
 const grow = css({
   flex: '1 1 auto',
 });
-
-export const hiddenFileBrowserStyle = css({
-  display: 'none',
+const flex = css({
+  display: 'flex',
 });
-
 const fullWidth = css({
   width: '100%',
 });
-
 const hidden = css({
   display: 'none',
 });
@@ -242,15 +238,22 @@ const setNodeTree = u(
   },
 );
 
+type FileUpdateCallback = (newFile: IFileDescriptor) => void;
+
 export interface FileBrowserProps {
   onFileClick?: (
-    file: IFileDescriptor | null,
-    onFileUpdate?: (newFile: IFileDescriptor) => void,
+    file: IFileDescriptor,
+    onFileUpdate?: FileUpdateCallback,
   ) => void;
+  onDelelteFile?: (file: IFileDescriptor | null) => void;
   selectedFiles?: string[];
 }
 
-export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
+export function FileBrowser({
+  onFileClick,
+  selectedFiles,
+  onDelelteFile,
+}: FileBrowserProps) {
   const [fileState, dispatchFileStateAction] = React.useReducer(setNodeTree, {
     rootNode: '',
     nodes: {},
@@ -304,7 +307,6 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
       const newFileName = oldName ? oldName : file.name;
       let forceUpload = oldName ? true : force;
       if (
-        fileState &&
         fileState.nodes[generateAbsolutePath(path, newFileName)] !== undefined
       ) {
         if (
@@ -348,17 +350,18 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
             });
           }
           dispatchUploadingFiles({ type: 'Decrement' });
-          onFileClick && onFileClick(file);
+          selectFile({ ...node, file: file });
         })
         .catch(() => {
           dispatchUploadingFiles({ type: 'Decrement' });
         });
     },
-    [fileState, onFileClick],
+    [fileState, selectFile],
   );
 
   const insertFiles = React.useCallback(
     (files: FileList, path?: string) => {
+      wlog('insert files');
       for (let i = 0; i < files.length; i += 1) {
         insertFile(files[i], path);
       }
@@ -399,10 +402,10 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
           type: 'RemoveFile',
           node: node,
         });
-        onFileClick && onFileClick(null);
+        onDelelteFile && onDelelteFile(node.file);
       });
     },
-    [onFileClick],
+    [onDelelteFile],
   );
 
   const [dropZoneProps, dropZone] = useDrop(
@@ -494,7 +497,8 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
   React.useEffect(() => {
     if (fileState && selectedFiles) {
       Object.keys(fileState.nodes).map(fileKey => {
-        const filePath = generateGoodPath(fileState.nodes[fileKey].file);
+        const fileNode = fileState.nodes[fileKey];
+        const filePath = generateGoodPath(fileNode.file);
         if (
           selectedFiles.find(selKey => selKey.startsWith(filePath)) !==
           undefined
@@ -512,121 +516,115 @@ export function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
         });
       });
     }
-  }, [selectedFiles, fileState]);
+    // We only want selectedFiles to trigger this effect
+    // avoid keeping the folder open when a file is selected and the user stills want to close the folder
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedFiles]);
 
   return (
-    <div className={grow}>
-      <div
-        ref={dropZone}
-        className={cx(
-          fullWidth,
-          !dropZoneProps.canDrop ? hidden : highlight,
-          dropZoneProps.isShallowOver ? dropZoneStyle : '',
-        )}
-      >
-        Drop file here
-      </div>
-      {fileState && nbUploadingFiles > 0 && (
+    <DefaultDndProvider>
+      <div className={grow}>
         <div
-          style={{
-            backgroundColor: 'rgba(255, 0, 0, 0.2)',
-            width: '100%',
-          }}
+          ref={dropZone}
+          className={cx(
+            fullWidth,
+            !dropZoneProps.canDrop ? hidden : highlight,
+            dropZoneProps.isShallowOver ? dropZoneStyle : '',
+          )}
         >
-          Uploading {nbUploadingFiles} files
+          Drop file here
         </div>
-      )}
-      {fileState && (
-        <div>
-          <IconButton
-            icon={'folder-plus'}
-            tooltip={'Add new directory in root folder'}
-            disabled={!isUploadAllowed(fileState.nodes[fileState.rootNode])}
-            onClick={() =>
-              addNewDirectory(fileState.nodes[fileState.rootNode].file)
+        {fileState && nbUploadingFiles > 0 && (
+          <div
+            style={{
+              backgroundColor: 'rgba(255, 0, 0, 0.2)',
+              width: '100%',
+            }}
+          >
+            Uploading {nbUploadingFiles} files
+          </div>
+        )}
+        {fileState && (
+          <div>
+            <IconButton
+              icon={'folder-plus'}
+              tooltip={'Add new directory in root folder'}
+              disabled={!isUploadAllowed(fileState.nodes[fileState.rootNode])}
+              onClick={() =>
+                addNewDirectory(fileState.nodes[fileState.rootNode].file)
+              }
+              fixedWidth={true}
+            />
+            <IconButton
+              icon={'file-upload'}
+              tooltip={'Upload file in the folder'}
+              disabled={!isUploadAllowed(fileState.nodes[fileState.rootNode])}
+              onClick={addNewFile}
+              fixedWidth={true}
+            />
+            <input
+              ref={uploader}
+              type="file"
+              name="file"
+              multiple={true}
+              className={hidden}
+              onChange={uploadFiles(fileState.nodes[fileState.rootNode])}
+            />
+            {renderNode(fileState.nodes[fileState.rootNode])}
+          </div>
+        )}
+      </div>
+    </DefaultDndProvider>
+  );
+}
+
+export function FileBrowserWithMeta() {
+  const [selectedFile, setSelectedFile] = React.useState<IFileDescriptor>();
+  const fileUpdate = React.useRef<FileUpdateCallback>(() => {});
+
+  const onFileClick = (
+    file: IFileDescriptor,
+    onFileUpdate?: FileUpdateCallback,
+  ) => {
+    setSelectedFile(oldSelectedFile => {
+      if (
+        !oldSelectedFile ||
+        generateGoodPath(file) !== generateGoodPath(oldSelectedFile)
+      ) {
+        if (onFileUpdate) {
+          fileUpdate.current = onFileUpdate;
+        }
+        return file;
+      }
+      return undefined;
+    });
+  };
+
+  const saveMeta = (file: IFileDescriptor) => {
+    FileAPI.updateMetadata(file).then((resFile: IFileDescriptor) => {
+      fileUpdate.current(resFile);
+      setSelectedFile(file);
+    });
+  };
+
+  return (
+    <div className={cx(flex, grow)}>
+      <FileBrowser
+        onFileClick={onFileClick}
+        onDelelteFile={() => setSelectedFile(undefined)}
+        selectedFiles={selectedFile ? [generateGoodPath(selectedFile)] : []}
+      />
+      {selectedFile && (
+        <div className={cx(flex, grow)}>
+          <AsyncVariableForm
+            getConfig={entity =>
+              getEditionConfig(entity) as Promise<Schema<AvailableViews>>
             }
-            fixedWidth={true}
+            update={saveMeta}
+            entity={selectedFile}
           />
-          <IconButton
-            icon={'file-upload'}
-            tooltip={'Upload file in the folder'}
-            disabled={!isUploadAllowed(fileState.nodes[fileState.rootNode])}
-            onClick={addNewFile}
-            fixedWidth={true}
-          />
-          <input
-            ref={uploader}
-            type="file"
-            name="file"
-            multiple={true}
-            className={hiddenFileBrowserStyle}
-            onChange={uploadFiles(fileState.nodes[fileState.rootNode])}
-          />
-          {renderNode(fileState.nodes[fileState.rootNode])}
         </div>
       )}
     </div>
-  );
-}
-
-interface CFileBrowserProps {
-  dispatch: StoreDispatch;
-  editing?: Readonly<Edition>;
-}
-
-function CFileBrowser(props: CFileBrowserProps) {
-  const { editing, dispatch } = props;
-
-  const [selectedFiles, setSelectedFiles] = React.useState<string[]>();
-
-  const onFileClick = React.useCallback(
-    (
-      file: IFileDescriptor | null,
-      onFileUpdate: (newFile: IFileDescriptor) => void,
-    ) => {
-      if (file === null) {
-        // Typically occures when selected file is deleted
-        dispatch(closeEditor());
-      } else {
-        dispatch(editFileAction(file, dispatch, onFileUpdate));
-      }
-    },
-    [dispatch],
-  );
-
-  React.useEffect(() => {
-    if (editing && editing.type === 'File') {
-      setSelectedFiles([generateGoodPath(editing.file)]);
-    } else {
-      setSelectedFiles([]);
-    }
-  }, [editing]);
-
-  return (
-    <FileBrowser onFileClick={onFileClick} selectedFiles={selectedFiles} />
-  );
-}
-
-export function ConnectedFileBrowser() {
-  return (
-    <StoreConsumer
-      selector={(state: State) => {
-        return {
-          editing: state.global.editing,
-        };
-      }}
-    >
-      {({ state, dispatch }) => {
-        return <CFileBrowser {...state} dispatch={dispatch} />;
-      }}
-    </StoreConsumer>
-  );
-}
-
-export function DndConnectedFileBrowser() {
-  return (
-    <DefaultDndProvider>
-      <ConnectedFileBrowser />
-    </DefaultDndProvider>
   );
 }

@@ -2,13 +2,12 @@ import u from 'immer';
 import { Actions as ACTIONS, Actions } from '..';
 import { ActionCreator, ActionType, StateActions } from '../actions';
 import { VariableDescriptor } from '../selectors';
-import { ThunkResult, store, StoreDispatch } from '../store';
+import { ThunkResult, store } from '../store';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { entityIsPersisted } from '../entities';
 import { Reducer } from 'redux';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../../Editor/Components/FormView';
-import { FileAPI } from '../../API/files.api';
 
 type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IAbstractEntity> {
@@ -93,13 +92,6 @@ export interface GlobalState {
 const global: Reducer<Readonly<GlobalState>> = u(
   (state: GlobalState, action: StateActions) => {
     switch (action.type) {
-      case ActionType.FILE_EDIT:
-        state.editing = {
-          type: 'File',
-          file: action.payload.file,
-          actions: action.payload.actions,
-        };
-        return;
       case ActionType.VARIABLE_EDIT:
         state.editing = {
           type: 'Variable',
@@ -405,26 +397,3 @@ export function searchUsage(
     });
   };
 }
-
-export const editFileAction = (
-  file: IFileDescriptor,
-  dispatch: StoreDispatch,
-  onFileChange?: (file: IFileDescriptor) => void,
-) => {
-  const oldName = file.name;
-  return ActionCreator.FILE_EDIT({
-    file: file,
-    actions: {
-      save: (file: IFileDescriptor) => {
-        FileAPI.updateMetadata({ ...file, name: oldName }).then(
-          (resFile: IFileDescriptor) => {
-            // Call edit file action again with the new file meta (especially the new name)
-            onFileChange && onFileChange(resFile);
-            dispatch(editFileAction(resFile, dispatch, onFileChange));
-          },
-        );
-      },
-      more: null,
-    },
-  });
-};
