@@ -1,83 +1,96 @@
-import * as React from 'react';
-import { FileAPI } from '../../../../API/files.api';
-import { GameModel } from '../../../../data/selectors';
-import u from 'immer';
-import { IconButton } from '../../../../Components/Button/IconButton';
+import * as React from "react";
 import {
-  getAbsoluteFileName,
-  isDirectory,
-  editFileAction,
-  generateGoodPath,
-  generateAbsolutePath,
-  TMap,
-} from '../../../../data/methods/ContentDescriptor';
-import { css, cx } from 'emotion';
-import { StoreDispatch, StoreConsumer } from '../../../../data/store';
-import { Edition, closeEditor } from '../../../../data/Reducer/globalState';
-import { State } from '../../../../data/Reducer/reducers';
-import {
-  __EXPERIMENTAL_DND_HOOKS_THAT_MAY_CHANGE_AND_BREAK_MY_BUILD__ as dnd,
-  DropTargetMonitor,
-  DragObjectWithType,
-} from 'react-dnd';
-import { NativeTypes } from 'react-dnd-html5-backend';
-import { defaultContextManager } from '../../../../Components/DragAndDrop';
-import { themeVar } from '../../../../Components/Theme';
-import { omit } from 'lodash';
-import { FileNode, isNodeDirectory, FileBrowserNode } from './FileBrowserNode';
+  FileAPI,
+  FILE_BASE,
+  generateAbsolutePath
+} from "../../../../API/files.api";
+import { GameModel } from "../../../../data/selectors";
+import { IconButton } from "../../../../Components/Button/IconButton";
+import { css, cx } from "emotion";
+import { DropTargetMonitor, DragObjectWithType, useDrop } from "react-dnd";
+import { NativeTypes } from "react-dnd-html5-backend";
+import { themeVar } from "../../../../Components/Theme";
+import { FileBrowserNode } from "./FileBrowserNode";
+import { DefaultDndProvider } from "../../../../Components/DefaultDndProvider";
+import { AsyncVariableForm } from "../../EntityEditor";
+import getEditionConfig from "../../../editionConfig";
+import { Schema } from "jsoninput";
+import { AvailableViews } from "../../FormView";
 
 const grow = css({
-  flex: '1 1 auto',
+  flex: "1 1 auto"
 });
-
-export const hiddenFileBrowserStyle = css({
-  display: 'none',
+const flex = css({
+  display: "flex"
 });
-
 const fullWidth = css({
-  width: '100%',
+  width: "100%"
 });
-
 const hidden = css({
-  display: 'none',
+  display: "none"
 });
 
 const highlight = css({
-  backgroundColor: themeVar.searchColor,
+  backgroundColor: themeVar.searchColor
 });
 
 export const dropZoneStyle = css({
-  borderStyle: 'solid',
-  borderWidth: '2px',
-  borderColor: 'red',
+  borderStyle: "solid",
+  borderWidth: "2px",
+  borderColor: "red"
 });
 
-type IFileMap = TMap<IFileDescriptor>;
+export const isDirectory = (file: IFileDescriptor) =>
+  file.mimeType === "application/wfs-directory";
+
+const getChildren = (
+  directory: IFileDescriptor,
+  fileState: FilesState
+): IFileDescriptor[] =>
+  Object.values(fileState).reduce((children, file) => {
+    const dirPath = generateAbsolutePath(directory);
+    const filePath = generateAbsolutePath(file);
+    if (dirPath !== filePath && dirPath === file.path) {
+      return [...children, file];
+    }
+    return children;
+  }, []);
+/**
+ * Returns url to read a file
+ * @param absolutePath the absolute path of the file to read
+ */
+export const fileURL = (absolutePath: string) => {
+  return (
+    API_ENDPOINT +
+    FILE_BASE(GameModel.selectCurrent().id!) +
+    "read" +
+    absolutePath
+  );
+};
 
 export const gameModelDependsOnModel = () => {
   return (
-    GameModel.selectCurrent().type === 'SCENARIO' &&
+    GameModel.selectCurrent().type === "SCENARIO" &&
     GameModel.selectCurrent().basedOnId !== null
   );
 };
 
-export const isUploadAllowed = (node: FileNode) => {
+export const isUploadAllowed = (file?: IFileDescriptor) => {
   return (
-    !gameModelDependsOnModel() ||
-    node.file.visibility === 'PRIVATE' ||
-    node.file.visibility === 'INHERITED'
+    file &&
+    (!gameModelDependsOnModel() ||
+      file.visibility === "PRIVATE" ||
+      file.visibility === "INHERITED")
   );
 };
 
-const accept = NativeTypes.FILE;
-
 type DropAction = (
   item: DragObjectWithType,
-  monitor: DropTargetMonitor,
+  monitor: DropTargetMonitor
 ) => void;
 
 export const dropSpecs = (action: DropAction) => ({
-  accept: accept,
+  accept: NativeTypes.FILE,
   canDrop: () => true,
   drop: action,
   collect: (mon: DropTargetMonitor) => {
@@ -92,545 +105,412 @@ export const dropSpecs = (action: DropAction) => ({
     return {
       isOver: !!mon.isOver(),
       isShallowOver: !!mon.isOver({ shallow: true }),
-      canDrop: canDrop,
+      canDrop: canDrop
     };
-  },
+  }
 });
 
-interface StateAction {
-  type: string;
+interface UploadAction {
+  type: "Increment" | "Decrement";
 }
 
-interface UploadAction extends StateAction {
-  type: 'IncrementUpload' | 'DecrementUpload';
+interface SetStateAction {
+  type: "SetState";
+  state: FilesState;
 }
 
-interface SetStateAction extends StateAction {
-  type: 'SetState';
-  state: FileTreeState;
-}
-
-interface InsertFileAction extends StateAction {
-  type: 'InsertFile';
+interface InsertFileAction {
+  type: "InsertFile";
   file: IFileDescriptor;
-  openPath?: boolean;
 }
 
-interface UpdateFileAction extends StateAction {
-  type: 'UpdateFile';
+interface RemoveFileAction {
+  type: "RemoveFile";
   file: IFileDescriptor;
-  openPath?: boolean;
-}
-
-interface RemoveFileAction extends StateAction {
-  type: 'RemoveFile';
-  node: FileNode;
-}
-
-interface SimpleActions extends StateAction {
-  type: 'OpenFolder' | 'SelectFile';
-  nodeId: string;
-  action: boolean;
 }
 
 type FileTreeStateActions =
   | SetStateAction
-  | SimpleActions
-  | UploadAction
   | InsertFileAction
-  | RemoveFileAction
-  | UpdateFileAction;
+  | RemoveFileAction;
 
-interface FileTable {
-  [key: string]: FileNode;
+interface FilesState {
+  [path: string]: IFileDescriptor;
 }
 
-interface FileTreeState {
-  rootNode: string;
-  nodes: FileTable;
-  nbUploadingFiles: number;
-}
-
-const setNodeTree: (
-  fileState: FileTreeState | null,
-  action: FileTreeStateActions,
-) => FileTreeState | null = (fileState, action) => {
-  return u(fileState, fileState => {
-    if (fileState === null || action.type === 'SetState') {
-      if (action.type === 'SetState') {
-        fileState = action.state;
-      }
-    } else {
-      switch (action.type) {
-        case 'OpenFolder': {
-          if (fileState.nodes[action.nodeId]) {
-            fileState.nodes[action.nodeId].open = action.action;
-          }
-          break;
-        }
-        case 'SelectFile': {
-          if (fileState.nodes[action.nodeId]) {
-            fileState.nodes[action.nodeId].selected = action.action;
-          }
-          break;
-        }
-        case 'IncrementUpload': {
-          fileState.nbUploadingFiles += 1;
-          break;
-        }
-        case 'DecrementUpload': {
-          if (fileState.nbUploadingFiles > 0) {
-            fileState.nbUploadingFiles -= 1;
-          }
-          break;
-        }
-        case 'InsertFile': {
-          if (
-            fileState.nodes[action.file.path] &&
-            fileState.nodes[action.file.path].childrenIds
-          ) {
-            const absoluteFileName = getAbsoluteFileName(action.file);
-            //Needs to be inserted at the good index in order to keep the sort
-            const insertionIndex = fileState.nodes[
-              action.file.path
-            ].childrenIds!.findIndex(
-              id =>
-                (isDirectory(action.file) ||
-                  (fileState !== null &&
-                    fileState.nodes[id] !== undefined &&
-                    !isDirectory(fileState.nodes[id].file))) &&
-                id > absoluteFileName,
-            );
-            fileState.nodes[action.file.path].childrenIds!.splice(
-              insertionIndex,
-              0,
-              absoluteFileName,
-            );
-            fileState.nodes[action.file.path].open = action.openPath;
-            fileState.nodes[absoluteFileName] = {
-              file: action.file,
-              childrenIds: isDirectory(action.file) ? [] : undefined,
-            };
-          }
-          break;
-        }
-        case 'UpdateFile': {
-          fileState.nodes[getAbsoluteFileName(action.file)].file = action.file;
-          if (action.openPath && fileState.nodes[action.file.path]) {
-            fileState.nodes[action.file.path].open = true;
-          }
-          break;
-        }
-        case 'RemoveFile': {
-          const recurseRemove: (
-            fileNodes: FileTable,
-            targetNode: FileNode,
-          ) => FileTable = (fileNodes, targetNode) => {
-            for (const key in fileNodes) {
-              if (isNodeDirectory(fileNodes[targetNode.file.path])) {
-                fileNodes[targetNode.file.path].childrenIds = fileNodes[
-                  targetNode.file.path
-                ].childrenIds!.filter(
-                  id => id !== getAbsoluteFileName(targetNode.file),
-                );
-              }
-              if (key === getAbsoluteFileName(action.node.file)) {
-                fileNodes = omit(fileNodes, key);
-                fileNodes = recurseRemove(fileNodes, targetNode);
-              }
-            }
-            return fileNodes;
-          };
-
-          fileState.nodes = recurseRemove(fileState.nodes, action.node);
-        }
-      }
+const reduceFileState = (
+  fileState: FilesState,
+  action: FileTreeStateActions
+) => {
+  switch (action.type) {
+    case "SetState": {
+      return action.state;
     }
-    return fileState;
-  });
+    case "InsertFile": {
+      return { ...fileState, [generateAbsolutePath(action.file)]: action.file };
+    }
+    case "RemoveFile": {
+      const removedFilePath = generateAbsolutePath(action.file);
+      return Object.keys(fileState).reduce((newFileState, filePath) => {
+        if (filePath.startsWith(removedFilePath)) {
+          return newFileState;
+        }
+        return { ...newFileState, [filePath]: fileState[filePath] };
+      }, {});
+    }
+  }
+  return fileState;
 };
 
+type FileUpdateCallback = (newFile: IFileDescriptor) => void;
+
 export interface FileBrowserProps {
-  onFileClick?: (files: IFileDescriptor | null) => void;
-  selectedFiles?: IFileMap;
+  onFileClick?: (
+    file: IFileDescriptor,
+    onFileUpdate?: FileUpdateCallback
+  ) => void;
+  onDelelteFile?: FileUpdateCallback;
+  selectedFiles?: string[];
 }
 
-function FileBrowser({ onFileClick, selectedFiles }: FileBrowserProps) {
+export function FileBrowser({
+  onFileClick,
+  onDelelteFile,
+  selectedFiles
+}: FileBrowserProps) {
   const [fileState, dispatchFileStateAction] = React.useReducer(
-    setNodeTree,
-    null,
+    reduceFileState,
+    {}
   );
   const uploader = React.useRef<HTMLInputElement>(null);
 
-  const selectFile = React.useCallback(
-    (node: FileNode) => {
-      if (onFileClick) {
-        onFileClick(node.file);
-      }
+  const fileClick = React.useCallback(
+    (file: IFileDescriptor) => {
+      onFileClick &&
+        onFileClick(file, updatedFile =>
+          dispatchFileStateAction({
+            type: "InsertFile",
+            file: updatedFile
+          })
+        );
     },
-    [onFileClick],
+    [onFileClick]
   );
 
-  const addNewDirectory = React.useCallback((parentDir: IFileDescriptor) => {
-    const newDirName = prompt('Please enter the name of the new directory', '');
-    if (newDirName !== null) {
-      FileAPI.createFile(newDirName, getAbsoluteFileName(parentDir)).then(
-        file =>
-          dispatchFileStateAction({
-            type: 'InsertFile',
-            file: file,
-            openPath: true,
-          }),
+  const [nbUploadingFiles, dispatchUploadingFiles] = React.useReducer(
+    (uploadCount: number, action: UploadAction) => {
+      switch (action.type) {
+        case "Increment":
+          return uploadCount + 1;
+        case "Decrement":
+          return uploadCount - 1;
+        default:
+          return uploadCount;
+      }
+    },
+    0
+  );
+
+  const addNewDirectory = React.useCallback(
+    async (parentDir: IFileDescriptor) => {
+      const newDirName = prompt(
+        "Please enter the name of the new directory",
+        ""
       );
-    }
-  }, []);
+      if (newDirName) {
+        return await FileAPI.createFile(
+          newDirName,
+          generateAbsolutePath(parentDir)
+        )
+          .then(file => {
+            dispatchFileStateAction({
+              type: "InsertFile",
+              file: file
+            });
+            return true;
+          })
+          .catch(() => {
+            return false;
+          });
+      }
+      return false;
+    },
+    []
+  );
 
   const insertFile = React.useCallback(
-    (
+    async (
       file: File,
-      path: string = '',
+      path: string = "",
       force: boolean = false,
-      oldName?: string,
+      oldName?: string
     ) => {
       const newFileName = oldName ? oldName : file.name;
+      const newFile =
+        fileState[generateAbsolutePath({ path, name: newFileName })];
       let forceUpload = oldName ? true : force;
-      if (
-        fileState &&
-        fileState.nodes[generateAbsolutePath(path, newFileName)] !== undefined
-      ) {
+      if (newFile) {
         if (
           forceUpload ||
           (!forceUpload &&
             confirm(
-              'This file [' +
-                newFileName +
-                '] already exists, do you want to override it?',
+              `This file [${newFileName}] already exists, do you want to override it?`
             ))
         ) {
           forceUpload = true;
           const newType = file.type;
-          const oldType =
-            fileState.nodes[generateAbsolutePath(path, newFileName)].file
-              .mimeType;
+          const oldType = newFile.mimeType;
           if (
             newType !== oldType &&
             !confirm(
-              'You are about to change file type from [' +
-                oldType +
-                '] to [' +
-                newType +
-                ']. Are you sure?',
+              `You are about to change file type from [${oldType}] to [${newType}]. Are you sure?`
             )
           ) {
-            return;
+            return false;
           }
         } else {
-          return;
+          return false;
         }
       }
-      dispatchFileStateAction({ type: 'IncrementUpload' });
-      FileAPI.createFile(newFileName, path, file, forceUpload)
+      dispatchUploadingFiles({ type: "Increment" });
+      return FileAPI.createFile(newFileName, path, file, forceUpload)
         .then(file => {
-          if (forceUpload) {
-            dispatchFileStateAction({
-              type: 'UpdateFile',
-              file: file,
-              openPath: true,
-            });
-          } else {
-            dispatchFileStateAction({
-              type: 'InsertFile',
-              file: file,
-              openPath: true,
-            });
-          }
-          dispatchFileStateAction({ type: 'DecrementUpload' });
-          onFileClick && onFileClick(file);
+          dispatchFileStateAction({
+            type: "InsertFile",
+            file: file
+          });
+          dispatchUploadingFiles({ type: "Decrement" });
+          fileClick(file);
+          return true;
         })
         .catch(() => {
-          dispatchFileStateAction({ type: 'DecrementUpload' });
+          dispatchUploadingFiles({ type: "Decrement" });
+          return false;
         });
     },
-    [fileState, onFileClick],
+    [fileState, fileClick]
   );
 
   const insertFiles = React.useCallback(
-    (files: FileList, path?: string) => {
-      for (let i = 0; i < files.length; i += 1) {
-        insertFile(files[i], path);
+    async (files: FileList, path?: string) => {
+      let insertSuccess = false;
+      for (let i = 0; i < files.length; ++i) {
+        insertSuccess = insertSuccess || (await insertFile(files[i], path));
       }
+      return insertSuccess;
     },
-    [insertFile],
+    [insertFile]
   );
 
   const uploadFiles = React.useCallback(
-    (targetNode: FileNode) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    (targetFile: IFileDescriptor) => async (
+      event: React.ChangeEvent<HTMLInputElement>
+    ) => {
       const target = event.target;
       if (target && target.files && target.files.length > 0) {
-        if (isNodeDirectory(targetNode)) {
-          insertFiles(target.files, getAbsoluteFileName(targetNode.file));
+        if (isDirectory(targetFile)) {
+          return insertFiles(target.files, generateAbsolutePath(targetFile));
         } else {
-          insertFile(
+          return insertFile(
             target.files[0],
-            targetNode.file.path,
+            targetFile.path,
             true,
-            targetNode.file.name,
+            targetFile.name
           );
         }
       }
+      return false;
     },
-    [insertFiles, insertFile],
+    [insertFiles, insertFile]
   );
 
-  const addNewFile = (event: React.MouseEvent) => {
+  const addNewFile = React.useCallback((event: React.MouseEvent) => {
     event.stopPropagation();
     if (uploader.current) {
       uploader.current.click();
     }
-  };
+  }, []);
 
   const deleteNode = React.useCallback(
-    (node: FileNode) => {
-      FileAPI.deleteFile(getAbsoluteFileName(node.file)).then(() => {
+    (file: IFileDescriptor) => {
+      FileAPI.deleteFile(generateAbsolutePath(file)).then(() => {
         dispatchFileStateAction({
-          type: 'RemoveFile',
-          node: node,
+          type: "RemoveFile",
+          file: file
         });
-        onFileClick && onFileClick(null);
+        onDelelteFile && onDelelteFile(file);
       });
     },
-    [onFileClick],
+    [onDelelteFile]
   );
 
-  const [dropZoneProps, dropZone] = dnd.useDrop(
+  const [dropZoneProps, dropZone] = useDrop(
     dropSpecs(item => {
       const { files } = (item as unknown) as {
         files: FileList;
         items: DataTransferItemList;
       };
       insertFiles(files);
-    }),
+    })
   );
 
-  type RenderNodeType = (node: FileNode | null) => JSX.Element;
-
-  const renderNode: RenderNodeType = React.useCallback(
-    node => {
-      if (node === null || fileState === null) {
-        return <div>Empty...</div>;
-      } else if (node.file.name === '' && node.file.path === '/') {
-        return (
-          <div className={grow}>
-            {isNodeDirectory(node) ? (
-              node.childrenIds.map((nodeKey: string) =>
-                renderNode(fileState.nodes[nodeKey]),
-              )
-            ) : (
-              <div>Empty...</div>
-            )}
-          </div>
-        );
-      } else {
-        return (
-          <FileBrowserNode
-            key={getAbsoluteFileName(node.file)}
-            node={node}
-            selectFile={selectFile}
-            addNewDirectory={addNewDirectory}
-            deleteFile={deleteNode}
-            insertFiles={insertFiles}
-            uploadFiles={uploadFiles}
-          >
-            {isNodeDirectory(node) &&
-              (node.childrenIds.length > 0
-                ? node.childrenIds.map(id => renderNode(fileState.nodes[id]))
-                : 'Empty...')}
-          </FileBrowserNode>
-        );
-      }
-    },
-    [
-      addNewDirectory,
-      deleteNode,
-      insertFiles,
-      fileState,
-      selectFile,
-      uploadFiles,
-    ],
-  );
+  const renderNode = (file: IFileDescriptor | null): JSX.Element => {
+    if (file == null || fileState == null) {
+      return <div>Empty...</div>;
+    } else if (file.name === "" && file.path === "/") {
+      return (
+        <div className={grow}>
+          {isDirectory(file) ? (
+            getChildren(file, fileState).map(file => renderNode(file))
+          ) : (
+            <div>Empty...</div>
+          )}
+        </div>
+      );
+    } else {
+      const filePath = generateAbsolutePath(file);
+      const children = getChildren(file, fileState);
+      return (
+        <FileBrowserNode
+          key={filePath}
+          file={file}
+          onFileClick={fileClick}
+          addNewDirectory={addNewDirectory}
+          deleteFile={deleteNode}
+          insertFiles={insertFiles}
+          uploadFiles={uploadFiles}
+          selected={selectedFiles && selectedFiles.includes(filePath)}
+          defaultOpen={
+            selectedFiles &&
+            selectedFiles.some(selectedPath =>
+              filePath.startsWith(selectedPath)
+            )
+          }
+        >
+          {isDirectory(file) &&
+            (children.length > 0
+              ? children.map(file => renderNode(file))
+              : "Empty...")}
+        </FileBrowserNode>
+      );
+    }
+  };
 
   React.useEffect(() => {
     FileAPI.getFileMeta().then(rootFile => {
-      FileAPI.getFileList('', true).then(files => {
-        const newFileState: FileTreeState = {
-          rootNode: getAbsoluteFileName(rootFile),
-          nodes: {},
-          nbUploadingFiles: 0,
-        };
-        newFileState.nodes[getAbsoluteFileName(rootFile)] = {
-          file: rootFile,
-          childrenIds: [],
-          open: true,
-        };
-        for (const file of files) {
-          newFileState.nodes[getAbsoluteFileName(file)] = isDirectory(file)
-            ? {
-                file: file,
-                childrenIds: [],
-                open: false,
-                selected: false,
-              }
-            : { file: file };
-          newFileState.nodes[file.path].childrenIds!.push(
-            getAbsoluteFileName(file),
-          );
-        }
-
+      FileAPI.getFileList("", true).then(files => {
         dispatchFileStateAction({
-          type: 'SetState',
-          state: newFileState,
+          type: "SetState",
+          state: [rootFile, ...files].reduce((newState: FilesState, file) => {
+            return { ...newState, [generateAbsolutePath(file)]: file };
+          }, {})
         });
       });
     });
   }, []);
 
-  React.useEffect(() => {
-    if (fileState && selectedFiles) {
-      Object.keys(fileState.nodes).map(fileKey => {
-        if (
-          Object.keys(selectedFiles).find(selKey =>
-            selKey.startsWith(
-              getAbsoluteFileName(fileState.nodes[fileKey].file),
-            ),
-          ) !== undefined
-        ) {
-          dispatchFileStateAction({
-            type: 'OpenFolder',
-            nodeId: fileKey,
-            action: true,
-          });
+  return (
+    <DefaultDndProvider>
+      <div className={grow}>
+        <div
+          ref={dropZone}
+          className={cx(fullWidth, {
+            [hidden]: !dropZoneProps.canDrop,
+            [highlight]: dropZoneProps.canDrop,
+            [dropZoneStyle]: dropZoneProps.isShallowOver
+          })}
+        >
+          Drop file here
+        </div>
+        {fileState && nbUploadingFiles > 0 && (
+          <div
+            style={{
+              backgroundColor: "rgba(255, 0, 0, 0.2)",
+              width: "100%"
+            }}
+          >
+            Uploading {nbUploadingFiles} files
+          </div>
+        )}
+        {fileState && (
+          <div>
+            <IconButton
+              icon={"folder-plus"}
+              tooltip={"Add new directory in root folder"}
+              disabled={!isUploadAllowed(fileState["/"])}
+              onClick={() => addNewDirectory(fileState["/"])}
+              fixedWidth={true}
+            />
+            <IconButton
+              icon={"file-upload"}
+              tooltip={"Upload file in the folder"}
+              disabled={!isUploadAllowed(fileState["/"])}
+              onClick={addNewFile}
+              fixedWidth={true}
+            />
+            <input
+              ref={uploader}
+              type="file"
+              name="file"
+              multiple={true}
+              className={hidden}
+              onChange={uploadFiles(fileState["/"])}
+            />
+            {renderNode(fileState["/"])}
+          </div>
+        )}
+      </div>
+    </DefaultDndProvider>
+  );
+}
+
+export function FileBrowserWithMeta() {
+  const [selectedFile, setSelectedFile] = React.useState<IFileDescriptor>();
+  const fileUpdate = React.useRef<FileUpdateCallback>(() => {});
+
+  const onFileClick = (
+    file: IFileDescriptor,
+    onFileUpdate?: FileUpdateCallback
+  ) => {
+    setSelectedFile(oldSelectedFile => {
+      if (
+        !oldSelectedFile ||
+        generateAbsolutePath(file) !== generateAbsolutePath(oldSelectedFile)
+      ) {
+        if (onFileUpdate) {
+          fileUpdate.current = onFileUpdate;
         }
-        dispatchFileStateAction({
-          type: 'SelectFile',
-          nodeId: fileKey,
-          action:
-            Object.keys(selectedFiles).indexOf(
-              getAbsoluteFileName(fileState.nodes[fileKey].file),
-            ) >= 0,
-        });
-      });
-    }
-  }, [selectedFiles, fileState]);
+        return file;
+      }
+      return undefined;
+    });
+  };
+
+  const saveMeta = (file: IFileDescriptor) => {
+    FileAPI.updateMetadata(file).then((resFile: IFileDescriptor) => {
+      fileUpdate.current(resFile);
+      setSelectedFile(file);
+    });
+  };
 
   return (
-    <div className={grow}>
-      <div
-        ref={dropZone}
-        className={cx(
-          fullWidth,
-          !dropZoneProps.canDrop ? hidden : highlight,
-          dropZoneProps.isShallowOver ? dropZoneStyle : '',
-        )}
-      >
-        Drop file here
-      </div>
-      {fileState && fileState.nbUploadingFiles > 0 && (
-        <div
-          style={{
-            backgroundColor: 'rgba(255, 0, 0, 0.2)',
-            width: '100%',
-          }}
-        >
-          Uploading {fileState.nbUploadingFiles} files
-        </div>
-      )}
-      {fileState && (
-        <div>
-          <IconButton
-            icon={'folder-plus'}
-            tooltip={'Add new directory in root folder'}
-            disabled={!isUploadAllowed(fileState.nodes[fileState.rootNode])}
-            onClick={() =>
-              addNewDirectory(fileState.nodes[fileState.rootNode].file)
+    <div className={cx(flex, grow)}>
+      <FileBrowser
+        onFileClick={onFileClick}
+        onDelelteFile={() => setSelectedFile(undefined)}
+        selectedFiles={selectedFile ? [generateAbsolutePath(selectedFile)] : []}
+      />
+      {selectedFile && (
+        <div className={cx(flex, grow)}>
+          <AsyncVariableForm
+            getConfig={entity =>
+              getEditionConfig(entity) as Promise<Schema<AvailableViews>>
             }
-            fixedWidth={true}
+            update={saveMeta}
+            entity={selectedFile}
           />
-          <IconButton
-            icon={'file-upload'}
-            tooltip={'Upload file in the folder'}
-            disabled={!isUploadAllowed(fileState.nodes[fileState.rootNode])}
-            onClick={addNewFile}
-            fixedWidth={true}
-          />
-          <input
-            ref={uploader}
-            type="file"
-            name="file"
-            multiple={true}
-            className={hiddenFileBrowserStyle}
-            onChange={uploadFiles(fileState.nodes[fileState.rootNode])}
-          />
-          {renderNode(fileState.nodes[fileState.rootNode])}
         </div>
       )}
     </div>
   );
 }
-
-export const DndFileBrowser = defaultContextManager(FileBrowser);
-
-interface CFileBrowserProps {
-  dispatch: StoreDispatch;
-  editing?: Readonly<Edition>;
-}
-
-function CFileBrowser(props: CFileBrowserProps) {
-  const { editing, dispatch } = props;
-
-  const [selectedFiles, setSelectedFiles] = React.useState<IFileMap>({});
-
-  const onFileClick = React.useCallback(
-    (file: IFileDescriptor | null) => {
-      if (file === null) {
-        dispatch(closeEditor());
-      } else {
-        dispatch(editFileAction(file, dispatch));
-      }
-    },
-    [dispatch],
-  );
-
-  React.useEffect(() => {
-    if (editing && editing.type === 'File') {
-      const newSF: IFileMap = {};
-      newSF[generateGoodPath(editing.file)] = editing.file;
-      setSelectedFiles(newSF);
-    } else {
-      setSelectedFiles({});
-    }
-  }, [editing]);
-
-  return (
-    <FileBrowser onFileClick={onFileClick} selectedFiles={selectedFiles} />
-  );
-}
-
-export function ConnectedFileBrowser() {
-  return (
-    <StoreConsumer
-      selector={(state: State) => {
-        return {
-          editing: state.global.editing,
-        };
-      }}
-    >
-      {({ state, dispatch }) => {
-        return <CFileBrowser {...state} dispatch={dispatch} />;
-      }}
-    </StoreConsumer>
-  );
-}
-
-export const DndConnectedFileBrowser = defaultContextManager<
-  React.ComponentType
->(ConnectedFileBrowser);

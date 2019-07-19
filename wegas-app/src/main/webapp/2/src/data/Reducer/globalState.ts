@@ -19,11 +19,7 @@ export interface EditorAction<T extends IAbstractEntity> {
     };
   };
 }
-export interface FileActions {
-  save: (entity: IFileDescriptor) => void;
-  more: null;
-}
-export type Edition =
+type Edition =
   | {
       type: 'Variable';
       id: number;
@@ -45,11 +41,6 @@ export type Edition =
       path: (string | number)[];
       config?: Schema<AvailableViews>;
       actions: EditorAction<IAbstractEntity>;
-    }
-  | {
-      type: 'File';
-      file: IFileDescriptor;
-      actions: FileActions;
     };
 export interface GlobalState {
   currentGameModelId: number;
@@ -92,13 +83,6 @@ export interface GlobalState {
 const global: Reducer<Readonly<GlobalState>> = u(
   (state: GlobalState, action: StateActions) => {
     switch (action.type) {
-      case ActionType.FILE_EDIT:
-        state.editing = {
-          type: 'File',
-          file: action.payload.file,
-          actions: action.payload.actions,
-        };
-        return;
       case ActionType.VARIABLE_EDIT:
         state.editing = {
           type: 'Variable',

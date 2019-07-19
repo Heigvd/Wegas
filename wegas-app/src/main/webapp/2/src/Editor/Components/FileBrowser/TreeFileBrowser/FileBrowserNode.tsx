@@ -1,20 +1,30 @@
 import * as React from 'react';
-import { FileAPI } from '../../../../API/files.api';
-import {
-  getAbsoluteFileName,
-  isDirectory,
-} from '../../../../data/methods/ContentDescriptor';
-import { __EXPERIMENTAL_DND_HOOKS_THAT_MAY_CHANGE_AND_BREAK_MY_BUILD__ as dnd } from 'react-dnd';
+import { useDrop } from 'react-dnd';
 import {
   dropSpecs,
-  hiddenFileBrowserStyle,
   dropZoneStyle,
   isUploadAllowed,
+  isDirectory,
+  fileURL,
 } from './FileBrowser';
 import { IconButton } from '../../../../Components/Button/IconButton';
 import { css, cx } from 'emotion';
 import { themeVar } from '../../../../Components/Theme';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { generateAbsolutePath } from '../../../../API/files.api';
+
+const grow = css({
+  flex: '1 1 auto',
+});
+const flex = css({
+  display: 'flex',
+});
+const block = css({
+  display: 'block',
+});
+const hidden = css({
+  display: 'none',
+});
 
 const selectedRow = css({
   backgroundColor: themeVar.primaryLighterColor,
@@ -54,49 +64,45 @@ const getIconForFileType = (fileType: string): IconProp => {
 };
 
 interface FileBrowserNodeProps {
-  node: FileNode;
-  selectFile: (file: FileNode) => void;
-  addNewDirectory: (file: IFileDescriptor) => void;
-  deleteFile: (baseDir: FileNode) => void;
-  insertFiles: (files: FileList, path?: string) => void;
+  file: IFileDescriptor;
+  onFileClick: (file: IFileDescriptor) => void;
+  addNewDirectory: (file: IFileDescriptor) => Promise<boolean>;
+  deleteFile: (baseDir: IFileDescriptor) => void;
+  insertFiles: (files: FileList, path?: string) => Promise<boolean>;
   uploadFiles: (
-    targetNode: FileNode,
-  ) => (event: React.ChangeEvent<HTMLInputElement>) => void;
+    targetFile: IFileDescriptor,
+  ) => (event: React.ChangeEvent<HTMLInputElement>) => Promise<boolean>;
+  selected?: boolean;
+  defaultOpen?: boolean;
 }
 
-export function FileBrowserNode(
-  props: React.PropsWithChildren<FileBrowserNodeProps>,
-) {
-  const {
-    node,
-    selectFile,
-    addNewDirectory,
-    deleteFile,
-    insertFiles,
-    uploadFiles,
-    children,
-  } = props;
-
-  const [open, setOpen] = React.useState(node.open);
+export function FileBrowserNode({
+  file,
+  onFileClick,
+  addNewDirectory,
+  deleteFile,
+  insertFiles,
+  uploadFiles,
+  children,
+  selected = false,
+  defaultOpen = false,
+}: React.PropsWithChildren<FileBrowserNodeProps>) {
+  const [open, setOpen] = React.useState(defaultOpen);
 
   const uploader = React.useRef<HTMLInputElement>(null);
 
   const openFile = (file: IFileDescriptor) => {
-    const win = window.open(
-      FileAPI.fileURL(getAbsoluteFileName(file)),
-      '_blank',
-    );
+    const win = window.open(fileURL(generateAbsolutePath(file)), '_blank');
     win!.focus();
   };
 
-  const [dropZoneProps, dropZone] = dnd.useDrop(
+  const [dropZoneProps, dropZone] = useDrop(
     dropSpecs(item => {
       const { files } = (item as unknown) as {
         files: FileList;
         items: DataTransferItemList;
       };
-      insertFiles(files, getAbsoluteFileName(node.file));
-      setOpen(true);
+      insertFiles(files, generateAbsolutePath(file));
     }),
   );
 
@@ -104,7 +110,7 @@ export function FileBrowserNode(
 
   React.useEffect(() => {
     let openTimeout: number | undefined;
-    if (isDirectory(node.file)) {
+    if (isDirectory(file)) {
       if (dropZoneProps.isShallowOver && dropZoneProps.canDrop) {
         openTimeout = (setTimeout(
           () => setOpen(true),
@@ -115,7 +121,7 @@ export function FileBrowserNode(
         clearTimeout(openTimeout);
       };
     }
-  }, [dropZoneProps, node]);
+  }, [dropZoneProps, file]);
 
   const addNewFile = (event: React.MouseEvent) => {
     event.stopPropagation();
@@ -126,70 +132,64 @@ export function FileBrowserNode(
   };
 
   return (
-    <div style={{ display: 'flex' }}>
+    <div ref={dropZone} className={cx(flex, grow)}>
       <input
         ref={uploader}
         type="file"
         name="file"
-        multiple={isNodeDirectory(node)}
-        className={hiddenFileBrowserStyle}
+        multiple={isDirectory(file)}
+        className={hidden}
         onClick={event => {
           (event.target as HTMLInputElement).value = '';
         }}
         onChange={event => {
-          uploadFiles(node)(event);
-          setOpen(true);
+          uploadFiles(file)(event).then(succes => setOpen(succes));
         }}
       />
-
-      {isNodeDirectory(node) && (
-        <IconButton
-          icon={open ? 'caret-down' : 'caret-right'}
-          onClick={event => {
-            event.stopPropagation();
-            event.preventDefault();
-            setOpen(oldOpen => !oldOpen);
-          }}
-          className={css({ float: 'left', height: 'fit-content' })}
-          fixedWidth={true}
-        />
-      )}
-      <div style={{ flex: '1 1 auto' }}>
-        <div
-          ref={dropZone}
-          className={cx(
-            isDirectory(node.file) &&
-              dropZoneProps.isShallowOver &&
-              dropZoneStyle,
-            hoverRow,
-            node.selected ? selectedRow : '',
-          )}
-          onClick={() => selectFile(node)}
-        >
+      {isDirectory(file) && (
+        <div className={css({ verticalAlign: 'top' })}>
           <IconButton
-            icon={getIconForFileType(node.file.mimeType)}
+            icon={open ? 'caret-down' : 'caret-right'}
+            onClick={event => {
+              event.stopPropagation();
+              event.preventDefault();
+              setOpen(oldOpen => !oldOpen);
+            }}
             fixedWidth={true}
           />
-          {node.file.name}
-          <span style={{ float: 'right' }}>
-            {isDirectory(node.file) ? (
+        </div>
+      )}
+      <div className={cx(block, grow)}>
+        <div
+          className={cx(flex, grow, hoverRow, {
+            [dropZoneStyle]: isDirectory(file) && dropZoneProps.isShallowOver,
+            [selectedRow]: selected,
+          })}
+          onClick={() => onFileClick(file)}
+        >
+          <IconButton
+            icon={getIconForFileType(file.mimeType)}
+            fixedWidth={true}
+          />
+          <div className={grow}>{file.name}</div>
+          <div className={flex}>
+            {isDirectory(file) ? (
               <>
                 <IconButton
                   icon={'folder-plus'}
                   tooltip={'Add new directory in folder'}
-                  disabled={!isUploadAllowed(node)}
+                  disabled={!isUploadAllowed(file)}
                   onClick={event => {
                     event.stopPropagation();
                     event.preventDefault();
-                    addNewDirectory(node.file);
-                    setOpen(true);
+                    addNewDirectory(file).then(succes => setOpen(succes));
                   }}
                   fixedWidth={true}
                 />
                 <IconButton
                   icon={'file-upload'}
                   tooltip={'Upload file in the folder'}
-                  disabled={!isUploadAllowed(node)}
+                  disabled={!isUploadAllowed(file)}
                   onClick={addNewFile}
                   fixedWidth={true}
                 />
@@ -202,14 +202,14 @@ export function FileBrowserNode(
                   onClick={event => {
                     event.stopPropagation();
                     event.preventDefault();
-                    openFile(node.file);
+                    openFile(file);
                   }}
                   fixedWidth={true}
                 />
                 <IconButton
                   icon={'file-import'}
                   tooltip={'Upload new version'}
-                  disabled={!isUploadAllowed(node)}
+                  disabled={!isUploadAllowed(file)}
                   onClick={addNewFile}
                   fixedWidth={true}
                 />
@@ -222,13 +222,15 @@ export function FileBrowserNode(
               onClick={event => {
                 event.stopPropagation();
                 event.preventDefault();
-                deleteFile(node);
+                deleteFile(file);
               }}
               fixedWidth={true}
             />
-          </span>
+          </div>
         </div>
-        {isNodeDirectory(node) && open && <div>{children}</div>}
+        <div className={cx(block, grow)}>
+          {isDirectory(file) && open && children}
+        </div>
       </div>
     </div>
   );

@@ -138,7 +138,7 @@ function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
   return schema;
 }
 
-export async function WindowedEditor<T>({
+async function WindowedEditor<T>({
   entity,
   update,
   actions = [],
@@ -179,7 +179,7 @@ export async function WindowedEditor<T>({
     />
   );
 }
-const AsyncVariableForm = asyncSFC<EditorProps<{ '@class': string }>>(
+export const AsyncVariableForm = asyncSFC<EditorProps<{ '@class': string }>>(
   WindowedEditor,
   () => <div>load...</div>,
   ({ err }: { err: Error }) => <span>{err.message}</span>,
@@ -211,15 +211,6 @@ export default function VariableForm(props: {
           return {
             ...editing,
             entity: VariableDescriptor.select(editing.id),
-          };
-        }
-        if (editing.type === 'File') {
-          return {
-            ...editing,
-            entity: {
-              '@class': 'File',
-              ...editing.file,
-            },
           };
         }
         return null;
