@@ -4,7 +4,6 @@ import {
   dropSpecs,
   dropZoneStyle,
   isUploadAllowed,
-  generateGoodPath,
   isDirectory,
   fileURL,
 } from './FileBrowser';
@@ -12,6 +11,7 @@ import { IconButton } from '../../../../Components/Button/IconButton';
 import { css, cx } from 'emotion';
 import { themeVar } from '../../../../Components/Theme';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { generateAbsolutePath } from '../../../../API/files.api';
 
 const grow = css({
   flex: '1 1 auto',
@@ -92,7 +92,7 @@ export function FileBrowserNode({
   const uploader = React.useRef<HTMLInputElement>(null);
 
   const openFile = (file: IFileDescriptor) => {
-    const win = window.open(fileURL(generateGoodPath(file)), '_blank');
+    const win = window.open(fileURL(generateAbsolutePath(file)), '_blank');
     win!.focus();
   };
 
@@ -102,7 +102,7 @@ export function FileBrowserNode({
         files: FileList;
         items: DataTransferItemList;
       };
-      insertFiles(files, generateGoodPath(file));
+      insertFiles(files, generateAbsolutePath(file));
     }),
   );
 

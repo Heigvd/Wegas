@@ -1,6 +1,19 @@
 import { rest } from './rest';
 import { GameModel } from '../data/selectors';
-import { generateGoodPath } from '../Editor/Components/FileBrowser/TreeFileBrowser/FileBrowser';
+
+/**
+ * Compute an absolute path for a path and a fileName.
+ * @param param0 FileDescriptor like object to compute absolute path from
+ */
+export function generateAbsolutePath({
+  path,
+  name,
+}: {
+  path: string;
+  name: string;
+}) {
+  return path.replace(/(\/)$/, '') + '/' + name;
+}
 
 export const FILE_BASE = (gameModelId?: number) =>
   `GameModel/${
@@ -102,10 +115,13 @@ export const FileAPIFactory = (gameModelId?: number) => {
      * @param file the file to update
      */
     updateMetadata(file: IFileDescriptor) {
-      return rest(FILE_BASE(gameModelId) + 'update' + generateGoodPath(file), {
-        method: 'PUT',
-        body: JSON.stringify(file),
-      }).then((res: Response) => {
+      return rest(
+        FILE_BASE(gameModelId) + 'update' + generateAbsolutePath(file),
+        {
+          method: 'PUT',
+          body: JSON.stringify(file),
+        },
+      ).then((res: Response) => {
         if (res.status === 204) {
           throw Error(res.statusText);
         }

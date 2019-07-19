@@ -1,5 +1,9 @@
 import * as React from 'react';
-import { FileAPI, FILE_BASE } from '../../../../API/files.api';
+import {
+  FileAPI,
+  FILE_BASE,
+  generateAbsolutePath,
+} from '../../../../API/files.api';
 import { GameModel } from '../../../../data/selectors';
 import u from 'immer';
 import { IconButton } from '../../../../Components/Button/IconButton';
@@ -40,21 +44,13 @@ export const dropZoneStyle = css({
 export const isDirectory = (file: IFileDescriptor) =>
   file.mimeType === 'application/wfs-directory';
 
-const generateAbsolutePath = (path: string, filename: string) => {
-  return path.replace(/(\/)$/, '') + '/' + filename;
-};
-
-export const generateGoodPath = (file: IFileDescriptor) => {
-  return generateAbsolutePath(file.path, file.name);
-};
-
 const getChildren = (
   directory: IFileDescriptor,
   fileState: FilesState,
 ): IFileDescriptor[] =>
   Object.values(fileState).reduce((children, file) => {
-    const dirPath = generateGoodPath(directory);
-    const filePath = generateGoodPath(file);
+    const dirPath = generateAbsolutePath(directory);
+    const filePath = generateAbsolutePath(file);
     if (dirPath !== filePath && dirPath === file.path) {
       return [...children, file];
     }
@@ -151,7 +147,7 @@ const reduceFileState = u(
         break;
       }
       case 'InsertFile': {
-        fileState[generateGoodPath(action.file)] = action.file;
+        fileState[generateAbsolutePath(action.file)] = action.file;
         break;
       }
       case 'RemoveFile': {
@@ -223,7 +219,10 @@ export function FileBrowser({
         '',
       );
       if (newDirName) {
-        return await FileAPI.createFile(newDirName, generateGoodPath(parentDir))
+        return await FileAPI.createFile(
+          newDirName,
+          generateAbsolutePath(parentDir),
+        )
           .then(file => {
             dispatchFileStateAction({
               type: 'InsertFile',
@@ -248,7 +247,8 @@ export function FileBrowser({
       oldName?: string,
     ) => {
       const newFileName = oldName ? oldName : file.name;
-      const newFile = fileState[generateAbsolutePath(path, newFileName)];
+      const newFile =
+        fileState[generateAbsolutePath({ path, name: newFileName })];
       let forceUpload = oldName ? true : force;
       if (newFile) {
         if (
@@ -310,7 +310,7 @@ export function FileBrowser({
       const target = event.target;
       if (target && target.files && target.files.length > 0) {
         if (isDirectory(targetFile)) {
-          return insertFiles(target.files, generateGoodPath(targetFile));
+          return insertFiles(target.files, generateAbsolutePath(targetFile));
         } else {
           return insertFile(
             target.files[0],
@@ -334,7 +334,7 @@ export function FileBrowser({
 
   const deleteNode = React.useCallback(
     (file: IFileDescriptor) => {
-      FileAPI.deleteFile(generateGoodPath(file)).then(() => {
+      FileAPI.deleteFile(generateAbsolutePath(file)).then(() => {
         dispatchFileStateAction({
           type: 'RemoveFile',
           file: file,
@@ -369,7 +369,7 @@ export function FileBrowser({
         </div>
       );
     } else {
-      const filePath = generateGoodPath(file);
+      const filePath = generateAbsolutePath(file);
       const children = getChildren(file, fileState);
       return (
         <FileBrowserNode
@@ -403,7 +403,7 @@ export function FileBrowser({
         dispatchFileStateAction({
           type: 'SetState',
           state: [rootFile, ...files].reduce((newState: FilesState, file) => {
-            return { ...newState, [generateGoodPath(file)]: file };
+            return { ...newState, [generateAbsolutePath(file)]: file };
           }, {}),
         });
       });
@@ -478,7 +478,7 @@ export function FileBrowserWithMeta() {
     setSelectedFile(oldSelectedFile => {
       if (
         !oldSelectedFile ||
-        generateGoodPath(file) !== generateGoodPath(oldSelectedFile)
+        generateAbsolutePath(file) !== generateAbsolutePath(oldSelectedFile)
       ) {
         if (onFileUpdate) {
           fileUpdate.current = onFileUpdate;
@@ -501,7 +501,7 @@ export function FileBrowserWithMeta() {
       <FileBrowser
         onFileClick={onFileClick}
         onDelelteFile={() => setSelectedFile(undefined)}
-        selectedFiles={selectedFile ? [generateGoodPath(selectedFile)] : []}
+        selectedFiles={selectedFile ? [generateAbsolutePath(selectedFile)] : []}
       />
       {selectedFile && (
         <div className={cx(flex, grow)}>
