@@ -84,8 +84,8 @@ export function FileBrowserNode({
   insertFiles,
   uploadFiles,
   children,
-  selected,
-  defaultOpen,
+  selected = false,
+  defaultOpen = false,
 }: React.PropsWithChildren<FileBrowserNodeProps>) {
   const [open, setOpen] = React.useState(defaultOpen);
 
@@ -161,20 +161,17 @@ export function FileBrowserNode({
       )}
       <div className={cx(block, grow)}>
         <div
-          className={cx(
-            flex,
-            grow,
-            isDirectory(file) && dropZoneProps.isShallowOver && dropZoneStyle,
-            hoverRow,
-            selected ? selectedRow : '',
-          )}
+          className={cx(flex, grow, hoverRow, {
+            [dropZoneStyle]: isDirectory(file) && dropZoneProps.isShallowOver,
+            [selectedRow]: selected,
+          })}
           onClick={() => onFileClick(file)}
         >
           <IconButton
             icon={getIconForFileType(file.mimeType)}
             fixedWidth={true}
           />
-          <div className={cx(grow)}>{file.name}</div>
+          <div className={grow}>{file.name}</div>
           <div className={flex}>
             {isDirectory(file) ? (
               <>

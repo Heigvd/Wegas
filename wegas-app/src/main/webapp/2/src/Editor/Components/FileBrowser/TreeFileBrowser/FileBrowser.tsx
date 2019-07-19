@@ -142,24 +142,24 @@ const reduceFileState = (
   fileState: FilesState,
   action: FileTreeStateActions,
 ) => {
-    switch (action.type) {
-      case 'SetState': {
+  switch (action.type) {
+    case 'SetState': {
       return action.state;
-      }
-      case 'InsertFile': {
+    }
+    case 'InsertFile': {
       return { ...fileState, [generateAbsolutePath(action.file)]: action.file };
-      }
-      case 'RemoveFile': {
+    }
+    case 'RemoveFile': {
       const removedFilePath = generateAbsolutePath(action.file);
       return Object.keys(fileState).reduce((newFileState, filePath) => {
         if (filePath.startsWith(removedFilePath)) {
-            return newFileState;
-          }
-          return { ...newFileState, [filePath]: fileState[filePath] };
-        }, {});
-      }
+          return newFileState;
+        }
+        return { ...newFileState, [filePath]: fileState[filePath] };
+      }, {});
     }
-    return fileState;
+  }
+  return fileState;
 };
 
 type FileUpdateCallback = (newFile: IFileDescriptor) => void;
@@ -409,18 +409,16 @@ export function FileBrowser({
     });
   }, []);
 
-  console.log('RENDEEER');
-
   return (
     <DefaultDndProvider>
       <div className={grow}>
         <div
           ref={dropZone}
-          className={cx(
-            fullWidth,
-            !dropZoneProps.canDrop ? hidden : highlight,
-            dropZoneProps.isShallowOver ? dropZoneStyle : '',
-          )}
+          className={cx(fullWidth, {
+            [hidden]: !dropZoneProps.canDrop,
+            [highlight]: dropZoneProps.canDrop,
+            [dropZoneStyle]: dropZoneProps.isShallowOver,
+          })}
         >
           Drop file here
         </div>
