@@ -54,7 +54,7 @@ public class JCRFacade {
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(JCRFacade.class);
 
     /**
-     * @param gameModelId
+     * @param gameModel
      * @param workspaceType
      * @param absolutePath
      * @param force
@@ -126,6 +126,36 @@ public class JCRFacade {
             logger.error(null, ex);
         }
         return new ArrayList<>();
+    }
+
+    /**
+     * @param gameModel
+     * @param workspaceType
+     * @param directory
+     *
+     * @return list of directory content and its subdirectories recursively
+     */
+    public List<AbstractContentDescriptor> recurseListDirectory(GameModel gameModel,
+                                                                WorkspaceType workspaceType,
+                                                                String directory) {
+
+        List<AbstractContentDescriptor> recurseList = new ArrayList<>();
+        List<AbstractContentDescriptor> childrenList = listDirectory(gameModel,workspaceType,directory);
+        if(childrenList != null){
+            for(AbstractContentDescriptor children : childrenList){
+                // We assume here that the directories are always listed first
+                recurseList.add(children);
+                if(children.isDirectory()){
+                    recurseList.addAll(
+                            this.recurseListDirectory(gameModel,
+                                    workspaceType,
+                                    children.getFullPath()));
+                }
+            }
+
+        }
+
+        return recurseList;
     }
 
     public FileDescriptor createFile(Long gameModelId, WorkspaceType wType, String name, String path, String mediaType,
