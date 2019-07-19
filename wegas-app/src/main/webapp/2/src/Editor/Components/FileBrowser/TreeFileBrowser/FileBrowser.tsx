@@ -5,7 +5,6 @@ import {
   generateAbsolutePath,
 } from '../../../../API/files.api';
 import { GameModel } from '../../../../data/selectors';
-import u from 'immer';
 import { IconButton } from '../../../../Components/Button/IconButton';
 import { css, cx } from 'emotion';
 import { DropTargetMonitor, DragObjectWithType, useDrop } from 'react-dnd';
@@ -139,20 +138,21 @@ interface FilesState {
   [path: string]: IFileDescriptor;
 }
 
-const reduceFileState = u(
-  (fileState: FilesState, action: FileTreeStateActions) => {
+const reduceFileState = (
+  fileState: FilesState,
+  action: FileTreeStateActions,
+) => {
     switch (action.type) {
       case 'SetState': {
-        fileState = action.state;
-        break;
+      return action.state;
       }
       case 'InsertFile': {
-        fileState[generateAbsolutePath(action.file)] = action.file;
-        break;
+      return { ...fileState, [generateAbsolutePath(action.file)]: action.file };
       }
       case 'RemoveFile': {
-        fileState = Object.keys(fileState).reduce((newFileState, filePath) => {
-          if (filePath.startsWith(action.file.path)) {
+      const removedFilePath = generateAbsolutePath(action.file);
+      return Object.keys(fileState).reduce((newFileState, filePath) => {
+        if (filePath.startsWith(removedFilePath)) {
             return newFileState;
           }
           return { ...newFileState, [filePath]: fileState[filePath] };
@@ -160,8 +160,7 @@ const reduceFileState = u(
       }
     }
     return fileState;
-  },
-);
+};
 
 type FileUpdateCallback = (newFile: IFileDescriptor) => void;
 
@@ -199,7 +198,7 @@ export function FileBrowser({
   );
 
   const [nbUploadingFiles, dispatchUploadingFiles] = React.useReducer(
-    u((uploadCount: number, action: UploadAction) => {
+    (uploadCount: number, action: UploadAction) => {
       switch (action.type) {
         case 'Increment':
           return uploadCount + 1;
@@ -208,7 +207,7 @@ export function FileBrowser({
         default:
           return uploadCount;
       }
-    }),
+    },
     0,
   );
 
