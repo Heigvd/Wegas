@@ -1,16 +1,29 @@
 import { store } from '../data/store';
 
-type ContentType = 'application/json' | 'text/plain';
+type ContentType =
+  | 'application/json'
+  | 'text/plain'
+  | 'multipart/form-data'
+  | undefined;
 
 function COMMON_CONFIG(
-  contentType: ContentType = 'application/json',
+  contentType?: ContentType,
   managed: boolean = false,
 ): RequestInit {
   const socket_id = store.getState().global.pusherStatus.socket_id;
-  const HEADERS = new Headers({
-    'Content-Type': contentType,
-    'Managed-Mode': String(managed),
-  });
+
+  let HEADERS;
+  if (contentType) {
+    HEADERS = new Headers({
+      'Content-Type': contentType,
+      'Managed-Mode': String(managed),
+    });
+  } else {
+    HEADERS = new Headers({
+      'Managed-Mode': String(managed),
+    });
+  }
+
   if (socket_id != null) {
     HEADERS.set('SocketId', socket_id);
   }
@@ -33,16 +46,25 @@ export function rest(
   view?: View,
   contentType: ContentType = 'application/json',
 ) {
+  let type: ContentType = contentType;
+  if (contentType === 'multipart/form-data') {
+    type = undefined;
+    if (!(options.body instanceof FormData)) {
+      throw Error(
+        "options.body must be FormData when contentType is 'multipart/form-data'",
+      );
+    }
+  }
   const v = view ? `${view}/` : '';
   const u = url.startsWith('/') ? url.substr(1) : url;
   return fetch(`${API_ENDPOINT}${v}${u}`, {
-    ...COMMON_CONFIG(contentType),
+    ...COMMON_CONFIG(type),
     ...options,
   }).then(res => {
     if (res.ok) {
       return res;
     }
-    throw Error(res.statusText);
+    throw res;
   });
 }
 export function managedModeRequest(
