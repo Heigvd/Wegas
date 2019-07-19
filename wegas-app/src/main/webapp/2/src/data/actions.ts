@@ -12,7 +12,6 @@ function createAction<T extends string, P>(type: T, payload: P) {
     payload,
   };
 }
-
 /**
  * Simple action creators.
  */
