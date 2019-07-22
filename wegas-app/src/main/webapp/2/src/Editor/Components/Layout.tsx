@@ -1,19 +1,19 @@
-import * as React from "react";
-import { css } from "emotion";
-import Header from "./Header";
-import { DndLinearLayout } from "./LinearTabLayout/LinearLayout";
-import StateMachineEditor from "./StateMachineEditor";
-import PageDisplay from "./Page/PageDisplay";
-import TreeView from "./Variable/VariableTree";
-import Editor from "./EntityEditor";
-import { FileBrowserWithMeta } from "./FileBrowser/TreeFileBrowser/FileBrowser";
-import LibraryEditor from "./ScriptEditors/LibraryEditor";
-import { HTMLEditor } from "../../Components/HTMLEditor";
+import * as React from 'react';
+import { css } from 'emotion';
+import Header from './Header';
+import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
+import StateMachineEditor from './StateMachineEditor';
+import PageDisplay from './Page/PageDisplay';
+import TreeView from './Variable/VariableTree';
+import Editor from './EntityEditor';
+import { FileBrowserWithMeta } from './FileBrowser/TreeFileBrowser/FileBrowser';
+import LibraryEditor from './ScriptEditors/LibraryEditor';
+import { HTMLEditor } from '../../Components/HTMLEditor';
 
 const layout = css({
-  display: "flex",
-  flexDirection: "column",
-  height: "100%"
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
 });
 
 export default class AppLayout extends React.Component<
@@ -23,21 +23,21 @@ export default class AppLayout extends React.Component<
   constructor(props: {}) {
     super(props);
     this.state = {
-      editable: false
+      editable: false,
     };
   }
   render() {
     const TestEditor = () => (
       <>
         <HTMLEditor
-          value={"<div>Tadaaaaaa</div>"}
-          onChange={val => alert("CHANGE : " + val)}
-          onSave={val => alert("SAVE : " + val)}
+          value={'<div>Tadaaaaaa</div>'}
+          onChange={val => alert('CHANGE : ' + val)}
+          onSave={val => alert('SAVE : ' + val)}
         />
         <HTMLEditor
-          value={"<div>Blablaaaa</div>"}
-          onChange={val => alert("CHANGE : " + val)}
-          onSave={val => alert("SAVE : " + val)}
+          value={'<div>Blablaaaa</div>'}
+          onChange={val => alert('CHANGE : ' + val)}
+          onSave={val => alert('SAVE : ' + val)}
         />
       </>
     );
@@ -53,34 +53,34 @@ export default class AppLayout extends React.Component<
             Editor: <Editor />,
             Files: <FileBrowserWithMeta />,
             Scripts: <LibraryEditor />,
-            TestEditor: <TestEditor />
+            TestEditor: <TestEditor />,
           }}
           layoutMap={{
-            rootKey: "0",
-            lastKey: "3",
+            rootKey: '0',
+            lastKey: '3',
             isDragging: false,
             layoutMap: {
-              "0": {
-                type: "ReflexLayoutNode",
+              '0': {
+                type: 'ReflexLayoutNode',
                 vertical: false,
-                children: ["1", "2", "3"]
+                children: ['1', '2', '3'],
               },
-              "1": {
-                type: "TabLayoutNode",
+              '1': {
+                type: 'TabLayoutNode',
                 vertical: false,
-                children: ["Variables"]
+                children: ['Variables'],
               },
-              "2": {
-                type: "TabLayoutNode",
+              '2': {
+                type: 'TabLayoutNode',
                 vertical: false,
-                children: ["Page", "StateMachine", "TestEditor"]
+                children: ['Page', 'StateMachine', 'TestEditor'],
               },
-              "3": {
-                type: "TabLayoutNode",
+              '3': {
+                type: 'TabLayoutNode',
                 vertical: false,
-                children: ["Editor"]
-              }
-            }
+                children: ['Editor'],
+              },
+            },
           }}
         />
       </div>

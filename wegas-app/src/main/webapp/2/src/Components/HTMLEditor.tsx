@@ -34,6 +34,11 @@ import {
   FileBrowser,
   fileURL,
 } from '../Editor/Components/FileBrowser/TreeFileBrowser/FileBrowser';
+import { css } from 'emotion';
+
+const toolbar = css({
+  width: '300px',
+});
 
 // TODO : make a hook that gets user styles (useUserStyles)
 const userstyles = [
@@ -142,14 +147,17 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
   return (
     <div>
       <div style={{ visibility: fileBrowsing.fn ? 'hidden' : 'visible' }}>
-        <div id={toolBarId}>
+        <div id={toolBarId} className={toolbar}>
           {!editorFocus && (
             <img
-              src={require('../pictures/tinymcetoolbar.png')}
+              src={require(onSave
+                ? '../pictures/tinymcetoolbar.png'
+                : '../pictures/tinymcetoolbarnosave.png')}
               onClick={() => HTMLEditor.current && HTMLEditor.current.focus()}
             />
           )}
         </div>
+
         <Editor
           initialValue={value}
           init={config(toolBarId)}
