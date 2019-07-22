@@ -21,10 +21,8 @@ import 'tinymce/skins/content/default/content.css';
 import 'tinymce/skins/ui/oxide/content.min.css';
 
 import { Editor } from '@tinymce/tinymce-react';
-import { DndFileBrowser } from '../Editor/Components/FileBrowser/TreeFileBrowser/FileBrowser';
 import { Modal } from './Modal';
-import { FileAPI } from '../API/files.api';
-import { getAbsoluteFileName } from '../data/methods/ContentDescriptor';
+import { generateAbsolutePath } from '../API/files.api';
 import { WidgetProps } from 'jsoninput/typings/types';
 import {
   CommonView,
@@ -32,7 +30,10 @@ import {
 } from '../Editor/Components/FormView/commonView';
 import { LabeledView, Labeled } from '../Editor/Components/FormView/labeled';
 import { primary, primaryLight, primaryDark } from './Theme';
-import tinymcetoolbar from '../pictures/tinymcetoolbar.png';
+import {
+  FileBrowser,
+  fileURL,
+} from '../Editor/Components/FileBrowser/TreeFileBrowser/FileBrowser';
 
 // TODO : make a hook that gets user styles (useUserStyles)
 const userstyles = [
@@ -144,7 +145,7 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
         <div id={toolBarId}>
           {!editorFocus && (
             <img
-              src={tinymcetoolbar}
+              src={require('../pictures/tinymcetoolbar.png')}
               onClick={() => HTMLEditor.current && HTMLEditor.current.focus()}
             />
           )}
@@ -163,14 +164,14 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
       </div>
       {fileBrowsing.fn && (
         <Modal>
-          <DndFileBrowser
+          <FileBrowser
             onFileClick={file => {
               setFileBrowsing({});
               file &&
                 fileBrowsing.fn &&
                 fileBrowsing.fn(
                   document.location.origin +
-                    FileAPI.fileURL(getAbsoluteFileName(file)),
+                    fileURL(generateAbsolutePath(file)),
                 );
             }}
           />
