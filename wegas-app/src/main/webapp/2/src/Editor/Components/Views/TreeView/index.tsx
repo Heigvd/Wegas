@@ -123,9 +123,9 @@ const isDraggingStyle = css({
 });
 
 interface ConnectedNodeProps extends NodeProps {
-  connectDragSource: DragElementWrapper<DragSourceOptions>;
-  onDropResult: (result: DropResult) => void;
-  isDragging: boolean;
+  connectDragSource?: DragElementWrapper<DragSourceOptions>;
+  onDropResult?: (result: DropResult) => void;
+  isDragging?: boolean;
 }
 class TreeNode extends React.Component<
   ConnectedNodeProps,
@@ -164,7 +164,6 @@ class TreeNode extends React.Component<
     });
     const isNode = Array.isArray(children);
     const cont = isNode && expanded && (
-      // @ts-ignore (ignore dummy props missing)
       <DropZone id={id} where="INSIDE" index={0}>
         {({ isOver, boundingRect }) => (
           <div className={childrenContainer}>
@@ -174,43 +173,43 @@ class TreeNode extends React.Component<
         )}
       </DropZone>
     );
-    return connectDragSource(
-      <div
-        ref={n => (this.root = n)}
-        className={cx({
-          [isDraggingStyle]: isDragging,
-        })}
-      >
-        {
-          // @ts-ignore (ignore dummy props missing)
-          <DropZone id={parent} index={index!} where={'AUTO'}>
-            {({ isOver, boundingRect, where, separator }) => (
-              <div>
-                {isOver && where === 'BEFORE' && (
-                  <DropPreview boundingRect={boundingRect} />
-                )}
-                {separator(
-                  <div>
-                    <span className={toggle} onClick={this.toggleExpand}>
-                      {isNode && (
-                        <FontAwesome
-                          icon={expanded ? 'caret-down' : 'caret-right'}
-                        />
-                      )}
-                    </span>
-                    {header}
-                  </div>,
-                )}
-                {cont}
-                {isOver && where === 'AFTER' && (
-                  <DropPreview boundingRect={boundingRect} />
-                )}
-              </div>
-            )}
-          </DropZone>
-        }
-      </div>,
-    );
+
+    return connectDragSource
+      ? connectDragSource(
+          <div
+            ref={n => (this.root = n)}
+            className={cx({
+              [isDraggingStyle]: isDragging ? isDragging : false,
+            })}
+          >
+            <DropZone id={parent} index={index!} where={'AUTO'}>
+              {({ isOver, boundingRect, where, separator }) => (
+                <div>
+                  {isOver && where === 'BEFORE' && (
+                    <DropPreview boundingRect={boundingRect} />
+                  )}
+                  {separator(
+                    <div>
+                      <span className={toggle} onClick={this.toggleExpand}>
+                        {isNode && (
+                          <FontAwesome
+                            icon={expanded ? 'caret-down' : 'caret-right'}
+                          />
+                        )}
+                      </span>
+                      {header}
+                    </div>,
+                  )}
+                  {cont}
+                  {isOver && where === 'AFTER' && (
+                    <DropPreview boundingRect={boundingRect} />
+                  )}
+                </div>
+              )}
+            </DropZone>
+          </div>,
+        )
+      : null;
   }
 }
 
@@ -254,7 +253,6 @@ export function Node(props: NodeProps) {
   return (
     <DropContext.Consumer>
       {({ onDropResult }) => {
-        // @ts-ignore (ignore dummy props missing)
         return <DSNode {...props} onDropResult={onDropResult} />;
       }}
     </DropContext.Consumer>

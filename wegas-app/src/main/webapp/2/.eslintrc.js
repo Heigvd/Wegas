@@ -30,6 +30,7 @@ module.exports = {
     'no-var': 'error',
     'no-eval': 'error',
     'no-implied-eval': 'error',
+    'no-param-reassign': 'error',
     'prefer-const': 'error',
     'linebreak-style': ['error', 'unix'],
     'react/no-unescaped-entities': 'off',

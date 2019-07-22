@@ -42,7 +42,7 @@ export function select<T extends IVariableDescriptor = IVariableDescriptor>(
 export function first<T extends IVariableDescriptor>(
   key: keyof T,
   value: unknown,
-) {
+): Readonly<T> | undefined {
   const state = store.getState();
   for (const vd in state.variableDescriptors) {
     const s = state.variableDescriptors[vd] as T;
@@ -52,10 +52,37 @@ export function first<T extends IVariableDescriptor>(
   }
 }
 /**
+ * Cache for findByName
+ */
+const descriptorNameIdCache = new Map<string, number>();
+/**
+ * Find a VariableDescriptor by it's name.
+ * They are cached by their id for faster subsequent calls.
+ * @param name descriptor's name
+ */
+export function findByName<T extends IVariableDescriptor>(name: string) {
+  const id = descriptorNameIdCache.get(name);
+  if (typeof id === 'number') {
+    const descriptor = select<T>(id);
+    // Check if descriptor still exists and has the right name.
+    if (descriptor != null && descriptor.name === name) {
+      return descriptor;
+    }
+    descriptorNameIdCache.delete(name);
+  }
+  const descriptor = first<T>('name', name);
+  if (descriptor != null && descriptor.id != null) {
+    descriptorNameIdCache.set(name, descriptor.id!);
+  }
+  return descriptor;
+}
+/**
  * Select first matching VariableDescriptor
  * @param o the shape the VariableDescriptor should match
  */
-export function firstMatch<T extends IVariableDescriptor>(o: Partial<T>) {
+export function firstMatch<T extends IVariableDescriptor>(
+  o: Partial<T>,
+): Readonly<T> | undefined {
   const state = store.getState();
   for (const vd in state.variableDescriptors) {
     const s = state.variableDescriptors[vd] as T;
@@ -106,7 +133,7 @@ export function flatten<
     }
 
     if (varIsList(descriptor)) {
-      ret.push(...(flatten(descriptor, ...cls) as any));
+      ret.push(...(flatten<T, E>(descriptor, ...cls)));
     }
   });
   return ret;

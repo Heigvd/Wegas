@@ -6,6 +6,8 @@ import StateMachineEditor from './StateMachineEditor';
 import PageDisplay from './Page/PageDisplay';
 import TreeView from './Variable/VariableTree';
 import Editor from './EntityEditor';
+import { FileBrowserWithMeta } from './FileBrowser/TreeFileBrowser/FileBrowser';
+import LibraryEditor from './ScriptEditors/LibraryEditor';
 
 const layout = css({
   display: 'flex',
@@ -41,24 +43,36 @@ export default class AppLayout extends React.Component<
             <Item key="Editor" label="Editor">
               <Editor />
             </Item>,
+            <Item key="Files" label="Files">
+              <FileBrowserWithMeta />
+            </Item>,
+            <Item key="Scripts" label="Scripts">
+              <LibraryEditor />
+            </Item>,
           ]}
         >
           <Layout>
-            <Item key="Variables" label="Variables">
+            <Item label="Variables">
               <TreeView />
             </Item>
           </Layout>
           <Layout>
-            <Item key="Page" label="Page">
+            <Item label="Page">
               <PageDisplay />
             </Item>
-            <Item key="StateMachine" label="StateMachine">
+            <Item label="StateMachine">
               <StateMachineEditor />
+            </Item>
+            <Item label="Files">
+              <FileBrowserWithMeta />
             </Item>
           </Layout>
           <Layout>
-            <Item key="Editor" label="Editor">
+            <Item label="Editor">
               <Editor />
+            </Item>
+            <Item label="Scripts">
+              <LibraryEditor />
             </Item>
           </Layout>
         </DndLinearLayout>
