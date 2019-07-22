@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useDrop, DropTargetMonitor } from 'react-dnd';
-import { DnDropTab, Tab, dndAcceptType, DragTab } from './DnDTabs';
+import { Tab, dndAcceptType, DragTab, DropTab } from './DnDTabs';
 import { IconButton } from '../../../Components/Button/IconButton';
 import { Toolbar } from '../../../Components/Toolbar';
 import { Menu } from '../../../Components/Menu';
@@ -187,7 +187,7 @@ export function DnDTabLayout({
       const label = componentsKeys[i];
 
       // Always put a dropTab on the left of a tab
-      tabs.push(<DnDropTab key={label + 'LEFTDROP'} onDrop={onDropTab(i)} />);
+      tabs.push(<DropTab key={label + 'LEFTDROP'} onDrop={onDropTab(i)} />);
 
       tabs.push(
         <DragTab
@@ -213,7 +213,7 @@ export function DnDTabLayout({
       // At the end, don't forget to add a dropTab on the right of the last tab
       if (Number(i) === componentsKeys.length - 1) {
         tabs.push(
-          <DnDropTab key={label + 'RIGHTDROP'} onDrop={onDropTab(i + 1)} />,
+          <DropTab key={label + 'RIGHTDROP'} onDrop={onDropTab(i + 1)} />,
         );
       }
     }
