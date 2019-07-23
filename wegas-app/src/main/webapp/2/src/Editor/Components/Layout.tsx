@@ -2,12 +2,21 @@ import * as React from 'react';
 import { css } from 'emotion';
 import Header from './Header';
 import { DndLinearLayout, Item, Layout } from './LinearTabLayout/LinearLayout';
-import StateMachineEditor from './StateMachineEditor';
-import PageDisplay from './Page/PageDisplay';
-import TreeView from './Variable/VariableTree';
-import Editor from './EntityEditor';
-import { FileBrowserWithMeta } from './FileBrowser/TreeFileBrowser/FileBrowser';
-import LibraryEditor from './ScriptEditors/LibraryEditor';
+// import StateMachineEditor from './StateMachineEditor';
+// import PageDisplay from './Page/PageDisplay';
+// import TreeView from './Variable/VariableTree';
+// import Editor from './EntityEditor';
+// import { FileBrowserWithMeta } from './FileBrowser/TreeFileBrowser/FileBrowser';
+// import LibraryEditor from './ScriptEditors/LibraryEditor';
+
+const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
+const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
+const TreeView = React.lazy(() => import('./Variable/VariableTree'));
+const Editor = React.lazy(() => import('./EntityEditor'));
+const FileBrowserWithMeta = React.lazy(() =>
+  import('./FileBrowser/TreeFileBrowser/FileBrowser'),
+);
+const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
 
 const layout = css({
   display: 'flex',

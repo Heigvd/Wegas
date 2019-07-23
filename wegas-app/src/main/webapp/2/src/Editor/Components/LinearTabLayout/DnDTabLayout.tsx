@@ -275,7 +275,9 @@ export function DnDTabLayout({
                 label !== activeLabel ? hidden : '',
               )}
             >
-              {components[label]}
+              <React.Suspense fallback={<div>Loading...</div>}>
+                {components[label]}
+              </React.Suspense>
             </Reparentable>
           );
         })}

@@ -464,7 +464,7 @@ export function FileBrowser({
   );
 }
 
-export function FileBrowserWithMeta() {
+export default function FileBrowserWithMeta() {
   const [selectedFile, setSelectedFile] = React.useState<IFileDescriptor>();
   const fileUpdate = React.useRef<FileUpdateCallback>(() => {});
 
