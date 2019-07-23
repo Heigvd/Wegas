@@ -176,18 +176,33 @@ export function DnDTabLayout({
   const [dropBottomProps, dropBottom] = useDrop(
     dropSpecsFactory(onDrop('BOTTOM')),
   );
+  const [dropTabsProps, dropTabs] = useDrop({
+    accept: dndAcceptType,
+    canDrop: () => false,
+    collect: (mon: DropTargetMonitor) => {
+      return {
+        isOver: mon.isOver(),
+      };
+    },
+  });
 
   /**
    * renderTabs generates a list with draggable and dropable tabs for the tabLayout
    */
-  const renderTabs = React.useCallback(() => {
+  const renderTabs = () => {
     const tabs = [];
     const componentsKeys = Object.keys(components);
     for (let i = 0; i < componentsKeys.length; i += 1) {
       const label = componentsKeys[i];
 
       // Always put a dropTab on the left of a tab
-      tabs.push(<DropTab key={label + 'LEFTDROP'} onDrop={onDropTab(i)} />);
+      tabs.push(
+        <DropTab
+          key={label + 'LEFTDROP'}
+          onDrop={onDropTab(i)}
+          disabled={!dropTabsProps.isOver}
+        />,
+      );
 
       tabs.push(
         <DragTab
@@ -213,33 +228,39 @@ export function DnDTabLayout({
       // At the end, don't forget to add a dropTab on the right of the last tab
       if (Number(i) === componentsKeys.length - 1) {
         tabs.push(
-          <DropTab key={label + 'RIGHTDROP'} onDrop={onDropTab(i + 1)} />,
+          <DropTab
+            key={label + 'RIGHTDROP'}
+            onDrop={onDropTab(i + 1)}
+            disabled={!dropTabsProps.isOver}
+          />,
         );
       }
     }
     return tabs;
-  }, [components, activeLabel, onDeleteTab, onDropTab, onSelect]);
+  };
 
   return (
     <Toolbar vertical={vertical}>
       <Toolbar.Header>
-        {renderTabs()}
-        {selectItems && Object.keys(selectItems).length > 0 && (
-          <Tab key={'-1'}>
-            <Menu
-              items={Object.keys(selectItems).map(label => {
-                return { label: label, value: label };
-              })}
-              icon="plus"
-              onSelect={i => {
-                onSelect && onSelect(i.value);
-                onNewTab(String(i.value));
-              }}
-              buttonClassName={buttonStyle}
-              listClassName={listStyle}
-            />
-          </Tab>
-        )}
+        <div ref={dropTabs} className={cx(flex, grow)}>
+          {renderTabs()}
+          {selectItems && Object.keys(selectItems).length > 0 && (
+            <Tab key={'-1'}>
+              <Menu
+                items={Object.keys(selectItems).map(label => {
+                  return { label: label, value: label };
+                })}
+                icon="plus"
+                onSelect={i => {
+                  onSelect && onSelect(i.value);
+                  onNewTab(String(i.value));
+                }}
+                buttonClassName={buttonStyle}
+                listClassName={listStyle}
+              />
+            </Tab>
+          )}
+        </div>
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, relative)}>
         {Object.keys(components).map(label => {

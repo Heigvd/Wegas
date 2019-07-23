@@ -98,6 +98,10 @@ export interface DropTabProps extends TabProps {
    * onDrop - The function to call when a drop occures on this tab
    */
   onDrop?: DropAction;
+  /**
+   * disabled - Allows to disable de component
+   */
+  disabled?: boolean;
 }
 
 export function DropTab(props: DropTabProps) {
@@ -114,7 +118,7 @@ export function DropTab(props: DropTabProps) {
     },
   });
 
-  const [style, setStyle] = React.useState(css());
+  const [style, setStyle] = React.useState('');
 
   React.useEffect(() => {
     setTimeout(() => {
@@ -122,18 +126,21 @@ export function DropTab(props: DropTabProps) {
         props.className
           ? props.className
           : cx(
-              dropTabProps.canDrop
+              dropTabProps.canDrop && !props.disabled
                 ? dropTabProps.isOverCurrent
-                  ? cx(
-                      dropTabProps.isOverCurrent && defaultTabStyle,
-                      dropTabProps.isOverCurrent && primaryDark,
-                    )
+                  ? dropTabProps.isOverCurrent &&
+                    cx(defaultTabStyle, primaryDark)
                   : dropZoneFocus
                 : hidden,
             ),
       );
     }, 100);
-  }, [dropTabProps.canDrop, dropTabProps.isOverCurrent, props.className]);
+  }, [
+    dropTabProps.canDrop,
+    dropTabProps.isOverCurrent,
+    props.className,
+    props.disabled,
+  ]);
 
   return (
     <Tab {...props} ref={dropTab} className={style}>
