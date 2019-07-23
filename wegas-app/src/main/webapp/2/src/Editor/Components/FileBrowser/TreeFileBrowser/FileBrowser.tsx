@@ -68,6 +68,17 @@ export const fileURL = (absolutePath: string) => {
   );
 };
 
+const sortFiles = (a: IFileDescriptor, b: IFileDescriptor): number => {
+  if (
+    (isDirectory(a) && isDirectory(b)) ||
+    (!isDirectory(a) && !isDirectory(b))
+  ) {
+    return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
+  } else {
+    return isDirectory(b) ? 1 : -1;
+  }
+};
+
 export const gameModelDependsOnModel = () => {
   return (
     GameModel.selectCurrent().type === 'SCENARIO' &&
@@ -361,7 +372,9 @@ export function FileBrowser({
       return (
         <div className={grow}>
           {isDirectory(file) ? (
-            getChildren(file, fileState).map(file => renderNode(file))
+            getChildren(file, fileState)
+              .sort(sortFiles)
+              .map(file => renderNode(file))
           ) : (
             <div>Empty...</div>
           )}
@@ -389,7 +402,7 @@ export function FileBrowser({
         >
           {isDirectory(file) &&
             (children.length > 0
-              ? children.map(file => renderNode(file))
+              ? children.sort(sortFiles).map(file => renderNode(file))
               : 'Empty...')}
         </FileBrowserNode>
       );
