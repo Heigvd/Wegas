@@ -66,12 +66,22 @@ const getIconForFileType = (fileType: string): IconProp => {
 interface FileBrowserNodeProps {
   file: IFileDescriptor;
   onFileClick: (file: IFileDescriptor) => void;
-  addNewDirectory: (file: IFileDescriptor) => Promise<boolean>;
+  addNewDirectory: (
+    parentDir: IFileDescriptor,
+    onAction?: (newFile?: IFileDescriptor) => void,
+  ) => void;
   deleteFile: (baseDir: IFileDescriptor) => void;
-  insertFiles: (files: FileList, path?: string) => Promise<boolean>;
+  insertFiles: (
+    files: FileList,
+    path?: string,
+    onAction?: (newFiles: IFileDescriptor[]) => void,
+  ) => void;
   uploadFiles: (
     targetFile: IFileDescriptor,
-  ) => (event: React.ChangeEvent<HTMLInputElement>) => Promise<boolean>;
+  ) => (
+    event: React.ChangeEvent<HTMLInputElement>,
+    onAction?: (newFiles: IFileDescriptor[]) => void,
+  ) => void;
   selected?: boolean;
   defaultOpen?: boolean;
 }
@@ -102,7 +112,11 @@ export function FileBrowserNode({
         files: FileList;
         items: DataTransferItemList;
       };
-      insertFiles(files, generateAbsolutePath(file));
+      insertFiles(files, generateAbsolutePath(file), newFiles => {
+        if (newFiles.length > 0) {
+          setOpen(true);
+        }
+      });
     }),
   );
 
@@ -143,7 +157,11 @@ export function FileBrowserNode({
           (event.target as HTMLInputElement).value = '';
         }}
         onChange={event => {
-          uploadFiles(file)(event).then(succes => setOpen(succes));
+          uploadFiles(file)(event, files => {
+            if (files.length) {
+              setOpen(true);
+            }
+          });
         }}
       />
       {isDirectory(file) && (
@@ -182,7 +200,9 @@ export function FileBrowserNode({
                   onClick={event => {
                     event.stopPropagation();
                     event.preventDefault();
-                    addNewDirectory(file).then(succes => setOpen(succes));
+                    addNewDirectory(file, newFile =>
+                      setOpen(newFile !== undefined),
+                    );
                   }}
                   fixedWidth={true}
                 />

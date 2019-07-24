@@ -17,6 +17,8 @@ import getEditionConfig from '../../../editionConfig';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../../FormView';
 import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
+import { FileNameModal } from './Modals/FileNameModal';
+import { FileOverrideModal } from './Modals/FileOverrideModal';
 
 const grow = css({
   flex: '1 1 auto',
@@ -174,6 +176,26 @@ const reduceFileState = (
   return fileState;
 };
 
+interface ModalStateClose {
+  type: 'close';
+}
+
+interface ModalStateFilename {
+  type: 'filename';
+  targetDir: IFileDescriptor;
+  onAction: (newFile?: IFileDescriptor) => void;
+}
+
+interface ModalStateOverride {
+  type: 'override';
+  oldFile: IFileDescriptor;
+  newFile: File;
+  force: boolean;
+  onAction: (newFile?: IFileDescriptor) => void;
+}
+
+type ModalState = ModalStateClose | ModalStateFilename | ModalStateOverride;
+
 type FileUpdateCallback = (newFile: IFileDescriptor) => void;
 
 export interface FileBrowserProps {
@@ -195,6 +217,9 @@ export function FileBrowser({
     {},
   );
   const uploader = React.useRef<HTMLInputElement>(null);
+  const [modalState, setModalState] = React.useState<ModalState>({
+    type: 'close',
+  });
 
   const fileClick = React.useCallback(
     (file: IFileDescriptor) => {
@@ -224,92 +249,86 @@ export function FileBrowser({
   );
 
   const addNewDirectory = React.useCallback(
-    async (parentDir: IFileDescriptor) => {
-      const newDirName = prompt(
-        'Please enter the name of the new directory',
-        '',
-      );
-      if (newDirName) {
-        return await FileAPI.createFile(
-          newDirName,
-          generateAbsolutePath(parentDir),
-        )
-          .then(file => {
+    (
+      parentDir: IFileDescriptor,
+      onAction?: (newFile?: IFileDescriptor) => void,
+    ) => {
+      setModalState({
+        type: 'filename',
+        targetDir: parentDir,
+        onAction: newFile => {
+          if (newFile) {
             dispatchFileStateAction({
               type: 'InsertFile',
-              file: file,
+              file: newFile,
             });
-            return true;
-          })
-          .catch(() => {
-            return false;
-          });
-      }
-      return false;
+          }
+          onAction && onAction(newFile);
+          setModalState({ type: 'close' });
+        },
+      });
     },
     [],
   );
 
   const insertFile = React.useCallback(
-    async (
+    (
       file: File,
+      onAction?: (newFile?: IFileDescriptor) => void,
       path: string = '',
       force: boolean = false,
       oldName?: string,
     ) => {
-      const newFileName = oldName ? oldName : file.name;
-      const newFile =
-        fileState[generateAbsolutePath({ path, name: newFileName })];
-      let forceUpload = oldName ? true : force;
-      if (newFile) {
-        if (
-          forceUpload ||
-          (!forceUpload &&
-            confirm(
-              `This file [${newFileName}] already exists, do you want to override it?`,
-            ))
-        ) {
-          forceUpload = true;
-          const newType = file.type;
-          const oldType = newFile.mimeType;
-          if (
-            newType !== oldType &&
-            !confirm(
-              `You are about to change file type from [${oldType}] to [${newType}]. Are you sure?`,
-            )
-          ) {
-            return false;
-          }
-        } else {
-          return false;
-        }
-      }
-      dispatchUploadingFiles({ type: 'Increment' });
-      return FileAPI.createFile(newFileName, path, file, forceUpload)
-        .then(file => {
-          dispatchFileStateAction({
-            type: 'InsertFile',
-            file: file,
-          });
-          dispatchUploadingFiles({ type: 'Decrement' });
-          fileClick(file);
-          return true;
-        })
-        .catch(() => {
-          dispatchUploadingFiles({ type: 'Decrement' });
-          return false;
+      const filename = oldName ? oldName : file.name;
+      const oldFile = fileState[generateAbsolutePath({ path, name: filename })];
+      if (oldFile) {
+        dispatchUploadingFiles({ type: 'Increment' });
+        setModalState({
+          type: 'override',
+          newFile: file,
+          oldFile: oldFile,
+          force: oldName ? true : force,
+          onAction: file => {
+            dispatchUploadingFiles({ type: 'Decrement' });
+            onAction && onAction(file);
+            setModalState({ type: 'close' });
+          },
         });
+      } else {
+        FileAPI.createFile(filename, path, file)
+          .then(savedFile => {
+            dispatchUploadingFiles({ type: 'Decrement' });
+            dispatchFileStateAction({ type: 'InsertFile', file: savedFile });
+            onAction && onAction(savedFile);
+          })
+          .catch(() => {
+            dispatchUploadingFiles({ type: 'Decrement' });
+            onAction && onAction();
+          });
+      }
     },
-    [fileState, fileClick],
+    [fileState],
   );
 
   const insertFiles = React.useCallback(
-    async (files: FileList, path?: string) => {
-      let insertSuccess = false;
+    async (
+      files: FileList,
+      path?: string,
+      onAction?: (newFiles: IFileDescriptor[]) => void,
+    ) => {
+      const successFiles: IFileDescriptor[] = [];
       for (let i = 0; i < files.length; ++i) {
-        insertSuccess = insertSuccess || (await insertFile(files[i], path));
+        await insertFile(
+          files[i],
+          newFile => {
+            if (newFile) {
+              successFiles.push(newFile);
+            }
+          },
+          path,
+        );
       }
-      return insertSuccess;
+      onAction && onAction(successFiles);
     },
     [insertFile],
   );
@@ -317,14 +336,20 @@ export function FileBrowser({
   const uploadFiles = React.useCallback(
     (targetFile: IFileDescriptor) => async (
       event: React.ChangeEvent<HTMLInputElement>,
+      onAction?: (newFiles: IFileDescriptor[]) => void,
     ) => {
       const target = event.target;
       if (target && target.files && target.files.length > 0) {
         if (isDirectory(targetFile)) {
-          return insertFiles(target.files, generateAbsolutePath(targetFile));
+          return insertFiles(
+            target.files,
+            generateAbsolutePath(targetFile),
+            onAction,
+          );
         } else {
           return insertFile(
             target.files[0],
+            file => onAction && (file ? onAction([file]) : onAction([])),
             targetFile.path,
             true,
             targetFile.name,
@@ -425,6 +450,8 @@ export function FileBrowser({
 
   return (
     <DefaultDndProvider>
+      {modalState.type === 'filename' && <FileNameModal {...modalState} />}
+      {modalState.type === 'override' && <FileOverrideModal {...modalState} />}
       <div className={grow}>
         <div
           ref={dropZone}

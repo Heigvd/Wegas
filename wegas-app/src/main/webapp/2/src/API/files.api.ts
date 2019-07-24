@@ -95,9 +95,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
         },
         undefined,
         'multipart/form-data',
-      ).then((res: Response) => {
-        return res.json();
-      });
+      ).then((res: Response) => res.json());
     },
     /**
      * Get metata of a specific file/directory
