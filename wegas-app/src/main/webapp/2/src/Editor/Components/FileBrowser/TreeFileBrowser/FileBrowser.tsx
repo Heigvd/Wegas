@@ -16,6 +16,7 @@ import { AsyncVariableForm } from '../../EntityEditor';
 import getEditionConfig from '../../../editionConfig';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../../FormView';
+import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
 
 const grow = css({
   flex: '1 1 auto',
@@ -508,22 +509,31 @@ export function FileBrowserWithMeta() {
 
   return (
     <div className={cx(flex, grow)}>
-      <FileBrowser
-        onFileClick={onFileClick}
-        onDelelteFile={() => setSelectedFile(undefined)}
-        selectedFiles={selectedFile ? [generateAbsolutePath(selectedFile)] : []}
-      />
-      {selectedFile && (
-        <div className={cx(flex, grow)}>
-          <AsyncVariableForm
-            getConfig={entity =>
-              getEditionConfig(entity) as Promise<Schema<AvailableViews>>
+      <ReflexContainer orientation={'vertical'}>
+        <ReflexElement>
+          <FileBrowser
+            onFileClick={onFileClick}
+            onDelelteFile={() => setSelectedFile(undefined)}
+            selectedFiles={
+              selectedFile ? [generateAbsolutePath(selectedFile)] : []
             }
-            update={saveMeta}
-            entity={selectedFile}
           />
-        </div>
-      )}
+        </ReflexElement>
+        {selectedFile && <ReflexSplitter />}
+        {selectedFile && (
+          <ReflexElement>
+            <div className={cx(flex, grow)}>
+              <AsyncVariableForm
+                getConfig={entity =>
+                  getEditionConfig(entity) as Promise<Schema<AvailableViews>>
+                }
+                update={saveMeta}
+                entity={selectedFile}
+              />
+            </div>
+          </ReflexElement>
+        )}
+      </ReflexContainer>
     </div>
   );
 }
