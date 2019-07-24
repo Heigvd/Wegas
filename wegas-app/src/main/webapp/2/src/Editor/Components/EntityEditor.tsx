@@ -138,7 +138,7 @@ function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
   return schema;
 }
 
-export async function WindowedEditor<T>({
+async function WindowedEditor<T>({
   entity,
   update,
   actions = [],
@@ -153,6 +153,7 @@ export async function WindowedEditor<T>({
     // return <span>There is nothing to edit</span>;
     return null;
   }
+
   function updatePath(variable: {}) {
     return update != null && update(deepUpdate(entity, path, variable) as T);
   }
@@ -178,7 +179,7 @@ export async function WindowedEditor<T>({
     />
   );
 }
-const AsyncVariableForm = asyncSFC<EditorProps<{ '@class': string }>>(
+export const AsyncVariableForm = asyncSFC<EditorProps<{ '@class': string }>>(
   WindowedEditor,
   () => <div>load...</div>,
   ({ err }: { err: Error }) => <span>{err.message}</span>,
@@ -226,7 +227,7 @@ export default function VariableForm(props: {
                 dispatch(Actions.EditorActions.saveEditor(entity));
               };
         const getConfig = (entity: IVariableDescriptor) => {
-          return state.config != null
+          return 'config' in state && state.config != null
             ? Promise.resolve(state.config)
             : (getEditionConfig(entity) as Promise<Schema<AvailableViews>>);
         };
