@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { LibraryAPI } from '../API/library.api';
+import { LibraryAPI, ILibraries } from '../API/library.api';
 
 interface WegasLibraries {
   CSS: ILibraries;
