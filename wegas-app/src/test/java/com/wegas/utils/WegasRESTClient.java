@@ -64,6 +64,10 @@ public class WegasRESTClient {
         this.baseURL = baseURL;
     }
 
+    public String getBaseURL() {
+        return baseURL;
+    }
+
     public Map<String, Role> getRoles() throws IOException {
         Map<String, Role> roles = new HashMap<>();
 
@@ -197,7 +201,7 @@ public class WegasRESTClient {
         if (request != null) {
             setHeaders(request);
 
-            logger.error(method + " " + url + " WITH " + jsonContent);
+            logger.info(method + " " + url + " WITH " + jsonContent);
             if (jsonContent != null) {
                 StringEntity strEntity = new StringEntity(jsonContent);
                 strEntity.setContentType("application/json");
@@ -205,7 +209,7 @@ public class WegasRESTClient {
             }
 
             HttpResponse execute = client.execute(request);
-            logger.error(" => " + execute.getStatusLine());
+            logger.info(" => " + execute.getStatusLine());
 
             return execute;
         } else {

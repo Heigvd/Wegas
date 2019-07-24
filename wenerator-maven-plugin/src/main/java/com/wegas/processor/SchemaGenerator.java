@@ -545,13 +545,13 @@ public class SchemaGenerator extends AbstractMojo {
 
                 if (!c.isInterface()) {
                     /*
-                             * Generate TS interface for classes only
+                     * Generate TS interface for classes only
                      */
                     this.generateTsInterface(wEF, extraProperties);
                 }
 
                 /*
-                         * Process all public methods (including inherited ones)
+                 * Process all public methods (including inherited ones)
                  */
                 // abstract classes too ? restrict ton concretes ??
                 methods.putAll(Arrays.stream(c.getMethods())

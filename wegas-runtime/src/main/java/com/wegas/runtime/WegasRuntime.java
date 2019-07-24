@@ -98,7 +98,7 @@ public class WegasRuntime {
         return "WegasRuntime UP: " + baseUrl;
     }
 
-    private static void resetDB(String dbName) {
+    public static void resetDB(String dbName) {
         final String DB_CON = "jdbc:postgresql://localhost:5432/" + dbName;
         final String USER = "user";
         final String PASSWORD = "1234";
@@ -136,9 +136,6 @@ public class WegasRuntime {
         FileUtils.copyFile(domainConfig, tmpDomainConfig);
 
         String warPath = root + "target/Wegas";
-        warPath = "/home/maxence/Projects/Payara-Examples/payara-micro/payara-micro-examples/target/payara-micro-examples-1.0-SNAPSHOT.war";
-
-        warPath = "/home/maxence/Projects/EmptyWar/target/EmptyWar-0.1-SNAPSHOT.war";
 
         File theWar = new File(warPath);
 

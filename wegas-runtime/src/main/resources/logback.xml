@@ -21,6 +21,9 @@
     <logger name="com.wegas.core" level="WARN"/>
     <logger name="net.sf.ehcache" level="WARN"/>
     <logger name="com.wegas.core.persistence.EntityListener" level="WARN"/>
+    <logger name="com.wegas.runtime.WegasTest" level="INFO"/>
+    <logger name="com.wegas.utils.WegasRESTClient" level="INFO"/>
+
     <logger name="org.eclipse.persistence.logging" level="ERROR" />
     <logger name="org.eclipse.persistence.logging.cache" level="WARN" />
     <logger name="org.eclipse.persistence.logging.sql" level="WARN" />
