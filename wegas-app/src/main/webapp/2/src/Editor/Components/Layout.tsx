@@ -1,25 +1,19 @@
 import * as React from 'react';
 import { css } from 'emotion';
 import Header from './Header';
+import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
+import StateMachineEditor from './StateMachineEditor';
+import PageDisplay from './Page/PageDisplay';
 import TreeView from './Variable/VariableTree';
 import Editor from './EntityEditor';
-import PageDisplay from './Page/PageDisplay';
-import { TabLayout } from '../../Components/Tabs';
-import StateMachineEditor from './StateMachineEditor';
+import { FileBrowserWithMeta } from './FileBrowser/TreeFileBrowser/FileBrowser';
 import LibraryEditor from './ScriptEditors/LibraryEditor';
 
 const layout = css({
-  display: 'grid',
-  gridTemplateRows: 'auto 1fr',
+  display: 'flex',
+  flexDirection: 'column',
   height: '100%',
-  gridTemplateColumns: 'auto 1fr auto',
-  '& > div': {
-    boxSizing: 'border-box',
-    borderRight: '1px solid',
-  },
 });
-
-const fullWidth = css({ gridColumnEnd: 'span 3' });
 
 export default class AppLayout extends React.Component<
   {},
@@ -34,22 +28,44 @@ export default class AppLayout extends React.Component<
   render() {
     return (
       <div className={layout}>
-        <div className={fullWidth}>
-          <Header />
-        </div>
-        <div>
-          <TreeView />
-        </div>
-        <div>
-          <TabLayout tabs={['Page', 'StateMachine', 'Scripts']}>
-            <PageDisplay />
-            <StateMachineEditor />
-            <LibraryEditor />
-          </TabLayout>
-        </div>
-        <div>
-          <Editor />
-        </div>
+        <Header />
+        <DndLinearLayout
+          tabMap={{
+            Variables: <TreeView />,
+            Page: <PageDisplay />,
+            StateMachine: <StateMachineEditor />,
+            Editor: <Editor />,
+            Files: <FileBrowserWithMeta />,
+            Scripts: <LibraryEditor />,
+          }}
+          layoutMap={{
+            rootKey: '0',
+            lastKey: '3',
+            isDragging: false,
+            layoutMap: {
+              '0': {
+                type: 'ReflexLayoutNode',
+                vertical: false,
+                children: ['1', '2', '3'],
+              },
+              '1': {
+                type: 'TabLayoutNode',
+                vertical: false,
+                children: ['Variables'],
+              },
+              '2': {
+                type: 'TabLayoutNode',
+                vertical: false,
+                children: ['Page', 'StateMachine'],
+              },
+              '3': {
+                type: 'TabLayoutNode',
+                vertical: false,
+                children: ['Editor'],
+              },
+            },
+          }}
+        />
       </div>
     );
   }

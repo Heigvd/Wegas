@@ -24,21 +24,21 @@ type Edition =
       type: 'Variable';
       id: number;
       config?: Schema<AvailableViews>;
-      path?: (string|number)[];
+      path?: (string | number)[];
       actions: EditorAction<IAbstractEntity>;
     }
   | {
       type: 'VariableCreate';
       '@class': string;
       parentId?: number;
-      parentType?: string,
+      parentType?: string;
       config?: Schema<AvailableViews>;
       actions: EditorAction<IAbstractEntity>;
     }
   | {
       type: 'Component';
       page: string;
-      path: (string|number)[];
+      path: (string | number)[];
       config?: Schema<AvailableViews>;
       actions: EditorAction<IAbstractEntity>;
     };
@@ -192,7 +192,7 @@ export default global;
  */
 export function editVariable(
   entity: IVariableDescriptor,
-  path: (string|number)[] = [],
+  path: (string | number)[] = [],
   config?: Schema<AvailableViews>,
   actions: EditorAction<IVariableDescriptor> = {
     more: {
@@ -269,13 +269,13 @@ export function editStateMachine(
  */
 export function createVariable(
   cls: string,
-  parent?: IListDescriptor | IQuestionDescriptor | IChoiceDescriptor ,
+  parent?: IListDescriptor | IQuestionDescriptor | IChoiceDescriptor,
   actions: EditorAction<IAbstractEntity> = {},
 ) {
   return ActionCreator.VARIABLE_CREATE({
     '@class': cls,
     parentId: parent ? parent.id : undefined,
-    parentType: parent ? parent['@class']: undefined,
+    parentType: parent ? parent['@class'] : undefined,
     actions,
   });
 }

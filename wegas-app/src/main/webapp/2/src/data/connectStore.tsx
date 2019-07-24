@@ -28,6 +28,7 @@ export function createStoreConnector<S extends Store>(store: S) {
     const [selected, setSelected] = React.useState(() =>
       selector(store.getState()),
     );
+    const initialized = React.useRef(false);
     React.useEffect(() => {
       const stateUpdater = () => {
         const value = selector(store.getState());
@@ -39,7 +40,12 @@ export function createStoreConnector<S extends Store>(store: S) {
         });
       };
       const sub = store.subscribe(stateUpdater);
-      stateUpdater();
+      if (initialized.current) {
+        // Not first time since it runs in store initializer
+        stateUpdater();
+      } else {
+        initialized.current = true;
+      }
       return sub;
     }, [selector, shouldUpdate]);
     return selected;

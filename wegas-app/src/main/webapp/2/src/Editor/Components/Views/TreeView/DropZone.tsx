@@ -94,9 +94,9 @@ interface DropZoneProps {
   }) => React.ReactElement<any>;
 }
 interface ConDropZoneProps extends DropZoneProps {
-  isOver: boolean;
-  item: ItemDescription;
-  connectDropTarget: ConnectDropTarget;
+  isOver?: boolean;
+  item?: ItemDescription;
+  connectDropTarget?: ConnectDropTarget;
 }
 class DropZoneContainer extends React.Component<
   ConDropZoneProps,
@@ -126,17 +126,19 @@ class DropZoneContainer extends React.Component<
     const { isOver, connectDropTarget, children, item } = this.props;
     const { where } = this.state;
 
-    return connectDropTarget(
-      children({
-        isOver,
-        boundingRect: item ? item.boundingRect : undefined,
-        where,
-        separator: element =>
-          React.cloneElement(element, {
-            ref: (n: HTMLElement | null) => (this.separator = n),
+    return connectDropTarget
+      ? connectDropTarget(
+          children({
+            isOver: isOver ? isOver : false,
+            boundingRect: item ? item.boundingRect : undefined,
+            where,
+            separator: element =>
+              React.cloneElement(element, {
+                ref: (n: HTMLElement | null) => (this.separator = n),
+              }),
           }),
-      }),
-    );
+        )
+      : null;
   }
 }
 export const DropZone = DropTarget<DropZoneProps>(

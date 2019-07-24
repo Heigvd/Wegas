@@ -264,6 +264,25 @@ public class FileController {
         return jcrFacade.listDirectory(gameModel, ContentConnector.WorkspaceType.FILES, directory);
     }
 
+
+    /**
+     * @param gameModelId
+     * @param directory
+     *
+     * @return list of directory content and its subdirectories recursively
+     */
+    @GET
+    @Path("recurseList{absoluteDirectoryPath : .*?}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<AbstractContentDescriptor> recurseListDirectory(@PathParam("gameModelId") Long gameModelId, @PathParam("absoluteDirectoryPath") String directory) {
+
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gameModel);
+
+        return jcrFacade.recurseListDirectory(gameModel, ContentConnector.WorkspaceType.FILES, directory);
+    }
+
+
     /**
      * @param gameModelId
      *
@@ -477,7 +496,9 @@ public class FileController {
             descriptor = DescriptorFactory.getDescriptor(absolutePath, connector);
             descriptor.setNote(tmpDescriptor.getNote());
             descriptor.setDescription(tmpDescriptor.getDescription());
-            descriptor.setVisibility(tmpDescriptor.getVisibility());
+            if(gameModel.isModel()){
+                descriptor.setVisibility(tmpDescriptor.getVisibility());
+            }
             descriptor.setContentToRepository();
             descriptor.getContentFromRepository();                              //Update
             return descriptor;
