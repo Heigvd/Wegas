@@ -182,6 +182,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     /**
      * @return true is this is a directory
      */
+    @JsonIgnore
     public Boolean isDirectory() {
         return this.mimeType.equals(DirectoryDescriptor.MIME_TYPE);
     }

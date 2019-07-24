@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Downshift, { StateChangeOptions } from 'downshift';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { IconButton } from './Button/IconButton';
 import { Props } from '@fortawesome/react-fontawesome';
 import { withDefault } from '../Editor/Components/Views/FontAwesome';
@@ -17,6 +17,8 @@ interface MenuProps<T extends Item<T>> {
   label?: React.ReactNode;
   icon?: Props['icon'];
   direction: 'left' | 'down' | 'right' | 'top';
+  buttonClassName?: string;
+  listClassName?: string;
 }
 /**
  * returns an empty string
@@ -67,7 +69,14 @@ export class Menu<T extends Item<T>> extends React.Component<MenuProps<T>> {
     }
   };
   render(): JSX.Element {
-    const { onSelect, direction, label, icon } = this.props;
+    const {
+      onSelect,
+      direction,
+      label,
+      icon,
+      buttonClassName,
+      listClassName,
+    } = this.props;
     return (
       <Downshift
         onStateChange={this.onStateChange}
@@ -84,12 +93,13 @@ export class Menu<T extends Item<T>> extends React.Component<MenuProps<T>> {
                   ev.stopPropagation();
                   toggleMenu();
                 }}
+                className={buttonClassName}
               />
             </div>
 
             {isOpen && (
               <div
-                className={DIR[direction]}
+                className={cx(DIR[direction], listClassName)}
                 ref={n => {
                   if (
                     n != null &&

@@ -1498,9 +1498,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             for (String pageId : pages) {
                 websocketFacade.pageUpdate(gameModel.getId(), pageId, null); //no requestId allows the requester to be notified too
             }
-            for (GameModelContent content : contents) {
-                websocketFacade.gameModelContentUpdate(content, null); //no requestId allows the requester to be notified too
-            }
+            //for (GameModelContent content : contents) {
+                //websocketFacade.gameModelContentUpdate(content, null); //no requestId allows the requester to be notified too
+            //}
         }
     }
 }

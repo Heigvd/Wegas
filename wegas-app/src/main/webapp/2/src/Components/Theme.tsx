@@ -11,6 +11,7 @@ interface ThemeProps {
   errorColor: string;
   successColor: string;
   disabledColor: string;
+  searchColor: string;
 }
 
 export const themeVar = {
@@ -20,11 +21,13 @@ export const themeVar = {
   primaryDarkerTextColor: 'var(--primary-darker-text-color)',
   primaryLighterColor: 'var(--primary-lighter-color)',
   primaryLighterTextColor: 'var(--primary-lighter-text-color)',
+  primaryHoverColor: 'var(--primary-hover-color)',
   warningColor: 'var(--warning-color)',
   errorColor: 'var(--error-color)',
   successColor: 'var(--success-color)',
   disabledColor: 'var(--disabled-color)',
   backgroundColor: 'var(--background-color)',
+  searchColor: 'var(--search-color)',
 };
 export const primary = css({
   backgroundColor: themeVar.primaryColor,
@@ -55,6 +58,7 @@ export class Theme extends React.PureComponent<
     errorColor: 'red',
     successColor: '#25f325',
     disabledColor: 'lightgrey',
+    searchColor: 'hotpink',
   };
 
   readonly state: Readonly<{ root: HTMLElement | null }> = {
@@ -71,6 +75,7 @@ export class Theme extends React.PureComponent<
       errorColor,
       successColor,
       disabledColor,
+      searchColor,
     } = this.props;
     const bgColor = Color(backgroundColor);
     const textColor = bgColor.isLight() ? darkTextColor : lightTextColor;
@@ -80,6 +85,7 @@ export class Theme extends React.PureComponent<
     const primDarkText = primDark.isLight() ? darkTextColor : lightTextColor;
     const primLight = primary.lighten(0.33);
     const primLightText = primLight.isLight() ? darkTextColor : lightTextColor;
+    const primHover = primLight.lighten(0.66);
     return (
       <div
         ref={n =>
@@ -98,11 +104,13 @@ export class Theme extends React.PureComponent<
           '--primary-darker-text-color': primDarkText,
           '--primary-lighter-color': primLight.string(),
           '--primary-lighter-text-color': primLightText,
+          '--primary-hover-color': primHover.string(),
           '--warning-color': warningColor,
           '--error-color': errorColor,
           '--success-color': successColor,
           '--disabled-color': disabledColor,
           '--background-color': backgroundColor,
+          '--search-color': searchColor,
         })}
       >
         <Provider value={this.state.root}>{children}</Provider>

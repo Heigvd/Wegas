@@ -93,7 +93,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
                             }
                         }, this);
                         if (cb) {
-                            cb.call(this, data.response.entity.get("val.content"));
+                            cb.call(this, data.response.entity.get("content"));
                         }
                     }, this)
                 }

@@ -129,7 +129,6 @@ public class LibraryFacade {
             // visibility is writable only if the gameModel is a model
             //    gameModelContent.setVisibility(content.getVisibility());
             //}
-            websocketFacade.gameModelContentUpdate(gameModelContent, requestManager.getSocketId());
         } else {
             throw WegasErrorMessage.error("Library does not exists");
         }

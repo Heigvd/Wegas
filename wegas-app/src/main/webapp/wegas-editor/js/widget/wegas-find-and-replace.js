@@ -175,7 +175,10 @@ YUI.add('wegas-find-and-replace', function(Y) {
                 request: "/" + this.get("gameModel").get("id") + "/FindAndReplace",
                 cfg: {
                     method: "POST",
-                    data: data
+                    data: data,
+                    headers: {
+                        'SocketId': ""
+                    }
                 },
                 on: {
                     success: Y.bind(function(e) {
