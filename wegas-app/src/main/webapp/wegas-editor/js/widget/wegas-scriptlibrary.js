@@ -81,15 +81,13 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                 // sync aceField changes with local library
                 this.aceField.session.on('change', Y.bind(function() {
                     // Each time the ace content change
-                    var libraries = this.scripts
-                        ? this.scripts.get('val')
-                        : {},
+                    var libraries = this.scripts || {},
                         selected = this.selectField.getValue();
 
                     if (libraries[selected]) {
                         var newContent = this.aceField.getValue();
                         this.showMessage('success', 'Script not saved');
-                        libraries[selected].content = newContent;
+                        libraries[selected].set("content", newContent);
                     }
                 }, this));
 
@@ -115,7 +113,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                     },
                     on: Wegas.superbind({
                         success: function(data) {
-                            this.scripts = data.response.entity;
+                            this.scripts = data.response.entity.get("val");
                             this.syncWithLibrary();
                         },
                         failure: function() {
@@ -151,7 +149,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                 var i,
                     isEmpty = true,
                     cb = this.get(CONTENTBOX),
-                    libraries = this.scripts ? this.scripts.get('val') : {};
+                    libraries = this.scripts || {};
                 delete libraries['@class'];
                 var keys = Object.keys(libraries).sort();
 
@@ -193,13 +191,13 @@ YUI.add('wegas-scriptlibrary', function(Y) {
              * @private
              */
             syncEditor: function() {
-                var libraries = this.scripts ? this.scripts.get('val') : {},
+                var libraries = this.scripts || {},
                     selected = this.selectField.getValue(),
                     val, visibility = "PRIVATE";
 
                 if (libraries[selected]) {
-                    val = libraries[selected].content || '';
-                    visibility = libraries[selected].visibility;
+                    val = libraries[selected].get("content") || '';
+                    visibility = libraries[selected].get("visibility");
                 } else {
                     val = '';
                 }
@@ -230,7 +228,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                     label: '<span class="wegas-icon wegas-icon-new"></span>New',
                     on: {
                         click: Y.bind(function() {
-                            var libraries = this.scripts ? this.scripts.get('val') : {};
+                            var libraries = this.scripts || {};
                             this.currentScriptName = prompt('Enter a name:');
                             if (this.currentScriptName == undefined) {
                                 return;
@@ -362,7 +360,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                             '@class': 'GameModelContent',
                             content: this.aceField.getValue(),
                             visibility: this.visibilityField.getValue(),
-                            version: this.scripts.get("val")[this.currentScriptName].version
+                            version: this.scripts[this.currentScriptName].version
                         }
                     },
                     on: Wegas.superbind({
@@ -370,12 +368,12 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                             this.showMessage('success', 'Script saved');
                             this.hideOverlay();
 
-                            this.scripts.get("val")[this.currentScriptName].version = e.response.entity.get("val").version;
+                            this.scripts[this.currentScriptName].set("version",
+                                e.response.entity.get("version"));
 
                             if (this.get('library') === 'CSS') {
                                 this.updateStyleSheet(this.currentScriptName, this.aceField.getValue());
-                            }
-                            else if (this.get('library') === 'ClientScript') {
+                            } else if (this.get('library') === 'ClientScript') {
                                 try {
                                     eval(this.aceField.getValue());
                                 } catch (e) {

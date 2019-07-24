@@ -3,10 +3,14 @@
 const path = require('path');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
+
+const smp = new SpeedMeasurePlugin();
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
 //   .BundleAnalyzerPlugin;
 
 const PROD = process.env.NODE_ENV === 'production';
+const STATS = process.env.NODE_ENV === 'stats';
 const isCI =
   typeof process.env.CI === 'string'
     ? process.env.CI.toLowerCase() === 'true'
@@ -16,16 +20,16 @@ const plugins = [
   new MonacoWebpackPlugin({
     languages: ['json', 'css', 'javascript', 'typescript'],
   }),
+  new ForkTsCheckerWebpackPlugin({
+    formatter: 'codeframe',
+  }),
 ];
 if (!isCI) {
-  plugins.push(
-    new ForkTsCheckerWebpackPlugin({
-      formatter: 'codeframe',
-    }),
-  );
   // plugins.push(new BundleAnalyzerPlugin());
 }
-module.exports = {
+
+const modules = {
+  // stats: 'verbose',
   devtool: PROD ? 'source-map' : 'inline-source-map',
   entry: {
     editor: ['./src/Editor/index.tsx'],
@@ -57,7 +61,7 @@ module.exports = {
                     module: 'commonjs',
                     noEmit: false,
                   },
-                  transpileOnly: !isCI,
+                  transpileOnly: true,
                   instance: 'node',
                   onlyCompileBundledFiles: true,
                 },
@@ -70,7 +74,7 @@ module.exports = {
               compilerOptions: {
                 noEmit: false,
               },
-              transpileOnly: !isCI,
+              transpileOnly: true,
               instance: 'web',
               onlyCompileBundledFiles: true,
             },
@@ -103,3 +107,5 @@ module.exports = {
     },
   },
 };
+
+module.exports = STATS ? smp.wrap(modules) : modules;
