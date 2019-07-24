@@ -23,7 +23,7 @@ import com.wegas.editor.ValueGenerators.Zero;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.INTERNAL;
 import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.NumberView;
 import com.wegas.editor.View.ScriptView;
 import com.wegas.editor.View.View;
 import java.util.Collection;
@@ -62,7 +62,13 @@ public abstract class AbstractTransition extends AbstractEntity {
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(
             nullable = false, optional = false, proposal = Zero.class,
-            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
+            sameEntityOnly = true, view = @View(
+                    label = "Version",
+                    readOnly = true,
+                    value = NumberView.class,
+                    featureLevel = ADVANCED
+            )
+    )
     private Long version;
 
     public Long getVersion() {
@@ -72,7 +78,6 @@ public abstract class AbstractTransition extends AbstractEntity {
     public void setVersion(Long version) {
         this.version = version;
     }
-
 
     /**
      *
@@ -167,12 +172,12 @@ public abstract class AbstractTransition extends AbstractEntity {
         this.nextStateId = nextStateId;
     }
 
-
-    private void touchPreStateImpact(){
-        if (this.preStateImpact !=null){
+    private void touchPreStateImpact() {
+        if (this.preStateImpact != null) {
             this.preStateImpact.setParent(this, "impact");
         }
     }
+
     /**
      * @return script to execute on transition
      */
@@ -189,8 +194,8 @@ public abstract class AbstractTransition extends AbstractEntity {
         this.touchPreStateImpact();
     }
 
-    private void touchTriggerCondition(){
-        if (this.triggerCondition !=null){
+    private void touchTriggerCondition() {
+        if (this.triggerCondition != null) {
             this.triggerCondition.setParent(this, "condition");
         }
     }
@@ -210,7 +215,6 @@ public abstract class AbstractTransition extends AbstractEntity {
         this.triggerCondition = triggerCondition;
         this.touchTriggerCondition();
     }
-
 
     @Override
     public String toString() {

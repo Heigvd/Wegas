@@ -35,7 +35,7 @@ import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.I18nHtmlView;
 import com.wegas.editor.View.I18nStringView;
-import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.NumberView;
 import com.wegas.editor.View.ScriptView;
 import com.wegas.editor.View.View;
 import java.util.Collection;
@@ -75,7 +75,8 @@ public class Result extends AbstractEntity implements LabelledEntity {
             sameEntityOnly = true, view = @View(
                     index = 0,
                     label = "Version",
-                    value = ReadOnlyNumber.class,
+                    readOnly = true,
+                    value = NumberView.class,
                     featureLevel = ADVANCED
             ))
     private Long version;
