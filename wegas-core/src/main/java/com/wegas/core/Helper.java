@@ -977,6 +977,27 @@ public class Helper {
         return Helper.setLoggerLevel(LoggerFactory.getLogger(klass), level);
     }
 
+    public static void log(Logger logger, Level level, String format, Object... argArray) {
+        switch (level) {
+            case ERROR:
+                logger.error(format, argArray);
+                break;
+            case INFO:
+                logger.info(format, argArray);
+                break;
+            case DEBUG:
+                logger.debug(format, argArray);
+                break;
+            case TRACE:
+                logger.trace(format, argArray);
+                break;
+            case WARN:
+                logger.warn(format, argArray);
+                break;
+        }
+    }
+
+
     /**
      * Set logger level and returns the previous level.
      *
