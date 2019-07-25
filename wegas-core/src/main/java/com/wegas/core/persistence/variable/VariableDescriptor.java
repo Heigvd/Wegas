@@ -51,7 +51,7 @@ import com.wegas.editor.ValueGenerators.Zero;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import static com.wegas.editor.View.CommonView.LAYOUT.shortInline;
 import com.wegas.editor.View.I18nStringView;
-import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.NumberView;
 import com.wegas.editor.View.SelectView;
 import com.wegas.editor.View.Textarea;
 import com.wegas.editor.View.View;
@@ -353,7 +353,8 @@ public abstract class VariableDescriptor<T extends VariableInstance>
             proposal = Zero.class,
             view = @View(
                     label = "Version",
-                    value = ReadOnlyNumber.class,
+                    readOnly = true,
+                    value = NumberView.class,
                     featureLevel = ADVANCED,
                     index = -490,
                     layout = shortInline

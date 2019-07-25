@@ -28,8 +28,8 @@ import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.Zero;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
-import com.wegas.editor.View.ReadOnlyNumber;
-import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.NumberView;
+import com.wegas.editor.View.StringView;
 import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -77,7 +77,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      */
     @Column(length = 16, columnDefinition = "character varying(16) default ''::character varying")
     @WegasEntityProperty(nullable = false, optional = false,
-            view = @View(label = "Language", value = ReadOnlyString.class))
+            view = @View(label = "Language", readOnly = true, value = StringView.class))
     private String lang;
 
     @JsonIgnore
@@ -96,7 +96,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      *
      */
     @WegasEntityProperty(optional = false, nullable = false,
-            view = @View(label = "Name", value = ReadOnlyString.class))
+            view = @View(label = "Name", readOnly = true, value = StringView.class))
     private String name;
     /**
      *
@@ -121,7 +121,13 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
 
     @Version
     @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
-            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
+            sameEntityOnly = true, view = @View(
+                    label = "Version",
+                    readOnly = true,
+                    value = NumberView.class,
+                    featureLevel = ADVANCED
+            )
+    )
     @Column(columnDefinition = "bigint default '0'::bigint")
     private Long version;
 

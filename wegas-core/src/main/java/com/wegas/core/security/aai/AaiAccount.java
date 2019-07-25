@@ -12,7 +12,7 @@ package com.wegas.core.security.aai;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.security.persistence.AbstractAccount;
-import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.StringView;
 import com.wegas.editor.View.View;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,11 +32,17 @@ public class AaiAccount extends AbstractAccount {
     private static final long serialVersionUID = 1L;
 
     @Column(columnDefinition = "text")
-    @WegasEntityProperty(ignoreNull = true, view = @View(label = "Persistent Id", value = ReadOnlyString.class),
-            optional = false, nullable = false)
+    @WegasEntityProperty(ignoreNull = true,
+            optional = false, nullable = false,
+            view = @View(
+                    label = "Persistent Id",
+                    readOnly = true,
+                    value = StringView.class
+            )
+    )
     private String persistentId;
 
-    @WegasEntityProperty(view = @View(label = "Organization", value = ReadOnlyString.class),
+    @WegasEntityProperty(view = @View(label = "Organization", readOnly = true, value = StringView.class),
             optional = false, nullable = false)
     private String homeOrg;
 

@@ -22,7 +22,7 @@ import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.NumberView;
 import com.wegas.editor.View.View;
 import java.util.*;
 import javax.persistence.*;
@@ -115,7 +115,7 @@ public abstract class AbstractAccount extends AbstractEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
     @WegasEntityProperty(ignoreNull = true, optional = false, nullable = false,
-            view = @View(label = "Agreed time", value = ReadOnlyNumber.class))
+            view = @View(label = "Agreed time", readOnly = true, value = NumberView.class))
     private Date agreedTime = null;
 
     /**

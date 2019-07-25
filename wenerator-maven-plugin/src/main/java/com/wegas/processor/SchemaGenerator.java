@@ -130,7 +130,7 @@ public class SchemaGenerator extends AbstractMojo {
                 System.out.println("Override Schema for  " + (schema.property()));
                 try {
                     JSONSchema val = schema.value().newInstance();
-                    injectView(val, schema.view());
+                    injectView(val, schema.view(), null);
 
                     if (schema.merge()) {
                         // do not apply patch now
@@ -178,7 +178,7 @@ public class SchemaGenerator extends AbstractMojo {
     /**
      * inject View into Schema
      */
-    private void injectView(JSONSchema schema, View view) {
+    private void injectView(JSONSchema schema, View view, Boolean forceReadOnly) {
         if (view != null) {
             if (schema instanceof JSONExtendedSchema) {
                 try {
@@ -187,9 +187,17 @@ public class SchemaGenerator extends AbstractMojo {
                     if (!view.label().isEmpty()) {
                         v.setLabel(view.label());
                     }
-                    v.setBorderTop(view.borderTop()).setDescription(view.description()).setLayout(view.layout());
+                    v.setBorderTop(view.borderTop());
+                    v.setDescription(view.description());
+                    v.setLayout(view.layout());
+
+                    if (view.readOnly() || Boolean.TRUE.equals(forceReadOnly)) {
+                        v.setReadOnly(true);
+                    }
+
                     ((JSONExtendedSchema) schema).setFeatureLevel(view.featureLevel());
                     ((JSONExtendedSchema) schema).setView(v);
+
                     v.setIndex(view.index()); // TO REMOVE
                     ((JSONExtendedSchema) schema).setIndex(view.index());
                 } catch (InstantiationException | IllegalAccessException e) {
@@ -579,7 +587,8 @@ public class SchemaGenerator extends AbstractMojo {
                                         field.getAnnotation().optional(),
                                         field.getAnnotation().nullable(),
                                         field.getAnnotation().proposal(),
-                                        field.getAnnotation().protectionLevel()
+                                        field.getAnnotation().protectionLevel(),
+                                        null
                                 );
                             });
 
@@ -594,7 +603,8 @@ public class SchemaGenerator extends AbstractMojo {
                                 annotation.schema(),
                                 name, annotation.view(), null, null,
                                 annotation.optional(), annotation.nullable(), annotation.proposal(),
-                                ModelScoped.ProtectionLevel.CASCADED
+                                ModelScoped.ProtectionLevel.CASCADED,
+                                true
                         );
                     }
 
@@ -654,10 +664,12 @@ public class SchemaGenerator extends AbstractMojo {
             Class<? extends JSONSchema> schemaOverride,
             String name, View view, List<Errored> erroreds,
             Visible visible,
+
             boolean optional,
             boolean nullable,
             Class<? extends ValueGenerators.ValueGenerator> proposal,
-            ModelScoped.ProtectionLevel protectionLevel) {
+            ModelScoped.ProtectionLevel protectionLevel,
+            Boolean readOnly) {
 
         JSONSchema prop;
         if (UndefinedSchema.class.isAssignableFrom(schemaOverride)) {
@@ -677,7 +689,7 @@ public class SchemaGenerator extends AbstractMojo {
             }
         }
 
-        injectView(prop, view);
+        injectView(prop, view, readOnly);
         if (prop instanceof JSONExtendedSchema) {
             ((JSONExtendedSchema) prop).setProtectionLevel(protectionLevel);
         }
@@ -1006,7 +1018,7 @@ public class SchemaGenerator extends AbstractMojo {
                     boolean nullable = false;
                     JSONExtendedSchema prop = javaToJSType(reified, param != null && param.nullable());
                     if (param != null) {
-                        injectView(prop, param.view());
+                        injectView(prop, param.view(), null);
                         if (!Undefined.class.equals(param.proposal())) {
                             try {
                                 prop.setValue(param.proposal().newInstance().getValue());

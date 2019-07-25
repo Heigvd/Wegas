@@ -21,6 +21,8 @@ public @interface View {
 
     boolean borderTop() default false;
 
+    boolean readOnly() default false;
+
     LAYOUT layout() default LAYOUT.none;
 
     FEATURE_LEVEL featureLevel() default FEATURE_LEVEL.DEFAULT;

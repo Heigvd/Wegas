@@ -28,7 +28,7 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.Zero;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
-import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.NumberView;
 import com.wegas.editor.View.View;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionInstance;
@@ -127,7 +127,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             sameEntityOnly = true, view = @View(
                     index = -999,
                     label = "Version",
-                    value = ReadOnlyNumber.class,
+                    readOnly = true,
+                    value = NumberView.class,
                     featureLevel = ADVANCED
             ))
     @JsonView(Views.IndexI.class)
@@ -323,7 +324,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @WegasExtraProperty(view = @View(
             index = -500,
             label = "Scope Key",
-            value = ReadOnlyNumber.class
+            value = NumberView.class
     ))
     public Long getScopeKey() {
         if (this.getTeamScope() != null) {
