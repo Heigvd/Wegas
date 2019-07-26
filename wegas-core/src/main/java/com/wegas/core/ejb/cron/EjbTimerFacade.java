@@ -7,14 +7,17 @@
  */
 package com.wegas.core.ejb.cron;
 
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.ILock;
 import com.wegas.admin.AdminFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.WegasAbstractFacade;
 import com.wegas.core.jcr.JackrabbitConnector;
 import com.wegas.core.persistence.game.Game.Status;
 import com.wegas.core.security.ejb.UserFacade;
-import java.io.Serializable;
-import javax.enterprise.context.ApplicationScoped;
+import javax.ejb.Schedule;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,12 +30,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
-@ApplicationScoped
-public class EjbTimerFacade extends WegasAbstractFacade implements Serializable {
+@Singleton
+@Startup
+public class EjbTimerFacade extends WegasAbstractFacade {
 
     private static final long serialVersionUID = 2011413104880647221L;
 
     private static final Logger logger = LoggerFactory.getLogger(EjbTimerFacade.class);
+
+    @Inject
+    private HazelcastInstance hzInstance;
 
     @Inject
     private AdminFacade adminFacade;
@@ -50,30 +57,47 @@ public class EjbTimerFacade extends WegasAbstractFacade implements Serializable 
      * CRON to delete games once the bin have been emptied. Note that only games
      * which are marked as {@link Status#PROCESSED} will be destroyed.
      * {@link Status#TODO} and {@link Status#CHARGED} ones will not be destroyed
+     * <p>
+     * This task is scheduled each Sunday at 1:30 am
      */
+    @Schedule(hour = "1", minute = "30", dayOfWeek = "Sun", persistent = false)
     public void deleteGames() {
-        logger.info("Scheduled games GC");
-        requestManager.su();
-        try {
-            adminFacade.deleteGames();
-        } finally {
-            requestManager.releaseSu();
+        ILock lock = hzInstance.getLock("ScheduleGameGCLock");
+        if (lock.tryLock()) {
+            try {
+                logger.info("Scheduled games GC");
+                requestManager.su();
+                try {
+                    adminFacade.deleteGames();
+                } finally {
+                    requestManager.releaseSu();
+                }
+            } finally {
+                lock.unlock();
+            }
         }
     }
 
     /**
-     * clean game model
+     * clean game model once a month
      */
+    //@Schedule(hour = "4", dayOfMonth = "Last Sat", persistence = false)
     public void removeGameModels() {
-        requestManager.su();
-        logger.info("Scheduled gamemodels GC");
-        try {
-            gameModelFacade.removeGameModels();
-        } finally {
-            requestManager.releaseSu();
+        ILock lock = hzInstance.getLock("ScheduleGuestGCLock");
+        if (lock.tryLock()) {
+            try {
+                requestManager.su();
+                logger.info("Scheduled gamemodels GC");
+                try {
+                    gameModelFacade.removeGameModels();
+                } finally {
+                    requestManager.releaseSu();
+                }
+            } finally {
+                lock.unlock();
+            }
         }
     }
-
 
     /*
      * @FIXME Should also remove players, created games and game models
@@ -81,13 +105,21 @@ public class EjbTimerFacade extends WegasAbstractFacade implements Serializable 
     /**
      * Remove old idle guests each days
      */
+    @Schedule(hour = "4", minute = "12", persistent = false)
     public void removeIdleGuests() {
-        logger.info("Scheduled idle guests GC");
-        requestManager.su();
-        try {
-            userFacade.removeIdleGuests();
-        } finally {
-            requestManager.releaseSu();
+        ILock lock = hzInstance.getLock("ScheduleGuestGCLock");
+        if (lock.tryLock()) {
+            try {
+                logger.info("Scheduled idle guests GC");
+                requestManager.su();
+                try {
+                    userFacade.removeIdleGuests();
+                } finally {
+                    requestManager.releaseSu();
+                }
+            } finally {
+                lock.unlock();
+            }
         }
     }
 
@@ -96,14 +128,35 @@ public class EjbTimerFacade extends WegasAbstractFacade implements Serializable 
      * <p>
      * OAK 1.8 will schedule this deletion automatically !!!
      */
+    @Schedule(hour = "*", minute = "0", persistent = false)
     public void jcrGC() {
-        logger.info("Scheduled JCR GC");
-        try {
-            requestManager.su();
-            jcrConnector.revisionGC();
-        } finally {
-            requestManager.releaseSu();
+        ILock lock = hzInstance.getLock("ScheduleJCRGCLock");
+        if (lock.tryLock()) {
+            try {
+                logger.info("Scheduled JCR GC");
+                try {
+                    requestManager.su();
+                    jcrConnector.revisionGC();
+                } finally {
+                    requestManager.releaseSu();
+                }
+            } finally {
+                lock.unlock();
+            }
         }
     }
 
+//    @Schedule(hour = "*", minute = "*", persistent = false)
+//    public void logTest() throws InterruptedException {
+//        ILock lock = hzInstance.getLock("ScheduleTestLock");
+//        if (lock.tryLock()) {
+//            try {
+//                logger.error("HERE EJBTimer Run");
+//                Thread.sleep(5000l);
+//                logger.error("Done");
+//            } finally {
+//                lock.unlock();
+//            }
+//        }
+//    }
 }
