@@ -32,9 +32,12 @@ import javax.persistence.*;
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
-@NamedQuery(name = "GameAdmin.findByGame", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.game.id = :gameId")
-@NamedQuery(name = "GameAdmin.findByStatus", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = :status ORDER BY ga.createdTime DESC")
-@NamedQuery(name = "GameAdmin.GamesToDelete", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = com.wegas.admin.persistence.GameAdmin.Status.PROCESSED AND ga.game.status = com.wegas.core.persistence.game.Game.Status.DELETE")
+@NamedQuery(name = "GameAdmin.findByGame",
+        query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.game.id = :gameId")
+@NamedQuery(name = "GameAdmin.findByStatus",
+        query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = :status ORDER BY ga.createdTime DESC")
+@NamedQuery(name = "GameAdmin.GamesToDelete",
+        query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = com.wegas.admin.persistence.GameAdmin.Status.PROCESSED AND ga.game.status = com.wegas.core.persistence.game.Game.Status.DELETE")
 @Table(
         indexes = {
             @Index(columnList = "game_id")
@@ -153,8 +156,12 @@ public class GameAdmin extends AbstractEntity {
             this.prevGameModel = this.getGameModelName();
             this.prevName = this.getGameName();
             this.prevTeamCount = this.getTeamCount();
-            this.prevPlayers = this.getPlayers().toString();
+
+            Jsonb mapper = getJsonb();
+            this.prevPlayers = mapper.toJson(this.getPlayers());
+
             this.prevTeams = this.getTeams().toString();
+
             this.prevGameId = this.getGame().getId();
         }
     }
@@ -252,22 +259,17 @@ public class GameAdmin extends AbstractEntity {
     }
 
     private List<String> getPrevPlayers() {
-        final List<String> players = new ArrayList<>();
-        Jsonb mapper = getJsonb();
-        ArrayList prev = mapper.fromJson(this.prevPlayers, ArrayList.class);
-        for (Object p : prev) {
-            players.add(mapper.toJson(p));
-        }
-
-        return players;
+        return getJsonb().fromJson(this.prevPlayers, ArrayList.class);
     }
 
     private List<String> getPrevTeams() {
         final List<String> teams = new ArrayList<>();
-        Jsonb mapper = getJsonb();
-        ArrayList prev = mapper.fromJson(this.prevTeams, ArrayList.class);
-        for (Object p : prev) {
-            teams.add(mapper.toJson(p));
+        if (this.prevTeams != null) {
+            Jsonb mapper = getJsonb();
+            ArrayList prev = mapper.fromJson(this.prevTeams, ArrayList.class);
+            for (Object p : prev) {
+                teams.add(mapper.toJson(p));
+            }
         }
 
         return teams;
