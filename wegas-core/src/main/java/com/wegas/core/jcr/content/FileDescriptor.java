@@ -11,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.editor.View.TimestampView;
+import com.wegas.editor.View.View;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,8 +33,13 @@ public class FileDescriptor extends AbstractContentDescriptor {
     static final private Logger logger = LoggerFactory.getLogger(FileDescriptor.class);
     private static final long serialVersionUID = 5695858459529162019L;
 
-    @JsonIgnore
-    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
+    @WegasEntityProperty(includeByDefault = false,
+            view = @View(
+                    readOnly = true,
+                    label = "Last Modified",
+                    value = TimestampView.class
+            )
+    )
     private Calendar dataLastModified;
 
     /**
@@ -174,12 +181,10 @@ public class FileDescriptor extends AbstractContentDescriptor {
     /**
      * @return last modified date
      */
-    @JsonProperty("dataLastModified")
     public Calendar getDataLastModified() {
         return dataLastModified;
     }
 
-    @JsonProperty("dataLastModified")
     public void setDataLastModified(Calendar date) {
         this.dataLastModified = date;
         try {
@@ -191,7 +196,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     /**
      * @return file content as bytes
      */
-    @JsonProperty(value = "bytes",access = JsonProperty.Access.READ_ONLY)
+    @JsonProperty(value = "bytes", access = JsonProperty.Access.READ_ONLY)
     @Override
     public Long getBytes() {
         return bytes;
