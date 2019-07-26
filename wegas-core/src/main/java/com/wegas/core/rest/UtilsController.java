@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -56,6 +57,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author CiGit
  */
+@Stateless
 @Path("Utils")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)

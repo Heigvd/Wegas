@@ -11,6 +11,7 @@ import com.wegas.admin.persistence.GameAdmin;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -20,6 +21,7 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
+@Stateless
 @Path("Admin/")
 @Produces(MediaType.APPLICATION_JSON)
 @RequiresRoles("Administrator")

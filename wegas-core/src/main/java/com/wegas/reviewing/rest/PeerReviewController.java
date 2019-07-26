@@ -21,6 +21,7 @@ import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
 import com.wegas.reviewing.persistence.Review;
 import java.util.List;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -30,6 +31,7 @@ import javax.ws.rs.core.Response;
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
+@Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/PeerReviewController/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)

@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
+@Stateless
 @Path("GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}VariableDescriptor")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)

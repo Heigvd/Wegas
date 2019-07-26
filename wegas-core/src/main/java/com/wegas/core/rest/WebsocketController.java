@@ -18,6 +18,7 @@ import com.wegas.core.security.util.OnlineUser;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -39,6 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Yannick Lagger (lagger.yannick.com)
  */
+@Stateless
 @Path("Pusher/")
 public class WebsocketController {
 

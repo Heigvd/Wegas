@@ -13,6 +13,7 @@ import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
 import java.util.Collection;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
+@Stateless
 @Path("GameModel/{gameModelId: ([1-9][0-9]*)?}{s: /?}Game/{gameId : ([1-9][0-9]*)?}{s2: /?}Team")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)

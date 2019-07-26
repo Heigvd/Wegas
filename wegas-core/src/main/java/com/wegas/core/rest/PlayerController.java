@@ -25,12 +25,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Collection;
 import java.util.Collections;
+import javax.ejb.Stateless;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
+@Stateless
 @Path("GameModel/{gameModelId : ([1-9][0-9]*)?}{sep: /?}Game/{gameId : ([1-9][0-9]*)?}{sep2: /?}Team/{teamId : [1-9][0-9]*}/Player")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)

@@ -10,6 +10,7 @@ package com.wegas.core.rest;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -24,6 +25,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
+@Stateless
 @Path("Download")
 public class DownloadController {
 

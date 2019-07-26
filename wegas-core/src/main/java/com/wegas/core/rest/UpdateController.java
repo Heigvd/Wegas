@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -66,6 +67,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
+@Stateless
 @Path("Update")
 @RequiresRoles("Administrator")
 public class UpdateController {

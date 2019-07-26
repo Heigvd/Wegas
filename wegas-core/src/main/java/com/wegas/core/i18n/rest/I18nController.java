@@ -20,6 +20,7 @@ import com.wegas.core.persistence.game.GameModelLanguage;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.script.ScriptException;
 import javax.ws.rs.Consumes;
@@ -41,6 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author maxence
  */
+@Stateless
 @Path("GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}I18n")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)

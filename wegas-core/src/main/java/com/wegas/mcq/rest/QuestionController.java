@@ -17,11 +17,13 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import com.wegas.mcq.persistence.ReadableInstance;
+import javax.ejb.Stateless;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
+@Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/QuestionDescriptor/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)

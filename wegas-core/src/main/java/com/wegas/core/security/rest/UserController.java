@@ -31,6 +31,7 @@ import com.wegas.core.security.util.AuthenticationInformation;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.mail.internet.AddressException;
 import javax.servlet.ServletException;
@@ -53,6 +54,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
+@Stateless
 @Path("User")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

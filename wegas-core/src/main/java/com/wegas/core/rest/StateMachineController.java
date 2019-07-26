@@ -13,6 +13,7 @@ import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.security.ejb.UserFacade;
+import javax.ejb.Stateless;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +27,7 @@ import javax.ws.rs.core.MediaType;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
+@Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/StateMachine/")
 public class StateMachineController {
 

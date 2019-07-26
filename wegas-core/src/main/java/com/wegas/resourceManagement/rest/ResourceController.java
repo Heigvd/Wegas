@@ -10,6 +10,7 @@ package com.wegas.resourceManagement.rest;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskInstance;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -24,6 +25,7 @@ import javax.ws.rs.core.MediaType;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
+@Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/ResourceDescriptor/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)

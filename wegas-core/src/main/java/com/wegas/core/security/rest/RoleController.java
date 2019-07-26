@@ -11,6 +11,7 @@ import com.wegas.core.rest.AbstractRestController;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.persistence.Role;
 import java.util.Collection;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -27,6 +28,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
+@Stateless
 @Path("Role")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.ejb.Stateless;
 
 /**
  * This class contains the methods used to access the Wegas statistics. It uses
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
  * @author Gérald Eberle
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
+@Stateless
 @Path("Statistics")
 @Produces(MediaType.APPLICATION_JSON)
 public class Neo4jStatistics {
