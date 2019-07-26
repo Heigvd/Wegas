@@ -7,7 +7,7 @@
         <title>Wegas AAI login</title>
     </h:head>
     <body>
-        #{aaiController.redirect(false)}
+        #{aaiController.redirect(true)}
         <!-- Everything below gets skipped when the above redirect is active !!!
         // Keep it only for debugging purposes -->
         #{aaiController.cookieName}=${aaiController.cookieValue}<br/>

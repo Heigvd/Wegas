@@ -1,5 +1,12 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
+package com.wegas.app.jsf.controllers;
 
-import com.wegas.app.jsf.controllers.ErrorController;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,14 +18,6 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 /*
- * Wegas
- * http://wegas.albasim.ch
- *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
- * Licensed under the MIT License
- */
-
- /*
  * Copyright (c) AlbaSim, School of Business and Engineering of Western Switzerland
  * Licensed under the MIT License
  *
@@ -97,7 +96,7 @@ public class AaiController {
 
             if (proceed) {
                 try {
-                    externalContext.redirect(url);
+                    externalContext.redirect(target);
                 } catch (IOException ex) {
                     errorController.dispatch("Redirect Error " + ex);
                 }
