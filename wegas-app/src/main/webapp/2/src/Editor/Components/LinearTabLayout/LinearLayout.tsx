@@ -914,6 +914,7 @@ function MainLinearLayout(props: LinearLayoutProps) {
                     flex: component.props.flex,
                   })
                 }
+                minSize={50}
               >
                 {renderLayouts(childKey)}
               </ReflexElement>,

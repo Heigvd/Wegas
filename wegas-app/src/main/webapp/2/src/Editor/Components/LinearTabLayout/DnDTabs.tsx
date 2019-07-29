@@ -109,13 +109,11 @@ export function DropTab(props: DropTabProps) {
     accept: dndAcceptType,
     canDrop: () => true,
     drop: props.onDrop,
-    collect: (mon: DropTargetMonitor) => {
-      return {
-        isOverCurrent: mon.isOver({ shallow: true }),
-        canDrop: mon.canDrop(),
-        item: mon.getItem(),
-      };
-    },
+    collect: (mon: DropTargetMonitor) => ({
+      isOverCurrent: mon.isOver({ shallow: true }),
+      canDrop: mon.canDrop(),
+      item: mon.getItem(),
+    }),
   });
 
   const [style, setStyle] = React.useState('');

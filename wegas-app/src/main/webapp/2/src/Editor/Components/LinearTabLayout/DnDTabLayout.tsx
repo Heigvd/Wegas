@@ -77,13 +77,13 @@ export interface ComponentMap {
 export const filterMap = (
   map: ComponentMap,
   filterFN: (k: string, i: number) => boolean,
-) => {
-  const newComponents: ComponentMap = {};
+) =>
   Object.keys(map)
     .filter((k, i) => filterFN(k, i))
-    .map(k => (newComponents[k] = map[k]));
-  return newComponents;
-};
+    .reduce<ComponentMap>(
+      (newComponents, k) => ({ ...newComponents, k: map[k] }),
+      {},
+    );
 
 export type DropAction = (item: { label: string; type: string }) => void;
 
@@ -98,9 +98,10 @@ export const dropSpecsFactory = (action: DropAction) => {
     accept: dndAcceptType,
     canDrop: () => true,
     drop: action,
-    collect: (mon: DropTargetMonitor) => {
-      return { isOver: mon.isOver(), canDrop: mon.canDrop() };
-    },
+    collect: (mon: DropTargetMonitor) => ({
+      isOver: mon.isOver(),
+      canDrop: mon.canDrop(),
+    }),
   };
 };
 
@@ -179,11 +180,7 @@ export function DnDTabLayout({
   const [dropTabsProps, dropTabs] = useDrop({
     accept: dndAcceptType,
     canDrop: () => false,
-    collect: (mon: DropTargetMonitor) => {
-      return {
-        isOver: mon.isOver(),
-      };
-    },
+    collect: (mon: DropTargetMonitor) => ({ isOver: mon.isOver() }),
   });
 
   /**
@@ -247,9 +244,10 @@ export function DnDTabLayout({
           {selectItems && Object.keys(selectItems).length > 0 && (
             <Tab key={'-1'}>
               <Menu
-                items={Object.keys(selectItems).map(label => {
-                  return { label: label, value: label };
-                })}
+                items={Object.keys(selectItems).map(label => ({
+                  label: label,
+                  value: label,
+                }))}
                 icon="plus"
                 onSelect={i => {
                   onSelect && onSelect(i.value);
@@ -263,24 +261,18 @@ export function DnDTabLayout({
         </div>
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, relative)}>
-        {Object.keys(components).map(label => {
-          return (
-            <Reparentable
-              key={label}
-              id={label}
-              innerClassName={cx(flex, grow)}
-              outerClassName={cx(
-                flex,
-                grow,
-                label !== activeLabel ? hidden : '',
-              )}
-            >
-              <React.Suspense fallback={<div>Loading...</div>}>
-                {components[label]}
-              </React.Suspense>
-            </Reparentable>
-          );
-        })}
+        {Object.keys(components).map(label => (
+          <Reparentable
+            key={label}
+            id={label}
+            innerClassName={cx(flex, grow)}
+            outerClassName={cx(flex, grow, label !== activeLabel ? hidden : '')}
+          >
+            <React.Suspense fallback={<div>Loading...</div>}>
+              {components[label]}
+            </React.Suspense>
+          </Reparentable>
+        ))}
         {dropLeftProps.canDrop && (
           <div
             ref={dropLeft}
