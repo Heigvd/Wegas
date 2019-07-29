@@ -57,7 +57,7 @@ public class ApplicationStartup extends HttpServlet {
 
         // read metrics once to register them
         metricsFacade.getOnlineUserCounter();
-        metricsFacade.getHzSize();
+        metricsFacade.getInternalSize();
         metricsFacade.getHzSize();
 
         websocketFacade.getOnlineUsers();

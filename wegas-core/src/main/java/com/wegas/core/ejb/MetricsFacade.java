@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * CDI singleton to group Gauge metrics.
+ * CDI Singleton to group Gauge metrics.
  *
  * @author maxence
  */
@@ -31,17 +31,17 @@ public class MetricsFacade {
     private WebsocketFacade websocketFacade;
 
     @Gauge(name = "online_users", unit = MetricUnits.NONE, absolute = true)
-    public int getOnlineUserCounter(){
+    public int getOnlineUserCounter() {
         return websocketFacade.getOnlineUserCount();
     }
 
-    @Gauge(name="internalcluster_size", unit = MetricUnits.NONE, absolute = true)
-    public int getInternalSize(){
+    @Gauge(name = "internalcluster_size", unit = MetricUnits.NONE, absolute = true)
+    public int getInternalSize() {
         return applicationLifecycle.countMembers();
     }
 
-    @Gauge(name="cluster_size", unit = MetricUnits.NONE, absolute = true)
-    public int getHzSize(){
+    @Gauge(name = "cluster_size", unit = MetricUnits.NONE, absolute = true)
+    public int getHzSize() {
         return applicationLifecycle.getHzSize();
     }
 }
