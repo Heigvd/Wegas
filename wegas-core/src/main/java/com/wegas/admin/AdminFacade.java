@@ -169,7 +169,7 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
      */
     public void deleteGames() {
         final List<GameAdmin> toDelete = this.getGameToDelete();
-        logger.info("deleteGames(): games to delete", toDelete.size());
+        logger.info("deleteGames(): {} games to delete", toDelete.size());
         for (GameAdmin ga : toDelete) {
             this.deleteGame(ga);
         }

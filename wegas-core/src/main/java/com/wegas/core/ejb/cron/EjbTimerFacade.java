@@ -83,7 +83,7 @@ public class EjbTimerFacade extends WegasAbstractFacade {
      */
     //@Schedule(hour = "4", dayOfMonth = "Last Sat", persistence = false)
     public void removeGameModels() {
-        ILock lock = hzInstance.getLock("ScheduleGuestGCLock");
+        ILock lock = hzInstance.getLock("ScheduleGameModelGCLock");
         if (lock.tryLock()) {
             try {
                 requestManager.su();

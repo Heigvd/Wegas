@@ -187,7 +187,7 @@ public class WebsocketFacade {
      * Unlock the lock to involved users.
      *
      * @param channel the channel involved user listen to
-     * @param token token to unlock
+     * @param token   token to unlock
      */
     public void sendUnLock(String channel, String token) {
         if (this.pusher != null) {
@@ -450,7 +450,10 @@ public class WebsocketFacade {
     public void pageIndexUpdate(Long gameModelId, String socketId) {
         if (pusher != null) {
             GameModel gameModel = gameModelFacade.find(gameModelId);
-            pusher.trigger(gameModel.getChannel(), "PageIndexUpdate", "newIndex", socketId);
+            if (gameModel != null) {
+                // gameModel may be if deleted
+                pusher.trigger(gameModel.getChannel(), "PageIndexUpdate", "newIndex", socketId);
+            }
         }
     }
 
