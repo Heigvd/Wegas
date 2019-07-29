@@ -196,7 +196,7 @@ YUI.add('wegas-app', function(Y) {
                 }, this);
 
                 if (extraTabs) {
-                    if (gm.get("properties").logID) {
+                    if (gm.get("properties").get("val").logID) {
                         extraTabs._addTab({
                             label: I18n.t("global.statistics"),
                             children: [{

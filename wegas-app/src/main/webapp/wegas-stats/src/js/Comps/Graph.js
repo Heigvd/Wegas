@@ -2,7 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import Chartist from 'chartist';
 import 'chartist/dist/chartist.min.css';
-import { computeData, computeDiffs } from './dataCompute';
+import { computeData, computeDiffs, translate } from './dataCompute';
 import '../../css/chartist.css';
 
 const CHART_BAR_OPT = {
@@ -171,11 +171,11 @@ class Graph extends React.Component {
                                     ).reduce(
                                 (pre, cur) =>
                                 `${pre}${
-                                    cur.label.translations[Object.keys(cur.label.translations)[0]]
+                                    translate(cur.label)
                                     } → `,
                                 ''
                                 ) +
-                                labelQ.translations[Object.keys(labelQ.translations)[0]];
+                                translate(labelQ);
                             container.setAttribute(
                                 'style',
                                 'white-space:nowrap'
