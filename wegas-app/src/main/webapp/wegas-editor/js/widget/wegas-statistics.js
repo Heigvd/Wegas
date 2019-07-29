@@ -38,13 +38,15 @@ YUI.add("wegas-statistics", function(Y) {
                 parent = parent.getParent();
             }
             return title;
-        }, getLogID = function(gm) {
-        if (gm.get("properties.logID")) {
-            return gm.get("properties.logID");
-        } else {
-            throw new Error("No logID defined");
-        }
-    },
+        },
+        getLogID = function(gm) {
+            var logId = gm.get("properties").get("val").logID;
+            if (logId) {
+                return logId;
+            } else {
+                throw new Error("No logID defined");
+            }
+        },
         inlineSvgStyle = function(node) {
             var tw = document.createTreeWalker(node, 1), n, img = new Image();
             while ((n = tw.nextNode())) {
@@ -81,7 +83,7 @@ YUI.add("wegas-statistics", function(Y) {
                 this.handlers = [];
                 this._gmPromise = Data.getCurrentGameModel();
                 this._gmPromise.then(Y.bind(function(gm) {
-                    if (!gm.get("properties.logID")) {
+                    if (!gm.get("properties").get("val").logID) {
                         this.get("contentBox").hide();
                         this.get("boundingBox").append("Statistics are not enabled for this game");
                     }
