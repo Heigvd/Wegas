@@ -1,34 +1,35 @@
-type TinyMCEEditorEventType =
-  | 'click'
-  | 'dblclick'
-  | 'mousedown'
-  | 'mouseup'
-  | 'mousemove'
-  | 'mouseover'
-  | 'mouseout'
-  | 'mouseenter'
-  | 'mouseleave'
-  | 'keydown'
-  | 'keypress'
-  | 'keyup'
-  | 'contextmenu'
-  | 'paste'
-  | 'init'
-  | 'focus'
-  | 'blur'
-  | 'beforesetcontent'
-  | 'setcontent'
-  | 'getcontent'
-  | 'preprocess'
-  | 'postprocess'
-  | 'undo'
-  | 'redo'
-  | 'change'
-  | 'dirty'
-  | 'remove'
-  | 'execcommand'
-  | 'pastepreprocess'
-  | 'pastepostprocess';
+// Keep this while all the types are not defined in TinyMCEEventsCallback
+// type TinyMCEEditorEventType =
+//   | 'click'
+//   | 'dblclick'
+//   | 'mousedown'
+//   | 'mouseup'
+//   | 'mousemove'
+//   | 'mouseover'
+//   | 'mouseout'
+//   | 'mouseenter'
+//   | 'mouseleave'
+//   | 'keydown'
+//   | 'keypress'
+//   | 'keyup'
+//   | 'contextmenu'
+//   | 'paste'
+//   | 'init'
+//   | 'focus'
+//   | 'blur'
+//   | 'beforesetcontent'
+//   | 'setcontent'
+//   | 'getcontent'
+//   | 'preprocess'
+//   | 'postprocess'
+//   | 'undo'
+//   | 'redo'
+//   | 'change'
+//   | 'dirty'
+//   | 'remove'
+//   | 'execcommand'
+//   | 'pastepreprocess'
+//   | 'pastepostprocess';
 
 type TinyMCEIcons =
   | 'accessibility-check'
@@ -202,13 +203,39 @@ interface TinyMCENodeChangeEvent {
   parents: HTMLElement[];
 }
 
-interface TinyMCEEventCallbacks {
+interface TinyMCEChangeEvent {
+  level: { content: string };
+}
+
+interface TinyMCEEventsCallback {
   init: TinyMCEEvent;
   nodechange: TinyMCENodeChangeEvent;
+  change: TinyMCEChangeEvent;
 }
+
+type TinyMCEEditorEventType = keyof TinyMCEEventsCallback;
 
 interface TinyMCEEditorFormatter {
   toggle: (style_format_name: string) => void;
+}
+
+interface TinyMCEUi {
+  registry: {
+    addToggleButton: (
+      name: string,
+      specs: {
+        text?: string;
+        icon?: TinyMCEIcons;
+        tooltip?: string;
+        disabled?: boolean;
+        active?: boolean;
+        onSetup?: (
+          api: TinyMCEToggleButtonAPI,
+        ) => (api: TinyMCEToggleButtonAPI) => void;
+        onAction: (api: TinyMCEToggleButtonAPI) => void;
+      },
+    ) => void;
+  };
 }
 
 interface TinyMCEToggleButtonAPI {
@@ -219,31 +246,19 @@ interface TinyMCEToggleButtonAPI {
 }
 
 interface TinyMCEEditor {
-  on: <T extends keyof TinyMCEEventCallbacks>(
+  on: <T extends TinyMCEEditorEventType>(
     event: T,
-    callback: (event?: TinyMCEEventCallbacks[T]) => void,
+    callback: (event?: TinyMCEEventsCallback[T]) => void,
   ) => void;
-  off: <T extends keyof TinyMCEEventCallbacks>(
+  off: <T extends TinyMCEEditorEventType>(
     event: T,
-    callback: (event?: TinyMCEEventCallbacks[T]) => void,
+    callback: (event?: TinyMCEEventsCallback[T]) => void,
+  ) => void;
+  fire: <T extends TinyMCEEditorEventType>(
+    event: T,
+    data?: TinyMCEEventsCallback[T],
   ) => void;
   formatter?: TinyMCEEditorFormatter;
-  ui: {
-    registry: {
-      addToggleButton: (
-        name: string,
-        specs: {
-          text?: string;
-          icon?: TinyMCEIcons;
-          tooltip?: string;
-          disabled?: boolean;
-          active?: boolean;
-          onSetup?: (
-            api: TinyMCEToggleButtonAPI,
-          ) => (api: TinyMCEToggleButtonAPI) => void;
-          onAction: (api: TinyMCEToggleButtonAPI) => void;
-        },
-      ) => void;
-    };
-  };
+  ui: TinyMCEUi;
+  getContent: () => string;
 }

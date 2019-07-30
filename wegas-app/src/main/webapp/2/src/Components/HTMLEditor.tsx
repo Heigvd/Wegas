@@ -35,6 +35,7 @@ import {
   fileURL,
 } from '../Editor/Components/FileBrowser/TreeFileBrowser/FileBrowser';
 import { css } from 'emotion';
+import { wlog } from '../Helper/wegaslog';
 
 const toolbar = css({
   width: '300px',
@@ -109,24 +110,24 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
       save_onsavecallback: () => onSave && onSave(HTMLContent.current),
       fixed_toolbar_container: '#' + toolBarContainerId,
       style_formats: [
-        {
-          title: 'Headers',
-          items: [
-            { title: 'h1', block: 'h1' },
-            { title: 'h2', block: 'h2' },
-            { title: 'h3', block: 'h3' },
-            { title: 'h4', block: 'h4' },
-            { title: 'h5', block: 'h5' },
-            { title: 'h6', block: 'h6' },
-          ],
-        },
-        {
-          title: 'Containers',
-          items: [
-            { title: 'div', block: 'div' },
-            { title: 'span', block: 'span' },
-          ],
-        },
+        // {
+        //   title: 'Headers',
+        //   items: [
+        //     { title: 'h1', block: 'h1' },
+        //     { title: 'h2', block: 'h2' },
+        //     { title: 'h3', block: 'h3' },
+        //     { title: 'h4', block: 'h4' },
+        //     { title: 'h5', block: 'h5' },
+        //     { title: 'h6', block: 'h6' },
+        //   ],
+        // },
+        // {
+        //   title: 'Containers',
+        //   items: [
+        //     { title: 'div', block: 'div' },
+        //     { title: 'span', block: 'span' },
+        //   ],
+        // },
         {
           title: 'Wegas styles',
           items: [
@@ -151,12 +152,21 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
         editor.on('init', () => {
           formatter = editor.formatter;
         });
+        editor.on('blur', () => {
+          // TODO : find a way to close the expended toolbar to avoid bug
+          // editor.execCommand('commandName');
+        });
 
         extraButtonsKeys.forEach(btnName => {
           editor.ui.registry.addToggleButton(btnName, {
             text: extraButtons[btnName].text,
             icon: extraButtons[btnName].cssIcon,
-            onAction: () => formatter && formatter.toggle(`custom-${btnName}`),
+            onAction: () => {
+              formatter && formatter.toggle(`custom-${btnName}`);
+              editor.fire('change', {
+                level: { content: editor.getContent() },
+              });
+            },
             onSetup: function(buttonApi) {
               // Getting the class of the current token to define button state
               const editorEventCallback = (
@@ -209,8 +219,8 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
             testbutton: { text: 'test', className: 'testclass' },
           })}
           onInit={editor => (HTMLEditor.current = editor.target)}
-          onChange={(val: { level: { content: string } }) => {
-            HTMLContent.current = val.level ? val.level.content : '';
+          onChange={(event: { level: { content: string } }) => {
+            HTMLContent.current = event.level ? event.level.content : '';
             onChange && onChange(HTMLContent.current);
           }}
           onFocus={() => setEditorFocus(true)}
