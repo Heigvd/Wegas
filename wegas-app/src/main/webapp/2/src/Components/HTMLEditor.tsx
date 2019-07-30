@@ -19,8 +19,8 @@ import 'tinymce/plugins/advlist';
 import 'tinymce/skins/ui/oxide/skin.min.css';
 import 'tinymce/skins/content/default/content.css';
 import 'tinymce/skins/ui/oxide/content.min.css';
-
 import { Editor } from '@tinymce/tinymce-react';
+
 import { Modal } from './Modal';
 import { generateAbsolutePath } from '../API/files.api';
 import { WidgetProps } from 'jsoninput/typings/types';
@@ -40,14 +40,19 @@ const toolbar = css({
   width: '300px',
 });
 
-// TODO : make a hook that gets user styles (useUserStyles)
-const userstyles = [
-  { title: 'my custom style 1', block: 'div', classes: 'customStyle1' },
-  { title: 'my custom style 2', block: 'div', classes: 'customStyle2' },
-  { title: 'my custom style 3', block: 'div', classes: 'customStyle3' },
-];
-
 type CallbackFN = (url: string) => void;
+
+interface ExtraButton {
+  block?: 'span' | 'div';
+  className: string;
+  cssIcon?: TinyMCEIcons;
+  text?: string;
+  tooltip?: string;
+}
+
+interface ExtraButtons {
+  [name: string]: ExtraButton;
+}
 
 interface HTMLEditorProps {
   /**
@@ -74,7 +79,11 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
   const HTMLContent = React.useRef('');
   const HTMLEditor = React.useRef<{ focus: () => void }>();
 
-  const config = (toolBarContainerId: string) => {
+  const config = (
+    toolBarContainerId: string,
+    extraButtons: ExtraButtons = {},
+  ) => {
+    const extraButtonsKeys = Object.keys(extraButtons);
     return {
       theme: 'silver',
       inline: true,
@@ -85,7 +94,9 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
       ],
       toolbar: `${
         onSave ? 'save' : ''
-      } bold italic underline bullist image | alignleft aligncenter alignright alignjustify link code media table forecolor backcolor styleselect fontsizeselect clientclassselection`,
+      } bold italic underline bullist image | alignleft aligncenter alignright alignjustify link | ${extraButtonsKeys.join(
+        ' ',
+      )} | code media table forecolor backcolor styleselect fontsizeselect clientclassselection`,
       toolbar_drawer: 'floating',
       menubar: false,
       resize: 'both',
@@ -126,9 +137,43 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
         },
         {
           title: 'User styles',
-          items: userstyles,
+          items: extraButtonsKeys.map(btnName => ({
+            title: btnName,
+            block: extraButtons[btnName].block
+              ? extraButtons[btnName].block
+              : 'span',
+            classes: extraButtons[btnName].className,
+          })),
         },
       ],
+      setup: function(editor: TinyMCEEditor) {
+        let formatter: TinyMCEEditorFormatter | undefined;
+        editor.on('init', () => {
+          formatter = editor.formatter;
+        });
+
+        extraButtonsKeys.forEach(btnName => {
+          editor.ui.registry.addToggleButton(btnName, {
+            text: extraButtons[btnName].text,
+            icon: extraButtons[btnName].cssIcon,
+            onAction: () => formatter && formatter.toggle(`custom-${btnName}`),
+            onSetup: function(buttonApi) {
+              // Getting the class of the current token to define button state
+              const editorEventCallback = (
+                eventApi: TinyMCENodeChangeEvent,
+              ) => {
+                buttonApi.setActive(
+                  eventApi.element.className.includes(
+                    extraButtons[btnName].className,
+                  ),
+                );
+              };
+              editor.on('nodechange', editorEventCallback);
+              return () => editor.off('nodechange', editorEventCallback);
+            },
+          });
+        });
+      },
     };
   };
 
@@ -160,11 +205,13 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
 
         <Editor
           initialValue={value}
-          init={config(toolBarId)}
+          init={config(toolBarId, {
+            testbutton: { text: 'test', className: 'testclass' },
+          })}
           onInit={editor => (HTMLEditor.current = editor.target)}
           onChange={(val: { level: { content: string } }) => {
-            HTMLContent.current = val.level.content;
-            onChange && onChange(val.level.content);
+            HTMLContent.current = val.level ? val.level.content : '';
+            onChange && onChange(HTMLContent.current);
           }}
           onFocus={() => setEditorFocus(true)}
           onBlur={() => setEditorFocus(false)}
