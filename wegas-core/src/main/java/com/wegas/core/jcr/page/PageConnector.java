@@ -170,7 +170,8 @@ public class PageConnector extends JTARepositoryConnector {
         try {
             session.save();
         } catch (RepositoryException ex) {
-            throw WegasErrorMessage.error("COMMIT FAILS");
+            //should never happened !!!!!
+            logger.error("Pages Commit FAILURE: {}", ex);
         }
         this.runCommitCallbacks();
         SessionManager.closeSession(session);
