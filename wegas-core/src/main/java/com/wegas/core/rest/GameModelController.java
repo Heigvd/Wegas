@@ -10,6 +10,7 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.ModelFacade;
 import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.ejb.cron.EjbTimerFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.JacksonMapperProvider;
@@ -64,6 +65,13 @@ public class GameModelController {
      */
     @Inject
     private RequestManager requestManager;
+
+
+    /**
+     *
+     */
+    @Inject
+    private EjbTimerFacade ejbTimerFacade;
 
     /**
      *
@@ -501,7 +509,7 @@ public class GameModelController {
     @Path("CleanDatabase")
     @RequiresRoles("Administrator")
     public void deleteForceAll() {
-        gameModelFacade.removeGameModels();
+        ejbTimerFacade.removeGameModels();
     }
 
     @POST

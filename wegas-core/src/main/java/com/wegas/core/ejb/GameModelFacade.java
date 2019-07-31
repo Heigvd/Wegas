@@ -664,7 +664,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                     requestManager.assertCanInstantiateGameModel(srcGameModel);
                     // prefer the reference
                     GameModel ref = modelFacade.getReference(srcGameModel);
-                    if (ref != null){
+                    if (ref != null) {
                         srcGameModel = ref;
                     }
                     newGameModel = new GameModel();
@@ -746,6 +746,18 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         TypedQuery<GameModel> query = this.getEntityManager().createNamedQuery("GameModel.findAllInstantiations", GameModel.class);
         query.setParameter("id", gm.getId());
         return query.getResultList();
+    }
+
+    /**
+     * Same as {@link remove(java.lang.Long) } but within a brand new transaction
+     *
+     * @param gameModelId id of the gameModel to remove
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void removeTX(Long gameModelId) {
+        logger.info("Remove GameModel #{}", gameModelId);
+        this.remove(gameModelId);
+        logger.info("  done");
     }
 
     @Override
@@ -1100,17 +1112,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             logger.error("Error retrieving gamemodelfacade", ex);
             return null;
         }
-    }
-
-    public void removeGameModels() {
-            logger.info("deleteGameModels(): delete gameModels");
-            List<GameModel> toDelete = this.findByTypeAndStatus(SCENARIO, Status.DELETE);
-            toDelete.addAll(this.findByTypeAndStatus(MODEL, Status.DELETE));
-
-            for (GameModel gm : toDelete) {
-                this.remove(gm);
-            }
-            this.getEntityManager().flush();
     }
 
     public String findAndReplace(GameModel mergeable, FindAndReplacePayload payload) {
@@ -1477,7 +1478,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 websocketFacade.pageUpdate(gameModel.getId(), pageId, null); //no requestId allows the requester to be notified too
             }
             //for (GameModelContent content : contents) {
-                //websocketFacade.gameModelContentUpdate(content, null); //no requestId allows the requester to be notified too
+            //websocketFacade.gameModelContentUpdate(content, null); //no requestId allows the requester to be notified too
             //}
         }
     }

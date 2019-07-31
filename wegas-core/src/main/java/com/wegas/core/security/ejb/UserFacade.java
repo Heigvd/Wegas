@@ -336,6 +336,18 @@ public class UserFacade extends BaseFacade<User> {
         this.getEntityManager().flush();
     }
 
+    /**
+     * Same as {@link remove(java.lang.Long) } but within a brand new transaction
+     *
+     * @param gameModelId id of the gameModel to remove
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void removeTX(Long userId) {
+        logger.info("Remove User #{}", userId);
+        this.remove(userId);
+        logger.info("  done");
+    }
+
     @Override
     public void remove(User entity) {
         for (Role r : entity.getRoles()) {
@@ -796,32 +808,6 @@ public class UserFacade extends BaseFacade<User> {
         if (nbExceptions > 0) {
             throw WegasErrorMessage.error(nbExceptions + " error(s) while sending email");
         }
-    }
-
-    /*
-     * @FIXME Should also remove players, created games and game models
-     */
-    /**
-     * Remove old idle guests
-     */
-    public void removeIdleGuests() {
-        logger.info("removeIdleGuests(): unused guest accounts will be removed");
-        TypedQuery<GuestJpaAccount> findIdleGuests = getEntityManager().createQuery("SELECT DISTINCT account FROM GuestJpaAccount account "
-                + "WHERE account.createdTime < :idletime", GuestJpaAccount.class);
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 3);
-        findIdleGuests.setParameter("idletime", calendar.getTime(), TemporalType.DATE);
-
-        List<GuestJpaAccount> resultList = findIdleGuests.getResultList();
-
-        for (GuestJpaAccount account : resultList) {
-            this.remove(account.getUser());
-        }
-
-        //Force flush before closing RequestManager !
-        getEntityManager().flush();
-
-        logger.info("removeIdleGuests(): {} unused guest accounts removed (idle since: {})", resultList.size(), calendar.getTime());
     }
 
     /**

@@ -14,19 +14,25 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.WegasAbstractFacade;
 import com.wegas.core.jcr.JackrabbitConnector;
 import com.wegas.core.persistence.game.Game.Status;
+import com.wegas.core.persistence.game.GameModel;
+import static com.wegas.core.persistence.game.GameModel.GmType.MODEL;
+import static com.wegas.core.persistence.game.GameModel.GmType.SCENARIO;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.guest.GuestJpaAccount;
+import java.util.Calendar;
+import java.util.List;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.inject.Inject;
+import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  *
  * A CDI singleton which acts as an interface to various EJBs.
- *
- * @see EjbTimerExecutor#ejbTimerFacade injection point.
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
@@ -89,7 +95,15 @@ public class EjbTimerFacade extends WegasAbstractFacade {
                 requestManager.su();
                 logger.info("Scheduled gamemodels GC");
                 try {
-                    gameModelFacade.removeGameModels();
+                    logger.info("deleteGameModels(): delete gameModels");
+                    List<GameModel> toDelete = gameModelFacade.findByTypeAndStatus(SCENARIO, GameModel.Status.DELETE);
+                    toDelete.addAll(gameModelFacade.findByTypeAndStatus(MODEL, GameModel.Status.DELETE));
+
+                    for (GameModel gm : toDelete) {
+                        gameModelFacade.removeTX(gm.getId());
+                    }
+                    this.getEntityManager().flush();
+
                 } finally {
                     requestManager.releaseSu();
                 }
@@ -113,7 +127,24 @@ public class EjbTimerFacade extends WegasAbstractFacade {
                 logger.info("Scheduled idle guests GC");
                 requestManager.su();
                 try {
-                    userFacade.removeIdleGuests();
+                    logger.info("removeIdleGuests(): unused guest accounts will be removed");
+                    TypedQuery<GuestJpaAccount> findIdleGuests = getEntityManager().createQuery("SELECT DISTINCT account FROM GuestJpaAccount account "
+                            + "WHERE account.createdTime < :idletime", GuestJpaAccount.class);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 3);
+                    findIdleGuests.setParameter("idletime", calendar.getTime(), TemporalType.DATE);
+
+                    List<GuestJpaAccount> resultList = findIdleGuests.getResultList();
+
+                    for (GuestJpaAccount account : resultList) {
+                        userFacade.removeTX(account.getUser().getId());
+                    }
+
+                    //Force flush before closing RequestManager !
+                    getEntityManager().flush();
+
+                    logger.info("removeIdleGuests(): {} unused guest accounts removed (idle since: {})", resultList.size(), calendar.getTime());
+
                 } finally {
                     requestManager.releaseSu();
                 }
@@ -126,9 +157,9 @@ public class EjbTimerFacade extends WegasAbstractFacade {
     /**
      * JCR clean old revisions each hour
      * <p>
-     * OAK 1.8 will schedule this deletion automatically !!!
+     * OAK 1.8 schedule this deletion automatically !!!
      */
-    @Schedule(hour = "*", minute = "0", persistent = false)
+    //@Schedule(hour = "*", minute = "0", persistent = false)
     public void jcrGC() {
         ILock lock = hzInstance.getLock("ScheduleJCRGCLock");
         if (lock.tryLock()) {
