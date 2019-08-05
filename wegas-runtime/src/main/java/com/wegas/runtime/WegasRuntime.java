@@ -7,23 +7,28 @@
  */
 package com.wegas.runtime;
 
+import com.github.difflib.DiffUtils;
+import com.github.difflib.algorithm.DiffException;
+import com.github.difflib.patch.Patch;
+import com.github.difflib.patch.PatchFailedException;
 import fish.payara.micro.BootstrapException;
 import fish.payara.micro.PayaraMicro;
 import fish.payara.micro.PayaraMicroRuntime;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import org.apache.commons.io.FileUtils;
-//import org.apache.commons.io.FileUtils;
+import java.util.PropertyResourceBundle;
 
 /**
  * Main class to run Wegas
@@ -41,6 +46,8 @@ public class WegasRuntime {
     public static final String CACHE_COORDINATION_PROTOCOL = "eclipselink.cache.coordination.protocol";
     public static final String CACHE_COORDINATION_CHANNEL = "eclipselink.cache.coordination.channel";
 
+    public static final String PROPERTIES_PATH = "./src/main/resources/wegas-override.properties";
+
     private PayaraMicroRuntime payara;
     private String appName;
     private String baseUrl;
@@ -56,7 +63,16 @@ public class WegasRuntime {
         env.put(WEGAS_HTTP_THREADS_KEY, "5");
         env.put(WEGAS_HTTP_POPULATORS_KEY, "3");
         env.put(CACHE_COORDINATION_PROTOCOL, "fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager");
-        env.put(CACHE_COORDINATION_CHANNEL, "TODO_RANDOMIZE");
+
+        String clusterName;
+        try {
+            InetAddress localHost = InetAddress.getLocalHost();
+            clusterName = "Hz" + localHost.getHostName() + "Cluster";
+        } catch (UnknownHostException ex) {
+            clusterName = "HzLocalCluster";
+        }
+
+        env.put(CACHE_COORDINATION_CHANNEL, clusterName);
     }
 
     public WegasRuntime() {
@@ -110,7 +126,22 @@ public class WegasRuntime {
         }
     }
 
-    public static final void initEnv(Map<String, String> extraEnv) {
+    /**
+     * ENv := Default static env + wegas.properties file + extraEnv
+     *
+     * @param extraEnv
+     *
+     * @throws IOException
+     */
+    public static final void initEnv(Map<String, String> extraEnv) throws IOException {
+
+        try (FileInputStream fis = new FileInputStream(PROPERTIES_PATH)) {
+            PropertyResourceBundle properties = new PropertyResourceBundle(fis);
+            for (String k : properties.keySet()) {
+                env.put(k, properties.getString(k));
+            }
+        }
+
         if (extraEnv != null) {
             env.putAll(extraEnv);
         }
@@ -133,7 +164,7 @@ public class WegasRuntime {
         File domainConfig = new File("./src/main/resources/domain.xml");
         File tmpDomainConfig = File.createTempFile("domain", ".xml");
 
-        FileUtils.copyFile(domainConfig, tmpDomainConfig);
+        Files.copy(domainConfig.toPath(), tmpDomainConfig.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
         String warPath = root + "target/Wegas";
 
@@ -161,58 +192,47 @@ public class WegasRuntime {
         return wr;
     }
 
-    /**
-     * https://github.com/paoloantinori/custom-classloader/
-     */
-    public static class MyClassLoader extends URLClassLoader {
+    public static void main(String... args) throws BootstrapException, IOException {
+        try {
 
-        private ClassLoader realParent;
+            File defaultProperties = new File("./src/main/resources/default_wegas.properties");
 
-        public MyClassLoader(URL[] urls, ClassLoader realParent) {
-            // pass null as parent so upward delegation disabled for first
-            // findClass call
-            super(urls, null);
+            File oriDefaultProperties = new File("./src/main/resources/default_wegas.properties.orig");
+            File properties = new File(PROPERTIES_PATH);
 
-            this.realParent = realParent;
-        }
+            if (properties.exists()) {
+                try {
+                    // try to patch
+                    List<String> oriLines = Files.readAllLines(oriDefaultProperties.toPath());
+                    List<String> modLines = Files.readAllLines(defaultProperties.toPath());
+                    List<String> targetLines = Files.readAllLines(properties.toPath());
 
-        @Override
-        public Class<?> findClass(String name) throws ClassNotFoundException {
-            try {
-                // first try to use the URLClassLoader findClass
-                return super.findClass(name);
-            } catch (ClassNotFoundException e) {
-                // if that fails, ask real parent classloader to load the
-                // class (give up)
-                return realParent.loadClass(name);
+                    Patch<String> patch = DiffUtils.diff(oriLines, modLines);
+
+                    List<String> result = patch.applyTo(targetLines);
+                    Files.write(properties.toPath(), result);
+
+                } catch (PatchFailedException ex) {
+                    System.out.println("Failed to patch " + properties.getAbsolutePath() + "! Please edit it manually");
+                    return;
+                } catch (DiffException ex) {
+                    System.out.println("Failed to diff " + properties.getAbsolutePath() + "! Please edit it manually");
+                    return;
+                } finally {
+                    Files.copy(defaultProperties.toPath(), oriDefaultProperties.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
+
+            } else {
+                // Copy
+                Files.copy(defaultProperties.toPath(), oriDefaultProperties.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(defaultProperties.toPath(), properties.toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
+        } catch (IOException ex) {
+            System.out.println("Failed to read some file: " + ex);
+            System.err.println("Abort");
+            return;
         }
-    }
 
-    public static void main(String... args) throws BootstrapException, IOException, InterruptedException, ExecutionException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-
-//        Callable<Object> runPayara = () -> {
-//            ClassLoader thatClassLoader = Thread.currentThread().getContextClassLoader();
-//            URLClassLoader urlClassLoader = (URLClassLoader) thatClassLoader;
-//            try {
-//                MyClassLoader myClassLoader = new MyClassLoader(urlClassLoader.getURLs(), thatClassLoader);
-//                Thread.currentThread().setContextClassLoader(thatClassLoader);
-//                return myClassLoader
-//                        .loadClass("com.wegas.runtime.WegasRuntime")
-//                        .getMethod("boot", Boolean.class)
-//                        .invoke(null, false);
-//            } finally {
-//                Thread.currentThread().setContextClassLoader(thatClassLoader);
-//            }
-//        };
-//
-//        ForkJoinPool pool1 = new ForkJoinPool();
-//        ForkJoinTask<Object> submit1 = pool1.submit(runPayara);
-//        Object payara1 = submit1.get();
-//
-//        ForkJoinPool pool2 = new ForkJoinPool();
-//        ForkJoinTask<Object> submit2 = pool2.submit(runPayara);
-//        Object payara2 = submit2.get();
         WegasRuntime payara1 = WegasRuntime.boot(false);
 
         Runtime.getRuntime()

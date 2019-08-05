@@ -247,7 +247,7 @@ public class UtilsController {
     }
 
     /**
-     * Some text which descibe the cluster state
+     * Some text which describe the cluster state
      *
      * @return the cluster state
      */

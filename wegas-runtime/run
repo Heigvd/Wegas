@@ -1,0 +1,155 @@
+#!/bin/bash
+
+DB_HOST=localhost
+DB_NAME=wegas_dev
+PAYARA_MICRO=target/payara-micro-5.192.jar
+
+NB_THREADS=9
+NB_POPULATORS=1
+
+HZ_CLUSTER_NAME="wegasDev_$(hostname)"
+
+BASE_DOMAIN_XML=./src/main/resources/domain.xml
+DOMAIN_XML=`mktemp target/domain_XXX.xml`
+
+HEAP=2G
+
+THE_WAR=../wegas-app/target/Wegas
+
+DEBUG_PORT=9009
+DEBUG="false"
+DEBUG_OPTS=
+
+JAVA_HOME=/usr/bin/
+
+WEGAS_PROPERTIES=./src/main/resources/wegas-override.properties
+DEFAULT_WEGAS_PROPERTIES=./src/main/resources/default_wegas.properties
+DEFAULT_WEGAS_PROPERTIES_ORI=./src/main/resources/default_wegas.properties.orig
+
+function show_help {
+    echo "Usage: ./run [OPTIONS]"
+    echo " -d NUM         number of populating daemon (default is ${NB_POPULATORS})"
+    echo " -g             debug mode"
+    echo " -j JAVA_PATH   java path (default is ${JAVA_HOME})"
+    echo " -m HEAP        heap size (default is ${HEAP})"
+    echo " -p PORT        debug port (default is ${DEBUG_PORT})"
+    echo " -t NUM         number of http threads (default is ${NB_THREADS})"
+    echo " -w WAR_PATH    war path (default is ${THE_WAR})"
+}
+
+# A POSIX variable
+OPTIND=1         # Reset in case getopts has been used previously in the shell.
+
+while getopts "h?gm:t:d:p:w:j:" opt; do
+    case "$opt" in
+    h|\?)
+        show_help
+        exit 0
+        ;;
+    d)  NB_POPULATORS=$OPTARG
+        ;;
+    g)  DEBUG="true"
+        ;;
+    j)  JAVA_HOME=$OPTARG
+        ;;
+    m)  HEAP=$OPTARG
+        ;;
+    p)  DEBUG_PORT=$OPTARG
+        ;;
+    w)  THE_WAR=$OPTARG
+        ;;
+    t)  NB_THREADS=$OPTARG
+        ;;
+    esac
+done
+
+
+if [ ${DEBUG} == "true" ]; then
+    DEBUG_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=${DEBUG_PORT},server=y,suspend=n"
+    echo DEBUG_OPTS ${DEBUG_OPTS}
+    echo DEBUG_PORT ${DEBUG_PORT}
+fi
+
+echo HEAP ${HEAP}
+echo WAR ${THE_WAR}
+
+cp ${BASE_DOMAIN_XML} ${DOMAIN_XML}
+
+RAND_S=`printf "%d.%03d" $((($RANDOM % 3 )+ 1)) $(($RANDOM % 1000 ))`;
+
+echo PRE SHUTDOWN SLEEP TIME: $RAND_S
+sleep $RAND_S
+
+#SSL_OPTS="-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djavax.net.ssl.trustStorePassword=changeit"
+SSL_OPTS=""
+
+#trap 'echo "TERM";sleep $RAND_S;kill -TERM $PID;' TERM INT
+trap 'echo "TERM";kill -TERM $PID;' TERM INT
+
+# to enable http2 support
+HTTP2_OPTS=-Xbootclasspath/a:grizzly-npn-bootstrap.jar
+
+# if java has the list-modules options, it's java 11
+${JAVA_HOME}/java --list-modules > /dev/null 2> /dev/null
+
+if [ $? -eq 0 ]; then
+    echo JAVA 11 detected: enable extra options
+    JDK_EXTRA_OPTS="--add-modules java.se
+        --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED 
+        --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED 
+        --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED 
+        --add-opens=java.base/java.lang=ALL-UNNAMED 
+        --add-opens=java.base/java.nio=ALL-UNNAMED 
+        --add-opens=java.base/sun.nio.ch=ALL-UNNAMED 
+        --add-opens=java.management/sun.management=ALL-UNNAMED 
+        --add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED 
+        --add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED"
+    GC="-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"
+# -XX:ConcGCThreads=<number> – Basic logging: -Xlog:gc – Detailed logging useful when tuning: -Xlog:gc* 
+else
+    echo JAVA 8 detected
+    JDK_EXTRA_OPTS=""
+    GC="-XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1MaxNewSizePercent=75 -XX:G1NewSizePercent=40 -XX:MaxGCPauseMillis=2500"
+fi
+
+
+##
+# Wegas Properties Merge Process
+################################
+if [ -e ${WEGAS_PROPERTIES} ]; then
+    # wegas-override.properties exists -> try to patch it
+    diff -u ${DEFAULT_WEGAS_PROPERTIES_ORI} ${DEFAULT_WEGAS_PROPERTIES} | patch --no-backup-if-mismatch --merge ${WEGAS_PROPERTIES}
+    if [ $? -eq 1 ]; then
+        echo "FAILS TO PATCH ${WEGAS_PROPERTIES}: please fix conflicts"
+        cp ${DEFAULT_WEGAS_PROPERTIES} ${DEFAULT_WEGAS_PROPERTIES_ORI}
+        exit;
+    fi
+else
+    # No wegas-override -> create it
+    cp ${DEFAULT_WEGAS_PROPERTIES} ${WEGAS_PROPERTIES}
+fi
+
+cp ${DEFAULT_WEGAS_PROPERTIES} ${DEFAULT_WEGAS_PROPERTIES_ORI}
+
+
+${JAVA_HOME}/java ${DEBUG_OPTS} ${JDK_EXTRA_OPTS} ${SSL_OPTS} ${GC} ${HTTP2_OPTS} \
+    -XX:+UseStringDeduplication -XX:+UnlockDiagnosticVMOptions \
+    -Dproduct.name= -XX:+ParallelRefProcEnabled -XX:+UseCompressedOops -XX:-UseLoopPredicate \
+    -Xms${HEAP} -Xmx${HEAP} \
+    -Djava.security.egd=file:/dev/urandom \
+    -Dwegas.db.host=${DB_HOST} -Dwegas.db.name=${DB_NAME} \
+    -Dwegas.nb_populators=${NB_POPULATORS} -Dwegas.http.threads=${NB_THREADS} \
+    -Declipselink.cache.coordination.protocol=fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager \
+    -Declipselink.cache.coordination.channel=${HZ_CLUSTER_NAME} \
+    -jar ${PAYARA_MICRO} --deploy ${THE_WAR} --domainconfig ${DOMAIN_XML} --addlibs target/extra-libs --clusterName ${HZ_CLUSTER_NAME} \
+    --systemproperties ${WEGAS_PROPERTIES} --autobindhttp --autobindssl &
+PID=$!
+
+wait $PID
+trap - TERM INT
+wait $PID
+EXIT_STATUS=$?
+
+rm ${DOMAIN_XML}
+ 
+echo "Terminated"
