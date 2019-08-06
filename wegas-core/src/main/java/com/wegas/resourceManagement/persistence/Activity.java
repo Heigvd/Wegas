@@ -14,8 +14,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
-import com.wegas.editor.View.ReadOnlyNumber;
-import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.NumberView;
+import com.wegas.editor.View.StringView;
 import com.wegas.editor.View.View;
 import javax.persistence.*;
 
@@ -37,7 +37,7 @@ public class Activity extends AbstractAssignement {
     @JsonIgnore
     @WegasEntityProperty(
             nullable = false, optional = false,
-            view = @View(value = ReadOnlyString.class, label = "Requirement name"))
+            view = @View(readOnly = true, value = StringView.class, label = "Requirement name"))
     private String requirementName;
 
     /**
@@ -53,7 +53,7 @@ public class Activity extends AbstractAssignement {
     @Column(name = "wtime")
     @WegasEntityProperty(
             nullable = false, optional = false,
-            view = @View(value = ReadOnlyNumber.class, label = "time"))
+            view = @View(readOnly = true, value = NumberView.class, label = "time"))
     private double time;
 
     /**
@@ -62,7 +62,7 @@ public class Activity extends AbstractAssignement {
     @Column(name = "stime")
     @WegasEntityProperty(
             nullable = false, optional = false,
-            view = @View(value = ReadOnlyNumber.class, label = "Start time"))
+            view = @View(readOnly = true, value = NumberView.class, label = "Start time"))
     private double startTime;
 
     /**
@@ -71,7 +71,7 @@ public class Activity extends AbstractAssignement {
     @Column(name = "wcompletion")
     @WegasEntityProperty(
             nullable = false, optional = false,
-            view = @View(value = ReadOnlyNumber.class, label = "Completion"))
+            view = @View(readOnly = true, value = NumberView.class, label = "Completion"))
     private double completion;
     /**
      *
