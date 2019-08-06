@@ -105,6 +105,7 @@ public class SchemaGenerator extends AbstractMojo {
     @Parameter(property = "schema.pkg", required = true)
     private String[] pkg;
     private final Map<String, String> tsInterfaces;
+    private final Map<String, String> inheritance;
 
     public SchemaGenerator() {
         this(false);
@@ -120,6 +121,7 @@ public class SchemaGenerator extends AbstractMojo {
         this.classFilter = cf;
 
         this.tsInterfaces = new HashMap<>();
+        this.inheritance = new HashMap<>();
     }
 
     public List<JsonMergePatch> processSchemaAnnotation(JSONObject o, Schema... schemas) {
@@ -259,6 +261,34 @@ public class SchemaGenerator extends AbstractMojo {
      */
     private String getPropertyName(Method method) {
         return Introspector.decapitalize(method.getName().replaceFirst("get", "").replaceFirst("is", ""));
+    }
+
+    private void generateInheritanceTable(WegasEntityFields wEF) {
+        Class<? extends Mergeable> theClass = wEF.getTheClass();
+        final StringBuilder sb = new StringBuilder("[");
+        Class<?>[] interfaces = theClass.getInterfaces();
+        if (!theClass.isInterface() && theClass.getSuperclass() != Object.class) {
+            sb.append("\"").append(Mergeable.getJSONClassName(theClass.getSuperclass())).append("\"");
+        } else {
+            sb.append("null");
+        }
+        if (interfaces.length > 0) {
+            String collect3 = Arrays.stream(interfaces).filter(i -> {
+                return i.getName().startsWith("com.wegas");
+            }).map(i -> {
+                return "\"" + Mergeable.getJSONClassName(i) + "\"";
+            }).collect(Collectors.joining(", "));
+            if (collect3.length() > 0) {
+                sb.append(", ");
+                sb.append(collect3);
+            }
+        }
+        sb.append("]");
+        if (dryRun) {
+            System.out.println(theClass.getSimpleName() + ":" + sb.toString());
+        } else {
+            inheritance.put(Mergeable.getJSONClassName(theClass), sb.toString());
+        }
     }
 
     private void generateTsInterface(WegasEntityFields wEF, Map<Method, WegasExtraProperty> extraProperties) {
@@ -457,6 +487,20 @@ public class SchemaGenerator extends AbstractMojo {
         return null;
     }
 
+    private void writeInheritanceToFile() {
+        StringBuilder sb = new StringBuilder("{\n");
+        sb.append(inheritance.entrySet().stream().map((e) -> {
+            return "\"" + e.getKey() + "\": " + e.getValue();
+        }).collect(Collectors.joining(",\n")));
+        sb.append("\n}");
+        File f = new File(outputTypings, "Inheritance.json");
+        try (FileWriter fw = new FileWriter(f)) {
+            fw.write(sb.toString());
+        } catch (IOException ex) {
+            getLog().error("Failed to write " + f.getAbsolutePath(), ex);
+        }
+    }
+
     /**
      *
      */
@@ -497,7 +541,7 @@ public class SchemaGenerator extends AbstractMojo {
         Set<Class<? extends Mergeable>> classes;
 
         if (!dryRun) {
-            pkg = new String[]{"com.wegas"};
+            pkg = new String[] { "com.wegas" };
             classes = new Reflections((Object[]) pkg).getSubTypesOf(Mergeable.class);
 
             if (outputDirectory.isFile()) {
@@ -557,6 +601,7 @@ public class SchemaGenerator extends AbstractMojo {
                      */
                     this.generateTsInterface(wEF, extraProperties);
                 }
+                this.generateInheritanceTable(wEF);
 
                 /*
                  * Process all public methods (including inherited ones)
@@ -655,6 +700,7 @@ public class SchemaGenerator extends AbstractMojo {
 
         if (!dryRun) {
             writeTsInterfacesToFile();
+            writeInheritanceToFile();
         }
     }
 
