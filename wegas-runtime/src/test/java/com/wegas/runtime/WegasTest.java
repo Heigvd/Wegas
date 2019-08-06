@@ -13,9 +13,12 @@ import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable;
+import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.test.TestHelper;
@@ -159,6 +162,10 @@ public class WegasTest {
         artos = client.postJSONFromFile("/rest/GameModel", "../wegas-app/src/main/webapp/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-Artos.json", GameModel.class);
     }
 
+    private Player getTestPlayer(GameModel gameModel) throws IOException{
+        return client.get("/rest/GameModel/" + gameModel.getId() + "/TestPlayer", Player.class);
+    }
+
     @Test
     public void testDatabaseIndexes() {
         final String DB_CON = "jdbc:postgresql://localhost:5432/wegas_test";
@@ -170,6 +177,61 @@ public class WegasTest {
                     0, TestHelper.getMissingIndexesCount(st));
         } catch (SQLException ex) {
         }
+    }
+
+    private String getArtosBaseURL() {
+        return "/rest/Editor/GameModel/" + artos.getId();
+    }
+
+    @Test
+    public void testCacheCoordination() throws IOException {
+        String artosUrl = getArtosBaseURL();
+
+        Player testPlayer = getTestPlayer(artos);
+
+        String runURL = artosUrl + "/VariableDescriptor/Script/Run/" + testPlayer.getId();
+
+        client.login(root);
+        client2.login(root);
+
+        // Load managementApproval on both instances
+        Script fetchVar = new Script("JavaScript", "Variable.find(gameModel, 'managementApproval');");
+        NumberDescriptor var1 = client.post(runURL, fetchVar, NumberDescriptor.class);
+        NumberDescriptor var2 = client2.post(runURL, fetchVar, NumberDescriptor.class);
+        Assert.assertEquals("Min bounds do not match", var1.getMinValue(), var2.getMinValue(), 0.001);
+
+        // update min bound on instance #1
+        var1.setMinValue(-100.0);
+        var1 = client.put(artosUrl + "/VariableDescriptor/" + var1.getId(), var1, NumberDescriptor.class);
+        Assert.assertEquals("Min bounds do not match", -100, var1.getMinValue(), 0.001);
+
+
+        // update the min bound in database
+        // since the cache is active, this value will not be read again, unless the cache is wiped out
+        final String DB_CON = "jdbc:postgresql://localhost:5432/wegas_test";
+        final String USER = "user";
+        final String PASSWORD = "1234";
+        try (Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD);
+                Statement st = connection.createStatement()) {
+            st.executeUpdate("UPDATE numberdescriptor SET minvalue = -9999 WHERE id = " + var1.getId());
+        } catch (SQLException ex) {
+        }
+
+        // assert both instsances do not read the min bounds from database
+        var1 = client.get(artosUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
+        var2 = client2.get(artosUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
+        Assert.assertEquals("Min bounds do not match", -100, var1.getMinValue(), 0.001);
+        Assert.assertEquals("Min bounds do not match", -100, var2.getMinValue(), 0.001);
+
+
+        // Clear JPA l2 cache
+        client.delete("/rest/Utils/EmCache");
+
+        // assert both instsances DO read the min bounds from database
+        var1 = client.get(artosUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
+        var2 = client2.get(artosUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
+        Assert.assertEquals("Min bounds do not match", -9999, var1.getMinValue(), 0.001);
+        Assert.assertEquals("Min bounds do not match", -9999, var2.getMinValue(), 0.001);
     }
 
     @Test

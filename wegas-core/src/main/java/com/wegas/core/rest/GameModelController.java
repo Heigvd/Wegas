@@ -9,10 +9,12 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.ModelFacade;
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.cron.EjbTimerFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,6 +61,9 @@ public class GameModelController {
      */
     @Inject
     private ModelFacade modelFacade;
+
+    @Inject
+    private PlayerFacade playerFacade;
 
     /**
      *
@@ -518,5 +523,18 @@ public class GameModelController {
             FindAndReplacePayload payload) {
         return gameModelFacade.findAndReplace(gameModelId, payload);
     }
+
+    @GET
+    @Path("{gameModelId: [1-9][0-9]*}/TestPlayer")
+    public Player getTestPlayer(
+            @PathParam("gameModelId") Long gameModelId
+    ) {
+        if (gameModelId != null) {
+            return playerFacade.findDebugPlayerByGameModelId(gameModelId);
+        }
+        return null;
+    }
+
+
 
 }
