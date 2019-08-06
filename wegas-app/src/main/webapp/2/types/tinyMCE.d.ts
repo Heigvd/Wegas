@@ -211,6 +211,7 @@ interface TinyMCEEventsCallback {
   init: TinyMCEEvent;
   nodechange: TinyMCENodeChangeEvent;
   change: TinyMCEChangeEvent;
+  blur: TinyMCEEvent;
 }
 
 type TinyMCEEditorEventType = keyof TinyMCEEventsCallback;

@@ -35,7 +35,6 @@ import {
   fileURL,
 } from '../Editor/Components/FileBrowser/TreeFileBrowser/FileBrowser';
 import { css } from 'emotion';
-import { wlog } from '../Helper/wegaslog';
 
 const toolbar = css({
   width: '300px',
@@ -155,8 +154,9 @@ export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
         editor.on('blur', () => {
           // TODO : find a way to close the expended toolbar to avoid bug
           // editor.execCommand('commandName');
+          // wlog(e);
+          // debugger;
         });
-
         extraButtonsKeys.forEach(btnName => {
           editor.ui.registry.addToggleButton(btnName, {
             text: extraButtons[btnName].text,
