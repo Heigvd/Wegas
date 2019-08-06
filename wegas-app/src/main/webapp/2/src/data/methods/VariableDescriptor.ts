@@ -22,7 +22,7 @@ export function getParent(vd: IVariableDescriptor): IParentDescriptor {
   if (vd.parentType!.endsWith('Descriptor')) {
     return (VariableDescriptor.select(
       vd.parentId,
-    ) as any) as IParentDescriptor;
+    ) as unknown) as IParentDescriptor;
   }
   return GameModel.select(vd.parentId!);
 }

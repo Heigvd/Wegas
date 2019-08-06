@@ -9,7 +9,7 @@ package com.wegas.core.persistence;
 
 import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
-import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.NumberView;
 import com.wegas.editor.View.View;
 
 /**
@@ -19,7 +19,7 @@ import com.wegas.editor.View.View;
 public interface WithId {
 
     @WegasExtraProperty(nullable = false,
-            view = @View(value = ReadOnlyNumber.class,
+            view = @View(value = NumberView.class,
                     label = "id",
                     featureLevel = ADVANCED,
                     index = -1000

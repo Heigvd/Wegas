@@ -23,8 +23,8 @@ import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.View.I18nHtmlView;
-import com.wegas.editor.View.ReadOnlyNumber;
-import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.NumberView;
+import com.wegas.editor.View.StringView;
 import com.wegas.editor.View.View;
 import java.util.Collection;
 import java.util.Date;
@@ -59,14 +59,14 @@ public class Reply extends AbstractEntity implements DatedEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
     @WegasEntityProperty(optional = false, nullable = false,
-            view = @View(label = "Created Time", value = ReadOnlyNumber.class))
+            view = @View(label = "Created Time", readOnly = true, value = NumberView.class))
     private Date createdTime = new Date();
     /**
      * <p>
      */
     @WegasEntityProperty(
             optional = false, nullable = false,
-            view = @View(label = "Start Time", value = ReadOnlyNumber.class))
+            view = @View(label = "Start Time", readOnly = true, value = NumberView.class))
     private Long startTime;
     /**
      *
@@ -102,12 +102,12 @@ public class Reply extends AbstractEntity implements DatedEntity {
     @Transient
     @WegasEntityProperty(
             optional = false, nullable = false,
-            view = @View(label = "Result Name", value = ReadOnlyString.class))
+            view = @View(label = "Result Name", readOnly = true, value = StringView.class))
     private String resultName;
 
     @Transient
     @WegasEntityProperty(optional = false, nullable = false,
-            view = @View(label = "Choice Name", value = ReadOnlyString.class))
+            view = @View(label = "Choice Name", readOnly = true, value = StringView.class))
     private String choiceName;
 
     /**

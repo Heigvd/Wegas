@@ -24,7 +24,7 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.StringView;
 import com.wegas.editor.View.View;
 import java.io.IOException;
 import java.io.Serializable;
@@ -65,7 +65,13 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
 
     @WegasEntityProperty(
             nullable = false,
-            view = @View(label = "RefID", value = ReadOnlyString.class, index=-800))
+            view = @View(
+                    label = "RefID",
+                    readOnly = true,
+                    value = StringView.class,
+                    index = -800
+            )
+    )
     //@JsonView(Views.InternalI.class)
     private String refId;
 

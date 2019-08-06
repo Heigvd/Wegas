@@ -20,8 +20,8 @@ import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.INTERNAL;
 import static com.wegas.editor.View.CommonView.LAYOUT.shortInline;
-import com.wegas.editor.View.ReadOnlyNumber;
-import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.NumberView;
+import com.wegas.editor.View.StringView;
 import com.wegas.editor.View.View;
 
 /**
@@ -53,7 +53,7 @@ public interface Mergeable {
             optional = false,
             nullable = false,
             view = @View(
-                    value = ReadOnlyString.class,
+                    value = StringView.class,
                     label = "",
                     featureLevel = INTERNAL,
                     index = -2000
@@ -138,7 +138,7 @@ public interface Mergeable {
     @WegasExtraProperty(
             nullable = false,
             view = @View(
-                    value = ReadOnlyString.class,
+                    value = StringView.class,
                     label = "Parent Type",
                     featureLevel = INTERNAL,
                     index = -990,
@@ -157,7 +157,7 @@ public interface Mergeable {
     @WegasExtraProperty(
             nullable = false,
             view = @View(
-                    value = ReadOnlyNumber.class,
+                    value = NumberView.class,
                     label = "Parent ID",
                     featureLevel = INTERNAL,
                     index = -980,

@@ -28,6 +28,8 @@ public class CommonView extends BaseView {
 
     private Boolean borderTop = false;
 
+    private Boolean readOnly = false;
+
     private LAYOUT layout = LAYOUT.none;
 
     public ModelScoped.ProtectionLevel protectionLevel;
@@ -58,9 +60,8 @@ public class CommonView extends BaseView {
      *
      * @return this
      */
-    final public CommonView setLabel(String label) {
+    final public void setLabel(String label) {
         this.label = label;
-        return this;
     }
 
     /**
@@ -75,9 +76,8 @@ public class CommonView extends BaseView {
      *
      * @return this
      */
-    final public CommonView setDescription(String description) {
+    final public void setDescription(String description) {
         this.description = description;
-        return this;
     }
 
     /**
@@ -93,9 +93,8 @@ public class CommonView extends BaseView {
      *
      * @return this
      */
-    final public CommonView setLayout(LAYOUT layout) {
+    final public void setLayout(LAYOUT layout) {
         this.layout = layout;
-        return this;
     }
 
     /**
@@ -111,9 +110,25 @@ public class CommonView extends BaseView {
      *
      * @return this
      */
-    final public CommonView setBorderTop(Boolean borderTop) {
+    final public void setBorderTop(Boolean borderTop) {
         this.borderTop = borderTop;
-        return this;
+    }
+
+     /**
+     * @return is the view readOnly
+     */
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    final public Boolean getReadOnly() {
+        return readOnly;
+    }
+
+    /**
+     * @param readOnly readOnly view
+     *
+     * @return this
+     */
+    final public void setReadOnly(Boolean readOnly) {
+        this.readOnly = readOnly;
     }
 
     public static class LayoutConverter extends StdConverter<LAYOUT, String> {
