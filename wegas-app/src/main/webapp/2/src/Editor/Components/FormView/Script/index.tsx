@@ -180,6 +180,7 @@ export class Script extends React.Component<ScriptProps, ScriptState> {
                 >
                   <SrcEditor
                     value={scriptObject(props.value)}
+                    language="javascript"
                     onChange={v =>
                       props.onChange({
                         '@class': 'Script',
