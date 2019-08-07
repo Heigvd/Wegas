@@ -97,7 +97,7 @@ export const filterMap = (
   Object.keys(map)
     .filter((k, i) => filterFN(k, i))
     .reduce<ComponentMap>(
-      (newComponents, k) => ({ ...newComponents, k: map[k] }),
+      (newComponents, k) => ({ ...newComponents, [k]: map[k] }),
       {},
     );
 
