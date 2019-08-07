@@ -18,7 +18,7 @@ interface EditorProps {
   /**
    * langauge - the editor language
    */
-  language?: 'javascript' | 'css' | 'json';
+  language: 'javascript' | 'css' | 'json' | 'plaintext';
   /**
    * onChange - this function is fired each time the content of the editor is changed by the user
    */
@@ -81,7 +81,7 @@ class SrcEditor extends React.Component<EditorProps> {
           if (this.editor) {
             monaco.editor.setModelLanguage(
               this.editor.getModel()!,
-              this.props.language ? this.props.language : 'plaintext',
+              this.props.language,
             );
           }
         });
