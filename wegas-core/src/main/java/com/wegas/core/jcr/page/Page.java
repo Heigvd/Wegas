@@ -19,6 +19,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonPatch;
 import javax.json.JsonReader;
 import org.slf4j.LoggerFactory;
@@ -112,9 +113,20 @@ public class Page {
             jsonbContent = reader.readObject();
         }
 
-        return Json.createObjectBuilder(jsonbContent)
-                .add("@name", this.name)
-                .add("@index", this.index).build();
+        JsonObjectBuilder page = Json.createObjectBuilder(jsonbContent);
+        if (this.name != null) {
+            page.add("@name", this.name);
+        } else {
+            page.addNull("@name");
+        }
+
+        if (this.index != null) {
+            page.add("@index", this.index);
+        } else {
+            page.addNull("@index");
+        }
+
+        return page.build();
     }
 
     /**
