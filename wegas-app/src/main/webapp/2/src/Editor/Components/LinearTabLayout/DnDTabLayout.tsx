@@ -13,6 +13,32 @@ const hidden = css({
   display: 'none',
 });
 
+const grow = css({
+  flex: '1 1 auto',
+});
+const flex = css({
+  display: 'flex',
+});
+const relative = css({
+  position: 'relative',
+});
+const absoute = css({
+  position: 'absolute',
+});
+
+const expand = css({
+  width: '100%',
+  height: '100%',
+});
+
+const scroll = css({
+  overflow: 'auto',
+});
+
+const noscroll = css({
+  overflow: 'hidden',
+});
+
 const buttonStyle = css({
   color: themeVar.primaryDarkerTextColor,
   ':hover': {
@@ -58,16 +84,6 @@ const dropBottomZone = css({
   width: '100%',
   height: '20%',
   bottom: 0,
-});
-
-const grow = css({
-  flex: '1 1 auto',
-});
-const flex = css({
-  display: 'flex',
-});
-const relative = css({
-  position: 'relative',
 });
 
 export interface ComponentMap {
@@ -239,7 +255,7 @@ export function DnDTabLayout({
   return (
     <Toolbar vertical={vertical}>
       <Toolbar.Header>
-        <div ref={dropTabs} className={cx(flex, grow)}>
+        <div ref={dropTabs} className={cx(flex, grow, scroll)}>
           {renderTabs()}
           {selectItems && Object.keys(selectItems).length > 0 && (
             <Tab key={'-1'}>
@@ -261,48 +277,61 @@ export function DnDTabLayout({
         </div>
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, relative)}>
-        {Object.keys(components).map(label => (
-          <Reparentable
-            key={label}
-            id={label}
-            innerClassName={cx(flex, grow)}
-            outerClassName={cx(flex, grow, label !== activeLabel ? hidden : '')}
-          >
-            <React.Suspense fallback={<div>Loading...</div>}>
-              {components[label]}
-            </React.Suspense>
-          </Reparentable>
-        ))}
-        {dropLeftProps.canDrop && (
-          <div
-            ref={dropLeft}
-            className={cx(dropLeftZone, dropLeftProps.isOver && dropZoneFocus)}
-          />
-        )}
-        {dropRightProps.canDrop && (
-          <div
-            ref={dropRight}
-            className={cx(
-              dropRightZone,
-              dropRightProps.isOver && dropZoneFocus,
-            )}
-          />
-        )}
-        {dropTopProps.canDrop && (
-          <div
-            ref={dropTop}
-            className={cx(dropTopZone, dropTopProps.isOver && dropZoneFocus)}
-          />
-        )}
-        {dropBottomProps.canDrop && (
-          <div
-            ref={dropBottom}
-            className={cx(
-              dropBottomZone,
-              dropBottomProps.isOver && dropZoneFocus,
-            )}
-          />
-        )}
+        <div className={cx(expand, noscroll)}>
+          <div className={cx(scroll, absoute, expand, flex)}>
+            {Object.keys(components).map(label => (
+              <Reparentable
+                key={label}
+                id={label}
+                innerClassName={cx(flex, grow)}
+                outerClassName={cx(
+                  flex,
+                  grow,
+                  label !== activeLabel ? hidden : '',
+                )}
+              >
+                <React.Suspense fallback={<div>Loading...</div>}>
+                  {components[label]}
+                </React.Suspense>
+              </Reparentable>
+            ))}
+          </div>
+          {(dropLeftProps.canDrop ||
+            dropRightProps.canDrop ||
+            dropTopProps.canDrop ||
+            dropBottomProps.canDrop) && (
+            <div className={cx(absoute, expand)}>
+              <div
+                ref={dropLeft}
+                className={cx(
+                  dropLeftZone,
+                  dropLeftProps.isOver && dropZoneFocus,
+                )}
+              />
+              <div
+                ref={dropRight}
+                className={cx(
+                  dropRightZone,
+                  dropRightProps.isOver && dropZoneFocus,
+                )}
+              />
+              <div
+                ref={dropTop}
+                className={cx(
+                  dropTopZone,
+                  dropTopProps.isOver && dropZoneFocus,
+                )}
+              />
+              <div
+                ref={dropBottom}
+                className={cx(
+                  dropBottomZone,
+                  dropBottomProps.isOver && dropZoneFocus,
+                )}
+              />
+            </div>
+          )}
+        </div>
       </Toolbar.Content>
     </Toolbar>
   );
