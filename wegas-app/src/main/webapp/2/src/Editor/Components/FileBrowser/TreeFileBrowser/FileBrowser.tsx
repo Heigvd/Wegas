@@ -19,6 +19,7 @@ import { AvailableViews } from '../../FormView';
 import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
 import { FileNameModal } from './Modals/FileNameModal';
 import { FileOverrideModal } from './Modals/FileOverrideModal';
+import { FileDeleteModal } from './Modals/FileDeleteModal';
 
 const grow = css({
   flex: '1 1 auto',
@@ -194,7 +195,17 @@ interface ModalStateOverride {
   onAction: (newFile?: IFileDescriptor) => void;
 }
 
-type ModalState = ModalStateClose | ModalStateFilename | ModalStateOverride;
+interface ModalStateDelete {
+  type: 'forcedelete';
+  targetFile: IFileDescriptor;
+  onAction: (accepted: boolean) => void;
+}
+
+type ModalState =
+  | ModalStateClose
+  | ModalStateFilename
+  | ModalStateOverride
+  | ModalStateDelete;
 
 type FileUpdateCallback = (newFile: IFileDescriptor) => void;
 
@@ -370,13 +381,28 @@ export function FileBrowser({
 
   const deleteNode = React.useCallback(
     (file: IFileDescriptor) => {
-      FileAPI.deleteFile(generateAbsolutePath(file)).then(() => {
+      const absolutePath = generateAbsolutePath(file);
+      const deleteAction = () => {
         dispatchFileStateAction({
           type: 'RemoveFile',
           file: file,
         });
         onDelelteFile && onDelelteFile(file);
-      });
+      };
+      FileAPI.deleteFile(absolutePath)
+        .then(() => deleteAction())
+        .catch(() =>
+          setModalState({
+            type: 'forcedelete',
+            targetFile: file,
+            onAction: accepted => {
+              if (accepted) {
+                deleteAction();
+              }
+              setModalState({ type: 'close' });
+            },
+          }),
+        );
     },
     [onDelelteFile],
   );
@@ -452,6 +478,7 @@ export function FileBrowser({
     <DefaultDndProvider>
       {modalState.type === 'filename' && <FileNameModal {...modalState} />}
       {modalState.type === 'override' && <FileOverrideModal {...modalState} />}
+      {modalState.type === 'forcedelete' && <FileDeleteModal {...modalState} />}
       <div className={grow}>
         <div
           ref={dropZone}

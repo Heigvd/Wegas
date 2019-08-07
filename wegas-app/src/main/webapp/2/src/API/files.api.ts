@@ -56,20 +56,9 @@ export const FileAPIFactory = (gameModelId?: number) => {
         {
           method: 'DELETE',
         },
-      )
-        .then((res: Response) => {
-          return res.json();
-        })
-        .catch(() => {
-          if (
-            confirm(
-              `Are you sure you want to delete ${absolutePath} with all files and subdirectories?`,
-            )
-          ) {
-            return this.deleteFile(absolutePath, true);
-          }
-          throw Error('Force delete not accepted or failed');
-        });
+      ).then((res: Response) => {
+        return res.json();
+      });
     },
     /**
      * Create a new file
@@ -120,6 +109,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
           body: JSON.stringify(file),
         },
       ).then((res: Response) => {
+        // 204 is seen as an error as the file wasn't updated
         if (res.status === 204) {
           throw Error(res.statusText);
         }
