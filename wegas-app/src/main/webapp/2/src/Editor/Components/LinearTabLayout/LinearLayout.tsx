@@ -906,7 +906,11 @@ function MainLinearLayout(props: LinearLayoutProps) {
             rendered.push(
               <ReflexElement
                 key={childKey}
-                flex={layout.layoutMap[childKey].flex}
+                flex={
+                  layout.layoutMap[childKey].flex
+                    ? layout.layoutMap[childKey].flex
+                    : 1000
+                }
                 onStopResize={({ component }) =>
                   dispatchLayout({
                     type: 'RESIZE',
