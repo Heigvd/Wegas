@@ -135,7 +135,7 @@
         <github.global.server>github</github.global.server>
 
         <jacoco.skip>false</jacoco.skip>
-        <jacoco.surfireArgLine></jacoco.surfireArgLine>
+        <jacoco.surefireArgLine></jacoco.surefireArgLine>
         <jacoco.failsafeArgLine></jacoco.failsafeArgLine>
     </properties>
 
