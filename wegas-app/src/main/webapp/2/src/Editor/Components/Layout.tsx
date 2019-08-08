@@ -28,24 +28,6 @@ export default class AppLayout extends React.Component<
   render() {
     return (
       <div className={layout}>
-<<<<<<< HEAD
-        <div className={fullWidth}>
-          <Header />
-        </div>
-        <div>
-          <TreeView />
-        </div>
-        <div style={{ display: 'flex' }}>
-          <TabLayout tabs={['Page', 'StateMachine', 'Scripts']}>
-            <PageDisplay />
-            <StateMachineEditor />
-            <LibraryEditor />
-          </TabLayout>
-        </div>
-        <div>
-          <Editor />
-        </div>
-=======
         <Header />
         <DndLinearLayout
           tabMap={{
@@ -84,7 +66,6 @@ export default class AppLayout extends React.Component<
             },
           }}
         />
->>>>>>> origin/master
       </div>
     );
   }
