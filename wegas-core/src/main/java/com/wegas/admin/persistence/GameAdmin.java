@@ -32,6 +32,8 @@ import javax.persistence.*;
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
+@NamedQuery(name = "GameAdmin.findByGameIds",
+        query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.game.id in :ids")
 @NamedQuery(name = "GameAdmin.findByGame",
         query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.game.id = :gameId")
 @NamedQuery(name = "GameAdmin.findByStatus",

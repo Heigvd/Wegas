@@ -30,6 +30,14 @@ public class AdminRestController {
     @Inject
     private AdminFacade adminFacade;
 
+
+    @POST
+    @Path("GamesByIds")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Collection<GameAdmin> get(List<Long> ids) {
+        return adminFacade.getByIds(ids);
+    }
+
     @Path("Game")
     @GET
     public Collection<GameAdmin> get(@QueryParam("type") String type) {
