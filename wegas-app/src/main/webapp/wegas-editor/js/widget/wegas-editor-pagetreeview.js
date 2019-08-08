@@ -153,7 +153,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             var menu = [];
             menu.push({
                 type: "Button",
-                label: "Standard (Flex layout)",
+                label: "Standard (List layout)",
                 on: {
                     click: Y.bind(
                         function(e) {
