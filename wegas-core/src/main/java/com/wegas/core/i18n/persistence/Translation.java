@@ -16,7 +16,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.StringView;
 import com.wegas.editor.View.View;
 import java.util.Collection;
 import java.util.Objects;
@@ -83,7 +83,7 @@ public class Translation implements WithPermission {
     @JsonIgnore
     @Id
     @WegasEntityProperty(initOnly = true, optional = false, nullable = false,
-            view = @View(label = "Language", value = ReadOnlyString.class))
+            view = @View(label = "Language", readOnly = true, value = StringView.class))
     @JsonView(Views.IndexI.class)
     private String lang;
 

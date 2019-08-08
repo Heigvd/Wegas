@@ -27,7 +27,7 @@ import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.Zero;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
-import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.NumberView;
 import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,7 +70,13 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
-            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
+            sameEntityOnly = true, view = @View(
+                    label = "Version",
+                    readOnly = true,
+                    value = NumberView.class,
+                    featureLevel = ADVANCED
+            )
+    )
     @JsonView(Views.IndexI.class)
     private Long version;
 
@@ -85,7 +91,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
      *
      */
     @JsonIgnore
-    @WegasEntityProperty(searchable = true, callback = TranslatableCallback.class, 
+    @WegasEntityProperty(searchable = true, callback = TranslatableCallback.class,
             optional = false, nullable = false, proposal = EmptyArray.class,
             view = @View(label = "Translations"))
     @OneToMany(mappedBy = "translatableContent", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)

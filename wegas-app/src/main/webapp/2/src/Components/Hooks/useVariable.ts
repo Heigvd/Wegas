@@ -12,7 +12,7 @@ export function useVariableDescriptor<D extends IVariableDescriptor>(
   name: string,
 ) {
   const getDescriptor = React.useCallback(
-    () => VariableDescriptor.first<D>('name', name),
+    () => VariableDescriptor.findByName<D>(name),
     [name],
   );
   return useStore(getDescriptor);

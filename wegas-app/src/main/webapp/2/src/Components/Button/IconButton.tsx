@@ -16,7 +16,7 @@ interface IconButtonProps extends Props {
   prefixedLabel?: boolean;
   type?: 'submit' | 'reset';
 }
-const activeStyle = css({ color: themeVar.primaryDarkerColor });
+const defaultActiveStyle = css({ color: themeVar.primaryDarkerColor });
 
 const shapeStyle = css({
   width: 'auto',
@@ -80,7 +80,7 @@ export function IconButton(props: IconButtonProps) {
         shapeStyle,
         {
           [disabledStyle]: Boolean(disabled),
-          [activeStyle]: Boolean(pressed),
+          [defaultActiveStyle]: Boolean(pressed),
         },
         className,
       )}

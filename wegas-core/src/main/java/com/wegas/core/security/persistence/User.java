@@ -20,7 +20,7 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.StringView;
 import com.wegas.editor.View.View;
 import java.util.*;
 import javax.persistence.*;
@@ -170,7 +170,12 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
      *
      * @return main account name or unnamed if user doesn't have any account
      */
-    @WegasExtraProperty(optional= false, nullable = true, view = @View(label = "Name", value = ReadOnlyString.class))
+    @WegasExtraProperty(optional = false, nullable = true, view = @View(
+            label = "Name",
+            readOnly = true,
+            value = StringView.class
+    )
+    )
     public String getName() {
         if (this.getMainAccount() != null) {
             return this.getMainAccount().getName();

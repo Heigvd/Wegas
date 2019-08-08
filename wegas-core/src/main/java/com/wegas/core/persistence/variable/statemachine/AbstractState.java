@@ -25,7 +25,7 @@ import com.wegas.editor.ValueGenerators.Origin;
 import com.wegas.editor.ValueGenerators.Zero;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.NumberView;
 import com.wegas.editor.View.ScriptView;
 import com.wegas.editor.View.View;
 import java.io.Serializable;
@@ -66,7 +66,12 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
-            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
+            sameEntityOnly = true, view = @View(
+                    label = "Version",
+                    readOnly = true,
+                    value = NumberView.class,
+                    featureLevel = ADVANCED
+            ))
     private Long version;
 
     /**
@@ -93,7 +98,7 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
     @Column(name = "fsm_statekey")
     @WegasEntityProperty(
             nullable = false,
-            view = @View(label = "Index", value = ReadOnlyNumber.class))
+            view = @View(label = "Index", readOnly = true, value = NumberView.class))
     private Long index;
 
     /**
