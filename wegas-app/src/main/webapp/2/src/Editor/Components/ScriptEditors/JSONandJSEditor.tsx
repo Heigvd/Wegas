@@ -4,41 +4,54 @@ import { css } from 'emotion';
 import { Modal } from '../../../Components/Modal';
 import SrcEditor from './SrcEditor';
 import { KeyMod, KeyCode } from 'monaco-editor';
-import { StyledLabel } from '../../../Components/AutoImport/String/Label';
+import {
+  StyledLabel,
+  LabelStyle,
+} from '../../../Components/AutoImport/String/Label';
 import { store } from '../../../data/store';
 // using raw-loader works but you need to put the whole file name and ts doesn't like it
 // @ts-ignore
 import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasEntities.d.ts';
 
+const infoDuration = 5000;
+
 const fullHeight = css({
   height: '100%',
 });
 
+export interface OnSaveStatus {
+  status?: LabelStyle;
+  text?: string;
+}
+
 interface JSONandJSEditorProps {
   content: string;
-  onSave: (content: string) => void;
+  onSave: (content: string) => OnSaveStatus;
 }
 
 export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
   const [editing, setEditing] = React.useState(false);
-  const [error, setError] = React.useState('');
+  const [error, setError] = React.useState<OnSaveStatus>({});
   const [editorContent, setEditorContent] = React.useState(content);
   const cursorOffset = React.useRef(0);
   const jsContent = React.useRef('');
   const jsCodeInit = React.useRef(0);
   const jsCodeEnd = React.useRef(0);
-  const timeout = React.useRef(0);
 
   React.useEffect(() => {
     setEditorContent(content);
   }, [content]);
+
+  const trySave = (content: string) => {
+    setError(onSave(content));
+  };
 
   const editJS = (
     monaco: typeof import('monaco-editor'),
     editor: import('monaco-editor').editor.ICodeEditor,
   ) => {
     try {
-      setError('');
+      setError({});
       const cursorPosition = editor.getPosition();
       const model = editor.getModel();
       if (cursorPosition && model) {
@@ -121,9 +134,9 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
         setEditing(true);
       }
     } catch (e) {
-      setError(e);
-      clearTimeout(timeout.current);
-      timeout.current = window.setTimeout(() => setError(''), 10000);
+      setError({ status: 'error', text: e });
+      // clearTimeout(timeout.current);
+      // timeout.current = window.setTimeout(() => setError({}), 10000);
     }
   };
   const onAcceptJS = () => {
@@ -167,8 +180,12 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
   return (
     <Toolbar className={fullHeight}>
       <Toolbar.Header>
-        <button onClick={() => onSave(editorContent)}>Save</button>
-        <StyledLabel type={'error'} value={error} />
+        <button onClick={() => trySave(editorContent)}>Save</button>
+        <StyledLabel
+          type={error.status}
+          value={error.text}
+          duration={infoDuration}
+        />
       </Toolbar.Header>
       <Toolbar.Content>
         {editing && (
@@ -204,7 +221,7 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
           defaultUri="internal://page.json"
           language="json"
           onChange={val => setEditorContent(val)}
-          onSave={onSave}
+          onSave={trySave}
           cursorOffset={cursorOffset.current}
           defaultFocus={true}
           defaultActions={[

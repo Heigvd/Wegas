@@ -6,15 +6,22 @@ import { Toolbar } from '../../../Components/Toolbar';
 import { Actions } from '../../../data';
 import { StoreDispatch, StoreConsumer } from '../../../data/store';
 import { Theme } from '../../../Components/Theme';
-import { JSONandJSEditor } from '../ScriptEditors/JSONandJSEditor';
+import {
+  JSONandJSEditor,
+  OnSaveStatus,
+} from '../ScriptEditors/JSONandJSEditor';
 
 interface PageDisplayProps {
   srcMode: boolean;
   pageId?: string;
   dispatch: StoreDispatch;
 }
-
 class PageDisplay extends React.Component<PageDisplayProps> {
+  constructor(props: PageDisplayProps) {
+    super(props);
+    this.state = { modalState: { type: 'close' } };
+  }
+
   render() {
     const { pageId } = this.props;
     return (
@@ -38,14 +45,30 @@ class PageDisplay extends React.Component<PageDisplayProps> {
                   dispatch(Actions.PageActions.get(pageId));
                 }
 
-                const onSave = (value: string) => {
+                const onSave = (value: string): OnSaveStatus => {
                   if (pageId != null) {
                     try {
                       const p = JSON.parse(value);
                       dispatch(Actions.PageActions.patch(pageId, p));
+                      return { status: 'succes', text: 'Page saved' };
                     } catch (e) {
-                      alert(`There's a syntax error in your script : \n${e}`);
+                      const message = String(e.message);
+                      const textToFind = 'at position ';
+                      const position = Number(
+                        message
+                          .replace(textToFind, '')
+                          .substring(message.indexOf(textToFind)),
+                      );
+                      const line = String(
+                        value.substring(0, position).split('\n').length,
+                      );
+                      return {
+                        status: 'error',
+                        text: `Not saved!\n${message}\nLine number : ${line}`,
+                      };
                     }
+                  } else {
+                    return { status: 'warning', text: 'No page selected' };
                   }
                 };
 

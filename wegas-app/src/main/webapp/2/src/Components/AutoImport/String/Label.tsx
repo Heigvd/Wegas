@@ -1,4 +1,3 @@
-import { css } from 'emotion';
 import * as React from 'react';
 import { TranslatableContent } from '../../../data/i18n';
 import { themeVar } from '../../Theme';
@@ -6,6 +5,8 @@ import {
   useVariableDescriptor,
   useVariableInstance,
 } from '../../Hooks/useVariable';
+
+export type LabelStyle = 'normal' | 'warning' | 'error' | 'succes';
 
 interface StyledLabelProps {
   /**
@@ -15,13 +16,28 @@ interface StyledLabelProps {
   /**
    * type - changes the style of the text, normal by default
    */
-  type?: 'normal' | 'warning' | 'error' | 'succes';
+  type?: LabelStyle;
+  /**
+   * duration - the time during which is the value displayed.
+   * If undefined, the text is displayed forever
+   */
+  duration?: number;
 }
 
 /**
  * StyledLabel is a component that creates a styled label with text
  */
-export function StyledLabel({ type, value }: StyledLabelProps) {
+export function StyledLabel({ type, value, duration }: StyledLabelProps) {
+  const timeout = React.useRef(0);
+  const [text, setText] = React.useState(value);
+  React.useEffect(() => {
+    clearTimeout(timeout.current);
+    setText(value);
+    if (duration !== undefined) {
+      timeout.current = window.setTimeout(() => setText(''), duration);
+    }
+  }, [value, duration]);
+
   let color = '';
 
   switch (type) {
@@ -46,12 +62,13 @@ export function StyledLabel({ type, value }: StyledLabelProps) {
 
   return (
     <div
-      className={css({
+      style={{
         color: color,
         padding: '5px',
-      })}
+        whiteSpace: 'pre-wrap',
+      }}
     >
-      {value !== undefined ? value : ''}
+      {text !== undefined ? text : ''}
     </div>
   );
 }
