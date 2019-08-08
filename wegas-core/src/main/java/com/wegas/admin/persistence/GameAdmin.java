@@ -34,6 +34,7 @@ import org.codehaus.jettison.json.JSONException;
  */
 @Entity
 @NamedQueries({
+    @NamedQuery(name = "GameAdmin.findByGameIds", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.game.id in :ids"),
     @NamedQuery(name = "GameAdmin.findByGame", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.game.id = :gameId"),
     @NamedQuery(name = "GameAdmin.findByStatus", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = :status ORDER BY ga.createdTime DESC"),
     @NamedQuery(name = "GameAdmin.GamesToDelete", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = com.wegas.admin.persistence.GameAdmin.Status.PROCESSED AND ga.game.status = com.wegas.core.persistence.game.Game.Status.DELETE")
@@ -149,7 +150,6 @@ public class GameAdmin extends AbstractEntity {
     public String getCreator() {
         return this.creator;
     }
-
 
     @JsonIgnore
     public void populate() {

@@ -18,6 +18,7 @@ import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -58,6 +59,12 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
                 this.create(new GameAdmin(g));
             }
         }
+    }
+
+    public Collection<GameAdmin> getByIds(List<Long> ids) {
+        final TypedQuery<GameAdmin> findByIds = getEntityManager().createNamedQuery("GameAdmin.findByGameIds", GameAdmin.class);
+        findByIds.setParameter("ids", ids);
+        return findByIds.getResultList();
     }
 
     public List<GameAdmin> findDone() {
