@@ -225,7 +225,8 @@ public class WegasTest {
 
 
         // Clear JPA l2 cache
-        client.delete("/rest/Utils/EmCache");
+        client.delete("/rest/Utils/LocalEmCache");
+        client2.delete("/rest/Utils/LocalEmCache");
 
         // assert both instsances DO read the min bounds from database
         var1 = client.get(artosUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);

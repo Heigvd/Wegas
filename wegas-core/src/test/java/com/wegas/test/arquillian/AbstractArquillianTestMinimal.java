@@ -11,7 +11,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.ejb.HelperBean;
+import com.wegas.core.ejb.JPACacheHelper;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.RequestManager;
@@ -106,7 +106,7 @@ public abstract class AbstractArquillianTestMinimal {
     protected ScriptFacade scriptFacade;
 
     @Inject
-    protected HelperBean helperBean;
+    protected JPACacheHelper jpaCacheHelper;
 
     @Inject
     protected RequestFacade requestFacade;
@@ -192,7 +192,7 @@ public abstract class AbstractArquillianTestMinimal {
 
         requestManager.setPlayer(null);
         requestManager.clearEntities();
-        helperBean.wipeCache();
+        this.wipeEmCache();
 
         this.setSynchronous();
 
@@ -285,11 +285,12 @@ public abstract class AbstractArquillianTestMinimal {
 
         requestManager.setPlayer(null);
         requestManager.clearEntities();
-        helperBean.wipeCache();
+
+        this.wipeEmCache();
     }
 
     protected void wipeEmCache() {
-        this.helperBean.wipeCache();
+        this.jpaCacheHelper.requestClearCache();
     }
 
     public void logout() {

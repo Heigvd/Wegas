@@ -16,7 +16,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
 import com.wegas.core.ejb.ConcurrentHelper;
-import com.wegas.core.ejb.HelperBean;
+import com.wegas.core.ejb.JPACacheHelper;
 import fish.payara.micro.cdi.Outbound;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -66,10 +66,6 @@ public class UtilsController {
     private static final String TRAVIS_URL = "https://api.travis-ci.org";
 
     @Inject
-    @Outbound(eventName = HelperBean.CLEAR_CACHE_EVENT_NAME, loopBack = true)
-    Event<String> messages;
-
-    @Inject
     private ApplicationLifecycle applicationLifecycle;
 
     @Inject
@@ -81,10 +77,25 @@ public class UtilsController {
     @Inject
     private ConcurrentHelper concurrentHelper;
 
+    @Inject
+    private JPACacheHelper jpaCacheHelper;
+
+    /**
+     * Request all cluster instances to clear JPA l2 cache
+     */
     @DELETE
     @Path("EmCache")
     public void wipeEmCache() {
-        messages.fire("clear");
+        jpaCacheHelper.requestClearCache();
+    }
+
+    /**
+     * Clear THIS instance only JPA l2 cache
+     */
+    @DELETE
+    @Path("LocalEmCache")
+    public void directWipeEmCache() {
+        jpaCacheHelper.clearCacheLocal();
     }
 
     @GET
