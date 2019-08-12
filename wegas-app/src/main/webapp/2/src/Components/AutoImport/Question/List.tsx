@@ -19,10 +19,10 @@ function questionInfo(question: IQuestionDescriptor) {
   const choices = VariableDescriptor.select<IChoiceDescriptor>(
     question.itemsIds,
   ).filter(c => c != null) as Readonly<IChoiceDescriptor>[];
-  const choicesInstances = choices.map(c => getInstance(c)());
+  const choicesInstances = choices.map(c => getInstance(c));
   return {
     descriptor: question,
-    instance: getInstance(question)(),
+    instance: getInstance(question),
     choices,
     choicesInstances,
     replies: choicesInstances
@@ -45,7 +45,7 @@ function repliesCount(question: IQuestionDescriptor) {
   return choices.reduce<number>((p, c) => {
     if (c == null) return p;
 
-    const cI = getInstance(c)();
+    const cI = getInstance(c);
     if (cI == null) return p;
     return p + cI.replies.length;
   }, 0);
@@ -250,7 +250,7 @@ export default function QuestionList(props: QuestionProps) {
         );
         return flatten<IQuestionDescriptor>(list, 'QuestionDescriptor').filter(
           q => {
-            const instance = getInstance(q)();
+            const instance = getInstance(q);
             if (instance != null) {
               return instance.active;
             }

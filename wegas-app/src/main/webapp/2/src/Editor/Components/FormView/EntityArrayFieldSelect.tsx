@@ -50,9 +50,10 @@ function EntityArrayFieldSelect(props: IEntityArrayFieldSelectProps) {
   const results: unknown =
     scope !== 'instance'
       ? (computedEntity as Record<string, unknown>)[field]
-      : (((getInstance(
-          computedEntity as IVariableDescriptor,
-        ) as unknown) as Record<string, unknown>)[field] as unknown);
+      : (getInstance(computedEntity as IVariableDescriptor) as Record<
+          string,
+          unknown
+        >)[field];
 
   if (results == null) {
     return null;

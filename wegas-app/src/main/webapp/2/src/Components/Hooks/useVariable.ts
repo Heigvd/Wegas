@@ -28,7 +28,7 @@ export function useVariableInstance<D extends IVariableDescriptor>(
 ) {
   const getInstanceForDescriptor = React.useCallback(() => {
     if (descriptor) {
-      return getInstance(descriptor)(player) as instanceOf<D>;
+      return getInstance(descriptor, player) as instanceOf<D>;
     }
     return;
   }, [descriptor, player]);
