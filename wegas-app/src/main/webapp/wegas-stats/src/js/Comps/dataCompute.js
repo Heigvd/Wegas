@@ -10,8 +10,7 @@ function translate(trContent, fallback){
     return fallback || '';
 }
 
-function genLabel(questionName, snapshot) {
-    const question = JSON.search(snapshot, `//*[@class='QuestionDescriptor'][name='${questionName}']`)[0];
+function genLabel(question) {
     const labels = [];
     if (question) {
         question.items.forEach(function(choice) {
@@ -27,8 +26,7 @@ function genLabel(questionName, snapshot) {
     return labels;
 }
 
-function questionSerie(questionName, questionData, snapshot) {
-    const question = JSON.search(snapshot, `//*[@class='QuestionDescriptor'][name='${questionName}']`)[0];
+function questionSerie(question, questionData) {
     const choices = new Map();
     const serie = [];
     let count = 0;
@@ -61,15 +59,15 @@ function questionSerie(questionName, questionData, snapshot) {
     };
 }
 
-function computeData( { question, snapshot, logId, groups }) {
+function computeData( question, logId, groups ) {
     const data = {
-        labels: genLabel(question, snapshot),
+        labels: genLabel(question),
         series: [],
     };
     return Promise.all(groups.map((group, index) => {
         if (group.length) {
-            return getQuestionData(logId, question, ...group)
-                .then(questionData => questionSerie(question, questionData, snapshot, index));
+            return getQuestionData(logId, question.name, ...group)
+                .then(questionData => questionSerie(question, questionData, index));
         }
         return {
             serie: [],
