@@ -98,10 +98,11 @@ class Graph extends React.Component {
             );
     }
     componentDidUpdate() {
-        if (!this.props.question) {
+        if (!this.props.questionName) {
             return;
         }
-        computeData(this.props)
+        const question = JSON.search(this.props.snapshot, `//*[@class='QuestionDescriptor'][name='${this.props.questionName}']`)[0];
+        computeData(question, this.props.logId, this.props.groups)
             .then(data => {
                 this.chart.update(data);
                 return data;
@@ -134,18 +135,13 @@ class Graph extends React.Component {
             DIFF_BAR_OPT
             );
         let promiseChain = Promise.resolve();
-        JSON.search(snapshot, '//*[@class="QuestionDescriptor"]/name').forEach(
+        JSON.search(snapshot, '//*[@class="QuestionDescriptor"]').forEach(
             question => {
                 promiseChain = promiseChain.then(() => {
                     if (windowHandler.closed) {
                         throw new Error('Window has been closed, halting');
                     }
-                    return computeData({
-                        groups,
-                        snapshot,
-                        logId,
-                        question,
-                    })
+                    return computeData(question, logId, groups)
                         .then(data => {
                             tmpChart.update(data);
                             return data;
@@ -160,14 +156,11 @@ class Graph extends React.Component {
                         })
                         .then(([chart, diff]) => {
                             const container = document.createElement('div');
-                            const labelQ = JSON.search(
-                                snapshot,
-                                `//*[@class='QuestionDescriptor'][name="${question}"]/label`
-                                )[0];
+                            const labelQ = question.label;
                             const label =
                                 JSON.search(
                                     snapshot,
-                                    `//*[name="${question}"]/ancestor::*[@class="ListDescriptor"]`
+                                    `//*[name="${question.name}"]/ancestor::*[@class="ListDescriptor"]`
                                     ).reduce(
                                 (pre, cur) =>
                                 `${pre}${
@@ -224,7 +217,7 @@ class Graph extends React.Component {
 }
 Graph.propTypes = {
     groups: PropTypes.arrayOf(PropTypes.array),
-    question: PropTypes.string,
+    questionName: PropTypes.string,
 };
 Graph.defaultProps = {
     groups: [],
