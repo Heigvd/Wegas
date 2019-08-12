@@ -547,7 +547,9 @@ public class UIVariableDescriptor extends UIComponentBase {
 
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_COLUMN);
 
-            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, getI18nFacade().interpolate(question.getDescription().translateOrEmpty(player), player), false, editorMode);
+            if (question.getDescription() != null) {
+                UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, getI18nFacade().interpolate(question.getDescription().translateOrEmpty(player), player), false, editorMode);
+            }
 
             if (editorMode) {
                 UIHelper.printProperty(context, writer, "Min: ", question.getMinReplies());
@@ -598,7 +600,10 @@ public class UIVariableDescriptor extends UIComponentBase {
             //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             encodeBase(context, writer, choice, editorMode);
 
-            UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, getI18nFacade().interpolate(choice.getDescription().translateOrEmpty(player), player), false, editorMode);
+            if (choice.getDescription() != null) {
+                UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION,
+                        getI18nFacade().interpolate(choice.getDescription().translateOrEmpty(player), player), false, editorMode);
+            }
 
             if (editorMode) {
                 UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, instance.getActive());
@@ -675,7 +680,7 @@ public class UIVariableDescriptor extends UIComponentBase {
         if (editorMode) { // never show to players
             //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             encodeBase(context, writer, fsm, editorMode);
-            StateMachineInstance instance = (StateMachineInstance)fsm.getDefaultInstance();
+            StateMachineInstance instance = (StateMachineInstance) fsm.getDefaultInstance();
             UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, instance.getEnabled());
             UIHelper.printProperty(context, writer, UIHelper.TEXT_DEFAULT_STATE, instance.getCurrentStateId().toString());
 
