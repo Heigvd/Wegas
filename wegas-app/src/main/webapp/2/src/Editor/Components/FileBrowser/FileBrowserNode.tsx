@@ -217,7 +217,7 @@ export function FileBrowserNode({
         .then(files => {
           setChildren(files);
         })
-        .catch(({ statusText }: { statusText: string }) => {
+        .catch(({ statusText }: Response) => {
           setModalState({
             type: 'error',
             label: statusText,
@@ -269,7 +269,7 @@ export function FileBrowserNode({
           setModalState({ type: 'close' });
           setOpen(true);
         })
-        .catch(({ statusText }: { statusText: string }) => {
+        .catch(({ statusText }: Response) => {
           setModalState({
             type: 'error',
             label: statusText,
@@ -306,7 +306,7 @@ export function FileBrowserNode({
           });
           onAction && onAction(savedFile);
         })
-        .catch(({ statusText }: { statusText: string }) => {
+        .catch(({ statusText }: Response) => {
           setModalState({
             type: 'error',
             label: statusText,
@@ -330,7 +330,7 @@ export function FileBrowserNode({
           setModalState({ type: 'close' });
           dispatchUploadingFiles({ type: 'decrement' });
         })
-        .catch(({ statusText }: { statusText: string }) => {
+        .catch(({ statusText }: Response) => {
           setModalState({
             type: 'error',
             label: statusText,
@@ -363,7 +363,7 @@ export function FileBrowserNode({
         onDelelteFile && onDelelteFile(deletedFile);
         setModalState({ type: 'close' });
       })
-      .catch(({ statusText }: { statusText: string }) => {
+      .catch(({ statusText }: Response) => {
         setModalState({
           type: 'error',
           label: statusText,

@@ -37,7 +37,7 @@ export function FileBrowser({
   React.useEffect(() => {
     FileAPI.getFileMeta()
       .then(file => setRootFile(file))
-      .catch(({ statusText }: { statusText: string }) => {
+      .catch(({ statusText }: Response) => {
         setRootFile(undefined);
         setError(statusText);
       });
@@ -95,7 +95,7 @@ export function FileBrowserWithMeta() {
         fileUpdate.current(resFile);
         setSelectedFile(file);
       })
-      .catch(({ statusText }: { statusText: string }) => setError(statusText));
+      .catch(({ statusText }: Response) => setError(statusText));
   };
 
   return (
