@@ -8,6 +8,7 @@ import { Schema } from 'jsoninput';
 import { AvailableViews } from '../FormView';
 import { DefaultDndProvider } from '../../../Components/DefaultDndProvider';
 import { FileBrowserNode } from './FileBrowserNode';
+import { StyledLabel } from '../../../Components/AutoImport/String/Label';
 
 const grow = css({
   flex: '1 1 auto',
@@ -31,16 +32,21 @@ export function FileBrowser({
   selectedPaths,
 }: FileBrowserProps) {
   const [rootFile, setRootFile] = React.useState<IFileDescriptor>();
+  const [error, setError] = React.useState<string>('');
 
   React.useEffect(() => {
     FileAPI.getFileMeta()
       .then(file => setRootFile(file))
-      .catch(() => setRootFile(undefined));
+      .catch(({ statusText }: { statusText: string }) => {
+        setRootFile(undefined);
+        setError(statusText);
+      });
   }, []);
 
   return (
     <DefaultDndProvider>
       <div className={grow}>
+        <StyledLabel value={error} type={'error'} duration={3000} />
         {rootFile ? (
           <FileBrowserNode
             currentFile={rootFile}
@@ -60,6 +66,7 @@ export function FileBrowser({
 
 export function FileBrowserWithMeta() {
   const [selectedFile, setSelectedFile] = React.useState<IFileDescriptor>();
+  const [error, setError] = React.useState<string>('');
   const fileUpdate = React.useRef<(updatedFile: IFileDescriptor) => void>(
     () => {},
   );
@@ -83,10 +90,12 @@ export function FileBrowserWithMeta() {
   };
 
   const saveMeta = (file: IFileDescriptor) => {
-    FileAPI.updateMetadata(file).then((resFile: IFileDescriptor) => {
-      fileUpdate.current(resFile);
-      setSelectedFile(file);
-    });
+    FileAPI.updateMetadata(file)
+      .then((resFile: IFileDescriptor) => {
+        fileUpdate.current(resFile);
+        setSelectedFile(file);
+      })
+      .catch(({ statusText }: { statusText: string }) => setError(statusText));
   };
 
   return (
@@ -113,6 +122,7 @@ export function FileBrowserWithMeta() {
         {selectedFile && <ReflexSplitter />}
         {selectedFile && (
           <ReflexElement>
+            <StyledLabel value={error} type={'error'} duration={3000} />
             <div className={cx(flex, grow)}>
               <AsyncVariableForm
                 getConfig={entity =>

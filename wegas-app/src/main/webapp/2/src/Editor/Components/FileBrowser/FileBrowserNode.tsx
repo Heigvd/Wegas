@@ -217,12 +217,12 @@ export function FileBrowserNode({
         .then(files => {
           setChildren(files);
         })
-        .catch(() => {
-          setChildren([]);
+        .catch(({ statusText }: { statusText: string }) => {
           setModalState({
             type: 'error',
-            label: 'Cannot get files from server',
+            label: statusText,
           });
+          setChildren([]);
         });
     }
   }, [currentFile]);
@@ -269,10 +269,10 @@ export function FileBrowserNode({
           setModalState({ type: 'close' });
           setOpen(true);
         })
-        .catch(() => {
+        .catch(({ statusText }: { statusText: string }) => {
           setModalState({
             type: 'error',
-            label: `Something went wrong with directory creation. Please try again.`,
+            label: statusText,
           });
         });
     }
@@ -306,10 +306,10 @@ export function FileBrowserNode({
           });
           onAction && onAction(savedFile);
         })
-        .catch(() => {
+        .catch(({ statusText }: { statusText: string }) => {
           setModalState({
             type: 'error',
-            label: `Cannot upload file [${file.name}]`,
+            label: statusText,
           });
           dispatchUploadingFiles({ type: 'decrement' });
           onAction && onAction();
@@ -330,10 +330,10 @@ export function FileBrowserNode({
           setModalState({ type: 'close' });
           dispatchUploadingFiles({ type: 'decrement' });
         })
-        .catch(() => {
+        .catch(({ statusText }: { statusText: string }) => {
           setModalState({
             type: 'error',
-            label: `Something went wrong with file update. Please try again.`,
+            label: statusText,
           });
           dispatchUploadingFiles({ type: 'decrement' });
         });
@@ -363,10 +363,10 @@ export function FileBrowserNode({
         onDelelteFile && onDelelteFile(deletedFile);
         setModalState({ type: 'close' });
       })
-      .catch(() => {
+      .catch(({ statusText }: { statusText: string }) => {
         setModalState({
           type: 'error',
-          label: `Something went wrong with deletion. Please try again.`,
+          label: statusText,
         });
       });
   };
