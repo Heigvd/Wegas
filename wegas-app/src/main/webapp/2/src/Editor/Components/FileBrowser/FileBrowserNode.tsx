@@ -474,7 +474,8 @@ export function FileBrowserNode({
                   }
                 }}
                 onBlur={() => setModalState({ type: 'close' })}
-                applyOnEnter={true}
+                applyOnEnter
+                defaultFocus
               />
             )}
             {modalState.type === 'type' && (

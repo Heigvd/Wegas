@@ -23,6 +23,10 @@ interface TextPromptProps {
    * applyOnEnter - Auto click on accept when the enter key is pressed
    */
   applyOnEnter?: boolean;
+  /**
+   * defaultFocus - force editor to focus on first render
+   */
+  defaultFocus?: boolean;
 }
 
 export function TextPrompt({
@@ -31,9 +35,17 @@ export function TextPrompt({
   onAction,
   onBlur,
   applyOnEnter,
+  defaultFocus,
 }: TextPromptProps) {
   const inputValue = React.useRef('');
+  const input = React.useRef<HTMLInputElement>(null);
   const textPrompt = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (defaultFocus && input.current) {
+      input.current.focus();
+    }
+  }, [defaultFocus]);
 
   useOnClickOutside(textPrompt, () => onBlur && onBlur());
 
@@ -41,6 +53,7 @@ export function TextPrompt({
     <div ref={textPrompt}>
       {label}
       <input
+        ref={input}
         placeholder={placeholder}
         type="text"
         onClick={event => event.stopPropagation()}
