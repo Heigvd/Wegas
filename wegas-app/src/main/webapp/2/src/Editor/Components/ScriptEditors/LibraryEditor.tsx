@@ -15,6 +15,8 @@ import { WebSocketEvent, useWebsocket } from '../../../API/websocket';
 import SrcEditor from './SrcEditor';
 import MergeEditor from './MergeEditor';
 import { StyledLabel } from '../../../Components/AutoImport/String/Label';
+import { TextPrompt } from '../TextPrompt';
+import { ConfirmButton } from '../../../Components/Button/ConfirmButton';
 
 type IVisibility = IAbstractContentDescriptor['visibility'];
 const visibilities: IVisibility[] = [
@@ -335,6 +337,21 @@ const getLibraryVisibility = (librariesState: ILibrariesState): IVisibility => {
   return 'PRIVATE';
 };
 
+interface ModalStateClose {
+  type: 'close';
+}
+
+interface ModalStateError {
+  type: 'error';
+  label: string;
+}
+
+interface ModalStateLibname {
+  type: 'libname';
+}
+
+type ModalState = ModalStateClose | ModalStateError | ModalStateLibname;
+
 interface ScriptEditorProps {
   /**
    * scriptType- the type of library to use ("CSS" | "ClientScript" | "ServerScript")
@@ -355,6 +372,9 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
       libraries: {},
     },
   );
+  const [modalState, setModalState] = React.useState<ModalState>({
+    type: 'close',
+  });
 
   /**
    * A callback for websocket event management
@@ -407,13 +427,18 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           .catch((e: NewLibErrors) => {
             switch (e) {
               case 'NOTNEW':
-                alert(
-                  'Script name not available (script already exists or the name contains bad characters)',
-                );
+                setModalState({
+                  type: 'error',
+                  label:
+                    'Script name not available (script already exists or the name contains bad characters)',
+                });
                 break;
               case 'UNKNOWN':
               default:
-                alert('Cannot create the script');
+                setModalState({
+                  type: 'error',
+                  label: 'Cannot create the script',
+                });
             }
           });
       }
@@ -426,54 +451,57 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
    *
    * @param content - the content of the library
    */
-  const onSaveLibrary = React.useCallback(
-    (content: string) => {
-      let libKey: string | null = librariesState.selected;
-      if (!libKey) {
-        // If no library is yet selected (tipically when there is no library of this type in the db)
-        // Ask for a name and insert content as new library
-        libKey = prompt('Please enter a script name');
-        if (libKey) {
-          onNewLibrary(libKey, content);
-        }
-      } else {
-        if (isEditAllowed(librariesState)) {
-          LibraryAPI.saveLibrary(
-            scriptType,
-            librariesState.selected,
-            librariesState.libraries[librariesState.selected].library,
-          )
-            .catch(() => {
-              alert('The library cannot be saved');
-            })
-            .then(() => {
-              dispatchStateAction({
-                type: 'SaveLibrary',
-              });
-            });
-        }
-      }
-    },
-    [librariesState, onNewLibrary, scriptType],
-  );
+  const onSaveLibrary = React.useCallback(() => {
+    // let libKey: string | null = librariesState.selected;
+    // if (!libKey) {
+    //   // If no library is yet selected (tipically when there is no library of this type in the db)
+    //   // Ask for a name and insert content as new library
+    //   libKey = prompt('Please enter a script name');
+    //   if (libKey) {
+    //     onNewLibrary(libKey, content);
+    //   }
+    // } else {
+    if (isEditAllowed(librariesState)) {
+      LibraryAPI.saveLibrary(
+        scriptType,
+        librariesState.selected,
+        librariesState.libraries[librariesState.selected].library,
+      )
+        .then(() => {
+          dispatchStateAction({
+            type: 'SaveLibrary',
+          });
+        })
+        .catch(() => {
+          // alert('The library cannot be saved');
+          setModalState({
+            type: 'error',
+            label: 'The library cannot be saved',
+          });
+        });
+    }
+    // }
+  }, [librariesState, scriptType]);
 
   /**
    * onDeleteLibrary deletes the selected library in the database
    */
   const onDeleteLibrary = () => {
-    if (confirm('Are you sure you want to delete this library?')) {
-      LibraryAPI.deleteLibrary(scriptType, librariesState.selected)
-        .then(() => {
-          if (librarySelector.current) {
-            dispatchStateAction({
-              type: 'RemoveLibrary',
-            });
-          }
-        })
-        .catch(() => {
-          alert('Cannot delete the script');
+    LibraryAPI.deleteLibrary(scriptType, librariesState.selected)
+      .then(() => {
+        if (librarySelector.current) {
+          dispatchStateAction({
+            type: 'RemoveLibrary',
+          });
+        }
+      })
+      .catch(() => {
+        'The library cannot be saved';
+        setModalState({
+          type: 'error',
+          label: 'Cannot delete the script',
         });
-    }
+      });
   };
 
   /**
@@ -485,7 +513,11 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
         dispatchStateAction({ type: 'SetUpLibrariesState', libraries: libs });
       })
       .catch(() => {
-        alert('Cannot get the scripts');
+        // alert('Cannot get the scripts');
+        setModalState({
+          type: 'error',
+          label: 'Cannot get the scripts',
+        });
       });
   }, [scriptType]);
 
@@ -494,13 +526,35 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
   return (
     <Toolbar>
       <Toolbar.Header>
-        <IconButton
-          icon="plus"
-          tooltip="Add a new script"
-          onClick={() => {
-            onNewLibrary(prompt('Type the name of the script'));
-          }}
-        />
+        {modalState.type === 'libname' ? (
+          <TextPrompt
+            placeholder="Library name"
+            defaultFocus
+            onAction={(success, value) => {
+              if (value === '') {
+                setModalState({
+                  type: 'error',
+                  label: 'The library must have a name',
+                });
+              } else {
+                if (success) {
+                  onNewLibrary(value);
+                  setModalState({ type: 'close' });
+                }
+              }
+            }}
+            onBlur={() => setModalState({ type: 'close' })}
+            applyOnEnter
+          />
+        ) : (
+          <IconButton
+            icon="plus"
+            tooltip="Add a new script"
+            onClick={() => {
+              setModalState({ type: 'libname' });
+            }}
+          />
+        )}
         {librariesState.selected && (
           <>
             <select
@@ -549,14 +603,15 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
                   <IconButton
                     icon="save"
                     tooltip="Save the script"
-                    onClick={() => onSaveLibrary(libEntry.library.content)}
+                    onClick={() => onSaveLibrary()}
                   />
                 )}
                 {isDeleteAllowed(librariesState) && (
-                  <IconButton
+                  <ConfirmButton
                     icon="trash"
                     tooltip="Delete the script"
-                    onClick={onDeleteLibrary}
+                    onAction={success => success && onDeleteLibrary()}
+                    onBlur={() => setModalState({ type: 'close' })}
                   />
                 )}
               </>
@@ -569,7 +624,19 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             ) : libEntry.status.isEdited ? (
               <StyledLabel type="warning" value="The script is not saved" />
             ) : (
-              <StyledLabel type="normal" value="The script is saved" />
+              <StyledLabel
+                type="succes"
+                value="The script is saved"
+                duration={3000}
+              />
+            )}
+            {modalState.type === 'error' && (
+              <StyledLabel
+                type="error"
+                value={modalState.label}
+                duration={3000}
+                onLabelVanish={() => setModalState({ type: 'close' })}
+              />
             )}
           </>
         )}
