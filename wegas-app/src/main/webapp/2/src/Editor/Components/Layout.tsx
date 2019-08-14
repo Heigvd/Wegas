@@ -6,7 +6,7 @@ import StateMachineEditor from './StateMachineEditor';
 import PageDisplay from './Page/PageDisplay';
 import TreeView from './Variable/VariableTree';
 import Editor from './EntityEditor';
-import { FileBrowserWithMeta } from './FileBrowser/TreeFileBrowser/FileBrowser';
+import { FileBrowserWithMeta } from './FileBrowser/FileBrowser';
 import LibraryEditor from './ScriptEditors/LibraryEditor';
 
 const layout = css({
@@ -56,7 +56,7 @@ export default class AppLayout extends React.Component<
               '2': {
                 type: 'TabLayoutNode',
                 vertical: false,
-                children: ['Page', 'StateMachine'],
+                children: ['Files', 'Page', 'StateMachine'],
               },
               '3': {
                 type: 'TabLayoutNode',

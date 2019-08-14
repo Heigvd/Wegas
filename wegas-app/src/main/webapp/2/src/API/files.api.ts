@@ -47,7 +47,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
     deleteFile(
       absolutePath: string,
       force?: boolean,
-    ): Promise<IFileDescriptor | undefined> {
+    ): Promise<IFileDescriptor> {
       return rest(
         FILE_BASE(gameModelId) +
           (force ? 'force/' : '') +
