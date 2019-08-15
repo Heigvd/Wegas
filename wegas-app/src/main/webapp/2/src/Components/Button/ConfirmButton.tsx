@@ -1,24 +1,39 @@
 import * as React from 'react';
 import { IconButtonProps, IconButton, shapeStyle } from './IconButton';
 import { themeVar } from '../Theme';
-import { omit } from 'lodash';
 import { useOnClickOutside } from '../Hooks/useOnClickOutside';
+import { css } from 'emotion';
+
+const buttonZone = css({
+  margin: '5px',
+  backgroundColor: 'lightgrey',
+  textAlign: 'center',
+  display: 'inline-block',
+});
 
 interface ConfirmButtonProps {
   onAction?: (success: boolean) => void;
   onBlur?: () => void;
   defaultConfirm?: boolean;
+  dontResetOnBlur?: boolean;
 }
 
 export function ConfirmButton(props: ConfirmButtonProps & IconButtonProps) {
   const [confirmation, setConfirmation] = React.useState(props.defaultConfirm);
   const confirmButton = React.useRef(null);
 
-  useOnClickOutside(confirmButton, () => props.onBlur && props.onBlur());
+  useOnClickOutside(confirmButton, () => {
+    if (!props.dontResetOnBlur) {
+      setConfirmation(false);
+    }
+    if (props.onBlur) {
+      props.onBlur();
+    }
+  });
 
   return !confirmation ? (
     <IconButton
-      {...omit(props, ['onAction', 'onBlur', 'defaultConfirm'])}
+      {...props as IconButtonProps}
       onClick={event => {
         event.stopPropagation();
         props.onClick && props.onClick(event);
@@ -26,14 +41,7 @@ export function ConfirmButton(props: ConfirmButtonProps & IconButtonProps) {
       }}
     />
   ) : (
-    <div
-      ref={confirmButton}
-      style={{
-        margin: '5px',
-        backgroundColor: 'lightgrey',
-        textAlign: 'center',
-      }}
-    >
+    <div ref={confirmButton} className={buttonZone}>
       {props.label}
       <button
         style={{

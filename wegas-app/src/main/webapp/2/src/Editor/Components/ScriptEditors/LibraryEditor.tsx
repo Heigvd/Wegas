@@ -452,15 +452,6 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
    * @param content - the content of the library
    */
   const onSaveLibrary = React.useCallback(() => {
-    // let libKey: string | null = librariesState.selected;
-    // if (!libKey) {
-    //   // If no library is yet selected (tipically when there is no library of this type in the db)
-    //   // Ask for a name and insert content as new library
-    //   libKey = prompt('Please enter a script name');
-    //   if (libKey) {
-    //     onNewLibrary(libKey, content);
-    //   }
-    // } else {
     if (isEditAllowed(librariesState)) {
       LibraryAPI.saveLibrary(
         scriptType,
@@ -473,14 +464,12 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           });
         })
         .catch(() => {
-          // alert('The library cannot be saved');
           setModalState({
             type: 'error',
             label: 'The library cannot be saved',
           });
         });
     }
-    // }
   }, [librariesState, scriptType]);
 
   /**
@@ -513,7 +502,6 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
         dispatchStateAction({ type: 'SetUpLibrariesState', libraries: libs });
       })
       .catch(() => {
-        // alert('Cannot get the scripts');
         setModalState({
           type: 'error',
           label: 'Cannot get the scripts',

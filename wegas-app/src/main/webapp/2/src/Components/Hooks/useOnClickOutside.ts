@@ -1,22 +1,13 @@
 import * as React from 'react';
 
-function isNode(object: any): object is Node {
-  for (const key in Node) {
-    if (object[key] === undefined) {
-      return false;
-    }
-  }
-  return true;
-}
-
 export function useOnClickOutside(
-  ref: React.RefObject<HTMLDivElement>,
+  ref: React.RefObject<HTMLElement>,
   cb: () => void,
 ) {
   React.useEffect(() => {
     const listener = (e: MouseEvent) => {
-      const target = e.target;
-      if (ref.current && isNode(target) && !ref.current.contains(target)) {
+      const target = e.target as HTMLElement;
+      if (ref.current && !ref.current.contains(target)) {
         cb();
       }
     };
