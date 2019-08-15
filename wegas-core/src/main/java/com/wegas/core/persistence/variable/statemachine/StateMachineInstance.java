@@ -21,7 +21,7 @@ import com.wegas.editor.ValueGenerators.One;
 import com.wegas.editor.ValueGenerators.True;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.ReadOnlyNumber;
+import com.wegas.editor.View.NumberView;
 import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +57,8 @@ public class StateMachineInstance extends VariableInstance {
             view = @View(
                     label = "Current State id",
                     featureLevel = ADVANCED,
-                    value = ReadOnlyNumber.class
+                    readOnly = true,
+                    value = NumberView.class
             ))
     private Long currentStateId;
     /**

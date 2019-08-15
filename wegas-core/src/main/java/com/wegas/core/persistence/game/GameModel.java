@@ -39,8 +39,8 @@ import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.ValueGenerators.GmProperties;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.INTERNAL;
 import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.ReadOnlyNumber;
-import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.NumberView;
+import com.wegas.editor.View.StringView;
 import com.wegas.editor.View.Textarea;
 import com.wegas.editor.View.View;
 import java.util.*;
@@ -109,7 +109,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Column(columnDefinition = "int not null default 1")
     @WegasEntityProperty(initOnly = true,
             optional = false, nullable = false,
-            view = @View(label = "UI Version", value = ReadOnlyNumber.class))
+            view = @View(label = "UI Version", readOnly = true, value = NumberView.class))
     private Integer UIVersion;
 
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
@@ -409,7 +409,12 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @WegasExtraProperty(
             optional = true, nullable = false,
-            view = @View(label = "Type", value = ReadOnlyString.class))
+            view = @View(
+                    label = "Type",
+                    readOnly = true,
+                    value = StringView.class
+            )
+    )
     public Status getStatus() {
         return status;
     }
@@ -950,7 +955,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     @WegasExtraProperty(
             optional = true, nullable = false,
-            view = @View(label = "Type", value = ReadOnlyString.class))
+            view = @View(label = "Type", value = StringView.class))
     public GmType getType() {
         return type;
     }

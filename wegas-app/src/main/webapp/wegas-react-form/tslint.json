@@ -23,7 +23,8 @@
                     "functions": "never",
                     "typeLiterals": "ignore"
                 }
-            }
+            },
+            "esSpecCompliant": true
         ],
         "jsx-no-multiline-js": false,
         "jsx-no-lambda": {

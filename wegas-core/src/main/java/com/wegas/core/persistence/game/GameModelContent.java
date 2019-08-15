@@ -22,8 +22,8 @@ import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.ValueGenerators.Zero;
 import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.ReadOnlyNumber;
-import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.NumberView;
+import com.wegas.editor.View.StringView;
 import com.wegas.editor.View.View;
 import com.wegas.editor.View.VisibilitySelectView;
 import java.io.Serializable;
@@ -64,7 +64,7 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
 
     @WegasEntityProperty(
             nullable = false,
-            view = @View(label = "Key", value = ReadOnlyString.class))
+            view = @View(label = "Key", readOnly = true, value = StringView.class))
     private String contentKey;
 
     /**
@@ -72,7 +72,7 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
      */
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyString.class,
-            view = @View(label = "Content Type", value = ReadOnlyString.class))
+            view = @View(label = "Content Type", readOnly = true, value = StringView.class))
     private String contentType;
     /**
      *
@@ -98,7 +98,13 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
 
     @Version
     @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
-            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
+            sameEntityOnly = true, view = @View(
+                    label = "Version",
+                    readOnly = true,
+                    value = NumberView.class,
+                    featureLevel = ADVANCED
+            )
+    )
     @Column(columnDefinition = "bigint default '0'::bigint")
     private Long version;
 

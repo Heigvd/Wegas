@@ -21,7 +21,7 @@ import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.False;
-import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.StringView;
 import com.wegas.editor.View.View;
 import com.wegas.editor.View.VisibilitySelectView;
 import java.util.Collection;
@@ -72,7 +72,8 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
             optional = false, nullable = false,
             view = @View(
                     label = "Language code",
-                    value = ReadOnlyString.class
+                    readOnly = true,
+                    value = StringView.class
             ))
     private String code;
 

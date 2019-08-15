@@ -19,7 +19,7 @@ import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.View.ReadOnlyString;
+import com.wegas.editor.View.StringView;
 import com.wegas.editor.View.View;
 import com.wegas.editor.View.VisibilitySelectView;
 import java.io.Serializable;
@@ -50,7 +50,9 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      * @throws RepositoryException
      */
     @JsonCreator
-    public static AbstractContentDescriptor getDescriptor(@JsonProperty("name") String name, @JsonProperty("path") String path, @JsonProperty("mimeType") String mimeType) throws RepositoryException {
+    public static AbstractContentDescriptor getDescriptor(@JsonProperty("name") String name,
+            @JsonProperty("path") String path,
+            @JsonProperty("mimeType") String mimeType) throws RepositoryException {
         if (mimeType.equals(DirectoryDescriptor.MIME_TYPE)) {
             return new DirectoryDescriptor(name, path, null);
         } else {
@@ -63,8 +65,14 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     /**
      * MIME type
      */
-    @WegasEntityProperty(view = @View(label = "MIME type", value = ReadOnlyString.class),
-            optional = false, nullable = false)
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(
+                    label = "MIME type",
+                    readOnly = true,
+                    value = StringView.class
+            )
+    )
     protected String mimeType;
 
     /**
@@ -360,7 +368,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     /**
      * @return node size
      */
-    @WegasExtraProperty(view = @View(label = "File size"), optional =false, nullable =false)
+    @WegasExtraProperty(view = @View(label = "File size"), optional = false, nullable = false)
     public Long getBytes() {
         return 0L;
     }
