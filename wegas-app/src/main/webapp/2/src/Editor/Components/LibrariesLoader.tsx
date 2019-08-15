@@ -1,12 +1,13 @@
 import * as React from 'react';
-import { LibraryAPI, ILibraries } from '../API/library.api';
+import { LibraryAPI, ILibraries } from '../../API/library.api';
+import { wlog } from '../../Helper/wegaslog';
 
 interface WegasLibraries {
   CSS: ILibraries;
   JS: ILibraries;
 }
 
-export function LibrariesLoader() {
+export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
   const [libraries, setLibraries] = React.useState<WegasLibraries>({
     CSS: {},
     JS: {},
@@ -20,7 +21,7 @@ export function LibrariesLoader() {
         });
       })
       .catch(() => {
-        alert('Cannot get the scripts');
+        wlog('Cannot get the scripts');
       });
 
     LibraryAPI.getAllLibraries('ClientScript')
@@ -30,19 +31,26 @@ export function LibrariesLoader() {
         });
       })
       .catch(() => {
-        alert('Cannot get the scripts');
+        wlog('Cannot get the scripts');
       });
   }, []);
   return (
     <>
       {Object.keys(libraries.CSS).map(libKey => {
         return (
-          <style key={'CSS' + libKey}>{libraries.CSS[libKey].content}</style>
+          <style className="WegasStyle" key={'CSS' + libKey}>
+            {libraries.CSS[libKey].content}
+          </style>
         );
       })}
+      {props.children}
       {Object.keys(libraries.JS).map(libKey => {
         return (
-          <script key={'JS' + libKey} type="text/javascript">
+          <script
+            className="WegasScript"
+            key={'JS' + libKey}
+            type="text/javascript"
+          >
             {libraries.JS[libKey].content}
           </script>
         );
