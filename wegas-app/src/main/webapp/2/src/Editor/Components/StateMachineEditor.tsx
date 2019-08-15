@@ -458,7 +458,7 @@ export default function ConnectedStateMachineEditor() {
             )
           : undefined;
         const instance =
-          descriptor != null ? getInstance(descriptor)() : undefined;
+          descriptor != null ? getInstance(descriptor) : undefined;
         const editChild =
           s.global.editing &&
           s.global.editing.type === 'Variable' &&
