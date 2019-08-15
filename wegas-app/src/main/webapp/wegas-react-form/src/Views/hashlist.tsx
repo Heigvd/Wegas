@@ -96,7 +96,7 @@ function HashlistView({
 
         return (
             <Row
-                key={child.key}
+                key={child.key!}
                 editKey={key}
                 readOnly={restProps.view.readOnly}
                 alterKey={alterKey}
