@@ -57,7 +57,7 @@
     "downshift": "^3.2.10",
     "emotion": "^10.0.9",
     "fast-json-patch": "^2.1.0",
-    "immer": "3.1.2",
+    "immer": "3.2.0",
     "immutable": "^3.8.2",
     "jsoninput": "github:cigit/jsoninput",
     "jsplumb": "^2.9.3",

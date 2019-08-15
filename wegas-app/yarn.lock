@@ -6900,15 +6900,10 @@ image-size@~0.5.0:
   resolved "https://registry.yarnpkg.com/image-size/-/image-size-0.5.5.tgz#09dfd4ab9d20e29eb1c3e80b8990378df9e3cb9c"
   integrity sha1-Cd/Uq50g4p6xw+gLiZA3jfnjy5w=
 
-immer@3.1.2:
-  version "3.1.2"
-  resolved "https://registry.yarnpkg.com/immer/-/immer-3.1.2.tgz#1f24f2e25433f5ff168a1ff6c8c6366d2106e61a"
-  integrity sha512-pi8JuvJ9c+98DlpDms/o0YLLg5khP8Qzjd8CtIGc4qVm2eoLdQGivJL266nWccofKT/oBSxnhAh/o+nmOXtLXw==
-
-immer@^3.1.2:
-  version "3.1.3"
-  resolved "https://registry.yarnpkg.com/immer/-/immer-3.1.3.tgz#59bc742b2aab6e2c676445edb653e588a23c70fc"
-  integrity sha512-HG5SXTXTTVy9lGNwS075cNhQoV375jHsIJO3UtMjuUWJOuwlMr0u42FlsKTJcppt5AzsFAsmj9r4kHvsSHh3hQ==
+immer@3.2.0, immer@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/immer/-/immer-3.2.0.tgz#53686471e9dd2b070e0fb5500c6fdecd3a99375f"
+  integrity sha512-+a2R8z9eELHst6aht++nzVzJ8LJ+Hsg49qttfg9Kc/vmoxEdPXw5/rV6+4DYWGgnq+B36KbLr4OTaGtS9mDjtg==
 
 immutable@^3, immutable@^3.8.2:
   version "3.8.2"
@@ -8133,20 +8128,20 @@ jsonfile@^3.0.0:
     graceful-fs "^4.1.6"
 
 "jsoninput@github:cigit/JSONInput":
-  version "0.0.23"
-  resolved "https://codeload.github.com/cigit/JSONInput/tar.gz/64de71f63e78292c0d72e2c1ceb6b3793939b99e"
+  version "0.0.25"
+  resolved "https://codeload.github.com/cigit/JSONInput/tar.gz/4bd825b124fc38325d57ce8b552e2af60a852387"
   dependencies:
-    immer "^3.1.2"
+    immer "^3.2.0"
     jsonschema "^1.2.4"
-    lodash-es "^4.17.11"
+    lodash-es "^4.17.15"
 
 "jsoninput@github:cigit/jsoninput":
-  version "0.0.23"
-  resolved "https://codeload.github.com/cigit/jsoninput/tar.gz/64de71f63e78292c0d72e2c1ceb6b3793939b99e"
+  version "0.0.25"
+  resolved "https://codeload.github.com/cigit/jsoninput/tar.gz/4bd825b124fc38325d57ce8b552e2af60a852387"
   dependencies:
-    immer "^3.1.2"
+    immer "^3.2.0"
     jsonschema "^1.2.4"
-    lodash-es "^4.17.11"
+    lodash-es "^4.17.15"
 
 jsonschema@^1.2.4:
   version "1.2.4"
@@ -8397,10 +8392,10 @@ locate-path@^3.0.0:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
 
-lodash-es@^4.17.11:
-  version "4.17.11"
-  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.11.tgz#145ab4a7ac5c5e52a3531fb4f310255a152b4be0"
-  integrity sha512-DHb1ub+rMjjrxqlB3H56/6MXtm1lSksDp2rA2cNWjG8mlDUYFhUj3Di2Zn5IwSU87xLv8tNIQ7sSwE/YOX/D/Q==
+lodash-es@^4.17.11, lodash-es@^4.17.15:
+  version "4.17.15"
+  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.15.tgz#21bd96839354412f23d7a10340e5eac6ee455d78"
+  integrity sha512-rlrc3yU3+JNOpZ9zj5pQtxnx2THmvRykwL4Xlxoa8I9lHBlVbbyPhgyPMioxVZ4NqyxaVVtaJnzsyOidQIhyyQ==
 
 lodash._basecopy@^3.0.0:
   version "3.0.1"
