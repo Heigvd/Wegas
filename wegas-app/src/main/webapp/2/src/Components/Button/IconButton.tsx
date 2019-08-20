@@ -76,14 +76,10 @@ export function IconButton(props: IconButtonProps) {
           ? event => !disabled && onMouseDown(event)
           : onMouseDown
       }
-      className={cx(
-        shapeStyle,
-        {
-          [disabledStyle]: Boolean(disabled),
-          [defaultActiveStyle]: Boolean(pressed),
-        },
-        className,
-      )}
+      className={cx(shapeStyle, className, {
+        [disabledStyle]: Boolean(disabled),
+        [defaultActiveStyle]: Boolean(pressed),
+      })}
     >
       {prefixedLabel && label}
       <FontAwesome {...other} />

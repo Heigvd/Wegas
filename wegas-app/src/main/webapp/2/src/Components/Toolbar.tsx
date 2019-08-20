@@ -3,13 +3,16 @@ import { css, cx } from 'emotion';
 
 const flex = css({
   display: 'flex',
-  flexDirection: 'column',
   height: '100%',
   width: '100%',
 });
 const vertical = css(flex, {
   flexDirection: 'row',
 });
+const horizontal = css(flex, {
+  flexDirection: 'column',
+});
+
 const toolbar = css({
   display: 'flex',
   [`.${vertical} > &`]: {
@@ -33,7 +36,7 @@ export const Toolbar = Object.assign(
     return (
       <div
         className={cx({
-          [flex]: !props.vertical,
+          [cx(horizontal, flex)]: !props.vertical,
           [vertical]: Boolean(props.vertical),
         })}
       >

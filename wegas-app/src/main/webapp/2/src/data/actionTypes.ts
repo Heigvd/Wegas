@@ -20,3 +20,5 @@ export const SEARCH_ONGOING = 'SEARCH/ONGOING';
 export const SEARCH_CLEAR = 'SEARCH/CLEAR';
 
 export const PUSHER_SOCKET = 'PUSHER/SOCKET';
+
+export const GAMEMODEL_EDIT = 'GAMEMODEL/EDIT';

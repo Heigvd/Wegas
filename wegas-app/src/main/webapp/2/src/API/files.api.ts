@@ -20,7 +20,7 @@ export const FILE_BASE = (gameModelId?: number) =>
     gameModelId === undefined ? GameModel.selectCurrent().id! : gameModelId
   }/File/`;
 
-export const FileAPIFactory = (gameModelId?: number) => {
+const FileAPIFactory = (gameModelId?: number) => {
   return {
     /**
      * List all files in a directory

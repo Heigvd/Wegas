@@ -8,6 +8,20 @@ import TreeView from './Variable/VariableTree';
 import Editor from './EntityEditor';
 import { FileBrowserWithMeta } from './FileBrowser/TreeFileBrowser/FileBrowser';
 import LibraryEditor from './ScriptEditors/LibraryEditor';
+import { LanguageEditor } from './LanguageEditor';
+
+export type Features = 'ADVANCED' | 'INTERNAL' | 'DEBUG' | 'READONLY';
+export const features: Features[] = [
+  'ADVANCED',
+  'INTERNAL',
+  'DEBUG',
+  'READONLY',
+];
+export const featuresCTX = React.createContext<{
+  currentFeatures: Features[];
+  setFeature: (feature: Features) => void;
+  removeFeature: (feature: Features) => void;
+}>({ currentFeatures: [], setFeature: () => {}, removeFeature: () => {} });
 
 const layout = css({
   display: 'flex',
@@ -15,19 +29,22 @@ const layout = css({
   height: '100%',
 });
 
-export default class AppLayout extends React.Component<
-  {},
-  { editable: boolean }
-> {
-  constructor(props: {}) {
-    super(props);
-    this.state = {
-      editable: false,
-    };
-  }
-  render() {
-    return (
-      <div className={layout}>
+export default function AppLayout() {
+  const [features, setFeature] = React.useState<Features[]>([]);
+
+  return (
+    <div className={layout}>
+      <featuresCTX.Provider
+        value={{
+          currentFeatures: features,
+          setFeature: feature =>
+            setFeature(oldFeatures => [...oldFeatures, feature]),
+          removeFeature: feature =>
+            setFeature(oldFeatures =>
+              oldFeatures.filter(feat => feat !== feature),
+            ),
+        }}
+      >
         <Header />
         <DndLinearLayout
           tabMap={{
@@ -37,6 +54,7 @@ export default class AppLayout extends React.Component<
             Editor: <Editor />,
             Files: <FileBrowserWithMeta />,
             Scripts: <LibraryEditor />,
+            Languages: <LanguageEditor />,
           }}
           layoutMap={{
             rootKey: '0',
@@ -56,7 +74,7 @@ export default class AppLayout extends React.Component<
               '2': {
                 type: 'TabLayoutNode',
                 vertical: false,
-                children: ['Page', 'StateMachine'],
+                children: ['Languages', 'Page', 'StateMachine'],
               },
               '3': {
                 type: 'TabLayoutNode',
@@ -66,7 +84,7 @@ export default class AppLayout extends React.Component<
             },
           }}
         />
-      </div>
-    );
-  }
+      </featuresCTX.Provider>
+    </div>
+  );
 }

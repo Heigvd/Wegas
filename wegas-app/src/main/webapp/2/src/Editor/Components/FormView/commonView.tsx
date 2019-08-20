@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
+// import { featuresCTX } from '../Layout';
 
 const containerStyle = css({
   position: 'relative',
@@ -19,14 +20,14 @@ const shortInline = css({
   marginRight: '2em',
   verticalAlign: 'top',
   maxWidth: '11em',
-})
+});
 const LAYOUTS = {
   shortInline: shortInline,
   inline: css({
     display: 'inline-block',
     verticalAlign: 'top',
   }),
-    extraShortInline: css(shortInline, {
+  extraShortInline: css(shortInline, {
     maxWidth: '5em',
   }),
 };
@@ -50,17 +51,21 @@ export function CommonViewContainer({
   errorMessage,
   view,
 }: CommonViewProps) {
+  // const { currentFeature } = React.useContext(featuresCTX);
   const error = errorMessage && errorMessage.join(', ');
   const layout = view.layout ? LAYOUTS[view.layout] : '';
+
   return (
+    // (!view.readOnly || currentFeature === 'READONLY') && (
     <div
       className={cx(containerStyle, layout, {
         [`${borderTop}`]: Boolean(view.borderTop),
       })}
     >
-    <span>Index: {view.index}: </span>
+      {/* {currentFeature === 'DEBUG' && <span>Index: {view.index}: </span>} */}
       {children}
       <div className={errorStyle}>{error}</div>
     </div>
+    // )
   );
 }

@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 import u from 'immer';
-import { ActionType, StateActions } from '../actions';
+import { ActionType, StateActions, ActionCreator } from '../actions';
 import { omit } from 'lodash-es';
 
 export interface GameModelState {
@@ -19,9 +19,21 @@ const gameModels: Reducer<Readonly<GameModelState>> = u(
         );
         return { ...omit(state, deletedKeys), ...gms };
       }
+      case ActionType.GAMEMODEL_EDIT:
+        state[action.payload.gameModelId] = action.payload.gameModel;
+        return;
     }
     return state;
   },
   { [CurrentGM.id!]: CurrentGM },
 );
 export default gameModels;
+
+/**
+ * Edit GameModel
+ * @param gameModel the new version of the game model
+ * @param gameModelId the Id of the edited game model
+ */
+export function editGameModel(gameModel: IGameModel, gameModelId: string) {
+  return ActionCreator.GAMEMODEL_EDIT({ gameModel, gameModelId });
+}
