@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
-// import { featuresCTX } from '../Layout';
+import { featuresCTX } from '../../../Components/FeatureProvider';
 
 const containerStyle = css({
   position: 'relative',
@@ -31,11 +31,15 @@ const LAYOUTS = {
     maxWidth: '5em',
   }),
 };
+
+export type FeatureLevel = 'ADVANCED' | 'INTERNAL' | 'DEFAULT';
+
 export interface CommonView {
   borderTop?: boolean;
   layout?: keyof typeof LAYOUTS;
   index?: number;
   readOnly?: boolean;
+  featureLevel?: FeatureLevel;
 }
 interface CommonViewProps {
   children: React.ReactNode;
@@ -51,21 +55,25 @@ export function CommonViewContainer({
   errorMessage,
   view,
 }: CommonViewProps) {
-  // const { currentFeature } = React.useContext(featuresCTX);
+  const { currentFeatures } = React.useContext(featuresCTX);
   const error = errorMessage && errorMessage.join(', ');
   const layout = view.layout ? LAYOUTS[view.layout] : '';
 
-  return (
-    // (!view.readOnly || currentFeature === 'READONLY') && (
-    <div
-      className={cx(containerStyle, layout, {
-        [`${borderTop}`]: Boolean(view.borderTop),
-      })}
-    >
-      {/* {currentFeature === 'DEBUG' && <span>Index: {view.index}: </span>} */}
-      {children}
-      <div className={errorStyle}>{error}</div>
-    </div>
-    // )
-  );
+  if (
+    view.featureLevel === undefined ||
+    currentFeatures.includes(view.featureLevel)
+  ) {
+    return (
+      <div
+        className={cx(containerStyle, layout, {
+          [`${borderTop}`]: Boolean(view.borderTop),
+        })}
+      >
+        {/* <span>Index: {view.index}: </span> */}
+        {children}
+        <div className={errorStyle}>{error}</div>
+      </div>
+    );
+  }
+  return null;
 }

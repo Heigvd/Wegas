@@ -65,7 +65,7 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
         method: 'PUT',
         body: JSON.stringify(language),
       }).then((res: Response) => {
-        return res.json() as Promise<IGameModel>;
+        return res.json() as Promise<IGameModelLanguage>;
       });
     },
 

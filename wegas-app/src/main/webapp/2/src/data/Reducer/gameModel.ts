@@ -22,6 +22,18 @@ const gameModels: Reducer<Readonly<GameModelState>> = u(
       case ActionType.GAMEMODEL_EDIT:
         state[action.payload.gameModelId] = action.payload.gameModel;
         return;
+      case ActionType.LANGUAGE_EDIT:
+        state[action.payload.gameModelId] = {
+          ...state[action.payload.gameModelId],
+          languages: [
+            ...state[action.payload.gameModelId].languages.filter(
+              language =>
+                language.code !== action.payload.gameModelLanguage.code,
+            ),
+            action.payload.gameModelLanguage,
+          ],
+        };
+        return;
     }
     return state;
   },
@@ -36,4 +48,16 @@ export default gameModels;
  */
 export function editGameModel(gameModel: IGameModel, gameModelId: string) {
   return ActionCreator.GAMEMODEL_EDIT({ gameModel, gameModelId });
+}
+
+/**
+ * Edit GameModelLanguage
+ * @param gameModelLanguage the new version of the game model language
+ * @param gameModelId the Id of the edited game model
+ */
+export function editLanguage(
+  gameModelLanguage: IGameModelLanguage,
+  gameModelId: string,
+) {
+  return ActionCreator.LANGUAGE_EDIT({ gameModelLanguage, gameModelId });
 }

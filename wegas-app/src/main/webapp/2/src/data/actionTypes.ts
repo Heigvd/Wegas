@@ -22,3 +22,4 @@ export const SEARCH_CLEAR = 'SEARCH/CLEAR';
 export const PUSHER_SOCKET = 'PUSHER/SOCKET';
 
 export const GAMEMODEL_EDIT = 'GAMEMODEL/EDIT';
+export const LANGUAGE_EDIT = 'LANGUAGE/EDIT';

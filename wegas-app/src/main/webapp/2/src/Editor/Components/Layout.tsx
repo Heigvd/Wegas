@@ -9,19 +9,7 @@ import Editor from './EntityEditor';
 import { FileBrowserWithMeta } from './FileBrowser/TreeFileBrowser/FileBrowser';
 import LibraryEditor from './ScriptEditors/LibraryEditor';
 import { LanguageEditor } from './LanguageEditor';
-
-export type Features = 'ADVANCED' | 'INTERNAL' | 'DEBUG' | 'READONLY';
-export const features: Features[] = [
-  'ADVANCED',
-  'INTERNAL',
-  'DEBUG',
-  'READONLY',
-];
-export const featuresCTX = React.createContext<{
-  currentFeatures: Features[];
-  setFeature: (feature: Features) => void;
-  removeFeature: (feature: Features) => void;
-}>({ currentFeatures: [], setFeature: () => {}, removeFeature: () => {} });
+import { FeatureProvider } from '../../Components/FeatureProvider';
 
 const layout = css({
   display: 'flex',
@@ -30,21 +18,9 @@ const layout = css({
 });
 
 export default function AppLayout() {
-  const [features, setFeature] = React.useState<Features[]>([]);
-
   return (
     <div className={layout}>
-      <featuresCTX.Provider
-        value={{
-          currentFeatures: features,
-          setFeature: feature =>
-            setFeature(oldFeatures => [...oldFeatures, feature]),
-          removeFeature: feature =>
-            setFeature(oldFeatures =>
-              oldFeatures.filter(feat => feat !== feature),
-            ),
-        }}
-      >
+      <FeatureProvider>
         <Header />
         <DndLinearLayout
           tabMap={{
@@ -84,7 +60,7 @@ export default function AppLayout() {
             },
           }}
         />
-      </featuresCTX.Provider>
+      </FeatureProvider>
     </div>
   );
 }
