@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { FeatureLevel } from '../Editor/Components/FormView/commonView';
+import { Menu } from './Menu';
 
-export const availableFeatures: FeatureLevel[] = ['ADVANCED', 'INTERNAL'];
+const availableFeatures: FeatureLevel[] = ['ADVANCED', 'INTERNAL'];
 export const featuresCTX = React.createContext<{
   currentFeatures: FeatureLevel[];
   setFeature: (feature: FeatureLevel) => void;
@@ -26,5 +27,47 @@ function FeatureContext({ children }: React.PropsWithChildren<{}>) {
     </featuresCTX.Provider>
   );
 }
-
+/**
+ * Provider for FeatureContext Handles display features
+ */
 export const FeatureProvider = React.memo(FeatureContext);
+
+/**
+ * Features selector allows to select features inside the feature context given by the FeatureProvider
+ */
+
+export function FeatureToggler() {
+  const { currentFeatures, setFeature, removeFeature } = React.useContext(
+    featuresCTX,
+  );
+
+  return React.useMemo(
+    () => (
+      <Menu
+        label={'Features'}
+        items={availableFeatures.map(feature => ({
+          id: feature,
+          label: (
+            <>
+              <input
+                type="checkbox"
+                defaultChecked={currentFeatures.includes(feature)}
+                onChange={e => {
+                  if (e.target.checked) {
+                    setFeature(feature);
+                  } else {
+                    removeFeature(feature);
+                  }
+                }}
+                onClick={e => e.stopPropagation()}
+              />
+              {feature}
+            </>
+          ),
+        }))}
+        onSelect={() => {}}
+      />
+    ),
+    [currentFeatures, removeFeature, setFeature],
+  );
+}

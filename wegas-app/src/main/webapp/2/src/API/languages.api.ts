@@ -37,8 +37,9 @@ const LanguagesAPIFactory = (gameModelId?: number) => {
     },
     /**
      * Get the list of editable languages
+     * if anwser is ["*"] everything is editable and a new language can be created
      */
-    getEditableLanguages() {
+    getEditableLanguages(): Promise<(IGameModelLanguage | '*')[]> {
       return rest(LANGUAGES_BASE(gameModelId) + 'EditableLanguages').then(
         (res: Response) => {
           return res.json();

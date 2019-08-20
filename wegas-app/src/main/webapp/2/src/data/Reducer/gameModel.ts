@@ -22,18 +22,20 @@ const gameModels: Reducer<Readonly<GameModelState>> = u(
       case ActionType.GAMEMODEL_EDIT:
         state[action.payload.gameModelId] = action.payload.gameModel;
         return;
-      case ActionType.LANGUAGE_EDIT:
-        state[action.payload.gameModelId] = {
-          ...state[action.payload.gameModelId],
-          languages: [
-            ...state[action.payload.gameModelId].languages.filter(
-              language =>
-                language.code !== action.payload.gameModelLanguage.code,
-            ),
-            action.payload.gameModelLanguage,
-          ],
-        };
+      case ActionType.LANGUAGE_EDIT: {
+        const newLanguages = state[action.payload.gameModelId].languages;
+        const langIndex = newLanguages.findIndex(
+          language => language.code === action.payload.gameModelLanguage.code,
+        );
+        if (langIndex > -1) {
+          newLanguages.splice(langIndex, 1, action.payload.gameModelLanguage);
+          state[action.payload.gameModelId] = {
+            ...state[action.payload.gameModelId],
+            languages: newLanguages,
+          };
+        }
         return;
+      }
     }
     return state;
   },

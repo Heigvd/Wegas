@@ -30,6 +30,28 @@ export function LanguageEditor() {
   const [selectedLanguages, setSelectedLanguages] = React.useState(() =>
     languages.filter((_val, index) => index < 2).map(language => language.code),
   );
+
+  React.useEffect(() => {
+    LanguagesAPI.getEditableLanguages().then(editable => {
+      setSelectedLanguages(
+        languages
+          .sort((langA, langB) => {
+            const editA = editable.includes(langA);
+            const editB = editable.includes(langB);
+            if (editA && !editB) {
+              return -1;
+            }
+            if (!editA && editB) {
+              return 1;
+            }
+            return 0;
+          })
+          .filter((_val, index) => index < 2)
+          .map(language => language.code),
+      );
+    });
+  }, [languages]);
+
   return (
     <div className={cx(flex, grow)}>
       <Toolbar>
