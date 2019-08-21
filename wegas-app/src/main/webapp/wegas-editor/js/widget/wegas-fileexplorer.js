@@ -109,7 +109,8 @@ YUI.add('wegas-fileexplorer', function(Y) {
                                         ret = this.get(LABEL).toLowerCase().indexOf(searchVal.toLowerCase()) > -1;
                                     }
                                     if (!ret && this.get('data') && this.get('data.mimeType')) {
-                                        ret = this.get('data.mimeType').toLowerCase().indexOf(searchVal.toLowerCase()) === 0;
+                                        ret = this.get('data.mimeType').toLowerCase()
+                                            .indexOf(searchVal.toLowerCase()) === 0;
                                     }
                                     return ret;
                                 }
@@ -213,7 +214,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     return;
                 }
                 if (leaf.data.mimeType.indexOf('image') > -1) {
-                    ret += '<img src="' + this.getFullPath(leaf.path) +"?t="  + new Date().getTime() + '" /><br />';
+                    ret += '<img src="' + this.getFullPath(leaf.path) + "?t=" + new Date().getTime() + '" /><br />';
                 }
                 ret += leaf.data.mimeType + '<br />';
                 ret += FileExplorer.formatFileSize(leaf.data.bytes) + '<br /';
@@ -377,8 +378,10 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 e.file.progressBar.set('color', 'red');
                 e.file.treeLeaf.set('loading', false);
 
-                if (endsWith(e.statusText, ' already exists')) {
-                    Y.Wegas.Panel.confirm(e.statusText + '<br>Overwrite it ?<br><small>you will have to refresh your browser to see changes</small>',
+                var error = JSON.parse(e.data);
+                if (error && error["@class"] === "WegasErrorMessage"
+                    && endsWith(error.message, ' already exists')) {
+                    Y.Wegas.Panel.confirm(error.message + '<br>Overwrite it ?<br><small>you will have to refresh your browser to see changes</small>',
                         Y.bind(function() {
                             this.treeView.find(function(i) {
                                 return (i !== e.file.treeLeaf && i.get('label') === e.file.get('name'));
@@ -397,7 +400,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                         e.file.treeLeaf.destroy();
                     } catch (ex) {
                     }
-                    this.showMessage('error', e.statusText);
+                    this.showMessage('error', error && error.message || "Unexpeced Error");
                 }
             }, this);
 
@@ -786,7 +789,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     node.add(this.editNode);
                     this.editNode.hide();
 
-                    if (!this.editNode.parentPath.endsWith("/")){
+                    if (!this.editNode.parentPath.endsWith("/")) {
                         this.editNode.parentPath += "/";
                     }
                 }
@@ -1015,6 +1018,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 force = true;
             }
 
+            Y.log("Upload File: " + file);
             this.uploader.uploadThese([file],
                 Wegas.Facade.File.get('source') + (force ? 'force/' : '') + 'upload' + path,
                 {

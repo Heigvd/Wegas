@@ -77,7 +77,7 @@ YUI.add('wegas-alerts', function(Y) {
             var iconCss = cfg && cfg.iconCss;
 
             var notif = notificationArea.appendChild("<div class=\"wegas-notification\">"
-                + (cfg.iconCss ? "<span class=\"wegas-notification-icon " + iconCss + "\"></span>" : "")
+                + (iconCss ? "<span class=\"wegas-notification-icon " + iconCss + "\"></span>" : "")
                 + "<span class=\"wegas-notification-message\">" + message + "</span></div>");
 
             if (timeout && timeout > 0) {
