@@ -162,4 +162,10 @@ public interface RequestManagerI {
      */
     boolean isTestEnv();
 
+    /**
+     * Get application based url
+     *
+     * @return app base url
+     */
+    String getBaseUrl();
 }
