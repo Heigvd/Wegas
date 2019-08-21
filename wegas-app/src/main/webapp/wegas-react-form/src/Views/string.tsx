@@ -63,8 +63,8 @@ function StringView(props: IStringProps) {
     React.useEffect(() => () => debounced.flush(), [debounced]);
 
     function handleChange(event: { target: { value: string }; type: string }) {
+        setValue(event.target.value);
         if (event.target.value !== fromNotToEmpty(props.value)) {
-            setValue(event.target.value);
             if (!props.blurOnly || event.type === 'blur') {
                 debounced(event.target.value);
                 if (event.type === 'blur') {
