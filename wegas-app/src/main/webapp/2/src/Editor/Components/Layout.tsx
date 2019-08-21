@@ -10,6 +10,7 @@ import { FileBrowserWithMeta } from './FileBrowser/TreeFileBrowser/FileBrowser';
 import LibraryEditor from './ScriptEditors/LibraryEditor';
 import { LanguageEditor } from './LanguageEditor';
 import { FeatureProvider } from '../../Components/FeatureProvider';
+import { Loader } from '../../Components/HOC/Loader';
 
 const layout = css({
   display: 'flex',

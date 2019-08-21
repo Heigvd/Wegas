@@ -160,11 +160,7 @@ export function LanguageEditor() {
                     );
                   };
 
-                  const LanguageForm = asyncSFC(
-                    asyncForm,
-                    () => <div>load...</div>,
-                    ({ err }: { err: Error }) => <span>{err.message}</span>,
-                  );
+                  const LanguageForm = asyncSFC(asyncForm);
 
                   return (
                     <div
