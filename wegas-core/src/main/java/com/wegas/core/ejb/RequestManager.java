@@ -60,6 +60,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -149,6 +150,9 @@ public class RequestManager implements RequestManagerI {
      */
     @Inject
     private AccountFacade accountFacade;
+
+    @Inject
+    private HttpServletRequest request;
 
     /**
      * RequestFacade instance
@@ -318,6 +322,12 @@ public class RequestManager implements RequestManagerI {
      * To count how many events have been thrown and how many have bean consumed
      */
     private final StateMachineEventCounter eventCounter = new StateMachineEventCounter();
+
+    @Override
+    public String getBaseUrl() {
+        HttpServletRequest req = (HttpServletRequest) request;
+        return req.getRequestURL().toString().replace(req.getRequestURI(), req.getContextPath());
+    }
 
     /**
      * Get the current execution environment

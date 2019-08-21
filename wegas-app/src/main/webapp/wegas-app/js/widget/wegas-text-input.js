@@ -1098,7 +1098,7 @@ YUI.add('wegas-text-input', function(Y) {
                 index: 52,
                 visible: function(val, formVal) {
                     if (formVal.variable) {
-                        var variable = Y.Wegas.Facade.Variable.script.localEval(formVal.variable)
+                        var variable = Y.Wegas.Facade.Variable.script.localEval(formVal.variable);
                         return variable && variable.get("allowedValues").length > 0;
                     }
                     return false;
@@ -1120,7 +1120,7 @@ YUI.add('wegas-text-input', function(Y) {
                 index: 31,
                 visible: function(val, formVal) {
                     if (formVal.variable) {
-                        var variable = Y.Wegas.Facade.Variable.script.localEval(formVal.variable)
+                        var variable = Y.Wegas.Facade.Variable.script.localEval(formVal.variable);
                         return variable && variable.get("allowedValues").length > 0;
                     }
                     return false;
