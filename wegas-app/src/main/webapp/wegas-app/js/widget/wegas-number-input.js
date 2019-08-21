@@ -209,6 +209,14 @@ YUI.add("wegas-number-input", function(Y) {
             /** @lends Y.Wegas.AbstractNumberInput */
             EDITORNAME: "AbstractNumberInput",
             ATTRS: {
+                label: {
+                    type: "string",
+                    optional: true,
+                    index: 0,
+                    view: {
+                        label: "Label"
+                    }
+                },
                 /**
                  * The target variable, returned either based on the name attribute,
                  * and if absent by evaluating the expr attribute.
@@ -216,6 +224,7 @@ YUI.add("wegas-number-input", function(Y) {
                 variable: {
                     type: "object",
                     getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                    index: 1,
                     view: {
                         type: "variableselect",
                         label: "Variable",
@@ -225,7 +234,11 @@ YUI.add("wegas-number-input", function(Y) {
                 readonly: {
                     getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     type: "object",
-                    value: false,
+                    index: 100,
+                    value: {
+                        "@class": "Script",
+                        "content": "false;"
+                    },
                     optional: true,
                     view: {
                         type: "scriptcondition",
@@ -236,15 +249,9 @@ YUI.add("wegas-number-input", function(Y) {
                     type: "boolean",
                     value: true,
                     optional: true,
+                    index: 109,
                     view: {
                         label: "Self saving"
-                    }
-                },
-                label: {
-                    type: "string",
-                    optional: true,
-                    view: {
-                        label: "Label"
                     }
                 }
             }
@@ -348,7 +355,8 @@ YUI.add("wegas-number-input", function(Y) {
 
                         CB.one(".wegas-input").set("value", fmtValue);
                         if (this.xSlider && this.xSlider.get("value") !== inst.get("value")) {
-                            this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", fmtValue);
+                            this.xSlider.get("contentBox").one(".yui3-slider-rail")
+                                .setAttribute("data-value", fmtValue);
                             this.xSlider.set("value", inst.get("value"));
                         }
                     }

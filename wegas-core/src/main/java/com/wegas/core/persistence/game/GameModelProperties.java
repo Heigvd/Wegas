@@ -81,7 +81,7 @@ public class GameModelProperties implements Serializable, Mergeable {
     /**
      *
      */
-    @JsonView({Views.ExtendedI.class})
+    //@JsonView({Views.ExtendedI.class})
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyString.class,
             view = @View(label = "Log ID"))
