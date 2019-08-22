@@ -18,6 +18,8 @@ import com.wegas.core.exception.WegasErrorMessageManager;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.exception.client.WegasWrappedException;
+import com.wegas.core.exception.internal.WegasInternalException;
 import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.*;
@@ -443,7 +445,11 @@ public class ScriptFacade extends WegasAbstractFacade {
                 if (subCause instanceof WegasRuntimeException) {
                     throw (WegasRuntimeException) subCause;
                 } else {
-                    throw new WegasScriptException(script.getContent(), cause.getMessage(), ex);
+                    if (subCause != null) {
+                        throw new WegasScriptException(script.getContent(), subCause.getMessage(), ex);
+                    } else {
+                        throw new WegasScriptException(script.getContent(), cause.getMessage(), ex);
+                    }
                 }
             } else {
                 throw new WegasScriptException(script.getContent(), ex.getMessage(), ex);

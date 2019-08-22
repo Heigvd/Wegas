@@ -156,6 +156,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
         Boolean transitionPassed = false;
 
         for (AbstractStateMachineDescriptor sm : stateMachineDescriptors) {
+            logger.trace("Process FSM {}", sm);
             if (sm != null) {
                 validTransition = false;
                 smi = (StateMachineInstance) variableDescriptorFacade.getInstance(sm, player);
@@ -163,7 +164,8 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                 if (!smi.getEnabled() || currentState == null) { // a state may not be defined : remove statemachine's state when a player is inside that state
                     continue;
                 }
-                for (AbstractTransition transition : (List<AbstractTransition>)currentState.getSortedTransitions()) {
+                for (AbstractTransition transition : (List<AbstractTransition>) currentState.getSortedTransitions()) {
+                    logger.trace("Process FSM Transition {}", transition);
                     requestManager.getEventCounter().clearCurrents();
 
                     if (validTransition) {
@@ -172,29 +174,40 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                     if (transition instanceof DialogueTransition
                             && ((DialogueTransition) transition).getActionText() != null
                             && !((DialogueTransition) transition).getActionText().translateOrEmpty(player).isEmpty()) {                 // Dialogue, don't eval if not null or empty
+
+                        logger.trace("Ignore dialogue transition (explicit user action is requiered)");
                         continue;
                     } else if (this.isNotDefined(transition.getTriggerCondition())) {
+                        logger.trace("Select This transition (no condition defined)");
                         validTransition = true;
                     } else {
                         try {
+                            logger.trace("Eval the condition \"{}\"", transition.getTriggerCondition().getContent());
                             validTransition = (Boolean) scriptManager.eval(player, transition.getTriggerCondition(), sm);
+                            logger.trace("Eval result: {}", validTransition);
                         } catch (EJBException ex) {
                             logger.error("Transition eval exception: FSM {}:{}:{}", sm.getName(), sm.getId(), transition.getTriggerCondition().getContent());
                             throw ex;
                         } catch (WegasScriptException ex) {
-                            ex.setScript("Variable " + sm.getLabel());
+                            logger.trace("WegasScriptException: {}", ex);
+                            String script = ex.getScript();
+                            Long stateId = transition.getState().getIndex();
+                            Long nextStateId = transition.getNextStateId();
+                            ex.setScript("Transition from state #" + stateId + " to state #" + nextStateId + " of StateMachine \"" + sm.getLabel() + "\"");
                             requestManager.addException(ex);
                             //validTransition still false
                         }
                     }
                     if (validTransition == null) {
+                        logger.trace("Condition return null !");
                         throw WegasErrorMessage.error("Please review condition [" + sm.getLabel() + "]:\n"
                                 + transition.getTriggerCondition().getContent());
                     } else if (validTransition) {
+                        logger.trace("Valid transition found");
                         if (passedTransitions.contains(transition)) {
                             /*
-                         * Loop prevention : that player already passed through
-                         * this transiton
+                             * Loop prevention : that player already passed through
+                             * this transiton
                              */
                             logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
                         } else {
@@ -220,7 +233,8 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
             /* WHAT ? */
  /*@DIRTY, @TODO : find something else : Running scripts overrides previous state change Only for first Player (resetEvent). */
  /* Fixed by lib, currently commenting it  @removeme */
-//            this.getAllStateMachines(player.getGameModel());
+            //            this.getAllStateMachines(player.getGameModel());
+            logger.trace("Walk Selected Transitions");
 
             for (Map.Entry<StateMachineInstance, AbstractTransition> entry : selectedTransitions.entrySet()) {
 
