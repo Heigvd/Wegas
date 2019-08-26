@@ -457,8 +457,8 @@ YUI().use(function(Y) {
             },
             "wegas-entitychooser": {
                 path: "js/widget/wegas-entitychooser-min.js",
-                requires: ["wegas-entitychoosercss", "wegas-button"],
-                ws_provides: ["EntityChooser", "EntityChooser2"]
+                requires: ["wegas-entitychoosercss", "wegas-button", "wegas-react-form"],
+                ws_provides: ["EntityChooser", "EntityChooser2", "ObjectPropertyEditor"]
             },
             "wegas-entitychoosercss": {
                 type: CSS
