@@ -215,8 +215,8 @@ YUI.add('wegas-text-input', function(Y) {
                             this.get('contentBox').get('id') +
                             ' .wegas-text-input-editor',
                         plugins: [
-                            'autolink link image lists code media table paste advlist textcolor ' 
-                                + (this.get('contextmenu')? "contextmenu" :"")
+                            'autolink link image lists code media table paste advlist textcolor '
+                                + (this.get('contextmenu') ? "contextmenu" : "")
                                 //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
                         ],
                         external_plugins: {
@@ -337,7 +337,8 @@ YUI.add('wegas-text-input', function(Y) {
             }
             var question = this.get('variable.evaluated');
             if (question) {
-                this.onInstanceUpdate = Y.Wegas.Facade.Instance.after(question.getInstance().get("id") + ':updatedInstance', this.syncUI, this);
+                this.onInstanceUpdate = Y.Wegas.Facade.Instance.after(question.getInstance()
+                    .get("id") + ':updatedInstance', this.syncUI, this);
             }
         },
         bindUI: function() {
@@ -787,8 +788,7 @@ YUI.add('wegas-text-input', function(Y) {
                 if (!(this.get('allowNull') && value === '') &&
                     !Y.Array.find(allowedValues, function(item) {
                         return item.get("name") === value;
-                    }, this))
-                {
+                    }, this)) {
                     this.showMessage('error', Y.Wegas.I18n.t('errors.prohibited', {
                         value: desc.getLabelForAllowedValue(value),
                         values: Y.Array.map(allowedValues, function(item) {
@@ -911,9 +911,10 @@ YUI.add('wegas-text-input', function(Y) {
                     ];
                     for (i in allowedValues) {
                         value = allowedValues[i];
-                        content.push('<li data-value=' + JSON.stringify(value.get("name")) + ' ' +
-                            (value.get("name") === inst.get('value') ? "class='selected'" : '') + '>' +
-                            I18n.t(value.get("label")) + '</li>');
+                        content.push('<li role="button" tabindex="0" data-value='
+                            + JSON.stringify(value.get("name")) + ' '
+                            + (value.get("name") === inst.get('value') ? "class='selected'" : '') + '>'
+                            + I18n.t(value.get("label")) + '</li>');
                     }
 
                     if (this.get('allowNull')) {
@@ -1032,11 +1033,20 @@ YUI.add('wegas-text-input', function(Y) {
             }
             ul = this.get(CONTENTBOX).one('ul');
             if (ul) {
-                this.handlers.push(this.get(CONTENTBOX).delegate('click',
-                    this.updateFromUl, 'li', this));
+                this.handlers.push(this.get(CONTENTBOX).delegate('keyup', this.updateFromUlKey, 'li', this));
+                this.handlers.push(this.get(CONTENTBOX).delegate('click', this.updateFromUl, 'li', this));
             }
             this.on('save', this._save);
         },
+        updateFromUlKey: function(e) {
+            if (!e.metaKey && !e.altKey && !e.ctrlKey && (
+                e.keyCode === 32 // space
+                || e.keyCode === 13 // enter
+                )) {
+                this.updateFromUl(e);
+            }
+        },
+
         updateFromUl: function(e) {
             var v;
             if (!this.get('readonly.evaluated')) {
