@@ -485,4 +485,8 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     public WithPermission getMergeableParent() {
         return this.getTeam();
     }
+
+    public boolean isTestPlayer() {
+        return this.getTeam() instanceof DebugTeam || this.getGame() instanceof DebugGame;
+    }
 }

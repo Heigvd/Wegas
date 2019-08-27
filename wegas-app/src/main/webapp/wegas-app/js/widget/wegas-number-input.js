@@ -353,7 +353,9 @@ YUI.add("wegas-number-input", function(Y) {
 
                         this._initialValue = value;
 
-                        CB.one(".wegas-input").set("value", fmtValue);
+                        if (desc.get("defaultValue") !== value || !this.get("voidDefaultValue")) {
+                            CB.one(".wegas-input").set("value", fmtValue);
+                        }
                         if (this.xSlider && this.xSlider.get("value") !== inst.get("value")) {
                             this.xSlider.get("contentBox").one(".yui3-slider-rail")
                                 .setAttribute("data-value", fmtValue);
@@ -373,33 +375,13 @@ YUI.add("wegas-number-input", function(Y) {
                     Y.Wegas.Facade.Variable.after("update", this.syncUI, this)
                     );
                 if (this.xSlider) {
-                    this.handlers.push(
-                        this.xSlider.after(
-                            "slideEnd",
-                            this.updateFromSlider,
-                            this
-                            )
-                        );
-                    this.handlers.push(
-                        this.xSlider.after(
-                            "railMouseDown",
-                            this.updateFromSlider,
-                            this
-                            )
-                        );
-                    this.handlers.push(
-                        this.xSlider.after(
-                            "valueChange",
-                            this.updateInput,
-                            this
-                            )
-                        );
+                    this.handlers.push(this.xSlider.after("slideEnd", this.updateFromSlider, this));
+                    this.handlers.push(this.xSlider.after("railMouseDown", this.updateFromSlider, this));
+                    this.handlers.push(this.xSlider.after("valueChange", this.updateInput, this));
                 }
                 if (input) {
                     //this.handlers.push(input.on("blur", this.updateFromInput, this));
-                    this.handlers.push(
-                        input.on("valuechange", this.onValueChange, this)
-                        );
+                    this.handlers.push(input.on("valuechange", this.onValueChange, this));
                 }
             },
             destructor: function() {},
@@ -445,7 +427,18 @@ YUI.add("wegas-number-input", function(Y) {
         },
         {
             /** @lends Y.Wegas.NumberInput */
-            EDITORNAME: "NumberInput"
+            EDITORNAME: "NumberInput",
+            ATTRS:{
+                voidDefaultValue: {
+                    type: "boolean",
+                    value: false,
+                    optional: true,
+                    index: 109,
+                    view: {
+                        label: "Should empty input when value equals default value ?"
+                    }
+                }
+            }
         }
     );
     Wegas.NumberInput = NumberInput;

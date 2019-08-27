@@ -1033,20 +1033,11 @@ YUI.add('wegas-text-input', function(Y) {
             }
             ul = this.get(CONTENTBOX).one('ul');
             if (ul) {
-                this.handlers.push(this.get(CONTENTBOX).delegate('keyup', this.updateFromUlKey, 'li', this));
+                this.handlers.push(this.get(CONTENTBOX).delegate('key', this.updateFromUl, 'up:13,32', 'li', this));
                 this.handlers.push(this.get(CONTENTBOX).delegate('click', this.updateFromUl, 'li', this));
             }
             this.on('save', this._save);
         },
-        updateFromUlKey: function(e) {
-            if (!e.metaKey && !e.altKey && !e.ctrlKey && (
-                e.keyCode === 32 // space
-                || e.keyCode === 13 // enter
-                )) {
-                this.updateFromUl(e);
-            }
-        },
-
         updateFromUl: function(e) {
             var v;
             if (!this.get('readonly.evaluated')) {
