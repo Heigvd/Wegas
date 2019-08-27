@@ -722,13 +722,8 @@ YUI.add('wegas-widget', function(Y) {
             if (Lang.isFunction(Fn)) {
                 child = new Fn(config);
             } else {
-                Y.log(
-                    'Could not create a child widget because its constructor is either undefined or invalid(' +
-                    type +
-                    ').',
-                    'error',
-                    'Wegas.Widget'
-                    );
+                Y.log('Could not create a child widget because its constructor is either undefined or invalid(' + type + ').',
+                    'error', 'Wegas.Widget');
             }
 
             return child;
@@ -873,14 +868,10 @@ YUI.add('wegas-widget', function(Y) {
             this.get(BOUNDING_BOX).setHTML(
                 "<div class='wegas-widget-errored'><i>Failed to render<br>" +
                 e.message +
-                '</i><span class="wegas-advanced-feature">' + e.stack + '</span></div>'
-                );
+                '</i><span class="wegas-advanced-feature">' + e.stack + '</span></div>');
 
-            Y.log(
-                'error',
-                'Failed to render ' + this.getType() + ': ' + (e.message || ''),
-                this.constructor.NAME
-                );
+            Y.log('Failed to render ' + this.getType() + ': ' + (e.message || ''), "error", this.constructor.NAME);
+            Y.log("Stack:" + e.stack, "error", this.constructor.NAME);
             //Y.error("Failed to render " + this.getType() + ": " + (e.message || ""), e, this.constructor.NAME);//do crash parent widget in debug mode
             //throw e;
         }

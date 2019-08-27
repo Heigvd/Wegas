@@ -705,7 +705,7 @@ YUI.add('wegas-tabview', function(Y) {
                 //cb = tab.get("parent").get(CONTENTBOX),
                 bb = tab.get(BOUNDINGBOX);
             if (!(tab instanceof Tab)) {
-                return Y.log("error", "Plugin Removable expects a Tab host", "Y.Plugin.Removable");
+                return Y.log("Plugin Removable expects a Tab host", "error", "Y.Plugin.Removable");
             }
             bb.addClass('yui3-tabview-removeable');
             bb.delegate('click', this.onRemoveClick, '.yui3-tab-remove', this);
