@@ -1,7 +1,5 @@
 package com.wegas.log.xapi;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -19,11 +17,11 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
+import com.wegas.log.xapi.jta.XapiTx;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.adlnet.xapi.client.StatementClient;
 import gov.adlnet.xapi.model.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,8 +34,12 @@ public class Xapi implements XapiI {
 
     @Inject
     private RequestManager manager;
+
     @Inject
     private UserFacade userFacade;
+
+    @Inject
+    private XapiTx xapiTx;
 
     @Override
     public Statement userStatement(final String verb, final IStatementObject object) {
@@ -101,12 +103,7 @@ public class Xapi implements XapiI {
             return;
         }
         stmt.setContext(this.genContext());
-        try {
-            this.getClient().postStatement(stmt);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-
-        }
+        xapiTx.post(stmt);
     }
 
     @Override
@@ -119,15 +116,8 @@ public class Xapi implements XapiI {
         }
         Context ctx = this.genContext();
         stmts.forEach(stmt -> stmt.setContext(ctx));
-        try {
-            this.getClient().postStatements(new ArrayList<>(stmts));
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
 
-    private StatementClient getClient() throws MalformedURLException {
-        return new StatementClient(Helper.getWegasProperty("xapi.host"), Helper.getWegasProperty("xapi.auth"));
+        xapiTx.post(new ArrayList<>(stmts));
     }
 
     private Context genContext() {
@@ -197,4 +187,6 @@ public class Xapi implements XapiI {
         }
         return true;
     }
+
+
 }
