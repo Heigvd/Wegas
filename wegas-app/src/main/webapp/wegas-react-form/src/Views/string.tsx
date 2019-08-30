@@ -52,21 +52,29 @@ interface IStringProps {
 
 function StringView(props: IStringProps) {
     const [value, setValue] = React.useState(fromNotToEmpty(props.value));
-    const debounced = React.useCallback(deb(props.onChange, 300), [
-        props.onChange,
-    ]);
+    const onChange = React.useRef(props.onChange);
+    onChange.current = props.onChange;
+    const debounced = React.useCallback(
+        deb((v: string) => {
+            onChange.current(v);
+        }, 300),
+        []
+    );
     React.useEffect(() => () => debounced.flush(), [debounced]);
 
-    function handleChange(event: { target: { value: string } }) {
-        if (event.target.value !== value) {
-            setValue(event.target.value);
-            debounced(event.target.value);
+    function handleChange(event: { target: { value: string }; type: string }) {
+        setValue(event.target.value);
+        if (event.target.value !== fromNotToEmpty(props.value)) {
+            if (!props.blurOnly || event.type === 'blur') {
+                debounced(event.target.value);
+                if (event.type === 'blur') {
+                    debounced.flush();
+                }
+            }
         }
     }
 
-    React.useEffect(() => setValue(fromNotToEmpty(props.value)), [
-        props.value,
-    ]);
+    React.useEffect(() => setValue(fromNotToEmpty(props.value)), [props.value]);
     if (typeof props.view.rows === 'number') {
         return (
             <textarea

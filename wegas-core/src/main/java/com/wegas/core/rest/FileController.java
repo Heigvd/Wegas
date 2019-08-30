@@ -11,7 +11,6 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.JCRFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnector.WorkspaceType;
@@ -20,6 +19,7 @@ import com.wegas.core.jcr.content.FileDescriptor;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.persistence.game.GameModel;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
@@ -109,18 +109,19 @@ public class FileController {
         logger.debug("File name: {}", details.getContentDisposition().getFileName());
         final Boolean override = !force.equals("");
         if (name == null) {
-            name = details.getContentDisposition().getFileName();
+            byte[] bytes = details.getContentDisposition().getFileName().getBytes(StandardCharsets.ISO_8859_1);
+            name = new String(bytes, StandardCharsets.UTF_8);
         }
         AbstractContentDescriptor detachedFile;
-        try {
-            if (details.getContentDisposition().getFileName() == null
-                    || details.getContentDisposition().getFileName().equals("")) {//Assuming an empty filename means a directory
-                detachedFile = jcrFacade.createDirectory(gameModel, WorkspaceType.FILES, name, path, note, description);
-            } else {
-                detachedFile = jcrFacade.createFile(gameModel, WorkspaceType.FILES, name, path, details.getMediaType().toString(),
-                        note, description, file, override);
-            }
-        } catch (final WegasRuntimeException ex) {
+        //try {
+        if (details.getContentDisposition().getFileName() == null
+                || details.getContentDisposition().getFileName().equals("")) {//Assuming an empty filename means a directory
+            detachedFile = jcrFacade.createDirectory(gameModel, WorkspaceType.FILES, name, path, note, description);
+        } else {
+            detachedFile = jcrFacade.createFile(gameModel, WorkspaceType.FILES, name, path, details.getMediaType().toString(),
+                    note, description, file, override);
+        }
+        /*} catch (final WegasRuntimeException ex) {
             Response.StatusType status = new Response.StatusType() {
                 @Override
                 public int getStatusCode() {
@@ -139,6 +140,7 @@ public class FileController {
             };
             return Response.status(status).build();
         }
+         */
         return Response.ok(detachedFile, MediaType.APPLICATION_JSON).build();
     }
 
@@ -266,7 +268,6 @@ public class FileController {
         return jcrFacade.listDirectory(gameModel, ContentConnector.WorkspaceType.FILES, directory);
     }
 
-
     /**
      * @param gameModelId
      * @param directory
@@ -283,7 +284,6 @@ public class FileController {
 
         return jcrFacade.recurseListDirectory(gameModel, ContentConnector.WorkspaceType.FILES, directory);
     }
-
 
     /**
      * @param gameModelId
@@ -470,6 +470,20 @@ public class FileController {
         return jcrFacade.delete(gameModel, ContentConnector.WorkspaceType.FILES, absolutePath, force);
     }
 
+    @POST
+    @Path("{force: (force/)?}post_delete")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Object deleteByPOST(@PathParam("gameModelId") Long gameModelId,
+            @PathParam("force") String force,
+            String absolutePath) {
+
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gameModel);
+
+        return jcrFacade.delete(gameModel, ContentConnector.WorkspaceType.FILES, absolutePath, force);
+    }
+
     /**
      * Update File Meta
      *
@@ -498,7 +512,7 @@ public class FileController {
             descriptor = DescriptorFactory.getDescriptor(absolutePath, connector);
             descriptor.setNote(tmpDescriptor.getNote());
             descriptor.setDescription(tmpDescriptor.getDescription());
-            if(gameModel.isModel()){
+            if (gameModel.isModel()) {
                 descriptor.setVisibility(tmpDescriptor.getVisibility());
             }
             descriptor.setContentToRepository();

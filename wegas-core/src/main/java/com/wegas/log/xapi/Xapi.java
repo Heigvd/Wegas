@@ -1,7 +1,5 @@
 package com.wegas.log.xapi;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -16,14 +14,17 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
+import com.wegas.log.xapi.jta.XapiTx;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.adlnet.xapi.client.StatementClient;
 import gov.adlnet.xapi.model.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @Stateless
 @LocalBean
@@ -33,8 +34,12 @@ public class Xapi implements XapiI {
 
     @Inject
     private RequestManager manager;
+
     @Inject
     private UserFacade userFacade;
+
+    @Inject
+    private XapiTx xapiTx;
 
     @Override
     public Statement userStatement(final String verb, final IStatementObject object) {
@@ -42,7 +47,6 @@ public class Xapi implements XapiI {
         final Agent agent = this.agent(manager.getCurrentUser());
         final Verb v = new Verb(verb);
         final Statement stmt = new Statement(agent, v, object);
-
         stmt.setTimestamp(OffsetDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
         return stmt;
     }
@@ -52,10 +56,30 @@ public class Xapi implements XapiI {
         return new Activity(id);
     }
 
+    private HashMap<String, String> convertToHashMap(Map<String, String> map) {
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.putAll(map);
+        return hashMap;
+    }
+
+    @Override
+    public IStatementObject activity(String id, String activityType,
+            Map<String, String> name,
+            Map<String, String> definition) {
+        Activity activity = new Activity(id);
+        ActivityDefinition def = new ActivityDefinition();
+        def.setType(activityType);
+        def.setName(convertToHashMap(name));
+        def.setDescription(convertToHashMap(definition));
+        activity.setDefinition(def);
+        return activity;
+    }
+
     @Override
     public Result result(String response) {
         final Result result = new Result();
         result.setResponse(response);
+
         return result;
     }
 
@@ -79,12 +103,7 @@ public class Xapi implements XapiI {
             return;
         }
         stmt.setContext(this.genContext());
-        try {
-            this.getClient().postStatement(stmt);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-
-        }
+        xapiTx.post(stmt);
     }
 
     @Override
@@ -97,19 +116,13 @@ public class Xapi implements XapiI {
         }
         Context ctx = this.genContext();
         stmts.forEach(stmt -> stmt.setContext(ctx));
-        try {
-            this.getClient().postStatements(new ArrayList<>(stmts));
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
 
-    private StatementClient getClient() throws MalformedURLException {
-        return new StatementClient(Helper.getWegasProperty("xapi.host"), Helper.getWegasProperty("xapi.auth"));
+        xapiTx.post(new ArrayList<>(stmts));
     }
 
     private Context genContext() {
         final String logID = manager.getPlayer().getGameModel().getProperties().getLogID();
+        final Team team = manager.getPlayer().getTeam();
         final Game game = manager.getPlayer().getGame();
 
         final Context context = new Context();
@@ -125,13 +138,16 @@ public class Xapi implements XapiI {
         ContextActivities ctx = new ContextActivities();
         ctx.setCategory(new ArrayList<Activity>() {
             private static final long serialVersionUID = 1L;
+
             {
                 add(new Activity("internal://wegas/log-id/" + logID));
             }
         });
         ctx.setGrouping(new ArrayList<Activity>() {
             private static final long serialVersionUID = 1L;
+
             {
+                add(new Activity("internal://wegas/team/" + String.valueOf(team.getId())));
                 add(new Activity("internal://wegas/game/" + String.valueOf(game.getId())));
             }
         });
@@ -143,7 +159,7 @@ public class Xapi implements XapiI {
      * Transform a user into an Agent
      */
     private Agent agent(User user) {
-        return new Agent(null, new Account(String.valueOf(user.getId()), "https://wegas.albasim.ch"));
+        return new Agent(null, new Account(String.valueOf(user.getId()), manager.getBaseUrl()));
     }
 
     /**
@@ -152,12 +168,25 @@ public class Xapi implements XapiI {
      */
     private Boolean isValid() {
         final Player player = manager.getPlayer();
-        if (player == null || player.getTeam() instanceof DebugTeam || player.getTeam() instanceof DebugTeam
-                || Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID())
-                || Helper.isNullOrEmpty(Helper.getWegasProperty("xapi.auth"))
+
+        boolean logDebug = Helper.getWegasProperty("xapi.log_debug_player", "false").equals("true");
+
+        if (player == null) {
+            logger.warn("No player");
+            return false;
+        } else if (!logDebug && (player.getTeam() instanceof DebugTeam || player.getTeam() instanceof DebugTeam)) {
+            logger.warn("Do not log statements for debug players");
+            return false;
+        } else if (Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID())) {
+            logger.warn("No Log ID defined");
+            return false;
+        } else if (Helper.isNullOrEmpty(Helper.getWegasProperty("xapi.auth"))
                 || Helper.isNullOrEmpty(Helper.getWegasProperty("xapi.host"))) {
+            logger.warn("XAPI host/auth are not defined");
             return false;
         }
         return true;
     }
+
+
 }

@@ -113,7 +113,7 @@ YUI.add('wegas-app', function(Y) {
                         this.idlemonitor.set("timeout", 1800000);  // 30 minutes
                         //this.idlemonitor.set("timeout", 2700000);  // 45 minutes
                         //this.idlemonitor.set("timeout", 3600000);  // 1 hour
-                        
+
                         this.idlemonitor.set("resolution", 60000); // check each minute
                         //this.idlemonitor.set("resolution", 300000); // check each five minutes
 
@@ -127,8 +127,8 @@ YUI.add('wegas-app', function(Y) {
                             I18n.setCode(playerCode);
 
                             Y.later(10, this, function() { // Let the loading div update
-                                    this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
-                                        .render(); // and render it
+                                this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
+                                    .render(); // and render it
                                 this.fire("render"); // Fire a render event for some post processing
                                 this.fire("ready"); // Fire a ready event for some eventual post processing
                                 Y.log("Ready");
@@ -222,13 +222,14 @@ YUI.add('wegas-app', function(Y) {
                 }
 
                 Y.one("body").on("key", function(e) { // Add shortcut to activate developper mode on key '§' pressed
-                    e.currentTarget.toggleClass("wegas-stdmode") // Toggle stdmode class on body (hides any wegas-advancedfeature)
-                        .toggleClass("wegas-advancedmode");
-                    Y.config.win.Y = Y; // Allow access to Y instance
+                        e.currentTarget.toggleClass("wegas-stdmode") // Toggle stdmode class on body (hides any wegas-advancedfeature)
+                            .toggleClass("wegas-advancedmode");
+                        Y.config.win.Y = Y; // Allow access to Y instance
                 }, "167", this);
 
                 Y.one("body").on("key", function(e) { // Add shortcut to activate internal mode on key '°' pressed
-                    e.currentTarget.toggleClass("wegas-internalmode");
+                        e.currentTarget.toggleClass("wegas-internalmode");
+                        Y.config.win.Y = Y; // Allow access to Y instance
                 }, "176", this);
             });
         },
