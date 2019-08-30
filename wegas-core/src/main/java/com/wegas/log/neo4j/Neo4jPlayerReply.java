@@ -57,15 +57,11 @@ public class Neo4jPlayerReply {
     @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
 
-    public void onReplyValidate(@Observes QuestionDescriptorFacade.ReplyValidate event) {
-        this.addPlayerReply(event.player, event.reply, (ChoiceDescriptor) event.choice.getDescriptor(), (QuestionDescriptor) event.question.getDescriptor());
-    }
-
-    public void onReplyValidate(@Observes QuestionDescriptorFacade.WhValidate event) {
+    public void onReplyValidate(QuestionDescriptorFacade.WhValidate event) {
         this.addWhPlayerReply(event.player, event.whDescriptor);
     }
 
-    public void onNumberUpdate(@Observes NumberListener.NumberUpdate update) {
+    public void onNumberUpdate(NumberListener.NumberUpdate update) {
         this.addNumberUpdate(update.player, update.number);
     }
 

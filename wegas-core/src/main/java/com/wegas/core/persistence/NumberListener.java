@@ -10,7 +10,7 @@ package com.wegas.core.persistence;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
-import javax.enterprise.event.Event;
+import com.wegas.log.neo4j.Neo4jPlayerReply;
 import javax.inject.Inject;
 import javax.persistence.PostUpdate;
 
@@ -20,10 +20,10 @@ import javax.persistence.PostUpdate;
 public class NumberListener {
 
     @Inject
-    private Event<NumberUpdate> updatedNumber;
-
-    @Inject 
     private RequestManager requestManager;
+
+    @Inject
+    private Neo4jPlayerReply neo4jPlayerReply;
 
     /**
      * @param number received from EntityListener
@@ -33,7 +33,7 @@ public class NumberListener {
         if (number instanceof NumberInstance) {
             NumberInstance n = (NumberInstance) number;
             if (n.getScope() != null) {
-                updatedNumber.fire(new NumberUpdate(requestManager.getPlayer(), n));
+                neo4jPlayerReply.onNumberUpdate(new NumberUpdate(requestManager.getPlayer(), n));
             }
         }
     }

@@ -265,8 +265,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-
             <plugin>
                 <groupId>com.wegas</groupId>
                 <artifactId>wenerator-maven-plugin</artifactId>

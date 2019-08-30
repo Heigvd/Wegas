@@ -18,11 +18,14 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import com.wegas.log.xapi.jta.XapiTx;
+import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.mcq.ejb.QuestionDescriptorFacade.ReplyValidate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.adlnet.xapi.model.*;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +35,8 @@ public class Xapi implements XapiI {
 
     private static final Logger logger = LoggerFactory.getLogger(Xapi.class);
 
+    public static final String LOG_ID_PREFIX = "internal://wegas/log-id/";
+
     @Inject
     private RequestManager manager;
 
@@ -40,6 +45,12 @@ public class Xapi implements XapiI {
 
     @Inject
     private XapiTx xapiTx;
+
+    private LearningLockerClient getLearningLockerClient() {
+        return new LearningLockerClient(Helper.getWegasProperty("xapi.ll.host"),
+                "Basic " + Helper.getWegasProperty("xapi.auth"),
+                manager.getBaseUrl());
+    }
 
     @Override
     public Statement userStatement(final String verb, final IStatementObject object) {
@@ -98,26 +109,26 @@ public class Xapi implements XapiI {
 
     @Override
     public void post(Statement stmt) {
-        if (!isValid()) {
+        if (isValid()) {
+            stmt.setContext(this.genContext());
+            xapiTx.post(stmt);
+        } else {
             logger.warn("Failed to persist an xapi statement, invalid context\n{}", serialize(stmt));
-            return;
         }
-        stmt.setContext(this.genContext());
-        xapiTx.post(stmt);
     }
 
     @Override
     public void post(List<Statement> stmts) {
-        if (!isValid()) {
+        if (isValid()) {
+            Context ctx = this.genContext();
+            stmts.forEach(stmt -> stmt.setContext(ctx));
+
+            xapiTx.post(new ArrayList<>(stmts));
+        } else {
             for (Statement s : stmts) {
                 logger.warn("Failed to persist an xapi statement, invalid context\n{}", serialize(s));
             }
-            return;
         }
-        Context ctx = this.genContext();
-        stmts.forEach(stmt -> stmt.setContext(ctx));
-
-        xapiTx.post(new ArrayList<>(stmts));
     }
 
     private Context genContext() {
@@ -140,7 +151,7 @@ public class Xapi implements XapiI {
             private static final long serialVersionUID = 1L;
 
             {
-                add(new Activity("internal://wegas/log-id/" + logID));
+                add(new Activity(LOG_ID_PREFIX + logID));
             }
         });
         ctx.setGrouping(new ArrayList<Activity>() {
@@ -188,5 +199,50 @@ public class Xapi implements XapiI {
         return true;
     }
 
+    public Statement buildQuestionStatement(String questionName, String choiceName, String resultName) {
+        IStatementObject activity = activity("act:wegas/question/"
+                + questionName + "/choice/" + choiceName);
 
+        Statement stmt = userStatement("http://adlnet.gov/expapi/verbs/answered", activity);
+        stmt.setResult(result(resultName));
+
+        return stmt;
+    }
+
+    public void replyValidate(ReplyValidate reply) {
+        Statement stmt = buildQuestionStatement(reply.question.getDescriptor().getName(),
+                reply.choice.getDescriptor().getName(),
+                reply.reply.getResultName());
+
+        post(stmt);
+    }
+
+    public void whValidate(QuestionDescriptorFacade.WhValidate whVal) {
+    }
+
+    public List<Long> getAllGameIdByLogId(String logId) {
+        try {
+            return getLearningLockerClient().getAllGamesByLogId(logId);
+        } catch (IOException ex) {
+            return new ArrayList<>();
+        }
+    }
+
+    public List<String> getAllLogId() {
+
+        try {
+            return getLearningLockerClient().getAllLogIds();
+        } catch (IOException ex) {
+            return new ArrayList<>();
+        }
+    }
+
+    public String getQuestionActivityId(String questionName, String choiceName) {
+        return "act:wegas/question/" + questionName + "/choice/" + choiceName;
+    }
+
+    public List<Map<String, String>> getQuestionReplies(String logId, String questionName, List<Long> gameIds) throws IOException {
+        LearningLockerClient client = getLearningLockerClient();
+        return client.getQuestionReplies(logId, gameIds, questionName);
+    }
 }
