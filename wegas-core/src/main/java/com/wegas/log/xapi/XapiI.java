@@ -29,6 +29,10 @@ public interface XapiI {
 
     Result result();
 
+    void post(String verb, String activity);
+
+    void post(String verb, String activity, String result);
+
     void post(Statement stmt);
 
     void post(List<Statement> stmts);

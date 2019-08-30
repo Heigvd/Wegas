@@ -120,6 +120,24 @@ public class Xapi implements XapiI {
         xapiTx.post(new ArrayList<>(stmts));
     }
 
+    @Override
+    public void post(String verb, String activity) {
+        this.post(verb, activity, null);
+    }
+
+    @Override
+    public void post(String verb, String activity, String result) {
+        if (isValid()) {
+            Statement statement = userStatement(verb, activity(activity));
+            if (!Helper.isNullOrEmpty(result)) {
+                statement.setResult(result(result));
+            }
+            post(statement);
+        } else {
+            logger.warn("Failed to persist an xapi statement, invalid context\n{}", verb, activity, result);
+        }
+    }
+
     private Context genContext() {
         final String logID = manager.getPlayer().getGameModel().getProperties().getLogID();
         final Team team = manager.getPlayer().getTeam();
@@ -155,11 +173,16 @@ public class Xapi implements XapiI {
         return context;
     }
 
+    private String getAgentHomePage() {
+        return Helper.getWegasProperty("xapi.agent.homepage", "");
+    }
+
     /**
      * Transform a user into an Agent
      */
     private Agent agent(User user) {
-        return new Agent(null, new Account(String.valueOf(user.getId()), manager.getBaseUrl()));
+        return new Agent(null, new Account(String.valueOf(user.getId()),
+                this.getAgentHomePage()));
     }
 
     /**
@@ -180,6 +203,9 @@ public class Xapi implements XapiI {
         } else if (Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID())) {
             logger.warn("No Log ID defined");
             return false;
+        } else if (Helper.isNullOrEmpty(this.getAgentHomePage())) {
+            logger.warn("No Agent homepage");
+            return false;
         } else if (Helper.isNullOrEmpty(Helper.getWegasProperty("xapi.auth"))
                 || Helper.isNullOrEmpty(Helper.getWegasProperty("xapi.host"))) {
             logger.warn("XAPI host/auth are not defined");
@@ -187,6 +213,5 @@ public class Xapi implements XapiI {
         }
         return true;
     }
-
 
 }
