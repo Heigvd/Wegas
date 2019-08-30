@@ -210,11 +210,13 @@ public class Xapi implements XapiI {
     }
 
     public void replyValidate(ReplyValidate reply) {
-        Statement stmt = buildQuestionStatement(reply.question.getDescriptor().getName(),
-                reply.choice.getDescriptor().getName(),
-                reply.reply.getResultName());
+        if (isValid()) {
+            Statement stmt = buildQuestionStatement(reply.question.getDescriptor().getName(),
+                    reply.choice.getDescriptor().getName(),
+                    reply.reply.getResultName());
 
-        post(stmt);
+            post(stmt);
+        }
     }
 
     public void whValidate(QuestionDescriptorFacade.WhValidate whVal) {
