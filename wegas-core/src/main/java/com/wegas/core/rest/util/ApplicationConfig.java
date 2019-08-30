@@ -33,6 +33,6 @@ public class ApplicationConfig extends ResourceConfig {
             "com.wegas.resourceManagement.rest",
             "com.wegas.reviewing.rest",
             "com.wegas.admin",
-            "com.wegas.log.neo4j");
+            "com.wegas.log.rest");
     }
 }

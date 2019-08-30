@@ -23,6 +23,9 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.PrimitiveDescriptorI;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
+import com.wegas.log.neo4j.Neo4jCommunication;
+import com.wegas.log.neo4j.Neo4jPlayerReply;
+import com.wegas.log.xapi.Xapi;
 import com.wegas.mcq.persistence.*;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import com.wegas.mcq.persistence.wh.WhQuestionInstance;
@@ -52,12 +55,6 @@ import org.slf4j.LoggerFactory;
 public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> implements QuestionDescriptorFacadeI {
 
     static final private Logger logger = LoggerFactory.getLogger(QuestionDescriptorFacade.class);
-
-    @Inject
-    private Event<ReplyValidate> replyValidate;
-
-    @Inject
-    private Event<WhValidate> whValidate;
 
     /**
      *
@@ -95,6 +92,12 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
 
     @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
+
+    @Inject
+    private Xapi xapi;
+
+    @Inject
+    private Neo4jPlayerReply neo4jPlayerReply;
 
     /**
      * Find a result identified by the given name belonging to the given
@@ -566,7 +569,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         return this.cancelReplyTransactional(playerId, replyId);
     }
 
-
     /**
      * @param playerId id of player who wants to cancel the reply
      * @param replyId  id of reply to cancel
@@ -576,8 +578,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
     public Reply quietCancelReply(Long playerId, Long replyId) {
         return this.internalCancelReply(replyId);
     }
-
-
 
     /**
      * @param player
@@ -614,7 +614,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                 logger.error("EventListener error (\"replyValidate\")", e);
                 // GOTCHA no eventManager is instantiated
             }
-            this.replyValidate.fire(replyV);
+            xapi.replyValidate(replyV);
             return reply;
         } else {
             throw WegasErrorMessage.error("This reply has already been validated");
@@ -652,7 +652,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         validateQuestion.setValidated(true);
         WhValidate whVal = new WhValidate(validateQuestion, player);
         scriptEvent.fire(player, "whValidate", whVal);
-        this.whValidate.fire(whVal);
+
+        neo4jPlayerReply.onReplyValidate(whVal);
+        //xapi.whValidate(whVal);
     }
 
     /**
