@@ -1,4 +1,5 @@
 <domain log-root="${com.sun.aas.instanceRoot}/logs" application-root="${com.sun.aas.instanceRoot}/applications" version="10.0">
+    <hazelcast-runtime-configuration></hazelcast-runtime-configuration>
     <security-configurations>
         <authentication-service default="true" name="adminAuth" use-password-credential="true">
             <security-provider provider-name="adminSpc" name="spcrealm" type="LoginModule">
@@ -22,47 +23,40 @@
     </security-configurations>
     <system-applications />
     <resources>
-        <jdbc-resource ping="true" pool-name="__TimerPool" object-type="system-admin" jndi-name="jdbc/__TimerPool"></jdbc-resource>
-        <jdbc-connection-pool datasource-classname="org.apache.derby.jdbc.EmbeddedXADataSource" name="__TimerPool" res-type="javax.sql.XADataSource">
-            <property name="databaseName" value="${com.sun.aas.instanceRoot}/lib/databases/ejbtimer"></property>
-            <property name="connectionAttributes" value=";create=true"></property>
+        <jdbc-resource ping="true" pool-name="__TimerPool" jndi-name="jdbc/__TimerPool" object-type="system-all" />
+        <jdbc-resource pool-name="DerbyPool" jndi-name="jdbc/__derby" object-type="system-all" />
+        <jdbc-resource pool-name="H2Pool" jndi-name="jdbc/__default" object-type="system-all" />
+        <jdbc-connection-pool name="__TimerPool" datasource-classname="org.apache.derby.jdbc.EmbeddedXADataSource" res-type="javax.sql.XADataSource">
+            <property value="${com.sun.aas.instanceRoot}/lib/databases/ejbtimer" name="databaseName" />
+            <property value=";create=true" name="connectionAttributes" />
         </jdbc-connection-pool>
-        <jdbc-resource pool-name="DerbyPool" object-type="system-all" jndi-name="jdbc/__default"></jdbc-resource>
-        <jdbc-connection-pool is-isolation-level-guaranteed="false" datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" name="DerbyPool" res-type="javax.sql.DataSource">
-            <property name="databaseName" value="${com.sun.aas.instanceRoot}/lib/databases/embedded_default"></property>
-            <property name="connectionAttributes" value=";create=true"></property>
+        <jdbc-connection-pool is-isolation-level-guaranteed="false" name="DerbyPool" datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" res-type="javax.sql.DataSource">
+            <property name="databaseName" value="${com.sun.aas.instanceRoot}/lib/databases/derby_default" />
+            <property name="connectionAttributes" value=";create=true" />
         </jdbc-connection-pool>
-        <connector-connection-pool resource-adapter-name="jmsra" max-pool-size="250" steady-pool-size="1" name="jms/__defaultConnectionFactory-Connection-Pool" connection-definition-name="javax.jms.ConnectionFactory"></connector-connection-pool>
-        <connector-resource pool-name="jms/__defaultConnectionFactory-Connection-Pool" object-type="system-all-req" jndi-name="jms/__defaultConnectionFactory"></connector-resource>
-        <context-service object-type="system-all" jndi-name="concurrent/__defaultContextService"></context-service>
-        <managed-executor-service object-type="system-all" jndi-name="concurrent/__defaultManagedExecutorService"></managed-executor-service>
-        <managed-scheduled-executor-service object-type="system-all" jndi-name="concurrent/__defaultManagedScheduledExecutorService"></managed-scheduled-executor-service>
+        <jdbc-connection-pool is-isolation-level-guaranteed="false" name="H2Pool" datasource-classname="org.h2.jdbcx.JdbcDataSource" res-type="javax.sql.DataSource">
+            <property name="URL" value="jdbc:h2:${com.sun.aas.instanceRoot}/lib/databases/embedded_default;AUTO_SERVER=TRUE" />
+        </jdbc-connection-pool>
         <managed-executor-service jndi-name="timeoutExecutorService" object-type="system-all" core-pool-size="1"/>
-        <managed-thread-factory object-type="system-all" jndi-name="concurrent/__defaultManagedThreadFactory"></managed-thread-factory>
     </resources>
     <servers>
-        <server config-ref="server-config" name="server">
-            <application-ref ref="__admingui" virtual-servers="__asadmin"></application-ref>
-            <resource-ref ref="jdbc/__TimerPool"></resource-ref>
-            <resource-ref ref="jdbc/__default"></resource-ref>
-            <resource-ref ref="jms/__defaultConnectionFactory"></resource-ref>
-            <resource-ref ref="concurrent/__defaultContextService"></resource-ref>
-            <resource-ref ref="concurrent/__defaultManagedExecutorService"></resource-ref>
-            <resource-ref ref="timeoutExecutorService"></resource-ref>
-            <resource-ref ref="concurrent/__defaultManagedScheduledExecutorService"></resource-ref>
-            <resource-ref ref="concurrent/__defaultManagedThreadFactory"></resource-ref>
+        <server name="server" config-ref="server-config">
+            <resource-ref ref="jdbc/__TimerPool" />
+            <resource-ref ref="jdbc/__default" />
+            <resource-ref ref="jdbc/__derby" />
+            <resource-ref ref="timeoutExecutorService"/>
         </server>
     </servers>
     <nodes>
-        <node name="localhost-payaradomain" install-dir="${com.sun.aas.productRoot}" type="CONFIG" node-host="localhost"></node>
+        <node name="localhost-production" type="CONFIG" node-host="localhost" install-dir="${com.sun.aas.productRoot}"/>
     </nodes>
     <configs>
         <config name="server-config">
             <system-property name="JMS_PROVIDER_PORT" description="Port Number that JMS Service will listen for remote clients connection." value="27676"></system-property>
             <http-service>
-                <access-log></access-log>
-                <virtual-server network-listeners="http-listener-1,http-listener-2" id="server"></virtual-server>
-                <virtual-server network-listeners="admin-listener" id="__asadmin"></virtual-server>
+                <access-log/>
+                <virtual-server id="server" network-listeners="http-listener-1,http-listener-2"/>
+                <virtual-server id="__asadmin" network-listeners="admin-listener"/>
             </http-service>
             <iiop-service>
                 <orb use-thread-pool-ids="thread-pool-1" />
@@ -76,18 +70,19 @@
                 </iiop-listener>
             </iiop-service>
             <admin-service auth-realm-name="admin-realm" type="das-and-server" system-jmx-connector-name="system">
-                <jmx-connector auth-realm-name="admin-realm" security-enabled="false" address="0.0.0.0" port="8686" name="system" />
+                <jmx-connector auth-realm-name="admin-realm" security-enabled="false" address="0.0.0.0" port="28686" name="system" />
                 <property value="/admin" name="adminConsoleContextRoot" />
                 <property value="${com.sun.aas.installRoot}/lib/install/applications/admingui.war" name="adminConsoleDownloadLocation" />
                 <property value="${com.sun.aas.installRoot}/.." name="ipsRoot" />
                 <das-config dynamic-reload-enabled="false" autodeploy-enabled="false"/>
             </admin-service>
+            <hazelcast-config-specific-configuration></hazelcast-config-specific-configuration>
             <connector-service shutdown-timeout-in-seconds="30">
             </connector-service>
             <transaction-service tx-log-dir="${com.sun.aas.instanceRoot}/logs" timeout-in-seconds="300">
                 <property name="xaresource-txn-timeout" value="300"/>
+                <property name="purge-cancelled-transactions-after" value="500"/>
             </transaction-service>
-            <hazelcast-runtime-configuration cluster-group-name="WegasCore-Test-Cluster" enabled="true"></hazelcast-runtime-configuration>
             <ejb-container max-pool-size="128">
                 <ejb-timer-service />
             </ejb-container>
@@ -100,6 +95,7 @@
             </notification-service-configuration>
             <batch-runtime-configuration data-source-lookup-name="jdbc/__default"></batch-runtime-configuration>
             <monitoring-service-configuration></monitoring-service-configuration>
+            <microprofile-metrics-configuration></microprofile-metrics-configuration>
             <diagnostic-service />
             <security-service activate-default-principal-to-role-mapping="true">
                 <auth-realm classname="com.sun.enterprise.security.auth.realm.file.FileRealm" name="admin-realm">
@@ -163,30 +159,51 @@
                 <property value="SHA-256" name="default-digest-algorithm" />
             </security-service>
             <java-config classpath-suffix="" system-classpath="" debug-options="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=9009">
+                <jvm-options>[9|]--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED</jvm-options>
+                <jvm-options>[9|]--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED</jvm-options>
+                <!-- Hazelcast internal package access requirement to get the best performance results. -->
+                <jvm-options>[9|]--add-exports=java.base/jdk.internal.ref=ALL-UNNAMED</jvm-options>
+                <jvm-options>[9|]--add-opens=java.base/java.lang=ALL-UNNAMED</jvm-options>
+                <jvm-options>[9|]--add-opens=java.base/java.nio=ALL-UNNAMED</jvm-options>
+                <jvm-options>[9|]--add-opens=java.base/sun.nio.ch=ALL-UNNAMED</jvm-options>
+                <jvm-options>[9|]--add-opens=java.management/sun.management=ALL-UNNAMED</jvm-options>
+                <jvm-options>[9|]--add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED</jvm-options>
+                <jvm-options>-Xmx2g</jvm-options>
+                <jvm-options>-Xms2g</jvm-options>
                 <jvm-options>-XX:+UseG1GC</jvm-options>
                 <jvm-options>-XX:+UseStringDeduplication</jvm-options>
+                <jvm-options>-XX:MaxGCPauseMillis=500</jvm-options>
+                <jvm-options>-XX:MetaspaceSize=256m</jvm-options>
+                <jvm-options>-XX:MaxMetaspaceSize=2g</jvm-options>
+                <jvm-options>-XX:+UnlockDiagnosticVMOptions</jvm-options>
                 <jvm-options>-Djava.awt.headless=true</jvm-options>
                 <jvm-options>-Djdk.corba.allowOutputStreamSubclass=true</jvm-options>
                 <jvm-options>-Djavax.xml.accessExternalSchema=all</jvm-options>
-                <jvm-options>-XX:+UnlockDiagnosticVMOptions</jvm-options>
-                <jvm-options>-Djava.endorsed.dirs=${com.sun.aas.installRoot}/modules/endorsed${path.separator}${com.sun.aas.installRoot}/lib/endorsed</jvm-options>
                 <jvm-options>-Djava.security.policy=${com.sun.aas.instanceRoot}/config/server.policy</jvm-options>
                 <jvm-options>-Djava.security.auth.login.config=${com.sun.aas.instanceRoot}/config/login.conf</jvm-options>
-                <jvm-options>-Dcom.sun.enterprise.security.httpsOutboundKeyAlias=s1as</jvm-options>
                 <jvm-options>-Djavax.net.ssl.keyStore=${com.sun.aas.instanceRoot}/config/keystore.jks</jvm-options>
                 <jvm-options>-Djavax.net.ssl.trustStore=${com.sun.aas.instanceRoot}/config/cacerts.jks</jvm-options>
-                <jvm-options>-Djava.ext.dirs=${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext</jvm-options>
-                <jvm-options>-Djava.ext.dirs=${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext</jvm-options>
                 <jvm-options>-Djdbc.drivers=org.apache.derby.jdbc.ClientDriver</jvm-options>
                 <jvm-options>-DANTLR_USE_DIRECT_CLASS_LOADING=true</jvm-options>
                 <jvm-options>-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory</jvm-options>
-                <jvm-options>-XX:NewRatio=2</jvm-options>
-                <jvm-options>-Xmx2g</jvm-options>
-                <jvm-options>-Xms2g</jvm-options>
                 <jvm-options>-Djdk.tls.rejectClientInitiatedRenegotiation=true</jvm-options>
                 <jvm-options>-Dorg.jboss.weld.serialization.beanIdentifierIndexOptimization=false</jvm-options>
                 <jvm-options>-Dorg.glassfish.grizzly.DEFAULT_MEMORY_MANAGER=org.glassfish.grizzly.memory.HeapMemoryManager</jvm-options>
+                <jvm-options>-Dorg.glassfish.grizzly.nio.DefaultSelectorHandler.force-selector-spin-detection=true</jvm-options>
+                <!-- Grizzly NPN Jar version -->
+                <jvm-options>[1.8.0|1.8.0u120]-Xbootclasspath/p:${com.sun.aas.installRoot}/lib/grizzly-npn-bootstrap-1.6.jar</jvm-options>
+                <jvm-options>[1.8.0u121|1.8.0u160]-Xbootclasspath/p:${com.sun.aas.installRoot}/lib/grizzly-npn-bootstrap-1.7.jar</jvm-options>
+                <jvm-options>[1.8.0u161|1.8.0u190]-Xbootclasspath/p:${com.sun.aas.installRoot}/lib/grizzly-npn-bootstrap-1.8.jar</jvm-options>
+                <jvm-options>[1.8.0u191|1.8.0u500]-Xbootclasspath/p:${com.sun.aas.installRoot}/lib/grizzly-npn-bootstrap-1.8.1.jar</jvm-options>
+                <jvm-options>[9|]-Xbootclasspath/a:${com.sun.aas.installRoot}/lib/grizzly-npn-api.jar</jvm-options>
+                <jvm-options>[|8]-Djava.endorsed.dirs=${com.sun.aas.installRoot}/modules/endorsed${path.separator}${com.sun.aas.installRoot}/lib/endorsed</jvm-options>
+                <jvm-options>[|8]-Djava.ext.dirs=${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext</jvm-options>
             </java-config>
+            <availability-service>
+                <web-container-availability/>
+                <ejb-container-availability sfsb-store-pool-name="jdbc/hastore"/>
+                <jms-availability/>
+            </availability-service>
             <network-config>
                 <protocols>
                     <protocol name="http-listener-1">
@@ -208,9 +225,9 @@
                     </protocol>
                 </protocols>
                 <network-listeners>
-                    <network-listener port="28080" protocol="http-listener-1" transport="tcp" name="http-listener-1" thread-pool="http-thread-pool"></network-listener>
-                    <network-listener port="28181" protocol="http-listener-2" transport="tcp" name="http-listener-2" thread-pool="http-thread-pool"></network-listener>
-                    <network-listener port="24848" protocol="admin-listener" transport="tcp" name="admin-listener" thread-pool="admin-thread-pool"></network-listener>
+                    <network-listener port="8080" protocol="http-listener-1" transport="tcp" name="http-listener-1" thread-pool="http-thread-pool"></network-listener>
+                    <network-listener port="8181" protocol="http-listener-2" transport="tcp" name="http-listener-2" thread-pool="http-thread-pool"></network-listener>
+                    <network-listener port="4848" protocol="admin-listener" transport="tcp" name="admin-listener" thread-pool="admin-thread-pool"></network-listener>
                 </network-listeners>
                 <transports>
                     <transport name="tcp"></transport>
@@ -222,10 +239,14 @@
                 <thread-pool name="admin-thread-pool" max-thread-pool-size="15" min-thread-pool-size="1" max-queue-size="256"></thread-pool>
             </thread-pools>
             <system-property name="fish.payara.classloading.delegate" value="false"/>
+            <system-property name="jersey.config.client.readTimeout" value="300000"/>
+            <system-property name="jersey.config.client.connectTimeout" value="300000"/>
             <system-property name="org.jboss.weld.clustering.rollingUpgradesIdDelimiter" value=".."/>
             <system-property name="org.jboss.weld.probe.allowRemoteAddress" value="127.0.0.1|::1|::1%.+|0:0:0:0:0:0:0:1|0:0:0:0:0:0:0:1%.+"/>
         </config>
+
         <config name="default-config" dynamic-reconfiguration-enabled="true" >
+            <payara-executor-service-configuration/>
             <http-service>
                 <access-log/>
                 <virtual-server id="server" network-listeners="http-listener-1, http-listener-2" >
@@ -324,8 +345,9 @@
             </security-service>
             <transaction-service tx-log-dir="${com.sun.aas.instanceRoot}/logs" automatic-recovery="true" timeout-in-seconds="300">
                 <property name="xaresource-txn-timeout" value="300"/>
+                <property name="purge-cancelled-transactions-after" value="500"/>
             </transaction-service>
-            <hazelcast-runtime-configuration></hazelcast-runtime-configuration>
+            <hazelcast-config-specific-configuration></hazelcast-config-specific-configuration>
             <request-tracing-service-configuration>
                 <log-notifier></log-notifier>
             </request-tracing-service-configuration>
@@ -333,30 +355,48 @@
                 <log-notifier-configuration enabled="true"></log-notifier-configuration>
             </notification-service-configuration>
             <monitoring-service-configuration></monitoring-service-configuration>
+            <microprofile-metrics-configuration></microprofile-metrics-configuration>
             <diagnostic-service />
             <java-config debug-options="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=${JAVA_DEBUGGER_PORT}" system-classpath="" classpath-suffix="">
-                <jvm-options>-server</jvm-options>
+                <jvm-options>[9|]--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED</jvm-options>
+                <jvm-options>[9|]--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED</jvm-options>
+                <!-- Hazelcast internal package access requirement to get the best performance results. -->
+                <jvm-options>[9|]--add-exports=java.base/jdk.internal.ref=ALL-UNNAMED</jvm-options>
+                <jvm-options>[9|]--add-opens=java.base/java.lang=ALL-UNNAMED</jvm-options>
+                <jvm-options>[9|]--add-opens=java.base/java.nio=ALL-UNNAMED</jvm-options>
+                <jvm-options>[9|]--add-opens=java.base/sun.nio.ch=ALL-UNNAMED</jvm-options>
+                <jvm-options>[9|]--add-opens=java.management/sun.management=ALL-UNNAMED</jvm-options>
+                <jvm-options>[9|]--add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED</jvm-options>
+                <jvm-options>-Xmx2g</jvm-options>
+                <jvm-options>-Xms2g</jvm-options>
+                <jvm-options>-XX:NewRatio=2</jvm-options>
                 <jvm-options>-XX:+UseG1GC</jvm-options>
                 <jvm-options>-XX:+UseStringDeduplication</jvm-options>
+                <jvm-options>-XX:MaxGCPauseMillis=500</jvm-options>
+                <jvm-options>-XX:MetaspaceSize=256m</jvm-options>
+                <jvm-options>-XX:MaxMetaspaceSize=2g</jvm-options>
+                <jvm-options>-XX:+UnlockDiagnosticVMOptions</jvm-options>
                 <jvm-options>-Djava.awt.headless=true</jvm-options>
                 <jvm-options>-Djdk.corba.allowOutputStreamSubclass=true</jvm-options>
-                <jvm-options>-XX:+UnlockDiagnosticVMOptions</jvm-options>
-                <jvm-options>-Djava.endorsed.dirs=${com.sun.aas.installRoot}/modules/endorsed${path.separator}${com.sun.aas.installRoot}/lib/endorsed</jvm-options>
                 <jvm-options>-Djava.security.policy=${com.sun.aas.instanceRoot}/config/server.policy</jvm-options>
                 <jvm-options>-Djava.security.auth.login.config=${com.sun.aas.instanceRoot}/config/login.conf</jvm-options>
-                <jvm-options>-Dcom.sun.enterprise.security.httpsOutboundKeyAlias=s1as</jvm-options>
                 <jvm-options>-Djavax.net.ssl.keyStore=${com.sun.aas.instanceRoot}/config/keystore.jks</jvm-options>
                 <jvm-options>-Djavax.net.ssl.trustStore=${com.sun.aas.instanceRoot}/config/cacerts.jks</jvm-options>
-                <jvm-options>-Djava.ext.dirs=${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext</jvm-options>
                 <jvm-options>-Djdbc.drivers=org.apache.derby.jdbc.ClientDriver</jvm-options>
                 <jvm-options>-DANTLR_USE_DIRECT_CLASS_LOADING=true</jvm-options>
                 <jvm-options>-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory</jvm-options>
-                <jvm-options>-XX:NewRatio=2</jvm-options>
-                <jvm-options>-Xmx2g</jvm-options>
-                <jvm-options>-Xms2g</jvm-options>
                 <jvm-options>-Djdk.tls.rejectClientInitiatedRenegotiation=true</jvm-options>
                 <jvm-options>-Dorg.jboss.weld.serialization.beanIdentifierIndexOptimization=false</jvm-options>
-                <jvm-options>-Dorg.glassfish.grizzly.DEFAULT_MEMORY_MANAGER=org.glassfish.grizzly.memory.HeapMemoryManager</jvm-options>        
+                <jvm-options>-Dorg.glassfish.grizzly.DEFAULT_MEMORY_MANAGER=org.glassfish.grizzly.memory.HeapMemoryManager</jvm-options>
+                <jvm-options>-Dorg.glassfish.grizzly.nio.DefaultSelectorHandler.force-selector-spin-detection=true</jvm-options>
+                <!-- Grizzly NPN Jar version -->
+                <jvm-options>[1.8.0|1.8.0u120]-Xbootclasspath/p:${com.sun.aas.installRoot}/lib/grizzly-npn-bootstrap-1.6.jar</jvm-options>
+                <jvm-options>[1.8.0u121|1.8.0u160]-Xbootclasspath/p:${com.sun.aas.installRoot}/lib/grizzly-npn-bootstrap-1.7.jar</jvm-options>
+                <jvm-options>[1.8.0u161|1.8.0u190]-Xbootclasspath/p:${com.sun.aas.installRoot}/lib/grizzly-npn-bootstrap-1.8.jar</jvm-options>
+                <jvm-options>[1.8.0u191|1.8.0u500]-Xbootclasspath/p:${com.sun.aas.installRoot}/lib/grizzly-npn-bootstrap-1.8.1.jar</jvm-options>
+                <jvm-options>[9|]-Xbootclasspath/a:${com.sun.aas.installRoot}/lib/grizzly-npn-api.jar</jvm-options>
+                <jvm-options>[|8]-Djava.endorsed.dirs=${com.sun.aas.installRoot}/modules/endorsed${path.separator}${com.sun.aas.installRoot}/lib/endorsed</jvm-options>
+                <jvm-options>[|8]-Djava.ext.dirs=${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext</jvm-options>
             </java-config>
             <availability-service>
                 <web-container-availability/>
@@ -428,8 +468,9 @@
             <system-property name="org.jboss.weld.clustering.rollingUpgradesIdDelimiter" value=".."/>
         </config>
     </configs>
-    <property name="administrative.domain.name" value="payaradomain"/>
-    <secure-admin special-admin-indicator="3ce0f6df-12b8-4070-b82f-f85446b506dc">
+
+    <property name="administrative.domain.name" value="production"/>
+    <secure-admin special-admin-indicator="fe7cadfc-818e-4731-9667-808046f946ce">
         <secure-admin-principal dn="CN=localhost,OU=Payara,O=Payara Foundation,L=Great Malvern,ST=Worcestershire,C=UK"></secure-admin-principal>
         <secure-admin-principal dn="CN=localhost-instance,OU=Payara,O=Payara Foundation,L=Great Malvern,ST=Worcestershire,C=UK"></secure-admin-principal>
     </secure-admin>

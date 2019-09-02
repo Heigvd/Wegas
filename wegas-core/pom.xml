@@ -78,6 +78,12 @@
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>oak-store-document</artifactId>
             <type>jar</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
@@ -120,7 +126,7 @@
 
         <dependency>
             <groupId>fish.payara.arquillian</groupId>
-            <artifactId>arquillian-payara-server-4-embedded</artifactId>
+            <artifactId>arquillian-payara-server-embedded</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -139,6 +145,10 @@
                     <!-- deprecated ...-->
                     <groupId>javax.enterprise</groupId>
                     <artifactId>cdi-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -180,12 +190,21 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.eclipse.microprofile</groupId>
             <artifactId>microprofile</artifactId>
             <type>pom</type>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.microprofile.metrics</groupId>
+            <artifactId>microprofile-metrics-api</artifactId>
+            <version>2.0.1</version>
+            <type>jar</type>
+        </dependency>
+
         <dependency>
             <groupId>fish.payara.extras</groupId>
             <artifactId>payara-embedded-all</artifactId>

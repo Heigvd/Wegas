@@ -181,7 +181,7 @@
 
         <dependency>
             <groupId>fish.payara.arquillian</groupId>
-            <artifactId>arquillian-payara-server-4-embedded</artifactId>
+            <artifactId>arquillian-payara-server-embedded</artifactId>
             <scope>test</scope>
         </dependency>
 

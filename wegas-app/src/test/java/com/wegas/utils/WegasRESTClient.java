@@ -230,7 +230,9 @@ public class WegasRESTClient {
 
         logger.info(" => " + response.getStatusLine());
 
-        Assert.assertTrue("Expected 2xx OK but got " + response.getStatusLine().getStatusCode(), response.getStatusLine().getStatusCode() < 300);
+        if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_BAD_REQUEST) {
+            throw WegasErrorMessage.error("DELETE failed");
+        }
 
         return getEntityAsString(response.getEntity());
 
