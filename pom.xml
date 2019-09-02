@@ -494,13 +494,6 @@
                 <scope>provided</scope>
             </dependency>
             
-            <!-- Neo4j driver -->
-            <dependency>
-                <groupId>org.neo4j.driver</groupId>
-                <artifactId>neo4j-java-driver</artifactId>
-                <version>1.2.1</version>
-            </dependency>
-
             <dependency>
                 <groupId>io.prometheus</groupId>
                 <artifactId>simpleclient</artifactId>
