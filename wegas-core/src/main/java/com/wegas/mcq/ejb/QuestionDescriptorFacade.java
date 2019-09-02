@@ -23,8 +23,6 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.PrimitiveDescriptorI;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
-import com.wegas.log.neo4j.Neo4jCommunication;
-import com.wegas.log.neo4j.Neo4jPlayerReply;
 import com.wegas.log.xapi.Xapi;
 import com.wegas.mcq.persistence.*;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
@@ -38,7 +36,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.persistence.TypedQuery;
 import jdk.nashorn.api.scripting.JSObject;
@@ -83,20 +80,11 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
     @Inject
     private ScriptEventFacade scriptEvent;
 
-    /**
-     *
-     */
-    @Inject
-    private VariableInstanceFacade variableInstanceFacade;
-
     @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
 
     @Inject
     private Xapi xapi;
-
-    @Inject
-    private Neo4jPlayerReply neo4jPlayerReply;
 
     /**
      * Find a result identified by the given name belonging to the given
@@ -652,8 +640,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         WhValidate whVal = new WhValidate(validateQuestion, player);
         scriptEvent.fire(player, "whValidate", whVal);
 
-        neo4jPlayerReply.onReplyValidate(whVal);
-        //xapi.whValidate(whVal);
+        xapi.whValidate(whVal, player);
     }
 
     /**

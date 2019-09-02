@@ -435,7 +435,6 @@
                 <scope>test</scope>
             </dependency>
 
-
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
                 <artifactId>arquillian-bom</artifactId>
