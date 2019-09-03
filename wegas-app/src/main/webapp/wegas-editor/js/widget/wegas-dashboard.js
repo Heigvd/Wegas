@@ -161,7 +161,7 @@ YUI.add('wegas-dashboard', function(Y) {
                             .get("val").logID;
                         var path = owner.name === "Game" || owner.name === "DebugGame" ? "Games" : "Teams";
                         window.open("rest/Statistics/Export/" + logId
-                            + "/" + path + "/" + team.get("id"), "_blank");
+                            + "/" + path + "/" + owner.get("id"), "_blank");
                     }
                 };
                 return struct;
