@@ -1,3 +1,10 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
 package com.wegas.log.xapi;
 
 import java.time.OffsetDateTime;
@@ -10,7 +17,9 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
@@ -26,6 +35,7 @@ import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import com.wegas.log.xapi.jta.XapiTx;
+import com.wegas.log.xapi.model.ProjectedStatement;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade.ReplyValidate;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
@@ -35,8 +45,12 @@ import org.slf4j.LoggerFactory;
 
 import gov.adlnet.xapi.model.*;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.DatatypeConverter;
 
 @Stateless
 @LocalBean
@@ -55,6 +69,12 @@ public class Xapi implements XapiI {
 
     @Inject
     private RequestManager manager;
+
+    @Inject
+    private TeamFacade teamFacade;
+
+    @Inject
+    private GameFacade gameFacade;
 
     @Inject
     private UserFacade userFacade;
@@ -337,5 +357,74 @@ public class Xapi implements XapiI {
     public List<Map<String, String>> getQuestionReplies(String logId, String questionName, List<Long> gameIds) throws IOException {
         LearningLockerClient client = getLearningLockerClient();
         return client.getQuestionReplies(logId, gameIds, questionName);
+    }
+
+    public StringBuilder exportCSV(String logId, List<Long> gameIds, String fieldSeparator) throws IOException {
+        return mapStatementsToCSV(getLearningLockerClient().getStatements(logId, gameIds), fieldSeparator);
+    }
+
+    public StringBuilder exportCSVByTeam(String logId, List<Long> teamIds, String fieldSeparator) throws IOException {
+        return mapStatementsToCSV(getLearningLockerClient().getStatementsByTeams(logId, teamIds), fieldSeparator);
+    }
+
+    private String digest(Map<String, String> registry, String salt, String value) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(salt.getBytes(StandardCharsets.UTF_8));
+
+            if (!registry.containsKey(value)) {
+                String digest = DatatypeConverter.printHexBinary(md.digest(value.getBytes(StandardCharsets.UTF_8)));
+                String shortDigest;
+
+                int start = 0;
+                do {
+                    shortDigest = digest.substring(start, start + 7);
+                    start++;
+                } while (registry.containsValue(shortDigest));
+
+                registry.put(value, shortDigest);
+            }
+
+            return registry.get(value);
+        } catch (NoSuchAlgorithmException ex) {
+            return value;
+        }
+    }
+
+    public StringBuilder mapStatementsToCSV(List<ProjectedStatement> statements, String fieldSeparator) throws IOException {
+
+            Map<String, String> registry = new HashMap<>();
+
+        // hash userId
+        for (ProjectedStatement stmt : statements) {
+            try {
+                User user = userFacade.find(Long.parseLong(stmt.getActor()));
+                Team team = teamFacade.find(Long.parseLong(stmt.getTeam()));
+                Game game = gameFacade.find(Long.parseLong(stmt.getGame()));
+
+                if (user != null) {
+                    stmt.setActor(digest(registry, user.getMainAccount().getSalt(), stmt.getActor()));
+                }
+
+                if (team != null) {
+                    stmt.setTeam(digest(registry, team.getRefId(), stmt.getTeam()));
+                }
+
+                if (game != null) {
+                    stmt.setGame(digest(registry, game.getRefId(), stmt.getGame()));
+                }
+
+            } catch (NumberFormatException ex) {
+            }
+        }
+
+        String sep = ",";
+        StringBuilder csv = new StringBuilder();
+        ProjectedStatement.writeCSVHeaders(csv, sep);
+        for (ProjectedStatement s : statements) {
+            s.writeCSVRecord(csv, sep);
+        }
+
+        return csv;
     }
 }

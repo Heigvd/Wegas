@@ -55,16 +55,12 @@ public class JpaAccount extends AbstractAccount {
     /**
      *
      */
-    @JsonIgnore
-    private String salt;
-
-    /**
-     *
-     */
     @PrePersist
     public void prePersist() {
         RandomNumberGenerator rng = new SecureRandomNumberGenerator();
-        this.setSalt(rng.nextBytes().toHex());
+        if (this.getSalt() == null) {
+            this.setSalt(rng.nextBytes().toHex());
+        }
         if (this.password == null || this.password.isEmpty()) {
             this.password = rng.nextBytes().toString().substring(0, 7);
         }
@@ -114,20 +110,6 @@ public class JpaAccount extends AbstractAccount {
      */
     public void setPasswordHex(String passwordHex) {
         this.passwordHex = passwordHex;
-    }
-
-    /**
-     * @return the salt
-     */
-    public String getSalt() {
-        return salt;
-    }
-
-    /**
-     * @param salt the salt to set
-     */
-    public void setSalt(String salt) {
-        this.salt = salt;
     }
 
     @Override

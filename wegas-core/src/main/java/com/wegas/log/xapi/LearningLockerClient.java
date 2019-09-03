@@ -1,13 +1,16 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
  */
 package com.wegas.log.xapi;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.log.xapi.model.ProjectedStatement;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -172,6 +175,7 @@ public class LearningLockerClient {
     public static Map matchAll(List<Map> ands) {
         return map("$match", and(ands));
     }
+
     public static Map equals(String key, Object value) {
         return map(key, value);
     }
@@ -222,16 +226,26 @@ public class LearningLockerClient {
         );
     }
 
+    public static Map getByAnyTeamsFilter(List<Long> teamIds) {
+        return or(
+                teamIds.stream()
+                        .map(id -> map("statement.context.contextActivities.grouping.id", "internal://wegas/team/" + id))
+                        .collect(Collectors.toList())
+        );
+    }
+
     public static Map projectStatemenet() {
         return map("$project", map(
                 "_id", 0,
-                "actor", "$statement.actor.account",
+                "actor", "$statement.actor.account.name",
                 "timestamp", "$statement.timestamp",
                 "verb", "$statement.verb.id",
-                "object", "$statement.object",
-                "result", "$statement.result.response"
+                "object_id", "$statement.object.id",
+                "object_type", "$statement.object.definition.type",
+                "object_desc", "$statement.object.definition.description",
+                "result", "$statement.result.response",
+                "grouping", "$statement.context.contextActivities.grouping.id"
         ));
-
     }
 
     /**
@@ -297,16 +311,26 @@ public class LearningLockerClient {
      *
      * @throws IOException
      */
-    public List<Object> getStatements(String logId, List<Long> gameIds) throws IOException {
-        return query(
+    public List<ProjectedStatement> getStatements(String logId, List<Long> gameIds) throws IOException {
+        return ((List<Map<String, Object>>) query(
                 Arrays.asList(
                         matchAll(
                                 equals(LOG_ID, Xapi.LOG_ID_PREFIX + logId),
                                 getByAnyGamesFilter(gameIds)
                         ),
                         projectStatemenet()
-                )
-        );
+                ))).stream().map(ProjectedStatement::new).collect(Collectors.toList());
+    }
+
+    public List<ProjectedStatement> getStatementsByTeams(String logId, List<Long> teamsIds) throws IOException {
+        return ((List<Map<String, Object>>) query(
+                Arrays.asList(
+                        matchAll(
+                                equals(LOG_ID, Xapi.LOG_ID_PREFIX + logId),
+                                getByAnyTeamsFilter(teamsIds)
+                        ),
+                        projectStatemenet()
+                ))).stream().map(ProjectedStatement::new).collect(Collectors.toList());
     }
 
     /**

@@ -549,7 +549,9 @@ YUI.add('wegas-text-input', function(Y) {
             if (this.waitForValue === value) {
                 this.waitForValue = null;
                 if (this.queuedValue) {
-                    this.processSave(this.queuedValue.value, this.queuedValue.descriptor);
+                    if (this.queuedValue.value !== value) {
+                        this.processSave(this.queuedValue.value, this.queuedValue.descriptor);
+                    }
                     this.queuedValue = null;
                 }
             }

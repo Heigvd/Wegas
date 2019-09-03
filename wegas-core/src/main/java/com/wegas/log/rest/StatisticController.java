@@ -2,11 +2,14 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.log.rest;
 
+import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.ejb.TeamFacade;
 import com.wegas.log.xapi.Xapi;
 import java.io.IOException;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -21,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 
 /**
  * This class contains the methods used to access the Wegas statistics. It uses
@@ -36,6 +40,15 @@ import javax.inject.Inject;
 public class StatisticController {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(StatisticController.class);
+
+    @Inject
+    private RequestManager requestManager;
+
+    @Inject
+    private TeamFacade teamFacade;
+
+    @Inject
+    private GameFacade gameFacade;
 
     @Inject Xapi xapi;
 
@@ -77,4 +90,42 @@ public class StatisticController {
         return xapi.getAllGameIdByLogId(logID);
     }
 
+    @GET
+    @Path("Export/{logid: [^/]+}/Games/{ids: [^/]+}")
+    public Response exportCSV(@PathParam("logid") String logId,
+            @PathParam("ids") String gameIds) throws IOException {
+
+        List<Long> ids = readIds(gameIds);
+        for (Long id : ids) {
+            requestManager.assertUpdateRight(gameFacade.find(id));
+        }
+        StringBuilder sb = xapi.exportCSV(logId, ids, ",");
+
+        String filename = logId + ".csv";
+
+        return Response.ok(sb.toString(), "text/csv")
+                .header("Content-Disposition", "attachment; filename="
+                        + filename).build();
+
+    }
+
+    @GET
+    @Path("Export/{logid: [^/]+}/Teams/{ids: [^/]+}")
+    public Response exportCSVByTeam(@PathParam("logid") String logId,
+            @PathParam("ids") String teamIds) throws IOException {
+
+        List<Long> ids = readIds(teamIds);
+        for (Long id : ids) {
+            requestManager.assertUpdateRight(teamFacade.find(id));
+        }
+
+        StringBuilder sb = xapi.exportCSVByTeam(logId, ids, ",");
+
+        String filename = logId + ".csv";
+
+        return Response.ok(sb.toString(), "text/csv")
+                .header("Content-Disposition", "attachment; filename="
+                        + filename).build();
+
+    }
 }
