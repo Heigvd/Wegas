@@ -204,7 +204,7 @@ public class WebsocketFacade {
      * Unlock the lock to involved users.
      *
      * @param channel the channel involved user listen to
-     * @param token token to unlock
+     * @param token   token to unlock
      */
     public void sendUnLock(String channel, String token) {
         if (this.pusher != null) {
@@ -447,7 +447,10 @@ public class WebsocketFacade {
                 //} else {
                 Result result = pusher.trigger(audience, eventName, content, socketId);
 
-                if (result.getHttpStatus() == 403) {
+                if (result == null) {
+                    logger.error("Unexpected NULL pusher result");
+                    this.fallback(clientEvent, audience, socketId);
+                } else if (result.getHttpStatus() == 403) {
                     logger.error("403 QUOTA REACHED");
                 } else if (result.getHttpStatus() == 413) {
                     logger.error("413 MESSAGE TOO BIG NOT DETECTED!!!!");
