@@ -97,7 +97,8 @@ YUI.add('wegas-app', function(Y) {
                 onRequest = function() { // When a response to initial requests is received
                     var playerCode, playerLanguage;
                     requestCounter -= 1;
-                    Y.one(".wegas-loading-app-current").setAttribute("style", "width:" + ((1 - requestCounter / totalRequests) * 100) + "%");
+                    Y.one(".wegas-loading-app-current")
+                        .setAttribute("style", "width:" + ((1 - requestCounter / totalRequests) * 100) + "%");
 
                     if (requestCounter === 0) { // If all initial request are completed,
                         while ((event = events.shift()) !== undefined) {
@@ -197,12 +198,14 @@ YUI.add('wegas-app', function(Y) {
 
                 if (extraTabs) {
                     if (gm.get("properties").get("val").logID) {
-                        extraTabs._addTab({
-                            label: I18n.t("global.statistics"),
-                            children: [{
-                                    type: "Statistics"
-                                }]
-                        });
+                        if (Y.Wegas.Facade.Variable.cache.find("@class", "QuestionDescriptor")) {
+                            extraTabs._addTab({
+                                label: I18n.t("global.statistics"),
+                                children: [{
+                                        type: "Statistics"
+                                    }]
+                            });
+                        }
                     }
 
                     Y.Array.each(Y.Wegas.Facade.Variable.cache.findAll("@class", "PeerReviewDescriptor"),
@@ -222,14 +225,14 @@ YUI.add('wegas-app', function(Y) {
                 }
 
                 Y.one("body").on("key", function(e) { // Add shortcut to activate developper mode on key '§' pressed
-                        e.currentTarget.toggleClass("wegas-stdmode") // Toggle stdmode class on body (hides any wegas-advancedfeature)
-                            .toggleClass("wegas-advancedmode");
-                        Y.config.win.Y = Y; // Allow access to Y instance
+                    e.currentTarget.toggleClass("wegas-stdmode") // Toggle stdmode class on body (hides any wegas-advancedfeature)
+                        .toggleClass("wegas-advancedmode");
+                    Y.config.win.Y = Y; // Allow access to Y instance
                 }, "167", this);
 
                 Y.one("body").on("key", function(e) { // Add shortcut to activate internal mode on key '°' pressed
-                        e.currentTarget.toggleClass("wegas-internalmode");
-                        Y.config.win.Y = Y; // Allow access to Y instance
+                    e.currentTarget.toggleClass("wegas-internalmode");
+                    Y.config.win.Y = Y; // Allow access to Y instance
                 }, "176", this);
             });
         },
@@ -246,7 +249,8 @@ YUI.add('wegas-app', function(Y) {
                             delete tIds[response.tId];
                             counter++;
                             if (showLoader) {
-                                Y.one(".wegas-loading-app-current").setAttribute("style", "width:" + ((counter / totalRequests) * 100) + "%");
+                                Y.one(".wegas-loading-app-current")
+                                    .setAttribute("style", "width:" + ((counter / totalRequests) * 100) + "%");
                             }
                             var event;
                             if (Object.keys(tIds).length === 0) {
@@ -277,7 +281,8 @@ YUI.add('wegas-app', function(Y) {
                 Y.one("body").toggleClass("idle", false);
                 if (showLoader) {
                     // but show loader
-                    Y.one("body").prepend("<div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>");
+                    Y.one("body")
+                        .prepend("<div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>");
                 }
                 // listen to pusher
                 this.dataSources.Pusher.resume();
