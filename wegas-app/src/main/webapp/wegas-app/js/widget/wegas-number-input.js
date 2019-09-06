@@ -151,10 +151,13 @@ YUI.add("wegas-number-input", function(Y) {
                 if (this.waitForValue === value) {
                     this.waitForValue = null;
                     if (this.queuedValue) {
-                        this.processSave(
-                            this.queuedValue.value,
-                            this.queuedValue.descriptor
-                            );
+                        if (this.queuedValue.value !== value) {
+                            this.processSave(
+                                this.queuedValue.value,
+                                this.queuedValue.descriptor
+                                );
+                        }
+                        this.queuedValue = null;
                     }
                 }
             },
@@ -428,7 +431,7 @@ YUI.add("wegas-number-input", function(Y) {
         {
             /** @lends Y.Wegas.NumberInput */
             EDITORNAME: "NumberInput",
-            ATTRS:{
+            ATTRS: {
                 voidDefaultValue: {
                     type: "boolean",
                     value: false,

@@ -1,13 +1,17 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
  */
 package com.wegas.log.xapi;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.log.xapi.model.ProjectedStatement;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -89,6 +93,10 @@ public class LearningLockerClient {
         return new ObjectMapper();
     }
 
+    public static List list(Object... values) {
+        return Arrays.stream(values).collect(Collectors.toList());
+    }
+
     /**
      *
      * @param kvs list of key, value, key2, value2, ..., keyN, valueN
@@ -166,22 +174,23 @@ public class LearningLockerClient {
     }
 
     public static Map matchAll(Map... ands) {
-        return matchAll(Arrays.asList(ands));
+        return matchAll(list(ands));
     }
 
     public static Map matchAll(List<Map> ands) {
         return map("$match", and(ands));
     }
+
     public static Map equals(String key, Object value) {
         return map(key, value);
     }
 
     public static Map equals(Object key, Object value) {
-        return map("$eq", Arrays.asList(key, value));
+        return map("$eq", list(key, value));
     }
 
     public static Map and(Map... ands) {
-        return and(Arrays.asList(ands));
+        return and(list(ands));
     }
 
     public static Map and(List<Map> ands) {
@@ -189,7 +198,7 @@ public class LearningLockerClient {
     }
 
     public static Map or(Map... ors) {
-        return or(Arrays.asList(ors));
+        return or(list(ors));
     }
 
     public static Map or(List<Map> or) {
@@ -202,15 +211,15 @@ public class LearningLockerClient {
 
     public static Map lastPart(Object value, String delimiter) {
         return map("$arrayElemAt",
-                Arrays.asList(
-                        map("$split", Arrays.asList(value, delimiter)),
+                list(
+                        map("$split", list(value, delimiter)),
                         -1
                 )
         );
     }
 
     public static Map elemAt(Object value, int index) {
-        return map("$arrayElemAt", Arrays.asList(value, index)
+        return map("$arrayElemAt", list(value, index)
         );
     }
 
@@ -222,16 +231,26 @@ public class LearningLockerClient {
         );
     }
 
+    public static Map getByAnyTeamsFilter(List<Long> teamIds) {
+        return or(
+                teamIds.stream()
+                        .map(id -> map("statement.context.contextActivities.grouping.id", "internal://wegas/team/" + id))
+                        .collect(Collectors.toList())
+        );
+    }
+
     public static Map projectStatemenet() {
         return map("$project", map(
                 "_id", 0,
-                "actor", "$statement.actor.account",
+                "actor", "$statement.actor.account.name",
                 "timestamp", "$statement.timestamp",
                 "verb", "$statement.verb.id",
-                "object", "$statement.object",
-                "result", "$statement.result.response"
+                "object_id", "$statement.object.id",
+                "object_type", "$statement.object.definition.type",
+                "object_desc", "$statement.object.definition.description",
+                "result", "$statement.result.response",
+                "grouping", "$statement.context.contextActivities.grouping.id"
         ));
-
     }
 
     /**
@@ -242,7 +261,7 @@ public class LearningLockerClient {
      * @throws IOException
      */
     public List<String> getAllLogIds() throws IOException {
-        return ((List<Map<String, String>>) query(Arrays.asList(
+        return ((List<Map<String, String>>) query(list(
                 map("$project", map(
                         "logId", lastPart(elemAt("$" + LOG_ID, 0), "/")
                 )),
@@ -262,7 +281,7 @@ public class LearningLockerClient {
      * @throws IOException
      */
     public List<Long> getAllGamesByLogId(String logId) throws IOException {
-        return ((List<Map<String, String>>) query(Arrays.asList(
+        return ((List<Map<String, String>>) query(list(
                 matchAll(equals(LOG_ID, Xapi.LOG_ID_PREFIX + logId)),
                 map("$group", map(
                         "_id", "$statement.context.contextActivities.grouping.id"
@@ -274,7 +293,7 @@ public class LearningLockerClient {
                                                 "input", "$_id",
                                                 "as", "item",
                                                 "cond", equals(
-                                                        map("$substrCP", Arrays.asList("$$item", 0, 22)),
+                                                        map("$substrCP", list("$$item", 0, 22)),
                                                         "internal://wegas/game/"
                                                 )
                                         )
@@ -297,16 +316,39 @@ public class LearningLockerClient {
      *
      * @throws IOException
      */
-    public List<Object> getStatements(String logId, List<Long> gameIds) throws IOException {
-        return query(
-                Arrays.asList(
-                        matchAll(
-                                equals(LOG_ID, Xapi.LOG_ID_PREFIX + logId),
-                                getByAnyGamesFilter(gameIds)
-                        ),
-                        projectStatemenet()
-                )
+    public List<ProjectedStatement> getStatements(String logId, List<Long> gameIds, String activityPattern) throws IOException {
+
+        List<Map> ands = list(
+                equals(LOG_ID, Xapi.LOG_ID_PREFIX + logId),
+                getByAnyGamesFilter(gameIds)
         );
+
+        if (!Helper.isNullOrEmpty(activityPattern)) {
+            ands.add(regex("statement.object.id", activityPattern));
+        }
+
+        return ((List<Map<String, Object>>) query(
+                list(
+                        matchAll(ands),
+                        projectStatemenet()
+                ))).stream().map(ProjectedStatement::new).collect(Collectors.toList());
+    }
+
+    public List<ProjectedStatement> getStatementsByTeams(String logId, List<Long> teamsIds, String activityPattern) throws IOException {
+        List<Map> ands = list(
+                equals(LOG_ID, Xapi.LOG_ID_PREFIX + logId),
+                getByAnyTeamsFilter(teamsIds)
+        );
+
+        if (!Helper.isNullOrEmpty(activityPattern)) {
+            ands.add(regex("statement.object.id", activityPattern));
+        }
+
+        return ((List<Map<String, Object>>) query(
+                list(
+                        matchAll(ands),
+                        projectStatemenet()
+                ))).stream().map(ProjectedStatement::new).collect(Collectors.toList());
     }
 
     /**
@@ -322,7 +364,7 @@ public class LearningLockerClient {
      */
     public List<Map<String, String>> getQuestionReplies(String logId, List<Long> gameIds, String questionName) throws IOException {
         return query(
-                Arrays.asList(
+                list(
                         matchAll(
                                 equals(LOG_ID, Xapi.LOG_ID_PREFIX + logId),
                                 getByAnyGamesFilter(gameIds),

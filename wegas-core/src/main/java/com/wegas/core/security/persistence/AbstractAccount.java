@@ -26,6 +26,8 @@ import com.wegas.editor.View.NumberView;
 import com.wegas.editor.View.View;
 import java.util.*;
 import javax.persistence.*;
+import org.apache.shiro.crypto.RandomNumberGenerator;
+import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -65,6 +67,12 @@ public abstract class AbstractAccount extends AbstractEntity {
     @Id
     @GeneratedValue
     private Long id;
+
+    /**
+     *
+     */
+    @JsonIgnore
+    private String salt;
 
     /**
      *
@@ -131,6 +139,17 @@ public abstract class AbstractAccount extends AbstractEntity {
     @JsonView(Views.ExtendedI.class)
     @Transient
     private Collection<Role> roles = new HashSet<>();
+
+    /**
+     *
+     */
+    @PrePersist
+    public void setSaltOnPrePersist() {
+        if (salt == null) {
+            RandomNumberGenerator rng = new SecureRandomNumberGenerator();
+            this.setSalt(rng.nextBytes().toHex());
+        }
+    }
 
     /**
      * @return the id
@@ -294,21 +313,6 @@ public abstract class AbstractAccount extends AbstractEntity {
         this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 
-    @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
-        return null;
-    }
-
-    @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getUser().getRequieredUpdatePermission();
-    }
-
-    @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getUser().getRequieredReadPermission();
-    }
-
     /**
      *
      * @return the email
@@ -345,6 +349,35 @@ public abstract class AbstractAccount extends AbstractEntity {
 
     public void setAgreedTime(Date agreedTime) {
         this.agreedTime = agreedTime != null ? new Date(agreedTime.getTime()) : null;
+    }
+
+    /**
+     * @return the salt
+     */
+    public String getSalt() {
+        return salt;
+    }
+
+    /**
+     * @param salt the salt to set
+     */
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredCreatePermission() {
+        return null;
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        return this.getUser().getRequieredUpdatePermission();
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission() {
+        return this.getUser().getRequieredReadPermission();
     }
 
     @Override
