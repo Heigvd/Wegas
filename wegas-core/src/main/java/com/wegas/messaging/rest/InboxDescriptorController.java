@@ -16,6 +16,7 @@ import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
