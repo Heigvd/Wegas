@@ -93,13 +93,14 @@ public class StatisticController {
     @GET
     @Path("Export/{logid: [^/]+}/Games/{ids: [^/]+}")
     public Response exportCSV(@PathParam("logid") String logId,
-            @PathParam("ids") String gameIds) throws IOException {
+            @PathParam("ids") String gameIds,
+            @QueryParam("activityPattern") String activityPattern) throws IOException {
 
         List<Long> ids = readIds(gameIds);
         for (Long id : ids) {
             requestManager.assertUpdateRight(gameFacade.find(id));
         }
-        StringBuilder sb = xapi.exportCSV(logId, ids, ",");
+        StringBuilder sb = xapi.exportCSV(logId, ids, ",", activityPattern);
 
         String filename = logId + ".csv";
 
@@ -112,14 +113,15 @@ public class StatisticController {
     @GET
     @Path("Export/{logid: [^/]+}/Teams/{ids: [^/]+}")
     public Response exportCSVByTeam(@PathParam("logid") String logId,
-            @PathParam("ids") String teamIds) throws IOException {
+            @PathParam("ids") String teamIds,
+            @QueryParam("activityPattern") String activityPattern) throws IOException {
 
         List<Long> ids = readIds(teamIds);
         for (Long id : ids) {
             requestManager.assertUpdateRight(teamFacade.find(id));
         }
 
-        StringBuilder sb = xapi.exportCSVByTeam(logId, ids, ",");
+        StringBuilder sb = xapi.exportCSVByTeam(logId, ids, ",", activityPattern);
 
         String filename = logId + ".csv";
 

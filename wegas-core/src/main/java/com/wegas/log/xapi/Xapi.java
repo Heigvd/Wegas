@@ -359,12 +359,12 @@ public class Xapi implements XapiI {
         return client.getQuestionReplies(logId, gameIds, questionName);
     }
 
-    public StringBuilder exportCSV(String logId, List<Long> gameIds, String fieldSeparator) throws IOException {
-        return mapStatementsToCSV(getLearningLockerClient().getStatements(logId, gameIds), fieldSeparator);
+    public StringBuilder exportCSV(String logId, List<Long> gameIds, String fieldSeparator, String activityPattern) throws IOException {
+        return mapStatementsToCSV(getLearningLockerClient().getStatements(logId, gameIds, activityPattern), fieldSeparator);
     }
 
-    public StringBuilder exportCSVByTeam(String logId, List<Long> teamIds, String fieldSeparator) throws IOException {
-        return mapStatementsToCSV(getLearningLockerClient().getStatementsByTeams(logId, teamIds), fieldSeparator);
+    public StringBuilder exportCSVByTeam(String logId, List<Long> teamIds, String fieldSeparator, String activityPattern) throws IOException {
+        return mapStatementsToCSV(getLearningLockerClient().getStatementsByTeams(logId, teamIds, activityPattern), fieldSeparator);
     }
 
     private String digest(Map<String, String> registry, String salt, String value) {
@@ -393,7 +393,7 @@ public class Xapi implements XapiI {
 
     public StringBuilder mapStatementsToCSV(List<ProjectedStatement> statements, String fieldSeparator) throws IOException {
 
-            Map<String, String> registry = new HashMap<>();
+        Map<String, String> registry = new HashMap<>();
 
         // hash userId
         for (ProjectedStatement stmt : statements) {
