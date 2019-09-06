@@ -267,8 +267,10 @@ YUI.add('wegas-panel', function(Y) {
                 if (e.button === 1 && panel.orig) {
                     var dx = e.pageX - panel.drag.x;
                     var dy = e.pageY - panel.drag.y;
-                    panel.set("x", panel.orig.x + dx);
-                    panel.set("y", panel.orig.y + dy);
+                    if (Math.abs(dy) + Math.abs(dy) > 20) {
+                        panel.set("x", panel.orig.x + dx);
+                        panel.set("y", panel.orig.y + dy);
+                    }
                 }
             });
         },
