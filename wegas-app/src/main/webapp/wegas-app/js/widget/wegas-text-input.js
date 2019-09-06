@@ -181,6 +181,9 @@ YUI.add('wegas-text-input', function(Y) {
             this.publish('editing', {
                 emitFacade: true
             });
+            this.publish('stopEditing', {
+                emitFacade: true
+            });
         },
         /**
          * @function
@@ -409,9 +412,14 @@ YUI.add('wegas-text-input', function(Y) {
                     if (this.get('selfSaving')) {
                         this.wait = Y.later(1000, this, function() {
                             this.wait = null;
+                            this.fire('stopEditing', this.getPayload(content));
                             this.onSave();
                         });
                     } else {
+                        this.wait = Y.later(1000, this, function() {
+                            this.wait = null;
+                            this.fire('stopEditing', this.getPayload(content));
+                        });
                         this.onSave();
                     }
                 }
@@ -493,6 +501,9 @@ YUI.add('wegas-text-input', function(Y) {
                 msg = this.save(value)
                     ? 'saving...'
                     : 'Something went wrong';
+                if (!this.get('selfSaving')) {
+                    msg = '';
+                }
             } else {
                 msg = 'Size limit exceeded';
             }
@@ -760,11 +771,19 @@ YUI.add('wegas-text-input', function(Y) {
             this.publish('saved', {
                 emitFacade: true
             });
+            this.publish('stopEditing', {
+                emitFacade: true
+            });
         },
         destructor: function() {
             Y.Array.each(this.handlers, function(h) {
                 h.detach();
             });
+
+            if (this.onInstanceUpdate) {
+                this.onInstanceUpdate.detach();
+            }
+
         },
         getPayload: function(value) {
             var desc = this._descriptor || this.get('variable.evaluated');
@@ -1015,11 +1034,25 @@ YUI.add('wegas-text-input', function(Y) {
                 }
             }
         },
+
+        bindUpdatedInstance: function() {
+            if (this.onInstanceUpdate) {
+                this.onInstanceUpdate.detach();
+            }
+            var question = this.get('variable.evaluated');
+            if (question) {
+                this.onInstanceUpdate = Y.Wegas.Facade.Instance.after(question.getInstance()
+                    .get("id") + ':updatedInstance', this.syncUI, this);
+            }
+        },
         bindUI: function() {
+            this.bindUpdatedInstance();
+            this.after("variableChange", this.bindUpdatedInstance, this);
+
             var input, select, ul;
-            this.handlers.push(
-                Y.Wegas.Facade.Variable.after('update', this.syncUI, this)
-                );
+//            this.handlers.push(
+//                Y.Wegas.Facade.Variable.after('update', this.syncUI, this)
+//                );
             input = this.get(CONTENTBOX).one('input');
             if (input) {
                 //this.handlers.push(input.on("blur", this.updateFromInput, this));
@@ -1068,9 +1101,14 @@ YUI.add('wegas-text-input', function(Y) {
             if (this.get('selfSaving')) {
                 this.wait = Y.later(1000, this, function() {
                     this.wait = null;
+                    this.fire('stopEditing', this.getPayload(value));
                     this.updateValue(value);
                 });
             } else {
+                this.wait = Y.later(1000, this, function() {
+                    this.wait = null;
+                    this.fire('stopEditing', this.getPayload(value));
+                });
                 this.updateValue(value);
             }
         }
