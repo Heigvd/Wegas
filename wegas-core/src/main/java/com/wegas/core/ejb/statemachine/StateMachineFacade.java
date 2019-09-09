@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -58,12 +57,12 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
      */
     static final private String EVENT_PARAMETER_NAME = "param";
 
-    @EJB
+    @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
 
-    @EJB
+    @Inject
     private ScriptFacade scriptManager;
 
     @Inject

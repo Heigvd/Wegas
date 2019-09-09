@@ -15,8 +15,8 @@ import com.wegas.messaging.ejb.MessageFacade;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
@@ -32,20 +32,20 @@ public class InboxDescriptorController {
     /**
      *
      */
-    @EJB
+    @Inject
     private MessageFacade messageFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableInstanceFacade variableInstanceFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
 
-    @EJB
+    @Inject
     private RequestFacade requestFacade;
 
     /**

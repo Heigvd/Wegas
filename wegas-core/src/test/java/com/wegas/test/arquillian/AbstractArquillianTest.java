@@ -14,7 +14,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.rest.UserController;
 import java.sql.SQLException;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.naming.NamingException;
 import org.junit.Before;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestMinim
 
     protected static final Logger logger = LoggerFactory.getLogger(AbstractArquillianTest.class);
 
-    @EJB
+    @Inject
     private UserController userController;
 
     /**

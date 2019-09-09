@@ -389,4 +389,20 @@ public class MergeHelper {
     public static void resetRefIds(AbstractEntity target, AbstractEntity reference, Boolean clear) {
         MergeHelper.visitMergeable(target, true, new RefidResetter(clear), reference);
     }
+
+
+    private static class NameResetter implements MergeableVisitor {
+
+        @Override
+        public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references) {
+            if (target instanceof NamedEntity){
+                ((NamedEntity) target).setName(target.getClass().getSimpleName());
+            }
+            return true;
+        }
+    }
+
+    public static void resetNames(Mergeable target) {
+        MergeHelper.visitMergeable(target, Boolean.TRUE, new NameResetter());
+    }
 }

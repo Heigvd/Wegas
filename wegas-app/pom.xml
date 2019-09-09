@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.wegas</groupId>
         <artifactId>wegas-project</artifactId>
-        <version>3.0-SNAPSHOT</version>
+        <version>4.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -22,31 +22,6 @@
 
     <profiles>
         <profile>
-            <id>light-profile</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-war-plugin</artifactId>
-                        <configuration>
-                            <warName>Wegas</warName>
-                            <failOnMissingWebXml>false</failOnMissingWebXml>
-                            <archive>
-                                <!--<manifest>
-                                    <addClasspath>true</addClasspath>
-                                    <classpathPrefix>lib</classpathPrefix>
-                                </manifest>-->
-                                <!--<manifestEntries>
-                                    <Class-Path>file:/${basedir}/../wegas-core/target/wegas-core.jar</Class-Path>
-                                </manifestEntries>-->
-                            </archive>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
             <id>release-profile</id>
             <build>
                 <plugins>
@@ -56,20 +31,9 @@
                         <configuration>
                             <!--remove not min js-->
                             <!--<packagingExcludes>%regex[(?!.*min).*\.js]</packagingExcludes>-->
-                            <overlays>
-                                <overlay>
-                                    <id>wegaslibs</id>
-                                    <groupId>com.wegas</groupId>
-                                    <artifactId>wegas-resources</artifactId>
-                                    <type>war</type>
-                                    <includes>
-                                        <include>lib/**</include>
-                                    </includes>
-                                    <excludes>
-                                        <exclude>lib/yui3/**</exclude>
-                                    </excludes>
-                                </overlay>
-                            </overlays>
+                            <packagingExcludes>
+                                lib/yui3/**
+                            </packagingExcludes>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -121,6 +85,10 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>fish.payara.api</groupId>
+            <artifactId>payara-api</artifactId>
+        </dependency>
 
         <!-- log4j -->
         <dependency>
@@ -213,7 +181,7 @@
 
         <dependency>
             <groupId>fish.payara.arquillian</groupId>
-            <artifactId>arquillian-payara-server-4-embedded</artifactId>
+            <artifactId>arquillian-payara-server-embedded</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -267,6 +235,18 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -285,7 +265,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>com.wegas</groupId>
                 <artifactId>wenerator-maven-plugin</artifactId>
@@ -359,7 +338,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>${war.plugin.version}</version>
                 <configuration>
                     <useCache>true</useCache>
                     <!--<packagingExcludes>%regex[(?!.*min).*\.js]</packagingExcludes>-->
@@ -409,7 +387,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.4.0</version>
+                <version>1.6.0</version>
                 <configuration>
                     <skip>${skip.yarn}</skip>
                 </configuration>
@@ -465,46 +443,17 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <systemProperties>
+                        <java.util.logging.config.file>${project.basedir}/../wegas-core/src/test/resources/logging.properties</java.util.logging.config.file>
                         <arquillian.launch>glassfish-embedded</arquillian.launch>
                     </systemProperties>
-                    <excludes>
-                        <exclude>**/integration/**</exclude>
-                    </excludes>
-                    <includes>
-                        <include>**/unit/**</include>
-                    </includes>
                     <skipTests>${skip.surefire.tests}</skipTests>
                 </configuration>
-            </plugin>
-
-            <!-- Integration Tests -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.17</version>
-                <configuration>
-                    <argLine>-Xms800m -Xmx800m ${jacoco.failsafeArgLine}</argLine>
-                    <excludes>
-                        <exclude>**/unit/**</exclude>
-                    </excludes>
-                    <includes>
-                        <include>**/integration/**</include>
-                    </includes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>

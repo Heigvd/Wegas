@@ -427,4 +427,10 @@ public class Xapi implements XapiI {
 
         return csv;
     }
+
+
+    public List<Map<String, Object>> getActivityCount(List<Long> gameIds) throws IOException {
+        return getLearningLockerClient().getActivityCount(gameIds);
+    }
+
 }

@@ -23,7 +23,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "FSMDescriptor")
 @JsonTypeName(value = "FSMDescriptor")
-
 @Schema(property = "states", value = StateMachineDescriptor.StateProp.class, view = @View(label = "", value = Hidden.class))
 public class StateMachineDescriptor extends AbstractStateMachineDescriptor<State, Transition> {
 

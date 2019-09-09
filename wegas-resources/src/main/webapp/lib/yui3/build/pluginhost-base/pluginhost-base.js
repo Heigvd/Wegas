@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -90,11 +90,15 @@ YUI.add('pluginhost-base', function (Y, NAME) {
                         if (this[ns].setAttrs) {
                             this[ns].setAttrs(config);
                         }
+                        else {
+                        }
                     } else {
                         // Create new instance
                         this[ns] = new Plugin(config);
                         this._plugins[ns] = Plugin;
                     }
+                }
+                else {
                 }
             }
             return this;
@@ -185,4 +189,4 @@ YUI.add('pluginhost-base', function (Y, NAME) {
     Y.namespace("Plugin").Host = PluginHost;
 
 
-}, '3.17.2', {"requires": ["yui-base"]});
+}, '3.18.1', {"requires": ["yui-base"]});

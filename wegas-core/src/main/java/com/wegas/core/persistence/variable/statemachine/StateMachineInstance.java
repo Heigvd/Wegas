@@ -9,6 +9,7 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -43,6 +44,7 @@ import java.util.Map;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "TriggerInstance", value = StateMachineInstance.class)
 })
+@JsonIgnoreProperties("currentState")
 public class StateMachineInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;

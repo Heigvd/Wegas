@@ -219,7 +219,7 @@ YUI.add("wegas-pageloader", function(Y) {
                     Wegas.Facade.Page.cache.getPage(val, Y.bind(function(widgetCfg) { // Retrieve page
                         this.showOverlay();
 
-                        Y.log("Destroy previous widget (page " + widgetCfg["@pageId"] + ")", "log", "Wegas.PageLoader");
+                        Y.log("Destroy previous widget (page " + (widgetCfg ? widgetCfg["@pageId"] : "N/A")+ ")", "log", "Wegas.PageLoader");
                         this.set(WIDGET, null);
                         if (!widgetCfg) {
                             this.get(CONTENTBOX).setContent("<center class=" + pageloaderErrorMessageClass +

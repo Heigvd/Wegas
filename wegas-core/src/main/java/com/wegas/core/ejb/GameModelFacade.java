@@ -13,8 +13,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.text.DiffRow;
 import com.github.difflib.text.DiffRowGenerator;
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ILock;
 import com.wegas.core.Helper;
 import com.wegas.core.api.GameModelFacadeI;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
@@ -109,13 +107,13 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
 
     @Inject
@@ -137,9 +135,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     @Inject
     private PageFacade pageFacade;
-
-    @Inject
-    private HazelcastInstance hzInstance;
 
     @Inject
     private JCRConnectorProvider jcrConnectorProvider;
@@ -669,7 +664,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                     requestManager.assertCanInstantiateGameModel(srcGameModel);
                     // prefer the reference
                     GameModel ref = modelFacade.getReference(srcGameModel);
-                    if (ref != null){
+                    if (ref != null) {
                         srcGameModel = ref;
                     }
                     newGameModel = new GameModel();
@@ -751,6 +746,18 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         TypedQuery<GameModel> query = this.getEntityManager().createNamedQuery("GameModel.findAllInstantiations", GameModel.class);
         query.setParameter("id", gm.getId());
         return query.getResultList();
+    }
+
+    /**
+     * Same as {@link remove(java.lang.Long) } but within a brand new transaction
+     *
+     * @param gameModelId id of the gameModel to remove
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void removeTX(Long gameModelId) {
+        logger.info("Remove GameModel #{}", gameModelId);
+        this.remove(gameModelId);
+        logger.info("  done");
     }
 
     @Override
@@ -1107,34 +1114,6 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         }
     }
 
-    //@Schedule(hour = "4", dayOfMonth = "Last Sat")
-    public void removeGameModels() {
-        requestManager.su();
-        try {
-            ILock lock = hzInstance.getLock("GameModelFacade.Schedule");
-            logger.info("deleteGameModels(): want to delete gameModels");
-            if (lock.tryLock()) {
-                try {
-                    List<GameModel> toDelete = this.findByTypeAndStatus(SCENARIO, Status.DELETE);
-                    toDelete.addAll(this.findByTypeAndStatus(MODEL, Status.DELETE));
-
-                    for (GameModel gm : toDelete) {
-                        this.remove(gm);
-                    }
-                    this.getEntityManager().flush();
-                } finally {
-                    lock.unlock();
-                    lock.destroy();
-                }
-            } else {
-                logger.info("somebody else got the lock...");
-            }
-
-        } finally {
-            requestManager.releaseSu();
-        }
-    }
-
     public String findAndReplace(GameModel mergeable, FindAndReplacePayload payload) {
 
         FindAndReplaceVisitor replacer = new FindAndReplaceVisitor(payload);
@@ -1163,7 +1142,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         return this.findAndReplace(this.find(gameModelId), payload);
     }
 
-    private static class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
+    public static class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
 
         private final DiffRowGenerator generator;
 
@@ -1499,7 +1478,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 websocketFacade.pageUpdate(gameModel.getId(), pageId, null); //no requestId allows the requester to be notified too
             }
             //for (GameModelContent content : contents) {
-                //websocketFacade.gameModelContentUpdate(content, null); //no requestId allows the requester to be notified too
+            //websocketFacade.gameModelContentUpdate(content, null); //no requestId allows the requester to be notified too
             //}
         }
     }

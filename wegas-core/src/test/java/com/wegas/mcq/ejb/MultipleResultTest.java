@@ -17,7 +17,7 @@ import com.wegas.test.TestHelper;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import com.wegas.test.mcq.Answerer;
 import java.util.function.Function;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -29,10 +29,10 @@ import org.slf4j.LoggerFactory;
  */
 public class MultipleResultTest extends AbstractArquillianTest {
 
-    @EJB
+    @Inject
     private QuestionDescriptorFacade questionDescriptorFacade;
 
-    @EJB
+    @Inject
     private Answerer answerer;
 
     private static final Logger logger = LoggerFactory.getLogger(MultipleResultTest.class);

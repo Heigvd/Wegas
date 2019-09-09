@@ -1073,6 +1073,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Some changes were not saved",
                             'fr': "Des changements n'ont pas été sauvés"
                         },
+                        'PRIVATE-MODALE-SETTINGS-DIFF-BTN': {
+                            'en': "Diff as CSV",
+                            'fr': "Diff en CSV"
+                        },
                         'PRIVATE-MODALE-SETTINGS-CANCEL-BTN': {
                             'en': "Cancel",
                             'fr': "Annuler"

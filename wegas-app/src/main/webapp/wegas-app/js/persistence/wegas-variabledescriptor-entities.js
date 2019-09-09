@@ -455,7 +455,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                             ]
                                         }, {
                                             type: BUTTON,
-                                            label: "Private",
+                                            label: "Private (delete from scenario !)",
                                             plugins: [
                                                 {
                                                     fn: "ResetVisibilityAction",
@@ -464,7 +464,16 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                                     }
                                                 }
                                             ]
+                                        }, {
+                                            type: BUTTON,
+                                            label: "Release from model (preserve in scenarios)",
+                                            plugins: [
+                                                {
+                                                    fn: "ReleaseVariableAction"
+                                                }
+                                            ]
                                         }
+
                                     ]
                                 }
                             }

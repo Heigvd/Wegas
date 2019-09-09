@@ -88,30 +88,4 @@
             <goal>scm-publish:publish-scm</goal>
         </goals>
     </action>
-    <action>
-        <actionName>CUSTOM-Deploy-prod</actionName>
-        <displayName>Deploy-prod</displayName>
-        <goals>
-            <goal>clean:clean</goal>
-            <goal>install</goal>
-            <goal>wagon:upload-single</goal>
-        </goals>
-        <activatedProfiles>
-            <activatedProfile>release-profile</activatedProfile>
-            <activatedProfile>prod-profile</activatedProfile>
-        </activatedProfiles>
-    </action>
-    <action>
-        <actionName>CUSTOM-Deploy-dev</actionName>
-        <displayName>Deploy-dev</displayName>
-        <goals>
-            <goal>clean:clean</goal>
-            <goal>install</goal>
-            <goal>wagon:upload-single</goal>
-        </goals>
-        <activatedProfiles>
-            <activatedProfile>release-profile</activatedProfile>
-        </activatedProfiles>
-    </action>
-
 </actions>

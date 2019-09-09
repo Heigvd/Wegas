@@ -7,6 +7,7 @@
  */
 package com.wegas.app.jsf.controllers;
 
+import com.wegas.app.jsf.controllers.utils.HttpParam;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.LibraryFacade;
 import com.wegas.core.exception.internal.WegasForbiddenException;
@@ -19,10 +20,8 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import javax.ejb.EJB;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -42,13 +41,13 @@ public class AbstractGameController implements Serializable {
     /**
      *
      */
-    @ManagedProperty("#{param.id}")
+    @Inject @HttpParam("id")
     protected Long playerId;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private LibraryFacade libraryFacade;
 
     /**

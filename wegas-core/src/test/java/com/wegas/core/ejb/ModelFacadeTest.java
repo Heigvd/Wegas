@@ -852,40 +852,43 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         modelFacade.propagateModel(model.getId());
 
         VariableDescriptor x2Model = variableDescriptorFacade.duplicate(xModel.getId());
+        String x2Name = x2Model.getName();
         Assert.assertNotEquals("X and X2 have same refid", xModel.getRefId(), x2Model.getRefId());
 
         // propagate x2 to scenarios
         modelFacade.propagateModel(model.getId());
 
-        Assert.assertNotNull("X2 does not exist in the model", getDescriptor(model, "x_2"));
-        Assert.assertNotNull("X2 does not exist in scenario1", getDescriptor(gameModel1, "x_2"));
-        Assert.assertNotNull("X2 does not exist in scenario2", getDescriptor(gameModel2, "x_2"));
+        Assert.assertNotNull("X2 does not exist in the model", getDescriptor(model, x2Name));
+        Assert.assertNotNull("X2 does not exist in scenario1", getDescriptor(gameModel1, x2Name));
+        Assert.assertNotNull("X2 does not exist in scenario2", getDescriptor(gameModel2, x2Name));
 
-        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(model, "x_2").getVisibility());
-        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(gameModel1, "x_2").getVisibility());
-        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(gameModel2, "x_2").getVisibility());
+        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(model, x2Name).getVisibility());
+        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(gameModel1, x2Name).getVisibility());
+        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(gameModel2, x2Name).getVisibility());
 
-        // duplcate X in model -> x_3
-        variableDescriptorFacade.duplicate(xModel.getId());
+        // duplcate X in model -> numberDescriptor_??????
+        VariableDescriptor x3 = variableDescriptorFacade.duplicate(xModel.getId());
+        String x3Name = x3.getName();
 
-        Assert.assertNotNull("X3 does not exist in the model", getDescriptor(model, "x_3"));
-        Assert.assertNull("X3 already exists in scenario1", getDescriptor(gameModel1, "x_3"));
-        Assert.assertNull("X3 already exists in scenario2", getDescriptor(gameModel2, "x_3"));
+        Assert.assertNotNull("X3 does not exist in the model", getDescriptor(model, x3Name));
+        Assert.assertNull("X3 already exists in scenario1", getDescriptor(gameModel1, x3Name));
+        Assert.assertNull("X3 already exists in scenario2", getDescriptor(gameModel2, x3Name));
 
-        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(model, "x_3").getVisibility());
+        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(model, x3Name).getVisibility());
 
-        // duplcate X in gm1 -> x_4
-        variableDescriptorFacade.duplicate(getDescriptor(gameModel1, "x").getId());
-        Assert.assertNotNull("X4 does not exist in scenario1", getDescriptor(gameModel1, "x_4"));
-        Assert.assertEquals(ModelScoped.Visibility.PRIVATE, getDescriptor(gameModel1, "x_4").getVisibility());
+        // duplcate X in gm1 -> numberDescriptor_??????
+        VariableDescriptor x4= variableDescriptorFacade.duplicate(getDescriptor(gameModel1, "x").getId());
+        String x4Name =x4.getName();
+        Assert.assertNotNull("X4 does not exist in scenario1", getDescriptor(gameModel1, x4Name));
+        Assert.assertEquals(ModelScoped.Visibility.PRIVATE, getDescriptor(gameModel1, x4Name).getVisibility());
 
         modelFacade.propagateModel(model.getId());
-        Assert.assertNotNull("X3 does not exist in the model", getDescriptor(model, "x_3"));
-        Assert.assertNotNull("X3 does not exist in scenario1", getDescriptor(gameModel1, "x_3"));
-        Assert.assertNotNull("X3 does not exist in scenario3", getDescriptor(gameModel2, "x_3"));
+        Assert.assertNotNull("X3 does not exist in the model", getDescriptor(model, x3Name));
+        Assert.assertNotNull("X3 does not exist in scenario1", getDescriptor(gameModel1, x3Name));
+        Assert.assertNotNull("X3 does not exist in scenario3", getDescriptor(gameModel2, x3Name));
 
-        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(gameModel1, "x_3").getVisibility());
-        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(gameModel2, "x_3").getVisibility());
+        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(gameModel1, x3Name).getVisibility());
+        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(gameModel2, x3Name).getVisibility());
     }
 
     @Test
