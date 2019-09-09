@@ -228,7 +228,7 @@ angular.module('private.modeler.directives', [
                 return;
             ctrl.duplicating = true;
             $('#dupe-' + model.id).addClass('busy-button');
-            ScenariosModel.copyScenario(model.id).then(function(response) {
+            ScenariosModel.copyScenario(model).then(function(response) {
                 if (response.isErroneous()) {
                     response.flash();
                 } else {
