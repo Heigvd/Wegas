@@ -1252,7 +1252,17 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                                     targetClass: "StringDescriptor"
                                                 }
                                             }]
+                                    }, {
+                                        type: BUTTON,
+                                        label: '<span class="fa fa-toggle-on"></span> Boolean',
+                                        plugins: [{
+                                                fn: "AddEntityChildAction",
+                                                cfg: {
+                                                    targetClass: "BooleanDescriptor"
+                                                }
+                                            }]
                                     }
+
                                 ]
                             }
                         }

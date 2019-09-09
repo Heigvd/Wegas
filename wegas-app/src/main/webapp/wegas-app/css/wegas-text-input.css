@@ -69,15 +69,19 @@
  * Checkboxes
  */
 
+.readonly .wegas-boolean-input-checkboxes li,
 .readonly .wegas-string-input-checkboxes li{
     cursor: initial;
 }
 
+.wegas-boolean-input:not(.readonly) .wegas-boolean-input-checkboxes li.selected:focus,
+.wegas-boolean-input:not(.readonly) .wegas-boolean-input-checkboxes li.selected:hover,
 .wegas-string-input:not(.readonly) .wegas-string-input-checkboxes li.selected:focus,
 .wegas-string-input:not(.readonly) .wegas-string-input-checkboxes li.selected:hover {
     background-color: #a4d0e0;
 }
 
+.wegas-boolean-input-checkboxes li.selected,
 .wegas-string-input-checkboxes li.selected {
     background-color: #66b2ce;
     font-weight: bold;
@@ -85,6 +89,7 @@
 }
 
 
+.wegas-boolean-input-checkboxes li.selected:before,
 .wegas-string-input-checkboxes li.selected:before {
     content:"\f00c";
     font-family:"FontAwesome";
@@ -96,6 +101,7 @@
     cursor: default;
 }
 
+.wegas-boolean-input-checkboxes li,
 .wegas-string-input-checkboxes li{
     display:inline-block;
     padding: 2px 10px;
@@ -113,11 +119,15 @@
     user-select: none;
 }
 
+.wegas-boolean-input:not(.readonly) .wegas-boolean-input-checkboxes li:focus,
+.wegas-boolean-input:not(.readonly) .wegas-boolean-input-checkboxes li:hover,
 .wegas-string-input:not(.readonly) .wegas-string-input-checkboxes li:focus,
 .wegas-string-input:not(.readonly) .wegas-string-input-checkboxes li:hover{
     background: hsl(133, 2%, 50%);
 }
 
+.readonly .wegas-boolean-input-checkboxes li:focus,
+.readonly .wegas-boolean-input-checkboxes li:hover,
 .readonly .wegas-string-input-checkboxes li:focus,
 .readonly .wegas-string-input-checkboxes li:hover{
     background-image: none;

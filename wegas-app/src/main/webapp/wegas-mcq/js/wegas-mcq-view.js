@@ -26,7 +26,7 @@ YUI.add('wegas-mcq-view', function(Y) {
         renderUI: function() {
             var whQuestion = this.get("variable.evaluated"),
                 whQuestionInstance = whQuestion.getInstance(),
-                i, j, child, name, classes,
+                i, child, name, classes,
                 answers,
                 inputWidget, label, title;
             this.destroyAll();
@@ -79,7 +79,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                                     label: label,
                                     cssClass: classes,
                                     variable: {name: name},
-                                    selfSaving: false,
+                                    selfSaving: this.get("selfSaving"),
                                     readonly: {
                                         "content": "return " + this.readonly + ";"
                                     }
@@ -89,7 +89,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                                     label: label,
                                     cssClass: classes,
                                     variable: {name: name},
-                                    selfSaving: false,
+                                    selfSaving: this.get("selfSaving"),
                                     readonly: {
                                         "content": "return " + this.readonly + ";"
                                     }});
@@ -109,7 +109,18 @@ YUI.add('wegas-mcq-view', function(Y) {
                                     "content": "return " + this.readonly + ";"
                                 },
                                 allowNull: false,
-                                selfSaving: false
+                                selfSaving: this.get("selfSaving")
+                            });
+                            break;
+                        case "BooleanDescriptor":
+                            inputWidget = new Y.Wegas.BooleanInput({
+                                label: label,
+                                cssClass: classes,
+                                variable: {name: name},
+                                readonly: {
+                                    "content": "return " + this.readonly + ";"
+                                },
+                                selfSaving: this.get("selfSaving")
                             });
                             break;
                         case "TextDescriptor":
@@ -127,7 +138,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                                 readonly: {
                                     "content": "return " + this.readonly + ";"
                                 },
-                                selfSaving: false,
+                                selfSaving: this.get("selfSaving"),
                                 toolbar1: "bold italic underline bullist",
                                 toolbar2: "",
                                 toolbar3: "",
@@ -382,6 +393,11 @@ YUI.add('wegas-mcq-view', function(Y) {
                         "ListDescriptor" // use the label
                     ]
                 }
+            },
+            selfSaving: {
+                type: 'boolean',
+                value: false,
+                view: {label: 'Auto save'}
             }
         }
     });
