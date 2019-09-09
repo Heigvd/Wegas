@@ -490,7 +490,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         ChoiceDescriptor choice = this.createChoice(question, "choice", null, "result",
                 wegasFactory.createResult("result"),
-                wegasFactory.createResult("result"));
+                wegasFactory.createResult("result_2"));
 
         choice.getResults().remove(0);
         variableDescriptorFacade.update(choice.getId(), choice);
