@@ -49,6 +49,7 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -562,6 +563,27 @@ public class ModelFacade {
         }
 
         return model;
+    }
+
+    public Map<String, List<Long>> getVariableMatrixFromIds(List<Long> gameModelIds) {
+        return getVariableMatrix(loadGameModelsFromIds(gameModelIds));
+    }
+
+    public Map<String, List<Long>> getVariableMatrix(List<GameModel> gameModels) {
+
+        Map<String, List<Long>> matrix = new LinkedHashMap<>();
+
+        for (GameModel gameModel : gameModels) {
+            for (VariableDescriptor vd : gameModel.getOrderedVariableDesacriptors()) {
+                String vdName = vd.getName();
+                if (!matrix.containsKey(vdName)) {
+                    matrix.put(vdName, new LinkedList<>());
+                }
+                matrix.get(vdName).add(gameModel.getId());
+            }
+        }
+
+        return matrix;
     }
 
     /**

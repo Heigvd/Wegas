@@ -465,6 +465,25 @@ public class UpdateController {
      * @return some output
      */
     @GET
+    @Path("LIST_PMG")
+    public String pmg_list() {
+        List<GameModel> PMGs = this.findPMGs(true);
+        StringBuilder ret = new StringBuilder();
+
+        for (GameModel pmg : PMGs) {
+            ret.append(",").append(pmg.getId());
+        }
+        return ret.toString();
+    }
+
+
+    /**
+     * Make sure all PMGshare the same structure.
+     * Make extractModel smarter
+     *
+     * @return some output
+     */
+    @GET
     @Path("NORMALISE_PMG")
     public String pmg_normalise() {
         List<GameModel> PMGs = this.findPMGs(true);

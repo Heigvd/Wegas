@@ -882,7 +882,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
             try {
                 Pages pagesDAO = this.jcrProvider.getPages(this);
                 pagesDAO.delete();                                              // Remove existing pages
-                // Pay Attention: this.pages != this.getPages() ! 
+                // Pay Attention: this.pages != this.getPages() !
                 // this.pages contains deserialized pages, getPages() fetchs them from the jackrabbit repository
                 for (Entry<String, JsonNode> p : this.pages.entrySet()) {       // Add all pages
                     pagesDAO.store(new Page(p.getKey(), p.getValue()));

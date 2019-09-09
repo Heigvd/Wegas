@@ -33,6 +33,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -70,7 +71,6 @@ public class GameModelController {
      */
     @Inject
     private RequestManager requestManager;
-
 
     /**
      *
@@ -119,6 +119,39 @@ public class GameModelController {
         GameModel model = modelFacade.createModelFromCommonContentFromIds(template.getName(), getIdsFromString(ids));
 
         return model;
+    }
+
+    /**
+     * compare variable and send CSV file
+     *
+     * @param ids
+     */
+    @GET
+    @Path("Compare/{ids}")
+    public Response compare(@PathParam("ids") String ids) {
+
+        List<Long> idList = getIdsFromString(ids);
+        Map<String, List<Long>> matrix = modelFacade.getVariableMatrixFromIds(idList);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Var, all ");
+        idList.stream().forEach(id -> sb.append(", ").append(id));
+        sb.append(System.lineSeparator());
+
+        matrix.forEach((varName, list) -> {
+            sb.append(StringEscapeUtils.escapeCsv(varName));
+            if (list.size() == idList.size()) {
+                sb.append(", x");
+            } else {
+                sb.append(",");
+                idList.stream().forEach(id -> sb.append(", ").append(list.contains(id) ? "x" : ""));
+            }
+            sb.append(System.lineSeparator());
+        });
+
+        return Response.ok(sb.toString(), "text/csv")
+                .header("Content-Disposition", "attachment; filename="
+                        + "variables.csv").build();
     }
 
     @GET
@@ -272,7 +305,7 @@ public class GameModelController {
             gameModelFacade.createWithDebugGame(gameModel);
             return gameModel;
         } else if (details.getContentDisposition().getFileName().endsWith(".wgz")) {
-            try (ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
+            try ( ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
                 return gameModelFacade.unzip(zip);
             }
         } else {
@@ -534,7 +567,5 @@ public class GameModelController {
         }
         return null;
     }
-
-
 
 }
