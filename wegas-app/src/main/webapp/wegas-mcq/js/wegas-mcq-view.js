@@ -186,7 +186,8 @@ YUI.add('wegas-mcq-view', function(Y) {
             }
             var question = this.get('variable.evaluated');
             if (question) {
-                this.handlers.onInstanceUpdate = Y.Wegas.Facade.Instance.after(question.getInstance().get("id") + ':updatedInstance', this.renderUI, this);
+                this.handlers.onInstanceUpdate = Y.Wegas.Facade.Instance.after(question.getInstance()
+                    .get("id") + ':updatedInstance', this.renderUI, this);
             }
         },
         afterChange: function(e) {
@@ -455,7 +456,8 @@ YUI.add('wegas-mcq-view', function(Y) {
             }
             var desc = this.get('choice.evaluated');
             if (desc) {
-                this.handlers.onInstanceUpdate = Y.Wegas.Facade.Instance.after(desc.getInstance().get("id") + ':updatedInstance', this.syncUI, this);
+                this.handlers.onInstanceUpdate = Y.Wegas.Facade.Instance.after(desc.getInstance()
+                    .get("id") + ':updatedInstance', this.syncUI, this);
             }
         },
         bindUI: function() {
@@ -519,7 +521,8 @@ YUI.add('wegas-mcq-view', function(Y) {
             if (repliesToDisplay.length &&
                 (!cbx || question.getInstance().get("validated"))
                 && !(cbx && question.get("tabular")) && this.get("displayResult") === "inline") {
-                this.resultTitle.set("content", repliesToDisplay.length > 1 ? Y.Wegas.I18n.t('mcq.results').capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize());
+                this.resultTitle.set("content", repliesToDisplay.length > 1 ? Y.Wegas.I18n.t('mcq.results')
+                    .capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize());
                 this.resultTitle.syncUI();
                 var repliesIds = {};
                 for (var i in repliesToDisplay) {
@@ -845,7 +848,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                 var question = this.get("variable.evaluated"), updatedInstance;
 
                 if (e.entity instanceof Y.Wegas.persistence.ChoiceInstance) {
-                    updatedInstance = Y.Wegas.Facade.Variable.cache.findParentDescriptor(e.entity.getDescriptor()).getInstance();
+                    updatedInstance = Y.Wegas.Facade.Variable.cache.findParentDescriptor(e.entity.getDescriptor())
+                        .getInstance();
                 } else {
                     updatedInstance = e.entity;
                 }
@@ -865,7 +869,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                 ".answerable.cbx.checkbox.maximumReached:not(.locked) .hasReplies .mcqchoice__submit"  // unselect checkboxes even if maximum reached
                 , this);
 
-            this.get("boundingBox").delegate("click", this.validateQuestion, ".answerable:not(.locked) .mcq-view__submit span", this);
+            this.get("boundingBox")
+                .delegate("click", this.validateQuestion, ".answerable:not(.locked) .mcq-view__submit span", this);
         },
         beforeRequest: function() {
             this.lockable.lock();
@@ -1164,7 +1169,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                         || effectiveDisplayResult === "dialogue")
                     && (!cbx || questionInstance.get("validated")))
                     || (cbx && questionInstance.get("validated") && questionDescriptor.get("tabular"))) {
-                    this.resultTitle.set("content", validatedReplies.length > 1 ? Y.Wegas.I18n.t('mcq.results').capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize());
+                    this.resultTitle.set("content", validatedReplies.length > 1 ? Y.Wegas.I18n.t('mcq.results')
+                        .capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize());
                     this.resultTitle.syncUI();
                     if (cbx) {
                         validatedReplies = [];
@@ -1224,7 +1230,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                                             '<div class="mcq-reply-content">' + toDisplay + '</div>' +
                                             '</div>'
                                     });
-                                    Y.later(1500, this, function(reply){
+                                    Y.later(1500, this, function(reply) {
                                         reply.get("boundingBox").removeClass("typing");
                                         this.scrollToBottom();
                                     }, this.results[reply.get("id")]);
@@ -1249,7 +1255,8 @@ YUI.add('wegas-mcq-view', function(Y) {
 
                     if (!this.resync) {
                         // if there is no validated replies or pendings, show possible choices
-                        this.get("contentBox").toggleClass("show_choices", this.resultList.isEmpty() || pendingReplies.length);
+                        this.get("contentBox")
+                            .toggleClass("show_choices", this.resultList.isEmpty() || pendingReplies.length);
                     }
 
                     this.pendings.destroyAll();
@@ -1315,8 +1322,10 @@ YUI.add('wegas-mcq-view', function(Y) {
         },
         scrollToBottom: function() {
             // last feedback
-            var histDom = this.history.get("boundingBox").getDOMNode();
-            histDom.scrollTop = histDom.scrollHeight - histDom.clientHeight;
+            if (this.history) {
+                var histDom = this.history.get("boundingBox").getDOMNode();
+                histDom.scrollTop = histDom.scrollHeight - histDom.clientHeight;
+            }
         },
         isTextEmpty: function(text) {
             return !text || text === "<p></p>";
