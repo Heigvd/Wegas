@@ -1142,7 +1142,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         return this.findAndReplace(this.find(gameModelId), payload);
     }
 
-    private static class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
+    public static class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
 
         private final DiffRowGenerator generator;
 

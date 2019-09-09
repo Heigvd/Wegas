@@ -136,7 +136,7 @@ public class UpdateController {
             List<TranslatableContent> findDistinctLabels = descriptorFacade.findDistinctLabels(vd.getGameModel());
             findDistinctNames.remove(vd.getName());
             findDistinctLabels.remove(vd.getLabel());
-            Helper.setUniqueName(vd, findDistinctNames, vd.getGameModel());
+            Helper.setUniqueName(vd, findDistinctNames, vd.getGameModel(), false);
             Helper.setUniqueLabel(vd, findDistinctLabels, vd.getGameModel());
             descriptorFacade.flush();
         }
@@ -428,7 +428,7 @@ public class UpdateController {
         logger.error("Going to add {}/{} variable", parentName, varName);
 
         try {
-            // Does the variable already exists ? 
+            // Does the variable already exists ?
             descriptorFacade.find(gm, varName);
             logger.error("  -> variable {} exists : SKIP", varName);
             return "already exists";
@@ -437,7 +437,7 @@ public class UpdateController {
         }
 
         try {
-            // assert the parent already exists ? 
+            // assert the parent already exists ?
             descriptorFacade.find(gm, parentName);
             logger.error("  -> variable {} exists : PROCEED", parentName);
         } catch (WegasNoResultException ex) {
@@ -550,7 +550,7 @@ public class UpdateController {
                 ListDescriptor newChild = new ListDescriptor(childrenPrefix + i);
                 newChild.setDefaultInstance(new ListInstance());
                 newChild.setScope(new GameModelScope());
-                descriptorFacade.createChild(gameModel, parent, newChild);
+                descriptorFacade.createChild(gameModel, parent, newChild, false);
                 if (i < parent.size()) {
                     // move new folder at the right place
                     descriptorFacade.move(newChild.getId(), parent.getId(), i - 1);

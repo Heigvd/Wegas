@@ -10,6 +10,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.AlphanumericComparator;
 import com.wegas.core.Helper;
 import com.wegas.core.api.VariableDescriptorFacadeI;
+import com.wegas.core.ejb.GameModelFacade.FindAndReplaceVisitor;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.merge.utils.MergeHelper;
@@ -38,8 +39,7 @@ import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
 import com.wegas.core.persistence.variable.statemachine.DialogueState;
 import com.wegas.core.persistence.variable.statemachine.DialogueTransition;
-import com.wegas.core.persistence.variable.statemachine.State;
-import com.wegas.core.persistence.variable.statemachine.Transition;
+import com.wegas.core.rest.FindAndReplacePayload;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
@@ -57,6 +57,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -164,7 +165,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      *
      * @return the new descriptor
      */
-    public VariableDescriptor createChild(final GameModel gameModel, final DescriptorListI<VariableDescriptor> list, final VariableDescriptor entity) {
+    public VariableDescriptor createChild(final GameModel gameModel, final DescriptorListI<VariableDescriptor> list,
+            final VariableDescriptor entity, boolean resetNames) {
 
         List<String> usedNames = this.findDistinctNames(gameModel, entity.getRefId());
         List<TranslatableContent> usedLabels = this.findDistinctLabels(list);
@@ -186,7 +188,20 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             entity.setName(entity.getEditorTag());
         }
 
-        Helper.setUniqueName(entity, usedNames, gameModel);
+        Map<String, String> newNames = Helper.setUniqueName(entity, usedNames, gameModel, resetNames);
+
+        // some impacts may impact renamed variable. -> update them to impact the new variable name
+        for (Entry<String, String> newName : newNames.entrySet()) {
+            FindAndReplacePayload payload = new FindAndReplacePayload();
+            payload.setRegex(false);
+            payload.setFind("Variable.find(gameModel, \"" + newName.getKey() + "\")");
+            payload.setReplace("Variable.find(gameModel, \"" + newName.getValue() + "\")");
+            payload.setPretend(false);
+
+            FindAndReplaceVisitor replacer = new FindAndReplaceVisitor(payload);
+            MergeHelper.visitMergeable(entity, true, replacer);
+        }
+
         Helper.setUniqueLabel(entity, usedLabels, gameModel);
 
         list.addItem(entity);
@@ -414,7 +429,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      */
     public VariableDescriptor createChild(final Long parentDescriptorId, final VariableDescriptor entity) {
         VariableDescriptor parent = this.find(parentDescriptorId);
-        return this.createChild(parent.getGameModel(), (DescriptorListI) parent, entity);
+        return this.createChild(parent.getGameModel(), (DescriptorListI) parent, entity, false);
     }
 
     /**
@@ -435,7 +450,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                 }
             }
         } // */
-        this.createChild(find, find, variableDescriptor);
+        this.createChild(find, find, variableDescriptor, false);
     }
 
     /**
@@ -458,7 +473,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         }
 
         final DescriptorListI list = oldEntity.getParent();
-        this.createChild(oldEntity.getGameModel(), list, newEntity);
+        this.createChild(oldEntity.getGameModel(), list, newEntity, true);
         return newEntity;
     }
 
@@ -543,7 +558,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
             this.remove(vd);
 
-            this.createChild(gameModel, parent, ld);
+            this.createChild(gameModel, parent, ld, false);
 
             ld.setName(vdName);
         }

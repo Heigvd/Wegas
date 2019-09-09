@@ -146,7 +146,7 @@ public class VariableDescriptorController {
             VariableDescriptor parent = variableDescriptorFacade.find(gm, entityName);
 
             if (parent instanceof DescriptorListI) {
-                return variableDescriptorFacade.createChild(gm, (DescriptorListI) parent, entity);
+                return variableDescriptorFacade.createChild(gm, (DescriptorListI) parent, entity, false);
             } else {
                 throw WegasErrorMessage.error("Parent entity does not allow children");
             }
@@ -169,7 +169,7 @@ public class VariableDescriptorController {
 
     @PUT
     @Path("{id: [1-9][0-9]*}/visibility/{visibility: [A-Z]*}")
-    public VariableDescriptor resetVisibilities(@PathParam("id") Long vdId, 
+    public VariableDescriptor resetVisibilities(@PathParam("id") Long vdId,
             @PathParam("visibility") ModelScoped.Visibility visibility) {
         return variableDescriptorFacade.resetVisibility(vdId, visibility);
     }

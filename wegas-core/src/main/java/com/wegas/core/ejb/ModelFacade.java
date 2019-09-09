@@ -749,7 +749,7 @@ public class ModelFacade {
                                             VariableDescriptor parent = variableDescriptorFacade.find(scenario, parentName);
                                             VariableDescriptor clone;
                                             clone = (VariableDescriptor) vd.shallowClone();
-                                            variableDescriptorFacade.createChild(scenario, (DescriptorListI<VariableDescriptor>) parent, clone);
+                                            variableDescriptorFacade.createChild(scenario, (DescriptorListI<VariableDescriptor>) parent, clone, false);
 
                                             logger.info(" CREATE AT as {} child", parent);
                                             it.remove();
@@ -760,7 +760,7 @@ public class ModelFacade {
                                     } else {
                                         logger.info(" CREATE AT ROOL LEVEL");
                                         VariableDescriptor clone = (VariableDescriptor) vd.shallowClone();
-                                        variableDescriptorFacade.createChild(scenario, scenario, clone);
+                                        variableDescriptorFacade.createChild(scenario, scenario, clone, false);
                                         clone.setName(vd.getName()); // force the new variable name
                                         it.remove();
                                         restart = true;
@@ -862,7 +862,7 @@ public class ModelFacade {
                     throw WegasErrorMessage.error("No reference yet. Please propagate model before integrating new scenarios");
                 }
             } else {
-                // model is not a model 
+                // model is not a model
                 throw WegasErrorMessage.error("Model is not a Model");
             }
         }
