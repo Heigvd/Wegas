@@ -20,7 +20,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         Wegas = Y.Wegas, persistence = Wegas.persistence,
         EntityAction, EditFSMAction, EditEntityAction, NewEntityAction,
         EditEntityArrayFieldAction, AddEntityChildAction, DuplicateEntityAction,
-        SortEntityAction, ResetVisibilityAction,
+        SortEntityAction, ResetVisibilityAction, ReleaseVariableAction,
         DeleteEntityAction, SearchEntityAction, ToolbarMenu;
 
     var MESSAGE_DISCARD_EDITS = "Unsaved changes!";
@@ -992,6 +992,30 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         }
     });
     Plugin.ResetVisibilityAction = ResetVisibilityAction;
+
+
+    ReleaseVariableAction = Y.Base.create("ReleaseVariableAction", EntityAction, [], {
+        execute: function() {
+            if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "MODEL") {
+                this.showOverlay();
+                Y.Wegas.Facade.Variable.cache.sendRequest({
+                    request: '/' + this.get(ENTITY).get("id") + "/release",
+                    cfg: {
+                        method: 'PUT'
+                    },
+                    on: {
+                        success: Y.bind(this.hideOverlay, this),
+                        failure: Y.bind(this.hideOverlay, this)
+                    }
+                });
+            }
+        }
+    }, {
+        NS: "ReleaseVariableAction",
+        ATTRS: {
+        }
+    });
+    Plugin.ReleaseVariableAction = ReleaseVariableAction;
 
     var ConvertToListAction = Y.Base.create("ConvertToListAction", EntityAction, [], {
         execute: function() {

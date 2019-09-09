@@ -648,6 +648,39 @@ public class ModelFacade {
         return scenario;
     }
 
+    public VariableDescriptor releaseVariableFromModel(Long variableId) {
+        VariableDescriptor vd = variableDescriptorFacade.find(variableId);
+        this.releaseVariableFromModel(vd.getGameModel(), vd.getName());
+        return vd;
+    }
+
+    public void releaseVariableFromModel(GameModel model, String variableName) {
+
+        if (model.isModel()) {
+            try {
+                VariableDescriptor mVd = variableDescriptorFacade.find(model, variableName);
+                variableDescriptorFacade.resetVisibility(mVd, ModelScoped.Visibility.PRIVATE);
+
+                List<GameModel> implementations = gameModelFacade.getImplementations(model);
+                for (GameModel impl : implementations) {
+                    if (!impl.isReference()) {
+                        try {
+                            VariableDescriptor vd = variableDescriptorFacade.find(impl, variableName);
+
+                            variableDescriptorFacade.resetVisibility(vd, ModelScoped.Visibility.PRIVATE);
+                            MergeHelper.resetRefIds(vd, null, Boolean.TRUE);
+
+                            this.resetVariableDescriptorInstanceRefIds(vd, vd, true);
+                        } catch (WegasNoResultException ex) {
+                        }
+                    }
+                }
+
+            } catch (WegasNoResultException ex) {
+            }
+        }
+    }
+
     /**
      * Attach all scenarios to the given model
      *

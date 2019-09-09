@@ -8,6 +8,7 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.ModelFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -52,6 +53,9 @@ public class VariableDescriptorController {
      */
     @Inject
     private GameModelFacade gameModelFacade;
+
+    @Inject
+    private ModelFacade modelFacade;
 
     @Inject
     private RequestManager requestManager;
@@ -175,6 +179,12 @@ public class VariableDescriptorController {
     }
 
     @PUT
+    @Path("{id: [1-9][0-9]*}/release")
+    public VariableDescriptor releaseFromModel(@PathParam("id") Long vdId) {
+        return modelFacade.releaseVariableFromModel(vdId);
+    }
+
+    @PUT
     @Path("{id: [1-9][0-9]*}/changeScope/{scopeType: GameModelScope|TeamScope|PlayerScope}")
     public VariableDescriptor changeScopeRecursivly(@PathParam("id") Long vdId,
             @PathParam("scopeType") String scopeType) {
@@ -187,9 +197,6 @@ public class VariableDescriptorController {
             @PathParam("scopeType") String scopeType) {
         return variableDescriptorFacade.convertToList(vdId);
     }
-
-
-
 
     /**
      * @param descriptorId

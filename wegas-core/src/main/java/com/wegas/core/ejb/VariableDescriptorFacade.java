@@ -477,7 +477,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         return newEntity;
     }
 
-    private VariableDescriptor resetVisibility(VariableDescriptor vd, Visibility visibility) {
+    public VariableDescriptor resetVisibility(VariableDescriptor vd, Visibility visibility) {
         vd.setVisibility(visibility);
         if (vd instanceof DescriptorListI) {
             for (VariableDescriptor child : (List<? extends VariableDescriptor>) ((DescriptorListI) vd).getItems()) {
