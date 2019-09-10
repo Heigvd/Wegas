@@ -130,4 +130,16 @@ public class StatisticController {
                         + filename).build();
 
     }
+
+    @GET
+    @Path("Count")
+    public List<Map<String, Object>> getActivityCount(@QueryParam("gids") String gameIds) throws IOException {
+
+        List<Long> ids = readIds(gameIds);
+        for (Long id : ids) {
+            requestManager.assertUpdateRight(gameFacade.find(id));
+        }
+
+        return xapi.getActivityCount(ids);
+    }
 }

@@ -30,4 +30,19 @@
             <where>dtype = 'TriggerInstance'</where>
         </update>
     </changeSet>
+
+    <changeSet author="maxence" id="1559114784027-5">
+        <sql>
+            DELETE FROM fsmdescriptor
+            WHERE id IN (
+            SELECT id FROM triggerdescriptor
+            );
+        </sql>
+        <sql>
+            DELETE FROM fsmdescriptor
+            WHERE id IN (
+            SELECT id FROM dialoguedescriptor
+            );
+        </sql>
+    </changeSet>
 </databaseChangeLog>

@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
@@ -257,6 +258,15 @@ public class Translation implements WithPermission {
         return translatableContent;
     }
 
+    @WegasExtraProperty(
+            nullable = false,
+            view = @View(
+                    label = "RefID",
+                    readOnly = true,
+                    value = StringView.class,
+                    index = -800
+            )
+    )
     @Override
     public String getRefId() {
         return this.getMergeableParent().getRefId() + "::" + this.getLang();

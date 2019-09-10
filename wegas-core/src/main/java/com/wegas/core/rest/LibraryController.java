@@ -12,8 +12,8 @@ import com.wegas.core.ejb.LibraryFacade;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
 import java.util.Map;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.authz.AuthorizationException;
@@ -31,12 +31,12 @@ public class LibraryController {
     /**
      *
      */
-    @EJB
+    @Inject
     private GameModelFacade gameModelFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private LibraryFacade libraryFacade;
 
     /**

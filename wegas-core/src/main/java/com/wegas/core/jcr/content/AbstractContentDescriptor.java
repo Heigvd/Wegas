@@ -176,6 +176,15 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
         }
     }
 
+    @WegasExtraProperty(
+            nullable = false,
+            view = @View(
+                    label = "RefID",
+                    readOnly = true,
+                    value = StringView.class,
+                    index = -800
+            )
+    )
     @Override
     //@JsonIgnore
     public String getRefId() {

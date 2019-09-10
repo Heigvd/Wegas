@@ -10,7 +10,6 @@ package com.wegas.core.rest.exception;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasUniqueConstraintException;
-import java.sql.BatchUpdateException;
 import java.sql.SQLException;
 import javax.ejb.EJBException;
 import javax.enterprise.event.ObserverException;

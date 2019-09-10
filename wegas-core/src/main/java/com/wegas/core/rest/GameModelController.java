@@ -9,9 +9,12 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.ModelFacade;
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.ejb.cron.EjbTimerFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +26,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
@@ -31,6 +33,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -51,7 +54,7 @@ public class GameModelController {
     /**
      *
      */
-    @EJB
+    @Inject
     private GameModelFacade gameModelFacade;
 
     /**
@@ -60,11 +63,20 @@ public class GameModelController {
     @Inject
     private ModelFacade modelFacade;
 
+    @Inject
+    private PlayerFacade playerFacade;
+
     /**
      *
      */
     @Inject
     private RequestManager requestManager;
+
+    /**
+     *
+     */
+    @Inject
+    private EjbTimerFacade ejbTimerFacade;
 
     /**
      *
@@ -107,6 +119,39 @@ public class GameModelController {
         GameModel model = modelFacade.createModelFromCommonContentFromIds(template.getName(), getIdsFromString(ids));
 
         return model;
+    }
+
+    /**
+     * compare variable and send CSV file
+     *
+     * @param ids
+     */
+    @GET
+    @Path("Compare/{ids}")
+    public Response compare(@PathParam("ids") String ids) {
+
+        List<Long> idList = getIdsFromString(ids);
+        Map<String, List<Long>> matrix = modelFacade.getVariableMatrixFromIds(idList);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Var, all ");
+        idList.stream().forEach(id -> sb.append(", ").append(id));
+        sb.append(System.lineSeparator());
+
+        matrix.forEach((varName, list) -> {
+            sb.append(StringEscapeUtils.escapeCsv(varName));
+            if (list.size() == idList.size()) {
+                sb.append(", x");
+            } else {
+                sb.append(",");
+                idList.stream().forEach(id -> sb.append(", ").append(list.contains(id) ? "x" : ""));
+            }
+            sb.append(System.lineSeparator());
+        });
+
+        return Response.ok(sb.toString(), "text/csv")
+                .header("Content-Disposition", "attachment; filename="
+                        + "variables.csv").build();
     }
 
     @GET
@@ -260,7 +305,7 @@ public class GameModelController {
             gameModelFacade.createWithDebugGame(gameModel);
             return gameModel;
         } else if (details.getContentDisposition().getFileName().endsWith(".wgz")) {
-            try (ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
+            try ( ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
                 return gameModelFacade.unzip(zip);
             }
         } else {
@@ -502,7 +547,7 @@ public class GameModelController {
     @Path("CleanDatabase")
     @RequiresRoles("Administrator")
     public void deleteForceAll() {
-        gameModelFacade.removeGameModels();
+        ejbTimerFacade.removeGameModels();
     }
 
     @POST
@@ -510,6 +555,17 @@ public class GameModelController {
     public String findAndReplace(@PathParam("gameModelId") Long gameModelId,
             FindAndReplacePayload payload) {
         return gameModelFacade.findAndReplace(gameModelId, payload);
+    }
+
+    @GET
+    @Path("{gameModelId: [1-9][0-9]*}/TestPlayer")
+    public Player getTestPlayer(
+            @PathParam("gameModelId") Long gameModelId
+    ) {
+        if (gameModelId != null) {
+            return playerFacade.findDebugPlayerByGameModelId(gameModelId);
+        }
+        return null;
     }
 
 }

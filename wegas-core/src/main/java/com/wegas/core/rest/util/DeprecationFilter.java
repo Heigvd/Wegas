@@ -9,6 +9,7 @@ package com.wegas.core.rest.util;
 
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import java.io.IOException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import org.slf4j.Logger;
@@ -25,11 +26,13 @@ public class DeprecationFilter implements ContainerRequestFilter {
      * @param request
      */
     @Override
-    public void filter(ContainerRequestContext request) {
+    public void filter(ContainerRequestContext request) throws IOException {
         RequestFacade rmf = RequestFacade.lookup(); //CDI not available here
 
         Logger logger = LoggerFactory.getLogger(DeprecationFilter.class);
         String msg = "The requested endpoint (" + request.getMethod() + " /" + request.getUriInfo().getPath() + ") has been deprecated and will be removed in the future";
+        String json = "{\"timeout\":2500,\"iconCss\":\"fa fa-warning\",\"content\":\"" + msg + "\"}";
+        rmf.getRequestManager().sendNotification(JacksonMapperProvider.getMapper().readValue(json, Object.class));
         rmf.getRequestManager().addException(WegasErrorMessage.warn(msg));
         logger.warn(msg);
     }

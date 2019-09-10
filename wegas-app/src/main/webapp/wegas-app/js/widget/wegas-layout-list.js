@@ -113,16 +113,17 @@ YUI.add('wegas-layout-list', function(Y) {
 
         }
     }, {
-        EDITORNAME: "Flex layout",
+        EDITORNAME: "List layout",
         // Redefine visibility and default value of some inherited attributes:
         ATTRS: {
             name: {
-                value: "Flex List",
+                value: "List",
                 type: "string",
+                visible: function(_val, formVal){
+                    return !formVal.hasOwnProperty("@pageId");
+                },
                 view: {
                     label: "Layout name",
-                    // Hide in case this is a page:
-                    className: "wegas-advanced-feature"
                 }
             },
             direction: {
@@ -132,8 +133,6 @@ YUI.add('wegas-layout-list', function(Y) {
                     label: "Direction",
                     type: 'select',
                     choices: ['vertical', 'horizontal'],
-                    // Hide in case this is a page:
-                    className: "wegas-advanced-feature"
                 }
             }
         }

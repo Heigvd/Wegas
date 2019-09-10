@@ -1077,26 +1077,36 @@ YUI.add('wegas-tabview', function(Y) {
         },
         _addTab: function(cfg) {
             var addTab = function(cfg) {
+
+                var targetMode = cfg.targetMode || ["edit", "host"];
+                if (typeof targetMode === "string") {
+                    targetMode = [targetMode];
+                }
+
                 var target = Wegas.TabView.getPreviewTabView();
                 if (target) {
-                    var t = target.add(cfg, target.size() - 1).item(0),
-                        // Complete the 'plus' menus:
-                        menu1 = Y.Widget.getByNode("#centerTabView .wegas-plus-tab").hasPlugin("menu"),
-                        menu2 = Y.Widget.getByNode("#rightTabView .wegas-plus-tab").hasPlugin("menu"),
-                        menuCfg = {
-                            type: "OpenTabButton",
-                            label: cfg.label,
-                            tabSelector: "#centerTabView",
-                            cssClass: "wegas-editor-menu-separator-above",
-                            wchildren: cfg.children
-                        };
-                    menu1.add(menuCfg, menu1.size() - 1); // Insert before the "Attributes" entry
-                    menuCfg.tabSelector = "#rightTabView";
-                    menu2.add(menuCfg, menu2.size() - 1); // Insert before the "Attributes" entry
-                    t.plug(Hideable);
+                    if (targetMode.indexOf("edit") >= 0) {
+                        var t = target.add(cfg, target.size() - 1).item(0),
+                            // Complete the 'plus' menus:
+                            menu1 = Y.Widget.getByNode("#centerTabView .wegas-plus-tab").hasPlugin("menu"),
+                            menu2 = Y.Widget.getByNode("#rightTabView .wegas-plus-tab").hasPlugin("menu"),
+                            menuCfg = {
+                                type: "OpenTabButton",
+                                label: cfg.label,
+                                tabSelector: "#centerTabView",
+                                cssClass: "wegas-editor-menu-separator-above",
+                                wchildren: cfg.children
+                            };
+                        menu1.add(menuCfg, menu1.size() - 1); // Insert before the "Attributes" entry
+                        menuCfg.tabSelector = "#rightTabView";
+                        menu2.add(menuCfg, menu2.size() - 1); // Insert before the "Attributes" entry
+                        t.plug(Hideable);
+                    }
                 } else {
-                    // This is not the scenario editor, just add the given tab to the center tabView:
-                    Y.Widget.getByNode("#centerTabView").add(cfg);
+                    if (targetMode.indexOf("host") >= 0) {
+                        // This is not the scenario editor, just add the given tab to the center tabView:
+                        Y.Widget.getByNode("#centerTabView").add(cfg);
+                    }
                 }
             };
 

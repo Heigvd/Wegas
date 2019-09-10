@@ -102,6 +102,16 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
         }
     }
 
+    @JsonIgnore
+    public AbstractState getState(Long currentStateId) {
+        for (AbstractState<U> state : this.states) {
+            if (state.getIndex().equals(currentStateId)){
+                return state;
+            }
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         return "StateMachineDescriptor{id=" + this.getId() + ", states=" + states + '}';

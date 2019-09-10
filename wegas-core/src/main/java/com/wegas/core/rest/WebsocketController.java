@@ -18,8 +18,8 @@ import com.wegas.core.security.util.OnlineUser;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -55,7 +55,7 @@ public class WebsocketController {
     /**
      *
      */
-    @EJB
+    @Inject
     private WebsocketFacade websocketFacade;
 
     @GET

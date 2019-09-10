@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import org.junit.Assert;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -41,10 +41,10 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
     static final private Logger logger = LoggerFactory.getLogger(ResourceFacade.class);
 
-    @EJB
+    @Inject
     private ResourceFacade resourceFacade;
 
-    @EJB
+    @Inject
     private IterationFacade iterationFacade;
 
     @Test

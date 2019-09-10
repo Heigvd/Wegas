@@ -30,6 +30,7 @@ import org.apache.http.HttpMessage;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -62,6 +63,10 @@ public class WegasRESTClient {
     public WegasRESTClient(String baseURL) {
         this.client = HttpClientBuilder.create().build();
         this.baseURL = baseURL;
+    }
+
+    public String getBaseURL() {
+        return baseURL;
     }
 
     public Map<String, Role> getRoles() throws IOException {
@@ -153,10 +158,12 @@ public class WegasRESTClient {
     }
 
     public String get(String url) throws IOException {
+        logger.info("GET" + " " + url);
         HttpUriRequest get = new HttpGet(baseURL + url);
         setHeaders(get);
 
         HttpResponse response = client.execute(get);
+        logger.info(" => " + response.getStatusLine());
 
         if (response.getStatusLine().getStatusCode() >= 300) {
             throw WegasErrorMessage.error("Expected 2xx OK but got " + response.getStatusLine().getStatusCode());
@@ -168,6 +175,11 @@ public class WegasRESTClient {
     public String put(String url, Object object) throws IOException {
         HttpResponse response = this._put(url, object);
         return getEntityAsString(response.getEntity());
+    }
+
+    public <T> T put(String url, Object object, Class<T> valueType) throws IOException {
+        String response = this.put(url, object);
+        return getObjectMapper().readValue(response, valueType);
     }
 
     private HttpResponse _put(String url, Object object) throws IOException {
@@ -209,6 +221,23 @@ public class WegasRESTClient {
         return this.postJSON_asString(url, getObjectMapper().writeValueAsString(object));
     }
 
+    public String delete(String url) throws IOException {
+        logger.info("DELETE " + url);
+        HttpUriRequest delete = new HttpDelete(baseURL + url);
+        setHeaders(delete);
+
+        HttpResponse response = client.execute(delete);
+
+        logger.info(" => " + response.getStatusLine());
+
+        if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_BAD_REQUEST) {
+            throw WegasErrorMessage.error("DELETE failed");
+        }
+
+        return getEntityAsString(response.getEntity());
+
+    }
+
     private HttpResponse sendRequest(String url, String method, String jsonContent) throws IOException {
         HttpEntityEnclosingRequestBase request = null;
         switch (method) {
@@ -223,7 +252,7 @@ public class WegasRESTClient {
         if (request != null) {
             setHeaders(request);
 
-            logger.error(method + " " + url + " WITH " + jsonContent);
+            logger.info(method + " " + url + " WITH " + jsonContent);
             if (jsonContent != null) {
                 StringEntity strEntity = new StringEntity(jsonContent);
                 strEntity.setContentType("application/json");
@@ -231,7 +260,7 @@ public class WegasRESTClient {
             }
 
             HttpResponse execute = client.execute(request);
-            logger.error(" => " + execute.getStatusLine());
+            logger.info(" => " + execute.getStatusLine());
 
             return execute;
         } else {

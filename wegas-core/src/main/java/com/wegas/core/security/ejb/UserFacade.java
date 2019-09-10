@@ -7,8 +7,6 @@
  */
 package com.wegas.core.security.ejb;
 
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ILock;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
@@ -33,13 +31,11 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.messaging.ejb.EMailFacade;
 import java.util.*;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.ejb.LocalBean;
-import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -67,31 +63,28 @@ public class UserFacade extends BaseFacade<User> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UserFacade.class);
 
-    @Inject
-    private HazelcastInstance hzInstance;
-
     /**
      *
      */
-    @EJB
+    @Inject
     private AccountFacade accountFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private RoleFacade roleFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private GameFacade gameFacade;
 
     /**
@@ -329,7 +322,7 @@ public class UserFacade extends BaseFacade<User> {
                     throw WegasErrorMessage.error("This email is already associated with an existing account.");
                 }
             }
-        } catch (WegasNoResultException | EJBTransactionRolledbackException e) {
+        } catch (WegasNoResultException | InjectTransactionRolledbackException e) {
             // GOTCHA
             // E-Mail not yet registered -> proceed
         }
@@ -341,6 +334,18 @@ public class UserFacade extends BaseFacade<User> {
          * Very strange behaviour: without this flush, RequestManages faild to be injected within others beans...
          */
         this.getEntityManager().flush();
+    }
+
+    /**
+     * Same as {@link remove(java.lang.Long) } but within a brand new transaction
+     *
+     * @param gameModelId id of the gameModel to remove
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void removeTX(Long userId) {
+        logger.info("Remove User #{}", userId);
+        this.remove(userId);
+        logger.info("  done");
     }
 
     @Override
@@ -802,51 +807,6 @@ public class UserFacade extends BaseFacade<User> {
         }
         if (nbExceptions > 0) {
             throw WegasErrorMessage.error(nbExceptions + " error(s) while sending email");
-        }
-    }
-
-    /*
-     * @FIXME Should also remove players, created games and game models
-     */
-    /**
-     * Remove old idle guests
-     */
-    @Schedule(hour = "4", minute = "12")
-    public void removeIdleGuests() {
-        requestManager.su();
-        try {
-            ILock lock = hzInstance.getLock("UserFacade.Schedule");
-
-            if (lock.tryLock()) {
-                try {
-                    logger.info("removeIdleGuests(): unused guest accounts will be removed");
-                    TypedQuery<GuestJpaAccount> findIdleGuests
-                            = getEntityManager().createQuery("SELECT DISTINCT account "
-                                    + "FROM GuestJpaAccount account "
-                                    + "WHERE account.createdTime < :idletime", GuestJpaAccount.class);
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 3);
-                    findIdleGuests.setParameter("idletime", calendar.getTime(), TemporalType.DATE);
-
-                    List<GuestJpaAccount> resultList = findIdleGuests.getResultList();
-
-                    for (GuestJpaAccount account : resultList) {
-                        this.remove(account.getUser());
-                    }
-
-                    //Force flush before closing RequestManager !
-                    getEntityManager().flush();
-
-                    logger.info("removeIdleGuests(): {} unused guest accounts removed (idle since: {})",
-                            resultList.size(), calendar.getTime());
-
-                } finally {
-                    lock.unlock();
-                    lock.destroy();
-                }
-            }
-        } finally {
-            requestManager.releaseSu();
         }
     }
 

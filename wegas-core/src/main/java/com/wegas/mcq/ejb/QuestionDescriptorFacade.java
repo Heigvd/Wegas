@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -56,24 +55,24 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private ScriptFacade scriptManager;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private RequestFacade requestFacade;
 
     /**
      *
-     * @EJB QuestionSingleton questionSingleton;
+     * @Inject QuestionSingleton questionSingleton;
      */
     /**
      *

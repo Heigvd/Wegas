@@ -11,7 +11,7 @@ import com.wegas.core.async.PopulatorFacade.Candidate;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import java.util.concurrent.Callable;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ public class Populator implements Callable<Integer> {
 
     private static final Logger logger = LoggerFactory.getLogger(Populator.class);
 
-    @EJB
+    @Inject
     private PopulatorFacade populatorFacade;
 
     @Override
