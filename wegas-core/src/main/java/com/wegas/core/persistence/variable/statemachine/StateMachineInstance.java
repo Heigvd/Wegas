@@ -26,14 +26,13 @@ import com.wegas.editor.View.NumberView;
 import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
-@Table(name = "FSMinstance"/*, 
+@Table(name = "FSMinstance"/*,
         indexes = {
             @Index(columnList = "transitionHistory.statemachineinstance_id")
         }*/
@@ -89,8 +88,7 @@ public class StateMachineInstance extends VariableInstance {
      */
     @JsonIgnore
     public AbstractState getCurrentState() {
-        final Map<Long, AbstractState> states = ((AbstractStateMachineDescriptor) this.findDescriptor()).getStates();
-        return states.get(this.currentStateId);
+        return ((AbstractStateMachineDescriptor) this.findDescriptor()).getState(this.currentStateId);
     }
 
     /**

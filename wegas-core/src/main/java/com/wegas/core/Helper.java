@@ -965,7 +965,7 @@ public class Helper {
          * @param cacheSize Max size the cache should have
          */
         public LRUCache(int cacheSize) {
-            super(16, 0.75f, true); // default values
+            super(cacheSize * (4 / 3) + 1, 0.75f, true); // default values
             this.cacheSize = cacheSize;
         }
 
