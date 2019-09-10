@@ -1286,8 +1286,8 @@ YUI.add('wegas-text-input', function(Y) {
             inst.set('value', value);
             if (this.get('selfSaving')) {
                 Wegas.Facade.Variable.script.remoteEval(
-                    'Variable.find(gameModel, "' + e.descriptor.get('name') + '").setValue(self, '
-                    (value ? "true":"false")+ ');',
+                    'Variable.find(gameModel, "' + e.descriptor.get('name') + '")'
+                    + '.setValue(self, ' + (value ? "true" : "false") + ');',
                     {
                         on: {
                             success: Y.bind(function() {
@@ -1368,7 +1368,7 @@ YUI.add('wegas-text-input', function(Y) {
         },
         updateFromUl: function(e) {
             if (!this.get('readonly.evaluated')) {
-                this.updateValue( e.target.getData().value === "true");
+                this.updateValue(e.target.getData().value === "true");
             }
         }
     }, {

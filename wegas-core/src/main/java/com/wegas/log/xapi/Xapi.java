@@ -26,6 +26,8 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
+import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
@@ -307,6 +309,9 @@ public class Xapi implements XapiI {
                 } else if (item instanceof TextDescriptor) {
                     statements.add(
                             this.buildAuthorTextInstance((TextInstance) variableDescriptorFacade.getInstance(item, player)));
+                } else if (item instanceof BooleanDescriptor) {
+                    statements.add(
+                            this.buildAuthorBooleanInstance((BooleanInstance) variableDescriptorFacade.getInstance(item, player)));
                 }
             }
             statements.add(this.build(Verbs.ANSWERED, "act:wegas/whQuestion/" + whDesc.getName()));
@@ -314,8 +319,13 @@ public class Xapi implements XapiI {
         }
     }
 
-    public Statement buildAuthorTextInstance(TextInstance n) {
+    public Statement buildAuthorBooleanInstance(BooleanInstance n) {
         String activity = "act:wegas/text/" + n.getDescriptor().getName() + "/instance";
+        return this.build(Xapi.Verbs.AUTHORED, activity, n.getValue() ? "true" : "false");
+    }
+
+    public Statement buildAuthorTextInstance(TextInstance n) {
+        String activity = "act:wegas/boolean/" + n.getDescriptor().getName() + "/instance";
         return this.build(Xapi.Verbs.AUTHORED, activity, n.getValue());
     }
 
@@ -427,7 +437,6 @@ public class Xapi implements XapiI {
 
         return csv;
     }
-
 
     public List<Map<String, Object>> getActivityCount(List<Long> gameIds) throws IOException {
         return getLearningLockerClient().getActivityCount(gameIds);
