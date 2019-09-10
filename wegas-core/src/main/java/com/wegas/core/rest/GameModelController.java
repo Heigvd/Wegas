@@ -135,7 +135,7 @@ public class GameModelController {
 
         StringBuilder sb = new StringBuilder();
         sb.append("Var, all ");
-        idList.stream().forEach(id -> sb.append(", ").append(id));
+        idList.stream().forEach(id -> sb.append(",").append(id));
         sb.append(System.lineSeparator());
 
         matrix.forEach((varName, list) -> {
@@ -144,7 +144,7 @@ public class GameModelController {
                 sb.append(", x");
             } else {
                 sb.append(",");
-                idList.stream().forEach(id -> sb.append(", ").append(list.contains(id) ? "x" : ""));
+                idList.stream().forEach(id -> sb.append(",").append(list.contains(id) ? "x" : ""));
             }
             sb.append(System.lineSeparator());
         });
