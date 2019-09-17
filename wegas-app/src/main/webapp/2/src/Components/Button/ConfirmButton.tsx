@@ -3,6 +3,7 @@ import { IconButtonProps, IconButton, shapeStyle } from './IconButton';
 import { themeVar } from '../Theme';
 import { useOnClickOutside } from '../Hooks/useOnClickOutside';
 import { css } from 'emotion';
+import { omit } from 'lodash';
 
 const buttonZone = css({
   margin: '5px',
@@ -33,7 +34,7 @@ export function ConfirmButton(props: ConfirmButtonProps & IconButtonProps) {
 
   return !confirmation ? (
     <IconButton
-      {...props as IconButtonProps}
+      {...(omit(props, 'onAction') as IconButtonProps)}
       onClick={event => {
         event.stopPropagation();
         props.onClick && props.onClick(event);
