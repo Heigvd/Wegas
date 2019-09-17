@@ -7,6 +7,7 @@ import DiffEditor, {
   ExtendedDiffNavigator,
   DiffEditorLineChanges,
 } from './DiffEditor';
+import { StyledLabel } from '../../../Components/AutoImport/String/Label';
 
 const diffLabel = css({
   color: themeVar.primaryLighterColor,
@@ -112,6 +113,17 @@ interface NavState {
   diffs: DiffEditorLineChanges;
 }
 
+interface ModalStateClose {
+  type: 'close';
+}
+
+interface ModalStateError {
+  type: 'error';
+  label: string;
+}
+
+type ModalState = ModalStateClose | ModalStateError;
+
 interface MergeEditorProps {
   /**
    * originalValue - the original content.
@@ -171,6 +183,9 @@ function MergeEditor({
    * This must be a state or it will never update the editor when finalValue is modified
    */
   const [finalValue, setFinalValue] = React.useState(originalValue);
+  const [modalState, setModalState] = React.useState<ModalState>({
+    type: 'close',
+  });
 
   React.useEffect(() => {
     setFinalValue(originalValue);
@@ -227,7 +242,10 @@ function MergeEditor({
     (value: string) => {
       if (onResolved) {
         if (mergeState.diffs.length > 0) {
-          alert('You must resolve all differences before saving');
+          setModalState({
+            type: 'error',
+            label: 'You must resolve all differences before saving',
+          });
         } else {
           onResolved(value);
         }
@@ -342,6 +360,14 @@ function MergeEditor({
             onClick={() => {
               onSave(modifiedValue);
             }}
+          />
+        )}
+        {modalState.type === 'error' && (
+          <StyledLabel
+            type="error"
+            value={modalState.label}
+            duration={3000}
+            onLabelVanish={() => setModalState({ type: 'close' })}
           />
         )}
       </Toolbar.Header>
