@@ -191,6 +191,12 @@ public class GameModelController {
         return modelFacade.propagateModel(modelId);
     }
 
+    @GET
+    @Path("{modelId : [1-9][0-9]*}/FixVariableTree")
+    public void fixTree(@PathParam("modelId") Long modelId) throws IOException, RepositoryException {
+         modelFacade.fixVariableTree(modelId);
+    }
+
     /**
      *
      * Duplicate model
@@ -305,7 +311,7 @@ public class GameModelController {
             gameModelFacade.createWithDebugGame(gameModel);
             return gameModel;
         } else if (details.getContentDisposition().getFileName().endsWith(".wgz")) {
-            try ( ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
+            try (ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
                 return gameModelFacade.unzip(zip);
             }
         } else {
