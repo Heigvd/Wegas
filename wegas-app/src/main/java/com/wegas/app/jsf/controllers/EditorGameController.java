@@ -7,18 +7,16 @@
  */
 package com.wegas.app.jsf.controllers;
 
+import com.wegas.app.jsf.controllers.utils.HttpParam;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.security.ejb.UserFacade;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
+import javax.inject.Named;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -27,38 +25,38 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-@ManagedBean(name = "editorGameController")
+@Named("editorGameController")
 @RequestScoped
 public class EditorGameController extends AbstractGameController {
+
+    private static final long serialVersionUID = 1396920765516903529L;
 
     /**
      *
      */
-    @ManagedProperty("#{param.gameId}")
+    @Inject @HttpParam
     private Long gameId;
     /**
      *
      */
-    @ManagedProperty("#{param.gameModelId}")
+    @Inject @HttpParam
     private Long gameModelId;
     /**
      *
      */
-    @ManagedProperty("#{param.teamId}")
+    @Inject @HttpParam
     private Long teamId;
     /**
      *
      */
-    @EJB
+    @Inject
     private TeamFacade teamFacade;
-    @EJB
+    @Inject
     private GameFacade gameFacade;
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
-    @EJB
+    @Inject
     private GameModelFacade gameModelFacade;
-    @EJB
-    private UserFacade userFacade;
     @Inject
     private RequestManager requestManager;
 

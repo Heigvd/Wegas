@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -360,4 +360,4 @@ YUI.add('editor-para', function (Y, NAME) {
     Y.Plugin.EditorPara = EditorPara;
 
 
-}, '3.17.2', {"requires": ["editor-para-base"]});
+}, '3.18.1', {"requires": ["editor-para-base"]});

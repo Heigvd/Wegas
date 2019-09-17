@@ -8,6 +8,7 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.ModelFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -22,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -45,14 +45,17 @@ public class VariableDescriptorController {
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private GameModelFacade gameModelFacade;
+
+    @Inject
+    private ModelFacade modelFacade;
 
     @Inject
     private RequestManager requestManager;
@@ -147,7 +150,7 @@ public class VariableDescriptorController {
             VariableDescriptor parent = variableDescriptorFacade.find(gm, entityName);
 
             if (parent instanceof DescriptorListI) {
-                return variableDescriptorFacade.createChild(gm, (DescriptorListI) parent, entity);
+                return variableDescriptorFacade.createChild(gm, (DescriptorListI) parent, entity, false);
             } else {
                 throw WegasErrorMessage.error("Parent entity does not allow children");
             }
@@ -170,9 +173,15 @@ public class VariableDescriptorController {
 
     @PUT
     @Path("{id: [1-9][0-9]*}/visibility/{visibility: [A-Z]*}")
-    public VariableDescriptor resetVisibilities(@PathParam("id") Long vdId, 
+    public VariableDescriptor resetVisibilities(@PathParam("id") Long vdId,
             @PathParam("visibility") ModelScoped.Visibility visibility) {
         return variableDescriptorFacade.resetVisibility(vdId, visibility);
+    }
+
+    @PUT
+    @Path("{id: [1-9][0-9]*}/release")
+    public VariableDescriptor releaseFromModel(@PathParam("id") Long vdId) {
+        return modelFacade.releaseVariableFromModel(vdId);
     }
 
     @PUT
@@ -188,9 +197,6 @@ public class VariableDescriptorController {
             @PathParam("scopeType") String scopeType) {
         return variableDescriptorFacade.convertToList(vdId);
     }
-
-
-
 
     /**
      * @param descriptorId

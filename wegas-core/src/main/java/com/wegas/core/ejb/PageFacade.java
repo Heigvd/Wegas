@@ -7,17 +7,14 @@
  */
 package com.wegas.core.ejb;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jsonpatch.JsonPatchException;
-import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.wegas.core.Helper;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.game.GameModel;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +23,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
+import javax.json.JsonPatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,7 +139,7 @@ public class PageFacade {
         this.registerPageIndexPropagates(pagesDAO, gm);
     }
 
-    public Page patchPage(GameModel gm, String pageId, JsonNode patch) throws RepositoryException, IOException, JsonPatchException {
+    public Page patchPage(GameModel gm, String pageId, JsonPatch patch) throws RepositoryException, JsonProcessingException {
 
         Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
 
@@ -151,11 +149,6 @@ public class PageFacade {
         pagesDAO.store(page);
         this.registerPagePropagate(pagesDAO, gm, pageId);
         return page;
-    }
-
-    public Page patchPage(GameModel gm, String pageId, String patch) throws RepositoryException, IOException, JsonPatchException {
-        Page p = this.patchPage(gm, pageId, (new ObjectMapper()).readTree(patch));
-        return p;
     }
 
     /**

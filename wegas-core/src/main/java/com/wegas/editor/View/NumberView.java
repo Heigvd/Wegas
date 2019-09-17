@@ -10,7 +10,7 @@ package com.wegas.editor.View;
 /**
  * @author maxence
  */
-    public class NumberView extends CommonView {
+public class NumberView extends CommonView {
 
     @Override
     public String getType() {

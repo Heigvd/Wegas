@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -174,27 +174,20 @@ YUI.add('editor-base', function (Y, NAME) {
             * to walk through and filter to pass off the event to before firing..
             */
 
-            switch (e.changedType) {
-                case 'tab':
-                    if (!e.changedNode.test('li, li *') && !e.changedEvent.shiftKey) {
-                        e.changedEvent.frameEvent.preventDefault();
-                        Y.log('Overriding TAB key to insert HTML: HALTING', 'info', 'editor');
-                        if (Y.UA.webkit) {
-                            this.execCommand('inserttext', '\t');
-                        } else if (Y.UA.gecko) {
-                            this.frame.exec._command('inserthtml', EditorBase.TABKEY);
-                        } else if (Y.UA.ie) {
-                            this.execCommand('inserthtml', EditorBase.TABKEY);
-                        }
+            if (e.changedType === 'tab') {
+                if (!e.changedNode.test('li, li *') && !e.changedEvent.shiftKey) {
+                    e.changedEvent.frameEvent.preventDefault();
+                    Y.log('Overriding TAB key to insert HTML: HALTING', 'info', 'editor');
+                    if (Y.UA.webkit) {
+                        this.execCommand('inserttext', '\t');
+                    } else if (Y.UA.gecko) {
+                        this.frame.exec._command('inserthtml', EditorBase.TABKEY);
+                    } else if (Y.UA.ie) {
+                        this.execCommand('inserthtml', EditorBase.TABKEY);
                     }
-                    break;
-                case 'backspace-up':
-                    // Fixes #2531090 - Joins text node strings so they become one for bidi
-                    if (Y.UA.webkit && e.changedNode) {
-                        e.changedNode.set('innerHTML', e.changedNode.get('innerHTML'));
-                    }
-                    break;
+                }
             }
+            
             if (Y.UA.webkit && e.commands && (e.commands.indent || e.commands.outdent)) {
                 /*
                 * When executing execCommand 'indent or 'outdent' Webkit applies
@@ -957,4 +950,4 @@ YUI.add('editor-base', function (Y, NAME) {
 
 
 
-}, '3.17.2', {"requires": ["base", "frame", "node", "exec-command", "editor-selection"]});
+}, '3.18.1', {"requires": ["base", "frame", "node", "exec-command", "editor-selection"]});

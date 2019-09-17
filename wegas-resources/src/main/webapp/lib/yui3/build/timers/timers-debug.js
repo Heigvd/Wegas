@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -15,6 +15,7 @@ This module includes [asap.js](https://github.com/kriskowal/asap) for scheduling
 asynchronous tasks.
 
 @module timers
+@main timers
 @author Steven Olmsted
 **/
 
@@ -271,6 +272,10 @@ function asap(task) {
 
 module.exports = asap;
 /**
+@module timers
+**/
+
+/**
 Y.soon accepts a callback function.  The callback function will be called
 once in a future turn of the JavaScript event loop.  If the function
 requires a specific execution context or arguments, wrap it with Y.bind.
@@ -313,4 +318,4 @@ soon._impl = 'asap';
 Y.soon = soon;
 
 
-}, '3.17.2', {"requires": ["yui-base"]});
+}, '3.18.1', {"requires": ["yui-base"]});

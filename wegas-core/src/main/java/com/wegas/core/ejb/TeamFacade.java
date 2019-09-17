@@ -18,7 +18,6 @@ import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -42,10 +41,10 @@ public class TeamFacade extends BaseFacade<Team> {
     /**
      *
      */
-    @EJB
+    @Inject
     private GameFacade gameFacade;
 
-    @EJB
+    @Inject
     private AccountFacade accountFacade;
 
     /**

@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -938,7 +938,7 @@ YUI.add('editor-selection', function (Y, NAME) {
         * @return {Node}
         */
         getCursor: function() {
-            return Y.EditorSelection.ROOT.all('.' + Y.EditorSelection.CURID);
+            return Y.EditorSelection.ROOT.all('.' + Y.EditorSelection.CURID).get('parentNode');
         },
         /**
         * Remove the cursor placeholder from the DOM.
@@ -948,9 +948,8 @@ YUI.add('editor-selection', function (Y, NAME) {
         */
         removeCursor: function(keep) {
             var cur = this.getCursor();
-            if (cur) {
+            if (cur && cur.remove) {
                 if (keep) {
-                    cur.removeAttribute('id');
                     cur.set('innerHTML', '<br class="yui-cursor">');
                 } else {
                     cur.remove();
@@ -1031,4 +1030,4 @@ YUI.add('editor-selection', function (Y, NAME) {
 
 
 
-}, '3.17.2', {"requires": ["node"]});
+}, '3.18.1', {"requires": ["node"]});

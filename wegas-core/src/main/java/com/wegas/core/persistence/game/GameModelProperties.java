@@ -11,12 +11,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.ValueGenerators.False;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.SelectView.FreeForAllSelector;
+import com.wegas.editor.View.StringView;
 import com.wegas.editor.View.View;
 import java.io.Serializable;
 import javax.persistence.*;
@@ -29,6 +31,15 @@ import javax.persistence.*;
 @JsonIgnoreProperties(value = {"imageUri"})
 public class GameModelProperties implements Serializable, Mergeable {
 
+    @WegasExtraProperty(
+            nullable = false,
+            view = @View(
+                    label = "RefID",
+                    readOnly = true,
+                    value = StringView.class,
+                    index = -800
+            )
+    )
     @Override
     public String getRefId() {
         return "GameModelProperties";
@@ -81,7 +92,7 @@ public class GameModelProperties implements Serializable, Mergeable {
     /**
      *
      */
-    @JsonView({Views.ExtendedI.class})
+    //@JsonView({Views.ExtendedI.class})
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyString.class,
             view = @View(label = "Log ID"))

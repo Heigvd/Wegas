@@ -18,9 +18,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -29,6 +28,7 @@ import javax.jcr.LoginException;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.ws.rs.core.Response;
+import org.apache.jackrabbit.oak.namepath.impl.NamePathMapperImpl;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -46,8 +46,8 @@ public class JCRFacade {
     /**
      *
      */
-    private static final String FILENAME_REGEXP = "^(?:[\\p{L}[0-9]-_ ]|\\.)+$";
-
+    //private static final String FILENAME_REGEXP = "^(?:[\\p{L}[0-9]-_ ]|\\.)+$";
+    private static final String[] FORBIDDEN_CHARS = {"?", "\\", "/", "]", "[", "*", "|", "¦", "#", ";", ":", "\""};
     /**
      *
      */
@@ -136,16 +136,16 @@ public class JCRFacade {
      * @return list of directory content and its subdirectories recursively
      */
     public List<AbstractContentDescriptor> recurseListDirectory(GameModel gameModel,
-                                                                WorkspaceType workspaceType,
-                                                                String directory) {
+            WorkspaceType workspaceType,
+            String directory) {
 
         List<AbstractContentDescriptor> recurseList = new ArrayList<>();
-        List<AbstractContentDescriptor> childrenList = listDirectory(gameModel,workspaceType,directory);
-        if(childrenList != null){
-            for(AbstractContentDescriptor children : childrenList){
+        List<AbstractContentDescriptor> childrenList = listDirectory(gameModel, workspaceType, directory);
+        if (childrenList != null) {
+            for (AbstractContentDescriptor children : childrenList) {
                 // We assume here that the directories are always listed first
                 recurseList.add(children);
-                if(children.isDirectory()){
+                if (children.isDirectory()) {
                     recurseList.addAll(
                             this.recurseListDirectory(gameModel,
                                     workspaceType,
@@ -185,6 +185,35 @@ public class JCRFacade {
         }
     }
 
+    private void assertFilenameIsValid(String filename) {
+        List<String> errors = new LinkedList<String>();
+
+        // rewrite with a powerfil regex
+        for (String c : FORBIDDEN_CHARS) {
+            if (filename.contains(c)) {
+                errors.add(c);
+            }
+        }
+
+        if (!errors.isEmpty()) {
+            StringBuilder sb = new StringBuilder("Filename ").append(filename).append(" is not valid! Character");
+            if (errors.size() > 1) {
+                sb.append("s");
+            }
+            for (int i = errors.size() - 1; i >= 0; i--) {
+                sb.append(" ").append(errors.get(i));
+                if (i > 1) {
+                    sb.append(",");
+                } else if (i == 1){
+                    sb.append(" and");
+                }
+            }
+            sb.append(errors.size() > 1 ? " are" : " is").append(" forbidden!");
+
+            throw WegasErrorMessage.error(sb.toString());
+        }
+    }
+
     /**
      * @param gameModel
      * @param wType
@@ -205,11 +234,7 @@ public class JCRFacade {
 
         logger.debug("File name: {}", name);
 
-        Pattern pattern = Pattern.compile(FILENAME_REGEXP);
-        Matcher matcher = pattern.matcher(name);
-        if (name.equals("") || !matcher.matches()) {
-            throw WegasErrorMessage.error(name + " is not a valid filename.  Letters, numbers, whitespace or \".-_\" only.");
-        }
+        assertFilenameIsValid(name);
 
         try {
             ContentConnector connector = jCRConnectorProvider.getContentConnector(gameModel, wType);
@@ -283,12 +308,10 @@ public class JCRFacade {
      */
     public DirectoryDescriptor createDirectory(GameModel gameModel, WorkspaceType wType, String name, String path, String note, String description) throws RepositoryException {
 
+        NamePathMapperImpl npm;
         //logger.debug("Directory name: {}", name);
-        Pattern pattern = Pattern.compile(FILENAME_REGEXP);
-        Matcher matcher = pattern.matcher(name);
-        if (name.equals("") || !matcher.matches()) {
-            throw WegasErrorMessage.error(name + " is not a valid filename.");
-        }
+        assertFilenameIsValid(name);
+
         ContentConnector connector = this.getContentConnector(gameModel, wType);
 
         AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);

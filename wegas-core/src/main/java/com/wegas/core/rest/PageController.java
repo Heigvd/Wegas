@@ -7,8 +7,8 @@
  */
 package com.wegas.core.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.fge.jsonpatch.JsonPatchException;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
 import com.wegas.core.ejb.GameModelFacade;
@@ -17,10 +17,15 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.persistence.game.GameModel;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Map;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonPatch;
+import javax.json.JsonReader;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -340,31 +345,34 @@ public class PageController {
      *
      * @param gameModelId The GameModel's ID
      * @param pageId      The page's ID
-     * @param patch       The patch based on Myer's diff algorithm
+     * @param strPatch    The patch based on Myer's diff algorithm
      *
      * @return The new patched page
      *
      * @throws RepositoryException
-     * @throws JSONException
-     * @throws IOException
+     * @throws JsonProcessingException
      */
     @PUT
     @Path("/{pageId : [A-Za-z0-9]+}")
     @Consumes(MediaType.TEXT_PLAIN)
     public Response patch(@PathParam("gameModelId") Long gameModelId,
             @PathParam("pageId") String pageId,
-            String patch) throws RepositoryException, IOException, JsonPatchException {
+            String strPatch) throws RepositoryException, JsonProcessingException {
 
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
 
-        try {
-            Page page = pageFacade.patchPage(gm, pageId, patch);
+        try (JsonReader reader = Json.createReader(new StringReader(strPatch))) {
+            JsonArray patchArray = reader.readArray();
+            JsonPatch patch = Json.createPatchBuilder(patchArray).build();
 
-            return Response.ok(page.getContentWithMeta(), MediaType.APPLICATION_JSON)
-                    .header("Page", pageId).build();
-        } catch (RepositoryException ex) {
-            return Response.status(Response.Status.NOT_FOUND).header("Page", pageId).build();
+            try {
+                Page page = pageFacade.patchPage(gm, pageId, patch);
+                return Response.ok(page.getContentWithMeta(), MediaType.APPLICATION_JSON)
+                        .header("Page", pageId).build();
+            } catch (RepositoryException ex) {
+                return Response.status(Response.Status.NOT_FOUND).header("Page", pageId).build();
+            }
         }
     }
 
