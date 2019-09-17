@@ -715,7 +715,7 @@ function MainLinearLayout(props: LinearLayoutProps) {
           const rendered: JSX.Element[] = [];
           for (let i = 0; i < currentLayout.children.length; i += 1) {
             rendered.push(
-              <ReflexElement key={currentLayout.children[i]}>
+              <ReflexElement key={currentLayout.children[i]} className={flex}>
                 {renderLayouts(currentLayout.children[i])}
               </ReflexElement>,
             );

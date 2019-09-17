@@ -236,15 +236,17 @@ class DiffEditor extends React.Component<DiffEditorProps> {
             this.props.onModifiedChange(this.lastModifiedValue);
           }
         });
-        // Catches the Ctrl+S command and fire onSave prop
-        this.diffEditor.addCommand(
-          monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
-          () => {
-            if (this.props.onSave && this.diffEditor) {
+        // Catches the Ctrl+S action and fire onSave prop
+        this.diffEditor.addAction({
+          id: 'onSave',
+          label: 'Save code',
+          keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S],
+          run: () => {
+            if (this.diffEditor && this.props.onSave) {
               this.props.onSave(this.diffEditor.getModifiedEditor().getValue());
             }
           },
-        );
+        });
         // Creates a diff navigator to allow navigation in diffs
         this.diffNavigator = monaco.editor.createDiffNavigator(
           this.diffEditor,
