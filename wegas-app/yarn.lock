@@ -8250,7 +8250,6 @@ jsonfile@^3.0.0:
 
 "jsoninput@github:cigit/JSONInput":
   version "0.0.25"
-  uid "4bd825b124fc38325d57ce8b552e2af60a852387"
   resolved "https://codeload.github.com/cigit/JSONInput/tar.gz/4bd825b124fc38325d57ce8b552e2af60a852387"
   dependencies:
     immer "^3.2.0"
@@ -11388,7 +11387,7 @@ react-redux@^5.1.1:
     react-is "^16.6.0"
     react-lifecycles-compat "^3.0.0"
 
-react-reflex@^3.0.13:
+react-reflex@^3.0.16:
   version "3.0.16"
   resolved "https://registry.yarnpkg.com/react-reflex/-/react-reflex-3.0.16.tgz#19797d1857c0a3c0e16943d0fde1f389946e89d2"
   integrity sha512-96vtppG+AwpHCRO2cLjS4evKpSA7xx9ACwq2JiJR73JsA2nnGeoBSVGUKW7gFa9ec6RdExpGzP6OS8rjqALCEg==
