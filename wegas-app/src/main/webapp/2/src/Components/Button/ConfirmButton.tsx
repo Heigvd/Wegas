@@ -1,29 +1,59 @@
 import * as React from 'react';
 import { IconButtonProps, IconButton, shapeStyle } from './IconButton';
 import { themeVar } from '../Theme';
+import { useOnClickOutside } from '../Hooks/useOnClickOutside';
+import { css } from 'emotion';
+import { omit } from 'lodash';
 
-export function ConfirmButton(props: IconButtonProps) {
-  const [confirmation, setConfirmation] = React.useState(true);
-  const onConfirm = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
-    event.stopPropagation();
-    setConfirmation(false);
-  };
+const buttonZone = css({
+  margin: '5px',
+  backgroundColor: 'lightgrey',
+  textAlign: 'center',
+  display: 'inline-block',
+});
 
-  return confirmation ? (
-    <IconButton {...props} onClick={onConfirm} />
+interface ConfirmButtonProps {
+  onAction?: (success: boolean) => void;
+  onBlur?: () => void;
+  defaultConfirm?: boolean;
+  dontResetOnBlur?: boolean;
+}
+
+export function ConfirmButton(props: ConfirmButtonProps & IconButtonProps) {
+  const [confirmation, setConfirmation] = React.useState(props.defaultConfirm);
+  const confirmButton = React.useRef(null);
+
+  useOnClickOutside(confirmButton, () => {
+    if (!props.dontResetOnBlur) {
+      setConfirmation(false);
+    }
+    if (props.onBlur) {
+      props.onBlur();
+    }
+  });
+
+  return !confirmation ? (
+    <IconButton
+      {...(omit(props, 'onAction') as IconButtonProps)}
+      onClick={event => {
+        event.stopPropagation();
+        props.onClick && props.onClick(event);
+        setConfirmation(true);
+      }}
+    />
   ) : (
-    <>
+    <div ref={confirmButton} className={buttonZone}>
+      {props.label}
       <button
         style={{
           backgroundColor: themeVar.warningColor,
           color: themeVar.primaryDarkerTextColor,
         }}
         className={shapeStyle}
-        onClick={e => {
-          setConfirmation(true);
-          props.onClick && props.onClick(e);
+        onClick={event => {
+          event.stopPropagation();
+          props.onAction && props.onAction(true);
+          setConfirmation(props.defaultConfirm);
         }}
       >
         Accept
@@ -34,10 +64,14 @@ export function ConfirmButton(props: IconButtonProps) {
           color: themeVar.primaryDarkerTextColor,
         }}
         className={shapeStyle}
-        onClick={() => setConfirmation(true)}
+        onClick={event => {
+          event.stopPropagation();
+          props.onAction && props.onAction(false);
+          setConfirmation(props.defaultConfirm);
+        }}
       >
         Cancel
       </button>
-    </>
+    </div>
   );
 }

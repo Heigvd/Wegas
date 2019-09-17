@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -74,4 +74,4 @@ conf.detachDelegate = conf.detach;
 Y.Event.define("hover", conf);
 
 
-}, '3.17.2', {"requires": ["event-mouseenter"]});
+}, '3.18.1', {"requires": ["event-mouseenter"]});

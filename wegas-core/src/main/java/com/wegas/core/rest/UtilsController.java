@@ -10,20 +10,17 @@ package com.wegas.core.rest;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.Member;
 import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
 import com.wegas.core.ejb.ConcurrentHelper;
-import com.wegas.core.ejb.HelperBean;
+import com.wegas.core.ejb.JPACacheHelper;
 import fish.payara.micro.cdi.Outbound;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.Enumeration;
@@ -35,6 +32,11 @@ import java.util.regex.Pattern;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.JsonValue;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -64,10 +66,6 @@ public class UtilsController {
     private static final String TRAVIS_URL = "https://api.travis-ci.org";
 
     @Inject
-    @Outbound(eventName = HelperBean.CLEAR_CACHE_EVENT_NAME, loopBack = true)
-    Event<String> messages;
-
-    @Inject
     private ApplicationLifecycle applicationLifecycle;
 
     @Inject
@@ -79,10 +77,25 @@ public class UtilsController {
     @Inject
     private ConcurrentHelper concurrentHelper;
 
+    @Inject
+    private JPACacheHelper jpaCacheHelper;
+
+    /**
+     * Request all cluster instances to clear JPA l2 cache
+     */
     @DELETE
     @Path("EmCache")
     public void wipeEmCache() {
-        messages.fire("clear");
+        jpaCacheHelper.requestClearCache();
+    }
+
+    /**
+     * Clear THIS instance only JPA l2 cache
+     */
+    @DELETE
+    @Path("LocalEmCache")
+    public void directWipeEmCache() {
+        jpaCacheHelper.clearCacheLocal();
     }
 
     @GET
@@ -119,7 +132,7 @@ public class UtilsController {
         StringBuilder sb = new StringBuilder(this.getFullVersion());
 
         String branch = Helper.getWegasProperty("wegas.build.branch", null);
-        Long travisVersion = null;
+        Integer travisVersion = null;
 
         if (!Helper.isNullOrEmpty(branch)) {
             String prBranch = Helper.getWegasProperty("wegas.build.pr_branch", null);
@@ -128,7 +141,8 @@ public class UtilsController {
             if (!Helper.isNullOrEmpty(prNumber) && !"false".equals(prNumber)) {
                 sb.append("pull request ").append(prNumber).append("/").append(prBranch).append(" into ").append(branch);
 
-                travisVersion = findCurrentTravisVersionPr("master", prNumber);
+                int intPrNumber = Integer.parseInt(prNumber, 10);
+                travisVersion = findCurrentTravisVersionPr("master", intPrNumber);
             } else {
                 sb.append(branch).append(" branch");
                 travisVersion = findCurrentTravisVersion(branch);
@@ -164,11 +178,11 @@ public class UtilsController {
     @GET
     @Path("build_details_pr/{number: [1-9][0-9]*}/{branch: [a-zA-Z0-9]*}")
     @Produces(MediaType.TEXT_PLAIN)
-    public Long getBuildDetailsForPr(@PathParam("number") String number, @PathParam("branch") String branch) throws URISyntaxException {
+    public Integer getBuildDetailsForPr(@PathParam("number") Integer number, @PathParam("branch") String branch) throws URISyntaxException {
         return findCurrentTravisVersionPr(branch, number);
     }
 
-    private static Long findCurrentTravisVersionPr(String branch, String prNumber) {
+    private static int findCurrentTravisVersionPr(String branch, Integer prNumber) {
 
         try {
             HttpClient client = HttpClientBuilder.create().build();
@@ -190,22 +204,25 @@ public class UtilsController {
             response.getEntity().writeTo(baos);
             String strResponse = baos.toString("UTF-8");
 
-            JsonParser jsonParser = new JsonParser();
-            JsonObject parse = jsonParser.parse(strResponse).getAsJsonObject();
-            JsonArray builds = parse.getAsJsonArray("builds");
-            for (JsonElement b : builds) {
-                JsonObject build = b.getAsJsonObject();
-                String val = build.get("pull_request_number").getAsString();
-                if (prNumber.equals(val)) {
-                    return build.get("number").getAsLong();
+            try (JsonReader reader = Json.createReader(new StringReader(strResponse))) {
+                JsonObject r = reader.readObject();
+                JsonArray builds = r.getJsonArray("builds");
+
+                for (JsonValue b : builds) {
+                    JsonObject build = b.asJsonObject();
+                    int val = build.getInt("pull_request_number", 10);
+
+                    if (prNumber.equals(val)) {
+                        return Integer.parseInt(build.getString("number"), 10);
+                    }
                 }
             }
         } catch (URISyntaxException | IOException ex) {
         }
-        return -1l;
+        return -1;
     }
 
-    private static Long findCurrentTravisVersion(String branch) {
+    private static Integer findCurrentTravisVersion(String branch) {
         try {
             HttpClient client = HttpClientBuilder.create().build();
 
@@ -229,19 +246,19 @@ public class UtilsController {
             Pattern p = Pattern.compile(".*\"number\": \"(\\d+)\".*", Pattern.DOTALL);
             Matcher matcher = p.matcher(strResponse);
             if (matcher.matches() && matcher.groupCount() == 1) {
-                return Long.parseLong(matcher.group(1), 10);
+                return Integer.parseInt(matcher.group(1), 10);
             } else {
-                return -1l;
+                return -1;
             }
         } catch (URISyntaxException ex) {
-            return -1l;
+            return -1;
         } catch (IOException ex) {
-            return -1l;
+            return -1;
         }
     }
 
     /**
-     * Some text which descibe the cluster state
+     * Some text which describe the cluster state
      *
      * @return the cluster state
      */

@@ -22,21 +22,36 @@ interface StyledLabelProps {
    * If undefined, the text is displayed forever
    */
   duration?: number;
+  /**
+   * onLabelVanish - called when the duration is reached (never if no duration sat)
+   */
+  onLabelVanish?: () => void;
 }
 
 /**
  * StyledLabel is a component that creates a styled label with text
  */
-export function StyledLabel({ type, value, duration }: StyledLabelProps) {
+export function StyledLabel({
+  type,
+  value,
+  duration,
+  onLabelVanish,
+}: StyledLabelProps) {
   const timeout = React.useRef(0);
   const [text, setText] = React.useState(value);
   React.useEffect(() => {
     clearTimeout(timeout.current);
     setText(value);
     if (duration !== undefined) {
-      timeout.current = window.setTimeout(() => setText(''), duration);
+      timeout.current = window.setTimeout(() => {
+        setText('');
+        onLabelVanish && onLabelVanish();
+      }, duration);
     }
-  }, [value, duration]);
+    return () => {
+      clearTimeout(timeout.current);
+    };
+  }, [value, duration, onLabelVanish]);
 
   let color = '';
 

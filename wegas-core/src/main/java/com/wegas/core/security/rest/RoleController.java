@@ -11,8 +11,8 @@ import com.wegas.core.rest.AbstractRestController;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.persistence.Role;
 import java.util.Collection;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -37,7 +37,7 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
     /**
      *
      */
-    @EJB
+    @Inject
     private RoleFacade roleFacade;
 
     @Override

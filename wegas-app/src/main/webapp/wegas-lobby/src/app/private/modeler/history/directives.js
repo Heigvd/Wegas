@@ -110,6 +110,29 @@ angular
             }
         };
     })
+    .directive('modelerHistoryDownloadWgz', function(ScenariosModel) {
+        "use strict";
+        return {
+            scope: {
+                scenario: "="
+            },
+            link: function(scope, element, attrs, parentCtrl) {
+                var $jsonElement = element;
+
+                scope.$watch("scenario", function(n, o) {
+                    if (_.contains([false, undefined], n)) {
+                        $jsonElement.addClass('disabled').attr('href', '#');
+                    } else {
+                        var url = window.ServiceURL + "rest/Export/GameModel/" + n.id + ".wgz";
+                        $jsonElement.removeClass('disabled').attr('href', url);
+                    }
+                    scope.scenario = n;
+                });
+
+
+            }
+        };
+    })
     .directive('modelerHistoryDownloadPdf', function(ScenariosModel) {
         "use strict";
         return {

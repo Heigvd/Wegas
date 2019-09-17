@@ -7,7 +7,6 @@
  */
 package com.wegas.core.event.client;
 
-import com.wegas.core.persistence.AbstractEntity;
 import java.util.ArrayList;
 import java.util.List;
 

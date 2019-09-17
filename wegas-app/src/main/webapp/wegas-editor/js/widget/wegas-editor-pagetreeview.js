@@ -42,6 +42,13 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 this.btnNew = new Y.Button({
                     label: "<span class=\"fa fa-plus-circle\"></span> New page"
                 }).render(header);
+
+                this.btnReload = new Y.Button({
+                    label: "<span class=\"fa fa-refresh\"></span>",
+                    on: {
+                        click: Y.bind(this.getIndex, this)
+                    }
+                }).render(header);
             }
             this.getIndex();
         },
@@ -65,10 +72,12 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                         DATASOURCE.move(e.dragWidget.get("data.page"), e.index, Y.bind(function() {
                             this.getIndex();
                         }, this));
-                    } else if (!e.dropWidget.get(BOUNDING_BOX).hasClass("container-node")) { //@TODO: find something better.
+                    } else if (!e.dropWidget.get(BOUNDING_BOX)
+                        .hasClass("container-node")) { //@TODO: find something better.
                         e.preventDefault();
                         this.getIndex();
                     } else if (e.dropWidget.get("data.widget")) {
+                        Y.log("Drop !!");
                         e.dropWidget.get("data.widget").add(e.dragWidget.get("data.widget"), e.index);
                         DATASOURCE.patch(e.dropWidget.get("data.widget").get("root").toObject());
                     }
@@ -153,13 +162,13 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             var menu = [];
             menu.push({
                 type: "Button",
-                label: "Standard (Flex layout)",
+                label: "Standard (List layout)",
                 on: {
                     click: Y.bind(
                         function(e) {
                             this.newPage({
                                 type: "FlexList"
-                            })
+                            });
                         }, this)
                 }
             });
@@ -171,7 +180,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                         function(e) {
                             this.newPage({
                                 type: "AbsoluteLayout"
-                            })
+                            });
                         }, this)
                 }
             });
@@ -274,11 +283,11 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                     /*
                      * after a widget.rebuild(), update references.
                      */
-                    e.currentTarget.detach("*:addChild", this.updateWidget, this);
-                    e.currentTarget.onceAfter("*:addChild", this.updateWidget, this);
+                    e.currentTarget.detach("*:addChild", this._addChild, this);
+                    e.currentTarget.onceAfter("*:addChild", this._addChild, this);
 
-                    e.currentTarget.detach("*:removeChild", this.updateWidget, this);
-                    e.currentTarget.onceAfter("*:removeChild", this.updateWidget, this);
+                    e.currentTarget.detach("*:removeChild", this._removeChild, this);
+                    e.currentTarget.onceAfter("*:removeChild", this._removeChild, this);
 
                     updatedWidget.each(function(item) {
                         this.buildSubTree(currentNode, item);
@@ -296,6 +305,12 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 this.getIndex();
             }
         },
+        _addChild:function(e){
+            this.updateWidget(e);
+        }, 
+        _removeChild:function(e){
+            Y.later(0, this, this.updateWidget, e);
+        },
         buildSub: function(node, widget) {
             this.buildSubTree(node, widget);
             if (node.item(0) && node.item(0).expand) {
@@ -305,13 +320,13 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
              * after a widget.rebuild(), update references.
              */
             if (node.item(0)) {
-                node.item(0).get("data.widget").detach("*:addChild", this.updateWidget, this);
-                node.item(0).get("data.widget").onceAfter("*:addChild", this.updateWidget, this);
+                node.item(0).get("data.widget").detach("*:addChild", this._addChild, this);
+                node.item(0).get("data.widget").onceAfter("*:addChild", this._addChild, this);
             }
 
             if (node.item(0)) {
-                node.item(0).get("data.widget").detach("*:removeChild", this.updateWidget, this);
-                node.item(0).get("data.widget").onceAfter("*:removeChild", this.updateWidget, this);
+                node.item(0).get("data.widget").detach("*:removeChild", this._removeChild, this);
+                node.item(0).get("data.widget").onceAfter("*:removeChild", this._removeChild, this);
             }
         },
         buildIndex: function(index) {

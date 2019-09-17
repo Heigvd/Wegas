@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -710,4 +710,4 @@ Y.DataTable.KeyNav = DtKeyNav;
 Y.Base.mix(Y.DataTable, [DtKeyNav]);
 
 
-}, '3.17.2', {"requires": ["datatable-base"]});
+}, '3.18.1', {"requires": ["datatable-base"]});

@@ -8,9 +8,9 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.wegas.core.persistence.game.GameModel;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.editor.JSONSchema.JSONObject;
@@ -51,22 +51,6 @@ public class DialogueDescriptor extends AbstractStateMachineDescriptor<DialogueS
 
             states.put(1l, state);
             this.setValue(states);
-        }
-    }
-
-    @Override
-    public void revive(GameModel gameModel, Beanjection beans) {
-        super.revive(gameModel, beans);
-        for (DialogueState s : this.getInternalStates()) {
-            if (s.getText() != null) {
-                s.getText().setParentDescriptor(this);
-            }
-
-            for (DialogueTransition t : s.getTransitions()) {
-                if (t.getActionText() != null) {
-                    t.getActionText().setParentDescriptor(this);
-                }
-            }
         }
     }
 }

@@ -109,7 +109,7 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
                   : currentOffset + 1,
                 t.token.offset,
               )
-              .indexOf('script') > -1,
+              .indexOf('variable') > -1,
         );
         if (keyTokenIndex < 0) throw 'No script key';
         keyTokenIndex = currentTokenIndex - keyTokenIndex;

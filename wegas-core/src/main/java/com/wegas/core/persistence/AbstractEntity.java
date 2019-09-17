@@ -89,7 +89,7 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
     public void assertRefId() {
         if (Helper.isNullOrEmpty(refId)) {
             if (this.getId() == null) {
-                logger.error("ID SHOULD NOT BE NULL");
+                logger.warn("ID SHOULD NOT BE NULL");
             } else {
                 this.setRefId(this.getClass().getSimpleName() + ":" + this.getId() + ":" + Helper.genToken(6));
             }

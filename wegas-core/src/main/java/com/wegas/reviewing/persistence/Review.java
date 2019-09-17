@@ -45,9 +45,7 @@ import javax.persistence.*;
     @Index(columnList = "author_id"),
     @Index(columnList = "reviewer_id")
 })
-@NamedNativeQueries({
-    @NamedNativeQuery(name = "Review.findOwners", query = "SELECT CASE WHEN player_id is not null THEN 'PLAYER' ELSE 'TEAM' END, COALESCE(player_id, team_id)  from review r join variableinstance vi on  vi.id = r.author_id or vi.id = r.reviewer_id  where r.id = ?1")
-})
+@NamedNativeQuery(name = "Review.findOwners", query = "SELECT CASE WHEN player_id is not null THEN 'PLAYER' ELSE 'TEAM' END, COALESCE(player_id, team_id)  from review r join variableinstance vi on  vi.id = r.author_id or vi.id = r.reviewer_id  where r.id = ?1")
 public class Review extends AbstractEntity implements DatedEntity, AcceptInjection {
 
     private static final long serialVersionUID = 1L;

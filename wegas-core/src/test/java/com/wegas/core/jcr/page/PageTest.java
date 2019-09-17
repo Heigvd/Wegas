@@ -7,11 +7,11 @@
  */
 package com.wegas.core.jcr.page;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jsonpatch.JsonPatchException;
 import com.wegas.core.ejb.PageFacade;
 import com.wegas.core.jcr.jta.JCRTestFacade;
 import com.wegas.core.persistence.game.GameModel;
@@ -20,8 +20,13 @@ import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.IOException;
+import java.io.StringReader;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonPatch;
+import javax.json.JsonReader;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -53,22 +58,24 @@ public class PageTest extends AbstractArquillianTest {
     }
 
     @Test
-    public void patch() throws RepositoryException, IOException, JsonPatchException {
+    public void patch() throws RepositoryException, JsonProcessingException {
         // patch the name.
         final String patchedPageName = "Patched Page";
-        final ArrayNode patch = factory.arrayNode().add(factory.objectNode()
-                .put("op", "replace")
-                .put("path", "/@name")
-                .put("value", patchedPageName)
-        );
-        Page page = pageFacade.getPage(gameModel, "1");
-        Assert.assertEquals(pageName, page.getName());
 
-        pageFacade.patchPage(gameModel, "1", patch);
+        String strPatch = "[{\"op\": \"replace\", \"path\": \"/@name\", \"value\" : \"" + patchedPageName + "\"}]";
 
-        page = pageFacade.getPage(gameModel, "1");
+        try (JsonReader reader = Json.createReader(new StringReader(strPatch))) {
+            JsonArray patchArray = reader.readArray();
+            JsonPatch patch = Json.createPatchBuilder(patchArray).build();
 
-        Assert.assertEquals(patchedPageName, page.getName());
+            Page page = pageFacade.getPage(gameModel, "1");
+            Assert.assertEquals(pageName, page.getName());
+
+            pageFacade.patchPage(gameModel, "1", patch);
+            page = pageFacade.getPage(gameModel, "1");
+
+            Assert.assertEquals(patchedPageName, page.getName());
+        }
     }
 
     @Test
@@ -125,7 +132,7 @@ public class PageTest extends AbstractArquillianTest {
         // no new page
         Assert.assertEquals(2, pageFacade.getPageIndex(gameModel).size());
         GameModel gm = gameModelFacade.find(gameModel.getId());
-        for (VariableDescriptor vd : gm.getVariableDescriptors()){
+        for (VariableDescriptor vd : gm.getVariableDescriptors()) {
             logger.error("VD: {}", vd);
             Assert.assertNotEquals("a", vd.getName());
         }

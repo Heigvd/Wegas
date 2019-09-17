@@ -7,9 +7,9 @@
  */
 package com.wegas.app.jsf.controllers;
 
+import com.wegas.app.jsf.controllers.utils.HttpParam;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasNotFoundException;
-import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.Role;
@@ -19,12 +19,11 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Locale;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.ejb.EJBException;
+import javax.inject.Inject;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
@@ -34,9 +33,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-@ManagedBean(name = "requestController")
+@Named("requestController")
 @RequestScoped
 public class RequestController implements Serializable {
+
+    private static final long serialVersionUID = 3889537926448950055L;
 
     Logger logger = LoggerFactory.getLogger(RequestController.class);
 
@@ -45,17 +46,17 @@ public class RequestController implements Serializable {
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
     /**
      *
      */
-    @ManagedProperty("#{param.lang}")
-    private String lang = "en";
+    @Inject @HttpParam
+    private String lang;
     /**
      *
      */
-    @ManagedProperty("#{param.debug}")
+    @Inject @HttpParam
     private String debug;
 
     /**
