@@ -170,4 +170,19 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
     default boolean localRemove(T item) {
         return this.getItems().remove(item);
     }
+
+
+    @JsonIgnore
+    default public List<VariableDescriptor> getOrderedVariableDesacriptors() {
+        final List<VariableDescriptor> acc = new ArrayList<>();
+        for (VariableDescriptor vd : this.getItems()) {
+            acc.add(vd);
+            if (vd instanceof DescriptorListI) {
+                acc.addAll(((DescriptorListI) vd).getOrderedVariableDesacriptors());
+            }
+        }
+        return acc;
+    }
+
+
 }

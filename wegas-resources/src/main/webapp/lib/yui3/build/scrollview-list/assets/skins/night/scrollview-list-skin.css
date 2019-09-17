@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -10,7 +10,7 @@ http://yuilibrary.com/license/
 }
 
 .yui3-skin-night .yui3-scrollview{
-    color:#fff;    
+    color:#fff;
     background-color:#000;
 }
 
@@ -47,8 +47,8 @@ http://yuilibrary.com/license/
 .yui3-skin-night .yui3-scrollview-vert .yui3-scrollview-content .yui3-scrollview-list.selected{
 	background-color:#2C2D2E;
 	background: -moz-linear-gradient(
-		0% 100% 90deg,	
-		#252626 0%, 
+		0% 100% 90deg,
+		#252626 0%,
 		#333434 100%
 	);
     background: -webkit-gradient(
@@ -56,7 +56,7 @@ http://yuilibrary.com/license/
         left top,
         left bottom,
         from(#333434),
-        to(#252626)     
+        to(#252626)
     );
 	border-top:solid 1px #4b4b4b;
 	border-bottom:solid 1px #3e3f3f;

@@ -1,0 +1,15 @@
+<arquillian xmlns="http://jboss.org/schema/arquillian"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://jboss.org/schema/arquillian
+            http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+    <defaultProtocol type="Servlet 3.0"/>
+    <container qualifier="glassfish-embedded">
+        <configuration>
+            <property name="bindHttpPort">28080</property>
+            <property name="bindHttpsPort">28181</property>
+            <property name="configurationXml">../wegas-core/src/test/resources/domain.xml</property> 
+            <property name="resourcesXml">../wegas-core/src/test/resources/glassfish-resources.xml</property>
+        </configuration>
+    </container>
+</arquillian>

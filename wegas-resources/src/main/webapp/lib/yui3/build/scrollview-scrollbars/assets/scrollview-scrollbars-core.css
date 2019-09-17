@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -12,7 +12,7 @@ http://yuilibrary.com/license/
     height: 10px;
 }
 
-.yui3-scrollview-scrollbar { 
+.yui3-scrollview-scrollbar {
     top: 0;
     right: 1px;
 }
@@ -25,7 +25,7 @@ http://yuilibrary.com/license/
     left: 0;
 }
 
-.yui3-scrollview-scrollbar .yui3-scrollview-child { 
+.yui3-scrollview-scrollbar .yui3-scrollview-child {
     position: absolute;
     right: 0px;
     display: block;
@@ -33,16 +33,16 @@ http://yuilibrary.com/license/
     height: 4px;
 }
 
-.yui3-scrollview-scrollbar .yui3-scrollview-first { 
+.yui3-scrollview-scrollbar .yui3-scrollview-first {
     top: 0;
 }
 
-.yui3-scrollview-scrollbar .yui3-scrollview-last { 
+.yui3-scrollview-scrollbar .yui3-scrollview-last {
     top: 0;
 }
 
 .yui3-scrollview-scrollbar .yui3-scrollview-middle {
-    position: absolute; 
+    position: absolute;
     top: 4px;
     height: 1px;
 }
@@ -52,7 +52,7 @@ http://yuilibrary.com/license/
     display:inline-block;
     zoom:1;
     *display:inline;
- 
+
     top: 0;
     left: 0;
     bottom: auto;
@@ -60,12 +60,12 @@ http://yuilibrary.com/license/
 }
 
 .yui3-scrollview-scrollbar-horiz .yui3-scrollview-first,
-.yui3-scrollview-scrollbar-horiz .yui3-scrollview-last { 
+.yui3-scrollview-scrollbar-horiz .yui3-scrollview-last {
     width: 4px;
     height: 6px;
 }
 
-.yui3-scrollview-scrollbar-horiz .yui3-scrollview-middle { 
+.yui3-scrollview-scrollbar-horiz .yui3-scrollview-middle {
     top: 0;
     left: 4px;
     width: 1px;

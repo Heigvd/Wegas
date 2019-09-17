@@ -13,6 +13,7 @@ import { TreeVariableSelect } from './TreeVariableSelect';
 import translatable from './translatable';
 import EntityArrayFieldSelect from './EntityArrayFieldSelect';
 import FlatVariableSelect from './FlatVariableSelect';
+import {TimestampView} from './Timestamp';
 
 const DEFINED_VIEWS = {
   hidden,
@@ -31,6 +32,7 @@ const DEFINED_VIEWS = {
   variableselect: TreeVariableSelect,
   entityarrayfieldselect: EntityArrayFieldSelect,
   flatvariableselect: FlatVariableSelect,
+  timestamp: TimestampView,
 };
 setDefaultWidgets(DEFINED_VIEWS);
 

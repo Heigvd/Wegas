@@ -1,11 +1,11 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
 
-.yui3-skin-night .yui3-dial {    
+.yui3-skin-night .yui3-dial {
 	color:#fff;
 }
 
@@ -32,16 +32,16 @@ http://yuilibrary.com/license/
 	box-shadow:-1px -1px 2px rgba(0, 0, 0, 0.3) inset, 1px 1px 2px rgba(0, 0, 0, 0.5);
     background:#DDDBD4;
 	background:-moz-radial-gradient(
-		30% 30% 0deg, 
-		circle farthest-side, 
-		#999C9C 24%, 
-		#898989 41%, 
-		#535555 87%) 
+		30% 30% 0deg,
+		circle farthest-side,
+		#999C9C 24%,
+		#898989 41%,
+		#535555 87%)
 		repeat scroll 0 0 transparent;
 	background:-webkit-gradient(
-		radial, 15 15, 15, 30 30, 40, 
-		from(#999C9C), 
-		to(#535555), 
+		radial, 15 15, 15, 30 30, 40,
+		from(#999C9C),
+		to(#535555),
 		color-stop(.2,#898989));
 	cursor:pointer;
 	opacity:0.7;
@@ -74,9 +74,9 @@ http://yuilibrary.com/license/
 	height:5px;
 	left:50%;
 	top:-7px;
-	font-size:1px;	
+	font-size:1px;
 }
-.yui3-skin-night .yui3-dial-marker { 
+.yui3-skin-night .yui3-dial-marker {
 	background-color:#A0D8FF;
 	opacity:0.2;
 	font-size:1px;

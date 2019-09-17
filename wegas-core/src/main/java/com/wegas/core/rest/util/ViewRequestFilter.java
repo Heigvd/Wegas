@@ -9,23 +9,25 @@ package com.wegas.core.rest.util;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.jaxrs.cfg.EndpointConfigBase;
-import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
-import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.security.ejb.UserFacade;
-import io.prometheus.client.Counter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
-import javax.ejb.EJB;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
+import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.annotation.Metric;
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.cfg.EndpointConfigBase;
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.cfg.ObjectWriterInjector;
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.cfg.ObjectWriterModifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,19 +43,21 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 @PreMatching
+@RequestScoped // payara 3994 workaround (fixed in 193)
 public class ViewRequestFilter implements ContainerRequestFilter {
 
-    @EJB
+    @Inject
     RequestIdentifierGenerator idGenerator;
 
-    @EJB
+    @Inject
     UserFacade userFacade;
 
-    @EJB
+    @Inject
     RequestFacade requestFacade;
 
-    private static final Counter requests = Counter.build()
-            .name("requests_total").help("Total requests.").register();
+    @Inject
+    @Metric(name = "requests_total", description = "Total requests", absolute = true)
+    Counter requests;
 
     private final static Logger logger = LoggerFactory.getLogger(ViewRequestFilter.class);
 

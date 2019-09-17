@@ -14,13 +14,13 @@ import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.test.arquillian.AbstractArquillianTest;
+import javax.ejb.EJBException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.EJB;
-import javax.ejb.EJBException;
+import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.script.ScriptException;
 
@@ -31,7 +31,7 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(ScriptFacadeTest.class);
 
-    @EJB
+    @Inject
     private ScriptCheck scriptCheck;
 
     @Test

@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -86,4 +86,4 @@ Y.SplineSeries = Y.Base.create("splineSeries",  Y.LineSeries, [Y.CurveUtil, Y.Li
 
 
 
-}, '3.17.2', {"requires": ["series-line", "series-curve-util"]});
+}, '3.18.1', {"requires": ["series-line", "series-curve-util"]});

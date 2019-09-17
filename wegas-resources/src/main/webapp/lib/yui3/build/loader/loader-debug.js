@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -18,7 +18,7 @@ YUI.add('loader-base', function (Y, NAME) {
         BUILD = '/build/',
         ROOT = VERSION + '/',
         CDN_BASE = Y.Env.base,
-        GALLERY_VERSION = 'gallery-2014.05.29-15-46',
+        GALLERY_VERSION = 'gallery-2014.07.31-18-26',
         TNT = '2in3',
         TNT_VERSION = '4',
         YUI2_VERSION = '2.9.0',
@@ -1125,11 +1125,17 @@ Y.Loader.prototype = {
      */
     addGroup: function(o, name) {
         var mods = o.modules,
-            self = this, i, v;
+            self = this,
+            defaultBase = o.defaultBase || Y.config.defaultBase,
+            i, v;
 
         name = name || o.name;
         o.name = name;
         self.groups[name] = o;
+
+        if (!o.base && defaultBase && o.root) {
+            o.base = defaultBase + o.root;
+        }
 
         if (o.patterns) {
             for (i in o.patterns) {
@@ -2156,7 +2162,7 @@ Y.log('Undefined module: ' + mname + ', matched a pattern: ' +
                         test: void 0,
                         temp: true
                     }), mname);
-                    if (found.configFn) {
+                    if (m && found.configFn) {
                         m.configFn = found.configFn;
                     }
                 }
@@ -2711,7 +2717,8 @@ Y.log('Undefined module: ' + mname + ', matched a pattern: ' +
     resolve: function(calc, sorted) {
         var self     = this,
             resolved = { js: [], jsMods: [], css: [], cssMods: [] },
-            addSingle;
+            addSingle,
+            usePathogen = Y.config.comboLoader && Y.config.customComboBase;
 
         if (self.skin.overrides || self.skin.defaultSkin !== DEFAULT_SKIN || self.ignoreRegistered) {
             self._resetModules();
@@ -2754,7 +2761,7 @@ Y.log('Undefined module: ' + mname + ', matched a pattern: ' +
 
         /*jslint vars: true */
         var inserted     = (self.ignoreRegistered) ? {} : self.inserted,
-            comboSources = {},
+            comboSources,
             maxURLLength,
             comboMeta,
             comboBase,
@@ -2762,7 +2769,9 @@ Y.log('Undefined module: ' + mname + ', matched a pattern: ' +
             group,
             mod,
             len,
-            i;
+            i,
+            hasComboModule = false;
+
         /*jslint vars: false */
 
         for (i = 0, len = sorted.length; i < len; i++) {
@@ -2802,7 +2811,8 @@ Y.log('Undefined module: ' + mname + ', matched a pattern: ' +
                 addSingle(mod);
                 continue;
             }
-
+            hasComboModule = true;
+            comboSources = comboSources || {};
             comboSources[comboBase] = comboSources[comboBase] ||
                 { js: [], jsMods: [], css: [], cssMods: [] };
 
@@ -2812,19 +2822,46 @@ Y.log('Undefined module: ' + mname + ', matched a pattern: ' +
             comboMeta.maxURLLength  = maxURLLength || self.maxURLLength;
 
             comboMeta[mod.type + 'Mods'].push(mod);
+            if (mod.type === JS || mod.type === CSS) {
+                resolved[mod.type + 'Mods'].push(mod);
+            }
         }
+        //only encode if we have something to encode
+        if (hasComboModule) {
+            if (usePathogen) {
+                resolved = this._pathogenEncodeComboSources(resolved);
+            } else {
+                resolved = this._encodeComboSources(resolved, comboSources);
+            }
+        }
+        return resolved;
+    },
 
-        // TODO: Refactor the encoding logic below into its own method.
-
-        /*jslint vars: true */
+    /**
+     * Encodes combo sources and appends them to an object hash of arrays from `loader.resolve`.
+     *
+     * @method _encodeComboSources
+     * @param {Object} resolved The object hash of arrays in which to attach the encoded combo sources.
+     * @param {Object} comboSources An object containing relevant data about modules.
+     * @return Object
+     * @private
+     */
+    _encodeComboSources: function(resolved, comboSources) {
         var fragSubset,
             modules,
             tmpBase,
             baseLen,
             frags,
             frag,
-            type;
-        /*jslint vars: false */
+            type,
+            mod,
+            maxURLLength,
+            comboBase,
+            comboMeta,
+            comboSep,
+            i,
+            len,
+            self = this;
 
         for (comboBase in comboSources) {
             if (comboSources.hasOwnProperty(comboBase)) {
@@ -2876,12 +2913,10 @@ Y.log('Undefined module: ' + mname + ', matched a pattern: ' +
                                 resolved[type].push(self._filter(tmpBase, null, comboMeta.group));
                             }
                         }
-                        resolved[type + 'Mods'] = resolved[type + 'Mods'].concat(modules);
                     }
                 }
             }
         }
-
         return resolved;
     },
 
@@ -2922,7 +2957,6 @@ Y.log('Undefined module: ' + mname + ', matched a pattern: ' +
         self.insert();
     }
 };
-
 
 
 }, '@VERSION@', {"requires": ["get", "features"]});
@@ -4197,7 +4231,8 @@ Y.mix(YUI.Env[Y.version].modules, {
     },
     "dd-drag": {
         "requires": [
-            "dd-ddm-base"
+            "dd-ddm-base",
+            "selector-css2"
         ]
     },
     "dd-drop": {
@@ -4668,7 +4703,7 @@ Y.mix(YUI.Env[Y.version].modules, {
         useSVG = !Y.config.defaultGraphicEngine || Y.config.defaultGraphicEngine != "canvas",
 		canvas = DOCUMENT && DOCUMENT.createElement("canvas"),
         svg = (DOCUMENT && DOCUMENT.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1"));
-    
+
     return svg && (useSVG || !canvas);
 },
             "trigger": "graphics"
@@ -4685,7 +4720,7 @@ Y.mix(YUI.Env[Y.version].modules, {
         useSVG = !Y.config.defaultGraphicEngine || Y.config.defaultGraphicEngine != "canvas",
 		canvas = DOCUMENT && DOCUMENT.createElement("canvas"),
         svg = (DOCUMENT && DOCUMENT.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1"));
-    
+
     return svg && (useSVG || !canvas);
 },
             "trigger": "graphics"
@@ -4887,7 +4922,7 @@ Y.mix(YUI.Env[Y.version].modules, {
     function workingNative( k, v ) {
         return k === "ok" ? true : v;
     }
-    
+
     // Double check basic functionality.  This is mainly to catch early broken
     // implementations of the JSON API in Firefox 3.1 beta1 and beta2
     if ( nativeSupport ) {
@@ -4966,6 +5001,15 @@ Y.mix(YUI.Env[Y.version].modules, {
         "requires": [
             "get",
             "features"
+        ]
+    },
+    "loader-pathogen-combohandler": {},
+    "loader-pathogen-encoder": {
+        "use": [
+            "loader-base",
+            "loader-rollup",
+            "loader-yui3",
+            "loader-pathogen-combohandler"
         ]
     },
     "loader-rollup": {
@@ -6009,7 +6053,7 @@ Y.mix(YUI.Env[Y.version].modules, {
         ]
     }
 });
-YUI.Env[Y.version].md5 = '45357bb11eddf7fd0a89c0b756599df2';
+YUI.Env[Y.version].md5 = '2fd2be6b12ee9f999b4367499ae61aae';
 
 
 }, '@VERSION@', {"requires": ["loader-base"]});

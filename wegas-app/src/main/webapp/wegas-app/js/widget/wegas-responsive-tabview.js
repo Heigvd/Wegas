@@ -334,5 +334,5 @@ YUI.add('wegas-responsive-tabview', function(Y) {
 
         }
     });
-    Y.Wegas.ResponsibeTabView = ResponsiveTabview;
+    Y.Wegas.ResponsiveTabView = ResponsiveTabview;
 });

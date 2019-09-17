@@ -12,12 +12,12 @@ import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import com.wegas.mcq.persistence.ReadableInstance;
+import javax.ejb.Stateless;
 
 /**
  *
@@ -32,12 +32,12 @@ public class QuestionController {
     /**
      *
      */
-    @EJB
+    @Inject
     private QuestionDescriptorFacade questionDescriptorFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private RequestFacade requestFacade;
 
     /**

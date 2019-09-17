@@ -125,7 +125,12 @@ YUI.add('wegas-react-form', Y => {
                                                 ? (value as any).id
                                                 : undefined
                                         }
-                                        formRef={form => this.set(FORM, form)}
+                                        formRef={form => {
+                                            this.set(FORM, form);
+                                            if (form){
+                                                this.validate();
+                                            }
+                                        }}
                                         schema={schema}
                                         value={value}
                                         onChange={boundFire}

@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ResourceInfo;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
 @Provider
+@RequestScoped // payara 3994 workaround (fixed in 193)
 public class SecurityFilter implements ContainerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityFilter.class);

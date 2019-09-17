@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -144,6 +144,13 @@ PjaxBase.prototype = {
 
         if (!this._hasSameOrigin(url)) {
             Y.error('Security error: The new URL must be of the same origin as the current URL.');
+            return false;
+        }
+
+        if (this.get('allowFallThrough')) {
+            // Send paths with the same origin but no matching routes to window.location if specified.
+            win.location = url;
+            return true;
         }
 
         return false;
@@ -422,10 +429,22 @@ PjaxBase.ATTRS = {
     **/
     scrollToTop: {
         value: true
+    },
+
+    /**
+    Whether to set `window.location` when calling `navigate()`
+    if no routes match the specified URL.
+
+    @attribute allowFallThrough
+    @type Boolean
+    @default true
+    @since 3.18.0
+    **/
+    allowFallThrough: {
+        value: true
     }
 };
 
 Y.PjaxBase = PjaxBase;
 
-
-}, '3.17.2', {"requires": ["classnamemanager", "node-event-delegate", "router"]});
+}, '3.18.1', {"requires": ["classnamemanager", "node-event-delegate", "router"]});

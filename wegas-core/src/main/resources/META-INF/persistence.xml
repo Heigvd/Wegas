@@ -15,7 +15,10 @@
       <property name="eclipselink.weaving" value="static"/>
       <property name="eclipselink.flush-clear.cache" value="Merge"/>
       <property name="eclipselink.cache.type.default" value="Soft"/>
+
       <!--
+      <property name="eclipselink.cache.coordination.protocol" value="fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager"/>
+      <property name="eclipselink.cache.coordination.channel" value="WegasPuChannel"/>
       -->
       <!--
       <property name="eclipselink.target-server" value="Glassfish"/>
@@ -65,7 +68,7 @@
             <artifactId>glassfish-embedded-all</artifactId>
             <scope>compile</scope>
     -->
-  <!--    <persistence-unit name="RunJPQL" transaction-type="RESOURCE_LOCAL">
+    <!--    <persistence-unit name="RunJPQL" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <jar-file>../../../target/wegas-core_1.0-SNAPSHOT.jar</jar-file>

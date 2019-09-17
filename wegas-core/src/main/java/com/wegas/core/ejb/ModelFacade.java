@@ -49,6 +49,7 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -564,6 +565,27 @@ public class ModelFacade {
         return model;
     }
 
+    public Map<String, List<Long>> getVariableMatrixFromIds(List<Long> gameModelIds) {
+        return getVariableMatrix(loadGameModelsFromIds(gameModelIds));
+    }
+
+    public Map<String, List<Long>> getVariableMatrix(List<GameModel> gameModels) {
+
+        Map<String, List<Long>> matrix = new LinkedHashMap<>();
+
+        for (GameModel gameModel : gameModels) {
+            for (VariableDescriptor vd : gameModel.getOrderedVariableDesacriptors()) {
+                String vdName = vd.getName();
+                if (!matrix.containsKey(vdName)) {
+                    matrix.put(vdName, new LinkedList<>());
+                }
+                matrix.get(vdName).add(gameModel.getId());
+            }
+        }
+
+        return matrix;
+    }
+
     /**
      *
      * @param vd
@@ -646,6 +668,39 @@ public class ModelFacade {
         scenario.setBasedOn(null);
 
         return scenario;
+    }
+
+    public VariableDescriptor releaseVariableFromModel(Long variableId) {
+        VariableDescriptor vd = variableDescriptorFacade.find(variableId);
+        this.releaseVariableFromModel(vd.getGameModel(), vd.getName());
+        return vd;
+    }
+
+    public void releaseVariableFromModel(GameModel model, String variableName) {
+
+        if (model.isModel()) {
+            try {
+                VariableDescriptor mVd = variableDescriptorFacade.find(model, variableName);
+                variableDescriptorFacade.resetVisibility(mVd, ModelScoped.Visibility.PRIVATE);
+
+                List<GameModel> implementations = gameModelFacade.getImplementations(model);
+                for (GameModel impl : implementations) {
+                    if (!impl.isReference()) {
+                        try {
+                            VariableDescriptor vd = variableDescriptorFacade.find(impl, variableName);
+
+                            variableDescriptorFacade.resetVisibility(vd, ModelScoped.Visibility.PRIVATE);
+                            MergeHelper.resetRefIds(vd, null, Boolean.TRUE);
+
+                            this.resetVariableDescriptorInstanceRefIds(vd, vd, true);
+                        } catch (WegasNoResultException ex) {
+                        }
+                    }
+                }
+
+            } catch (WegasNoResultException ex) {
+            }
+        }
     }
 
     /**
@@ -749,7 +804,7 @@ public class ModelFacade {
                                             VariableDescriptor parent = variableDescriptorFacade.find(scenario, parentName);
                                             VariableDescriptor clone;
                                             clone = (VariableDescriptor) vd.shallowClone();
-                                            variableDescriptorFacade.createChild(scenario, (DescriptorListI<VariableDescriptor>) parent, clone);
+                                            variableDescriptorFacade.createChild(scenario, (DescriptorListI<VariableDescriptor>) parent, clone, false);
 
                                             logger.info(" CREATE AT as {} child", parent);
                                             it.remove();
@@ -760,7 +815,7 @@ public class ModelFacade {
                                     } else {
                                         logger.info(" CREATE AT ROOL LEVEL");
                                         VariableDescriptor clone = (VariableDescriptor) vd.shallowClone();
-                                        variableDescriptorFacade.createChild(scenario, scenario, clone);
+                                        variableDescriptorFacade.createChild(scenario, scenario, clone, false);
                                         clone.setName(vd.getName()); // force the new variable name
                                         it.remove();
                                         restart = true;
@@ -862,7 +917,7 @@ public class ModelFacade {
                     throw WegasErrorMessage.error("No reference yet. Please propagate model before integrating new scenarios");
                 }
             } else {
-                // model is not a model 
+                // model is not a model
                 throw WegasErrorMessage.error("Model is not a Model");
             }
         }

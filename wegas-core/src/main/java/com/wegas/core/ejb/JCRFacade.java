@@ -47,7 +47,7 @@ public class JCRFacade {
      *
      */
     //private static final String FILENAME_REGEXP = "^(?:[\\p{L}[0-9]-_ ]|\\.)+$";
-    private static final String[] FORBIDDEN_CHARS = {"?", "/", "]", "[", "*", "|", "¦", "#"};
+    private static final String[] FORBIDDEN_CHARS = {"?", "\\", "/", "]", "[", "*", "|", "¦", "#", ";", ":", "\""};
     /**
      *
      */

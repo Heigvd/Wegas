@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%highlight(%-5level): %d{HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>myApp.log</file>
+        <encoder>
+            <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+        </encoder>
+    </appender>-->
+    <logger name="com.wegas.test.arquillian.AbstractArquillianTestMinimal" level="INFO"/>
+
+    <logger name="org.apache" level="WARN"/>
+    <logger name="com.wegas.core" level="WARN"/>
+    <logger name="net.sf.ehcache" level="WARN"/>
+    <logger name="com.wegas.core.persistence.EntityListener" level="WARN"/>
+    <logger name="com.wegas.runtime.WegasTest" level="INFO"/>
+    <logger name="com.wegas.utils.WegasRESTClient" level="INFO"/>
+
+    <logger name="org.eclipse.persistence.logging" level="ERROR" />
+    <logger name="org.eclipse.persistence.logging.cache" level="WARN" />
+    <logger name="org.eclipse.persistence.logging.sql" level="WARN" />
+    <logger name="org.eclipse.persistence.logging.default" level="ERROR" />
+
+    <root level="WARN">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

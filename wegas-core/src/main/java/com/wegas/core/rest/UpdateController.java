@@ -48,7 +48,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -75,13 +74,13 @@ public class UpdateController {
 
     private static Logger logger = LoggerFactory.getLogger(UpdateController.class);
 
-    @EJB
+    @Inject
     private VariableDescriptorFacade descriptorFacade;
 
-    @EJB
+    @Inject
     private VariableDescriptorController descriptorController;
 
-    @EJB
+    @Inject
     private GameModelFacade gameModelFacade;
 
     @Inject
@@ -137,7 +136,7 @@ public class UpdateController {
             List<TranslatableContent> findDistinctLabels = descriptorFacade.findDistinctLabels(vd.getGameModel());
             findDistinctNames.remove(vd.getName());
             findDistinctLabels.remove(vd.getLabel());
-            Helper.setUniqueName(vd, findDistinctNames, vd.getGameModel());
+            Helper.setUniqueName(vd, findDistinctNames, vd.getGameModel(), false);
             Helper.setUniqueLabel(vd, findDistinctLabels, vd.getGameModel());
             descriptorFacade.flush();
         }
@@ -429,7 +428,7 @@ public class UpdateController {
         logger.error("Going to add {}/{} variable", parentName, varName);
 
         try {
-            // Does the variable already exists ? 
+            // Does the variable already exists ?
             descriptorFacade.find(gm, varName);
             logger.error("  -> variable {} exists : SKIP", varName);
             return "already exists";
@@ -438,7 +437,7 @@ public class UpdateController {
         }
 
         try {
-            // assert the parent already exists ? 
+            // assert the parent already exists ?
             descriptorFacade.find(gm, parentName);
             logger.error("  -> variable {} exists : PROCEED", parentName);
         } catch (WegasNoResultException ex) {
@@ -458,6 +457,25 @@ public class UpdateController {
             return "JSON Error";
         }
     }
+
+    /**
+     * Make sure all PMGshare the same structure.
+     * Make extractModel smarter
+     *
+     * @return some output
+     */
+    @GET
+    @Path("LIST_PMG")
+    public String pmg_list() {
+        List<GameModel> PMGs = this.findPMGs(true);
+        StringBuilder ret = new StringBuilder();
+
+        for (GameModel pmg : PMGs) {
+            ret.append(",").append(pmg.getId());
+        }
+        return ret.toString();
+    }
+
 
     /**
      * Make sure all PMGshare the same structure.
@@ -551,7 +569,7 @@ public class UpdateController {
                 ListDescriptor newChild = new ListDescriptor(childrenPrefix + i);
                 newChild.setDefaultInstance(new ListInstance());
                 newChild.setScope(new GameModelScope());
-                descriptorFacade.createChild(gameModel, parent, newChild);
+                descriptorFacade.createChild(gameModel, parent, newChild, false);
                 if (i < parent.size()) {
                     // move new folder at the right place
                     descriptorFacade.move(newChild.getId(), parent.getId(), i - 1);

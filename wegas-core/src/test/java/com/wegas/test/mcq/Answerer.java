@@ -8,7 +8,7 @@
 package com.wegas.test.mcq;
 
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
@@ -21,7 +21,7 @@ import javax.ejb.Stateless;
 @LocalBean
 public class Answerer {
 
-    @EJB
+    @Inject
     private QuestionDescriptorFacade questionDescriptorFacade;
 
     public void selectAndValidateChoice(Long choiceId, Long playerId){

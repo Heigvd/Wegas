@@ -58,32 +58,30 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@NamedQueries({
-    @NamedQuery(name = "VariableInstance.findPlayerInstance",
-            query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "(vi.player.id = :playerId AND vi.playerScope.id = :scopeId)",
-            hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
-                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
-            }
-    ),
-    @NamedQuery(name = "VariableInstance.findTeamInstance",
-            query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "(vi.team.id = :teamId AND vi.teamScope.id = :scopeId)",
-            hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
-                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
-            }
-    ),
-    @NamedQuery(name = "VariableInstance.findAllPlayerInstances",
-            query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "(vi.playerScope.id = :scopeId)"
-    ),
-    @NamedQuery(name = "VariableInstance.findAllTeamInstances",
-            query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "(vi.teamScope.id = :scopeId)"
-    )
-})
+@NamedQuery(name = "VariableInstance.findPlayerInstance",
+        query = "SELECT vi FROM VariableInstance vi WHERE "
+        + "(vi.player.id = :playerId AND vi.playerScope.id = :scopeId)",
+        hints = {
+            @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+            @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+        }
+)
+@NamedQuery(name = "VariableInstance.findTeamInstance",
+        query = "SELECT vi FROM VariableInstance vi WHERE "
+        + "(vi.team.id = :teamId AND vi.teamScope.id = :scopeId)",
+        hints = {
+            @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+            @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+        }
+)
+@NamedQuery(name = "VariableInstance.findAllPlayerInstances",
+        query = "SELECT vi FROM VariableInstance vi WHERE "
+        + "(vi.playerScope.id = :scopeId)"
+)
+@NamedQuery(name = "VariableInstance.findAllTeamInstances",
+        query = "SELECT vi FROM VariableInstance vi WHERE "
+        + "(vi.teamScope.id = :scopeId)"
+)
 @CacheIndexes(value = {
     @CacheIndex(columnNames = {"GAMEMODELSCOPE_ID", "GAMEMODEL_ID"}),
     @CacheIndex(columnNames = {"TEAMSCOPE_ID", "TEAM_ID"}),
@@ -524,9 +522,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         } else {
             return Visibility.INHERITED;
         }
-    }
-
-    public void revive(Beanjection beans) {
     }
 
     /**

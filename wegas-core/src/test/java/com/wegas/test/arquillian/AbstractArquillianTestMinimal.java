@@ -11,7 +11,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.ejb.HelperBean;
+import com.wegas.core.ejb.JPACacheHelper;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.RequestManager;
@@ -38,7 +38,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
-import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.mail.internet.AddressException;
@@ -47,8 +46,10 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.config.Ini;
 import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.web.env.IniWebEnvironment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -74,40 +75,40 @@ public abstract class AbstractArquillianTestMinimal {
 
     protected static final Logger logger = LoggerFactory.getLogger(AbstractArquillianTestMinimal.class);
 
-    @EJB
+    @Inject
     protected GameModelFacade gameModelFacade;
 
-    @EJB
+    @Inject
     protected GameFacade gameFacade;
 
-    @EJB
+    @Inject
     protected TeamFacade teamFacade;
 
-    @EJB
+    @Inject
     protected RoleFacade roleFacade;
 
-    @EJB
+    @Inject
     protected UserFacade userFacade;
 
-    @EJB
+    @Inject
     protected AccountFacade accountFacade;
 
-    @EJB
+    @Inject
     protected PlayerFacade playerFacade;
 
-    @EJB
+    @Inject
     protected VariableDescriptorFacade variableDescriptorFacade;
 
-    @EJB
+    @Inject
     protected VariableInstanceFacade variableInstanceFacade;
 
-    @EJB
+    @Inject
     protected ScriptFacade scriptFacade;
 
     @Inject
-    protected HelperBean helperBean;
+    protected JPACacheHelper jpaCacheHelper;
 
-    @EJB
+    @Inject
     protected RequestFacade requestFacade;
 
     @Inject
@@ -178,12 +179,20 @@ public abstract class AbstractArquillianTestMinimal {
     @Before
     public void init() {
         this.startTime = System.currentTimeMillis();
+
+        Ini ini = Ini.fromResourcePath("classpath:shiro.ini");
+        IniWebEnvironment env = new IniWebEnvironment();
+        env.setIni(ini);
+        env.init();
+
+        //SecurityUtils.setSecurityManager(env.getSecurityManager());
+
         SecurityUtils.setSecurityManager(new IniSecurityManagerFactory("classpath:shiro.ini").getInstance());
         TestHelper.emptyDBTables();
 
         requestManager.setPlayer(null);
         requestManager.clearEntities();
-        helperBean.wipeCache();
+        this.wipeEmCache();
 
         this.setSynchronous();
 
@@ -276,11 +285,12 @@ public abstract class AbstractArquillianTestMinimal {
 
         requestManager.setPlayer(null);
         requestManager.clearEntities();
-        helperBean.wipeCache();
+
+        this.wipeEmCache();
     }
 
     protected void wipeEmCache() {
-        this.helperBean.wipeCache();
+        this.jpaCacheHelper.requestClearCache();
     }
 
     public void logout() {

@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -7,7 +7,7 @@ http://yuilibrary.com/license/
 
 /* Vertical menus and submenus */
 
-.yui3-skin-sam .yui3-menu-content, 
+.yui3-skin-sam .yui3-menu-content,
 .yui3-skin-sam .yui3-menu .yui3-menu .yui3-menu-content {
 
     font-size: 93%;  /* 12px */
@@ -22,7 +22,7 @@ http://yuilibrary.com/license/
 .yui3-skin-sam .yui3-menu .yui3-menu .yui3-menu-content {
 
 	font-size: 100%;
-    
+
 }
 
 
@@ -51,7 +51,7 @@ http://yuilibrary.com/license/
 
     border: 0;
 	margin: 0;
-	padding: 0;    
+	padding: 0;
 
 }
 
@@ -68,9 +68,9 @@ http://yuilibrary.com/license/
 .yui3-skin-sam .yui3-menu .yui3-menu li {
 
     /*
-        For and IE 6 (Strict Mode and Quirks Mode) and IE 7 (Quirks Mode only): 
-		Used to collapse superfluous white space between <li> elements that is 
-		triggered by the "display" property of the <a> elements being set to 
+        For and IE 6 (Strict Mode and Quirks Mode) and IE 7 (Quirks Mode only):
+		Used to collapse superfluous white space between <li> elements that is
+		triggered by the "display" property of the <a> elements being set to
 		"block" by node-menunav-core.css file.
     */
 
@@ -119,8 +119,8 @@ http://yuilibrary.com/license/
     cursor: default;
 
 	/*
-		Necessary specify values for border, position and margin to override 
-		values specified in the selectors that follow. 
+		Necessary specify values for border, position and margin to override
+		values specified in the selectors that follow.
 	*/
 
 	float: none;
@@ -138,8 +138,8 @@ http://yuilibrary.com/license/
     border-width: 1px 0;
     margin: -1px 0;
 
-    float: left; 	/*	Ensures that menu labels clear floated descendents. 
-    					Also gets negative margins working in IE 7 
+    float: left; 	/*	Ensures that menu labels clear floated descendents.
+    					Also gets negative margins working in IE 7
 						(Strict Mode). */
     width: auto;
 
@@ -199,14 +199,14 @@ http://yuilibrary.com/license/
 }
 
 .yui3-skin-sam .yui3-splitbuttonnav .yui3-menu-label .yui3-menu-toggle {
-	
+
 	padding: 0;	/* Overide padding applied by the preceeding rule. */
-	border-left: solid 1px #ccc; 
+	border-left: solid 1px #ccc;
 	width: 15px;
 	overflow: hidden;
 	text-indent: -1000px;
-    background: url(horizontal-menu-submenu-indicator.png) 3px center no-repeat;	
-	
+    background: url(horizontal-menu-submenu-indicator.png) 3px center no-repeat;
+
 }
 
 
@@ -226,9 +226,9 @@ http://yuilibrary.com/license/
 
 	background-image: none;
     background-color: #B3D4FF;
-    
+
     /*
-    	Undo values set for "border-left-width" and "margin-left" when the root 
+    	Undo values set for "border-left-width" and "margin-left" when the root
     	menu has a class of "yui-menubuttonnav" or "yui-splitbuttonnav" applied.
     */
 
