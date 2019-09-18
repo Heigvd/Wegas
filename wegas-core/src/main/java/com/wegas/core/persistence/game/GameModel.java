@@ -59,11 +59,17 @@ import org.slf4j.LoggerFactory;
 //        @UniqueConstraint(columnNames = "name"))
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NamedQuery(name = "GameModel.findIdById", query = "SELECT gm.id FROM GameModel gm WHERE gm.id = :gameModelId")
+
 @NamedQuery(name = "GameModel.findByTypeAndStatus", query = "SELECT a FROM GameModel a WHERE a.status = :status AND a.type = :type ORDER BY a.name ASC")
+
 @NamedQuery(name = "GameModel.findDistinctChildrenLabels", query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.root.id = :containerId")
+
 @NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name AND a.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO")
+
 @NamedQuery(name = "GameModel.countByName", query = "SELECT count(gm.id) FROM GameModel gm WHERE gm.name = :name AND gm.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO")
+
 @NamedQuery(name = "GameModel.countModelByName", query = "SELECT count(gm.id) FROM GameModel gm WHERE gm.name = :name AND gm.type = com.wegas.core.persistence.game.GameModel.GmType.MODEL")
+
 @NamedQuery(name = "GameModel.findAll", query = "SELECT gm FROM GameModel gm WHERE gm.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO")
 @NamedQuery(name = "GameModel.findAllInstantiations", query = "SELECT gm FROM GameModel gm where gm.basedOn.id = :id")
 @Table(
@@ -243,7 +249,6 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * the same time.
      */
     @Transient
-
     @WegasEntityProperty(includeByDefault = false, protectionLevel = ModelScoped.ProtectionLevel.ALL, notSerialized = true)
     @JsonView({Views.ExportI.class})
     private Map<String, JsonNode> pages;
@@ -993,6 +998,25 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
             String CODE = code.toUpperCase();
             for (GameModelLanguage lang : this.getRawLanguages()) {
                 if (CODE.equals(lang.getCode())) {
+                    return lang;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Find a language of the gameModel which match the given name
+     *
+     * @param code language code to find
+     *
+     * @return the language with matching code or null
+     *
+     */
+    public GameModelLanguage getLanguageByRefId(String refId) {
+        if (refId != null) {
+            for (GameModelLanguage lang : this.getRawLanguages()) {
+                if (refId.equals(lang.getRefId())) {
                     return lang;
                 }
             }

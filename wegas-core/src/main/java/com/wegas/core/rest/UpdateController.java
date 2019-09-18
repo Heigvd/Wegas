@@ -19,6 +19,7 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.persistence.variable.ListDescriptor;
@@ -41,6 +42,7 @@ import com.wegas.resourceManagement.persistence.ResourceDescriptor;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +50,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -100,6 +103,9 @@ public class UpdateController {
 
     @Inject
     private GameModelCheck gameModelCheck;
+
+    @Inject
+    private I18nFacade i18nFacade;
 
     /**
      * @return Some String encoded HTML
@@ -476,7 +482,6 @@ public class UpdateController {
         return ret.toString();
     }
 
-
     /**
      * Make sure all PMGshare the same structure.
      * Make extractModel smarter
@@ -496,6 +501,134 @@ public class UpdateController {
         }
         ret.append("</ul>");
         return ret.toString();
+    }
+
+    /**
+     * Make sure all PMGshare the same structure.
+     * Make extractModel smarter
+     *
+     * @return some output
+     */
+    @GET
+    @Path("PRETEND_FIX_LANGS/{from}/{to}/{ids}")
+    public String pretendFixLang(@PathParam("from") String fromCode, @PathParam("to") String toCode, @PathParam("ids") String strIds) {
+        List<GameModel> gameModels = Arrays.stream(strIds.split(","))
+                .map(id -> Long.parseLong(id, 10))
+                .map(id -> gameModelFacade.find(id))
+                .collect(Collectors.toList());
+
+        StringBuilder sb = new StringBuilder();
+
+        for (GameModel gm : gameModels) {
+            GameModelLanguage from = gm.getLanguageByCode(fromCode);
+            GameModelLanguage to = gm.getLanguageByCode(toCode);
+
+            sb.append("<h3>GameModel: ").append(gm).append("</h3>");
+            if (from != null && to == null) {
+                sb.append("Process from ").append(from.getCode()).append("/").append(from.getLang()).append(" to ").append(toCode);
+                //i18nFacade.updateTranslationCode(gm, from, to);
+            } else {
+                sb.append("Invalid codes");
+            }
+        }
+        return sb.toString();
+    }
+
+
+    @GET
+    @Path("FIX_LANGS/{from}/{to}/{ids}")
+    public String fixLang(@PathParam("from") String fromCode, @PathParam("to") String toCode, @PathParam("ids") String strIds) {
+        List<GameModel> gameModels = Arrays.stream(strIds.split(","))
+                .map(id -> Long.parseLong(id, 10))
+                .map(id -> gameModelFacade.find(id))
+                .collect(Collectors.toList());
+
+        StringBuilder sb = new StringBuilder();
+
+        for (GameModel gm : gameModels) {
+            GameModelLanguage from = gm.getLanguageByCode(fromCode);
+            GameModelLanguage to = gm.getLanguageByCode(toCode);
+
+            sb.append("<h3>GameModel: ").append(gm).append("</h3>");
+            if (from != null && to == null) {
+                i18nFacade.updateCodeTx(gm.getId(), fromCode, toCode);
+            } else {
+                sb.append("Invalid codes");
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Make sure all PMGshare the same structure.
+     * Make extractModel smarter
+     *
+     * @return some output
+     */
+    @GET
+    @Path("COMPARE_LANGS/{ids}")
+    public String compareLangs(@PathParam("ids") String strIds) {
+        List<GameModel> gameModels = Arrays.stream(strIds.split(","))
+                .map(id -> Long.parseLong(id, 10))
+                .map(id -> gameModelFacade.find(id))
+                .collect(Collectors.toList());
+
+        Map<String, List<Long>> codeToIds = new HashMap<>();
+        Map<String, List<Long>> badCodeToIds = new HashMap<>();
+        Map<String, List<Long>> badNameToIds = new HashMap<>();
+
+        Map<String, String> nameToCode = new HashMap<>();
+        Map<String, String> codeToName = new HashMap<>();
+        nameToCode.put("français", "FR");
+        codeToName.put("FR", "français");
+        nameToCode.put("english", "EN");
+        codeToName.put("EN", "english");
+
+        codeToName.put("DEF", "");
+
+        for (GameModel gm : gameModels) {
+            for (GameModelLanguage lang : gm.getRawLanguages()) {
+                nameToCode.putIfAbsent(lang.getLang(), lang.getCode());
+                codeToName.putIfAbsent(lang.getCode(), lang.getLang());
+
+                codeToIds.putIfAbsent(lang.getCode(), new ArrayList<>());
+                badCodeToIds.putIfAbsent(lang.getCode(), new ArrayList<>());
+                badNameToIds.putIfAbsent(lang.getLang(), new ArrayList<>());
+
+                boolean goodCode = lang.getCode().equals(nameToCode.get(lang.getLang()));
+                boolean goodName = lang.getLang().equals(codeToName.get(lang.getCode()));
+
+                if (goodCode && goodName) {
+                    codeToIds.get(lang.getCode()).add(gm.getId());
+                } else {
+                    if (!goodCode) {
+                        badCodeToIds.get(lang.getCode()).add(gm.getId());
+                    }
+                    if (!goodName) {
+                        badNameToIds.get(lang.getLang()).add(gm.getId());
+                    }
+                }
+            }
+        }
+        StringBuilder ret = new StringBuilder();
+        ret.append("<h1>Good</h1>");
+        appendList(ret, codeToIds);
+        ret.append("<h1>Bad Code</h1>");
+        appendList(ret, badCodeToIds);
+        ret.append("<h1>Bad Names</h1>");
+        appendList(ret, badNameToIds);
+
+        return ret.toString();
+    }
+
+    private StringBuilder appendList(StringBuilder sb, Map<String, List<Long>> map) {
+        for (Entry<String, List<Long>> entry : map.entrySet()) {
+            if (!entry.getValue().isEmpty()) {
+                sb.append("<h2>").append(entry.getKey()).append("</h2>");
+                sb.append(",").append(entry.getValue().toString());
+            }
+        }
+        return sb;
     }
 
     @GET
