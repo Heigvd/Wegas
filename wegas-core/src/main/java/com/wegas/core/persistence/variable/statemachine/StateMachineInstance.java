@@ -9,6 +9,7 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -25,14 +26,13 @@ import com.wegas.editor.View.NumberView;
 import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
-@Table(name = "FSMinstance"/*, 
+@Table(name = "FSMinstance"/*,
         indexes = {
             @Index(columnList = "transitionHistory.statemachineinstance_id")
         }*/
@@ -43,6 +43,7 @@ import java.util.Map;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "TriggerInstance", value = StateMachineInstance.class)
 })
+@JsonIgnoreProperties("currentState")
 public class StateMachineInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
@@ -87,8 +88,7 @@ public class StateMachineInstance extends VariableInstance {
      */
     @JsonIgnore
     public AbstractState getCurrentState() {
-        final Map<Long, AbstractState> states = ((AbstractStateMachineDescriptor) this.findDescriptor()).getStates();
-        return states.get(this.currentStateId);
+        return ((AbstractStateMachineDescriptor) this.findDescriptor()).getState(this.currentStateId);
     }
 
     /**

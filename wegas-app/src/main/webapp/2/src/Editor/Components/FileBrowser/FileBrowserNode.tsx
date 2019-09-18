@@ -491,8 +491,8 @@ export function FileBrowserNode({
                     setModalState({ type: 'close' });
                   }
                 }}
-                fixedWidth={true}
-                defaultConfirm={true}
+                fixedWidth
+                defaultConfirm
               />
             )}
             {modalState.type === 'close' &&
@@ -549,13 +549,13 @@ export function FileBrowserNode({
                     }
                   }
                 }}
-                fixedWidth={true}
+                fixedWidth
               />
             )}
             {modalState.type === 'delete' && (
               <ConfirmButton
                 label="Are you sure to delete the folder and all its subdirectories?"
-                defaultConfirm={true}
+                defaultConfirm
                 icon={'trash'}
                 tooltip={'Force delete'}
                 onAction={success => {
@@ -564,7 +564,7 @@ export function FileBrowserNode({
                   }
                   setModalState({ type: 'close' });
                 }}
-                fixedWidth={true}
+                fixedWidth
               />
             )}
             {modalState.type === 'error' && (
@@ -614,8 +614,8 @@ export function FileBrowserNode({
                     removeFile();
                   }
                 }}
-                fixedWidth={true}
-                defaultConfirm={true}
+                fixedWidth
+                defaultConfirm
               />
             )}
           </div>

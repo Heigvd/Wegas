@@ -7,7 +7,6 @@
  */
 package com.wegas.core.jcr.jta;
 
-import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.jta.JCRConnectorProvider.RepositoryType;
@@ -24,7 +23,6 @@ import javax.ejb.PrePassivate;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionRequiredLocalException;
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jcr.RepositoryException;
 import javax.transaction.TransactionScoped;
@@ -50,9 +48,6 @@ public class JCRConnectorProviderTx implements Serializable {
      */
     @Resource
     private transient TransactionSynchronizationRegistry jtaSyncRegistry;
-
-    @Inject
-    private GameModelFacade gameModelFacade;
 
     /**
      * The JCR synchroniser for the current transaction

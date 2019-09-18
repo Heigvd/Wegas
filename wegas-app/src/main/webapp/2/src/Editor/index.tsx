@@ -6,13 +6,16 @@ import '../css/global.css';
 import { GameModel } from '../data/selectors';
 import Layout from './Components/Layout';
 import { Theme } from '../Components/Theme';
+import { LibrariesLoader } from './Components/LibrariesLoader';
 
 function mount() {
   render(
     <LangProvider availableLang={GameModel.selectCurrent().languages}>
-      <Theme>
-        <Layout />
-      </Theme>
+      <LibrariesLoader>
+        <Theme>
+          <Layout />
+        </Theme>
+      </LibrariesLoader>
     </LangProvider>,
     document.getElementById('root'),
   );

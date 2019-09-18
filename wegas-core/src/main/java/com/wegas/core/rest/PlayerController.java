@@ -19,14 +19,13 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Collection;
 import java.util.Collections;
+import javax.ejb.Stateless;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
@@ -42,24 +41,24 @@ public class PlayerController {
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
     @Inject
     private RequestManager requestManager;
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private TeamFacade teamFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private GameFacade gameFacade;
 
     /**

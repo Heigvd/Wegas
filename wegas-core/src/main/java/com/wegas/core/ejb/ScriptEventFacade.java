@@ -20,7 +20,7 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang3.ArrayUtils;
 
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.enterprise.context.RequestScoped;
 import java.util.Collection;
 import javax.script.ScriptContext;
@@ -50,7 +50,7 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
     /**
      *
      */
-    @EJB
+    @Inject
     private ScriptFacade scriptFacace;
 
     /**

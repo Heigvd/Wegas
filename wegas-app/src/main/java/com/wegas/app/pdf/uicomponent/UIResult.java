@@ -23,7 +23,8 @@ import javax.faces.context.ResponseWriter;
  *
  * Faces component that print a CHoice's Result as xHTML.
  * <p>
- * <pre>
+ * <
+ * pre>
  * <b>Usage:</b>
  * &lt;<b>Result</b> <b>value</b>="#{the Result object}"
  *        <b>player</b>="#{the player to print the result for (may be the test player)}"
@@ -112,7 +113,9 @@ public class UIResult extends UIComponentBase {
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             UIHelper.printText(context, writer, title, UIHelper.CSS_CLASS_VARIABLE_TITLE);
 
-            UIHelper.printTextArea(context, writer, getI18nFacade().interpolate(result.getAnswer().translateOrEmpty(player), player), UIHelper.CSS_CLASS_PROPERTY_VALUE_TEXTAREA, false);
+            if (result.getAnswer() != null) {
+                UIHelper.printTextArea(context, writer, getI18nFacade().interpolate(result.getAnswer().translateOrEmpty(player), player), UIHelper.CSS_CLASS_PROPERTY_VALUE_TEXTAREA, false);
+            }
             UIHelper.endDiv(writer);
             //UIHelper.printPropertyTextArea(context, writer, title, result.getAnswer(), false, editorMode);
         }

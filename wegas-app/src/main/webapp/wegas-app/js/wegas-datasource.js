@@ -309,7 +309,13 @@ YUI.add('wegas-datasource', function(Y) {
                                 break;
                             case "WegasScriptException":
                                 level = "error";
-                                msg = val.message + " at line " + val.lineNumber + " in script " + val.script;
+                                msg = val.message;
+                                if (val.lineNumber) {
+                                    msg += " at line " + val.lineNumber;
+                                }
+                                if (val.script) {
+                                    msg += " in script " + val.script;
+                                }
                                 break;
                             case "WegasWrappedException":
                                 level = type;
@@ -985,7 +991,8 @@ YUI.add('wegas-datasource', function(Y) {
                         failure: Y.bind(function(entity, parentEntity) {
                             Y.log("Error moving item", "error");
                             // Rollback move since TV was too optimistic
-                            if (!parentEntity || parentEntity.get("@class") === "GameModel" || entity.getParent().get("@class") === "GameModel") {
+                            if (!parentEntity || parentEntity.get("@class") === "GameModel" || entity.getParent()
+                                .get("@class") === "GameModel") {
                                 this.get(HOST).fire("rootUpdate");
                             } else {
                                 this.get(HOST).fire("updatedDescriptor", {entity: parentEntity});

@@ -6,7 +6,10 @@ import { Toolbar } from '../../../Components/Toolbar';
 import { Actions } from '../../../data';
 import { StoreDispatch, StoreConsumer } from '../../../data/store';
 import { Theme } from '../../../Components/Theme';
-import SrcEditor from '../ScriptEditors/SrcEditor';
+import {
+  JSONandJSEditor,
+  OnSaveStatus,
+} from '../ScriptEditors/JSONandJSEditor';
 
 interface PageDisplayProps {
   srcMode: boolean;
@@ -14,57 +17,69 @@ interface PageDisplayProps {
   dispatch: StoreDispatch;
 }
 class PageDisplay extends React.Component<PageDisplayProps> {
-  editorValue: string = '';
-  onSave = (value: string) => {
-    if (this.props.pageId != null) {
-      try {
-        const p = JSON.parse(value);
-        this.props.dispatch(Actions.PageActions.patch(this.props.pageId, p));
-      } catch (e) {
-        alert(`There's a syntax error in your script : \n${e}`);
-      }
-    }
-  };
+  constructor(props: PageDisplayProps) {
+    super(props);
+    this.state = { modalState: { type: 'close' } };
+  }
+
   render() {
     const { pageId } = this.props;
     return (
       <Toolbar>
         <Toolbar.Header>
-          <PageEditorHeader key="header" pageId={this.props.pageId} />
+          <PageEditorHeader key="header" pageId={pageId} />
         </Toolbar.Header>
         <Toolbar.Content>
           {this.props.srcMode ? (
-            <Toolbar>
-              <Toolbar.Header>
-                <button onClick={() => this.onSave(this.editorValue)}>
-                  Save
-                </button>
-              </Toolbar.Header>
-              <Toolbar.Content>
-                <StoreConsumer<Readonly<Page> | undefined>
-                  selector={s => (pageId ? s.pages[pageId] : undefined)}
-                >
-                  {({ state, dispatch }) => {
-                    if (state == null && pageId != null) {
-                      dispatch(Actions.PageActions.get(pageId));
+            <StoreConsumer<{
+              content: Readonly<Page> | undefined;
+            }>
+              selector={s => {
+                return {
+                  content: pageId ? s.pages[pageId] : undefined,
+                };
+              }}
+            >
+              {({ state, dispatch }) => {
+                if (state == null && pageId != null) {
+                  dispatch(Actions.PageActions.get(pageId));
+                }
+
+                const onSave = (value: string): OnSaveStatus => {
+                  if (pageId != null) {
+                    try {
+                      const p = JSON.parse(value);
+                      dispatch(Actions.PageActions.patch(pageId, p));
+                      return { status: 'succes', text: 'Page saved' };
+                    } catch (e) {
+                      const message = String(e.message);
+                      const textToFind = 'at position ';
+                      const position = Number(
+                        message
+                          .replace(textToFind, '')
+                          .substring(message.indexOf(textToFind)),
+                      );
+                      const line = String(
+                        value.substring(0, position).split('\n').length,
+                      );
+                      return {
+                        status: 'error',
+                        text: `Not saved!\n${message}\nLine number : ${line}`,
+                      };
                     }
-                    this.editorValue = JSON.stringify(state, null, 2);
-                    return (
-                      <SrcEditor
-                        key="SrcEditor"
-                        value={this.editorValue}
-                        defaultUri="internal://page.json"
-                        language="json"
-                        onChange={val => {
-                          this.editorValue = val;
-                        }}
-                        onSave={this.onSave}
-                      />
-                    );
-                  }}
-                </StoreConsumer>
-              </Toolbar.Content>
-            </Toolbar>
+                  } else {
+                    return { status: 'warning', text: 'No page selected' };
+                  }
+                };
+
+                return (
+                  <JSONandJSEditor
+                    content={JSON.stringify(state.content, null, 2)}
+                    onSave={onSave}
+                  />
+                );
+              }}
+            </StoreConsumer>
           ) : (
             <Theme
             // @TODO Load user theme!

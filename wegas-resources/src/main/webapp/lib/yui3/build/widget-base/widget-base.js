@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -784,7 +784,7 @@ Y.extend(Widget, Y.Base, {
      * For the Widget class, this will most commonly be null (resulting in a new
      * boundingBox node instance being created), unless a srcNode was provided
      * and CONTENT_TEMPLATE is null, in which case it will be srcNode.
-     * This behavior was introduced in 3.17.2 to accomodate single-box widgets
+     * This behavior was introduced in 3.18.1 to accomodate single-box widgets
      * whose BB & CB both point to srcNode (e.g. Y.Button).
      *
      * @method _defaultBB
@@ -1282,7 +1282,7 @@ Y.extend(Widget, Y.Base, {
 Y.Widget = Widget;
 
 
-}, '3.17.2', {
+}, '3.18.1', {
     "requires": [
         "attribute",
         "base-base",

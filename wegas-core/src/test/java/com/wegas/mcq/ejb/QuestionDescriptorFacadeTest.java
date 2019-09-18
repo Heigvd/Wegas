@@ -26,7 +26,7 @@ import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.test.arquillian.AbstractArquillianTest;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.naming.NamingException;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
@@ -38,7 +38,7 @@ import org.junit.Test;
  */
 public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
-    @EJB
+    @Inject
     private QuestionDescriptorFacade questionDescriptorFacade;
 
     private QuestionDescriptor createCbxQuestion(long gmId, String name, Integer min, Integer max) {
@@ -490,7 +490,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         ChoiceDescriptor choice = this.createChoice(question, "choice", null, "result",
                 wegasFactory.createResult("result"),
-                wegasFactory.createResult("result"));
+                wegasFactory.createResult("result_2"));
 
         choice.getResults().remove(0);
         variableDescriptorFacade.update(choice.getId(), choice);

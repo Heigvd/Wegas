@@ -4,7 +4,6 @@ import { css, cx } from 'emotion';
 const flex = css({
   display: 'flex',
   flexDirection: 'column',
-  height: '100%',
   width: '100%',
 });
 const vertical = css(flex, {
@@ -19,7 +18,6 @@ const toolbar = css({
 const content = css({
   flex: '1 1 auto',
   overflow: 'auto',
-  height: 0,
   [`.${vertical} > &`]: {
     height: 'auto',
   },
@@ -29,13 +27,17 @@ export const Toolbar = Object.assign(
   function Toolbar(props: {
     vertical?: boolean;
     children: React.ReactElement<{}>[];
+    className?: string;
   }) {
     return (
       <div
-        className={cx({
-          [flex]: !props.vertical,
-          [vertical]: Boolean(props.vertical),
-        })}
+        className={cx(
+          {
+            [flex]: !props.vertical,
+            [vertical]: Boolean(props.vertical),
+          },
+          props.className,
+        )}
       >
         {props.children}
       </div>
@@ -52,7 +54,7 @@ export const Toolbar = Object.assign(
     },
     Content(props: { children?: React.ReactNode; className?: string }) {
       return (
-        <div className={cx(content, props.className, flex)}>
+        <div className={cx(flex, content, props.className)}>
           {props.children}
         </div>
       );

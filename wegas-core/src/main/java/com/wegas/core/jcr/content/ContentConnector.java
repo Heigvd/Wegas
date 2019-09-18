@@ -18,7 +18,6 @@ import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -504,7 +503,8 @@ public class ContentConnector extends JTARepositoryConnector {
         try {
             session.save();
         } catch (RepositoryException ex) {
-            throw WegasErrorMessage.error("COMMIT FAILS");
+            //should never happened !!!!!
+            logger.error("Content Commit FAILURE: {}", ex);
         }
         this.runCommitCallbacks();
         SessionManager.closeSession(session);

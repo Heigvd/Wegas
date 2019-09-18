@@ -25,15 +25,18 @@ import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
+import com.wegas.resourceManagement.persistence.BurndownInstance;
+import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.reviewing.ejb.ReviewingFacade;
+import com.wegas.reviewing.persistence.PeerReviewInstance;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -55,27 +58,27 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private RequestFacade requestFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private TeamFacade teamFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private GameFacade gameFacade;
 
     @Inject
@@ -328,7 +331,15 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
     }
 
     public void reviveInstance(VariableInstance vi) {
-        vi.revive(getBeans());
+        if (vi instanceof ResourceInstance) {
+            resourceFacade.reviveResourceInstance((ResourceInstance) vi);
+        } else if (vi instanceof PeerReviewInstance) {
+            reviewingFacade.revivePeerReviewInstance((PeerReviewInstance) vi);
+        } else if (vi instanceof ChoiceInstance) {
+            questionDescriptorFacade.reviveChoiceInstance((ChoiceInstance) vi);
+        } else if (vi instanceof BurndownInstance) {
+            iterationFacade.reviveBurndownInstance((BurndownInstance) vi);
+        }
     }
 
     @Override

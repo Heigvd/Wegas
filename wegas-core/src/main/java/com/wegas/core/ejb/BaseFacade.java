@@ -205,7 +205,7 @@ public abstract class BaseFacade<T extends AbstractEntity> extends WegasAbstract
      * @return intercepted method returned object
      * @throws Exception
      */
-    /*@AroundInvoke
+ /*@AroundInvoke
     public Object interceptor(final InvocationContext ic) throws Exception {
         Object o = null;
         try {

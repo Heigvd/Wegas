@@ -1,5 +1,6 @@
 import * as React from 'react';
 import ReactSelect from 'react-select';
+import { translate } from './dataCompute';
 
 class QuestionSelect extends React.Component {
     render() {
@@ -15,8 +16,8 @@ class QuestionSelect extends React.Component {
                         snapshot,
                         `//*[name="${item.name}"]/ancestor::*[@class="ListDescriptor"]`
                     ).reduce((pre, cur) => {
-                        return `${pre}${cur.label.translations[Object.keys(cur.label.translations)[0]]} \u2192 `;
-                    }, '') + item.label.translations[Object.keys(item.label.translations)[0]]
+                        return pre + translate(cur.label) + ' \u2192 ';
+                    }, '') + translate(item.label)
             };
         });
         const style = {

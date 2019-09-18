@@ -22,7 +22,7 @@ import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import org.slf4j.Logger;
@@ -40,12 +40,12 @@ public class IterationFacade extends BaseFacade<Iteration> implements IterationF
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableInstanceFacade variableInstanceFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
 
     public IterationFacade() {

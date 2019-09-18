@@ -1,3 +1,10 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
 package com.wegas.log.xapi;
 
 import java.util.List;
@@ -14,10 +21,10 @@ public interface XapiI {
     /**
      * Activity with custom ActivityDefinition
      *
-     * @param id    activityTy
+     * @param id           activityTy
      * @param activityType definition type
-     * @param name activity definition name, mapped by language code
-     * @param definition definition itself, mapped by language code
+     * @param name         activity definition name, mapped by language code
+     * @param definition   definition itself, mapped by language code
      *
      * @return
      */
@@ -28,6 +35,10 @@ public interface XapiI {
     Result result(String response);
 
     Result result();
+
+    void post(String verb, String activity);
+
+    void post(String verb, String activity, String result);
 
     void post(Statement stmt);
 

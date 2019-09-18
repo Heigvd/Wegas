@@ -8,6 +8,7 @@ import TreeView from './Variable/VariableTree';
 import Editor from './EntityEditor';
 import { FileBrowserWithMeta } from './FileBrowser/FileBrowser';
 import LibraryEditor from './ScriptEditors/LibraryEditor';
+import { PlayLocal } from './PlayLocal';
 
 const layout = css({
   display: 'flex',
@@ -37,6 +38,7 @@ export default class AppLayout extends React.Component<
             Editor: <Editor />,
             Files: <FileBrowserWithMeta />,
             Scripts: <LibraryEditor />,
+            'Play Script': <PlayLocal />,
           }}
           layoutMap={{
             rootKey: '0',
@@ -56,7 +58,7 @@ export default class AppLayout extends React.Component<
               '2': {
                 type: 'TabLayoutNode',
                 vertical: false,
-                children: ['Files', 'Page', 'StateMachine'],
+                children: ['Scripts', 'Files', 'Pages', 'StateMachine'],
               },
               '3': {
                 type: 'TabLayoutNode',

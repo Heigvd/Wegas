@@ -15,7 +15,15 @@ function inherit(cls: string, type: Mergeable): boolean {
   }
   return false;
 }
-
+export function inheritanceChain(type: string): Mergeable[] {
+  if (type in InheritanceTable) {
+    const parent = InheritanceTable[type as Mergeable][0] as Mergeable | null;
+    if (parent != null) {
+      return [parent, ...inheritanceChain(parent)];
+    }
+  }
+  return [];
+}
 /**
  * Test if an entity extends a given type
  *
