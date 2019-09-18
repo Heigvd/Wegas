@@ -44,7 +44,7 @@ function questionSerie(question, questionData) {
 
 
     questionData.forEach(function(questionItem) {
-        choices.get(questionItem.choice).set(questionItem.result, choices.get(questionItem.choice).get(questionItem.result) + 1);
+        choices.get(questionItem.choice).set(questionItem.result, (choices.get(questionItem.choice).get(questionItem.result) || 0) + 1);
         count += 1;
     });
 

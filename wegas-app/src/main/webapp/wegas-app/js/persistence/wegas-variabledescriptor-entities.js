@@ -1206,42 +1206,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         persistence.VariableDescriptor,
         [persistence.VariableContainer],
         {
-            flatten: function(filters) {
-                var acc = [],
-                    push = function(item) {
-                        if (
-                            filters === undefined ||
-                            filters.length === 0 ||
-                            filters === item.name ||
-                            (Y.Lang.isArray(filters) &&
-                                Y.Array.find(filters, function(filter) {
-                                    return filter === item.name;
-                                }))
-                            ) {
-                            acc.push(item);
-                        }
-                    },
-                    doFlatten = function(items) {
-                        var i, it;
-                        for (i = 0; i < items.length; i += 1) {
-                            it = items[i];
-                            if (
-                                persistence.QuestionDescriptor &&
-                                it instanceof persistence.QuestionDescriptor
-                                ) {
-                                push(it);
-                            } else if (
-                                it instanceof persistence.ListDescriptor
-                                ) {
-                                doFlatten(it.get(ITEMS));
-                            } else {
-                                push(it);
-                            }
-                        }
-                    };
-                doFlatten(this.get(ITEMS));
-                return acc;
-            },
             getChildByKey: function(key, value, directChildOnly) {
                 var needle,
                     filterFn = function(it) {

@@ -325,9 +325,9 @@ body:not(.wegas-modeler-mode) .wegas-model-feature {
     margin-top: 6px;
     width: 6px;
     height: 18px;
-    -webkit-animation: loadingbar 1.2s linear infinite;
-    -moz-animation: loadingbar 1.2s linear infinite;
-    animation: loadingbar 1.2s linear infinite;
+    -webkit-animation: loadingbar 1.2s steps(8) infinite;
+    -moz-animation: loadingbar 1.2s steps(8) infinite;
+    animation: loadingbar 1.2s steps(8) infinite;
 }
 
 .wegas-loader .bar:nth-child(2) {
@@ -784,7 +784,7 @@ svg #triangleStart{
 }
 
 .loading:after {
-    animation: rotate .7s linear infinite;
+    animation: rotate .7s steps(7) infinite;
     border-color: rgba(255, 255, 255, 0.95) transparent transparent transparent;
 }
 

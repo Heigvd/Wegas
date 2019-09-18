@@ -66,6 +66,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.script.CompiledScript;
@@ -927,6 +929,7 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
             if (target instanceof TranslatableContent) {
                 TranslatableContent trTarget = (TranslatableContent) target;
                 process(trTarget, level);
+                return false;
             } else if (target instanceof Script) {
                 try {
                     List<TranslatableContent> inscript = i18nFacade.getInScriptTranslations(((Script) target).getContent());
@@ -1194,7 +1197,7 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
         MergeHelper.visitMergeable(target, Boolean.TRUE, extractor);
         List<I18nUpdate> patches = extractor.getPatches();
 
-        for (I18nUpdate patch: patches){
+        for (I18nUpdate patch : patches) {
             patch.setCode(targetLangCode);
         }
 
@@ -1325,6 +1328,19 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
      */
     public void updateTranslationCode(GameModel gameModel, String oldCode, String newCode) {
         MergeHelper.visitMergeable(gameModel, Boolean.TRUE, new LanguageCodeUpgrader(oldCode, newCode, this));
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void updateCodeTx(Long id, String oldCode, String newCode) {
+        GameModel gameModel = gameModelFacade.find(id);
+        try {
+            GameModelLanguage lang = gameModel.getLanguageByCode(oldCode);
+            lang.setCode(newCode);
+            MergeHelper.visitMergeable(gameModel, Boolean.TRUE, new LanguageCodeUpgrader(oldCode, newCode, this));
+            gameModelFacade.reset(gameModel);
+        } catch (Exception ex) {
+            logger.error("Faild to process {}", gameModel);
+        }
     }
 
     /**

@@ -89,11 +89,14 @@ YUI.add("wegas-statistics", function(Y) {
                     }
                 }, this));
             },
+            getQuestionList: function() {
+                return Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().flatten("QuestionDescriptor");
+            },
             renderUI: function() {
                 var selectQNode = this.get("contentBox").one(".stats-question select"),
-                    selectNNode = this.get("contentBox").one(".stats-number select"),
-                    questions = Y.Wegas.Facade.Variable.cache.findAll("@class", "QuestionDescriptor"),
-                    numbers = Y.Wegas.Facade.Variable.cache.findAll("@class", "NumberDescriptor");
+                    //selectNNode = this.get("contentBox").one(".stats-number select"),
+                    questions = this.getQuestionList();
+                //numbers = Y.Wegas.Facade.Variable.cache.findAll("@class", "NumberDescriptor");
                 this._questionButton = new Y.Button({
                     srcNode: this.get("contentBox").one(".gen-button"),
                     on: {
@@ -107,12 +110,6 @@ YUI.add("wegas-statistics", function(Y) {
                     },
                     CHART_BAR_OPT);
 
-                // Todo: should use kind of gameModel.flatten(filter: QuestionDescriptor) to keep treeview order
-                questions.sort(function(a, b) {
-                    var aPath = getPath(a),
-                        bPath = getPath(b);
-                    return (aPath < bPath ? -1 : 1);
-                });
                 Y.Array.each(questions, function(i) {
                     selectQNode.appendChild("<option value='" + i.get("name") + "'>" + getPath(i) + "</option>");
                 });
@@ -121,15 +118,13 @@ YUI.add("wegas-statistics", function(Y) {
                 // + "</option>"); });
             },
             bindUI: function() {
-                var chartNNode = this.get("contentBox").one(".stats-number .chart"),
-                    loading = this.get("contentBox").one(".loading");
                 this.handlers.push(this.get("contentBox").one(".stats-question select")
                     .on("valueChange", Y.bind(function(e) {
                         this.drawQuestion(e.newVal);
                     }, this)));
             },
             genAllQuestion: function() {
-                var questions = Y.Wegas.Facade.Variable.cache.findAll("@class", "QuestionDescriptor"),
+                var questions = this.getQuestionList(),
                     promiseChain, i, drawQ = Y.bind(this.drawQuestion, this),
                     wHand = window.open(), wHandInfo, addToWindow, panel, setInitialState, tmpChart;
                 panel = new Y.Wegas.Panel({
@@ -277,6 +272,7 @@ YUI.add("wegas-statistics", function(Y) {
 
             });
             Y.Array.each(questionData, function(i) {
+                choices[i.choice][i.result] = choices[i.choice][i.result] || 0;
                 choices[i.choice][i.result] += 1;
                 count += 1;
             });
