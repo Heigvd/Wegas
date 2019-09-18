@@ -4,7 +4,7 @@ import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
 import { Props } from '@fortawesome/react-fontawesome';
 import { themeVar } from '../Theme';
 
-interface IconButtonProps extends Props {
+export interface IconButtonProps extends Props {
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onMouseDown?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   label?: React.ReactNode;
@@ -18,7 +18,7 @@ interface IconButtonProps extends Props {
 }
 const defaultActiveStyle = css({ color: themeVar.primaryDarkerColor });
 
-const shapeStyle = css({
+export const shapeStyle = css({
   width: 'auto',
   margin: '3px',
   background: 'none',
