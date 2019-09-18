@@ -436,7 +436,7 @@ export function FileBrowserNode({
               event.preventDefault();
               setOpen(oldOpen => !oldOpen);
             }}
-            fixedWidth={true}
+            fixedWidth
           />
         </div>
       )}
@@ -451,7 +451,7 @@ export function FileBrowserNode({
         >
           <IconButton
             icon={getIconForFileType(currentFile.mimeType)}
-            fixedWidth={true}
+            fixedWidth
           />
           <div className={grow}>{currentFile.name}</div>
           {nbUploadingFiles > 0 && (
@@ -506,7 +506,7 @@ export function FileBrowserNode({
                       event.stopPropagation();
                       setModalState({ type: 'filename' });
                     }}
-                    fixedWidth={true}
+                    fixedWidth
                   />
                   <IconButton
                     icon={'file-upload'}
@@ -525,14 +525,14 @@ export function FileBrowserNode({
                       event.stopPropagation();
                       openFile(currentFile);
                     }}
-                    fixedWidth={true}
+                    fixedWidth
                   />
                   <IconButton
                     icon={'file-import'}
                     tooltip={'Upload new version'}
                     disabled={!isUploadAllowed(currentFile)}
                     onClick={openUploader}
-                    fixedWidth={true}
+                    fixedWidth
                   />
                 </>
               ))}
