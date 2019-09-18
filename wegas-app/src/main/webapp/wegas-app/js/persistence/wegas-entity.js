@@ -499,7 +499,40 @@ YUI.add('wegas-entity', function(Y) {
         },
         size: function() {
             return this.get("itemsIds").length;
-        }
+        },
+        flatten: function(filters) {
+            var theFilters = [],
+                acc = [];
+
+            if (filters) {
+                if (!Y.Lang.isArray(filters)) {
+                    theFilters = [filters];
+                } else {
+                    theFilters = filters;
+                }
+            }
+            var push = function(item) {
+                if (theFilters.length === 0 || theFilters.indexOf(item.name) >= 0) {
+                    acc.push(item);
+                }
+            };
+            var doFlatten = function(items) {
+                for (var i in items) {
+                    var it = items[i];
+                    if (persistence.QuestionDescriptor && it instanceof persistence.QuestionDescriptor) {
+                        push(it);
+                    } else if (it instanceof persistence.ListDescriptor) {
+                        doFlatten(it.get(ITEMS));
+                    } else {
+                        push(it);
+                    }
+                }
+            };
+
+            doFlatten(this.get(ITEMS));
+
+            return acc;
+        },
     });
     persistence.VariableContainer.ATTRS = {
         itemsIds: {
@@ -633,6 +666,21 @@ YUI.add('wegas-entity', function(Y) {
     }, {
         EDITORNAME: "Scenario",
         ATTRS: {
+            parentId: {
+                type: ["null", NUMBER],
+                /*"transient": true,*/
+                view: {
+                    type: HIDDEN
+                }
+            },
+            parentType: {
+                type: ["null", STRING],
+                optional: true,
+                /*"transient": true,*/
+                view: {
+                    type: HIDDEN
+                }
+            },
             name: {
                 type: STRING,
                 view: {
