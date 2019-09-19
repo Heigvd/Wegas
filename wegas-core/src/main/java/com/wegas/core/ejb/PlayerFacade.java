@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -56,16 +55,16 @@ public class PlayerFacade extends BaseFacade<Player> {
     /**
      *
      */
-    @EJB
+    @Inject
     private GameFacade gameFacade;
 
-    @EJB
+    @Inject
     private TeamFacade teamFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private GameModelFacade gameModelFacade;
 
     @Inject
@@ -74,7 +73,7 @@ public class PlayerFacade extends BaseFacade<Player> {
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
 
     @Inject

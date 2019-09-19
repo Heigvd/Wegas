@@ -22,7 +22,7 @@ import 'tinymce/skins/ui/oxide/content.min.css';
 import { Editor } from '@tinymce/tinymce-react';
 
 import { Modal } from './Modal';
-import { generateAbsolutePath } from '../API/files.api';
+import { generateAbsolutePath, fileURL } from '../API/files.api';
 import { WidgetProps } from 'jsoninput/typings/types';
 import {
   CommonView,
@@ -30,10 +30,7 @@ import {
 } from '../Editor/Components/FormView/commonView';
 import { LabeledView, Labeled } from '../Editor/Components/FormView/labeled';
 import { primary, primaryLight, primaryDark } from './Theme';
-import {
-  FileBrowser,
-  fileURL,
-} from '../Editor/Components/FileBrowser/TreeFileBrowser/FileBrowser';
+import { FileBrowser } from '../Editor/Components/FileBrowser/FileBrowser';
 import { css } from 'emotion';
 
 const toolbar = css({
@@ -71,7 +68,11 @@ interface HTMLEditorProps {
 
 let id = 0;
 
-export function HTMLEditor({ value, onSave, onChange }: HTMLEditorProps) {
+export default function HTMLEditor({
+  value,
+  onSave,
+  onChange,
+}: HTMLEditorProps) {
   const [fileBrowsing, setFileBrowsing] = React.useState<{ fn?: CallbackFN }>(
     {},
   );

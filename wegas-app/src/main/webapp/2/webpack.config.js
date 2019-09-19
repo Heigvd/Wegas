@@ -106,6 +106,10 @@ const modules = {
           },
         ],
       },
+      {
+        test: /\.txt$/i,
+        use: 'raw-loader',
+      },
     ],
   },
   devServer: {

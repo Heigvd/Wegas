@@ -11,7 +11,6 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.JCRFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnector.WorkspaceType;
@@ -26,7 +25,6 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jcr.PathNotFoundException;
@@ -57,7 +55,7 @@ public class FileController {
     /**
      *
      */
-    @EJB
+    @Inject
     private GameModelFacade gmFacade;
 
     @Inject
@@ -116,13 +114,13 @@ public class FileController {
         }
         AbstractContentDescriptor detachedFile;
         //try {
-            if (details.getContentDisposition().getFileName() == null
-                    || details.getContentDisposition().getFileName().equals("")) {//Assuming an empty filename means a directory
-                detachedFile = jcrFacade.createDirectory(gameModel, WorkspaceType.FILES, name, path, note, description);
-            } else {
-                detachedFile = jcrFacade.createFile(gameModel, WorkspaceType.FILES, name, path, details.getMediaType().toString(),
-                        note, description, file, override);
-            }
+        if (details.getContentDisposition().getFileName() == null
+                || details.getContentDisposition().getFileName().equals("")) {//Assuming an empty filename means a directory
+            detachedFile = jcrFacade.createDirectory(gameModel, WorkspaceType.FILES, name, path, note, description);
+        } else {
+            detachedFile = jcrFacade.createFile(gameModel, WorkspaceType.FILES, name, path, details.getMediaType().toString(),
+                    note, description, file, override);
+        }
         /*} catch (final WegasRuntimeException ex) {
             Response.StatusType status = new Response.StatusType() {
                 @Override
@@ -142,7 +140,7 @@ public class FileController {
             };
             return Response.status(status).build();
         }
-            */
+         */
         return Response.ok(detachedFile, MediaType.APPLICATION_JSON).build();
     }
 
@@ -465,6 +463,20 @@ public class FileController {
     public Object delete(@PathParam("gameModelId") Long gameModelId,
             @PathParam("absolutePath") String absolutePath,
             @PathParam("force") String force) {
+
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gameModel);
+
+        return jcrFacade.delete(gameModel, ContentConnector.WorkspaceType.FILES, absolutePath, force);
+    }
+
+    @POST
+    @Path("{force: (force/)?}post_delete")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Object deleteByPOST(@PathParam("gameModelId") Long gameModelId,
+            @PathParam("force") String force,
+            String absolutePath) {
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);

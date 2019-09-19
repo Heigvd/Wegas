@@ -236,4 +236,51 @@ YUI.add('wegas-panel', function(Y) {
             btn.wegaspanelwithcfg.execute();
         }
     });
+
+    var DraggablePanel = Y.Base.create("wegas-panel-draggable", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+        initializer: function() {
+            var panel = this.get("host");
+            panel.get("boundingBox").addClass("draggable");
+            this.onMouseDown = panel.on("mousedown", function(e) {
+                if (e.domEvent.button === 1) {
+                    panel.get("boundingBox").addClass("dragging");
+                    panel.orig = {
+                        x: panel.get("x"),
+                        y: panel.get("y")
+                    };
+                    panel.drag = {
+                        x: e.domEvent.pageX,
+                        y: e.domEvent.pageY
+                    };
+                }
+            }, this);
+
+            this.onMouseUp = Y.on("mouseup", function(e) {
+                if (e.button === 1 && panel.orig) {
+                    panel.get("boundingBox").removeClass("dragging");
+                    panel.orig = null;
+                    panel.clickOrig = null;
+                }
+            });
+
+            this.onMouseMove = Y.on("mousemove", function(e) {
+                if (e.button === 1 && panel.orig) {
+                    var dx = e.pageX - panel.drag.x;
+                    var dy = e.pageY - panel.drag.y;
+                    if (Math.abs(dy) + Math.abs(dy) > 20) {
+                        panel.set("x", panel.orig.x + dx);
+                        panel.set("y", panel.orig.y + dy);
+                    }
+                }
+            });
+        },
+        destructor: function() {
+            this.onMouseMove.detach();
+            this.onMouseDown.detach();
+            this.onMouseUp.detach();
+        }
+    }, {
+        NS: "draggablepanel"
+    });
+    Y.Plugin.DraggablePanel = DraggablePanel;
 });

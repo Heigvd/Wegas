@@ -17,7 +17,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
         Wegas = Y.Wegas,
         MCQTabView;
 
-    MCQTabView = Y.Base.create("wegas-mcqtabview", Y.Wegas.ResponsibeTabView, [], {
+    MCQTabView = Y.Base.create("wegas-mcqtabview", Y.Wegas.ResponsiveTabView, [], {
         /** @lends Y.Wegas.MCQTabView# */
         // *** Lifecycle Methods *** //
         //CONTENT_TEMPLATE: null,

@@ -1,5 +1,6 @@
 import { rest } from './rest';
 import { GameModel } from '../data/selectors';
+import { omit } from 'lodash';
 
 /**
  * Compute an absolute path for a path and a fileName.
@@ -19,6 +20,19 @@ export const FILE_BASE = (gameModelId?: number) =>
   `GameModel/${
     gameModelId === undefined ? GameModel.selectCurrent().id! : gameModelId
   }/File/`;
+
+/**
+ * Returns url to read a file
+ * @param absolutePath the absolute path of the file to read
+ */
+export const fileURL = (absolutePath: string) => {
+  return (
+    API_ENDPOINT +
+    FILE_BASE(GameModel.selectCurrent().id!) +
+    'read' +
+    absolutePath
+  );
+};
 
 export const FileAPIFactory = (gameModelId?: number) => {
   return {
@@ -47,7 +61,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
     deleteFile(
       absolutePath: string,
       force?: boolean,
-    ): Promise<IFileDescriptor | undefined> {
+    ): Promise<IFileDescriptor> {
       return rest(
         FILE_BASE(gameModelId) +
           (force ? 'force/' : '') +
@@ -56,20 +70,9 @@ export const FileAPIFactory = (gameModelId?: number) => {
         {
           method: 'DELETE',
         },
-      )
-        .then((res: Response) => {
-          return res.json();
-        })
-        .catch(() => {
-          if (
-            confirm(
-              `Are you sure you want to delete ${absolutePath} with all files and subdirectories?`,
-            )
-          ) {
-            return this.deleteFile(absolutePath, true);
-          }
-          throw Error('Force delete not accepted or failed');
-        });
+      ).then((res: Response) => {
+        return res.json();
+      });
     },
     /**
      * Create a new file
@@ -95,9 +98,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
         },
         undefined,
         'multipart/form-data',
-      ).then((res: Response) => {
-        return res.json();
-      });
+      ).then((res: Response) => res.json());
     },
     /**
      * Get metata of a specific file/directory
@@ -119,9 +120,10 @@ export const FileAPIFactory = (gameModelId?: number) => {
         FILE_BASE(gameModelId) + 'update' + generateAbsolutePath(file),
         {
           method: 'PUT',
-          body: JSON.stringify(file),
+          body: JSON.stringify(omit(file, 'bytes')),
         },
       ).then((res: Response) => {
+        // 204 is seen as an error as the file wasn't updated
         if (res.status === 204) {
           throw Error(res.statusText);
         }

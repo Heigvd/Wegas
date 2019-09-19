@@ -9,7 +9,7 @@ package com.wegas.core.security.rest;
 
 import com.wegas.test.arquillian.AbstractArquillianTestMinimal;
 import java.io.IOException;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import org.junit.Test;
 
 /**
@@ -18,7 +18,7 @@ import org.junit.Test;
  */
 public class UserControllerTest extends AbstractArquillianTestMinimal {
 
-    @EJB
+    @Inject
     private UserController userController;
 
     @Test

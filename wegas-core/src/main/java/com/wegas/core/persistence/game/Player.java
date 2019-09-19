@@ -45,16 +45,14 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-@NamedQueries({
-    @NamedQuery(name = "Player.findPlayerByGameModelIdAndUserId",
-            query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.gameTeams.game.gameModel.id = :gameModelId"),
-    @NamedQuery(name = "Player.findPlayerByGameIdAndUserId",
-            query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.gameTeams.game.id = :gameId"),
-    @NamedQuery(name = "Player.findPlayerByTeamIdAndUserId",
-            query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.id = :teamId"),
-    @NamedQuery(name = "Player.findToPopulate",
-            query = "SELECT a FROM Player a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
-})
+@NamedQuery(name = "Player.findPlayerByGameModelIdAndUserId",
+        query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.gameTeams.game.gameModel.id = :gameModelId")
+@NamedQuery(name = "Player.findPlayerByGameIdAndUserId",
+        query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.gameTeams.game.id = :gameId")
+@NamedQuery(name = "Player.findPlayerByTeamIdAndUserId",
+        query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.id = :teamId")
+@NamedQuery(name = "Player.findToPopulate",
+        query = "SELECT a FROM Player a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(indexes = {
     @Index(columnList = "user_id"),
@@ -484,5 +482,9 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     @Override
     public WithPermission getMergeableParent() {
         return this.getTeam();
+    }
+
+    public boolean isTestPlayer() {
+        return this.getTeam() instanceof DebugTeam || this.getGame() instanceof DebugGame;
     }
 }

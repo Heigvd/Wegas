@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -90,7 +90,7 @@ Y.mix(Y.namespace("Number"), {
         if (typeof data === 'string' && Y.Lang.trim(data) !== '') {
             data = +data;
         }
-        
+
         // catch NaN and ±Infinity
         if (typeof data !== 'number' || !isFinite(data)) {
             data = null;
@@ -108,4 +108,4 @@ Y.namespace("DataType");
 Y.DataType.Number = Y.Number;
 
 
-}, '3.17.2', {"requires": ["escape"]});
+}, '3.18.1', {"requires": ["escape"]});

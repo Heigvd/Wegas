@@ -9,8 +9,6 @@ package com.wegas.admin.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
@@ -18,26 +16,30 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
-import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbBuilder;
+import javax.json.bind.JsonbConfig;
+import javax.json.bind.JsonbException;
 import javax.persistence.*;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
-@NamedQueries({
-    @NamedQuery(name = "GameAdmin.findByGame", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.game.id = :gameId"),
-    @NamedQuery(name = "GameAdmin.findByStatus", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = :status ORDER BY ga.createdTime DESC"),
-    @NamedQuery(name = "GameAdmin.GamesToDelete", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = com.wegas.admin.persistence.GameAdmin.Status.PROCESSED AND ga.game.status = com.wegas.core.persistence.game.Game.Status.DELETE")
-})
+@NamedQuery(name = "GameAdmin.findByGameIds",
+        query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.game.id in :ids")
+@NamedQuery(name = "GameAdmin.findByGame",
+        query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.game.id = :gameId")
+@NamedQuery(name = "GameAdmin.findByStatus",
+        query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = :status ORDER BY ga.createdTime DESC")
+@NamedQuery(name = "GameAdmin.GamesToDelete",
+        query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = com.wegas.admin.persistence.GameAdmin.Status.PROCESSED AND ga.game.status = com.wegas.core.persistence.game.Game.Status.DELETE")
 @Table(
         indexes = {
             @Index(columnList = "game_id")
@@ -48,7 +50,7 @@ public class GameAdmin extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 
-    private static ObjectWriter ow = null;
+    private static Jsonb jsonb = null;
 
     @Id
     @GeneratedValue
@@ -150,15 +152,18 @@ public class GameAdmin extends AbstractEntity {
         return this.creator;
     }
 
-
     @JsonIgnore
     public void populate() {
         if (this.getGame() != null) {
             this.prevGameModel = this.getGameModelName();
             this.prevName = this.getGameName();
             this.prevTeamCount = this.getTeamCount();
-            this.prevPlayers = this.getPlayers().toString();
+
+            Jsonb mapper = getJsonb();
+            this.prevPlayers = mapper.toJson(this.getPlayers());
+
             this.prevTeams = this.getTeams().toString();
+
             this.prevGameId = this.getGame().getId();
         }
     }
@@ -203,11 +208,12 @@ public class GameAdmin extends AbstractEntity {
     }
 
     // Small optimization for getTeams():
-    private static ObjectWriter getObjectWriter() {
-        if (GameAdmin.ow == null) {
-            GameAdmin.ow = JacksonMapperProvider.getMapper().writer();
+    private static Jsonb getJsonb() {
+        if (GameAdmin.jsonb == null) {
+            JsonbConfig config = new JsonbConfig().withFormatting(true);
+            GameAdmin.jsonb = JsonbBuilder.create(config);
         }
-        return GameAdmin.ow;
+        return GameAdmin.jsonb;
     }
 
     public List<String> getTeams() {
@@ -217,8 +223,8 @@ public class GameAdmin extends AbstractEntity {
                 if (t.getClass() == Team.class) { // filter debugTeam
                     GameAdminTeam gaTeam = new GameAdminTeam(t);
                     try {
-                        teams.add(getObjectWriter().writeValueAsString(gaTeam));
-                    } catch (JsonProcessingException e) {
+                        teams.add(getJsonb().toJson(gaTeam));
+                    } catch (JsonbException e) {
                         e.printStackTrace();
                     }
                 }
@@ -255,33 +261,19 @@ public class GameAdmin extends AbstractEntity {
     }
 
     private List<String> getPrevPlayers() {
-        final List<String> players = new ArrayList<>();
-        JSONArray ar;
-        try {
-            ar = new JSONArray(this.prevPlayers);
-            for (int i = 0; i < ar.length(); i++) {
-                players.add(ar.get(i).toString());
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return players;
+        return getJsonb().fromJson(this.prevPlayers, ArrayList.class);
     }
 
     private List<String> getPrevTeams() {
         final List<String> teams = new ArrayList<>();
-        JSONArray ar;
         if (this.prevTeams != null) {
-            try {
-                ar = new JSONArray(this.prevTeams);
-                for (int i = 0; i < ar.length(); i++) {
-                    teams.add(ar.get(i).toString());
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
+            Jsonb mapper = getJsonb();
+            ArrayList prev = mapper.fromJson(this.prevTeams, ArrayList.class);
+            for (Object p : prev) {
+                teams.add(mapper.toJson(p));
             }
         }
+
         return teams;
     }
 

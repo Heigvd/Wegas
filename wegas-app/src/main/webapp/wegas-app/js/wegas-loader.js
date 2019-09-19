@@ -255,7 +255,7 @@ YUI().use(function(Y) {
             },
             "wegas-text-input": {
                 path: "js/widget/wegas-text-input-min.js",
-                ws_provides: ["TextInput", "StringInput", "SaveStatusAggregator"],
+                ws_provides: ["TextInput", "StringInput", "BooleanInput", "SaveStatusAggregator"],
                 requires: ["wegas-text-inputcss", "wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button", "event-valuechange"]
             },
             "wegas-number-inputcss": {
@@ -457,8 +457,8 @@ YUI().use(function(Y) {
             },
             "wegas-entitychooser": {
                 path: "js/widget/wegas-entitychooser-min.js",
-                requires: ["wegas-entitychoosercss", "wegas-button"],
-                ws_provides: ["EntityChooser", "EntityChooser2"]
+                requires: ["wegas-entitychoosercss", "wegas-button", "wegas-react-form"],
+                ws_provides: ["EntityChooser", "EntityChooser2", "ObjectPropertyEditor"]
             },
             "wegas-entitychoosercss": {
                 type: CSS

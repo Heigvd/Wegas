@@ -17,6 +17,13 @@
     max-height: 100%;
 }
 
+.wegas-panel.draggable {
+    cursor: grab;
+}
+.wegas-panel.dragging {
+    cursor: grabbing;
+}
+
 .yui3-skin-sam .dashboard-panel .wegas-panel-content {
     background: rgba(239, 239, 239, 1);
     color: black;

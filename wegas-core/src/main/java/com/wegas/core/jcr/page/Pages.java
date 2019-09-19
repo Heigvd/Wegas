@@ -16,7 +16,6 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import org.slf4j.LoggerFactory;
 import com.wegas.core.jcr.jta.JTARepositoryConnector;
-import java.util.function.Consumer;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)

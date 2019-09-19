@@ -17,6 +17,7 @@ class GameSelect extends React.Component {
                     label: val.name
                         ? `${val.name} (${val.gmName}) by ${val.creator} (P: ${val.playersCount})`
                         : val.id,
+                    playersCount: val.playersCount
                 })),
             });
         }
@@ -43,6 +44,7 @@ class GameSelect extends React.Component {
             display: 'inline-block',
             minWidth: '15em',
         };
+        const options = opt ? opt.sort( (a, b) => b.playersCount - a.playersCount ) : undefined;
         for (let groupId = 0; groupId < groupsCount; groupId++) {
             ret.push(
                 <span key={groupId} style={style}>
@@ -50,7 +52,7 @@ class GameSelect extends React.Component {
                     <ReactSelect
                         multi
                         onChange={this.onChange.bind(this, groupId)}
-                        options={opt}
+                        options={ options }
                         value={this.state.groups[groupId]}
                     />
                 </span>

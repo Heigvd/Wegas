@@ -25,13 +25,11 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Level;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -78,13 +76,13 @@ public class PdfRenderer implements Filter {
     private FilterConfig filterConfig = null;
     private DocumentBuilder documentBuilder;
 
-    @EJB
+    @Inject
     private UserFacade userFacade;
 
-    @EJB
+    @Inject
     private RoleFacade roleFacade;
 
-    @EJB
+    @Inject
     private GameModelFacade gameModelFacade;
 
     @Override
@@ -395,10 +393,8 @@ public class PdfRenderer implements Filter {
                 uc.setRequestProperty("Cookie", joinCookies(this.cookies));
                 is = uc.getInputStream();
 
-            } catch (MalformedURLException ex) {
-                java.util.logging.Logger.getLogger(PdfRenderer.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
-                java.util.logging.Logger.getLogger(PdfRenderer.class.getName()).log(Level.SEVERE, null, ex);
+                logger.error("Cookie exception", ex);
             }
             return is;
         }

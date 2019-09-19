@@ -73,7 +73,7 @@ class Stats extends React.Component {
                 <Graph
                     groups={groups}
                     logId={this.props.match.params.LogId}
-                    question={currentQuestion}
+                    questionName={currentQuestion}
                     ref="graph"
                     snapshot={this.props.snapshot}
                 />

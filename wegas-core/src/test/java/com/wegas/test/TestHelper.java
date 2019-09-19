@@ -70,16 +70,7 @@ public class TestHelper {
         }
     }
 
-    public static int getMissingIndexesCount() {
-        DataSource ds;
-        try {
-            ds = (DataSource) new InitialContext().lookup("jdbc/wegas_dev");
-        } catch (NamingException ex) {
-            throw WegasErrorMessage.error("No jdbc/wegas_dev !!!");
-        }
-
-        try (Connection connection = ds.getConnection("user", "1234");
-                Statement statement = connection.createStatement()) {
+    public static int getMissingIndexesCount(Statement statement) throws SQLException{
             String createExtension = "CREATE EXTENSION IF NOT EXISTS intarray;";
             statement.execute(createExtension);
 
@@ -130,6 +121,19 @@ public class TestHelper {
                 logger.error(msg.toString());
             }
             return count;
+    }
+
+    public static int getMissingIndexesCount() {
+        DataSource ds;
+        try {
+            ds = (DataSource) new InitialContext().lookup("jdbc/wegas_dev");
+        } catch (NamingException ex) {
+            throw WegasErrorMessage.error("No jdbc/wegas_dev !!!");
+        }
+
+        try (Connection connection = ds.getConnection("user", "1234");
+                Statement statement = connection.createStatement()) {
+            return getMissingIndexesCount(statement);
         } catch (SQLException ex) {
             logger.error("SQL Exception: {}", ex);
             throw WegasErrorMessage.error("SQL Query error");

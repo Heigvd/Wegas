@@ -24,12 +24,10 @@ import javax.persistence.*;
     @Index(columnList = "resourceinstance_id"),
     @Index(columnList = "taskinstance_id")
 })
-@NamedQueries({
-    @NamedQuery(
-            name = "Assignment.findByResourceInstanceIdAndTaskInstanceId",
-            query = "SELECT a FROM Assignment a where a.resourceInstance.id = :resourceInstanceId AND a.taskInstance.id = :taskInstanceId"
-    )
-})
+@NamedQuery(
+    name = "Assignment.findByResourceInstanceIdAndTaskInstanceId",
+    query = "SELECT a FROM Assignment a where a.resourceInstance.id = :resourceInstanceId AND a.taskInstance.id = :taskInstanceId"
+)
 @Entity
 public class Assignment extends AbstractAssignement implements NamedEntity {
 

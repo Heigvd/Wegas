@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -98,10 +98,10 @@ LocalSync._store = LocalSync._store || {};
 LocalSync.prototype = {
 
     // -- Public Methods -------------------------------------------------------
-    
+
     /**
     Root used as the key inside of localStorage and/or the in-memory store.
-    
+
     @property root
     @type String
     @default ""
@@ -111,7 +111,7 @@ LocalSync.prototype = {
 
     /**
     Shortcut for access to localStorage.
-    
+
     @property storage
     @type Storage
     @default null
@@ -155,9 +155,9 @@ LocalSync.prototype = {
             LocalSync._store[this.root] || (LocalSync._store[this.root] = []);
         }
     },
-    
+
     // -- Public Methods -----------------------------------------------------------
-    
+
     /**
     Creates a synchronization layer with the localStorage API, if available.
     Otherwise, falls back to a in-memory data store.
@@ -220,7 +220,7 @@ LocalSync.prototype = {
     /**
     Generate a random GUID for our Models. This can be overriden if you have
     another method of generating different IDs.
-    
+
     @method generateID
     @protected
     @param {String} pre Optional GUID prefix
@@ -233,7 +233,7 @@ LocalSync.prototype = {
 
     /**
     Sync method correlating to the "read" operation, for a Model List
-    
+
     @method _index
     @return {Object[]} Array of objects found for that root key
     @protected
@@ -250,7 +250,7 @@ LocalSync.prototype = {
 
     /**
     Sync method correlating to the "read" operation, for a Model
-    
+
     @method _show
     @return {Object} Object found for that root key and model ID
     @protected
@@ -259,10 +259,10 @@ LocalSync.prototype = {
     _show: function () {
         return LocalSync._data[this.get('id')] || null;
     },
-    
+
     /**
     Sync method correlating to the "create" operation
-    
+
     @method _show
     @return {Object} The new object created.
     @protected
@@ -297,7 +297,7 @@ LocalSync.prototype = {
             id = this.get('id');
 
         LocalSync._data[id] = hash;
-        
+
         if (this.storage) {
             this.storage.setItem(id, hash);
         }
@@ -314,7 +314,7 @@ LocalSync.prototype = {
     /**
     Sync method correlating to the "delete" operation.  Deletes the data
     from the in-memory object, and saves into localStorage if available.
-    
+
     @method _destroy
     @protected
     @since 3.13.0
@@ -340,11 +340,11 @@ LocalSync.prototype = {
         this._save();
         return this.toJSON();
     },
-    
+
     /**
     Saves the current in-memory store into a localStorage key/value pair
     if localStorage is available; otherwise, does nothing.
-    
+
     @method _save
     @protected
     @since 3.13.0
@@ -364,4 +364,4 @@ LocalSync.prototype = {
 Y.namespace('ModelSync').Local = LocalSync;
 
 
-}, '3.17.2', {"requires": ["model", "json-stringify"]});
+}, '3.18.1', {"requires": ["model", "json-stringify"]});

@@ -8,7 +8,7 @@ function basePath(view = PUBLIC) {
 }
 
 export function getVariables(gmId) {
-    return jsonFetch(`${basePath(EDITOR_EXTENDED)}${gmId}/VariableDescriptor`);
+    return jsonFetch(`${basePath(EDITOR_EXTENDED)}${gmId}`).then(gm => gm.items);
 }
 
 export function getGameModelForGame(gameId) {
@@ -17,6 +17,12 @@ export function getGameModelForGame(gameId) {
     );
 }
 
-export function getGames() {
-    return jsonFetch(`/rest/Admin/Game`);
+export function getGamesByIds(ids) {
+    return jsonFetch(`/rest/Admin/GamesByIds`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(ids)
+    });
 }
