@@ -1,5 +1,6 @@
 import { rest } from './rest';
 import { GameModel } from '../data/selectors';
+import { omit } from 'lodash';
 
 /**
  * Compute an absolute path for a path and a fileName.
@@ -19,6 +20,19 @@ export const FILE_BASE = (gameModelId?: number) =>
   `GameModel/${
     gameModelId === undefined ? GameModel.selectCurrent().id! : gameModelId
   }/File/`;
+
+/**
+ * Returns url to read a file
+ * @param absolutePath the absolute path of the file to read
+ */
+export const fileURL = (absolutePath: string) => {
+  return (
+    API_ENDPOINT +
+    FILE_BASE(GameModel.selectCurrent().id!) +
+    'read' +
+    absolutePath
+  );
+};
 
 export const FileAPIFactory = (gameModelId?: number) => {
   return {
@@ -106,7 +120,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
         FILE_BASE(gameModelId) + 'update' + generateAbsolutePath(file),
         {
           method: 'PUT',
-          body: JSON.stringify(file),
+          body: JSON.stringify(omit(file, 'bytes')),
         },
       ).then((res: Response) => {
         // 204 is seen as an error as the file wasn't updated

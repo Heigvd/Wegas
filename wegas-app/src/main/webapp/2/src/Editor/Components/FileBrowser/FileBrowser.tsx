@@ -49,7 +49,7 @@ export function FileBrowser({
         <StyledLabel value={error} type={'error'} duration={3000} />
         {rootFile ? (
           <FileBrowserNode
-            currentFile={rootFile}
+            defaultFile={rootFile}
             selectedPaths={selectedPaths}
             noBracket
             noDelete
@@ -64,7 +64,7 @@ export function FileBrowser({
   );
 }
 
-export function FileBrowserWithMeta() {
+export default function FileBrowserWithMeta() {
   const [selectedFile, setSelectedFile] = React.useState<IFileDescriptor>();
   const [error, setError] = React.useState<string>('');
   const fileUpdate = React.useRef<(updatedFile: IFileDescriptor) => void>(
@@ -122,7 +122,12 @@ export function FileBrowserWithMeta() {
         {selectedFile && <ReflexSplitter />}
         {selectedFile && (
           <ReflexElement>
-            <StyledLabel value={error} type={'error'} duration={3000} />
+            <StyledLabel
+              value={error}
+              type={'error'}
+              duration={3000}
+              onLabelVanish={() => setError('')}
+            />
             <div className={cx(flex, grow)}>
               <AsyncVariableForm
                 getConfig={entity =>

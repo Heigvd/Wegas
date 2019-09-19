@@ -3,11 +3,7 @@ import { useDrop, DragObjectWithType, DropTargetMonitor } from 'react-dnd';
 import { css, cx } from 'emotion';
 import { themeVar } from '../../../Components/Theme';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import {
-  generateAbsolutePath,
-  FileAPI,
-  FILE_BASE,
-} from '../../../API/files.api';
+import { generateAbsolutePath, FileAPI, fileURL } from '../../../API/files.api';
 import { IconButton } from '../../../Components/Button/IconButton';
 import { TextPrompt } from '../TextPrompt';
 import { ConfirmButton } from '../../../Components/Button/ConfirmButton';
@@ -48,19 +44,6 @@ const dropZoneStyle = css({
 
 const isDirectory = (file: IFileDescriptor) =>
   file.mimeType === 'application/wfs-directory';
-
-/**
- * Returns url to read a file
- * @param absolutePath the absolute path of the file to read
- */
-const fileURL = (absolutePath: string) => {
-  return (
-    API_ENDPOINT +
-    FILE_BASE(GameModel.selectCurrent().id!) +
-    'read' +
-    absolutePath
-  );
-};
 
 const isSelected = (file: IFileDescriptor, selectedPaths: string[]) =>
   selectedPaths.includes(generateAbsolutePath(file));
@@ -167,7 +150,7 @@ type ModalState =
   | ModalStateChangeType;
 
 interface FileBrowserNodeProps {
-  currentFile: IFileDescriptor;
+  defaultFile: IFileDescriptor;
   selectedPaths?: string[];
   defaultOpen?: boolean;
   noBracket?: boolean;
@@ -180,7 +163,7 @@ interface FileBrowserNodeProps {
 }
 
 export function FileBrowserNode({
-  currentFile,
+  defaultFile,
   selectedPaths = [],
   defaultOpen = false,
   noBracket = false,
@@ -189,12 +172,15 @@ export function FileBrowserNode({
   onDelelteFile = () => {},
 }: FileBrowserNodeProps) {
   const [open, setOpen] = React.useState(
-    defaultOpen || isChildrenSelected(currentFile, selectedPaths) || noBracket,
+    defaultOpen || isChildrenSelected(defaultFile, selectedPaths) || noBracket,
   );
   const [modalState, setModalState] = React.useState<ModalState>({
     type: 'close',
   });
   const [children, setChildren] = React.useState<IFileDescriptor[]>();
+  const [currentFile, setCurrentFile] = React.useState<IFileDescriptor>(
+    defaultFile,
+  );
   const [nbUploadingFiles, dispatchUploadingFiles] = React.useReducer(
     (uploadCount: number, action: { type: 'increment' | 'decrement' }) => {
       switch (action.type) {
@@ -436,7 +422,7 @@ export function FileBrowserNode({
               event.preventDefault();
               setOpen(oldOpen => !oldOpen);
             }}
-            fixedWidth={true}
+            fixedWidth
           />
         </div>
       )}
@@ -447,11 +433,11 @@ export function FileBrowserNode({
               isDirectory(currentFile) && dropZoneProps.isShallowOver,
             [selectedRow]: isSelected(currentFile, selectedPaths),
           })}
-          onClick={() => onFileClick(currentFile)}
+          onClick={() => onFileClick(currentFile, setCurrentFile)}
         >
           <IconButton
             icon={getIconForFileType(currentFile.mimeType)}
-            fixedWidth={true}
+            fixedWidth
           />
           <div className={grow}>{currentFile.name}</div>
           {nbUploadingFiles > 0 && (
@@ -481,9 +467,7 @@ export function FileBrowserNode({
             {modalState.type === 'type' && (
               <ConfirmButton
                 icon={'trash'}
-                label={`Are you sure that you want to change the file type from [${
-                  currentFile.mimeType
-                }] to [${modalState.file.type}]`}
+                label={`Are you sure that you want to change the file type from [${currentFile.mimeType}] to [${modalState.file.type}]`}
                 onAction={success => {
                   if (success) {
                     updateFile(modalState.file, true);
@@ -506,7 +490,7 @@ export function FileBrowserNode({
                       event.stopPropagation();
                       setModalState({ type: 'filename' });
                     }}
-                    fixedWidth={true}
+                    fixedWidth
                   />
                   <IconButton
                     icon={'file-upload'}
@@ -525,14 +509,14 @@ export function FileBrowserNode({
                       event.stopPropagation();
                       openFile(currentFile);
                     }}
-                    fixedWidth={true}
+                    fixedWidth
                   />
                   <IconButton
                     icon={'file-import'}
                     tooltip={'Upload new version'}
                     disabled={!isUploadAllowed(currentFile)}
                     onClick={openUploader}
-                    fixedWidth={true}
+                    fixedWidth
                   />
                 </>
               ))}
@@ -578,9 +562,7 @@ export function FileBrowserNode({
             {modalState.type === 'override' && (
               <ConfirmButton
                 icon={'trash'}
-                label={`Are you sure that you want to override the file [${
-                  modalState.files[0].name
-                }]`}
+                label={`Are you sure that you want to override the file [${modalState.files[0].name}]`}
                 onAction={success => {
                   const removeFile = () =>
                     setModalState(oldState => {
@@ -628,7 +610,7 @@ export function FileBrowserNode({
                 ? children.sort(sortFiles).map(child => (
                     <FileBrowserNode
                       key={generateAbsolutePath(child)}
-                      currentFile={child}
+                      defaultFile={child}
                       onDelelteFile={deletedFile => {
                         setChildren(oldChildren => {
                           if (oldChildren) {
