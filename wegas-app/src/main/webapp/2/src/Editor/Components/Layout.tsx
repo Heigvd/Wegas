@@ -58,7 +58,7 @@ export default class AppLayout extends React.Component<
               '2': {
                 type: 'TabLayoutNode',
                 vertical: false,
-                children: ['Scripts', 'Page', 'StateMachine'],
+                children: ['Scripts', 'Files', 'Pages', 'StateMachine'],
               },
               '3': {
                 type: 'TabLayoutNode',

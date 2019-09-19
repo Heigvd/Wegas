@@ -101,7 +101,7 @@ export function FileBrowserWithMeta() {
   return (
     <div className={cx(flex, grow)}>
       <ReflexContainer orientation={'vertical'}>
-        <ReflexElement>
+        <ReflexElement minSize={30}>
           <FileBrowser
             onFileClick={onFileClick}
             onDelelteFile={file => {
@@ -122,7 +122,12 @@ export function FileBrowserWithMeta() {
         {selectedFile && <ReflexSplitter />}
         {selectedFile && (
           <ReflexElement>
-            <StyledLabel value={error} type={'error'} duration={3000} />
+            <StyledLabel
+              value={error}
+              type={'error'}
+              duration={3000}
+              onLabelVanish={() => setError('')}
+            />
             <div className={cx(flex, grow)}>
               <AsyncVariableForm
                 getConfig={entity =>

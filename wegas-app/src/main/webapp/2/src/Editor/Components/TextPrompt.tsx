@@ -73,7 +73,7 @@ export function TextPrompt({
       />
       <div className={buttonZone}>
         <IconButton
-          icon={'thumbs-up'}
+          icon={'check'}
           label={'Accept'}
           onClick={event => {
             event.stopPropagation();

@@ -34,7 +34,7 @@ export function ConfirmButton(props: ConfirmButtonProps & IconButtonProps) {
 
   return !confirmation ? (
     <IconButton
-      {...(omit(props, 'onAction') as IconButtonProps)}
+      {...omit(props, ['onAction', 'defaultConfirm'])}
       onClick={event => {
         event.stopPropagation();
         props.onClick && props.onClick(event);
@@ -42,6 +42,7 @@ export function ConfirmButton(props: ConfirmButtonProps & IconButtonProps) {
       }}
     />
   ) : (
+
     <div ref={confirmButton} className={buttonZone}>
       {props.label}
       <button
