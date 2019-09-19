@@ -67,6 +67,7 @@ var WegasDashboard = (function() {
             index: cfg.index || Object.keys(section).length,
             active: (cfg.active !== undefined) ? cfg.active : true,
             sortable: cfg.sortable,
+            preventClick: cfg.preventClick,
             sortFn: cfg.sortFn,
             mapFn: cfg.mapFn,
             mapFnExtraArgs: cfg.mapFnExtraArgs
@@ -202,6 +203,7 @@ var WegasDashboard = (function() {
                             item.formatter = itemCfg.formatter;
                             item.transformer = itemCfg.transformer;
                             item.active = itemCfg.active;
+                            item.preventClick = itemCfg.preventClick;
                             item.sortable = itemCfg.sortable;
                             item.sortFn = itemCfg.sortFn;
                             item.kind = variables[varName].descriptor.getClass().getSimpleName()
@@ -251,7 +253,7 @@ var WegasDashboard = (function() {
                                 } else if (item.item.kind === "text") {
                                     teamData[id] = WegasHelper.getTextInstanceContent(variable.instances[teamId], item.item.label, teamName);
                                 } else if (item.item.kind === "object") {
-                                    teamData[id] = WegasHelper.getObjectInstanceContent(variable.instances[teamId], item.item.label, teamName)
+                                    teamData[id] = WegasHelper.getObjectInstanceContent(variable.instances[teamId], item.item.label, teamName);
                                 } else {
                                     teamData[id] = variable.instances[teamId].getValue();
                                 }
@@ -290,7 +292,7 @@ var WegasDashboard = (function() {
         /**
          *
          * @param {type} varName
-         * @param {type} cfg {section = 'monitoring', dashboard = 'overview', label =varLabel, formatter, transformer, index, sortable, sortFn, active, mapFn = function(teamId, instance, ...extraInstances), mapFnExtraArgs = [vdNanem, vdName2, ...]}
+         * @param {type} cfg {section = 'monitoring', dashboard = 'overview', label =varLabel, formatter, transformer, index, preventClick, sortable, sortFn, active, mapFn = function(teamId, instance, ...extraInstances), mapFnExtraArgs = [vdNanem, vdName2, ...]}
          * @returns {undefined}
          */
         registerVariable: function(varName, cfg) {
@@ -305,7 +307,7 @@ var WegasDashboard = (function() {
         registerAction: function(id, doFn, cfg) {
             return registerAction(id, doFn, cfg);
         },
-        registerStatExporter: function(id, activityPattern, cfg){
+        registerStatExporter: function(id, activityPattern, cfg) {
             return registerStatExporter(id, activityPattern, cfg);
         },
         getOverview: function(name) {
