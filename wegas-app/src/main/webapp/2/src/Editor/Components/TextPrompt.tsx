@@ -1,6 +1,13 @@
 import * as React from 'react';
 import { IconButton } from '../../Components/Button/IconButton';
 import { useOnClickOutside } from '../../Components/Hooks/useOnClickOutside';
+import { css } from 'emotion';
+
+const buttonZone = css({
+  margin: '5px',
+  textAlign: 'center',
+  display: 'inline-block',
+});
 
 interface TextPromptProps {
   /**
@@ -64,22 +71,24 @@ export function TextPrompt({
           }
         }}
       />
-      <IconButton
-        icon={'thumbs-up'}
-        label={'Accept'}
-        onClick={event => {
-          event.stopPropagation();
-          onAction(true, inputValue.current);
-        }}
-      />
-      <IconButton
-        icon={'times'}
-        label={'Cancel'}
-        onClick={event => {
-          event.stopPropagation();
-          onAction(false, inputValue.current);
-        }}
-      />
+      <div className={buttonZone}>
+        <IconButton
+          icon={'check'}
+          label={'Accept'}
+          onClick={event => {
+            event.stopPropagation();
+            onAction(true, inputValue.current);
+          }}
+        />
+        <IconButton
+          icon={'times'}
+          label={'Cancel'}
+          onClick={event => {
+            event.stopPropagation();
+            onAction(false, inputValue.current);
+          }}
+        />
+      </div>
     </div>
   );
 }

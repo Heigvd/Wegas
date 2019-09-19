@@ -89,7 +89,7 @@ public class ScopeTest extends AbstractArquillianTest {
         // test getScopeKey
         Assert.assertEquals(player.getId(), pScoped.getInstance(player).getScopeKey());
         Assert.assertEquals(team.getId(), tScoped.getInstance(player).getScopeKey());
-        Assert.assertEquals(new Long(0), gmScoped.getInstance(player).getScopeKey());// hack -> scopeKey for gameModel is always 0 !
+        Assert.assertEquals((Long)0l, gmScoped.getInstance(player).getScopeKey());// hack -> scopeKey for gameModel is always 0 !
 
         Assert.assertEquals(null, pScoped.getDefaultInstance().getScopeKey());
 

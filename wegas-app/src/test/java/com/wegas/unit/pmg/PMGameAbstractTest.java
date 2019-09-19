@@ -10,8 +10,6 @@ package com.wegas.unit.pmg;
 import com.wegas.core.Helper;
 import com.wegas.utils.AbstractTest;
 import java.io.IOException;
-import java.nio.file.Paths;
-import org.glassfish.embeddable.GlassFishException;
 import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
@@ -39,7 +37,7 @@ abstract public class PMGameAbstractTest extends AbstractTest {
     protected abstract String getScriptTestPath();
 
     @Before
-    public void setUpGM() throws IOException, GlassFishException {
+    public void setUpGM() throws IOException {
         /* insert script from files*/
         //Helper.setWegasRootDirectory(Paths.get("").toAbsolutePath() + "/src/main/webapp/");
         Helper.setWegasRootDirectory("./src/main/webapp/");

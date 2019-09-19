@@ -436,7 +436,7 @@ export function FileBrowserNode({
               event.preventDefault();
               setOpen(oldOpen => !oldOpen);
             }}
-            fixedWidth={true}
+            fixedWidth
           />
         </div>
       )}
@@ -451,7 +451,7 @@ export function FileBrowserNode({
         >
           <IconButton
             icon={getIconForFileType(currentFile.mimeType)}
-            fixedWidth={true}
+            fixedWidth
           />
           <div className={grow}>{currentFile.name}</div>
           {nbUploadingFiles > 0 && (
@@ -491,8 +491,8 @@ export function FileBrowserNode({
                     setModalState({ type: 'close' });
                   }
                 }}
-                fixedWidth={true}
-                defaultConfirm={true}
+                fixedWidth
+                defaultConfirm
               />
             )}
             {modalState.type === 'close' &&
@@ -506,7 +506,7 @@ export function FileBrowserNode({
                       event.stopPropagation();
                       setModalState({ type: 'filename' });
                     }}
-                    fixedWidth={true}
+                    fixedWidth
                   />
                   <IconButton
                     icon={'file-upload'}
@@ -525,14 +525,14 @@ export function FileBrowserNode({
                       event.stopPropagation();
                       openFile(currentFile);
                     }}
-                    fixedWidth={true}
+                    fixedWidth
                   />
                   <IconButton
                     icon={'file-import'}
                     tooltip={'Upload new version'}
                     disabled={!isUploadAllowed(currentFile)}
                     onClick={openUploader}
-                    fixedWidth={true}
+                    fixedWidth
                   />
                 </>
               ))}
@@ -549,13 +549,13 @@ export function FileBrowserNode({
                     }
                   }
                 }}
-                fixedWidth={true}
+                fixedWidth
               />
             )}
             {modalState.type === 'delete' && (
               <ConfirmButton
                 label="Are you sure to delete the folder and all its subdirectories?"
-                defaultConfirm={true}
+                defaultConfirm
                 icon={'trash'}
                 tooltip={'Force delete'}
                 onAction={success => {
@@ -564,7 +564,7 @@ export function FileBrowserNode({
                   }
                   setModalState({ type: 'close' });
                 }}
-                fixedWidth={true}
+                fixedWidth
               />
             )}
             {modalState.type === 'error' && (
@@ -614,8 +614,8 @@ export function FileBrowserNode({
                     removeFile();
                   }
                 }}
-                fixedWidth={true}
-                defaultConfirm={true}
+                fixedWidth
+                defaultConfirm
               />
             )}
           </div>

@@ -32,7 +32,7 @@ var WegasDashboard = (function() {
 
     function getOrCreateSection(dashboardName, sectionName) {
         var sName = sectionName || "monitoring";
-        var dashboard = getOrCreateDashboard(dashboardName || "overview")
+        var dashboard = getOrCreateDashboard(dashboardName || "overview");
         var section = (dashboard[sName] = dashboard[sName] || {
             title: sName,
             items: {}
@@ -55,7 +55,10 @@ var WegasDashboard = (function() {
             }
         }
 
+        var order = Object.keys(section.items).length;
+
         section.items[id] = {
+            order: order,
             varName: varName,
             itemType: 'variable',
             formatter: cfg.formatter,
@@ -83,8 +86,11 @@ var WegasDashboard = (function() {
             }
         }
 
+        var order = cfg.order === "number" ? cfg.order : Object.keys(section.items).length;
+
         section.items[id] = {
             itemType: 'action',
+            order: order,
             doFn: doFn,
             label: cfg.label,
             icon: cfg.icon || "fa fa-pencil",
@@ -92,6 +98,29 @@ var WegasDashboard = (function() {
         };
     }
 
+    function registerStatExporter(id, activityPattern, userConfig) {
+        var fn = function(owner, payload) {
+            var logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val").logID;
+            var path = owner.name === "Game" || owner.name === "DebugGame" ? "Games" : "Teams";
+            window.open("rest/Statistics/Export/" + logId
+                + "/" + path + "/" + owner.get("id") + "QUERYSTRING", "_blank");
+        };
+
+        fn = "" + fn;
+
+        fn = fn.replace("QUERYSTRING", activityPattern ? "?activityPattern=" + activityPattern : "");
+
+        var cfg = userConfig || {};
+
+
+        registerAction(id, fn, {
+            section: cfg.section || 'actions',
+            order: typeof cfg.order === "number" ? cfg.order : -1,
+            icon: cfg.icon || "fa fa-pie-chart",
+            label: cfg.label || "View statistics",
+            hasGlobal: cfg.hasOwnProperty("hasGlobal") ? cfg.hasGlobal : true,
+        });
+    }
 
 
     function overview(name) {
@@ -127,7 +156,8 @@ var WegasDashboard = (function() {
                 for (var id in sectionCfg.items) {
                     var itemCfg = sectionCfg.items[id];
                     var item = {
-                        id: id
+                        id: id,
+                        order: itemCfg.order
                     };
 
                     switch (itemCfg.itemType) {
@@ -167,13 +197,15 @@ var WegasDashboard = (function() {
                                 item: item
                             };
 
-                            item.label = itemCfg.label || variables[varName].descriptor.getLabel().translateOrEmpty(self);
+                            item.label = itemCfg.label || variables[varName].descriptor.getLabel()
+                                .translateOrEmpty(self);
                             item.formatter = itemCfg.formatter;
                             item.transformer = itemCfg.transformer;
                             item.active = itemCfg.active;
                             item.sortable = itemCfg.sortable;
                             item.sortFn = itemCfg.sortFn;
-                            item.kind = variables[varName].descriptor.getClass().getSimpleName().replaceAll("Descriptor", "").toLowerCase();
+                            item.kind = variables[varName].descriptor.getClass().getSimpleName()
+                                .replaceAll("Descriptor", "").toLowerCase();
                             break;
                         default:
                     }
@@ -272,6 +304,9 @@ var WegasDashboard = (function() {
          */
         registerAction: function(id, doFn, cfg) {
             return registerAction(id, doFn, cfg);
+        },
+        registerStatExporter: function(id, activityPattern, cfg){
+            return registerStatExporter(id, activityPattern, cfg);
         },
         getOverview: function(name) {
             return overview(name);

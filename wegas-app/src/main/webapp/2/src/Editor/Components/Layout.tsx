@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { css } from 'emotion';
 import Header from './Header';
-import { DndLinearLayout, Item, Layout } from './LinearTabLayout/LinearLayout';
+import { Item, Layout, DndLinearLayout } from './LinearTabLayout/LinearLayout';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
 const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
 const TreeView = React.lazy(() => import('./Variable/VariableTree'));
 const Editor = React.lazy(() => import('./EntityEditor'));
 const FileBrowserWithMeta = React.lazy(() =>
-  import('./FileBrowser/TreeFileBrowser/FileBrowser'),
+  import('./FileBrowser/FileBrowser'),
 );
 const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
 

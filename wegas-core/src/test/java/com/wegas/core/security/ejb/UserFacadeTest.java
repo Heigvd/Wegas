@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.ejb;
 
+import com.wegas.core.ejb.cron.EjbTimerFacade;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.security.jparealm.JpaAccount;
@@ -17,6 +18,7 @@ import com.wegas.test.arquillian.AbstractArquillianTestMinimal;
 import java.util.Calendar;
 import java.util.List;
 import javax.ejb.EJBException;
+import javax.inject.Inject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +45,9 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
     private static final String ROLE_2 = "Role_2";
 
     private static final String EMAIL = "userfacadetest@local";
+
+    @Inject
+    private EjbTimerFacade ejbTimerFacade;
 
     @Before
     public void setUp() throws Exception {
@@ -182,7 +187,7 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
         accountFacade.merge(account);
 
         login(admin);
-        userFacade.removeIdleGuests();
+        ejbTimerFacade.removeIdleGuests();
 
         Assert.assertEquals(nbUser, userFacade.findAll().size());
     }

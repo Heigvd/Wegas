@@ -10,7 +10,6 @@ package com.wegas.core.rest.exception;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasUniqueConstraintException;
-import java.sql.BatchUpdateException;
 import java.sql.SQLException;
 import javax.ejb.EJBException;
 import javax.enterprise.event.ObserverException;
@@ -46,9 +45,18 @@ public abstract class AbstractExceptionMapper {
 
         if (exception instanceof OptimisticLockException) {
             OptimisticLockException ex = (OptimisticLockException) exception;
-            logger.error("Try to update outated: {}",  ex.getEntity());
+
+            logger.error("Try to update outdated: {}", ex.getEntity());
+            if (ex.getCause() instanceof org.eclipse.persistence.exceptions.OptimisticLockException) {
+                return processException(ex.getCause());
+            }
 
             return Response.status(Response.Status.CONFLICT).entity(new WegasConflictException(exception)).build();
+        } else if (exception instanceof org.eclipse.persistence.exceptions.OptimisticLockException) {
+            org.eclipse.persistence.exceptions.OptimisticLockException ex = (org.eclipse.persistence.exceptions.OptimisticLockException) exception;
+            logger.error("Query: {}", ex.getQuery());
+            return Response.status(Response.Status.CONFLICT).entity(new WegasConflictException(ex)).build();
+
         } else if (exception instanceof RollbackException
                 || exception instanceof TransactionRolledbackException
                 || exception instanceof ObserverException
@@ -77,8 +85,8 @@ public abstract class AbstractExceptionMapper {
                 sb.append(cv.getMessage());
             }
             return Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error(sb.toString())).build();
-        } else if (exception instanceof SQLException && ((SQLException)exception).getNextException() != null){
-            return processException(((SQLException)exception).getNextException());
+        } else if (exception instanceof SQLException && ((SQLException) exception).getNextException() != null) {
+            return processException(((SQLException) exception).getNextException());
         } else {
             if (exception != null) {
                 logger.error(exception.getLocalizedMessage());

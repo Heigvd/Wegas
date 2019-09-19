@@ -17,12 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.github.fge.jsonpatch.JsonPatchException;
-import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.google.common.reflect.TypeToken;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -57,6 +54,7 @@ import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.View;
 import com.wegas.editor.Visible;
 import java.beans.Introspector;
+import java.io.StringReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -68,6 +66,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import javax.json.Json;
+import javax.json.JsonMergePatch;
+import javax.json.JsonValue;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -137,7 +138,12 @@ public class SchemaGenerator extends AbstractMojo {
                         // do not apply patch now
                         Config newConfig = new Config();
                         newConfig.getSchema().setProperty(schema.property(), val);
-                        patches.add(mapper.readValue(mapper.writeValueAsString(newConfig), JsonMergePatch.class));
+
+                        String jsonNewConfig = mapper.writeValueAsString(newConfig);
+                        JsonValue readValue = Json.createReader(new StringReader(jsonNewConfig)).readValue();
+                        JsonMergePatch createMergePatch = Json.createMergePatch(readValue);
+
+                        patches.add(createMergePatch);
                     } else {
                         o.setProperty(schema.property(), val);
                     }
@@ -591,14 +597,14 @@ public class SchemaGenerator extends AbstractMojo {
 
                 if (!c.isInterface()) {
                     /*
-                             * Generate TS interface for classes only
+                     * Generate TS interface for classes only
                      */
                     this.generateTsInterface(wEF, extraProperties);
                 }
                 this.generateInheritanceTable(wEF);
 
                 /*
-                         * Process all public methods (including inherited ones)
+                 * Process all public methods (including inherited ones)
                  */
                 // abstract classes too ? restrict ton concretes ??
                 methods.putAll(Arrays.stream(c.getMethods())
@@ -757,14 +763,23 @@ public class SchemaGenerator extends AbstractMojo {
      */
     private String configToString(Config config, List<JsonMergePatch> patches) {
         try {
-            JsonNode jsonNode = mapper.valueToTree(config);
+            String jsonConfig = mapper.writeValueAsString(config);
+            JsonValue value = Json.createReader(new StringReader(jsonConfig)).readValue();
             for (JsonMergePatch patch : patches) {
-                jsonNode = patch.apply(jsonNode);
+                value = patch.apply(value);
             }
-            return mapper.writeValueAsString(jsonNode);
-        } catch (JsonPatchException | JsonProcessingException ex) {
+            return prettyPrint(value);
+        } catch (JsonProcessingException ex) {
             getLog().error("Failed to generate JSON", ex);
             return "ERROR, SHOULD CRASH";
+        }
+    }
+
+    public static String prettyPrint(JsonValue json) {
+        try {
+            return mapper.writeValueAsString(mapper.readValue(json.toString(), Object.class));
+        } catch (IOException ex) {
+            throw WegasErrorMessage.error("Pretty print fails");
         }
     }
 

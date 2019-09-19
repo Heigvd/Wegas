@@ -173,6 +173,11 @@ public class Helper {
         return t == null || t.isEmpty();
     }
 
+    public static enum NewNameStrategy {
+        ORDINAL,
+        HASH
+    };
+
     /**
      * Given a list of names and a name, generate a new name that is not already
      * used (ie not in usedNames).
@@ -188,30 +193,54 @@ public class Helper {
      *
      * @return name to use in place on initial one
      */
-    private static String findUniqueName(final String name, List<String> usedNames, String pattern, String preSuff, String postSuff) {
+    private static String findUniqueName(final String name, List<String> usedNames,
+            String preSuff, String postSuff,
+            NewNameStrategy strategy) {
+
+        String pattern = "(.+)" + Pattern.quote(preSuff);
+
+        switch (strategy) {
+            case HASH:
+                pattern += "(\\p{Alnum}+)";
+                break;
+            case ORDINAL:
+            default:
+                pattern += "(\\d+)";
+                break;
+        }
+        pattern += Pattern.quote(postSuff);
+
         if (usedNames != null) {
             Pattern p = Pattern.compile(pattern);
             Matcher matcher = p.matcher(name);
 
-            int suff;
+            String suff;
             final String baseName;
             if (matcher.matches()) {
                 baseName = matcher.group(1);
-                suff = Integer.parseInt(matcher.group(2)) + 1;
+                suff = matcher.group(2);
             } else {
                 baseName = name;
-                suff = 2;
+                suff = "1";
             }
 
             String newName = name;
             while (usedNames.contains(newName)) {
+                suff = genNewSuffix(suff, strategy);
                 newName = baseName + preSuff + suff + postSuff;
-                suff++;
             }
 
             return newName;
         } else {
             return name;
+        }
+    }
+
+    private static String genNewSuffix(String suffix, NewNameStrategy strategy) {
+        if (NewNameStrategy.ORDINAL.equals(strategy)) {
+            return "" + (Integer.parseInt(suffix, 10) + 1);
+        } else {
+            return Helper.genToken(6);
         }
     }
 
@@ -231,7 +260,7 @@ public class Helper {
      * @return new unique name to use in place of initial one
      */
     public static String findUniqueName(final String name, List<String> usedNames) {
-        return findUniqueName(name, usedNames, "(.*)_(\\d+)", "_", "");
+        return findUniqueName(name, usedNames, "_", "", NewNameStrategy.HASH);
     }
 
     /**
@@ -250,7 +279,7 @@ public class Helper {
      * @return new unique label to use in place of initial one
      */
     public static String findUniqueLabel(final String label, List<String> usedLabels) {
-        return findUniqueName(label, usedLabels, "(.*) \\((\\d+)\\)", " (", ")");
+        return findUniqueName(label, usedLabels, " (", ")", NewNameStrategy.ORDINAL);
     }
 
     /**
@@ -383,13 +412,28 @@ public class Helper {
      * @param vd
      * @param usedNames
      * @param gameModel
+     * @param forceReset true to reset names to default names
+     *
+     * @return map oldName to newName
      */
-    public static void setUniqueName(final VariableDescriptor vd, List<String> usedNames, GameModel gameModel) {
+    public static Map<String, String> setUniqueName(final VariableDescriptor vd, List<String> usedNames,
+            GameModel gameModel, Boolean forceReset) {
+        Map<String, String> map = new HashMap<>();
+        String oldName = vd.getName();
+        if (forceReset) {
+            vd.setName(vd.getClass().getSimpleName());
+        }
+
         setUniqueNameForEntity(vd, usedNames);
+
+        if (!Helper.isNullOrEmpty(oldName)) {
+            map.put(oldName, vd.getName());
+        }
+
         if (vd instanceof DescriptorListI) {
             // Recursively find unique names for children
             for (Object child : ((DescriptorListI) vd).getItems()) {
-                setUniqueName((VariableDescriptor) child, usedNames, gameModel);
+                map.putAll(setUniqueName((VariableDescriptor) child, usedNames, gameModel, forceReset));
             }
         } else if (vd instanceof ChoiceDescriptor) {
             ChoiceDescriptor cd = (ChoiceDescriptor) vd;
@@ -413,6 +457,8 @@ public class Helper {
                 }
             }
         }
+
+        return map;
     }
 
     public static void setNameAndLabelForLabelledEntityList(List<? extends LabelledEntity> items, String defaultName, GameModel gameModel) {
@@ -919,7 +965,7 @@ public class Helper {
          * @param cacheSize Max size the cache should have
          */
         public LRUCache(int cacheSize) {
-            super(16, 0.75f, true); // default values
+            super(cacheSize * (4 / 3) + 1, 0.75f, true); // default values
             this.cacheSize = cacheSize;
         }
 
@@ -975,6 +1021,26 @@ public class Helper {
 
     public static Level setLoggerLevel(Class klass, Level level) {
         return Helper.setLoggerLevel(LoggerFactory.getLogger(klass), level);
+    }
+
+    public static void log(Logger logger, Level level, String format, Object... argArray) {
+        switch (level) {
+            case ERROR:
+                logger.error(format, argArray);
+                break;
+            case INFO:
+                logger.info(format, argArray);
+                break;
+            case DEBUG:
+                logger.debug(format, argArray);
+                break;
+            case TRACE:
+                logger.trace(format, argArray);
+                break;
+            case WARN:
+                logger.warn(format, argArray);
+                break;
+        }
     }
 
     /**

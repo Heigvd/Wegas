@@ -13,7 +13,6 @@ import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
 import java.util.Collection;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -36,12 +35,12 @@ public class TeamController {
     /**
      *
      */
-    @EJB
+    @Inject
     private TeamFacade teamFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private GameFacade gameFacade;
 
     @Inject

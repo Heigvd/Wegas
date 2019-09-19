@@ -1,5 +1,6 @@
 import { rest } from './rest';
 import { GameModel } from '../data/selectors';
+import { omit } from 'lodash';
 
 /**
  * Compute an absolute path for a path and a fileName.
@@ -106,7 +107,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
         FILE_BASE(gameModelId) + 'update' + generateAbsolutePath(file),
         {
           method: 'PUT',
-          body: JSON.stringify(file),
+          body: JSON.stringify(omit(file, 'bytes')),
         },
       ).then((res: Response) => {
         // 204 is seen as an error as the file wasn't updated

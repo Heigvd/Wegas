@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -137,4 +137,4 @@ Y.StackedImpl = StackedImpl;
 Y.StackedAxisBase = Y.Base.create("stackedAxisBase", Y.NumericAxisBase, [Y.StackedImpl]);
 
 
-}, '3.17.2', {"requires": ["axis-numeric-base"]});
+}, '3.18.1', {"requires": ["axis-numeric-base"]});

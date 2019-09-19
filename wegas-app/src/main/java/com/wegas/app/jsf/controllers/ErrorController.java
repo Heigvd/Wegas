@@ -10,9 +10,9 @@ package com.wegas.app.jsf.controllers;
 import com.wegas.core.ejb.RequestFacade;
 import java.io.IOException;
 import java.io.Serializable;
-import javax.faces.bean.ManagedBean;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.inject.Named;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-@ManagedBean(name = "error")
+@Named("error")
 public class ErrorController implements Serializable {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(RequestFacade.class);

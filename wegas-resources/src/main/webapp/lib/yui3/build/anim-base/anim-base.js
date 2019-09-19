@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -341,7 +341,7 @@ YUI.add('anim-base', function (Y, NAME) {
         },
 
         /**
-         * If true, the `from` and `to` attributes are swapped, 
+         * If true, the `from` and `to` attributes are swapped,
          * and the animation is then run starting from `from`.
          * @attribute reverse
          * @type Boolean
@@ -689,4 +689,4 @@ YUI.add('anim-base', function (Y, NAME) {
     Y.extend(Y.Anim, Y.Base, proto);
 
 
-}, '3.17.2', {"requires": ["base-base", "node-style", "color-base"]});
+}, '3.18.1', {"requires": ["base-base", "node-style", "color-base"]});

@@ -40,10 +40,10 @@
                 <ui:fragment rendered="#{wegasConfig.useYUICDN}">
                     <!-- CDN -->
                     <ui:fragment rendered="#{request.scheme == 'http'}">
-                        <script type="text/javascript" src="http://yui.yahooapis.com/3.17.2/build/yui/yui-min.js"></script>
+                        <script type="text/javascript" src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
                     </ui:fragment>
                     <ui:fragment rendered="#{request.scheme == 'https'}">
-                        <script type="text/javascript" src="https://yui-s.yahooapis.com/3.17.2/build/yui/yui-min.js"></script>
+                        <script type="text/javascript" src="https://yui-s.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
                     </ui:fragment>
                 </ui:fragment>
                 <ui:fragment rendered="#{!wegasConfig.useYUICDN}">

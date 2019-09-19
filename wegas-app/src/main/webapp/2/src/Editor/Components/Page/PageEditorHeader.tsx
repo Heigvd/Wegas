@@ -7,6 +7,7 @@ import { StoreConsumer, StoreDispatch } from '../../../data/store';
 import { Menu } from '../../../Components/Menu';
 import { PageAPI, PageIndex } from '../../../API/pages.api';
 import { IconButton } from '../../../Components/Button/IconButton';
+import { ConfirmButton } from '../../../Components/Button/ConfirmButton';
 
 const pressed = css({ borderStyle: 'inset', outline: 'none' });
 function press(value: boolean) {
@@ -56,7 +57,7 @@ class PageSelector extends React.Component<
             label: (
               <span>
                 {i.name ? `${i.name} (${i.id})` : i.id}
-                <IconButton
+                <ConfirmButton
                   icon="trash"
                   onClick={e => {
                     e.stopPropagation();
@@ -69,6 +70,7 @@ class PageSelector extends React.Component<
                 />
               </span>
             ) as string | React.ReactElement<any>,
+
             id: i.id as string | undefined,
           }))
           .concat([{ label: <IconButton icon="plus" />, id: undefined }]),

@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -299,7 +299,7 @@ var Selector = {
     /**
      * Determines whether or not the given node matches the given CSS selector.
      * @method test
-     * 
+     *
      * @param {HTMLElement} node A node to test.
      * @param {String} selector A CSS selector to test the node against.
      * @param {HTMLElement} root optional A node to start the query from. Defaults to the parent document of the node.
@@ -409,4 +409,4 @@ Y.mix(Y.Selector, Selector, true);
 })(Y);
 
 
-}, '3.17.2', {"requires": ["dom-base"]});
+}, '3.18.1', {"requires": ["dom-base"]});

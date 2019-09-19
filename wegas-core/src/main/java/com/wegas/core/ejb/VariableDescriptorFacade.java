@@ -10,12 +10,14 @@ package com.wegas.core.ejb;
 import com.wegas.core.AlphanumericComparator;
 import com.wegas.core.Helper;
 import com.wegas.core.api.VariableDescriptorFacadeI;
+import com.wegas.core.ejb.GameModelFacade.FindAndReplaceVisitor;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -34,20 +36,28 @@ import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
+import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
+import com.wegas.core.persistence.variable.statemachine.DialogueState;
+import com.wegas.core.persistence.variable.statemachine.DialogueTransition;
+import com.wegas.core.rest.FindAndReplacePayload;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
+import com.wegas.mcq.persistence.Result;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
+import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.reviewing.ejb.ReviewingFacade;
+import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.EJB;
+import java.util.Map.Entry;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -72,10 +82,10 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     /**
      *
      */
-    @EJB
+    @Inject
     private GameModelFacade gameModelFacade;
 
-    @EJB
+    @Inject
     private VariableInstanceFacade variableInstanceFacade;
 
     @Inject
@@ -155,7 +165,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      *
      * @return the new descriptor
      */
-    public VariableDescriptor createChild(final GameModel gameModel, final DescriptorListI<VariableDescriptor> list, final VariableDescriptor entity) {
+    public VariableDescriptor createChild(final GameModel gameModel, final DescriptorListI<VariableDescriptor> list,
+            final VariableDescriptor entity, boolean resetNames) {
 
         List<String> usedNames = this.findDistinctNames(gameModel, entity.getRefId());
         List<TranslatableContent> usedLabels = this.findDistinctLabels(list);
@@ -177,7 +188,20 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             entity.setName(entity.getEditorTag());
         }
 
-        Helper.setUniqueName(entity, usedNames, gameModel);
+        Map<String, String> newNames = Helper.setUniqueName(entity, usedNames, gameModel, resetNames);
+
+        // some impacts may impact renamed variable. -> update them to impact the new variable name
+        for (Entry<String, String> newName : newNames.entrySet()) {
+            FindAndReplacePayload payload = new FindAndReplacePayload();
+            payload.setRegex(false);
+            payload.setFind("Variable.find(gameModel, \"" + newName.getKey() + "\")");
+            payload.setReplace("Variable.find(gameModel, \"" + newName.getValue() + "\")");
+            payload.setPretend(false);
+
+            FindAndReplaceVisitor replacer = new FindAndReplaceVisitor(payload);
+            MergeHelper.visitMergeable(entity, true, replacer);
+        }
+
         Helper.setUniqueLabel(entity, usedLabels, gameModel);
 
         list.addItem(entity);
@@ -259,7 +283,91 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     }
 
     public void reviveDescriptor(GameModel gm, VariableDescriptor vd) {
-        vd.revive(gm, getBeans());
+        if (vd instanceof ChoiceDescriptor) {
+            this.reviveChoiceDescriptor(gm, (ChoiceDescriptor) vd);
+        }
+
+        this._revive(gm, vd);
+
+        if (vd instanceof PeerReviewDescriptor) {
+            reviewingFacade.revivePeerReviewDescriptor((PeerReviewDescriptor) vd);
+        } else if (vd instanceof TaskDescriptor) {
+            resourceFacade.reviveTaskDescriptor((TaskDescriptor) vd);
+        } else if (vd instanceof DialogueDescriptor) {
+            this.reviveDialogue(gm, (DialogueDescriptor) vd);
+        }
+    }
+
+    public void reviveDialogue(GameModel gameModel, DialogueDescriptor dialogueDescriptor) {
+        for (DialogueState s : dialogueDescriptor.getInternalStates()) {
+            if (s.getText() != null) {
+                s.getText().setParentDescriptor(dialogueDescriptor);
+            }
+
+            for (DialogueTransition t : s.getTransitions()) {
+                if (t.getActionText() != null) {
+                    t.getActionText().setParentDescriptor(dialogueDescriptor);
+                }
+            }
+        }
+    }
+
+    private void _revive(GameModel gameModel, VariableDescriptor vd) {
+        if (vd.getDeprecatedTitle() != null) {
+            String title = vd.getDeprecatedTitle();
+            if (title.isEmpty()) {
+                // title is defined but empty -> not prefix, don't change label
+                // eg:  label="[r5b] Meet someone'; title=""; prefix = ""; label="[r5b] Meet someone"
+                vd.setEditorTag("");
+            } else {
+                String importedLabel = vd.getLabel().translateOrEmpty(gameModel);
+                if (importedLabel == null) {
+                    importedLabel = "";
+                }
+                // eg:  label="[r5b] Meet someone'; title="Meet someone"; prefix = "[r5b]"; label="Meet someone"
+                // eg:  label="Meet someone'; title="Meet someone"; prefix = ""; label="Meet someone"
+                // eg:  label=""; title="Meet someone"; prefix = ""; label="Meet someone"
+                vd.setEditorTag(importedLabel.replace(title, "").trim());
+                List<GameModelLanguage> languages = gameModel.getLanguages();
+                if (languages != null && !languages.isEmpty()) {
+                    vd.setLabel(TranslatableContent.build(languages.get(0).getCode(), title));
+                }
+            }
+            vd.setTitle(null);
+        }
+    }
+
+    private void reviveChoiceDescriptor(GameModel gameModel, ChoiceDescriptor choiceDescriptor) {
+        if (choiceDescriptor.getDeprecatedTitle() != null) {
+            String title = choiceDescriptor.getDeprecatedTitle();
+            // use deprecated title > upgrade
+            String importedLabel = choiceDescriptor.getLabel().translateOrEmpty(gameModel);
+            if (importedLabel == null) {
+                importedLabel = "";
+            }
+            // title = "", label= "" => prefix = "", label=""
+            // title = "", label= "[r5b] Meet someone" => prefix = "[r5b] Meet someone", label=""
+            // title = "Meet someone", label= "[r5b] Meet someone" => prefix = "[r5b]", label="Meet someone"
+            // title = "Meet someone", label="" => prefix = "", label="Meet someone"
+            choiceDescriptor.setEditorTag(importedLabel.replace(title, "").trim());
+
+            List<GameModelLanguage> languages = gameModel.getLanguages();
+            if (languages != null && !languages.isEmpty()) {
+                choiceDescriptor.setLabel(TranslatableContent.build(languages.get(0).getCode(), title));
+            }
+            choiceDescriptor.setTitle(null);
+        }
+        for (Result r : choiceDescriptor.getResults()) {
+            if (r.getLabel() != null) {
+                r.getLabel().setParentDescriptor(choiceDescriptor);
+            }
+            if (r.getAnswer() != null) {
+                r.getAnswer().setParentDescriptor(choiceDescriptor);
+            }
+            if (r.getIgnorationAnswer() != null) {
+                r.getIgnorationAnswer().setParentDescriptor(choiceDescriptor);
+            }
+        }
     }
 
     @Deprecated
@@ -321,7 +429,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      */
     public VariableDescriptor createChild(final Long parentDescriptorId, final VariableDescriptor entity) {
         VariableDescriptor parent = this.find(parentDescriptorId);
-        return this.createChild(parent.getGameModel(), (DescriptorListI) parent, entity);
+        return this.createChild(parent.getGameModel(), (DescriptorListI) parent, entity, false);
     }
 
     /**
@@ -342,7 +450,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                 }
             }
         } // */
-        this.createChild(find, find, variableDescriptor);
+        this.createChild(find, find, variableDescriptor, false);
     }
 
     /**
@@ -365,11 +473,11 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         }
 
         final DescriptorListI list = oldEntity.getParent();
-        this.createChild(oldEntity.getGameModel(), list, newEntity);
+        this.createChild(oldEntity.getGameModel(), list, newEntity, true);
         return newEntity;
     }
 
-    private VariableDescriptor resetVisibility(VariableDescriptor vd, Visibility visibility) {
+    public VariableDescriptor resetVisibility(VariableDescriptor vd, Visibility visibility) {
         vd.setVisibility(visibility);
         if (vd instanceof DescriptorListI) {
             for (VariableDescriptor child : (List<? extends VariableDescriptor>) ((DescriptorListI) vd).getItems()) {
@@ -450,7 +558,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
             this.remove(vd);
 
-            this.createChild(gameModel, parent, ld);
+            this.createChild(gameModel, parent, ld, false);
 
             ld.setName(vdName);
         }

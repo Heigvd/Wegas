@@ -23,11 +23,9 @@ import org.apache.shiro.util.SimpleByteSource;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-@NamedQueries({
-    @NamedQuery(name = "JpaAccount.findExactClass", query = "SELECT a FROM JpaAccount a WHERE TYPE(a) = JpaAccount"),
-    @NamedQuery(name = "JpaAccount.findByEmail", query = "SELECT a FROM JpaAccount a WHERE TYPE(a) = JpaAccount AND LOWER(a.email) LIKE LOWER(:email)"),
-    @NamedQuery(name = "JpaAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) = JpaAccount AND a.username = :username")
-})
+@NamedQuery(name = "JpaAccount.findExactClass", query = "SELECT a FROM JpaAccount a WHERE TYPE(a) = JpaAccount")
+@NamedQuery(name = "JpaAccount.findByEmail", query = "SELECT a FROM JpaAccount a WHERE TYPE(a) = JpaAccount AND LOWER(a.email) LIKE LOWER(:email)")
+@NamedQuery(name = "JpaAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) = JpaAccount AND a.username = :username")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class JpaAccount extends AbstractAccount {
 
@@ -55,16 +53,12 @@ public class JpaAccount extends AbstractAccount {
     /**
      *
      */
-    @JsonIgnore
-    private String salt;
-
-    /**
-     *
-     */
     @PrePersist
     public void prePersist() {
         RandomNumberGenerator rng = new SecureRandomNumberGenerator();
-        this.setSalt(rng.nextBytes().toHex());
+        if (this.getSalt() == null) {
+            this.setSalt(rng.nextBytes().toHex());
+        }
         if (this.password == null || this.password.isEmpty()) {
             this.password = rng.nextBytes().toString().substring(0, 7);
         }
@@ -114,20 +108,6 @@ public class JpaAccount extends AbstractAccount {
      */
     public void setPasswordHex(String passwordHex) {
         this.passwordHex = passwordHex;
-    }
-
-    /**
-     * @return the salt
-     */
-    public String getSalt() {
-        return salt;
-    }
-
-    /**
-     * @param salt the salt to set
-     */
-    public void setSalt(String salt) {
-        this.salt = salt;
     }
 
     @Override

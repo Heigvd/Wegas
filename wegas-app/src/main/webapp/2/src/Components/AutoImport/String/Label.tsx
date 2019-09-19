@@ -48,6 +48,9 @@ export function StyledLabel({
         onLabelVanish && onLabelVanish();
       }, duration);
     }
+    return () => {
+      clearTimeout(timeout.current);
+    };
   }, [value, duration, onLabelVanish]);
 
   let color = '';

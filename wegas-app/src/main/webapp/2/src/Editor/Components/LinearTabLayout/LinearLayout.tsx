@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
 import 'react-reflex/styles.css';
 import { DefaultDndProvider } from '../../../Components/DefaultDndProvider';
@@ -20,6 +20,9 @@ const splitter = css({
 
 const flex = css({
   display: 'flex',
+});
+
+const grow = css({
   flex: '1 1 auto',
 });
 
@@ -730,9 +733,7 @@ const reduceChildren = (
         (newChildren as React.ReactElement<ItemProps>[]).forEach(child => {
           if (!tabs[child.props.label]) {
             throw Error(
-              `The tab ${
-                child.props.label
-              } doesn't exist. All the used tabs must be given in the tabs props of the LinearLayout`,
+              `The tab ${child.props.label} doesn't exist. All the used tabs must be given in the tabs props of the LinearLayout`,
             );
           }
           newLayoutMap.layoutMap[parentLayoutKey].children.push(
@@ -919,6 +920,7 @@ function MainLinearLayout(props: LinearLayoutProps) {
                   })
                 }
                 minSize={50}
+                className={flex}
               >
                 {renderLayouts(childKey)}
               </ReflexElement>,
@@ -948,7 +950,7 @@ function MainLinearLayout(props: LinearLayoutProps) {
       }}
     >
       <ReparentableRoot>
-        <div className={flex}>{renderLayouts()}</div>
+        <div className={cx(flex, grow)}>{renderLayouts()}</div>
       </ReparentableRoot>
     </selectContext.Provider>
   );

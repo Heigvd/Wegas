@@ -9,15 +9,11 @@ package com.wegas.core.ejb;
 
 import javax.inject.Inject;
 import javax.persistence.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  */
 public abstract class WegasAbstractFacade {
-
-    private static final Logger logger = LoggerFactory.getLogger(WegasAbstractFacade.class);
 
     @Inject
     protected RequestManager requestManager;

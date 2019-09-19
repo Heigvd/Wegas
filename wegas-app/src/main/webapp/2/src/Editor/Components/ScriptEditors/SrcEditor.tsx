@@ -2,6 +2,28 @@ import { css } from 'emotion';
 import * as React from 'react';
 import { SizedDiv } from '../../../Components/SizedDiv';
 
+interface EditorAction {
+  /**
+   * id - An unique identifier of the contributed action.
+   */
+  id: string;
+  /**
+   * label - A label of the action that will be presented to the user.
+   */
+  label: string;
+  /**
+   * keys - An optional array of keybindings for the action.
+   */
+  keybindings?: number[];
+  /**
+   * run - the function to be fired with the action
+   */
+  run: (
+    monaco: typeof import('monaco-editor'),
+    editor: import('monaco-editor').editor.ICodeEditor,
+  ) => void;
+}
+
 interface EditorProps {
   /**
    * value - the content of the editor
@@ -18,7 +40,12 @@ interface EditorProps {
   /**
    * langauge - the editor language
    */
-  language: 'javascript' | 'css' | 'json' | 'plaintext';
+  language: 'javascript' | 'plaintext' | 'css' | 'json' | 'typescript';
+  /**
+   * cursorOffset - the position of the cursor in the text
+   */
+  cursorOffset?: number;
+
   /**
    * onChange - this function is fired each time the content of the editor is changed by the user
    */
@@ -36,6 +63,18 @@ interface EditorProps {
    * To apply changes you must rerender the whole editor (i.e : change the key of the componnent)
    */
   defaultUri?: 'internal://page.json';
+  /**
+   * defaultKeyEvents - a list of key event to be caught in the editor
+   */
+  defaultActions?: EditorAction[];
+  /**
+   * defaultFocus - force editor to focus on first render
+   */
+  defaultFocus?: boolean;
+  /**
+   * defaultExtraLibs - libraries to add to the editor intellisense
+   */
+  defaultExtraLibs?: { content: string; name?: string }[];
 }
 
 const overflowHide = css({
@@ -60,7 +99,8 @@ class SrcEditor extends React.Component<EditorProps> {
       nextProps.value !== this.lastValue ||
       nextProps.language !== this.props.language ||
       nextProps.readonly !== this.props.readonly ||
-      nextProps.minimap !== this.props.minimap
+      nextProps.minimap !== this.props.minimap ||
+      nextProps.cursorOffset !== this.props.cursorOffset
     );
   }
 
@@ -75,6 +115,9 @@ class SrcEditor extends React.Component<EditorProps> {
           this.editor.setValue('');
         }
         this.outsideChange = false;
+        if (this.props.defaultFocus) {
+          this.editor.focus();
+        }
       }
       if (this.props.language !== prevProps.language) {
         import('monaco-editor').then(monaco => {
@@ -92,6 +135,12 @@ class SrcEditor extends React.Component<EditorProps> {
       if (this.props.minimap !== prevProps.minimap) {
         this.editor.updateOptions({ minimap: { enabled: this.props.minimap } });
       }
+      if (this.props.cursorOffset !== prevProps.cursorOffset) {
+        const model = this.editor.getModel();
+        if (model && this.props.cursorOffset) {
+          this.editor.setPosition(model.getPositionAt(this.props.cursorOffset));
+        }
+      }
       this.editor.layout();
     }
   }
@@ -104,16 +153,53 @@ class SrcEditor extends React.Component<EditorProps> {
     ]).then(([monaco, t]) => {
       if (this.container != null) {
         this.lastValue = this.props.value;
-        monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-          validate: true,
-          schemas: [
-            {
-              fileMatch: ['page.json'],
-              uri: 'internal://page-schema.json',
-              schema: (t as any).schema,
-            },
-          ],
-        });
+        // Next line should be called only in json page editor...
+        if (this.props.language === 'json') {
+          monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+            validate: true,
+            schemas: [
+              {
+                fileMatch: ['page.json'],
+                uri: 'internal://page-schema.json',
+                schema: (t as any).schema,
+              },
+            ],
+          });
+        }
+
+        // Next code should be called only in javascript...
+        if (this.props.language === 'javascript') {
+          monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+            noLib: false,
+            allowNonTsExtensions: true,
+          });
+          if (this.props.defaultExtraLibs && this.props.language) {
+            for (const lib of this.props.defaultExtraLibs) {
+              monaco.languages.typescript.javascriptDefaults.addExtraLib(
+                lib.content,
+                lib.name,
+              );
+            }
+          }
+        }
+
+        // Next code should be called only in typescript...
+        if (this.props.language === 'typescript') {
+          monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+            noLib: false,
+            allowNonTsExtensions: true,
+            allowJs: true,
+          });
+          if (this.props.defaultExtraLibs && this.props.language) {
+            for (const lib of this.props.defaultExtraLibs) {
+              monaco.languages.typescript.typescriptDefaults.addExtraLib(
+                lib.content,
+                lib.name,
+              );
+            }
+          }
+        }
+
         const model = monaco.editor.createModel(
           this.props.value || '',
           this.props.language,
@@ -139,14 +225,31 @@ class SrcEditor extends React.Component<EditorProps> {
             this.props.onChange(this.lastValue);
           }
         });
-        this.editor.addCommand(
-          monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
-          () => {
+
+        this.editor.addAction({
+          id: 'onSave',
+          label: 'Save code',
+          keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S],
+          run: () => {
             if (this.editor && this.props.onSave) {
               this.props.onSave(this.editor.getValue());
             }
           },
-        );
+        });
+
+        if (this.props.defaultActions) {
+          this.props.defaultActions.forEach(action => {
+            if (this.editor) {
+              this.editor.addAction({
+                ...action,
+                run: editor => action.run(monaco, editor),
+              });
+            }
+          });
+        }
+        if (this.props.defaultFocus) {
+          this.editor.focus();
+        }
       }
     });
   }
@@ -160,6 +263,9 @@ class SrcEditor extends React.Component<EditorProps> {
       return this.editor.getValue();
     }
     return this.lastValue;
+  }
+  getEditor() {
+    return this.editor;
   }
   componentWillUnmount() {
     if (this.editor != null && this.editor.getModel() !== null) {
