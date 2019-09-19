@@ -49,7 +49,7 @@ export function FileBrowser({
         <StyledLabel value={error} type={'error'} duration={3000} />
         {rootFile ? (
           <FileBrowserNode
-            currentFile={rootFile}
+            defaultFile={rootFile}
             selectedPaths={selectedPaths}
             noBracket
             noDelete
