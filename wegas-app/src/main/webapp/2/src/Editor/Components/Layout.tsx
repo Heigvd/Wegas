@@ -11,6 +11,7 @@ const FileBrowserWithMeta = React.lazy(() =>
   import('./FileBrowser/FileBrowser'),
 );
 const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
+const HTMLEditor = React.lazy(() => import('../../Components/HTMLEditor'));
 
 const layout = css({
   display: 'flex',
@@ -29,6 +30,21 @@ export default class AppLayout extends React.Component<
     };
   }
   render() {
+    const TestEditor = () => (
+      <>
+        <HTMLEditor
+          value={'<div>Tadaaaaaa</div>'}
+          onChange={val => alert('CHANGE : ' + val)}
+          onSave={val => alert('SAVE : ' + val)}
+        />
+        <HTMLEditor
+          value={'<div>Blablaaaa</div>'}
+          onChange={val => alert('CHANGE : ' + val)}
+          onSave={val => alert('SAVE : ' + val)}
+        />
+      </>
+    );
+
     return (
       <div className={layout}>
         <Header />
@@ -52,6 +68,9 @@ export default class AppLayout extends React.Component<
             <Item key="Scripts" label="Scripts">
               <LibraryEditor />
             </Item>,
+            <Item key="TestEditor" label="TestEditor">
+              <TestEditor />
+            </Item>,
           ]}
         >
           <Layout>
@@ -62,6 +81,9 @@ export default class AppLayout extends React.Component<
           <Layout>
             <Item label="Page">
               <PageDisplay />
+            </Item>
+            <Item label="TestEditor">
+              <TestEditor />
             </Item>
             <Item label="StateMachine">
               <StateMachineEditor />

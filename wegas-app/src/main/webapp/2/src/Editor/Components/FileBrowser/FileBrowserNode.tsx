@@ -3,11 +3,7 @@ import { useDrop, DragObjectWithType, DropTargetMonitor } from 'react-dnd';
 import { css, cx } from 'emotion';
 import { themeVar } from '../../../Components/Theme';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import {
-  generateAbsolutePath,
-  FileAPI,
-  FILE_BASE,
-} from '../../../API/files.api';
+import { generateAbsolutePath, FileAPI, fileURL } from '../../../API/files.api';
 import { IconButton } from '../../../Components/Button/IconButton';
 import { TextPrompt } from '../TextPrompt';
 import { ConfirmButton } from '../../../Components/Button/ConfirmButton';
@@ -48,19 +44,6 @@ const dropZoneStyle = css({
 
 const isDirectory = (file: IFileDescriptor) =>
   file.mimeType === 'application/wfs-directory';
-
-/**
- * Returns url to read a file
- * @param absolutePath the absolute path of the file to read
- */
-const fileURL = (absolutePath: string) => {
-  return (
-    API_ENDPOINT +
-    FILE_BASE(GameModel.selectCurrent().id!) +
-    'read' +
-    absolutePath
-  );
-};
 
 const isSelected = (file: IFileDescriptor, selectedPaths: string[]) =>
   selectedPaths.includes(generateAbsolutePath(file));

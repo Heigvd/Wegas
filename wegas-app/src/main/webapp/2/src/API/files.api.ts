@@ -21,6 +21,19 @@ export const FILE_BASE = (gameModelId?: number) =>
     gameModelId === undefined ? GameModel.selectCurrent().id! : gameModelId
   }/File/`;
 
+/**
+ * Returns url to read a file
+ * @param absolutePath the absolute path of the file to read
+ */
+export const fileURL = (absolutePath: string) => {
+  return (
+    API_ENDPOINT +
+    FILE_BASE(GameModel.selectCurrent().id!) +
+    'read' +
+    absolutePath
+  );
+};
+
 export const FileAPIFactory = (gameModelId?: number) => {
   return {
     /**
