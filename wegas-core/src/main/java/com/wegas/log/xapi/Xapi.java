@@ -158,7 +158,7 @@ public class Xapi implements XapiI {
             stmt.setContext(this.genContext());
             xapiTx.post(stmt);
         } else {
-            logger.warn("Failed to persist an xapi statement, invalid context\n{}", serialize(stmt));
+            logger.info("Failed to persist an xapi statement, invalid context\n{}", serialize(stmt));
         }
     }
 
@@ -171,7 +171,7 @@ public class Xapi implements XapiI {
             xapiTx.post(new ArrayList<>(stmts));
         } else {
             for (Statement s : stmts) {
-                logger.warn("Failed to persist an xapi statement, invalid context\n{}", serialize(s));
+                logger.info("Failed to persist an xapi statement, invalid context\n{}", serialize(s));
             }
         }
     }

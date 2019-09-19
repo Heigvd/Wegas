@@ -1746,9 +1746,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         scenarios.add(gameModel2);
         scenarios.add(gameModel3);
 
-        i18nFacade.printTranslations(gameModel1.getId(), "en", "fr");
-        i18nFacade.printTranslations(gameModel2.getId(), "en", "fr");
-        i18nFacade.printTranslations(gameModel3.getId(), "en", "fr");
+        //i18nFacade.printTranslations(gameModel1.getId(), "en", "fr");
+        //i18nFacade.printTranslations(gameModel2.getId(), "en", "fr");
+        //i18nFacade.printTranslations(gameModel3.getId(), "en", "fr");
         logger.info("Create Model");
         GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
 
@@ -1769,10 +1769,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModel2 = gameModelFacade.find(gameModel2.getId());
         gameModel3 = gameModelFacade.find(gameModel3.getId());
 
-        i18nFacade.printTranslations(model, "en", "fr");
-        i18nFacade.printTranslations(gameModel1.getId(), "en", "fr");
-        i18nFacade.printTranslations(gameModel2.getId(), "en", "fr");
-        i18nFacade.printTranslations(gameModel3.getId(), "en", "fr");
+        //i18nFacade.printTranslations(model, "en", "fr");
+        //i18nFacade.printTranslations(gameModel1.getId(), "en", "fr");
+        //i18nFacade.printTranslations(gameModel2.getId(), "en", "fr");
+        //i18nFacade.printTranslations(gameModel3.getId(), "en", "fr");
         Assert.assertNull("French is missing in gameModel1", gameModel1.getLanguageByCode("fr"));
         Assert.assertNotNull("English is missing in gameModel1", gameModel1.getLanguageByCode("en"));
 
@@ -1875,10 +1875,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModel2 = gameModelFacade.find(gameModel2.getId());
         gameModel3 = gameModelFacade.find(gameModel3.getId());
 
-        i18nFacade.printTranslations(model.getId(), "en", "fr", "de");
-        i18nFacade.printTranslations(gameModel1.getId(), "en", "fr", "de");
-        i18nFacade.printTranslations(gameModel2.getId(), "en", "fr", "de");
-        i18nFacade.printTranslations(gameModel3.getId(), "en", "fr", "de");
+        //i18nFacade.printTranslations(model.getId(), "en", "fr", "de");
+        //i18nFacade.printTranslations(gameModel1.getId(), "en", "fr", "de");
+        //i18nFacade.printTranslations(gameModel2.getId(), "en", "fr", "de");
+        //i18nFacade.printTranslations(gameModel3.getId(), "en", "fr", "de");
 
         Assert.assertNotNull("German is missing in model", model.getLanguageByCode("de"));
         Assert.assertNotNull("German is missing in gameModel1", gameModel1.getLanguageByCode("de"));
