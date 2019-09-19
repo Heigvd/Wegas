@@ -11,7 +11,8 @@ app.once("render",
          */
         Y.Wegas.Facade.Variable.on("WegasOutOfBoundException", Y.bind(function(e) {
             if (e.variableName === "time") {
-                Y.Wegas.Alerts.showMessage("warn", Y.Wegas.Facade.Variable.cache.find("name", "messageNoTime").getValue());
+                Y.Wegas.Alerts.showMessage("warn", Y.Wegas.Facade.Variable.cache.find("name", "messageNoTime")
+                    .getValue());
                 e.halt();
             }
         }, this));
@@ -25,6 +26,8 @@ app.once("render",
 
             return "no";
         };
+
+        Y.use('wegas-mbenefits-css', function() {});
     }
 );
 

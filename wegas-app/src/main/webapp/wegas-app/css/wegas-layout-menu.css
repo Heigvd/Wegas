@@ -99,3 +99,8 @@
     position: absolute;
     right: 2px;
 }
+
+.wegas-i18n-menu:not(.wegas-layout-menu-inline) .wegas-i18n-menu-content > div {
+    padding-left: 20px;
+    padding-right: 20px;
+}
