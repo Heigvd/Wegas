@@ -50,13 +50,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.ejb.EJBException;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.naming.NamingException;
 import javax.ws.rs.core.MediaType;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -102,7 +102,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         vdLevel = Helper.setLoggerLevel(VariableDescriptor.class, Level.DEBUG);
     }
 
-    @AfterClass
+    //@AfterClass
     public static void rollbackLevels() {
         Helper.setLoggerLevel(ModelFacade.class, mfLevel);
         Helper.setLoggerLevel(WegasPatch.class, wpLevel);
@@ -668,6 +668,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
          */
         modelFacade.propagateModel(model.getId());
 
+        gameModelFacade.reset(gameModel1.getId());
+        gameModelFacade.reset(gameModel2.getId());
+
         logger.debug(Helper.printGameModel(gameModelFacade.find(model.getId())));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel2.getId())));
@@ -1098,6 +1101,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         logger.info("Initial Model Propagation");
         model = modelFacade.propagateModel(model.getId());
+        gameModelFacade.reset(gameModel1.getId());
+        gameModelFacade.reset(gameModel2.getId());
+        gameModelFacade.reset(gameModel3.getId());
 
         logger.debug(Helper.printGameModel(model));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
@@ -1177,6 +1183,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         logger.info("Propagate Model Update");
         modelFacade.propagateModel(model.getId());
 
+        gameModelFacade.reset(gameModel1.getId());
+        gameModelFacade.reset(gameModel2.getId());
+        gameModelFacade.reset(gameModel3.getId());
+
         /*
          * X: Model override scenarios
          */
@@ -1241,6 +1251,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         logger.info("Propagate Model: Create Alpha &Pi; Remove Z and move X");
         modelFacade.propagateModel(model.getId());
 
+        gameModelFacade.reset(gameModel1.getId());
+        gameModelFacade.reset(gameModel2.getId());
+        gameModelFacade.reset(gameModel3.getId());
+
         /**
          * Assert new descriptor stand in the correct folder
          */
@@ -1277,6 +1291,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         logger.info("Propagate Model: Remove X");
         modelFacade.propagateModel(model.getId());
 
+        gameModelFacade.reset(gameModel1.getId());
+        gameModelFacade.reset(gameModel2.getId());
+        gameModelFacade.reset(gameModel3.getId());
+
         /**
          * Assert x no longer exists
          */
@@ -1301,6 +1319,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         logger.info("Propagate Model: Update Y.value; move Y to Root");
         modelFacade.propagateModel(model.getId());
+
+        gameModelFacade.reset(gameModel1.getId());
+        gameModelFacade.reset(gameModel2.getId());
+        gameModelFacade.reset(gameModel3.getId());
 
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel2.getId())));

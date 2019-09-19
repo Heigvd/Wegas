@@ -142,6 +142,7 @@ ${JAVA_HOME}/java ${DEBUG_OPTS} ${JDK_EXTRA_OPTS} ${SSL_OPTS} ${GC} ${HTTP2_OPTS
     -Declipselink.cache.coordination.protocol=fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager \
     -Declipselink.cache.coordination.channel=${HZ_CLUSTER_NAME} \
     -jar ${PAYARA_MICRO} --deploy ${THE_WAR} --domainconfig ${DOMAIN_XML} --addlibs target/extra-libs --clusterName ${HZ_CLUSTER_NAME} \
+    --interfaces 127.0.0.1 \
     --systemproperties ${WEGAS_PROPERTIES} --autobindhttp --autobindssl &
 PID=$!
 
