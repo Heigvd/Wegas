@@ -49,7 +49,7 @@ export function FileBrowser({
         <StyledLabel value={error} type={'error'} duration={3000} />
         {rootFile ? (
           <FileBrowserNode
-            currentFile={rootFile}
+            defaultFile={rootFile}
             selectedPaths={selectedPaths}
             noBracket
             noDelete
@@ -64,7 +64,7 @@ export function FileBrowser({
   );
 }
 
-export function FileBrowserWithMeta() {
+export default function FileBrowserWithMeta() {
   const [selectedFile, setSelectedFile] = React.useState<IFileDescriptor>();
   const [error, setError] = React.useState<string>('');
   const fileUpdate = React.useRef<(updatedFile: IFileDescriptor) => void>(
@@ -101,7 +101,7 @@ export function FileBrowserWithMeta() {
   return (
     <div className={cx(flex, grow)}>
       <ReflexContainer orientation={'vertical'}>
-        <ReflexElement minSize={30}>
+        <ReflexElement>
           <FileBrowser
             onFileClick={onFileClick}
             onDelelteFile={file => {

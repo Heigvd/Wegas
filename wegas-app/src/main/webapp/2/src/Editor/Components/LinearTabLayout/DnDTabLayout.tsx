@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useDrop, DropTargetMonitor } from 'react-dnd';
-import { DnDropTab, Tab, dndAcceptType, DragTab } from './DnDTabs';
+import { Tab, dndAcceptType, DragTab, DropTab } from './DnDTabs';
 import { IconButton } from '../../../Components/Button/IconButton';
 import { Toolbar } from '../../../Components/Toolbar';
 import { Menu } from '../../../Components/Menu';
@@ -11,6 +11,32 @@ import { DropActionType } from './LinearLayout';
 
 const hidden = css({
   display: 'none',
+});
+
+const grow = css({
+  flex: '1 1 auto',
+});
+const flex = css({
+  display: 'flex',
+});
+const relative = css({
+  position: 'relative',
+});
+const absoute = css({
+  position: 'absolute',
+});
+
+const expand = css({
+  width: '100%',
+  height: '100%',
+});
+
+const scroll = css({
+  overflow: 'auto',
+});
+
+const noscroll = css({
+  overflow: 'hidden',
 });
 
 const buttonStyle = css({
@@ -60,16 +86,6 @@ const dropBottomZone = css({
   bottom: 0,
 });
 
-const grow = css({
-  flex: '1 1 auto',
-});
-const flex = css({
-  display: 'flex',
-});
-const relative = css({
-  position: 'relative',
-});
-
 export interface ComponentMap {
   [name: string]: React.ReactNode;
 }
@@ -77,13 +93,13 @@ export interface ComponentMap {
 export const filterMap = (
   map: ComponentMap,
   filterFN: (k: string, i: number) => boolean,
-) => {
-  const newComponents: ComponentMap = {};
+) =>
   Object.keys(map)
     .filter((k, i) => filterFN(k, i))
-    .map(k => (newComponents[k] = map[k]));
-  return newComponents;
-};
+    .reduce<ComponentMap>(
+      (newComponents, k) => ({ ...newComponents, [k]: map[k] }),
+      {},
+    );
 
 export type DropAction = (item: { label: string; type: string }) => void;
 
@@ -98,9 +114,10 @@ export const dropSpecsFactory = (action: DropAction) => {
     accept: dndAcceptType,
     canDrop: () => true,
     drop: action,
-    collect: (mon: DropTargetMonitor) => {
-      return { isOver: mon.isOver(), canDrop: mon.canDrop() };
-    },
+    collect: (mon: DropTargetMonitor) => ({
+      isOver: mon.isOver(),
+      canDrop: mon.canDrop(),
+    }),
   };
 };
 
@@ -176,18 +193,29 @@ export function DnDTabLayout({
   const [dropBottomProps, dropBottom] = useDrop(
     dropSpecsFactory(onDrop('BOTTOM')),
   );
+  const [dropTabsProps, dropTabs] = useDrop({
+    accept: dndAcceptType,
+    canDrop: () => false,
+    collect: (mon: DropTargetMonitor) => ({ isOver: mon.isOver() }),
+  });
 
   /**
    * renderTabs generates a list with draggable and dropable tabs for the tabLayout
    */
-  const renderTabs = React.useCallback(() => {
+  const renderTabs = () => {
     const tabs = [];
     const componentsKeys = Object.keys(components);
     for (let i = 0; i < componentsKeys.length; i += 1) {
       const label = componentsKeys[i];
 
       // Always put a dropTab on the left of a tab
-      tabs.push(<DnDropTab key={label + 'LEFTDROP'} onDrop={onDropTab(i)} />);
+      tabs.push(
+        <DropTab
+          key={label + 'LEFTDROP'}
+          onDrop={onDropTab(i)}
+          disabled={!dropTabsProps.isOver}
+        />,
+      );
 
       tabs.push(
         <DragTab
@@ -213,81 +241,97 @@ export function DnDTabLayout({
       // At the end, don't forget to add a dropTab on the right of the last tab
       if (Number(i) === componentsKeys.length - 1) {
         tabs.push(
-          <DnDropTab key={label + 'RIGHTDROP'} onDrop={onDropTab(i + 1)} />,
+          <DropTab
+            key={label + 'RIGHTDROP'}
+            onDrop={onDropTab(i + 1)}
+            disabled={!dropTabsProps.isOver}
+          />,
         );
       }
     }
     return tabs;
-  }, [components, activeLabel, onDeleteTab, onDropTab, onSelect]);
+  };
 
   return (
     <Toolbar vertical={vertical}>
       <Toolbar.Header>
-        {renderTabs()}
-        {selectItems && Object.keys(selectItems).length > 0 && (
-          <Tab key={'-1'}>
-            <Menu
-              items={Object.keys(selectItems).map(label => {
-                return { label: label, value: label };
-              })}
-              icon="plus"
-              onSelect={i => {
-                onSelect && onSelect(i.value);
-                onNewTab(String(i.value));
-              }}
-              buttonClassName={buttonStyle}
-              listClassName={listStyle}
-            />
-          </Tab>
-        )}
+        <div ref={dropTabs} className={cx(flex, grow, scroll)}>
+          {renderTabs()}
+          {selectItems && Object.keys(selectItems).length > 0 && (
+            <Tab key={'-1'}>
+              <Menu
+                items={Object.keys(selectItems).map(label => ({
+                  label: label,
+                  value: label,
+                }))}
+                icon="plus"
+                onSelect={i => {
+                  onSelect && onSelect(i.value);
+                  onNewTab(String(i.value));
+                }}
+                buttonClassName={buttonStyle}
+                listClassName={listStyle}
+              />
+            </Tab>
+          )}
+        </div>
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, relative)}>
-        {Object.keys(components).map(label => {
-          return (
-            <Reparentable
-              key={label}
-              id={label}
-              innerClassName={cx(flex, grow)}
-              outerClassName={cx(
-                flex,
-                grow,
-                label !== activeLabel ? hidden : '',
-              )}
-            >
-              {components[label]}
-            </Reparentable>
-          );
-        })}
-        {dropLeftProps.canDrop && (
-          <div
-            ref={dropLeft}
-            className={cx(dropLeftZone, dropLeftProps.isOver && dropZoneFocus)}
-          />
-        )}
-        {dropRightProps.canDrop && (
-          <div
-            ref={dropRight}
-            className={cx(
-              dropRightZone,
-              dropRightProps.isOver && dropZoneFocus,
-            )}
-          />
-        )}
-        {dropTopProps.canDrop && (
-          <div
-            ref={dropTop}
-            className={cx(dropTopZone, dropTopProps.isOver && dropZoneFocus)}
-          />
-        )}
-        {dropBottomProps.canDrop && (
-          <div
-            ref={dropBottom}
-            className={cx(
-              dropBottomZone,
-              dropBottomProps.isOver && dropZoneFocus,
-            )}
-          />
-        )}
+        <div className={cx(expand, noscroll)}>
+          <div className={cx(scroll, absoute, expand, flex)}>
+            {Object.keys(components).map(label => (
+              <Reparentable
+                key={label}
+                id={label}
+                innerClassName={cx(flex, grow)}
+                outerClassName={cx(
+                  flex,
+                  grow,
+                  label !== activeLabel ? hidden : '',
+                )}
+              >
+                <React.Suspense fallback={<div>Loading...</div>}>
+                  {components[label]}
+                </React.Suspense>
+              </Reparentable>
+            ))}
+          </div>
+          {(dropLeftProps.canDrop ||
+            dropRightProps.canDrop ||
+            dropTopProps.canDrop ||
+            dropBottomProps.canDrop) && (
+            <div className={cx(absoute, expand)}>
+              <div
+                ref={dropLeft}
+                className={cx(
+                  dropLeftZone,
+                  dropLeftProps.isOver && dropZoneFocus,
+                )}
+              />
+              <div
+                ref={dropRight}
+                className={cx(
+                  dropRightZone,
+                  dropRightProps.isOver && dropZoneFocus,
+                )}
+              />
+              <div
+                ref={dropTop}
+                className={cx(
+                  dropTopZone,
+                  dropTopProps.isOver && dropZoneFocus,
+                )}
+              />
+              <div
+                ref={dropBottom}
+                className={cx(
+                  dropBottomZone,
+                  dropBottomProps.isOver && dropZoneFocus,
+                )}
+              />
+            </div>
+          )}
+        </div>
       </Toolbar.Content>
     </Toolbar>
   );

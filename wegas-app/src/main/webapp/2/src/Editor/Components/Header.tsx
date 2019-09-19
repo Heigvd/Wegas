@@ -31,6 +31,14 @@ export default function Header() {
             tooltip="Restart"
             onClick={() => dispatch(Actions.VariableDescriptorActions.reset())}
           />
+          <IconButton
+            icon="trash-restore"
+            tooltip="Reset layout"
+            onClick={() => {
+              window.localStorage.removeItem('DnDGridLayoutData');
+              window.location.reload();
+            }}
+          />
         </div>
       )}
     </StoreConsumer>

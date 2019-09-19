@@ -1,28 +1,21 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
-import {
-  useDrag,
-  DropTargetMonitor,
-  DropTarget,
-  DropTargetConnector,
-  DragElementWrapper,
-} from 'react-dnd';
+import { useDrag, DropTargetMonitor, useDrop } from 'react-dnd';
 import { primaryLight, primaryDark, themeVar } from '../../../Components/Theme';
 import { DropAction } from './DnDTabLayout';
 
 export const dndAcceptType = 'DnDTab';
 
+const hidden = css({
+  visibility: 'hidden',
+});
+
 const dropZoneFocus = css({
-  width: '10px',
+  width: '50px',
   borderStyle: 'solid',
   borderWidth: '2px',
   borderColor: themeVar.successColor,
   zIndex: 1000,
-});
-
-const activeDropableTabStyle = css({
-  width: '100px',
-  backgroundColor: themeVar.successColor,
 });
 
 const defaultTabStyle = css({
@@ -54,153 +47,102 @@ interface TabProps {
   className?: string;
 }
 
-export function Tab(props: TabProps) {
-  if (props.children === null) {
-    return null;
-  }
-  return (
+export const Tab = React.forwardRef(
+  (props: TabProps, ref: React.RefObject<HTMLDivElement>) => (
     <div
-      className={cx(
-        defaultTabStyle,
-        {
-          [primaryDark]: props.active !== undefined && props.active,
-          [primaryLight]: !props.active,
-        },
-        props.className,
-      )}
+      ref={ref}
+      className={
+        props.className
+          ? props.className
+          : cx(defaultTabStyle, {
+              [primaryDark]: props.active !== undefined && props.active,
+              [primaryLight]: !props.active,
+            })
+      }
       onClick={props.onClick}
     >
       <React.Suspense fallback={<div>Loading...</div>}>
         {props.children}
       </React.Suspense>
     </div>
-  );
-}
+  ),
+);
 
-interface DragTabProps {
-  /**
-   * active - the state of the tab
-   */
-  active: boolean;
+Tab.displayName = 'Tab';
+
+interface DragTabProps extends TabProps {
   /**
    * label - the name of the draggable item
    */
   label: string;
   /**
-   * children - the content of the tab
-   */
-  children?: React.ReactChild | null;
-  /**
-   * onClick - the function to be called when the tab is clicked
-   */
-  onClick?: () => void;
-  /**
    * onDrag - the function to be called when a drag event occures
    */
   onDrag?: (label: string) => void;
-  /**
-   * className - the className to apply on the component
-   */
-  className?: string;
 }
 
 export function DragTab(props: DragTabProps) {
   const [, drag] = useDrag({
-    item: { label: props.label, type: dndAcceptType },
+    item: { label: props.label, type: dndAcceptType, children: props.children },
     begin: () => props.onDrag && props.onDrag(props.label),
   });
 
   if (props.children === null) {
     return null;
   }
-  return (
-    <div
-      ref={drag}
-      className={cx(
-        defaultTabStyle,
-        {
-          [primaryDark]: props.active,
-          [primaryLight]: !props.active,
-        },
-        props.className,
-      )}
-      onClick={props.onClick}
-    >
-      {props.children}
-    </div>
-  );
+  return <Tab ref={drag} {...props} />;
 }
 
-export interface DropTabProps {
+export interface DropTabProps extends TabProps {
   /**
    * onDrop - The function to call when a drop occures on this tab
    */
   onDrop?: DropAction;
   /**
-   * className - The style to class names to apply on the component
+   * disabled - Allows to disable de component
    */
-  className?: string;
-  /**
-   * children - The children in the component
-   */
-  children?: string | JSX.Element;
+  disabled?: boolean;
 }
 
-interface DnDropTabProps extends DropTabProps {
-  /**
-   * connectDropTarget - The function that wrap the stuff to be rendered (manage dnd event)
-   */
-  connectDropTarget: DragElementWrapper<DnDropTabProps>;
-  /**
-   * canDrop - Tells the component if something is beegin dragged
-   */
-  canDrop: boolean;
-  /**
-   * isOverCurrent - Tells if the drag element is over the current component
-   */
-  isOverCurrent: boolean;
-}
-function DropTab({
-  className,
-  children,
-  connectDropTarget,
-  canDrop,
-  isOverCurrent,
-}: DnDropTabProps) {
-  return connectDropTarget(
-    <div
-      className={cx(
-        className,
-        canDrop && dropZoneFocus,
-        isOverCurrent && activeDropableTabStyle,
-      )}
-    >
-      {children}
-    </div>,
+export function DropTab(props: DropTabProps) {
+  const [dropTabProps, dropTab] = useDrop({
+    accept: dndAcceptType,
+    canDrop: () => true,
+    drop: props.onDrop,
+    collect: (mon: DropTargetMonitor) => ({
+      isOverCurrent: mon.isOver({ shallow: true }),
+      canDrop: mon.canDrop(),
+      item: mon.getItem(),
+    }),
+  });
+
+  const [style, setStyle] = React.useState('');
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      setStyle(
+        props.className
+          ? props.className
+          : cx(
+              dropTabProps.canDrop && !props.disabled
+                ? dropTabProps.isOverCurrent
+                  ? dropTabProps.isOverCurrent &&
+                    cx(defaultTabStyle, primaryDark)
+                  : dropZoneFocus
+                : hidden,
+            ),
+      );
+    }, 100);
+  }, [
+    dropTabProps.canDrop,
+    dropTabProps.isOverCurrent,
+    props.className,
+    props.disabled,
+  ]);
+
+  return (
+    <Tab {...props} ref={dropTab} className={style}>
+      {dropTabProps.isOverCurrent ? dropTabProps.item.children : props.children}
+    </Tab>
   );
 }
-
-const dropTabTarget = {
-  // Calls the onDrop props function when a drop occures
-  drop(props: DropTabProps, monitor: DropTargetMonitor) {
-    if (props.onDrop) {
-      return props.onDrop(monitor.getItem());
-    }
-  },
-};
-
-// Collects these data and offers them to the dropTab
-function collect(connect: DropTargetConnector, monitor: DropTargetMonitor) {
-  return {
-    connectDropTarget: connect.dropTarget(),
-    canDrop: monitor.canDrop() && monitor.getItemType() === dndAcceptType,
-    isOverCurrent: monitor.isOver({ shallow: true }),
-  };
-}
-
-/**
- * DnDropTab creates a drop target tab for the DnDTabLayout component
- */
-export const DnDropTab = DropTarget(dndAcceptType, dropTabTarget, collect)(
-  DropTab,
-);
