@@ -713,7 +713,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         assertListEquals(((NumberDescriptor) getDescriptor(gameModel2, "aNumber")).getDefaultInstance().getHistory(), 1.1, 1.2, 1.3, 1.2, 1.1, 1.0);
 
-        assertListEquals(((NumberInstance) getInstance(gameModel1, "aNumber")).getHistory(), 1.1, 1.2, 1.3, 1.4, 1.3, 1.2, 1.2, 1.1, 1.0);
+    assertListEquals(((NumberInstance) getInstance(gameModel1, "aNumber")).getHistory(), 1.1, 1.2, 1.3, 1.4, 1.3, 1.2, 1.2, 1.1, 1.0);
 
         logger.info("DONE");
     }

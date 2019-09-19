@@ -740,6 +740,14 @@ public class UpdateController {
         StringBuilder sb = new StringBuilder();
         sb.append("<ul>");
 
+        try {
+            VariableDescriptor project = descriptorFacade.find(pmg, "projet");
+            project.setName("project");
+        } catch (WegasNoResultException ex) {
+        }
+
+
+
         sb.append(this.processChildren(pmg, "questions", "questionsPhase", 4));
         sb.append(this.processChildren(pmg, "questionsPhase1", "questionsPeriod1_", 1));
         sb.append(this.processChildren(pmg, "questionsPhase2", "questionsPeriod2_", 1));
