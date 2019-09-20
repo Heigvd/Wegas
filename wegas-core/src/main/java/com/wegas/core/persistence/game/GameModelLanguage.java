@@ -84,7 +84,10 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
     /**
      * Language name to display
      */
-    @WegasEntityProperty(optional = false, nullable = false)
+    @WegasEntityProperty(optional = false, nullable = false,
+            view = @View(
+            label = "Language name"
+    ))
     private String lang;
 
     @Enumerated(value = EnumType.STRING)

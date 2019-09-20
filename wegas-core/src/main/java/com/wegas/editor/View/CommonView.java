@@ -8,6 +8,7 @@ import com.wegas.core.persistence.variable.ModelScoped;
 public class CommonView extends BaseView {
 
     private int index;
+    private FEATURE_LEVEL featureLevel;
 
     public static enum LAYOUT {
         none,
@@ -46,6 +47,20 @@ public class CommonView extends BaseView {
      */
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    /**
+     * @return the feature level
+     */
+    public FEATURE_LEVEL getFeatureLevel() {
+        return featureLevel;
+    }
+
+    /**
+     * @param featureLevel the feature level to set
+     */
+    public void setFeatureLevel(FEATURE_LEVEL featureLevel) {
+        this.featureLevel = featureLevel;
     }
 
     /**

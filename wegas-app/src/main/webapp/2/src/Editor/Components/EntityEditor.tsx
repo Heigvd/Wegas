@@ -125,7 +125,7 @@ function _overrideSchema(
   return schema;
 }
 
-function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
+export function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
   const gameModel = GameModel.selectCurrent();
   if (gameModel.type === 'SCENARIO') {
     return _overrideSchema(cloneDeep(schema), entity);

@@ -201,6 +201,7 @@ public class SchemaGenerator extends AbstractMojo {
                     ((JSONExtendedSchema) schema).setView(v);
 
                     v.setIndex(view.index()); // TO REMOVE
+                    v.setFeatureLevel(view.featureLevel()); // TO REMOVE
                     ((JSONExtendedSchema) schema).setIndex(view.index());
                 } catch (InstantiationException | IllegalAccessException e) {
                     e.printStackTrace();

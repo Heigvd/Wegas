@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { css } from 'emotion';
 import Header from './Header';
+import { FeatureProvider } from '../../Components/FeatureProvider';
 import { Item, Layout, DndLinearLayout } from './LinearTabLayout/LinearLayout';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
@@ -12,6 +13,7 @@ const FileBrowserWithMeta = React.lazy(() =>
 );
 const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
 const HTMLEditor = React.lazy(() => import('../../Components/HTMLEditor'));
+const LanguageEditor = React.lazy(() => import('./LanguageEditor'));
 
 const layout = css({
   display: 'flex',
@@ -46,62 +48,70 @@ export default class AppLayout extends React.Component<
     );
 
     return (
-      <div className={layout}>
-        <Header />
-        <DndLinearLayout
-          tabs={[
-            <Item key="Variables" label="Variables">
-              <TreeView />
-            </Item>,
-            <Item key="Page" label="Page">
-              <PageDisplay />
-            </Item>,
-            <Item key="StateMachine" label="StateMachine">
-              <StateMachineEditor />
-            </Item>,
-            <Item key="Editor" label="Editor">
-              <Editor />
-            </Item>,
-            <Item key="Files" label="Files">
-              <FileBrowserWithMeta />
-            </Item>,
-            <Item key="Scripts" label="Scripts">
-              <LibraryEditor />
-            </Item>,
-            <Item key="TestEditor" label="TestEditor">
-              <TestEditor />
-            </Item>,
-          ]}
-        >
-          <Layout>
-            <Item label="Variables">
-              <TreeView />
-            </Item>
-          </Layout>
-          <Layout>
-            <Item label="Page">
-              <PageDisplay />
-            </Item>
-            <Item label="TestEditor">
-              <TestEditor />
-            </Item>
-            <Item label="StateMachine">
-              <StateMachineEditor />
-            </Item>
-            <Item label="Files">
-              <FileBrowserWithMeta />
-            </Item>
-          </Layout>
-          <Layout>
-            <Item label="Editor">
-              <Editor />
-            </Item>
-            <Item label="Scripts">
-              <LibraryEditor />
-            </Item>
-          </Layout>
-        </DndLinearLayout>
-      </div>
+      <FeatureProvider>
+        <div className={layout}>
+          <Header />
+          <DndLinearLayout
+            tabs={[
+              <Item key="Variables" label="Variables">
+                <TreeView />
+              </Item>,
+              <Item key="Page" label="Page">
+                <PageDisplay />
+              </Item>,
+              <Item key="StateMachine" label="StateMachine">
+                <StateMachineEditor />
+              </Item>,
+              <Item key="Editor" label="Editor">
+                <Editor />
+              </Item>,
+              <Item key="Files" label="Files">
+                <FileBrowserWithMeta />
+              </Item>,
+              <Item key="Scripts" label="Scripts">
+                <LibraryEditor />
+              </Item>,
+              <Item key="TestEditor" label="TestEditor">
+                <TestEditor />
+              </Item>,
+              <Item key="LanguageEditor" label="LanguageEditor">
+                <LanguageEditor />
+              </Item>,
+            ]}
+          >
+            <Layout>
+              <Item label="Variables">
+                <TreeView />
+              </Item>
+            </Layout>
+            <Layout>
+              <Item label="Page">
+                <PageDisplay />
+              </Item>
+              <Item label="TestEditor">
+                <TestEditor />
+              </Item>
+              <Item label="StateMachine">
+                <StateMachineEditor />
+              </Item>
+              <Item label="Files">
+                <FileBrowserWithMeta />
+              </Item>
+            </Layout>
+            <Layout>
+              <Item label="Editor">
+                <Editor />
+              </Item>
+              <Item label="Scripts">
+                <LibraryEditor />
+              </Item>
+              <Item key="LanguageEditor" label="LanguageEditor">
+                <LanguageEditor />
+              </Item>
+            </Layout>
+          </DndLinearLayout>
+        </div>
+      </FeatureProvider>
     );
   }
 }
