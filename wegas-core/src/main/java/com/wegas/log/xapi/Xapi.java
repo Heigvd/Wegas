@@ -55,6 +55,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.ejb.Asynchronous;
 import javax.xml.bind.DatatypeConverter;
 
@@ -478,8 +479,8 @@ public class Xapi implements XapiI {
         try {
             StatementClient client = getClient();
 
+            long start = System.currentTimeMillis();
             for (Object o : statements) {
-                long start = System.currentTimeMillis();
                 if (o instanceof Statement) {
                     try {
                         client.postStatement((Statement) o);
@@ -495,8 +496,8 @@ public class Xapi implements XapiI {
                         logger.error("XapiTx postStatements on commit error: {}", ex);
                     }
                 }
-                logger.trace("xAPI post duration: {}", System.currentTimeMillis() - start);
             }
+            logger.trace("xAPI post duration: {}", System.currentTimeMillis() - start);
             statements.clear();
         } catch (MalformedURLException ex) {
         }
