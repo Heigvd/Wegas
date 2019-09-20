@@ -9,7 +9,7 @@
 
     <groupId>com.wegas</groupId>
     <artifactId>wegas-project</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>4.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>wegas-core</module>
@@ -17,6 +17,7 @@
         <module>wegas-resources</module>
         <!--<module>wegas-mcq</module>-->
         <module>wenerator-maven-plugin</module>
+        <module>wegas-runtime</module>
     </modules>
 
     <developers>
@@ -89,46 +90,36 @@
         <wegas.debug>true</wegas.debug>
         <wegas.build>${maven.build.timestamp}</wegas.build>
 
-        <wegas.deploy.path>sftp://dev.albasim.ch/home/drop</wegas.deploy.path>
-        <wegas.deploy.server>dev-site</wegas.deploy.server>
-        <wegas.deploy.name>Wegas.war</wegas.deploy.name>
         <wegas.clientErrorLogging>false</wegas.clientErrorLogging>
         <wegas.useYUICDN>false</wegas.useYUICDN>
 
         <shiro.version>1.4.0</shiro.version>
-        <atmosphere.version>0.9-SNAPSHOT</atmosphere.version>
-        <!--<jersey.version>2.25.1</jersey.version>-->
         <jdk.version>1.8</jdk.version>
-        <payara.version>4.1.2.181</payara.version>
-        <payara-api.version>4.1.2.181</payara-api.version>
+        <payara.version>5.193</payara.version>
+        <payara.micro.version>5.193.albasim-p1</payara.micro.version>
+        <payara-api.version>5.193</payara-api.version>
         <junit.version>4.12</junit.version>
-        <arquillian.version>1.1.13.Final</arquillian.version>
+        <arquillian.version>1.4.1.Final</arquillian.version>
         <exec.plugin.version>1.2</exec.plugin.version>
-        <jar.plugin.version>2.3.1</jar.plugin.version>
-        <war.plugin.version>3.2.0</war.plugin.version>
-        
-        <maven.javadoc.plugin.version>3.0.0-M1</maven.javadoc.plugin.version>
-        <maven.surefire.plugin.version>2.20.1</maven.surefire.plugin.version>
 
-        <profile.dependent.scope>compile</profile.dependent.scope>
+        <jackson.version>2.9.9</jackson.version>
+        <jackson.scope>provided</jackson.scope>
 
-        <!--<slf4j.version>1.7.7</slf4j.version>
-        <logback.version>1.0.9</logback.version>-->
+        <jersey.version>2.29.payara-p5</jersey.version>
 
-        <slf4j.version>1.7.25</slf4j.version>
+        <eclipselink.scope>provided</eclipselink.scope>
+        <eclipselink.version>2.7.4</eclipselink.version>
+        <eclipselink.pversion>2.7.4.payara-p2</eclipselink.pversion>
+
+        <slf4j.version>1.7.28</slf4j.version>
         <logback.version>1.2.3</logback.version>
 
         <httpcomponents.version>4.5.6</httpcomponents.version>
         <liquibase.version>2.0.5</liquibase.version>
-        <eclipselink.version>2.6.4</eclipselink.version>
         <jcr.version>2.0</jcr.version>
-        <oak.version>1.10.1</oak.version>
-        <prometheus.version>0.5.0</prometheus.version>
+        <oak.version>1.16.0</oak.version>
 
-        <jackson.scope>provided</jackson.scope>
-        <jackson.version>2.8.8</jackson.version>
-
-        <netbeans.hint.j2eeVersion>1.7</netbeans.hint.j2eeVersion>
+        <netbeans.hint.j2eeVersion>8</netbeans.hint.j2eeVersion>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
         <netbeans.hint.license>wegas</netbeans.hint.license>
 
@@ -147,15 +138,6 @@
                 <wegas.debug>false</wegas.debug>
                 <wegas.clientErrorLogging>true</wegas.clientErrorLogging>
                 <wegas.useYUICDN>true</wegas.useYUICDN>
-                <profile.dependent.scope>compile</profile.dependent.scope>
-            </properties>
-        </profile>
-        <profile>
-            <id>prod-profile</id>
-            <properties>
-                <wegas.deploy.path>sftp://wegas.albasim.ch/home/drop/builds</wegas.deploy.path>
-                <wegas.deploy.server>prod-site</wegas.deploy.server>
-                <wegas.deploy.name>Wegas_${wegas.build}.war</wegas.deploy.name>
             </properties>
         </profile>
         <profile>
@@ -168,33 +150,21 @@
 
     <dependencyManagement>
         <dependencies>
-        <dependency>
-            <groupId>com.wegas</groupId>
-            <artifactId>wegas-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+            <dependency>
+                <groupId>com.wegas</groupId>
+                <artifactId>wegas-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>commons-collections</groupId>
                 <artifactId>commons-collections</artifactId>
                 <version>3.2.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>eclipselink</artifactId>
-                <version>${eclipselink.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.extension</artifactId>
-                <version>${eclipselink.version}</version>
             </dependency>
             <!-- slf4j -->
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
-                <scope>${profile.dependent.scope}</scope>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -242,13 +212,6 @@
                 <type>jar</type>
             </dependency>
 
-            <!--<dependency>
-                <groupId>javax.enterprise</groupId>
-                <artifactId>cdi-api</artifactId>
-                <version>1.2</version>
-                <scope>provided</scope>
-            </dependency>-->
-
             <!-- Liquibase -->
             <dependency>
                 <groupId>org.liquibase</groupId>
@@ -256,66 +219,19 @@
                 <version>${liquibase.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-core</artifactId>
-                <version>${jackson.version}</version>
-                <scope>${jackson.scope}</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
-                <scope>${jackson.scope}</scope>
-            </dependency>
-
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
-                <scope>${jackson.scope}</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.jaxrs</groupId>
-                <artifactId>jackson-jaxrs-base</artifactId>
-                <version>${jackson.version}</version>
-                <scope>${jackson.scope}</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.jaxrs</groupId>
-                <artifactId>jackson-jaxrs-json-provider</artifactId>
-                <version>${jackson.version}</version>
-                <scope>${jackson.scope}</scope>
-            </dependency>
-
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.module</groupId>
-                <artifactId>jackson-module-jaxb-annotations</artifactId>
-                <version>${jackson.version}</version>
-                <scope>${jackson.scope}</scope>
-            </dependency>
-
-
             <!-- Java Content Repository -->
             <dependency>
                 <groupId>org.apache.jackrabbit</groupId>
                 <artifactId>oak-jcr</artifactId>
                 <version>${oak.version}</version>
-                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.jackrabbit</groupId>
                 <artifactId>oak-segment-tar</artifactId>
                 <version>${oak.version}</version>
-                <scope>compile</scope>
             </dependency>
+            <!-- https://issues.apache.org/jira/browse/OAK-6542-->
             <dependency>
-                <!-- https://issues.apache.org/jira/browse/OAK-6542 :: check against payara 191 !!! -->
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-core</artifactId>
                 <version>3.2.3</version>
@@ -324,7 +240,6 @@
                 <groupId>org.apache.jackrabbit</groupId>
                 <artifactId>oak-store-document</artifactId>
                 <version>${oak.version}</version>
-                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.mongodb</groupId>
@@ -336,14 +251,8 @@
                 <groupId>javax.jcr</groupId>
                 <artifactId>jcr</artifactId>
                 <version>${jcr.version}</version>
-                <scope>compile</scope>
             </dependency>
 
-            <dependency>
-                <groupId>com.github.fge</groupId>
-                <artifactId>json-patch</artifactId>
-                <version>1.9</version>
-            </dependency>
             <!-- PDF Generation -->
             <dependency>
                 <groupId>com.itextpdf</groupId>
@@ -353,7 +262,7 @@
             <dependency>
                 <groupId>org.xhtmlrenderer</groupId>
                 <artifactId>flying-saucer-pdf</artifactId>
-                <version>9.1.16</version>
+                <version>9.1.18</version>
                 <type>jar</type>
             </dependency>
             <dependency>
@@ -383,79 +292,16 @@
                 <version>4.0</version>
             </dependency>
 
-            <!-- Test -->
-            <dependency>
-                <groupId>org.jboss.arquillian</groupId>
-                <artifactId>arquillian-bom</artifactId>
-                <version>${arquillian.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jboss.arquillian.junit</groupId>
-                <artifactId>arquillian-junit-container</artifactId>
-                <version>${arquillian.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>fish.payara.arquillian</groupId>
-                <artifactId>arquillian-payara-server-4-embedded</artifactId>
-                <version>1.0.Beta2</version>
-                <scope>test</scope>
-            </dependency>
-
-
-            <dependency>
-                <groupId>org.jboss.arquillian.extension</groupId>
-                <artifactId>arquillian-persistence-dbunit</artifactId>
-                <version>1.0.0.Alpha7</version>
-                <scope>test</scope>
-            </dependency>
-        
-            <dependency>
-                <groupId>org.eu.ingwar.tools</groupId>
-                <artifactId>arquillian-suite-extension</artifactId>
-                <version>1.1.4</version>
-                <scope>test</scope>
-            </dependency>
-
-
-            <dependency>
+            <!--<dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>23.0</version>
-            </dependency>
-
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-
+            </dependency>-->
 
             <dependency>
                 <groupId>org.reflections</groupId>
                 <artifactId>reflections</artifactId>
                 <version>0.9.11</version>
-                <scope>test</scope>
-            </dependency>
-
-            <!--<dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-all</artifactId>
-                <version>1.9.5</version>
-                <scope>test</scope>
-            </dependency>-->
-        
-            <dependency>
-                <groupId>net.sourceforge.htmlunit</groupId>
-                <artifactId>htmlunit</artifactId>
-                <version>2.33</version>
-                <scope>test</scope>
-                <type>jar</type>
             </dependency>
 
             <!-- Postgresql Driver -->
@@ -473,27 +319,6 @@
                 <version>1.0.0</version>
             </dependency>
 
-            <dependency>
-                <groupId>fish.payara.api</groupId>
-                <artifactId>payara-api</artifactId>
-                <version>${payara-api.version}</version>
-                <type>jar</type>
-            </dependency>
-
-            <!--<dependency>
-                <groupId>fish.payara.extras</groupId>
-                <artifactId>payara-micro</artifactId>
-                <version>${payara.version}</version>
-                <scope>provided</scope>
-            </dependency>-->
-
-            <dependency>
-                <groupId>fish.payara.extras</groupId>
-                <artifactId>payara-embedded-all</artifactId>
-                <version>${payara.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            
             <!-- Neo4j driver -->
             <dependency>
                 <groupId>org.neo4j.driver</groupId>
@@ -501,24 +326,173 @@
                 <version>1.2.1</version>
             </dependency>
 
+            <!--
+                Provided by payara micro
+            -->
             <dependency>
-                <groupId>io.prometheus</groupId>
-                <artifactId>simpleclient</artifactId>
-                <version>${prometheus.version}</version>
+                <groupId>fish.payara.api</groupId>
+                <artifactId>payara-api</artifactId>
+                <version>${payara-api.version}</version>
+                <type>jar</type>
+                <scope>provided</scope>
             </dependency>
 
             <dependency>
-                <groupId>io.prometheus</groupId>
-                <artifactId>simpleclient_servlet</artifactId>
-                <version>${prometheus.version}</version>
+                <groupId>org.eclipse.microprofile</groupId>
+                <artifactId>microprofile</artifactId>
+                <version>2.2</version>
+                <type>pom</type>
+                <scope>provided</scope>
             </dependency>
 
             <dependency>
-                <groupId>io.prometheus</groupId>
-                <artifactId>simpleclient_hotspot</artifactId>
-                <version>${prometheus.version}</version>
+                <groupId>org.eclipse.microprofile.metrics</groupId>
+                <artifactId>microprofile-metrics-api</artifactId>
+                <version>2.0.1</version>
+                <type>jar</type>
             </dependency>
 
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+                <type>jar</type>
+                <scope>${jackson.scope}</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+                <type>jar</type>
+                <scope>${jackson.scope}</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.core</artifactId>
+                <version>${eclipselink.pversion}</version>
+                <scope>${eclipselink.scope}</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.cache</groupId>
+                <artifactId>cache-api</artifactId>
+                <version>1.1.0</version>
+                <type>jar</type>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-multipart</artifactId>
+                <version>${jersey.version}</version>
+                <type>jar</type>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json-jackson</artifactId>
+                <version>${jersey.version}</version>
+                <type>jar</type>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-server</artifactId>
+                <version>${jersey.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-common</artifactId>
+                <version>2.28</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.corba</groupId>
+                <artifactId>glassfish-corba-omgapi</artifactId>
+                <version>4.1.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.hazelcast</groupId>
+                <artifactId>hazelcast</artifactId>
+                <version>3.12</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-api</artifactId>
+                <version>8.0.1</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!--
+                Test deps
+            -->
+            <dependency>
+                <groupId>fish.payara.extras</groupId>
+                <artifactId>payara-embedded-all</artifactId>
+                <version>${payara.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>fish.payara.extras</groupId>
+                <artifactId>payara-micro</artifactId>
+                <version>${payara.micro.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>${arquillian.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.arquillian.junit</groupId>
+                <artifactId>arquillian-junit-container</artifactId>
+                <version>${arquillian.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>fish.payara.arquillian</groupId>
+                <artifactId>arquillian-payara-server-embedded</artifactId>
+                <version>1.1</version>
+                <scope>test</scope>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.jboss.arquillian.extension</groupId>
+                <artifactId>arquillian-persistence-dbunit</artifactId>
+                <version>1.0.0.Alpha7</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eu.ingwar.tools</groupId>
+                <artifactId>arquillian-suite-extension</artifactId>
+                <version>1.2.0</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>net.sourceforge.htmlunit</groupId>
+                <artifactId>htmlunit</artifactId>
+                <version>2.33</version>
+                <scope>test</scope>
+                <type>jar</type>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -531,7 +505,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.7.0</version>
+                    <version>3.8.1</version>
                     <configuration>
                         <optimize>${build.optimize}</optimize>
                         <source>${jdk.version}</source>
@@ -572,7 +546,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>3.1.2</version>
                     <configuration>
                         <archive>
                             <manifest>
@@ -587,7 +561,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
-                    <version>${war.plugin.version}</version>
+                    <version>3.2.3</version>
                     <configuration>
                         <failOnMissingWebXml>false</failOnMissingWebXml>
                     </configuration>
@@ -597,29 +571,29 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>3.1.1</version>
                 </plugin>
 
                 <!-- Reource attachment -->
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>3.1.0</version>
                 </plugin>
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-project-info-reports-plugin</artifactId>
-                    <version>2.9</version>
+                    <version>3.0.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>${maven.javadoc.plugin.version}</version>
+                    <version>3.1.0</version>
                 </plugin>
 
                 <!-- YUI JS Compression Plugin -->
@@ -640,7 +614,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${maven.surefire.plugin.version}</version>
+                    <version>3.0.0-M3</version>
                     <configuration>
                         <!-- There is an issue with cobertura and jdk7,
                         that forces us to run  in compatiblity mode.-->
@@ -660,7 +634,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.6</version>
+                    <version>3.7.1</version>
                 </plugin>
 
                 <!--                <plugin>
@@ -834,7 +808,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-scm-publish-plugin</artifactId>
-                <version>1.1</version>
+                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <phase>none</phase>
@@ -845,67 +819,11 @@
                 </executions>
                 <configuration>
                     <serverId>github</serverId>
-
-                    <!--<dryRun>true</dryRun>-->
-                    <!--<tryUpdate>true</tryUpdate>-->
                     <content>${project.build.directory}/staging</content>
                     <scmBranch>gh-pages</scmBranch>
                 </configuration>
             </plugin>
-            <!--             Site deployment on github
-            <plugin>
-                <groupId>com.github.github</groupId>
-                <artifactId>site-maven-plugin</artifactId>
-                <version>0.12</version>
-                <inherited>false</inherited>
-                <configuration>
-                    <repositoryName>Wegas</repositoryName>
-                    <repositoryOwner>Heigvd</repositoryOwner>
-                    <server>github</server>
-                    <dryRun>true</dryRun>
-                    <outputDirectory>${project.build.directory}/staging</outputDirectory>
-                    <message>${project.version} Site (${maven.build.timestamp})</message>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>gitSite</id>
-                        <goals>
-                            <goal>site</goal>
-                        </goals>
-                        <phase>site-deploy</phase>
-                    </execution>
-                </executions>
-            </plugin>-->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>wagon-maven-plugin</artifactId>
-                <version>1.0</version>
-                <inherited>false</inherited>
-                <configuration>
-                    <serverId>${wegas.deploy.server}</serverId>
-                    <fromFile>wegas-app/target/Wegas.war</fromFile>
-                    <url>${wegas.deploy.path}</url>
-                    <toFile>${wegas.deploy.name}</toFile>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>upload-war</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>upload-single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
         </plugins>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh</artifactId>
-                <version>2.9</version>
-            </extension>
-        </extensions>
     </build>
 
     <reporting>
@@ -913,7 +831,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.9</version>
+                <version>3.0.0</version>
                 <configuration>
                     <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
                     <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
@@ -938,13 +856,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>${maven.javadoc.plugin.version}</version>
+                <version>3.1.0</version>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.5</version>
+                <version>3.0.0</version>
             </plugin>
 
             <plugin>
@@ -957,7 +875,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <version>3.0.5</version>
+                <version>3.0.55</version>
                 <configuration>
                     <threshold>Normal</threshold>
                     <effort>Min</effort>
@@ -983,7 +901,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.17</version>
+                <version>3.1.0</version>
                 <configuration>
                     <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
                     <configLocation>sun_checks.xml</configLocation>
@@ -993,13 +911,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>${maven.surefire.plugin.version}</version>
+                <version>3.0.0-M3</version>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.8</version>
+                <version>3.12.0</version>
                 <configuration>
                     <rulesets>http://pmd.sourceforge.net/rules/index.html
                         <ruleset>/rulesets/java/braces.xml</ruleset>
@@ -1039,25 +957,41 @@
         </plugins>
     </reporting>
 
-    <!--<repositories>
+    <repositories>
         <repository>
-            <id>maven2-repository.dev.java.net</id>
-            <name>Java.net Repository for Maven</name>
-            <url>http://maven.glassfish.org/content/groups/glassfish</url>
-            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
         </repository>
 
         <repository>
-            <url>http://download.eclipse.org/rt/eclipselink/maven.repo/</url>
-            <id>eclipselink</id>
-            <layout>default</layout>
-            <name>Repository for library Library[eclipselink]</name>
+            <id>payara-patched-externals</id>
+            <name>Payara Patched Externals</name>
+            <url>https://raw.github.com/payara/Payara_PatchedProjects/master</url>
+            <!--<url>file:///opt/PayaraDev/Payara_PatchedProjects</url>-->
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
+
         <repository>
-            <id>jsdoctk1</id>
-            <url>http://jsdoctk-plugin.googlecode.com/svn/repo</url>
-        </repository> 
-    </repositories>-->
+            <id>albasim-patched-externals</id>
+            <name>AlbaSim Patched Externals</name>
+            <url>https://raw.github.com/Heigvd/Wegas_PatchedProjects/master/repository</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
     <!--<pluginRepositories>
         <pluginRepository>

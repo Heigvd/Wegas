@@ -13,11 +13,11 @@ import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.security.ejb.UserFacade;
+import javax.ejb.Stateless;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -36,27 +36,27 @@ public class StateMachineController {
     /**
      *
      */
-    @EJB
+    @Inject
     private GameFacade gameFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private RequestFacade requestFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private StateMachineFacade stateMachineFacade;
 
     /**

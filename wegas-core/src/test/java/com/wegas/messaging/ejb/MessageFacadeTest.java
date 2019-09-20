@@ -22,7 +22,7 @@ import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.List;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.naming.NamingException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
@@ -38,7 +38,7 @@ public class MessageFacadeTest extends AbstractArquillianTest {
 
     protected static final Logger logger = LoggerFactory.getLogger(MessageFacadeTest.class);
 
-    @EJB
+    @Inject
     private ScriptController scriptController;
 
     private void exec(Player player,  String script) throws NamingException{

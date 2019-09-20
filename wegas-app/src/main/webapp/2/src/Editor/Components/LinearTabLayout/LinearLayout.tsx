@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
 import 'react-reflex/styles.css';
 import { DefaultDndProvider } from '../../../Components/DefaultDndProvider';
@@ -20,6 +20,9 @@ const splitter = css({
 
 const flex = css({
   display: 'flex',
+});
+
+const grow = css({
   flex: '1 1 auto',
 });
 
@@ -49,6 +52,10 @@ interface LayoutNode {
    */
   children: string[];
   /**
+   * flex - the proportion of the layout
+   */
+  flex?: number;
+  /**
    * defaultActive - the label of the active children
    */
   defaultActive?: string;
@@ -67,10 +74,6 @@ interface ManagedLayoutMap {
    * lastKey - the last inserted key (allows dynamic modification when keys are integers)
    */
   lastKey: string;
-  /**
-   * isDragging - dragging state
-   */
-  isDragging: boolean;
   /**
    * layoutMap - the current layout disposition
    */
@@ -234,7 +237,6 @@ const checkAndCleanLonelyLayout = (
   );
   if (parentLayoutInfo) {
     const parentLayout = layouts[parentLayoutInfo.parentKey];
-
     if (
       parentLayout.type === 'ReflexLayoutNode' &&
       lonelyLayout.type === 'ReflexLayoutNode' &&
@@ -248,6 +250,20 @@ const checkAndCleanLonelyLayout = (
       );
 
       newLayouts = removeLayout(newLayouts, layoutKey);
+    }
+  } else {
+    // This mean that the key is either not in use or the root key
+    // Let's check if the key exists and if it has only one children
+    const rootLayout = newLayouts[layoutKey];
+    if (rootLayout && rootLayout.children.length === 1) {
+      // Now let's check if the children exists and is also a ReflexLayoutNode
+      const childLayoutKey = rootLayout.children[0];
+      const childLayout = newLayouts[childLayoutKey];
+      if (childLayout && childLayout.type === 'ReflexLayoutNode') {
+        // Let's swap the content of the child in the root layout and delete the child
+        newLayouts[layoutKey].children = childLayout.children;
+        newLayouts = omit(newLayouts, childLayoutKey);
+      }
     }
   }
   return newLayouts;
@@ -417,229 +433,402 @@ interface ActionDropTab extends TabAction {
   tabIndex: number;
 }
 
+interface ActionResize extends Action {
+  type: 'RESIZE';
+  layoutKey: string;
+  flex?: number;
+}
+
 type TabLayoutsAction =
   | ActionDrop
   | ActionDelete
   | ActionDropTab
   | ActionSelect
-  | ActionExternalSelect;
+  | ActionExternalSelect
+  | ActionResize;
 
 /**
  * setLayout is the reducer function for layout disposition management
  */
 const setLayout = (layouts: ManagedLayoutMap, action: TabLayoutsAction) =>
   u(layouts, (layouts: ManagedLayoutMap) => {
-    // Find the parent tabLayout of the tab
-    const srcTabLayoutKey = findLayoutByKey(
-      layouts.layoutMap,
-      action.tabKey,
-      'TabLayoutNode',
-    );
-
+    let newLayouts = layouts;
+    // If a layout has been resized, same it in the state
+    if (action.type === 'RESIZE') {
+      newLayouts.layoutMap[action.layoutKey].flex = action.flex;
+    }
     // If new action, simply insert the new tab in the dest tabLayout
-    if (action.type === 'NEW') {
-      layouts.layoutMap = insertChildren(
-        layouts.layoutMap,
-        action.destTabLayoutKey,
+    else {
+      // Find the parent tabLayout of the tab
+      const srcTabLayoutKey = findLayoutByKey(
+        newLayouts.layoutMap,
         action.tabKey,
-        undefined,
-        true,
+        'TabLayoutNode',
       );
-    }
-    // If the selection come from the oustide of the component (selectContext) and the tab is not in use
-    else if (action.type === 'EXTERNALSELECT' && !srcTabLayoutKey) {
-      // Create a new tabLayout and insert the selected tab in it
-      layouts = createLayout(layouts, 'TabLayoutNode', [action.tabKey], false);
-      // Insert the new tabLayout in the root layout
-      layouts.layoutMap = insertChildren(
-        layouts.layoutMap,
-        layouts.rootKey,
-        layouts.lastKey,
-        undefined,
-        true,
-      );
-    }
-    // For the other actions, the tab must have a parent tabLayout
-    else if (srcTabLayoutKey) {
-      if (action.type === 'SELECT' || action.type === 'EXTERNALSELECT') {
-        layouts.layoutMap[srcTabLayoutKey.parentKey].defaultActive =
-          action.tabKey;
-        return layouts;
-      }
-      // Remaining actions are drop actions, always remove tab from source TabLayout when dropping
-      const oldTabLayout = layouts.layoutMap[srcTabLayoutKey.parentKey];
-      oldTabLayout.children = oldTabLayout.children.filter(
-        el => el !== action.tabKey,
-      );
-      layouts.layoutMap[srcTabLayoutKey.parentKey] = oldTabLayout;
 
-      // Dropping in the tab bar
-      if (action.type === 'TAB') {
-        // If the dragged tab came from the same tab bar, decrement index by 1 to take it's own position into account
-        let index = action.tabIndex;
-        if (
-          action.parentKey === srcTabLayoutKey.parentKey &&
-          action.tabIndex > srcTabLayoutKey.childIndex
-        ) {
-          index -= 1;
-        }
-
-        // Insert the tab at the right position
-        layouts.layoutMap = insertChildren(
-          layouts.layoutMap,
-          action.parentKey,
+      if (action.type === 'NEW') {
+        newLayouts.layoutMap = insertChildren(
+          newLayouts.layoutMap,
+          action.destTabLayoutKey,
           action.tabKey,
-          index,
+          undefined,
           true,
         );
-      } else if (action.type !== 'DELETE') {
-        // Getting the parent of the TabLayout
-        const destParentInfo = findLayoutByKey(
-          layouts.layoutMap,
-          action.destTabLayoutKey,
-          'ReflexLayoutNode',
+      }
+      // If the selection come from the oustide of the component (selectContext) and the tab is not in use
+      else if (action.type === 'EXTERNALSELECT' && !srcTabLayoutKey) {
+        // Create a new tabLayout and insert the selected tab in it
+        newLayouts = createLayout(
+          newLayouts,
+          'TabLayoutNode',
+          [action.tabKey],
+          false,
         );
+        // Insert the new tabLayout in the root layout
+        newLayouts.layoutMap = insertChildren(
+          newLayouts.layoutMap,
+          newLayouts.rootKey,
+          newLayouts.lastKey,
+          undefined,
+          true,
+        );
+      }
+      // For the other actions, the tab must have a parent tabLayout
+      else if (srcTabLayoutKey) {
+        if (action.type === 'SELECT' || action.type === 'EXTERNALSELECT') {
+          newLayouts.layoutMap[srcTabLayoutKey.parentKey].defaultActive =
+            action.tabKey;
+          return newLayouts;
+        }
+        // Remaining actions are drop actions, always remove tab from source TabLayout when dropping
+        const oldTabLayout = newLayouts.layoutMap[srcTabLayoutKey.parentKey];
+        oldTabLayout.children = oldTabLayout.children.filter(
+          el => el !== action.tabKey,
+        );
+        newLayouts.layoutMap[srcTabLayoutKey.parentKey] = oldTabLayout;
 
-        // This is always true because a tabLayout has to have a parent reflexLayout
-        if (destParentInfo) {
-          const dstParentKey = destParentInfo.parentKey;
-          const dstParentLayout = layouts.layoutMap[dstParentKey];
-          const isNewLayoutInside =
-            (dstParentLayout.vertical &&
-              (action.type === 'LEFT' || action.type === 'RIGHT')) ||
-            (!dstParentLayout.vertical &&
-              (action.type === 'TOP' || action.type === 'BOTTOM'));
+        // Dropping in the tab bar
+        if (action.type === 'TAB') {
+          // If the dragged tab came from the same tab bar, decrement index by 1 to take it's own position into account
+          let index = action.tabIndex;
+          if (
+            action.parentKey === srcTabLayoutKey.parentKey &&
+            action.tabIndex > srcTabLayoutKey.childIndex
+          ) {
+            index -= 1;
+          }
 
-          // Create a new tabLayout and insert the dragged tab in it
-          layouts = createLayout(
-            layouts,
-            'TabLayoutNode',
-            [action.tabKey],
-            false,
+          // Insert the tab at the right position
+          newLayouts.layoutMap = insertChildren(
+            newLayouts.layoutMap,
+            action.parentKey,
+            action.tabKey,
+            index,
+            true,
           );
-          const newTabLayoutKey = layouts.lastKey;
+        } else if (action.type !== 'DELETE') {
+          // Getting the parent of the TabLayout
+          const destParentInfo = findLayoutByKey(
+            newLayouts.layoutMap,
+            action.destTabLayoutKey,
+            'ReflexLayoutNode',
+          );
 
-          if (isNewLayoutInside) {
-            /*
-             * If the tab is not inserted in the orientation of the parent parent layout
-             * EX :
-             *  +-------+
-             *  |   1   |
-             *  +-------+
-             *  |   2   | <= insert new layout (3) here on the right
-             *  +-------+
-             *
-             *  +-------+
-             *  |   1   |
-             *  +-------+
-             *  |  ==>  |  <= First create an horizontal layout
-             *  +-------+
-             *
-             *  +-------+
-             *  |   1   |
-             *  +---+---+
-             *  | 2 | 3 | <= Then insert old layout (2) and new one (3)
-             *  +-------+
-             */
-            // Detect if the new layout is placed first or last
-            const newParentChildren =
-              action.type === 'LEFT' || action.type === 'TOP'
-                ? [newTabLayoutKey, action.destTabLayoutKey]
-                : [action.destTabLayoutKey, newTabLayoutKey];
-            // Create new layout and insert it at the position of the old layout
-            layouts = createLayout(
-              layouts,
-              'ReflexLayoutNode',
-              newParentChildren,
-              !dstParentLayout.vertical,
-            );
-            const newReflexLayoutKey = layouts.lastKey;
-            layouts.layoutMap = insertChildren(
-              layouts.layoutMap,
-              dstParentKey,
-              newReflexLayoutKey,
-              destParentInfo.childIndex,
-            );
+          // This is always true because a tabLayout has to have a parent reflexLayout
+          if (destParentInfo) {
+            const dstParentKey = destParentInfo.parentKey;
+            const dstParentLayout = newLayouts.layoutMap[dstParentKey];
+            const isNewLayoutInside =
+              (dstParentLayout.vertical &&
+                (action.type === 'LEFT' || action.type === 'RIGHT')) ||
+              (!dstParentLayout.vertical &&
+                (action.type === 'TOP' || action.type === 'BOTTOM'));
 
-            // Remove destinationLayout from parent layout as it's now wrapped in a new layout
-            layouts.layoutMap[dstParentKey].children = layouts.layoutMap[
-              dstParentKey
-            ].children.filter(el => el !== action.destTabLayoutKey);
-          } else {
-            /*
-             * If the tab is inserted in the orientation  of the parent parent layout
-             * EX :
-             *  +-------+
-             *  |   1   |
-             *  +-------+
-             *  |   2   |  <= insert new layout (3) here on the bottom
-             *  +-------+
-             *
-             *  +-------+
-             *  |   1   |
-             *  +-------+
-             *  |   2   |
-             *  +-------+ <= simply insert the new layout as new children of the parent parent layout
-             *  |   3   |
-             *  +-------+
-             */
-            // Insert new tabLayout
-            const newLayoutIndex =
-              action.type === 'RIGHT' || action.type === 'BOTTOM'
-                ? destParentInfo.childIndex + 1
-                : destParentInfo.childIndex;
-            layouts.layoutMap = insertChildren(
-              layouts.layoutMap,
-              dstParentKey,
-              newTabLayoutKey,
-              newLayoutIndex,
+            // Create a new tabLayout and insert the dragged tab in it
+            newLayouts = createLayout(
+              newLayouts,
+              'TabLayoutNode',
+              [action.tabKey],
+              false,
             );
+            const newTabLayoutKey = newLayouts.lastKey;
+
+            if (isNewLayoutInside) {
+              /*
+               * If the tab is not inserted in the orientation of the parent parent layout
+               * EX :
+               *  +-------+
+               *  |   1   |
+               *  +-------+
+               *  |   2   | <= insert new layout (3) here on the right
+               *  +-------+
+               *
+               *  +-------+
+               *  |   1   |
+               *  +-------+
+               *  |  ==>  |  <= First create an horizontal layout
+               *  +-------+
+               *
+               *  +-------+
+               *  |   1   |
+               *  +---+---+
+               *  | 2 | 3 | <= Then insert old layout (2) and new one (3)
+               *  +-------+
+               */
+              // Detect if the new layout is placed first or last
+              const newParentChildren =
+                action.type === 'LEFT' || action.type === 'TOP'
+                  ? [newTabLayoutKey, action.destTabLayoutKey]
+                  : [action.destTabLayoutKey, newTabLayoutKey];
+              // Create new layout and insert it at the position of the old layout
+              newLayouts = createLayout(
+                newLayouts,
+                'ReflexLayoutNode',
+                newParentChildren,
+                !dstParentLayout.vertical,
+              );
+              const newReflexLayoutKey = newLayouts.lastKey;
+              newLayouts.layoutMap = insertChildren(
+                newLayouts.layoutMap,
+                dstParentKey,
+                newReflexLayoutKey,
+                destParentInfo.childIndex,
+              );
+
+              // Remove destinationLayout from parent layout as it's now wrapped in a new layout
+              newLayouts.layoutMap[
+                dstParentKey
+              ].children = newLayouts.layoutMap[dstParentKey].children.filter(
+                el => el !== action.destTabLayoutKey,
+              );
+            } else {
+              /*
+               * If the tab is inserted in the orientation  of the parent parent layout
+               * EX :
+               *  +-------+
+               *  |   1   |
+               *  +-------+
+               *  |   2   |  <= insert new layout (3) here on the bottom
+               *  +-------+
+               *
+               *  +-------+
+               *  |   1   |
+               *  +-------+
+               *  |   2   |
+               *  +-------+ <= simply insert the new layout as new children of the parent parent layout
+               *  |   3   |
+               *  +-------+
+               */
+              // Insert new tabLayout
+              const newLayoutIndex =
+                action.type === 'RIGHT' || action.type === 'BOTTOM'
+                  ? destParentInfo.childIndex + 1
+                  : destParentInfo.childIndex;
+              newLayouts.layoutMap = insertChildren(
+                newLayouts.layoutMap,
+                dstParentKey,
+                newTabLayoutKey,
+                newLayoutIndex,
+              );
+            }
           }
         }
-      }
 
-      // If the source tabLayout is empty, remove it
-      if (layouts.layoutMap[srcTabLayoutKey.parentKey].children.length === 0) {
-        layouts.layoutMap = removeLayout(
-          layouts.layoutMap,
-          srcTabLayoutKey.parentKey,
+        // If the source tabLayout is empty, remove it
+        if (
+          newLayouts.layoutMap[srcTabLayoutKey.parentKey].children.length === 0
+        ) {
+          newLayouts.layoutMap = removeLayout(
+            newLayouts.layoutMap,
+            srcTabLayoutKey.parentKey,
+          );
+        }
+        // Check for misorientation after deleting and reordering the layouts
+        newLayouts.layoutMap = checkAndCleanMissOrientedLayouts(
+          newLayouts.layoutMap,
         );
       }
-      // Check for misorientation after deleting and reordering the layouts
-      layouts.layoutMap = checkAndCleanMissOrientedLayouts(layouts.layoutMap);
     }
-    return layouts;
+    // Saving layout in local storage
+    window.localStorage.setItem(
+      'DnDGridLayoutData',
+      JSON.stringify(newLayouts),
+    );
+    return newLayouts;
   });
+
+const defaultLayout: ManagedLayoutMap = {
+  lastKey: '0',
+  layoutMap: {
+    '0': { type: 'ReflexLayoutNode', children: [], vertical: false },
+  },
+  rootKey: '0',
+};
+
+const reduceChildren = (
+  tabs: ComponentMap,
+  children?:
+    | null
+    | React.ReactElement<ItemProps | LayoutProps>
+    | React.ReactElement<ItemProps | LayoutProps>[],
+  layoutMap?: ManagedLayoutMap,
+) => {
+  let newLayoutMap: ManagedLayoutMap = layoutMap
+    ? layoutMap
+    : // Deepcopy
+      JSON.parse(JSON.stringify(defaultLayout));
+  const parentLayoutKey = newLayoutMap.lastKey;
+  const parentLayout = newLayoutMap.layoutMap[parentLayoutKey];
+
+  if (children) {
+    let newChildren: React.ReactElement<ItemProps | LayoutProps>[] = [];
+    if (!Array.isArray(children)) {
+      newChildren.push(children);
+    } else {
+      newChildren = children;
+    }
+
+    if (
+      newChildren.every(
+        child =>
+          child.type &&
+          newChildren[0].type &&
+          typeof child.type !== 'string' &&
+          typeof newChildren[0].type !== 'string' &&
+          child.type.name === newChildren[0].type.name &&
+          (child.type.name === 'Layout' || child.type.name === 'Item'),
+      )
+    ) {
+      if (
+        (newChildren as { type: { name: string } }[]).findIndex(
+          child => child.type.name === 'Layout',
+        ) >= 0
+      ) {
+        newChildren.forEach(child => {
+          if (child.props.children) {
+            newLayoutMap = createLayout(
+              newLayoutMap,
+              'ReflexLayoutNode',
+              [],
+              !parentLayout.vertical,
+            );
+            const newReflexLayoutKey = newLayoutMap.lastKey;
+            newLayoutMap.layoutMap = insertChildren(
+              newLayoutMap.layoutMap,
+              parentLayoutKey,
+              newReflexLayoutKey,
+            );
+            newLayoutMap = reduceChildren(
+              tabs,
+              child.props.children,
+              newLayoutMap,
+            );
+          } else {
+            wlog('A layout without children was ignored');
+          }
+        });
+      } else {
+        newLayoutMap.layoutMap[parentLayoutKey].type = 'TabLayoutNode';
+        newLayoutMap.layoutMap[parentLayoutKey].vertical = false;
+        (newChildren as React.ReactElement<ItemProps>[]).forEach(child => {
+          if (!tabs[child.props.label]) {
+            throw Error(
+              `The tab ${child.props.label} doesn't exist. All the used tabs must be given in the tabs props of the LinearLayout`,
+            );
+          }
+          newLayoutMap.layoutMap[parentLayoutKey].children.push(
+            child.props.label,
+          );
+        });
+      }
+    } else {
+      wlog(
+        'You must wrap Items in Layout and you must not have other component than Item and Layout in the LinearLayout',
+      );
+    }
+  }
+  newLayoutMap.layoutMap = checkAndCleanLonelyLayout(
+    newLayoutMap.layoutMap,
+    parentLayoutKey,
+  );
+  newLayoutMap.layoutMap = checkAndCleanMissOrientedLayouts(
+    newLayoutMap.layoutMap,
+  );
+  return newLayoutMap;
+};
+
+const layoutTabMissing = (layout: LayoutMap | null, tabs: ComponentMap) =>
+  !layout ||
+  Object.values(layout).some(
+    item =>
+      item.type === 'TabLayoutNode' &&
+      item.children.some(c => !Object.keys(tabs).includes(c)),
+  );
+
+interface ItemProps {
+  label: string;
+  children: React.ReactElement<ItemProps> | null;
+}
+
+type TItem = React.FunctionComponent<ItemProps>;
+
+export const Item: TItem = (props: ItemProps) => {
+  return <>{props.children}</>;
+};
+
+interface LayoutProps {
+  children:
+    | React.ReactElement<LayoutProps | ItemProps>
+    | React.ReactElement<LayoutProps | ItemProps>[];
+}
+
+type TLayout = React.FunctionComponent<LayoutProps>;
+
+export const Layout: TLayout = (props: LayoutProps) => {
+  return <>{props.children}</>;
+};
 
 interface LinearLayoutProps {
   /**
-   * tabMap - the tabs that can be used in the linearLayout
-   * Be carefull, if a new tabMap is given and the current layoutMap is using these tabs the component will fail
+   * tabs - The tabs that can be used in the layout (You must include all the tabs that you use in the children)
    */
-  tabMap?: ComponentMap;
+  tabs: React.ReactElement<ItemProps>[];
   /**
-   * layoutMap - the layout initial disposition
+   * children - the layout initial disposition
+   * If a layout is saved in the browser, this won't be taken in account unless the saved layout is reset
    */
-  layoutMap?: ManagedLayoutMap;
+  children?:
+    | React.ReactElement<ItemProps | LayoutProps>
+    | React.ReactElement<ItemProps | LayoutProps>[];
 }
 
 /**
  * MainLinearLayout is a component that allows to chose the position and size of its children
  */
 function MainLinearLayout(props: LinearLayoutProps) {
-  const tabs = props.tabMap ? props.tabMap : {};
+  const tabs = React.useRef<ComponentMap>({});
+
+  React.Children.forEach(props.tabs, child => {
+    if (
+      child.type &&
+      typeof child.type !== 'string' &&
+      child.type.name === 'Item'
+    ) {
+      tabs.current[child.props.label] = child.props.children;
+    } else {
+      wlog('You must use an Item element to wrap the content of the tab');
+    }
+  });
+
+  const savedLayoutJSON = window.localStorage.getItem('DnDGridLayoutData');
+  const savedLayout = savedLayoutJSON
+    ? (JSON.parse(savedLayoutJSON) as ManagedLayoutMap)
+    : null;
   const [layout, dispatchLayout] = React.useReducer(
     setLayout,
-    props.layoutMap
-      ? props.layoutMap
-      : {
-          isDragging: false,
-          lastKey: '0',
-          layoutMap: {
-            '0': { type: 'ReflexLayoutNode', children: [], vertical: true },
-          },
-          rootKey: '0',
-        },
+    savedLayout && !layoutTabMissing(savedLayout.layoutMap, tabs.current)
+      ? savedLayout
+      : reduceChildren(tabs.current, props.children),
   );
 
   const onDrop = (layoutKey: string) => (type: DropActionType) => (item: {
@@ -699,8 +888,8 @@ function MainLinearLayout(props: LinearLayoutProps) {
           return (
             <DnDTabLayout
               key={currentLayoutKey}
-              components={makeTabMap(currentLayout.children, tabs)}
-              selectItems={getUnusedTabs(layout.layoutMap, tabs)}
+              components={makeTabMap(currentLayout.children, tabs.current)}
+              selectItems={getUnusedTabs(layout.layoutMap, tabs.current)}
               vertical={currentLayout.vertical}
               onDrop={onDrop(currentLayoutKey)}
               onDropTab={onDropTab(currentLayoutKey)}
@@ -714,17 +903,30 @@ function MainLinearLayout(props: LinearLayoutProps) {
         case 'ReflexLayoutNode': {
           const rendered: JSX.Element[] = [];
           for (let i = 0; i < currentLayout.children.length; i += 1) {
+            const childKey = currentLayout.children[i];
             rendered.push(
-              <ReflexElement key={currentLayout.children[i]}>
-                {renderLayouts(currentLayout.children[i])}
+              <ReflexElement
+                key={childKey}
+                flex={
+                  layout.layoutMap[childKey].flex
+                    ? layout.layoutMap[childKey].flex
+                    : 1000
+                }
+                onStopResize={({ component }) =>
+                  dispatchLayout({
+                    type: 'RESIZE',
+                    layoutKey: childKey,
+                    flex: component.props.flex,
+                  })
+                }
+                minSize={50}
+                className={flex}
+              >
+                {renderLayouts(childKey)}
               </ReflexElement>,
             );
             if (i < currentLayout.children.length - 1) {
-              rendered.push(
-                <ReflexSplitter
-                  key={currentLayout.children[i] + 'SEPARATOR'}
-                />,
-              );
+              rendered.push(<ReflexSplitter key={childKey + 'SEPARATOR'} />);
             }
           }
           return (
@@ -748,7 +950,7 @@ function MainLinearLayout(props: LinearLayoutProps) {
       }}
     >
       <ReparentableRoot>
-        <div className={flex}>{renderLayouts()}</div>
+        <div className={cx(flex, grow)}>{renderLayouts()}</div>
       </ReparentableRoot>
     </selectContext.Provider>
   );

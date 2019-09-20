@@ -106,7 +106,8 @@ YUI.add('wegas-fileexplorer', function(Y) {
                                     searchVal = Y.Lang.trim(searchVal);
                                     ret = searchVal === '';
                                     if (!ret) {
-                                        ret = this.get(LABEL).toLowerCase().indexOf(searchVal.toLowerCase()) > -1;
+                                        ret = (this.data.name || "").toLowerCase().indexOf(searchVal.toLowerCase()) > -1;
+
                                     }
                                     if (!ret && this.get('data') && this.get('data.mimeType')) {
                                         ret = this.get('data.mimeType').toLowerCase()
@@ -139,7 +140,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     collapsed: false,
                     label: '/',
                     rightWidget: null,
-                    data: {mimeType: this.directoryMimeType}
+                    data: {mimeType: this.directoryMimeType, name: '/'}
                 });
                 this.treeView.add(this.rootNode);
             }
@@ -384,7 +385,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     Y.Wegas.Panel.confirm(error.message + '<br>Overwrite it ?<br><small>you will have to refresh your browser to see changes</small>',
                         Y.bind(function() {
                             this.treeView.find(function(i) {
-                                return (i !== e.file.treeLeaf && i.get('label') === e.file.get('name'));
+                                return (i !== e.file.treeLeaf && i && i.data && i.data.name === e.file.get('name'));
                             }).destroy();
                             this.fileUploader.addFile(e.file, true);
                         }, this),
@@ -475,7 +476,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     break;
                 case 'upload':
                     file = params.file;
-                    file._set('name', node.get(LABEL));
+                    file._set('name', node.data.name);
                     file.treeLeaf = node;
                     node.set('editable', false);
                     this.uploadFile(file);
@@ -524,17 +525,21 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     break;
                 case 'delete':
                     if (!this.isProcessing(node)) {
-                        path = 'delete' + node.path;
-                        method = 'DELETE';
+                        path = 'post_delete';
+                        method = 'POST';
 
                         Wegas.Panel.confirm('Delete: ' + node.path + '?',
                             Y.bind(function() {
                                 Wegas.Facade.File.sendRequest({
                                     request: path,
                                     cfg: {
-                                        headers: DEFAULTHEADERS,
+                                        headers: {
+                                            'Content-Type': 'text/plain; charset=UTF-8',
+                                            'Managed-Mode': false
+                                        },
                                         method: method,
-                                        node: node
+                                        node: node,
+                                        data: node.path,
                                     },
                                     on: {
                                         success: Y.bind(this.removeNode, this),
@@ -834,10 +839,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 for (i in node._items) {
                     if (node._items.hasOwnProperty(i)) {
                         n = this.pathToNode(node._items[i], path);
-                        if (
-                            n instanceof Y.TreeNode ||
-                            n instanceof Y.TreeLeaf
-                            ) {
+                        if (n instanceof Y.TreeNode || n instanceof Y.TreeLeaf) {
                             return n;
                         }
                     }
@@ -1020,11 +1022,11 @@ YUI.add('wegas-fileexplorer', function(Y) {
 
             Y.log("Upload File: " + file);
             this.uploader.uploadThese([file],
-                Wegas.Facade.File.get('source') + (force ? 'force/' : '') + 'upload' + path,
-                {
-                    name: file.treeLeaf.get(LABEL)
-                }
-            );
+                Wegas.Facade.File.get('source') + (force ? 'force/' : '') + 'upload' + path/*,
+                 {
+                 name: file.treeLeaf.get(LABEL)
+                 }*/
+                );
         }
     },
         {

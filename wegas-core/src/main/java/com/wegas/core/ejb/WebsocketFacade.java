@@ -31,9 +31,6 @@ import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.OnlineUser;
-import fish.payara.micro.cdi.Inbound;
-import fish.payara.micro.cdi.Outbound;
-import io.prometheus.client.Gauge;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -55,8 +52,6 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.ejb.Asynchronous;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -69,8 +64,6 @@ import org.slf4j.LoggerFactory;
 @Stateless
 @LocalBean
 public class WebsocketFacade {
-
-    private static final Gauge onlineUsersGauge = Gauge.build().name("online_users").help("Number of onlineusers").register();
 
     private static final Logger logger = LoggerFactory.getLogger(WebsocketFacade.class);
 
@@ -88,13 +81,6 @@ public class WebsocketFacade {
 
     @Inject
     private HazelcastInstance hazelcastInstance;
-
-    private static final String COMMANDS_EVENT = "WF_UPDATE_OU_METRIC";
-    private static final String UPDATE_OU_METRIC_CMD = "WF_UPDATE_OU_METRIC";
-
-    @Inject
-    @Outbound(eventName = COMMANDS_EVENT, loopBack = true)
-    private Event<String> commands;
 
     private static final String UPTODATE_KEY = "onlineUsersUpTpDate";
     private static final String LOCKNAME = "WebsocketFacade.onlineUsersLock";
@@ -115,9 +101,6 @@ public class WebsocketFacade {
      */
     @Inject
     private UserFacade userFacade;
-
-    @Inject
-    private PlayerFacade playerFacade;
 
     @Inject
     private RequestManager requestManager;
@@ -188,6 +171,7 @@ public class WebsocketFacade {
      * @param channel the channel involved user listen to
      * @param token   token to lock
      */
+    @Asynchronous
     public void sendLock(String channel, String token) {
         if (this.pusher != null) {
             logger.info("send lock  \"{}\" to \"{}\"", token, channel);
@@ -204,8 +188,9 @@ public class WebsocketFacade {
      * Unlock the lock to involved users.
      *
      * @param channel the channel involved user listen to
-     * @param token token to unlock
+     * @param token   token to unlock
      */
+    @Asynchronous
     public void sendUnLock(String channel, String token) {
         if (this.pusher != null) {
             logger.info("send unlock  \"{}\" to \"{}\"", token, channel);
@@ -447,7 +432,10 @@ public class WebsocketFacade {
                 //} else {
                 Result result = pusher.trigger(audience, eventName, content, socketId);
 
-                if (result.getHttpStatus() == 403) {
+                if (result == null) {
+                    logger.error("Unexpected NULL pusher result");
+                    this.fallback(clientEvent, audience, socketId);
+                } else if (result.getHttpStatus() == 403) {
                     logger.error("403 QUOTA REACHED");
                 } else if (result.getHttpStatus() == 413) {
                     logger.error("413 MESSAGE TOO BIG NOT DETECTED!!!!");
@@ -467,7 +455,10 @@ public class WebsocketFacade {
     public void pageIndexUpdate(Long gameModelId, String socketId) {
         if (pusher != null) {
             GameModel gameModel = gameModelFacade.find(gameModelId);
-            pusher.trigger(gameModel.getChannel(), "PageIndexUpdate", "newIndex", socketId);
+            if (gameModel != null) {
+                // gameModel may be if deleted
+                pusher.trigger(gameModel.getChannel(), "PageIndexUpdate", "newIndex", socketId);
+            }
         }
     }
 
@@ -602,7 +593,6 @@ public class WebsocketFacade {
                 Long userId = this.getUserIdFromChannel(hook.getChannel());
                 if (userId != null) {
                     onlineUsers.remove(userId);
-                    updateOnlineUserMetric();
                 }
             }
 
@@ -641,6 +631,10 @@ public class WebsocketFacade {
         } else {
             return new ArrayList<>();
         }
+    }
+
+    public int getOnlineUserCount() {
+        return this.getLocalOnlineUsers().size();
     }
 
     public Collection<OnlineUser> getLocalOnlineUsers() {
@@ -702,11 +696,6 @@ public class WebsocketFacade {
     private void registerUser(User user) {
         if (user != null && !onlineUsers.containsKey(user.getId())) {
             onlineUsers.put(user.getId(), new OnlineUser(user, getHighestRole(user)));
-
-            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
-            if (onlineUsersUpToDate.get() == 1) {
-                updateOnlineUserMetric();
-            }
         }
     }
 
@@ -733,8 +722,6 @@ public class WebsocketFacade {
                     IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
                     onlineUsersUpToDate.set(1);
                 }
-
-                updateOnlineUserMetric();
 
             } catch (IOException ex) {
                 logger.error("InitOnlineUser", ex);
@@ -775,8 +762,6 @@ public class WebsocketFacade {
                         }
                     }
                 }
-
-                updateOnlineUserMetric();
 
                 if (maintainLocalListUpToDate) {
                     IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
@@ -835,16 +820,6 @@ public class WebsocketFacade {
             throw WegasErrorMessage.error("Unable to read request body");
         } catch (NoSuchAlgorithmException | InvalidKeyException ex) {
             throw WegasErrorMessage.error(ex.getMessage());
-        }
-    }
-
-    public void updateOnlineUserMetric() {
-        commands.fire(UPDATE_OU_METRIC_CMD);
-    }
-
-    public void onOnlineUserMetric(@Inbound(eventName = COMMANDS_EVENT) @Observes String command) {
-        if (UPDATE_OU_METRIC_CMD.equals(command)) {
-            onlineUsersGauge.set(this.getLocalOnlineUsers().size());
         }
     }
 

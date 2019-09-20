@@ -15,7 +15,6 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.ListUtils;
-import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.True;
@@ -40,9 +39,7 @@ import org.slf4j.LoggerFactory;
 @Table(indexes = {
     @Index(columnList = "currentresult_id")
 })
-@NamedQueries({
-    @NamedQuery(name = "ChoiceInstance.findByResultId", query = "SELECT ci FROM ChoiceInstance ci WHERE ci.currentResult.id = :resultId")
-})
+@NamedQuery(name = "ChoiceInstance.findByResultId", query = "SELECT ci FROM ChoiceInstance ci WHERE ci.currentResult.id = :resultId")
 public class ChoiceInstance extends VariableInstance implements ReadableInstance {
 
     private static final long serialVersionUID = 1L;
@@ -332,8 +329,4 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
 
         super.updateCacheOnDelete(beans);
     }*/
-    @Override
-    public void revive(Beanjection beans) {
-        beans.getQuestionDescriptorFacade().reviveChoiceInstance(this);
-    }
 }

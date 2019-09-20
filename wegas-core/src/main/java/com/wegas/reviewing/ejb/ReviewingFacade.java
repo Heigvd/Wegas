@@ -43,7 +43,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.Query;
@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * PeerReview EJB Facade
+ * PeerReview Inject Facade
  * <p>
  * Contains PeerReviewing logic
  *
@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
 public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFacadeI {
 
     static final private Logger logger = LoggerFactory.getLogger(ReviewingFacade.class);
+    private static final long serialVersionUID = 5140216834760973410L;
 
     /**
      * Default Constructor
@@ -72,17 +73,17 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
     /**
      * Player Facade
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
     /**
      * Variable Instance Facade
      */
-    @EJB
+    @Inject
     private VariableInstanceFacade variableInstanceFacade;
     /**
      * Variable Descriptor Facade
      */
-    @EJB
+    @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
 
     /**

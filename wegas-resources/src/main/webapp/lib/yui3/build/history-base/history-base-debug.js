@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -290,7 +290,6 @@ Y.mix(HistoryBase.prototype, {
      *       and <code>null</code> or <code>undefined</code> values will be
      *       removed from the state.
      *       </p>
-     *
      *       <p>
      *       If <code>false</code>, the existing state will be discarded as a
      *       whole and the new state will take its place.
@@ -644,4 +643,4 @@ Y.mix(HistoryBase.prototype, {
 Y.HistoryBase = HistoryBase;
 
 
-}, '3.17.2', {"requires": ["event-custom-complex"]});
+}, '3.18.1', {"requires": ["event-custom-complex"]});

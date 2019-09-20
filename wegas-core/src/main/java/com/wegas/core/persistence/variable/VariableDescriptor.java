@@ -28,7 +28,6 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.annotations.Errored;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.primitive.*;
@@ -103,16 +102,15 @@ import org.slf4j.LoggerFactory;
     @Index(columnList = "scope_id"),
     @Index(columnList = "label_id")
 })
-@NamedQueries({
-    @NamedQuery(
-            name = "VariableDescriptor.findAllNamesInModelAndItsScenarios",
-            query = "SELECT DISTINCT(vd.name)"
-            + "FROM GameModel model "
-            + "LEFT JOIN GameModel scen ON (model = scen.basedOn AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
-            + "JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
-            + "WHERE model.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
-    ),
-    /*@NamedQuery(
+@NamedQuery(
+        name = "VariableDescriptor.findAllNamesInModelAndItsScenarios",
+        query = "SELECT DISTINCT(vd.name)"
+        + "FROM GameModel model "
+        + "LEFT JOIN GameModel scen ON (model = scen.basedOn AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
+        + "JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
+        + "WHERE model.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
+)
+/*@NamedQuery(
             name = "VariableDescriptor.findAllNamesInScenarioAndItsModelCluster",
             query = "SELECT DISTINCT(vd.name)"
             + " FROM GameModel scen "
@@ -122,28 +120,26 @@ import org.slf4j.LoggerFactory;
             + "                               AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
             + " JOIN VariableDescriptor vd ON (vd.gameModel = other OR vd.gameModel = model)"
             + " WHERE scen.id = :gameModelId"
-    ),*/
-    @NamedQuery(
-            name = "VariableDescriptor.findAllNamesInScenarioAndItsModel",
-            query = "SELECT DISTINCT(vd.name)"
-            + " FROM GameModel scen "
-            + " LEFT JOIN GameModel model ON (model = scen.basedOn AND model.type = com.wegas.core.persistence.game.GameModel.GmType.MODEL)"
-            + " JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
-            + " WHERE scen.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
-    ),
-    @NamedQuery(
-            name = "VariableDescriptor.findByRootGameModelId",
-            query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
-    ),
-    @NamedQuery(
-            name = "VariableDescriptor.findByGameModelIdAndName",
-            query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.name LIKE :name",
-            hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
-                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)}
-    )
-
-})
+    )*/
+@NamedQuery(
+        name = "VariableDescriptor.findAllNamesInScenarioAndItsModel",
+        query = "SELECT DISTINCT(vd.name)"
+        + " FROM GameModel scen "
+        + " LEFT JOIN GameModel model ON (model = scen.basedOn AND model.type = com.wegas.core.persistence.game.GameModel.GmType.MODEL)"
+        + " JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
+        + " WHERE scen.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
+)
+@NamedQuery(
+        name = "VariableDescriptor.findByRootGameModelId",
+        query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
+)
+@NamedQuery(
+        name = "VariableDescriptor.findByGameModelIdAndName",
+        query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.name LIKE :name",
+        hints = {
+            @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+            @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)}
+)
 @CacheIndexes(value = {
     @CacheIndex(columnNames = {"GAMEMODEL_ID", "NAME"}) // bug uppercase: https://bugs.eclipse.org/bugs/show_bug.cgi?id=407834
 })
@@ -689,6 +685,11 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         this.title = title;
     }
 
+    @JsonIgnore
+    public String getDeprecatedTitle() {
+        return title;
+    }
+
     /**
      * Get the descriptor internal name (aka scriptAlias)
      *
@@ -892,30 +893,6 @@ public abstract class VariableDescriptor<T extends VariableInstance>
             return (GameModel) parent;
         } else {
             return null;
-        }
-    }
-
-    public void revive(GameModel gameModel, Beanjection beans) {
-        if (this.title != null) {
-            if (title.isEmpty()) {
-                // title is defined but empty -> not prefix, don't change label
-                // eg:  label="[r5b] Meet someone'; title=""; prefix = ""; label="[r5b] Meet someone"
-                this.setEditorTag("");
-            } else {
-                String importedLabel = getLabel().translateOrEmpty(this.getGameModel());
-                if (importedLabel == null) {
-                    importedLabel = "";
-                }
-                // eg:  label="[r5b] Meet someone'; title="Meet someone"; prefix = "[r5b]"; label="Meet someone"
-                // eg:  label="Meet someone'; title="Meet someone"; prefix = ""; label="Meet someone"
-                // eg:  label=""; title="Meet someone"; prefix = ""; label="Meet someone"
-                this.setEditorTag(importedLabel.replace(title, "").trim());
-                List<GameModelLanguage> languages = gameModel.getLanguages();
-                if (languages != null && !languages.isEmpty()) {
-                    this.setLabel(TranslatableContent.build(languages.get(0).getCode(), title));
-                }
-            }
-            this.title = null;
         }
     }
 

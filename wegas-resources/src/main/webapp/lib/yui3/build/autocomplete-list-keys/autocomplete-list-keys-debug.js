@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -23,7 +23,7 @@ var KEY_DOWN  = 40,
     KEY_UP    = 38;
 
 function ListKeys() {
-    Y.before(this._bindKeys, this, 'bindUI');
+    Y.after(this._bindKeys, this, 'bindUI');
     this._initKeys();
 }
 
@@ -190,4 +190,4 @@ ListKeys.prototype = {
 Y.Base.mix(Y.AutoCompleteList, [ListKeys]);
 
 
-}, '3.17.2', {"requires": ["autocomplete-list", "base-build"]});
+}, '3.18.1', {"requires": ["autocomplete-list", "base-build"]});

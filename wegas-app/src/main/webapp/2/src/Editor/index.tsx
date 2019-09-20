@@ -5,13 +5,16 @@ import { LangProvider } from '../Components/LangContext';
 import '../css/global.css';
 import Layout from './Components/Layout';
 import { Theme } from '../Components/Theme';
+import { LibrariesLoader } from './Components/LibrariesLoader';
 
 function mount() {
   render(
     <LangProvider>
-      <Theme>
-        <Layout />
-      </Theme>
+      <LibrariesLoader>
+        <Theme>
+          <Layout />
+        </Theme>
+      </LibrariesLoader>
     </LangProvider>,
     document.getElementById('root'),
   );

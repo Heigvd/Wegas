@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.security.jparealm.JpaAccount;
@@ -29,6 +30,7 @@ import org.apache.http.HttpMessage;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -38,7 +40,6 @@ import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +63,10 @@ public class WegasRESTClient {
     public WegasRESTClient(String baseURL) {
         this.client = HttpClientBuilder.create().build();
         this.baseURL = baseURL;
+    }
+
+    public String getBaseURL() {
+        return baseURL;
     }
 
     public Map<String, Role> getRoles() throws IOException {
@@ -106,7 +111,9 @@ public class WegasRESTClient {
         HttpEntity entity = loginResponse.getEntity();
         EntityUtils.consume(entity);
 
-        Assert.assertEquals(HttpStatus.SC_OK, loginResponse.getStatusLine().getStatusCode());
+        if (loginResponse.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+            throw WegasErrorMessage.error("Login failed");
+        }
 
         Header[] headers = loginResponse.getHeaders("Set-Cookie");
 
@@ -133,27 +140,50 @@ public class WegasRESTClient {
     }
 
     public <T> T get(String url, TypeReference valueTypeRef) throws IOException {
-        return getObjectMapper().readValue(this.get(url), valueTypeRef);
+        String get = this.get(url);
+        if (!Helper.isNullOrEmpty(get)) {
+            return getObjectMapper().readValue(get, valueTypeRef);
+        } else {
+            return null;
+        }
     }
 
     public <T> T get(String url, Class<T> valueType) throws IOException {
-        return getObjectMapper().readValue(this.get(url), valueType);
+        String get = this.get(url);
+        if (!Helper.isNullOrEmpty(get)) {
+            return getObjectMapper().readValue(get, valueType);
+        } else {
+            return null;
+        }
     }
 
     public String get(String url) throws IOException {
+        logger.info("GET" + " " + url);
         HttpUriRequest get = new HttpGet(baseURL + url);
         setHeaders(get);
 
         HttpResponse response = client.execute(get);
+        logger.info(" => " + response.getStatusLine());
 
-        Assert.assertTrue("Expected 2xx OK but got " + response.getStatusLine().getStatusCode(), response.getStatusLine().getStatusCode() < 300);
+        if (response.getStatusLine().getStatusCode() >= 300) {
+            throw WegasErrorMessage.error("Expected 2xx OK but got " + response.getStatusLine().getStatusCode());
+        }
 
         return getEntityAsString(response.getEntity());
+    }
+
+    public String put(String url) throws IOException {
+        return this.put(url, null);
     }
 
     public String put(String url, Object object) throws IOException {
         HttpResponse response = this._put(url, object);
         return getEntityAsString(response.getEntity());
+    }
+
+    public <T> T put(String url, Object object, Class<T> valueType) throws IOException {
+        String response = this.put(url, object);
+        return getObjectMapper().readValue(response, valueType);
     }
 
     private HttpResponse _put(String url, Object object) throws IOException {
@@ -162,17 +192,29 @@ public class WegasRESTClient {
 
     public String post(String url, Object object) throws IOException {
         HttpResponse response = this._post(url, object);
-        return this.getEntityAsString(response.getEntity());
+        String entity = this.getEntityAsString(response.getEntity());
+        if (response.getStatusLine().getStatusCode() >= 400) {
+            throw WegasErrorMessage.error(entity);
+        }
+        return entity;
     }
 
     public <T> T post(String url, Object object, TypeReference valueType) throws IOException {
         String post = this.post(url, object);
-        return getObjectMapper().readValue(post, valueType);
+        if (!Helper.isNullOrEmpty(post)) {
+            return getObjectMapper().readValue(post, valueType);
+        } else {
+            return null;
+        }
     }
 
     public <T> T post(String url, Object object, Class<T> valueType) throws IOException {
         String post = this.post(url, object);
-        return getObjectMapper().readValue(post, valueType);
+        if (!Helper.isNullOrEmpty(post)) {
+            return getObjectMapper().readValue(post, valueType);
+        } else {
+            return null;
+        }
     }
 
     private HttpResponse _post(String url, Object object) throws IOException {
@@ -181,6 +223,23 @@ public class WegasRESTClient {
 
     private String post_asString(String url, Object object) throws IOException {
         return this.postJSON_asString(url, getObjectMapper().writeValueAsString(object));
+    }
+
+    public String delete(String url) throws IOException {
+        logger.info("DELETE " + url);
+        HttpUriRequest delete = new HttpDelete(baseURL + url);
+        setHeaders(delete);
+
+        HttpResponse response = client.execute(delete);
+
+        logger.info(" => " + response.getStatusLine());
+
+        if (response.getStatusLine().getStatusCode() >= HttpStatus.SC_BAD_REQUEST) {
+            throw WegasErrorMessage.error("DELETE failed");
+        }
+
+        return getEntityAsString(response.getEntity());
+
     }
 
     private HttpResponse sendRequest(String url, String method, String jsonContent) throws IOException {
@@ -197,15 +256,14 @@ public class WegasRESTClient {
         if (request != null) {
             setHeaders(request);
 
-            logger.error(method + " " + url + " WITH " + jsonContent);
+            logger.info(method + " " + baseURL + url + " WITH " + jsonContent);
             if (jsonContent != null) {
-                StringEntity strEntity = new StringEntity(jsonContent);
-                strEntity.setContentType("application/json");
+                StringEntity strEntity = new StringEntity(jsonContent, "UTF-8");
                 request.setEntity(strEntity);
             }
 
             HttpResponse execute = client.execute(request);
-            logger.error(" => " + execute.getStatusLine());
+            logger.info(" => " + execute.getStatusLine());
 
             return execute;
         } else {
@@ -215,7 +273,11 @@ public class WegasRESTClient {
 
     public <T> T postJSON_asString(String url, String jsonContent, Class<T> valueType) throws IOException {
         String postJSON_asString = this.postJSON_asString(url, jsonContent);
-        return getObjectMapper().readValue(postJSON_asString, valueType);
+        if (!Helper.isNullOrEmpty(postJSON_asString)) {
+            return getObjectMapper().readValue(postJSON_asString, valueType);
+        } else {
+            return null;
+        }
     }
 
     public String postJSON_asString(String url, String jsonContent) throws IOException {
@@ -226,7 +288,11 @@ public class WegasRESTClient {
 
     public <T> T postJSONFromFile(String url, String jsonFile, Class<T> valueType) throws IOException {
         String postJSONFromFile = this.postJSONFromFile(url, jsonFile);
-        return getObjectMapper().readValue(postJSONFromFile, valueType);
+        if (!Helper.isNullOrEmpty(postJSONFromFile)) {
+            return getObjectMapper().readValue(postJSONFromFile, valueType);
+        } else {
+            return null;
+        }
     }
 
     public String postJSONFromFile(String url, String jsonFile) throws IOException {
@@ -238,7 +304,10 @@ public class WegasRESTClient {
         post.setEntity(fileEntity);
 
         HttpResponse response = client.execute(post);
-        Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+
+        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+            throw WegasErrorMessage.error("POST failed");
+        }
 
         return getEntityAsString(response.getEntity());
 

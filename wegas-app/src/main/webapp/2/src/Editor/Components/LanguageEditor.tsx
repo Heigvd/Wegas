@@ -24,7 +24,7 @@ const simple = { color: themeVar.primaryLighterColor };
 
 const title = 'Translation Manager';
 
-export function LanguageEditor() {
+export default function LanguageEditor() {
   const [editMode, setEditMode] = React.useState(false);
   const languages = useGameModel().languages;
   const [selectedLanguages, setSelectedLanguages] = React.useState(() =>

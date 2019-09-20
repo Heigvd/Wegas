@@ -160,7 +160,7 @@ public class ConcurrentHelper {
 
             if (this.getLock(lock).tryLock()) {
                 myLocks.add(effectiveToken);
-                logger.info("MyLock TryLock:" +  effectiveToken);
+                logger.info("MyLock TryLock:" + effectiveToken);
                 logger.info("LOCKED: {}", lock);
                 r = true; // Successful
                 lock.counter++;
@@ -203,7 +203,7 @@ public class ConcurrentHelper {
             lock = locks.get(effectiveToken);
             lock.counter++;
             locks.put(effectiveToken, lock);
-            logger.info("MyLock Lock:" +  effectiveToken);
+            logger.info("MyLock Lock:" + effectiveToken);
             myLocks.add(effectiveToken);
             logger.info("LOCKED: {}", lock);
             if (audience != null && lock.counter == 1) { //just locked
@@ -235,7 +235,7 @@ public class ConcurrentHelper {
         }
         logger.info("UNLOCKED");
         lock.counter--;
-        logger.info("MyLock unlock:" +  effectiveToken);
+        logger.info("MyLock unlock:" + effectiveToken);
         myLocks.remove(effectiveToken);
         if (lock.counter == 0) {
             if (!Helper.isNullOrEmpty(audience) && !audience.equals("internal")) {

@@ -14,7 +14,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.annotation.Resource;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
@@ -38,9 +38,9 @@ public class ScriptCheck {
     private static final Logger logger = LoggerFactory.getLogger(ScriptCheck.class);
     @Resource
     private UserTransaction utx;
-    @EJB
+    @Inject
     private RequestFacade requestFacade;
-    @EJB
+    @Inject
     private ScriptFacade scriptFacade;
     //private ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
 

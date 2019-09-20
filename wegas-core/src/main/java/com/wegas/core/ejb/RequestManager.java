@@ -60,6 +60,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.event.Level;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -994,8 +995,16 @@ public class RequestManager implements RequestManagerI {
                 + (currentPlayer != null ? currentPlayer.getId() : "n/a") + "::"
                 + (currentTeam != null ? currentTeam.getId() : "n/a") + "]";
 
-        RequestManager.logger.info("Request [{}] \"{} {}\" for {} processed in {} ms ( processing: {}; management: {}, propagation: {}, serialisation: {}) => {}",
-                this.requestId, this.getMethod(), this.getPath(), info, totalDuration, processingDuration, managementDuration, propagationDuration, serialisationDuration, this.status);
+        Level level = Level.INFO;
+        if (this.status != null && this.status.getStatusCode() >= 400) {
+            level = Level.ERROR;
+        }
+
+        Helper.log(logger, level,
+                "Request [{}] \"{} {}\" for {} processed in {} ms ( processing: {}; management: {}, propagation: {}, serialisation: {}) => {}",
+                this.requestId, this.getMethod(), this.getPath(), info, 
+                totalDuration, processingDuration, managementDuration, propagationDuration, serialisationDuration,
+                this.status);
     }
 
     /**

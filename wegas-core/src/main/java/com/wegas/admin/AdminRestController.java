@@ -11,8 +11,8 @@ import com.wegas.admin.persistence.GameAdmin;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -27,8 +27,16 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 @RequiresRoles("Administrator")
 public class AdminRestController {
 
-    @EJB
+    @Inject
     private AdminFacade adminFacade;
+
+
+    @POST
+    @Path("GamesByIds")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Collection<GameAdmin> get(List<Long> ids) {
+        return adminFacade.getByIds(ids);
+    }
 
     @Path("Game")
     @GET

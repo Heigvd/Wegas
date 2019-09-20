@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -139,7 +139,7 @@ YUI.add('editor-bidi', function (Y, NAME) {
             var parent = node, divNode, firstChild;
 
             root = root || Y.EditorSelection.ROOT;
-            
+
             if (!parent) {
                 parent = root;
             }
@@ -343,4 +343,5 @@ YUI.add('editor-bidi', function (Y, NAME) {
         return returnValue;
     };
 
-}, '3.17.2', {"requires": ["editor-base"]});
+
+}, '3.18.1', {"requires": ["editor-base"]});

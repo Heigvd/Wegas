@@ -139,10 +139,10 @@ YUI.add("wegas-entitychooser", function(Y) {
                     value: {
                         type: "HistoryDialog"
                     },
-                    properties:{
+                    properties: {
                         type: {
                             type: "string",
-                            view: { label: "Type" }
+                            view: {label: "Type"}
                         }
                     },
                     getter: function(v) {
@@ -152,18 +152,18 @@ YUI.add("wegas-entitychooser", function(Y) {
                 widgetAttr: {
                     value: "dialogueVariable",
                     type: "string",
-                    view: { label: "Widget Attribute" }
+                    view: {label: "Widget Attribute"}
                 },
                 flatten: {
                     type: "boolean",
                     value: "true",
-                    view: { label: "Flatten" }
+                    view: {label: "Flatten"}
                 },
                 classFilter: {
                     type: "array",
                     value: [],
                     required: true,
-                    view:{ label: "ClassFilter" },
+                    view: {label: "ClassFilter"},
                     items: {
                         type: "string",
                         view: {
@@ -192,7 +192,8 @@ YUI.add("wegas-entitychooser", function(Y) {
             this._currentWidget && this._currentWidget.hideAllOverlay();
         },
         syncUI: function() {
-            var items = (this.get("variable.evaluated") ? (this.get("flatten") ? this.get("variable.evaluated").flatten() : this.get("variable.evaluated").get("items")) : []),
+            var items = (this.get("variable.evaluated") ? (this.get("flatten") ? this.get("variable.evaluated")
+                .flatten() : this.get("variable.evaluated").get("items")) : []),
                 i, tmp, li,
                 entityBox = this.get(CONTENTBOX).one(".chooser-entities"),
                 length = items.length, label, getLabel,
@@ -330,17 +331,17 @@ YUI.add("wegas-entitychooser", function(Y) {
                 },
                 widgets: {
                     required: true,
-                    view:{ type: "hidden" }
+                    view: {type: "hidden"}
                 },
                 markUnread: {
                     type: "boolean",
                     value: false,
-                    view: { label: "Mark as unread"}
+                    view: {label: "Mark as unread"}
                 },
                 autoSelectFirstUnread: {
                     type: "boolean",
                     value: true,
-                    view: { label:"Autoselect first unread" }
+                    view: {label: "Autoselect first unread"}
                 },
                 userCounters: {
                     type: "object",
@@ -352,10 +353,271 @@ YUI.add("wegas-entitychooser", function(Y) {
                 flatten: {
                     type: "boolean",
                     value: true,
-                    view: {label:"flatter"}
+                    view: {label: "flatter"}
                 }
             }
         });
     Y.Wegas.EntityChooser2 = EntityChooser2;
 
+    var ObjectPropertyEditor = Y.Base.create("wegas-objectproperties-editor",
+        Y.Widget,
+        [Y.WidgetChild,
+            Y.Wegas.Widget,
+            Y.Wegas.Editable],
+        {
+            CONTENT_TEMPLATE:
+                "<div>"
+                + "  <div class='header'>"
+                + "    <span class='title'></span>"
+                + "    <span class='buttons'>"
+                + "      <i class='check-all fa fa-bug' title='Highlight all invalid properties'></i>"
+                + "    </span>"
+                + "  </div>"
+                + "  <div class='editor'>"
+                + "    <ul class='chooser-properties'></ul><div class='chooser-form'></div>"
+                + "  </div>"
+                + "  <div style='display:none' class='ghost-editor'></div>"
+                + "</div>",
+            initializer: function() {
+                this._handlers = [];
+                /**
+                 * hold a ref to the currently selected name
+                 */
+                this.currentTarget = null;
+            },
+            hideAllOverlay: function() {
+                Y.Wegas.Widget.prototype.hideAllOverlay.call(this);
+                this._currentWidget && this._currentWidget.hideAllOverlay();
+            },
+            readProperty: function(propertyName) {
+                var theObject = this.get("variable.evaluated");
+                var properties = theObject.get("properties");
+
+                if (properties.hasOwnProperty(propertyName)) {
+                    var prop = properties[propertyName];
+                    if (typeof prop === "string") {
+                        try {
+                            if (this.get("encoding") === "encoded json") {
+                                prop = unescape(prop);
+                            }
+                            return JSON.parse(prop);
+                        } catch (e) {
+                            return null;
+                        }
+                    }
+                }
+                return undefined;
+            },
+            writeProperty: function(propertyName, o) {
+                var theObject = this.get("variable.evaluated");
+                var properties = theObject.get("properties");
+
+                var value = JSON.stringify(o);
+                if (this.get("encoding") === "encoded json") {
+                    value = escape(value);
+                }
+                properties[propertyName] = value;
+                Y.Wegas.Facade.Variable.cache.put(theObject.toObject(), {
+                    on: {
+                        success: Y.bind(function() {
+                            this.form.deactivateSaveBtn();
+                        }, this)
+                    }
+                });
+            },
+            getPropertyKeys: function() {
+                return Object.keys(this.get("variable.evaluated").get("properties"))
+                    .filter(Y.bind(function(p) {
+                        var prop = this.readProperty(p);
+                        return prop && typeof prop === "object";
+                    }, this));
+            },
+            renderUI: function() {
+                this.get("contentBox").one(".header .title").setContent(this.get("variable.evaluated")
+                    .getLabel() + " Editor");
+            },
+            syncUI: function() {
+                var keys = this.getPropertyKeys();
+
+                var list = this.get(CONTENTBOX).one(".chooser-properties");
+
+                var errored = this.get(CONTENTBOX).all(".chooser-properties .errored").getData("name");
+
+                list.empty();
+
+                var length = keys.length;
+
+                if (length > 0) {
+                    for (var i = 0; i < length; i++) {
+                        list.append("<li class='chooser-property"
+                            + (errored.indexOf(keys[i]) >= 0 ? " errored" : "")
+                            + "' data-name='" + keys[i] + "'>" + keys[i] + "</li>");
+                    }
+                } else {
+                    list.append("<li class='no-property'><i>no valid property</i></li>");
+                }
+
+                if (this.currentTarget) {
+                    var tmp = list.all("[data-name='" + this.currentTarget + "']");
+                    tmp.addClass(CLASSES.CHOOSEN);
+
+                    if (!tmp.size()) { //current target exists but is not rendered anymore
+                        Y.later(200, this, function() {
+                            this.form.destroy();
+                            this.form = null;
+                        });
+                        this.currentTarget = null;
+                    }
+                }
+            },
+
+            highlightAllValidationFailure: function() {
+
+                var onChange;
+                var ctx = this;
+
+                var cfg = this.getFormConfig();
+                var keys = this.getPropertyKeys();
+
+                var key;
+                this.showOverlay();
+
+                function renderOne() {
+                    if (keys.length) {
+                        key = keys.shift();
+                        ctx.get("contentBox").one(".check-all").setContent("Process " + key);
+                        var value = ctx.readProperty(key);
+
+                        form.renderForm(value, cfg); // this one will trigger formChange once loader
+                    } else {
+                        ctx.get("contentBox").one(".check-all").setContent("");
+                        onChange.detach();
+                        form.destroy();
+                        ctx.hideOverlay();
+                    }
+                }
+
+
+                var cb = this.get("contentBox");
+
+                var form = new Y.Wegas.RForm({});
+                form.render(cb.one(".ghost-editor"));
+
+
+                onChange = form.after("formChange", Y.bind(function() {
+                    if (form.get("form")) {
+                        Y.log("KEY: " + key);
+                        var entry = this.get("contentBox").one("li.chooser-property[data-name='" + key + "']");
+
+                        var errors = form.validate();
+
+                        entry.toggleClass("errored", errors && errors.length > 0);
+
+                        renderOne();
+                    }
+                }, this));
+
+                renderOne();
+            },
+            bindUI: function() {
+                this.get(CONTENTBOX).delegate("click", this.highlightAllValidationFailure, ".check-all", this);
+                this.get(CONTENTBOX).delegate("click", function(e) {
+                    var targetName = e.target.getData("name");
+                    if (this.currentTarget === targetName) { // I'm the choosen one
+                        return;
+                    }
+                    this.genForm(targetName);
+                    this.get(CONTENTBOX).all("." + CLASSES.CHOOSEN).removeClass(CLASSES.CHOOSEN);
+                    e.target.addClass(CLASSES.CHOOSEN);
+                    this.currentTarget = targetName;
+                }, ".chooser-properties .chooser-property", this);
+
+                this._handlers.push(Y.Wegas.Facade.Variable.after("updatedDescriptor", function(e) {
+                    var obj = this.get("variable.evaluated");
+                    if (obj && obj.get("id") === e.entity.get("id")) {
+                        this.syncUI();
+                    }
+                }, this));
+            },
+            getFormConfig: function() {
+                if (this.get("evalFormConfig")) {
+                    return eval(this.get("evalFormConfig"));
+                } else {
+                    return this.get("formConfig");
+                }
+            },
+            genForm: function(name) {
+                var cfg = this.getFormConfig();
+                var parsed = this.readProperty(name);
+
+                if (this.form) {
+                    this.form.detach("submit");
+                    this.form.destroy();
+                }
+                this.initialValue = parsed;
+
+                this.form = new Y.Wegas.RForm({
+                    values: parsed,
+                    cfg: cfg
+                });
+                this.form.render(this.get("contentBox").one(".chooser-form"));
+
+                this.form.on("updated", Y.bind(function() {
+                    this.form.activateSaveBtn();
+                }, this));
+
+                this.form.on("submit", Y.bind(function(e) {
+                    this.showOverlay();
+                    Y.log("E: " + e.value);
+                    this.writeProperty(name, e.value);
+                    this.get("contentBox")
+                        .one("li.chooser-property[data-name='" + name + "']")
+                        .removeClass("errored");
+                    this.hideOverlay();
+                }, this));
+            },
+            destructor: function() {
+                this.form && this.form.destroy();
+                Y.Array.each(this._handlers, function(handle) {
+                    handle.detach();
+                });
+            }
+        },
+        {
+            ATTRS: {
+                variable: {
+                    type: 'object',
+                    getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                    view: {
+                        type: "variableselect",
+                        label: "Object",
+                        classFilter: ["ObjectDescriptor"]
+                    }
+                },
+                evalFormConfig: {
+                    type: "string",
+                    value: "",
+                    view: {
+                        className: 'wegas-advanced-feature',
+                    }
+                },
+                formConfig: {
+                    type: "object",
+                    view: {
+                        type: "hidden"
+                    },
+                    value: {}
+                },
+                encoding: {
+                    type: "string",
+                    value: "json",
+                    view: {
+                        label: "Encoding",
+                        type: "select",
+                        choices: ["json", "encoded json"]
+                    }
+                }
+            }
+        });
+    Y.Wegas.ObjectPropertyEditor = ObjectPropertyEditor;
 });

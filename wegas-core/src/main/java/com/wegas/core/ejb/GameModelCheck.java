@@ -44,7 +44,7 @@ public class GameModelCheck {
     private GameController gameController;
 
     @Inject
-    private HelperBean helperBean;
+    private JPACacheHelper jpaCacheHelper;
 
     public Exception validate(GameModel gameModel) {
         return this.createGameAndRollback(gameModel);
@@ -64,7 +64,7 @@ public class GameModelCheck {
             } finally {
                 requestManager.setPlayer(null);
                 utx.rollback();
-                helperBean.wipeCache();
+                jpaCacheHelper.requestClearCache();
             }
         } catch (NotSupportedException | SystemException ex) {
             logger.error("Transaction failed", ex);

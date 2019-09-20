@@ -32,7 +32,9 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
             backToMenu: "retour au menu",
             mcqBackToMenu: "retour à la liste de questions",
             ok: "OK",
-            cancel: "Annuler"
+            cancel: "Annuler",
+            yes: "oui",
+            no: "non"
         },
         i18n:{
             manager: {

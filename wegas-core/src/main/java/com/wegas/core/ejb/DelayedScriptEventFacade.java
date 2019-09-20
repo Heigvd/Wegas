@@ -36,13 +36,13 @@ public class DelayedScriptEventFacade implements DelayedScriptEventFacadeI {
     @Inject
     private ScriptEventFacade scriptEventFacade;
 
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
 
-    @EJB
+    @Inject
     private RequestFacade requestFacade;
 
-    @EJB
+    @Inject
     private WebsocketFacade websocketFacade;
 
     @Timeout

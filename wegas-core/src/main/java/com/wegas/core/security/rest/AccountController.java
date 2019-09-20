@@ -15,8 +15,8 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import java.util.Date;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
@@ -36,17 +36,17 @@ public class AccountController {
     /**
      *
      */
-    @EJB
+    @Inject
     private AccountFacade accountFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private TeamFacade teamFacade;
 
     /**
