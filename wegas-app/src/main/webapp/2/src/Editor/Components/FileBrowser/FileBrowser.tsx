@@ -43,24 +43,22 @@ export function FileBrowser({
       });
   }, []);
 
-  return (
+  return rootFile ? (
     <DefaultDndProvider>
       <div className={grow}>
         <StyledLabel value={error} type={'error'} duration={3000} />
-        {rootFile ? (
-          <FileBrowserNode
-            defaultFile={rootFile}
-            selectedPaths={selectedPaths}
-            noBracket
-            noDelete
-            onFileClick={onFileClick}
-            onDelelteFile={onDelelteFile}
-          />
-        ) : (
-          <div>"Loading root file"</div>
-        )}
+        <FileBrowserNode
+          defaultFile={rootFile}
+          selectedPaths={selectedPaths}
+          noBracket
+          noDelete
+          onFileClick={onFileClick}
+          onDelelteFile={onDelelteFile}
+        />
       </div>
     </DefaultDndProvider>
+  ) : (
+    <div>"Loading files"</div>
   );
 }
 

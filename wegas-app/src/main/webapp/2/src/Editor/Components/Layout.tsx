@@ -3,6 +3,7 @@ import { css } from 'emotion';
 import Header from './Header';
 import { FeatureProvider } from '../../Components/FeatureProvider';
 import { Item, Layout, DndLinearLayout } from './LinearTabLayout/LinearLayout';
+import { ReflexContainer, ReflexElement } from 'react-reflex';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
 const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
@@ -20,6 +21,16 @@ const layout = css({
   flexDirection: 'column',
   height: '100%',
 });
+
+function TestReFlex() {
+  return (
+    <ReflexContainer orientation={'vertical'}>
+      <ReflexElement>
+        <div>asljdfkajs</div>
+      </ReflexElement>
+    </ReflexContainer>
+  );
+}
 
 export default class AppLayout extends React.Component<
   {},
@@ -77,6 +88,9 @@ export default class AppLayout extends React.Component<
               <Item key="LanguageEditor" label="LanguageEditor">
                 <LanguageEditor />
               </Item>,
+              <Item key="TestReFlex" label="TestReFlex">
+                <TestReFlex />
+              </Item>,
             ]}
           >
             <Layout>
@@ -105,7 +119,10 @@ export default class AppLayout extends React.Component<
               <Item label="Scripts">
                 <LibraryEditor />
               </Item>
-              <Item key="LanguageEditor" label="LanguageEditor">
+              <Item key="TestReFlex" label="TestReFlex">
+                <TestReFlex />
+              </Item>
+              <Item label="LanguageEditor">
                 <LanguageEditor />
               </Item>
             </Layout>
