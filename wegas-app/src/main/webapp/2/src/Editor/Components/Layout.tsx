@@ -3,7 +3,6 @@ import { css } from 'emotion';
 import Header from './Header';
 import { FeatureProvider } from '../../Components/FeatureProvider';
 import { Item, Layout, DndLinearLayout } from './LinearTabLayout/LinearLayout';
-import { ReflexContainer, ReflexElement } from 'react-reflex';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
 const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
@@ -13,7 +12,6 @@ const FileBrowserWithMeta = React.lazy(() =>
   import('./FileBrowser/FileBrowser'),
 );
 const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
-const HTMLEditor = React.lazy(() => import('../../Components/HTMLEditor'));
 const LanguageEditor = React.lazy(() => import('./LanguageEditor'));
 
 const layout = css({
@@ -21,16 +19,6 @@ const layout = css({
   flexDirection: 'column',
   height: '100%',
 });
-
-function TestReFlex() {
-  return (
-    <ReflexContainer orientation={'vertical'}>
-      <ReflexElement>
-        <div>asljdfkajs</div>
-      </ReflexElement>
-    </ReflexContainer>
-  );
-}
 
 export default class AppLayout extends React.Component<
   {},
@@ -43,21 +31,6 @@ export default class AppLayout extends React.Component<
     };
   }
   render() {
-    const TestEditor = () => (
-      <>
-        <HTMLEditor
-          value={'<div>Tadaaaaaa</div>'}
-          onChange={val => alert('CHANGE : ' + val)}
-          onSave={val => alert('SAVE : ' + val)}
-        />
-        <HTMLEditor
-          value={'<div>Blablaaaa</div>'}
-          onChange={val => alert('CHANGE : ' + val)}
-          onSave={val => alert('SAVE : ' + val)}
-        />
-      </>
-    );
-
     return (
       <FeatureProvider>
         <div className={layout}>
@@ -82,14 +55,8 @@ export default class AppLayout extends React.Component<
               <Item key="Scripts" label="Scripts">
                 <LibraryEditor />
               </Item>,
-              <Item key="TestEditor" label="TestEditor">
-                <TestEditor />
-              </Item>,
               <Item key="LanguageEditor" label="LanguageEditor">
                 <LanguageEditor />
-              </Item>,
-              <Item key="TestReFlex" label="TestReFlex">
-                <TestReFlex />
               </Item>,
             ]}
           >
@@ -101,9 +68,6 @@ export default class AppLayout extends React.Component<
             <Layout>
               <Item label="Page">
                 <PageDisplay />
-              </Item>
-              <Item label="TestEditor">
-                <TestEditor />
               </Item>
               <Item label="StateMachine">
                 <StateMachineEditor />
@@ -118,9 +82,6 @@ export default class AppLayout extends React.Component<
               </Item>
               <Item label="Scripts">
                 <LibraryEditor />
-              </Item>
-              <Item key="TestReFlex" label="TestReFlex">
-                <TestReFlex />
               </Item>
               <Item label="LanguageEditor">
                 <LanguageEditor />

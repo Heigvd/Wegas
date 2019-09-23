@@ -215,19 +215,16 @@ function CTree(props: {
   const select = React.useContext(selectContext);
   return (
     <StoreConsumer
-      selector={(state: State) => {
-        const variable = VariableDescriptor.select(props.variableId);
-        return {
-          props,
-          variable,
-          match: isMatch(props.variableId, props.search),
-          editing:
-            state.global.editing != null &&
-            state.global.editing.type === 'Variable' &&
-            props.variableId === state.global.editing.id &&
-            shallowIs(props.subPath || [], state.global.editing.path),
-        };
-      }}
+      selector={(state: State) => ({
+        props,
+        variable: VariableDescriptor.select(props.variableId),
+        match: isMatch(props.variableId, props.search),
+        editing:
+          state.global.editing != null &&
+          state.global.editing.type === 'Variable' &&
+          props.variableId === state.global.editing.id &&
+          shallowIs(props.subPath || [], state.global.editing.path),
+      })}
     >
       {({ state, dispatch }) => {
         let { variable } = state;
@@ -251,6 +248,7 @@ function CTree(props: {
                 <span
                   className={cx(headerStyle, { [editingStyle]: state.editing })}
                   onClick={() => {
+                    select('Editor');
                     if (entityIs<IFSMDescriptor>(variable, 'FSMDescriptor')) {
                       select('StateMachine');
                     }

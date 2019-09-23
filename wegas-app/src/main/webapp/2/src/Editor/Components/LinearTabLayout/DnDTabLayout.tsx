@@ -40,10 +40,10 @@ const noscroll = css({
 });
 
 const buttonStyle = css({
-  color: themeVar.primaryDarkerTextColor,
-  ':hover': {
-    color: 'lightgrey',
-  },
+  color: themeVar.primaryLighterTextColor,
+  // ':hover': {
+  //   color: 'lightgrey',
+  // },
 });
 
 const listStyle = css({
@@ -167,7 +167,7 @@ export function DnDTabLayout({
   vertical,
   components,
   selectItems,
-  defaultActiveLabel: activeLabel,
+  defaultActiveLabel,
   onSelect,
   onDrop,
   onDropTab,
@@ -176,13 +176,13 @@ export function DnDTabLayout({
 }: TabLayoutProps) {
   React.useEffect(() => {
     if (
-      activeLabel === undefined ||
-      (components[activeLabel] === undefined &&
+      defaultActiveLabel === undefined ||
+      (components[defaultActiveLabel] === undefined &&
         Object.keys(components).length > 0)
     ) {
       onSelect && onSelect(Object.keys(components)[0]);
     }
-  }, [components, activeLabel, onSelect]);
+  }, [components, defaultActiveLabel, onSelect]);
 
   // DnD hooks (for dropping tabs on the side of the layout)
   const [dropLeftProps, dropLeft] = useDrop(dropSpecsFactory(onDrop('LEFT')));
@@ -221,7 +221,7 @@ export function DnDTabLayout({
         <DragTab
           key={label}
           label={label}
-          active={label === activeLabel}
+          active={label === defaultActiveLabel}
           onClick={() => {
             onSelect && onSelect(label);
           }}
@@ -287,7 +287,7 @@ export function DnDTabLayout({
                 outerClassName={cx(
                   flex,
                   grow,
-                  label !== activeLabel ? hidden : '',
+                  label !== defaultActiveLabel ? hidden : '',
                 )}
               >
                 <React.Suspense fallback={<div>Loading...</div>}>
