@@ -98,46 +98,43 @@ export default function FileBrowserWithMeta() {
 
   return (
     <div className={cx(flex, grow)}>
-      <ReflexContainer orientation={'vertical'}>
-        <ReflexElement>
-          <FileBrowser
-            onFileClick={onFileClick}
-            onDelelteFile={file => {
-              if (
-                selectedFile &&
-                generateAbsolutePath(selectedFile).startsWith(
-                  generateAbsolutePath(file),
-                )
-              ) {
-                setSelectedFile(undefined);
-              }
-            }}
-            selectedPaths={
-              selectedFile ? [generateAbsolutePath(selectedFile)] : []
+      <div className={cx(flex, grow)}>
+        <FileBrowser
+          onFileClick={onFileClick}
+          onDelelteFile={file => {
+            if (
+              selectedFile &&
+              generateAbsolutePath(selectedFile).startsWith(
+                generateAbsolutePath(file),
+              )
+            ) {
+              setSelectedFile(undefined);
             }
+          }}
+          selectedPaths={
+            selectedFile ? [generateAbsolutePath(selectedFile)] : []
+          }
+        />
+      </div>
+      {selectedFile && (
+        <div className={cx(flex, grow)}>
+          <StyledLabel
+            value={error}
+            type={'error'}
+            duration={3000}
+            onLabelVanish={() => setError('')}
           />
-        </ReflexElement>
-        {selectedFile && <ReflexSplitter />}
-        {selectedFile && (
-          <ReflexElement>
-            <StyledLabel
-              value={error}
-              type={'error'}
-              duration={3000}
-              onLabelVanish={() => setError('')}
+          <div className={cx(flex, grow)}>
+            <AsyncVariableForm
+              getConfig={entity =>
+                getEditionConfig(entity) as Promise<Schema<AvailableViews>>
+              }
+              update={saveMeta}
+              entity={selectedFile}
             />
-            <div className={cx(flex, grow)}>
-              <AsyncVariableForm
-                getConfig={entity =>
-                  getEditionConfig(entity) as Promise<Schema<AvailableViews>>
-                }
-                update={saveMeta}
-                entity={selectedFile}
-              />
-            </div>
-          </ReflexElement>
-        )}
-      </ReflexContainer>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
