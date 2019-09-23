@@ -70,11 +70,11 @@ export default function LanguageEditor() {
               {languages.map((language, index) => {
                 const selected = selectedLanguages.includes(language.code);
                 return (
-                  <>
+                  <React.Fragment key={language.code}>
                     {index > 0 && (
                       <div
                         className={cx(flex, grow, centered)}
-                        key={'UP' + language.code}
+                        // key={'UP' + language.code}
                       >
                         <IconButton
                           icon="arrows-alt-h"
@@ -95,7 +95,7 @@ export default function LanguageEditor() {
                       </div>
                     )}
                     <div
-                      key={language.code}
+                      // key={'LANG' + language.code}
                       className={cx(flex, grow, centered)}
                     >
                       {language.code}
@@ -117,7 +117,7 @@ export default function LanguageEditor() {
                         }
                       />
                     </div>
-                  </>
+                  </React.Fragment>
                 );
               })}
             </Toolbar.Header>
