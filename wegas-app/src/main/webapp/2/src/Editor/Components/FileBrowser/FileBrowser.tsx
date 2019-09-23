@@ -15,6 +15,9 @@ const grow = css({
 const flex = css({
   display: 'flex',
 });
+const growBig = css({
+  flex: '30 1 auto',
+});
 
 interface FileBrowserProps {
   onFileClick?: (
@@ -97,7 +100,7 @@ export default function FileBrowserWithMeta() {
 
   return (
     <div className={cx(flex, grow)}>
-      <div className={cx(flex, grow)}>
+      <div className={cx(flex, growBig)}>
         <FileBrowser
           onFileClick={onFileClick}
           onDelelteFile={file => {

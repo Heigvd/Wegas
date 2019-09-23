@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
-import 'react-reflex/styles.css';
 import { DefaultDndProvider } from '../../../Components/DefaultDndProvider';
 import { omit } from 'lodash';
 import u from 'immer';
 import { ReparentableRoot } from '../Reparentable';
 import { DnDTabLayout, ComponentMap, filterMap } from './DnDTabLayout';
 import { wlog } from '../../../Helper/wegaslog';
+
+import 'react-reflex/styles.css';
 
 const splitter = css({
   '&.reflex-container.vertical > .reflex-splitter': {
