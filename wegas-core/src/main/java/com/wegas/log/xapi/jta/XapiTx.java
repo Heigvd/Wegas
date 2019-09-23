@@ -109,8 +109,10 @@ public class XapiTx implements Serializable {
      * make sure changes from all opened repositories are "committable" or throw something bad
      */
     protected void prepare() throws RuntimeException {
-        if (isLoggingEnabled() && !statements.isEmpty()) {
-
+        if (!statements.isEmpty() && isLoggingEnabled()) {
+            // checkink connection may be  very slow
+            long start = System.currentTimeMillis();
+            /**
             try {
                 // well, the connection seems valid
                 // I still don't know whether I can post statement or not...
@@ -118,6 +120,8 @@ public class XapiTx implements Serializable {
             } catch (Exception ex) {
                 throw WegasErrorMessage.error("XAPI: is enabled but client fails to connect: " + ex);
             }
+            */
+            long step1 = System.currentTimeMillis();
 
             for (Object o : statements) {
                 if (!(o instanceof Statement)) {
@@ -134,6 +138,10 @@ public class XapiTx implements Serializable {
                     }
                 }
             }
+
+            long step2 = System.currentTimeMillis();
+            logger.trace("Xapi Prepare: skip check connection in {} ms; check statements: {}, total: {}",
+                    step1 - start, step2 - step1, step2 - start);
         }
     }
 
@@ -148,8 +156,8 @@ public class XapiTx implements Serializable {
      * Commit all changes in all opened repositories
      */
     protected void commit() {
-        if (isLoggingEnabled()) {
-            if (!statements.isEmpty()) {
+        if (!statements.isEmpty()) {
+            if (isLoggingEnabled()) {
                 xapi.asyncPost(statements);
             }
         }
