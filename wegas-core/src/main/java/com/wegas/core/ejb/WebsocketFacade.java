@@ -171,6 +171,7 @@ public class WebsocketFacade {
      * @param channel the channel involved user listen to
      * @param token   token to lock
      */
+    @Asynchronous
     public void sendLock(String channel, String token) {
         if (this.pusher != null) {
             logger.info("send lock  \"{}\" to \"{}\"", token, channel);
@@ -189,6 +190,7 @@ public class WebsocketFacade {
      * @param channel the channel involved user listen to
      * @param token   token to unlock
      */
+    @Asynchronous
     public void sendUnLock(String channel, String token) {
         if (this.pusher != null) {
             logger.info("send unlock  \"{}\" to \"{}\"", token, channel);

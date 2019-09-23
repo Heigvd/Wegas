@@ -234,7 +234,7 @@ YUI.add('wegas-dashboard', function(Y) {
             this.get("contentBox").delegate("click", this.actionClick, ".dashboard-action.enabled", this);
             this.get("contentBox").delegate("click", this.detailsClick, ".details__link", this);
 
-            this.get("contentBox").delegate("click", this.onBooleanClick, ".bloc__boolean", this);
+            this.get("contentBox").delegate("click", this.onBooleanClick, ".bloc__boolean.toggleable", this);
             this.get("contentBox").delegate("click", this.onTextClick, ".bloc__text", this);
 
             this.get("contentBox").delegate("click", this.onCustomizeGroupClick, ".customize-group", this);
@@ -575,7 +575,11 @@ YUI.add('wegas-dashboard', function(Y) {
                             var fallback = false;
                             if (def.kind) {
                                 if (def.kind === "boolean") {
-                                    o.cell.setHTML("<span class=\"bloc__value bloc__boolean\">" + (o.value ? "✔" : "✕") + "</span>");
+                                    if (def.preventClick) {
+                                        o.cell.setHTML("<span class=\"bloc__value bloc__boolean\">" + (o.value ? "✔" : "✕") + "</span>");
+                                    } else {
+                                        o.cell.setHTML("<span class=\"bloc__value bloc__boolean toggleable\">" + (o.value ? "✔" : "✕") + "</span>");
+                                    }
 
                                     if (o.column.valueFormatter) {
                                         o.column.valueFormatter.call(this, o.cell, o.value);

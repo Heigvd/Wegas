@@ -9,14 +9,9 @@ package com.wegas.log.xapi.jta;
 
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import gov.adlnet.xapi.client.StatementClient;
+import com.wegas.log.xapi.Xapi;
 import gov.adlnet.xapi.model.Statement;
-import gov.adlnet.xapi.util.Base64;
-import java.io.IOException;
 import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -24,6 +19,7 @@ import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.TransactionScoped;
 import javax.transaction.TransactionSynchronizationRegistry;
@@ -44,6 +40,9 @@ public class XapiTx implements Serializable {
 
     private static final long serialVersionUID = -1180630542160360589L;
     private static final Logger logger = LoggerFactory.getLogger(XapiTx.class);
+
+    @Inject
+    private Xapi xapi;
 
     /**
      * Resource to bound a XapiSync to the current transaction
@@ -110,15 +109,19 @@ public class XapiTx implements Serializable {
      * make sure changes from all opened repositories are "committable" or throw something bad
      */
     protected void prepare() throws RuntimeException {
-        if (isLoggingEnabled() && !statements.isEmpty()) {
-
+        if (!statements.isEmpty() && isLoggingEnabled()) {
+            // checkink connection may be  very slow
+            long start = System.currentTimeMillis();
+            /**
             try {
                 // well, the connection seems valid
                 // I still don't know whether I can post statement or not...
-                getClient().limitResults(1).getStatements();
+                xapi.getClient().limitResults(1).getStatements();
             } catch (Exception ex) {
                 throw WegasErrorMessage.error("XAPI: is enabled but client fails to connect: " + ex);
             }
+            */
+            long step1 = System.currentTimeMillis();
 
             for (Object o : statements) {
                 if (!(o instanceof Statement)) {
@@ -135,6 +138,10 @@ public class XapiTx implements Serializable {
                     }
                 }
             }
+
+            long step2 = System.currentTimeMillis();
+            logger.trace("Xapi Prepare: skip check connection in {} ms; check statements: {}, total: {}",
+                    step1 - start, step2 - step1, step2 - start);
         }
     }
 
@@ -145,63 +152,13 @@ public class XapiTx implements Serializable {
         statements.clear();;
     }
 
-    private StatementClient getClient() throws MalformedURLException {
-
-        String host = Helper.getWegasProperty("xapi.host");
-        String token = Helper.getWegasProperty("xapi.auth");
-
-        /**
-         * Bug in client when using token +filterWith...
-         */
-        byte[] bytes = Base64.decode(token, Base64.DEFAULT);
-        String decoded = new String(bytes, StandardCharsets.US_ASCII);
-
-        String user;
-        String password;
-
-        int indexOf = decoded.indexOf(":");
-
-        if (indexOf <= 0) {
-            throw new MalformedURLException("Authorization token is invalid");
-        } else {
-            user = decoded.substring(0, indexOf);
-            password = decoded.substring(indexOf + 1);
-        }
-
-        return new StatementClient(host, user, password);
-    }
-
     /**
      * Commit all changes in all opened repositories
      */
     protected void commit() {
-        if (isLoggingEnabled()) {
-            try {
-                if (!statements.isEmpty()) {
-                    logger.trace("XAPI Tx Commit");
-
-                    StatementClient client = this.getClient();
-
-                    for (Object o : statements) {
-                        if (o instanceof Statement) {
-                            try {
-                                client.postStatement((Statement) o);
-                            } catch (IOException ex) {
-                                logger.error("XapiTx postStatement on commit error: {}", ex);
-                            }
-                        } else if (o instanceof ArrayList) {
-                            ArrayList<Statement> list = (ArrayList<Statement>) o;
-                            try {
-                                client.postStatements(list);
-                            } catch (IOException ex) {
-                                logger.error("XapiTx postStatements on commit error: {}", ex);
-                            }
-                        }
-                    }
-                    statements.clear();
-                }
-            } catch (MalformedURLException ex) {
-                logger.error("XapiTx getClient error: {}", ex);
+        if (!statements.isEmpty()) {
+            if (isLoggingEnabled()) {
+                xapi.asyncPost(statements);
             }
         }
     }

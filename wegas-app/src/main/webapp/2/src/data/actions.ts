@@ -81,6 +81,12 @@ export const ActionCreator = {
     createAction(ActionType.SEARCH_USAGE, data),
   PUSHER_SOCKET: (data: { socket_id: string; status: string }) =>
     createAction(ActionType.PUSHER_SOCKET, data),
+  GAMEMODEL_EDIT: (data: { gameModel: IGameModel; gameModelId: string }) =>
+    createAction(ActionType.GAMEMODEL_EDIT, data),
+  LANGUAGE_EDIT: (data: {
+    gameModelLanguage: IGameModelLanguage;
+    gameModelId: string;
+  }) => createAction(ActionType.LANGUAGE_EDIT, data),
 };
 
 export type StateActions<

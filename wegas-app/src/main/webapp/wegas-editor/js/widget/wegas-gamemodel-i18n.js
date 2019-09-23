@@ -2511,7 +2511,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             if (languages && languages.length) {
                 this.add(new Y.Wegas.Text({
                     cssClass: "language-activator-title",
-                    content: "<span>Active Languages</span>"
+                    content: "<span>Available Languages</span>"
                 }));
                 this.list = new Y.Wegas.FlexList({"direction": "horizontal"});
                 for (var i in languages) {

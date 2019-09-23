@@ -94,6 +94,22 @@ const modules = {
       //   use: ['source-map-loader'],
       //   enforce: 'pre',
       // },
+      {
+        test: /\.(png|jp(e*)g|svg)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8000, // Convert images < 8kb to base64 strings
+              name: 'src/pictures/[hash]-[name].[ext]',
+            },
+          },
+        ],
+      },
+      {
+        test: /\.txt$/i,
+        use: 'raw-loader',
+      },
     ],
   },
   devServer: {

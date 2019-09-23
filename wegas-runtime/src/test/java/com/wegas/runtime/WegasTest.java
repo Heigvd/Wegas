@@ -21,6 +21,9 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import com.wegas.resourceManagement.persistence.Assignment;
+import com.wegas.resourceManagement.persistence.ResourceInstance;
+import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.test.TestHelper;
 import com.wegas.utils.WegasRESTClient;
 import com.wegas.utils.WegasRESTClient.TestAuthenticationInformation;
@@ -106,7 +109,7 @@ public class WegasTest {
     public static void setUpClass() {
         try {
             client = new WegasRESTClient("http://localhost:28080/Wegas");
-            client2 = new WegasRESTClient("http://localhost:28080/Wegas");
+            client2 = new WegasRESTClient("http://localhost:28081/Wegas");
 
             scenarist = client.signup("scenarist@local", "1234");
             trainer = client.signup("trainer@local", "1234");
@@ -162,7 +165,7 @@ public class WegasTest {
         artos = client.postJSONFromFile("/rest/GameModel", "../wegas-app/src/main/webapp/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-Artos.json", GameModel.class);
     }
 
-    private Player getTestPlayer(GameModel gameModel) throws IOException{
+    private Player getTestPlayer(GameModel gameModel) throws IOException {
         return client.get("/rest/GameModel/" + gameModel.getId() + "/TestPlayer", Player.class);
     }
 
@@ -171,8 +174,7 @@ public class WegasTest {
         final String DB_CON = "jdbc:postgresql://localhost:5432/wegas_test";
         final String USER = "user";
         final String PASSWORD = "1234";
-        try (Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD);
-                Statement st = connection.createStatement()) {
+        try ( Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD);  Statement st = connection.createStatement()) {
             Assert.assertEquals("Some indexes are missing. Please create liquibase changesets. See log for details",
                     0, TestHelper.getMissingIndexesCount(st));
         } catch (SQLException ex) {
@@ -205,14 +207,12 @@ public class WegasTest {
         var1 = client.put(artosUrl + "/VariableDescriptor/" + var1.getId(), var1, NumberDescriptor.class);
         Assert.assertEquals("Min bounds do not match", -100, var1.getMinValue(), 0.001);
 
-
         // update the min bound in database
         // since the cache is active, this value will not be read again, unless the cache is wiped out
         final String DB_CON = "jdbc:postgresql://localhost:5432/wegas_test";
         final String USER = "user";
         final String PASSWORD = "1234";
-        try (Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD);
-                Statement st = connection.createStatement()) {
+        try ( Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD);  Statement st = connection.createStatement()) {
             st.executeUpdate("UPDATE numberdescriptor SET minvalue = -9999 WHERE id = " + var1.getId());
         } catch (SQLException ex) {
         }
@@ -223,7 +223,6 @@ public class WegasTest {
         Assert.assertEquals("Min bounds do not match", -100, var1.getMinValue(), 0.001);
         Assert.assertEquals("Min bounds do not match", -100, var2.getMinValue(), 0.001);
 
-
         // Clear JPA l2 cache
         client.delete("/rest/Utils/LocalEmCache");
         client2.delete("/rest/Utils/LocalEmCache");
@@ -233,6 +232,58 @@ public class WegasTest {
         var2 = client2.get(artosUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
         Assert.assertEquals("Min bounds do not match", -9999, var1.getMinValue(), 0.001);
         Assert.assertEquals("Min bounds do not match", -9999, var2.getMinValue(), 0.001);
+    }
+
+    @Test
+    public void testCollectionChangeRecordIssue() throws IOException {
+        String artosUrl = getArtosBaseURL();
+
+        Player testPlayer = getTestPlayer(artos);
+
+        String runURL = artosUrl + "/VariableDescriptor/Script/Run/" + testPlayer.getId();
+        String assignUrl = artosUrl + "/VariableDescriptor/ResourceDescriptor/Assign/";
+        String moveUrl = artosUrl + "/VariableDescriptor/ResourceDescriptor/MoveAssignment/";
+
+        client.login(root);
+        client2.login(root);
+
+        /**
+         * DELETE	/Assign/{assignmentId}
+         * POST	/Assign/{resourceId}/{taskInstanceId}
+         * PUT	/MoveAssignment/{assignmentId}/{index}
+         */
+        // Load resource and task from botch instance
+        Script fetchTask1 = new Script("JavaScript", "Variable.find(gameModel, 'ChoixEnvironnementDéveloppement').getInstance(self);");
+        TaskInstance task1 = client.post(runURL, fetchTask1, TaskInstance.class);
+
+        Script fetchTask2 = new Script("JavaScript", "Variable.find(gameModel, 'AnalyseExistant').getInstance(self);");
+        TaskInstance task2 = client.post(runURL, fetchTask2, TaskInstance.class);
+
+        Script fetchResource = new Script("JavaScript", "Variable.find(gameModel, 'Gaelle').getInstance(self);");
+        ResourceInstance gaelle_a = client.post(runURL, fetchResource, ResourceInstance.class);
+        ResourceInstance gaelle_b = client2.post(runURL, fetchResource, ResourceInstance.class);
+
+        Assert.assertArrayEquals(gaelle_a.getAssignments().toArray(), gaelle_b.getAssignments().toArray());
+
+        // assign gaelle to task3, task2 and task1
+        client.post(assignUrl + gaelle_a.getId() + "/" + task1.getId(), null);
+        client.post(assignUrl + gaelle_a.getId() + "/" + task2.getId(), null);
+
+        // assert both instances have the same list
+        gaelle_a = client.post(runURL, fetchResource, ResourceInstance.class);
+        gaelle_b = client2.post(runURL, fetchResource, ResourceInstance.class);
+
+        Assert.assertArrayEquals(gaelle_a.getAssignments().toArray(), gaelle_b.getAssignments().toArray());
+
+        // move assignment
+        Assignment a = gaelle_a.getAssignments().get(1);
+        client.put(moveUrl + a.getId() + "/0");
+
+        // assert both instances have the same list
+        gaelle_a = client.post(runURL, fetchResource, ResourceInstance.class);
+        gaelle_b = client2.post(runURL, fetchResource, ResourceInstance.class);
+
+        Assert.assertArrayEquals(gaelle_a.getAssignments().toArray(), gaelle_b.getAssignments().toArray());
     }
 
     @Test
@@ -302,6 +353,8 @@ public class WegasTest {
 
     @Test
     public void testModeliseStateMachine() throws IOException {
+        client.get("/rest/Utils/SetLoggerLevel/com.wegas.core.ejb.ModelFacade/DEBUG");
+
         GameModel gm1 = client.postJSONFromFile("/rest/GameModel", "../wegas-app/src/test/resources/fsm.json", GameModel.class);
         GameModel gm2 = client.postJSONFromFile("/rest/GameModel", "../wegas-app/src/test/resources/fsm.json", GameModel.class);
 
@@ -309,7 +362,7 @@ public class WegasTest {
         GameModel model = client.postJSON_asString("/rest/GameModel/extractModel/" + gm1.getId() + "," + gm2.getId(),
                 "{\"@class\":\"GameModel\",\"name\":\"ModelFSM\"}", GameModel.class);
 
-        String put = client.put("/rest/GameModel/" + model.getId() + "/Propagate", GameModel.class);
+        GameModel gm = client.put("/rest/GameModel/" + model.getId() + "/Propagate", null, GameModel.class);
     }
 
     @Test

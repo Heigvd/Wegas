@@ -41,9 +41,9 @@ public class ResourceController {
      * @param taskInstanceId
      */
     @POST
-    @Path("Assign/{resourceId : [1-9][0-9]*}/{taskInstanceId : [1-9][0-9]*}")
+    @Path("Assign/{resourceInstanceId : [1-9][0-9]*}/{taskInstanceId : [1-9][0-9]*}")
     public void addAssignment(
-            @PathParam("resourceId") Long resourceInstanceId,
+            @PathParam("resourceInstanceId") Long resourceInstanceId,
             @PathParam("taskInstanceId") Long taskInstanceId
     ) {
         resourceFacade.assign(resourceInstanceId, taskInstanceId);

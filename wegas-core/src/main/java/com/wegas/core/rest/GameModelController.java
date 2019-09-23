@@ -135,7 +135,7 @@ public class GameModelController {
 
         StringBuilder sb = new StringBuilder();
         sb.append("Var, all ");
-        idList.stream().forEach(id -> sb.append(", ").append(id));
+        idList.stream().forEach(id -> sb.append(",").append(id));
         sb.append(System.lineSeparator());
 
         matrix.forEach((varName, list) -> {
@@ -144,7 +144,7 @@ public class GameModelController {
                 sb.append(", x");
             } else {
                 sb.append(",");
-                idList.stream().forEach(id -> sb.append(", ").append(list.contains(id) ? "x" : ""));
+                idList.stream().forEach(id -> sb.append(",").append(list.contains(id) ? "x" : ""));
             }
             sb.append(System.lineSeparator());
         });
@@ -189,6 +189,12 @@ public class GameModelController {
     @Path("{modelId : [1-9][0-9]*}/Propagate")
     public GameModel propagateModel(@PathParam("modelId") Long modelId) throws IOException, RepositoryException {
         return modelFacade.propagateModel(modelId);
+    }
+
+    @GET
+    @Path("{modelId : [1-9][0-9]*}/FixVariableTree")
+    public void fixTree(@PathParam("modelId") Long modelId) throws IOException, RepositoryException {
+         modelFacade.fixVariableTree(modelId);
     }
 
     /**
@@ -305,7 +311,7 @@ public class GameModelController {
             gameModelFacade.createWithDebugGame(gameModel);
             return gameModel;
         } else if (details.getContentDisposition().getFileName().endsWith(".wgz")) {
-            try ( ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
+            try (ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
                 return gameModelFacade.unzip(zip);
             }
         } else {

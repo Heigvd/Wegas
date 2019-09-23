@@ -41,17 +41,22 @@ import com.wegas.log.xapi.model.ProjectedStatement;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade.ReplyValidate;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
+import gov.adlnet.xapi.client.StatementClient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.adlnet.xapi.model.*;
+import gov.adlnet.xapi.util.Base64;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import javax.ejb.Asynchronous;
 import javax.xml.bind.DatatypeConverter;
 
 @Stateless
@@ -154,7 +159,7 @@ public class Xapi implements XapiI {
             stmt.setContext(this.genContext());
             xapiTx.post(stmt);
         } else {
-            logger.warn("Failed to persist an xapi statement, invalid context\n{}", serialize(stmt));
+            logger.info("Failed to persist an xapi statement, invalid context\n{}", serialize(stmt));
         }
     }
 
@@ -167,7 +172,7 @@ public class Xapi implements XapiI {
             xapiTx.post(new ArrayList<>(stmts));
         } else {
             for (Statement s : stmts) {
-                logger.warn("Failed to persist an xapi statement, invalid context\n{}", serialize(s));
+                logger.info("Failed to persist an xapi statement, invalid context\n{}", serialize(s));
             }
         }
     }
@@ -440,6 +445,62 @@ public class Xapi implements XapiI {
 
     public List<Map<String, Object>> getActivityCount(List<Long> gameIds) throws IOException {
         return getLearningLockerClient().getActivityCount(gameIds);
+    }
+
+    public StatementClient getClient() throws MalformedURLException {
+
+        String host = Helper.getWegasProperty("xapi.host");
+        String token = Helper.getWegasProperty("xapi.auth");
+
+        /**
+         * Bug in client when using token +filterWith...
+         */
+        byte[] bytes = Base64.decode(token, Base64.DEFAULT);
+        String decoded = new String(bytes, StandardCharsets.US_ASCII);
+
+        String user;
+        String password;
+
+        int indexOf = decoded.indexOf(":");
+
+        if (indexOf <= 0) {
+            throw new MalformedURLException("Authorization token is invalid");
+        } else {
+            user = decoded.substring(0, indexOf);
+            password = decoded.substring(indexOf + 1);
+        }
+
+        return new StatementClient(host, user, password);
+    }
+
+    @Asynchronous
+    public void asyncPost(List<Object> statements) {
+        logger.trace("XAPI Tx Commit");
+        try {
+            StatementClient client = getClient();
+
+            long start = System.currentTimeMillis();
+            for (Object o : statements) {
+                if (o instanceof Statement) {
+                    try {
+                        client.postStatement((Statement) o);
+
+                    } catch (IOException ex) {
+                        logger.error("XapiTx postStatement on commit error: {}", ex);
+                    }
+                } else if (o instanceof ArrayList) {
+                    ArrayList<Statement> list = (ArrayList<Statement>) o;
+                    try {
+                        client.postStatements(list);
+                    } catch (IOException ex) {
+                        logger.error("XapiTx postStatements on commit error: {}", ex);
+                    }
+                }
+            }
+            logger.trace("xAPI post duration: {}", System.currentTimeMillis() - start);
+            statements.clear();
+        } catch (MalformedURLException ex) {
+        }
     }
 
 }

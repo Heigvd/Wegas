@@ -17,9 +17,11 @@ import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
 import com.wegas.core.ejb.ConcurrentHelper;
 import com.wegas.core.ejb.JPACacheHelper;
+import fish.payara.micro.cdi.Inbound;
 import fish.payara.micro.cdi.Outbound;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.net.URISyntaxException;
 import java.util.Date;
@@ -31,6 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -79,6 +82,32 @@ public class UtilsController {
 
     @Inject
     private JPACacheHelper jpaCacheHelper;
+
+
+    private static final String SET_LEVEL_EVENT = "Wegas_setLoggerLevel";
+
+    @Inject
+    @Outbound(eventName = SET_LEVEL_EVENT, loopBack = false)
+    Event<LoggerLevel> events;
+
+    public static class LoggerLevel implements Serializable {
+
+        private final String loggerLevel;
+        private final String loggerName;
+
+        public LoggerLevel(String loggerName, String loggerLevel) {
+            this.loggerName = loggerName;
+            this.loggerLevel = loggerLevel;
+        }
+
+        private String getLoggerLevel() {
+            return loggerLevel;
+        }
+
+        private String getLoggerName() {
+            return loggerName;
+        }
+    }
 
     /**
      * Request all cluster instances to clear JPA l2 cache
@@ -204,7 +233,7 @@ public class UtilsController {
             response.getEntity().writeTo(baos);
             String strResponse = baos.toString("UTF-8");
 
-            try (JsonReader reader = Json.createReader(new StringReader(strResponse))) {
+            try ( JsonReader reader = Json.createReader(new StringReader(strResponse))) {
                 JsonObject r = reader.readObject();
                 JsonArray builds = r.getJsonArray("builds");
 
@@ -298,8 +327,15 @@ public class UtilsController {
     @RequiresRoles("Administrator")
     @Produces(MediaType.TEXT_PLAIN)
     public String setLoggerLevel(@PathParam("loggerName") String loggerName, @PathParam("level") String level) {
-        Logger logger = (Logger) LoggerFactory.getLogger(loggerName);
-        logger.setLevel(Level.valueOf(level));
+        LoggerLevel payload = new LoggerLevel(loggerName, level);
+        events.fire(payload);
+        this.setLoggerLevelInternal(payload);
+        return level;
+    }
+
+    public String setLoggerLevelInternal(@Observes @Inbound(eventName = SET_LEVEL_EVENT) LoggerLevel payload) {
+        Logger logger = (Logger) LoggerFactory.getLogger(payload.getLoggerName());
+        logger.setLevel(Level.valueOf(payload.getLoggerLevel()));
         return logger.getLevel().toString();
     }
 

@@ -99,7 +99,7 @@ YUI.add('wegas-inbox', function(Y) {
     Y.Wegas.MessageDisplay = MessageDisplay;
 
 
-    InboxDisplay = Y.Base.create("wegas-inbox", Y.Wegas.ResponsibeTabView, [], {
+    InboxDisplay = Y.Base.create("wegas-inbox", Y.Wegas.ResponsiveTabView, [], {
         syncUI: function() {
             Y.Wegas.InboxDisplay.superclass.syncUI.call(this);
 

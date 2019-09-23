@@ -1,14 +1,19 @@
 import * as React from 'react';
 import { css } from 'emotion';
 import Header from './Header';
-import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
-import StateMachineEditor from './StateMachineEditor';
-import PageDisplay from './Page/PageDisplay';
-import TreeView from './Variable/VariableTree';
-import Editor from './EntityEditor';
-import { FileBrowserWithMeta } from './FileBrowser/TreeFileBrowser/FileBrowser';
-import LibraryEditor from './ScriptEditors/LibraryEditor';
-import { PlayLocal } from './PlayLocal';
+import { FeatureProvider } from '../../Components/FeatureProvider';
+import { Item, Layout, DndLinearLayout } from './LinearTabLayout/LinearLayout';
+
+const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
+const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
+const TreeView = React.lazy(() => import('./Variable/VariableTree'));
+const Editor = React.lazy(() => import('./EntityEditor'));
+const FileBrowserWithMeta = React.lazy(() =>
+  import('./FileBrowser/FileBrowser'),
+);
+const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
+const HTMLEditor = React.lazy(() => import('../../Components/HTMLEditor'));
+const LanguageEditor = React.lazy(() => import('./LanguageEditor'));
 
 const layout = css({
   display: 'flex',
@@ -27,48 +32,86 @@ export default class AppLayout extends React.Component<
     };
   }
   render() {
-    return (
-      <div className={layout}>
-        <Header />
-        <DndLinearLayout
-          tabMap={{
-            Variables: <TreeView />,
-            Page: <PageDisplay />,
-            StateMachine: <StateMachineEditor />,
-            Editor: <Editor />,
-            Files: <FileBrowserWithMeta />,
-            Scripts: <LibraryEditor />,
-            'Play Script': <PlayLocal />,
-          }}
-          layoutMap={{
-            rootKey: '0',
-            lastKey: '3',
-            isDragging: false,
-            layoutMap: {
-              '0': {
-                type: 'ReflexLayoutNode',
-                vertical: false,
-                children: ['1', '2', '3'],
-              },
-              '1': {
-                type: 'TabLayoutNode',
-                vertical: false,
-                children: ['Variables'],
-              },
-              '2': {
-                type: 'TabLayoutNode',
-                vertical: false,
-                children: ['Page', 'StateMachine'],
-              },
-              '3': {
-                type: 'TabLayoutNode',
-                vertical: false,
-                children: ['Editor'],
-              },
-            },
-          }}
+    const TestEditor = () => (
+      <>
+        <HTMLEditor
+          value={'<div>Tadaaaaaa</div>'}
+          onChange={val => alert('CHANGE : ' + val)}
+          onSave={val => alert('SAVE : ' + val)}
         />
-      </div>
+        <HTMLEditor
+          value={'<div>Blablaaaa</div>'}
+          onChange={val => alert('CHANGE : ' + val)}
+          onSave={val => alert('SAVE : ' + val)}
+        />
+      </>
+    );
+
+    return (
+      <FeatureProvider>
+        <div className={layout}>
+          <Header />
+          <DndLinearLayout
+            tabs={[
+              <Item key="Variables" label="Variables">
+                <TreeView />
+              </Item>,
+              <Item key="Page" label="Page">
+                <PageDisplay />
+              </Item>,
+              <Item key="StateMachine" label="StateMachine">
+                <StateMachineEditor />
+              </Item>,
+              <Item key="Editor" label="Editor">
+                <Editor />
+              </Item>,
+              <Item key="Files" label="Files">
+                <FileBrowserWithMeta />
+              </Item>,
+              <Item key="Scripts" label="Scripts">
+                <LibraryEditor />
+              </Item>,
+              <Item key="TestEditor" label="TestEditor">
+                <TestEditor />
+              </Item>,
+              <Item key="LanguageEditor" label="LanguageEditor">
+                <LanguageEditor />
+              </Item>,
+            ]}
+          >
+            <Layout>
+              <Item label="Variables">
+                <TreeView />
+              </Item>
+            </Layout>
+            <Layout>
+              <Item label="Page">
+                <PageDisplay />
+              </Item>
+              <Item label="TestEditor">
+                <TestEditor />
+              </Item>
+              <Item label="StateMachine">
+                <StateMachineEditor />
+              </Item>
+              <Item label="Files">
+                <FileBrowserWithMeta />
+              </Item>
+            </Layout>
+            <Layout>
+              <Item label="Editor">
+                <Editor />
+              </Item>
+              <Item label="Scripts">
+                <LibraryEditor />
+              </Item>
+              <Item key="LanguageEditor" label="LanguageEditor">
+                <LanguageEditor />
+              </Item>
+            </Layout>
+          </DndLinearLayout>
+        </div>
+      </FeatureProvider>
     );
   }
 }

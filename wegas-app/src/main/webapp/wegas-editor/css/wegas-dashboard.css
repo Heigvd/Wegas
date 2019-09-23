@@ -174,9 +174,13 @@
 .yui3-skin-sam .dashboard-v3 td .bloc__boolean,
 .yui3-skin-sam .dashboard-v3 td .bloc__text{
     color: #646565;
-    cursor: pointer;
     padding: 0 10px;
     border-radius: 2px;
+}
+
+.yui3-skin-sam .dashboard-v3 td .bloc__boolean.toggleable,
+.yui3-skin-sam .dashboard-v3 td .bloc__text{
+    cursor: pointer;
 }
 
 

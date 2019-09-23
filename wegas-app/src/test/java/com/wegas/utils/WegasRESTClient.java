@@ -172,6 +172,10 @@ public class WegasRESTClient {
         return getEntityAsString(response.getEntity());
     }
 
+    public String put(String url) throws IOException {
+        return this.put(url, null);
+    }
+
     public String put(String url, Object object) throws IOException {
         HttpResponse response = this._put(url, object);
         return getEntityAsString(response.getEntity());
@@ -252,10 +256,9 @@ public class WegasRESTClient {
         if (request != null) {
             setHeaders(request);
 
-            logger.info(method + " " + url + " WITH " + jsonContent);
+            logger.info(method + " " + baseURL + url + " WITH " + jsonContent);
             if (jsonContent != null) {
-                StringEntity strEntity = new StringEntity(jsonContent);
-                strEntity.setContentType("application/json");
+                StringEntity strEntity = new StringEntity(jsonContent, "UTF-8");
                 request.setEntity(strEntity);
             }
 
