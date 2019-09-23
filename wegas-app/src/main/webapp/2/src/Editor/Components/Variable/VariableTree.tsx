@@ -25,6 +25,7 @@ import { editorLabel } from '../../../data/methods/VariableDescriptor';
 import { SearchTool } from '../SearchTool';
 import { focusTabContext } from '../LinearTabLayout/LinearLayout';
 import { useAsync } from '../../../Components/Hooks/useAsync';
+import { themeVar } from '../../../Components/Theme';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
@@ -206,6 +207,14 @@ const editingStyle = css({
 const headerStyle = css({
   borderLeft: `${SELECTED_STYLE_WIDTH}px solid transparent`,
 });
+const nodeContentStyle = css({
+  cursor: 'pointer',
+  marginLeft: '5px',
+  marginRight: '5px',
+  ':hover': {
+    backgroundColor: themeVar.primaryHoverColor,
+  },
+});
 function CTree(props: {
   variableId: number;
   subPath?: (string)[];
@@ -262,8 +271,10 @@ function CTree(props: {
                     );
                   }}
                 >
-                  <Title />
-                  {editorLabel(variable)}
+                  <span className={nodeContentStyle}>
+                    <Title />
+                    {editorLabel(variable)}
+                  </span>
                   {entityIs<IListDescriptor>(variable, 'ListDescriptor') ||
                   entityIs<IQuestionDescriptor>(
                     variable,
