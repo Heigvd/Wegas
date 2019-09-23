@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { generateAbsolutePath, FileAPI } from '../../../API/files.api';
-import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 import { AsyncVariableForm } from '../EntityEditor';
 import getEditionConfig from '../../editionConfig';
 import { Schema } from 'jsoninput';
