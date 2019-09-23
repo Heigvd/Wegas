@@ -26,7 +26,7 @@ const grow = css({
   flex: '1 1 auto',
 });
 
-export const selectContext = React.createContext<(id: string) => void>(
+export const focusTabContext = React.createContext<(id: string) => void>(
   () => {},
 );
 
@@ -944,7 +944,7 @@ function MainLinearLayout(props: LinearLayoutProps) {
   };
   logLayouts(layout.layoutMap);
   return (
-    <selectContext.Provider
+    <focusTabContext.Provider
       value={(id: string) => {
         dispatchLayout({ type: 'EXTERNALSELECT', tabKey: id });
       }}
@@ -952,7 +952,7 @@ function MainLinearLayout(props: LinearLayoutProps) {
       <ReparentableRoot>
         <div className={cx(flex, grow)}>{renderLayouts()}</div>
       </ReparentableRoot>
-    </selectContext.Provider>
+    </focusTabContext.Provider>
   );
 }
 
