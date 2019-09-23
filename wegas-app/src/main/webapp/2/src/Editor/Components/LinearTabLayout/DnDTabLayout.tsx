@@ -39,11 +39,21 @@ const noscroll = css({
   overflow: 'hidden',
 });
 
-const buttonStyle = css({
+const buttonStyle = {
+  ':hover,:focus': {
+    color: themeVar.primaryHoverColor,
+    outline: 'none',
+  },
+};
+
+const inactiveButton = css({
   color: themeVar.primaryLighterTextColor,
-  // ':hover': {
-  //   color: 'lightgrey',
-  // },
+  ...buttonStyle,
+});
+
+const activeButton = css({
+  color: themeVar.primaryDarkerTextColor,
+  ...buttonStyle,
 });
 
 const listStyle = css({
@@ -232,7 +242,9 @@ export function DnDTabLayout({
               icon="times"
               tooltip="Remove tab"
               onClick={() => onDeleteTab(label)}
-              className={buttonStyle}
+              className={
+                label === defaultActiveLabel ? activeButton : inactiveButton
+              }
             />
           </span>
         </DragTab>,
@@ -269,7 +281,7 @@ export function DnDTabLayout({
                   onSelect && onSelect(i.value);
                   onNewTab(String(i.value));
                 }}
-                buttonClassName={buttonStyle}
+                buttonClassName={inactiveButton}
                 listClassName={listStyle}
               />
             </Tab>
