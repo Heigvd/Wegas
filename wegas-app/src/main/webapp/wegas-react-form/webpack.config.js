@@ -93,7 +93,17 @@ module.exports = {
         ],
     },
     devServer: {
-        reload: false,
-        inline: true,
+        port: 3000,
+        overlay: true,
+        publicPath: '/Wegas/wegas-react-form/dist/',
+        proxy: {
+            '/Wegas': {
+                target: 'http://localhost:8080',
+            },
+        },
     },
+    // devServer: {
+    //     reload: false,
+    //     inline: true,
+    // },
 };

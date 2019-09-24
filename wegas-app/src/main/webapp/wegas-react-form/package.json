@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "private": true,
   "scripts": {
+    "start-dev": "webpack-dev-server --hot --mode development",
     "start": "webpack --watch --mode development",
     "clean": "rimraf dist",
     "build:webpack": "cross-env NODE_ENV=production webpack --mode production",
