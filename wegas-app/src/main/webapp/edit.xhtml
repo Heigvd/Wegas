@@ -71,10 +71,10 @@
                     }
                 }
 
-                Y.one("body").addClass("wegas-editmode-game");
 
                 // Handle switch from edit to host mode
                 if (gameModel.get("type") === "PLAY") {
+                    Y.one("body").addClass("wegas-editmode-game");
                     Y.use("wegas-button", function() {
                         var editButton = new Y.Wegas.Button({
                             label: "<i class=\"wegas-font wegas-teacher\" title=\"Back to game\"></i>",
