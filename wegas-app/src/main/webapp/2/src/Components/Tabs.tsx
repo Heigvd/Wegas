@@ -21,21 +21,6 @@ export class TabLayout extends React.Component<
   };
 
   render() {
-    const childrens = React.Children.map(this.props.children, (c, i) => {
-      return (
-        (i === this.state.active ||
-          (this.state.renderedFlag & (i + 1)) > 0) && (
-          <div
-            style={{
-              display: i === this.state.active ? 'flex' : 'none',
-              flex: '1 1 auto',
-            }}
-          >
-            {c}
-          </div>
-        )
-      );
-    });
     return (
       <Toolbar vertical={this.props.vertical}>
         <Toolbar.Header>
@@ -58,7 +43,23 @@ export class TabLayout extends React.Component<
             );
           })}
         </Toolbar.Header>
-        <Toolbar.Content>{childrens}</Toolbar.Content>
+        <Toolbar.Content>
+          {React.Children.map(this.props.children, (c, i) => {
+            return (
+              (i === this.state.active ||
+                (this.state.renderedFlag & (i + 1)) > 0) && (
+                <div
+                  style={{
+                    display: i === this.state.active ? 'flex' : 'none',
+                    flex: '1 1 auto',
+                  }}
+                >
+                  {c}
+                </div>
+              )
+            );
+          })}
+        </Toolbar.Content>
       </Toolbar>
     );
   }

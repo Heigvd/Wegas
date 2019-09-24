@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { generateAbsolutePath, FileAPI } from '../../../API/files.api';
-import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 import { AsyncVariableForm } from '../EntityEditor';
 import getEditionConfig from '../../editionConfig';
 import { Schema } from 'jsoninput';
@@ -15,6 +14,9 @@ const grow = css({
 });
 const flex = css({
   display: 'flex',
+});
+const growBig = css({
+  flex: '30 1 auto',
 });
 
 interface FileBrowserProps {
@@ -43,24 +45,22 @@ export function FileBrowser({
       });
   }, []);
 
-  return (
+  return rootFile ? (
     <DefaultDndProvider>
       <div className={grow}>
         <StyledLabel value={error} type={'error'} duration={3000} />
-        {rootFile ? (
-          <FileBrowserNode
-            defaultFile={rootFile}
-            selectedPaths={selectedPaths}
-            noBracket
-            noDelete
-            onFileClick={onFileClick}
-            onDelelteFile={onDelelteFile}
-          />
-        ) : (
-          <div>"Loading root file"</div>
-        )}
+        <FileBrowserNode
+          defaultFile={rootFile}
+          selectedPaths={selectedPaths}
+          noBracket
+          noDelete
+          onFileClick={onFileClick}
+          onDelelteFile={onDelelteFile}
+        />
       </div>
     </DefaultDndProvider>
+  ) : (
+    <div>"Loading files"</div>
   );
 }
 
@@ -100,46 +100,43 @@ export default function FileBrowserWithMeta() {
 
   return (
     <div className={cx(flex, grow)}>
-      <ReflexContainer orientation={'vertical'}>
-        <ReflexElement>
-          <FileBrowser
-            onFileClick={onFileClick}
-            onDelelteFile={file => {
-              if (
-                selectedFile &&
-                generateAbsolutePath(selectedFile).startsWith(
-                  generateAbsolutePath(file),
-                )
-              ) {
-                setSelectedFile(undefined);
-              }
-            }}
-            selectedPaths={
-              selectedFile ? [generateAbsolutePath(selectedFile)] : []
+      <div className={cx(flex, growBig)}>
+        <FileBrowser
+          onFileClick={onFileClick}
+          onDelelteFile={file => {
+            if (
+              selectedFile &&
+              generateAbsolutePath(selectedFile).startsWith(
+                generateAbsolutePath(file),
+              )
+            ) {
+              setSelectedFile(undefined);
             }
+          }}
+          selectedPaths={
+            selectedFile ? [generateAbsolutePath(selectedFile)] : []
+          }
+        />
+      </div>
+      {selectedFile && (
+        <div className={cx(flex, grow)}>
+          <StyledLabel
+            value={error}
+            type={'error'}
+            duration={3000}
+            onLabelVanish={() => setError('')}
           />
-        </ReflexElement>
-        {selectedFile && <ReflexSplitter />}
-        {selectedFile && (
-          <ReflexElement>
-            <StyledLabel
-              value={error}
-              type={'error'}
-              duration={3000}
-              onLabelVanish={() => setError('')}
+          <div className={cx(flex, grow)}>
+            <AsyncVariableForm
+              getConfig={entity =>
+                getEditionConfig(entity) as Promise<Schema<AvailableViews>>
+              }
+              update={saveMeta}
+              entity={selectedFile}
             />
-            <div className={cx(flex, grow)}>
-              <AsyncVariableForm
-                getConfig={entity =>
-                  getEditionConfig(entity) as Promise<Schema<AvailableViews>>
-                }
-                update={saveMeta}
-                entity={selectedFile}
-              />
-            </div>
-          </ReflexElement>
-        )}
-      </ReflexContainer>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

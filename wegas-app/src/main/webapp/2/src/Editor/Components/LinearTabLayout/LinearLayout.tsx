@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
-import 'react-reflex/styles.css';
 import { DefaultDndProvider } from '../../../Components/DefaultDndProvider';
 import { omit } from 'lodash';
 import u from 'immer';
 import { ReparentableRoot } from '../Reparentable';
 import { DnDTabLayout, ComponentMap, filterMap } from './DnDTabLayout';
 import { wlog } from '../../../Helper/wegaslog';
+
+import 'react-reflex/styles.css';
 
 const splitter = css({
   '&.reflex-container.vertical > .reflex-splitter': {
@@ -26,7 +27,7 @@ const grow = css({
   flex: '1 1 auto',
 });
 
-export const selectContext = React.createContext<(id: string) => void>(
+export const focusTabContext = React.createContext<(id: string) => void>(
   () => {},
 );
 
@@ -944,7 +945,7 @@ function MainLinearLayout(props: LinearLayoutProps) {
   };
   logLayouts(layout.layoutMap);
   return (
-    <selectContext.Provider
+    <focusTabContext.Provider
       value={(id: string) => {
         dispatchLayout({ type: 'EXTERNALSELECT', tabKey: id });
       }}
@@ -952,7 +953,7 @@ function MainLinearLayout(props: LinearLayoutProps) {
       <ReparentableRoot>
         <div className={cx(flex, grow)}>{renderLayouts()}</div>
       </ReparentableRoot>
-    </selectContext.Provider>
+    </focusTabContext.Provider>
   );
 }
 

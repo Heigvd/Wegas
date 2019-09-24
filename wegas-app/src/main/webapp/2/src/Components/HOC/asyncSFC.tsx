@@ -3,7 +3,7 @@ import { useAsync } from '../Hooks/useAsync';
 import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
 
 function Loading() {
-  return <FontAwesome icon="cog" size="5x" spin />;
+  return <FontAwesome icon="cog" /*size="5x"*/ spin />;
 }
 
 function Error(err: unknown) {

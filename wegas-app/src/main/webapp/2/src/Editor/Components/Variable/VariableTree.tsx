@@ -23,8 +23,9 @@ import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { AddMenuParent, AddMenuChoice } from './AddMenu';
 import { editorLabel } from '../../../data/methods/VariableDescriptor';
 import { SearchTool } from '../SearchTool';
-import { selectContext } from '../LinearTabLayout/LinearLayout';
+import { focusTabContext } from '../LinearTabLayout/LinearLayout';
 import { useAsync } from '../../../Components/Hooks/useAsync';
+import { themeVar } from '../../../Components/Theme';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
@@ -206,28 +207,33 @@ const editingStyle = css({
 const headerStyle = css({
   borderLeft: `${SELECTED_STYLE_WIDTH}px solid transparent`,
 });
+const nodeContentStyle = css({
+  cursor: 'pointer',
+  marginLeft: '5px',
+  marginRight: '5px',
+  ':hover': {
+    backgroundColor: themeVar.primaryHoverColor,
+  },
+});
 function CTree(props: {
   variableId: number;
   subPath?: (string)[];
   search: string;
   nodeProps: () => {};
 }): JSX.Element {
-  const select = React.useContext(selectContext);
+  const focusTab = React.useContext(focusTabContext);
   return (
     <StoreConsumer
-      selector={(state: State) => {
-        const variable = VariableDescriptor.select(props.variableId);
-        return {
-          props,
-          variable,
-          match: isMatch(props.variableId, props.search),
-          editing:
-            state.global.editing != null &&
-            state.global.editing.type === 'Variable' &&
-            props.variableId === state.global.editing.id &&
-            shallowIs(props.subPath || [], state.global.editing.path),
-        };
-      }}
+      selector={(state: State) => ({
+        props,
+        variable: VariableDescriptor.select(props.variableId),
+        match: isMatch(props.variableId, props.search),
+        editing:
+          state.global.editing != null &&
+          state.global.editing.type === 'Variable' &&
+          props.variableId === state.global.editing.id &&
+          shallowIs(props.subPath || [], state.global.editing.path),
+      })}
     >
       {({ state, dispatch }) => {
         let { variable } = state;
@@ -251,8 +257,9 @@ function CTree(props: {
                 <span
                   className={cx(headerStyle, { [editingStyle]: state.editing })}
                   onClick={() => {
+                    focusTab('Editor');
                     if (entityIs<IFSMDescriptor>(variable, 'FSMDescriptor')) {
-                      select('StateMachine');
+                      focusTab('StateMachine');
                     }
                     getEntityActions(variable!).then(({ edit }) =>
                       dispatch(
@@ -264,19 +271,29 @@ function CTree(props: {
                     );
                   }}
                 >
-                  <Title />
-                  {editorLabel(variable)}
+                  <span className={nodeContentStyle}>
+                    <Title />
+                    {editorLabel(variable)}
+                  </span>
                   {entityIs<IListDescriptor>(variable, 'ListDescriptor') ||
                   entityIs<IQuestionDescriptor>(
                     variable,
                     'QuestionDescriptor',
                   ) ? (
-                    <AddMenuParent variable={variable} dispatch={dispatch} />
+                    <AddMenuParent
+                      variable={variable}
+                      dispatch={dispatch}
+                      onSelect={() => focusTab('Editor')}
+                    />
                   ) : entityIs<IChoiceDescriptor>(
                       variable,
                       'ChoiceDescriptor',
                     ) ? (
-                    <AddMenuChoice variable={variable} dispatch={dispatch} />
+                    <AddMenuChoice
+                      variable={variable}
+                      dispatch={dispatch}
+                      onSelect={() => focusTab('Editor')}
+                    />
                   ) : null}
                 </span>
               }
