@@ -70,12 +70,9 @@ export default function LanguageEditor() {
               {languages.map((language, index) => {
                 const selected = selectedLanguages.includes(language.code);
                 return (
-                  <>
+                  <React.Fragment key={language.code}>
                     {index > 0 && (
-                      <div
-                        className={cx(flex, grow, centered)}
-                        key={'UP' + language.code}
-                      >
+                      <div className={cx(flex, grow, centered)}>
                         <IconButton
                           icon="arrows-alt-h"
                           tooltip="Priorize language on the right"
@@ -94,10 +91,7 @@ export default function LanguageEditor() {
                         />
                       </div>
                     )}
-                    <div
-                      key={language.code}
-                      className={cx(flex, grow, centered)}
-                    >
+                    <div className={cx(flex, grow, centered)}>
                       {language.code}
                       <input
                         type="checkbox"
@@ -117,7 +111,7 @@ export default function LanguageEditor() {
                         }
                       />
                     </div>
-                  </>
+                  </React.Fragment>
                 );
               })}
             </Toolbar.Header>

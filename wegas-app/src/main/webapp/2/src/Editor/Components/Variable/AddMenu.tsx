@@ -37,18 +37,22 @@ export const AddMenuParent = asyncSFC(
   async ({
     variable,
     dispatch,
+    onSelect,
   }: {
     variable: IListDescriptor | IQuestionDescriptor;
     dispatch: StoreDispatch;
+    onSelect?: () => void;
   }) => {
+    // const focusTab = React.useContext(focusTabContext);
     const items = await buildMenuItems(variable);
     return (
       <Menu
         items={items}
         icon="plus"
-        onSelect={i =>
-          dispatch(Actions.EditorActions.createVariable(i.value, variable))
-        }
+        onSelect={i => {
+          onSelect && onSelect();
+          dispatch(Actions.EditorActions.createVariable(i.value, variable));
+        }}
       />
     );
   },
@@ -60,16 +64,20 @@ export const AddMenuChoice = asyncSFC(
   async ({
     variable,
     dispatch,
+    onSelect,
   }: {
     variable: IChoiceDescriptor;
     dispatch: StoreDispatch;
+    onSelect?: () => void;
   }) => {
+    // const focusTab = React.useContext(focusTabContext);
     const items = await buildMenuItems(variable);
     return (
       <Menu
         items={items}
         icon="plus"
-        onSelect={i =>
+        onSelect={i => {
+          onSelect && onSelect();
           dispatch(
             Actions.EditorActions.createVariable(i.value, variable, {
               save: (entity: IResult) => {
@@ -89,8 +97,8 @@ export const AddMenuChoice = asyncSFC(
                 );
               },
             }),
-          )
-        }
+          );
+        }}
       />
     );
   },
