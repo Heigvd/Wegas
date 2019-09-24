@@ -99,12 +99,13 @@ const isGlobalMethod = node =>
         },
     });
 const isVarMethod = node =>
-    isMatch(node, {
+    (isMatch(node, { // e.g. Variable.find(gameModel, "myNumber").add(self, 12);
         type: 'CallExpression',
         callee: {
             type: 'MemberExpression',
         },
-    }) && isVariable(node.callee.object);
+    }) && isVariable(node.callee.object))
+    || isVariable(node); // e.g. Variable.find(gameModel, "myVariable");
 /**
  * extract method informations
  * @param {AST} node any AST to visit.
@@ -121,7 +122,9 @@ const extractMethod = node => {
     visit(node, {
         visitCallExpression: function visitCallExpression(path) {
             const nod = path.node;
-            if (isVarMethod(nod)) {
+            if (isVariable(nod)) {
+                ret.variable = extractVar(nod);
+            } else if (isVarMethod(nod)) {
                 ret.method =
                     nod.callee.property.value || nod.callee.property.name;
                 ret.args = nod.arguments;

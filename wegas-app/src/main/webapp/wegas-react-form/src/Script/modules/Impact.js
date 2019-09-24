@@ -5,7 +5,7 @@ import { isEqualWith, cloneDeep } from 'lodash-es';
 import { print, parse, types } from 'recast';
 import { css } from 'glamor';
 // import classNames from 'classnames';
-import { schema as variableSchema, varExist } from './Variable';
+import { schema as variableSchema, varExist, buildExpression } from './Variable';
 // import ArgForm from './ArgForm';
 import {
     methodSchema,
@@ -70,7 +70,7 @@ function getState(node, method, type) {
             ? globalMethodDescriptor(state.member, state.method)
             : methodDescriptor(state.variable, state.method);
 
-        if (argSchema.arguments.length === state.args.length) {
+        if (argSchema && argSchema.arguments.length === state.args.length) {
             argSchema.arguments.forEach((argDesc, i) => {
                 if (argDesc.preProcessAST && args[i]) {
                     state.args[i] = argDesc.preProcessAST(
@@ -148,7 +148,9 @@ class Impact extends React.Component {
         }
     }
     componentDidUpdate(prevProps, prevState) {
-        if (
+        if (!this.state.method && prevState.method) {
+            this.props.onChange(buildExpression(this.state.variable));
+        } else if (
             this.state.method &&
             (prevState.method !== this.state.method ||
                 prevState.variable !== this.state.variable ||
@@ -280,8 +282,7 @@ class Impact extends React.Component {
                 c = getReadOnlySchema(c);
             }
             child = child.concat(c);
-        }
-        if (this.state.member && this.state.method) {
+        } if (this.state.member && this.state.method) {
             const { member, method, args } = this.state;
             let c = globalHandleArgs(member, method, args, v =>
                 this.setState(() => ({ args: v }))
@@ -338,7 +339,6 @@ export class ErrorCatcher extends React.Component {
     }
     render() {
         const { node, children } = this.props;
-
         if (this.state.error) {
             return (
                 <div>
