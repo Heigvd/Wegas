@@ -2,7 +2,7 @@
 
 DB_HOST=localhost
 DB_NAME=wegas_dev
-PAYARA_MICRO=target/payara-micro-5.193.albasim-p1.jar
+PAYARA_MICRO=target/payara-micro.current.jar
 
 NB_THREADS=9
 NB_POPULATORS=1

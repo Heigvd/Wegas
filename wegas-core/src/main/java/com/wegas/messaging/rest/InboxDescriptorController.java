@@ -21,7 +21,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 /**
- * @deprecated ???
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless

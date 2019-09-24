@@ -33,6 +33,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.mail.internet.AddressException;
@@ -956,6 +957,7 @@ public class Helper {
      * @param <V> value type
      */
     public static class LRUCache<K, V> extends LinkedHashMap<K, V> {
+        ConcurrentHashMap<K, V> yaja;
 
         private int cacheSize;
 
@@ -965,8 +967,13 @@ public class Helper {
          * @param cacheSize Max size the cache should have
          */
         public LRUCache(int cacheSize) {
-            super(cacheSize * (4 / 3) + 1, 0.75f, true); // default values
+            super(cacheSize * (4 / 3) + 10, 0.75f, true);
             this.cacheSize = cacheSize;
+        }
+
+        public synchronized V putIfAbsentAndGet(K key, V value) {
+            super.putIfAbsent(key, value);
+            return this.get(key);
         }
 
         @Override

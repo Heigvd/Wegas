@@ -94,7 +94,7 @@ public class ScriptFacade extends WegasAbstractFacade {
     /**
      * Keep static scripts pre-compiled
      */
-    private static final Map<String, CachedScript> staticCache = new Helper.LRUCache<>(250);
+    private static final Helper.LRUCache<String, CachedScript> staticCache = new Helper.LRUCache<>(250);
 
     /*
      * Initialize noSuchProperty and other nashorn stuff
@@ -288,11 +288,13 @@ public class ScriptFacade extends WegasAbstractFacade {
         CachedScript cached = staticCache.get(name);
 
         if (cached == null) {
-            staticCache.put(name, new CachedScript(null, name, version, "JavaScript"));
-            cached = staticCache.get(name);
+            // since putIfAbsent is synchronised, check existence first to reduce locking
+            cached = staticCache.putIfAbsentAndGet(name, new CachedScript(null, name, version, "JavaScript"));
         }
 
-        if (!cached.version.equals(version) || cached.script == null) {
+        if (cached.version == null
+                || !cached.version.equals(version)
+                || cached.script == null) {
 
             CompiledScript compile;
             try {
@@ -384,11 +386,13 @@ public class ScriptFacade extends WegasAbstractFacade {
             CachedScript cached = staticCache.get(cacheFileName);
 
             if (cached == null) {
-                staticCache.put(cacheFileName, new CachedScript(null, cacheFileName, version, "JavaScript"));
-                cached = staticCache.get(cacheFileName);
+                // since putIfAbsent is synchronised, check existence first to reduce locking
+                cached = staticCache.putIfAbsentAndGet(cacheFileName, new CachedScript(null, cacheFileName, version, "JavaScript"));
             }
 
-            if (!cached.version.equals(version) || cached.script == null) {
+            if (cached.version == null 
+                    || !cached.version.equals(version) 
+                    || cached.script == null) {
                 try ( FileInputStream fis = new FileInputStream(f);  InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8)) {
                     cached.script = this.compile(isr);
                     cached.version = version;
