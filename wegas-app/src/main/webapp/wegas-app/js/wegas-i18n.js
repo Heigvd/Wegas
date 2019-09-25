@@ -42,6 +42,14 @@ YUI.add("wegas-i18n", function(Y) {
                 colonize: function() {
                     return this + ":";
                 }
+            },
+            it: {
+                capitalize: function() {
+                    return this.slice(0, 1).toUpperCase() + this.slice(1);
+                },
+                colonize: function() {
+                    return this + ":";
+                }
             }
         };
         /**
