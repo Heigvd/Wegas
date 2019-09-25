@@ -27,6 +27,8 @@ public class ProjectedStatement {
     private String result;
     private String timestamp;
     private String verb;
+    private Boolean success;
+    private Boolean completion;
 
     public ProjectedStatement() {
     }
@@ -48,6 +50,8 @@ public class ProjectedStatement {
         }
 
         this.result = (String) object.get("result");
+        this.success = (Boolean) object.get("success");
+        this.completion = (Boolean) object.get("completion");
 
         List<String> groups = (List<String>) object.get("grouping");
         for (String group : groups) {
@@ -99,6 +103,22 @@ public class ProjectedStatement {
         this.result = result;
     }
 
+    public Boolean getSuccess() {
+        return success;
+    }
+
+    public void setSuccess(Boolean success) {
+        this.success = success;
+    }
+
+    public Boolean getCompletion() {
+        return completion;
+    }
+
+    public void setCompletion(Boolean completion) {
+        this.completion = completion;
+    }
+
     public String getTimestamp() {
         return timestamp;
     }
@@ -140,6 +160,8 @@ public class ProjectedStatement {
                 .append("object id").append(sep)
                 .append("object type").append(sep)
                 .append("object description").append(sep)
+                .append("success").append(sep)
+                .append("completion").append(sep)
                 .append("result").append(System.lineSeparator());
     }
 
@@ -160,6 +182,8 @@ public class ProjectedStatement {
                 .append(escape(objectId)).append(sep)
                 .append(escape(objectType)).append(sep)
                 .append(escape(objectDesc)).append(sep)
+                .append(escape(success)).append(sep)
+                .append(escape(completion)).append(sep)
                 .append(escape(result)).append(System.lineSeparator());
     }
 }

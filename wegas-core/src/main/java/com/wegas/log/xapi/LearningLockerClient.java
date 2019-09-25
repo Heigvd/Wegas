@@ -246,6 +246,8 @@ public class LearningLockerClient {
                 "object_type", "$statement.object.definition.type",
                 "object_desc", "$statement.object.definition.description",
                 "result", "$statement.result.response",
+                "success", "$statement.result.success",
+                "completion", "$statement.result.completion",
                 "grouping", "$statement.context.contextActivities.grouping.id"
         ));
     }
