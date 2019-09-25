@@ -16,72 +16,72 @@ YUI.add("wegas-i18n-review-it", function(Y) {
     Y.Wegas.I18n.register("wegas-i18n-review", "it", {
         review: {
             orchestrator: {
-                mainTitle: "Peer Review Process for \"{{variableName}}\"",
-                includeEvicted: "Authors who did not submit anything for review shall still receive something to review",
+                mainTitle: "Processo di revisione paritaria per \"{{variableName}}\"",
+                includeEvicted: "Gli autori che non hanno inviati dati devono comunque ricevere qualcosa a valutare",
                 state: {
                     edition: {
-                        title: "Edition",
-                        description: "The authors are editing what will be reviewed<br/> <br /><i>The process has not begun yet</i>"
+                        title: "Modificazione",
+                        description: "Gli autori modificano quello che sara giudicato tra pari<br/> <br /><i>Il processo non e ancora iniziato</i>"
                     },
                     reviewing: {
-                        title: "Reviewing",
-                        description: "The authors are reviewing their peers<br /><br /><i>This is the first step of the process</i>"
+                        title: "Esaminazione",
+                        description: "Gli autori esaminano i loro pari<br /><br /><i>È un primo passo del processo</i>"
                     },
                     commenting: {
-                        title: "Commenting",
-                        description: "The authors acquaint themselves with peer reviews<br /><br /><i>They comment on those reviews</i>"
+                        title: "Osservazione",
+                        description: "Gli autori vengono a conoscenza del parere di loro pari<br /><br /><i>Commentano queste revisioni</i>"
                     },
                     completed: {
-                        title: "Completed",
-                        description: "The reviewing process has been completed<br /><br /><i>The authors take acquaintance of comments on reviews they've done</i>"
+                        title: "Completato",
+                        description: "Il processo di revisione e finito<br /><br /><i>Gli autori venivano a conoscenza dei commenti delle sue revisioni</i>"
                     }
                 },
-                properties: "properties",
-                overview: "overview",
-                reviews: "reviews",
-                comments: "comments",
-                charts: "charts",
-                playerData: "Data reviewed by peers for player \"{{playerName}}\"",
-                teamData: "Data reviewed by peers for team \"{{teamName}}\"",
-                goNextConfirmation: "This action cannot be undone.<br />\nDo you want to enter the next step of the reviewing process?",
+                properties: "proprietà",
+                overview: " visione d'insieme",
+                reviews: "revisioni",
+                comments: "commentari",
+                charts: "tabelle",
+                playerData: "Dati valutati da pari per il giocatore \"{{playerName}}\"",
+                teamData: "Dati valutati da pari per la squadra \"{{teamName}}\"",
+                goNextConfirmation: "Questa azione e irreversibile.<br />\nAvviare nonostante la fase successiva?",
                 stats: {
-                    mean: "avg.",
-                    median: "med.",
+                    mean: "media.",
+                    median: "mediana.",
                     sd: "&sigma;",
-                    bounds: "bounds",
-                    basedOn: "based on {{available}}/{{expected}} values",
-                    avgWc: "Average number of words",
-                    avgCc: "Average number of characters"
+                    bounds: "limiti",
+                    basedOn: "basato su {{available}}/{{expected}} valori",
+                    avgWc: "Numero medio delle parole",
+                    avgCc: "Numero medio dei caratteri"
                 },
-                notAvailableYet : "Not available yet"
+                notAvailableYet : "Non ancora disponibile"
             },
             global: {
-                submit: "submit",
-                confirmation: "Once submitted, those data will be final!<br /> Do you really want to submit them ?",
-                save: "save"
+                submit: "inviare",
+                confirmation: "Una volta inviate, queste dati non sarano piu modificabile!<br /> Inviare nonostante ?",
+                save: "Salvare"
             },
             tabview: {
-                emptyness_message: "No review available yet",
-                toReviewTitle: "Review your peers",
-                toReview: "Submission",
-                toCommentTitle: "Reviews of your submission",
-                toComment: "Reviewer"
+                emptyness_message: "Niente revisione ancora disponibile",
+                toReviewTitle: "Esaminare le sue pari",
+                toReview: "Presentazione",
+                toCommentTitle: "Revisione delle vostre presentazioni",
+                toComment: "Revisioni"
             },
             editor: {
-                given: "Given: ",
-                number: "#",
-                ask_your_feedback: "Edit your feedback",
-                your_feedback: "Your feedback:",
-                reviewer_feedback: "Reviewer feedback",
+                given: "Considerato: ",
+                number: "nº",
+                ask_your_feedback: "Dare un feedback",
+                your_feedback: "Vostro feedback:",
+                reviewer_feedback: "Feedback ricevuto",
                 ask_reviewer_feedback: "",
-                ask_comment: "What do you think about your reviewer's feedback?",
-                comment: "Your thoughts about feedback your reviewer's feedback",
-                author_comment: "What this author thinks about your feedback:",
-                noValueProvided: "No evaluation provided",
-                didNotProvide: "did not provide any evaluation",
-                didNotProvidePluralized: "did not provide any evaluation",
-                noTeamProvide: "no team has provided any evaluation",
-                noPlayerProvide: "no player has provided any evaluation"
+                ask_comment: "Che cosa pensa del feedback ricevuto?",
+                comment: "Ciò che pensa del feedback ricevuto",
+                author_comment: "Ciò che l'autore pensa del vostro feedback",
+                noValueProvided: "Non è stata fornita alcuna valutazione",
+                didNotProvide: "non ha fornito alcuna valutazione",
+                didNotProvidePluralized: "non hanno fornito alcuna valutazione",
+                noTeamProvide: "nessuna squadra ha fornito alcuna valutazione",
+                noPlayerProvide: "nessun gioccatore ha fornito alcuna valutazione"
             }
         }
     });

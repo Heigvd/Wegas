@@ -45,7 +45,7 @@ YUI.add("wegas-i18n-global-it", function(Y) {
                 languages: "Lingue"
             },
             errors: {
-                conflict: "La sua query non ha potuto essere completata a causa di un conflitto. Questo di solito significa che si è tentato di aggiornare un elemento obsoleto.",
+                conflict: "La sua query non ha potuto essere completata dovuta a un conflitto. Questo di solito significa che si è tentato di aggiornare un elemento obsoleto.",
                 greaterThan: "{{value}} è maggiore di {{max}}",
                 lessThan: "{{value}} è più piccolo di {{min}}",
                 limitReached: "Non è possibile selezionare più di {{num}} valori",
