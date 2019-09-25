@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useDebounce } from '../../Components/Hooks/useDebounce';
 import { useScript } from '../../Components/Hooks/useScript';
 import { shallowIs } from '../../Helper/shallowIs';
-import SrcEditor from './ScriptEditors/SrcEditor';
+import { WegasScriptEditor } from './ScriptEditors/WegasScriptEditor';
 
 const container = css({ width: '100%' });
 const editor = css({ width: '100%', height: '400px' });
@@ -32,18 +32,14 @@ const Eval = React.memo(function Eval({ script }: { script: string }) {
 });
 Eval.displayName = 'Eval';
 
-export function PlayLocal() {
+export default function PlayLocal() {
   const [script, setScript] = React.useState('Varia');
   const debouncedScript = useDebounce(script, 300);
 
   return (
     <div className={container}>
       <div className={editor}>
-        <SrcEditor
-          language="javascript"
-          value={script}
-          onChange={e => setScript(e)}
-        />
+        <WegasScriptEditor value={script} onChange={e => setScript(e)} />
       </div>
       <ErrorBoundary script={debouncedScript}>
         <Eval script={debouncedScript} />

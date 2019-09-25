@@ -24,7 +24,7 @@ interface EditorAction {
   ) => void;
 }
 
-interface EditorProps {
+export interface EditorProps {
   /**
    * value - the content of the editor
    */
@@ -40,7 +40,7 @@ interface EditorProps {
   /**
    * langauge - the editor language
    */
-  language: 'javascript' | 'plaintext' | 'css' | 'json' | 'typescript';
+  language?: 'javascript' | 'plaintext' | 'css' | 'json' | 'typescript';
   /**
    * cursorOffset - the position of the cursor in the text
    */
@@ -124,7 +124,7 @@ class SrcEditor extends React.Component<EditorProps> {
           if (this.editor) {
             monaco.editor.setModelLanguage(
               this.editor.getModel()!,
-              this.props.language,
+              this.props.language ? this.props.language : 'javascript',
             );
           }
         });
