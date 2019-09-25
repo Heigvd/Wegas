@@ -55,7 +55,7 @@ YUI.add("wegas-i18n-global-it", function(Y) {
                 outOfBounds: "{{value}} non deve essere {{min}} e {{max}}"
             },
             inbox: {
-                deleteEmailConfirmation: "The e-mail {{subject}} will be permanently deleted. Continue?",
+                deleteEmailConfirmation: "L'e-mail {{subject}} sarà cancellato definitivamente. Continua?",
                 noMessages: "Non hai messaggi",
                 noMessageSelected: "Selezionare un elemento a sinistra"
             }
