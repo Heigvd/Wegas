@@ -33,14 +33,9 @@ YUI.add('wegas-panel', function(Y) {
         },
         bindUI: function() {
             this.windowHandler = Y.after("windowresize", Y.bind(function() {
-                /*
-                 @HACK
-                 Hide - sync - show
-                 Avoid Widget modal to stack it again. As it will destroy it only once.
-                 */
-                this.hide();
-                this.syncUI();
-                this.show();
+                // do not this.syncUI() as Y.WidgetModality does not support it well (double overlay)
+                // moreover, we only need to realign the panel -> Y.WidgetPositionAlign._syncUIPosAligh() only
+                this._syncUIPosAlign();
             }, this));
         },
         syncUI: function() {

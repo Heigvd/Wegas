@@ -34,7 +34,7 @@ public abstract class WegasPatch {
     protected final static IndentLogger logger = new IndentLogger(LoggerFactory.getLogger(WegasPatch.class));
 
     /**
-     * Represent the patch mode
+     * Represent the patch mode: CREATE, DELETE, UPDATE, OVERRIDE or SKIP
      */
     public static enum PatchMode {
         /**
@@ -325,8 +325,16 @@ public abstract class WegasPatch {
                         mode = PatchMode.OVERRIDE;
                     }
                 } else {
+                    if (this.updateOrOverride(inheritedVisibility, visibility) == PatchMode.OVERRIDE) {
+                        // one is not allow to create child/children here -> delete target
+                        mode = PatchMode.DELETE;
+                    } else {
+                        // one is allowed to create create its own child/children -> keep in place
+                        mode = PatchMode.SKIP;
+                    }
                     // FROM NULL TO NULL !!!
-                    throw new WegasConflictException();
+                    logger.error("Patch Null2Null: Target: {}, From: {}; To: {}; ParentMode: {}; inheritedVisibility: {}; Visibility: {}; protectionLevel: {}; => mode: {}", 
+                            target, from, to, parentMode, inheritedVisibility, visibility, protectionLevel, mode);
                 }
             }
         }

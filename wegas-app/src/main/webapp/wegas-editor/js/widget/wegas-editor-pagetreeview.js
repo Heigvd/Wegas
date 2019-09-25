@@ -185,10 +185,11 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 }
             });
 
-            this.btnNew.plug(Plugin.WidgetMenu, {
-                children: menu
-            });
-
+            if (this.btnNew) {
+                this.btnNew.plug(Plugin.WidgetMenu, {
+                    children: menu
+                });
+            }
         },
         newPage: function(pageType) {
             DATASOURCE.createPage(pageType, Y.bind(function(page, id) {
@@ -305,10 +306,10 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 this.getIndex();
             }
         },
-        _addChild:function(e){
+        _addChild: function(e) {
             this.updateWidget(e);
-        }, 
-        _removeChild:function(e){
+        },
+        _removeChild: function(e) {
             Y.later(0, this, this.updateWidget, e);
         },
         buildSub: function(node, widget) {
