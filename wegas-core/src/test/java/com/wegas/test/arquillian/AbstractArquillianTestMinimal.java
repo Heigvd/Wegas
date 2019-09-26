@@ -251,7 +251,8 @@ public abstract class AbstractArquillianTestMinimal {
                     + "CREATE INDEX IF NOT EXISTS index_questiondescriptor_pictures_questiondescriptor_id on questiondescriptor_pictures (questiondescriptor_id);"
                     + "CREATE INDEX IF NOT EXISTS index_result_files_result_id on result_files (result_id);"
                     + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_taskdescriptor_id_predecessor_id on taskdescriptor_taskdescriptor (taskdescriptor_id,predecessor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_users_roles_roles_id_user_id on users_roles (role_id,user_id);";
+                    + "CREATE INDEX IF NOT EXISTS index_users_roles_roles_id_user_id on users_roles (role_id,user_id);"
+                    + "CREATE INDEX IF NOT EXISTS index_game_toen ON game (token) WHERE (status = 'LIVE' OR status = 'BIN');";
 
             statement.execute(setupQuery);
         } catch (SQLException ex) {

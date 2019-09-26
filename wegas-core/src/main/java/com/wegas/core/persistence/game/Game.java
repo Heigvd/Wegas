@@ -41,9 +41,9 @@ import javax.validation.constraints.Pattern;
  */
 @Entity
 @Table(
-        uniqueConstraints = {
+        //uniqueConstraints = {
             //    @UniqueConstraint(columnNames = {"name"}),
-            @UniqueConstraint(columnNames = {"token"})},
+        //    @UniqueConstraint(columnNames = {"token"})}, // partial index : WHERE status = LIVE OR status = BIN
         indexes = {
             @Index(columnList = "gamemodel_id"),
             @Index(columnList = "createdby_id")
