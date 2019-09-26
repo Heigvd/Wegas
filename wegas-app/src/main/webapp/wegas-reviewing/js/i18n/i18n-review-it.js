@@ -37,7 +37,7 @@ YUI.add("wegas-i18n-review-it", function(Y) {
                     }
                 },
                 properties: "proprietà",
-                overview: " visione d'insieme",
+                overview: "visione d'insieme",
                 reviews: "revisioni",
                 comments: "commentari",
                 charts: "tabelle",
