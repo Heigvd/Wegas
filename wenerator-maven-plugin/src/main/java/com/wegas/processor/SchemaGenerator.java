@@ -501,7 +501,7 @@ public class SchemaGenerator extends AbstractMojo {
         }).collect(Collectors.joining(",\n")));
         sb.append("\n}");
         File f = new File(outputTypings, "Inheritance.json");
-        try ( FileWriter fw = new FileWriter(f)) {
+        try (FileWriter fw = new FileWriter(f)) {
             fw.write(sb.toString());
         } catch (IOException ex) {
             getLog().error("Failed to write " + f.getAbsolutePath(), ex);
@@ -536,7 +536,7 @@ public class SchemaGenerator extends AbstractMojo {
 
         File f = new File(outputTypings, "WegasEntities.d.ts");
 
-        try ( FileWriter fw = new FileWriter(f)) {
+        try (FileWriter fw = new FileWriter(f)) {
             fw.write(sb.toString());
         } catch (IOException ex) {
             getLog().error("Failed to write " + f.getAbsolutePath(), ex);
@@ -546,7 +546,7 @@ public class SchemaGenerator extends AbstractMojo {
     private String getTsScriptableClass(Class<? extends Mergeable> klass, Map<String, ScriptableMethod> methods) {
         String className = this.baseFileName(klass);
 
-        List<String> imports = new ArrayList<>();
+        Map<String, List<String>> imports = new HashMap<>();
 
         StringBuilder script = new StringBuilder();
         script.append("class ").append(className).append("Method")
@@ -554,9 +554,11 @@ public class SchemaGenerator extends AbstractMojo {
 
         methods.forEach((k, v) -> {
             Method method = v.m;
+            String from = method.getDeclaringClass().getSimpleName();
             String methodName = method.getName();
 
-            imports.add(methodName);
+            imports.putIfAbsent(from, new ArrayList<>());
+            imports.get(from).add(methodName);
 
             script.append("  public ").append(methodName).append("(");
             Arrays.stream(method.getParameters()).forEach(p -> {
@@ -584,13 +586,15 @@ public class SchemaGenerator extends AbstractMojo {
         if (imports.isEmpty()) {
             return script.toString();
         } else {
-            StringBuilder ret = new StringBuilder("import {");
-            imports.forEach(i -> ret.append(i).append(", "));
+            StringBuilder ret = new StringBuilder();
 
-            ret.append("} from '../../proxyfy/").append(className).append("';");
+            imports.forEach((from, list) -> {
+                ret.append("import {");
+                list.forEach(i -> ret.append(i).append(", "));
+                ret.append("} from '../../proxyfy/").append(from).append("';").append(System.lineSeparator());
+            });
 
             return ret.toString()
-                    + System.lineSeparator()
                     + System.lineSeparator()
                     + script;
         }
@@ -754,13 +758,13 @@ public class SchemaGenerator extends AbstractMojo {
 
                     if (!dryRun) {
                         File f = new File(outputDirectory, jsonFileName);
-                        try ( FileWriter fw = new FileWriter(f)) {
+                        try (FileWriter fw = new FileWriter(f)) {
                             fw.write(configToString(config, patches));
                         } catch (IOException ex) {
                             getLog().error("Failed to write " + f.getAbsolutePath(), ex);
                         }
                         File f2 = new File(outputScriptables, classFileName);
-                        try ( FileWriter fw = new FileWriter(f2)) {
+                        try (FileWriter fw = new FileWriter(f2)) {
                             fw.write(getTsScriptableClass(c, allMethods));
                         } catch (IOException ex) {
                             getLog().error("Failed to write " + f.getAbsolutePath(), ex);
