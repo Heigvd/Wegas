@@ -26,6 +26,7 @@ import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.annotations.Errored;
+import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -586,6 +587,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
      *
      * @return variableInstance belonging to the player
      */
+    @Scriptable(wysiwyg = false)
     public T getInstance(Player player) {
         return (T) this.getScope().getVariableInstance(player);
     }

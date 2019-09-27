@@ -30,9 +30,10 @@ import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.editor.Schema;
 import com.wegas.editor.Schemas;
 import com.wegas.editor.JSONSchema.JSONArray;
@@ -79,6 +80,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.reflections.Reflections;
 
 import net.jodah.typetools.TypeResolver;
+import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 
 @Mojo(name = "schema", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class SchemaGenerator extends AbstractMojo {
@@ -99,8 +101,12 @@ public class SchemaGenerator extends AbstractMojo {
      */
     @Parameter(defaultValue = "${project.build.directory}/generated/schema", property = "schema.output", required = true)
     private File outputDirectory;
+
     @Parameter(defaultValue = "${project.build.directory}/generated/typings", property = "schema.typings", required = true)
     private File outputTypings;
+
+    @Parameter(defaultValue = "${project.build.directory}/generated/scriptables", property = "schema.scriptables", required = true)
+    private File outputScriptables;
 
     @Parameter(property = "schema.pkg", required = true)
     private String[] pkg;
@@ -495,7 +501,7 @@ public class SchemaGenerator extends AbstractMojo {
         }).collect(Collectors.joining(",\n")));
         sb.append("\n}");
         File f = new File(outputTypings, "Inheritance.json");
-        try (FileWriter fw = new FileWriter(f)) {
+        try ( FileWriter fw = new FileWriter(f)) {
             fw.write(sb.toString());
         } catch (IOException ex) {
             getLog().error("Failed to write " + f.getAbsolutePath(), ex);
@@ -530,10 +536,63 @@ public class SchemaGenerator extends AbstractMojo {
 
         File f = new File(outputTypings, "WegasEntities.d.ts");
 
-        try (FileWriter fw = new FileWriter(f)) {
+        try ( FileWriter fw = new FileWriter(f)) {
             fw.write(sb.toString());
         } catch (IOException ex) {
             getLog().error("Failed to write " + f.getAbsolutePath(), ex);
+        }
+    }
+
+    private String getTsScriptableClass(Class<? extends Mergeable> klass, Map<String, ScriptableMethod> methods) {
+        String className = this.baseFileName(klass);
+
+        List<String> imports = new ArrayList<>();
+
+        StringBuilder script = new StringBuilder();
+        script.append("class ").append(className).append("Method")
+                .append(" {").append(System.lineSeparator());
+
+        methods.forEach((k, v) -> {
+            Method method = v.m;
+            String methodName = method.getName();
+
+            imports.add(methodName);
+
+            script.append("  public ").append(methodName).append("(");
+            Arrays.stream(method.getParameters()).forEach(p -> {
+                Type type = p.getParameterizedType();
+                Type reified = TypeResolver.reify(type, method.getDeclaringClass());
+                script.append(p.getName()).append(": ").append(javaToTSType(reified, null));
+                script.append(", ");
+            });
+            script.append(")");
+
+            script.append("{").append(System.lineSeparator());
+            script.append("    return ").append(methodName).append("({} as any)(");
+            Arrays.stream(method.getParameters()).forEach(p -> script.append(p.getName()).append(","));
+            script.append(");").append(System.lineSeparator());
+            script.append("  }").append(System.lineSeparator());
+        });
+
+        script.append("}");
+        script.append(System.lineSeparator());
+        script.append(System.lineSeparator());
+
+        script.append("export type Scriptable").append(className) // <- exported type
+                .append(" = ").append(className).append("Method & I").append(className).append(";");
+
+        if (imports.isEmpty()) {
+            return script.toString();
+        } else {
+            StringBuilder ret = new StringBuilder("import {");
+            imports.forEach(i -> ret.append(i).append(", "));
+
+            ret.append("} from '../../proxyfy/").append(className).append("';");
+
+            return ret.toString()
+                    + System.lineSeparator()
+                    + System.lineSeparator()
+                    + script;
         }
     }
 
@@ -542,7 +601,7 @@ public class SchemaGenerator extends AbstractMojo {
         Set<Class<? extends Mergeable>> classes;
 
         if (!dryRun) {
-            pkg = new String[] { "com.wegas" };
+            pkg = new String[]{"com.wegas"};
             classes = new Reflections((Object[]) pkg).getSubTypesOf(Mergeable.class);
 
             if (outputDirectory.isFile()) {
@@ -551,9 +610,14 @@ public class SchemaGenerator extends AbstractMojo {
             if (outputTypings.isFile()) {
                 throw new MojoExecutionException(outputTypings.getAbsolutePath() + " is not a directory");
             }
+            if (outputScriptables.isFile()) {
+                throw new MojoExecutionException(outputScriptables.getAbsolutePath() + " is not a directory");
+            }
+
             getLog().info("Writing to " + outputDirectory.getAbsolutePath());
             outputDirectory.mkdirs();
             outputTypings.mkdirs();
+            outputScriptables.mkdirs();
         } else {
             getLog().info("DryRun: do not generate any files");
             classes = new HashSet<>(Arrays.asList(this.classFilter));
@@ -573,7 +637,8 @@ public class SchemaGenerator extends AbstractMojo {
                 WegasEntityFields wEF = new WegasEntityFields(c);
 
                 final Config config = new Config();
-                Map<String, ScriptableMethod> methods = config.getMethods();
+                Map<String, ScriptableMethod> allMethods = new HashMap<>();
+                Map<String, ScriptableMethod> schemaMethods = config.getMethods();
 
                 Map<Method, WegasExtraProperty> allExtraProperties = new HashMap<>();
                 Map<Method, WegasExtraProperty> extraProperties = new HashMap<>();
@@ -608,11 +673,18 @@ public class SchemaGenerator extends AbstractMojo {
                  * Process all public methods (including inherited ones)
                  */
                 // abstract classes too ? restrict ton concretes ??
-                methods.putAll(Arrays.stream(c.getMethods())
-                        // brige: methods duplicated when return type is overloaded (see
+                allMethods.putAll(Arrays.stream(c.getMethods())
+                        // brige: schemaMethods duplicated when return type is overloaded (see
                         // PrimitiveDesc.getValue)
                         .filter(m -> m.isAnnotationPresent(Scriptable.class) && !m.isBridge())
                         .collect(Collectors.toMap((Method m) -> m.getName(), ScriptableMethod::new)));
+
+                // schema should only contains wysiwyg methods
+                allMethods.forEach((k, v) -> {
+                    if (v.m.getAnnotation(Scriptable.class).wysiwyg()) {
+                        schemaMethods.put(k, v);
+                    }
+                });
 
                 /**
                  * Generate JSON Schema : Process all fields (including inherited ones)
@@ -669,26 +741,35 @@ public class SchemaGenerator extends AbstractMojo {
                     }
 
                     // Write
-                    String fileName = jsonFileName(c);
+                    String jsonFileName = jsonFileName(c);
+                    String classFileName = scriptableClassFileName(c);
 
-                    if (jsonBuiltFileNames.containsKey(fileName)) {
+                    if (jsonBuiltFileNames.containsKey(jsonFileName)) {
                         // At that point seems we have duplicate "@class"
-                        getLog().error("Duplicate file name " + fileName + "classes "
-                                + jsonBuiltFileNames.get(fileName) + " <> " + c.getName());
+                        getLog().error("Duplicate file name " + jsonFileName + "classes "
+                                + jsonBuiltFileNames.get(jsonFileName) + " <> " + c.getName());
                         return;
                     }
-                    jsonBuiltFileNames.put(fileName, wEF.getTheClass().getName());
+                    jsonBuiltFileNames.put(jsonFileName, wEF.getTheClass().getName());
 
                     if (!dryRun) {
-                        File f = new File(outputDirectory, fileName);
-                        try (FileWriter fw = new FileWriter(f)) {
+                        File f = new File(outputDirectory, jsonFileName);
+                        try ( FileWriter fw = new FileWriter(f)) {
                             fw.write(configToString(config, patches));
                         } catch (IOException ex) {
                             getLog().error("Failed to write " + f.getAbsolutePath(), ex);
                         }
+                        File f2 = new File(outputScriptables, classFileName);
+                        try ( FileWriter fw = new FileWriter(f2)) {
+                            fw.write(getTsScriptableClass(c, allMethods));
+                        } catch (IOException ex) {
+                            getLog().error("Failed to write " + f.getAbsolutePath(), ex);
+                        }
                     } else {
-                        System.out.println(fileName);
+                        System.out.println(jsonFileName);
                         System.out.println(configToString(config, patches));
+                        System.out.println(classFileName);
+                        System.out.println(getTsScriptableClass(c, allMethods));
                     }
                 }
             } catch (NoClassDefFoundError nf) {
@@ -711,7 +792,6 @@ public class SchemaGenerator extends AbstractMojo {
             Class<? extends JSONSchema> schemaOverride,
             String name, View view, List<Errored> erroreds,
             Visible visible,
-
             boolean optional,
             boolean nullable,
             Class<? extends ValueGenerators.ValueGenerator> proposal,
@@ -786,6 +866,10 @@ public class SchemaGenerator extends AbstractMojo {
 
     private String jsonFileName(Class<? extends Mergeable> cls) {
         return this.baseFileName(cls) + ".json";
+    }
+
+    private String scriptableClassFileName(Class<? extends Mergeable> cls) {
+        return this.baseFileName(cls) + ".ts";
     }
 
     private String baseFileName(Class<? extends Mergeable> cls) {
@@ -1097,7 +1181,7 @@ public class SchemaGenerator extends AbstractMojo {
     }
 
     /**
-     * JSONShemas for attributes and methods
+     * JSONShemas for attributes and schemaMethods
      */
     private static class Config {
 
@@ -1128,7 +1212,7 @@ public class SchemaGenerator extends AbstractMojo {
      * @throws MojoExecutionException
      */
     public static final void main(String... args) throws MojoExecutionException {
-        SchemaGenerator wenerator = new SchemaGenerator(true, ListDescriptor.class);
+        SchemaGenerator wenerator = new SchemaGenerator(true, NumberDescriptor.class, AaiAccount.class);
         wenerator.execute();
     }
 }

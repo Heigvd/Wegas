@@ -280,6 +280,7 @@
                 <configuration>
                     <output>${project.build.directory}/generated/schema</output>
                     <typings>${project.build.directory}/generated/typings</typings>
+                    <scriptables>${project.build.directory}/generated/scriptables</scriptables>
                     <pkg>
                         <param>com.wegas</param>
                     </pkg>
