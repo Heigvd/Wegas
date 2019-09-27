@@ -10,3 +10,13 @@ export function selectCurrentUser() {
   const state = store.getState();
   return state.global.currentUser;
 }
+
+/**
+ * Get the current State.
+ *
+ * @export
+ * @returns Current app state
+ */
+export function getState() {
+  return store.getState();
+}

@@ -26,6 +26,7 @@ import { SearchTool } from '../SearchTool';
 import { focusTabContext } from '../LinearTabLayout/LinearLayout';
 import { useAsync } from '../../../Components/Hooks/useAsync';
 import { themeVar } from '../../../Components/Theme';
+import { layoutTabs } from '../Layout';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
@@ -257,9 +258,9 @@ function CTree(props: {
                 <span
                   className={cx(headerStyle, { [editingStyle]: state.editing })}
                   onClick={() => {
-                    focusTab('Editor');
+                    focusTab(layoutTabs.EntityEditor);
                     if (entityIs<IFSMDescriptor>(variable, 'FSMDescriptor')) {
-                      focusTab('StateMachine');
+                      focusTab(layoutTabs.StateMachineEditor);
                     }
                     getEntityActions(variable!).then(({ edit }) =>
                       dispatch(
@@ -283,7 +284,7 @@ function CTree(props: {
                     <AddMenuParent
                       variable={variable}
                       dispatch={dispatch}
-                      onSelect={() => focusTab('Editor')}
+                      onSelect={() => focusTab(layoutTabs.EntityEditor)}
                     />
                   ) : entityIs<IChoiceDescriptor>(
                       variable,
@@ -292,7 +293,7 @@ function CTree(props: {
                     <AddMenuChoice
                       variable={variable}
                       dispatch={dispatch}
-                      onSelect={() => focusTab('Editor')}
+                      onSelect={() => focusTab(layoutTabs.EntityEditor)}
                     />
                   ) : null}
                 </span>

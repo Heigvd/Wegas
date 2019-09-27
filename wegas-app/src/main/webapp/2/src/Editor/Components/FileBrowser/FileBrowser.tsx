@@ -6,7 +6,7 @@ import getEditionConfig from '../../editionConfig';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../FormView';
 import { DefaultDndProvider } from '../../../Components/DefaultDndProvider';
-import { FileBrowserNode } from './FileBrowserNode';
+import { FileBrowserNode, FileBrowserNodeProps } from './FileBrowserNode';
 import { StyledLabel } from '../../../Components/AutoImport/String/Label';
 
 const grow = css({
@@ -20,11 +20,8 @@ const growBig = css({
 });
 
 interface FileBrowserProps {
-  onFileClick?: (
-    file: IFileDescriptor,
-    onFileUpdate?: (updatedFile: IFileDescriptor) => void,
-  ) => void;
-  onDelelteFile?: (deletedFile: IFileDescriptor) => void;
+  onFileClick?: FileBrowserNodeProps['onFileClick'];
+  onDelelteFile?: FileBrowserNodeProps['onDelelteFile'];
   selectedPaths?: string[];
 }
 
@@ -71,22 +68,36 @@ export default function FileBrowserWithMeta() {
     () => {},
   );
 
-  const onFileClick = (
-    file: IFileDescriptor,
-    onFileUpdate?: (updatedFile: IFileDescriptor) => void,
+  const onFileClick: FileBrowserProps['onFileClick'] = (
+    event,
+    file,
+    onFileUpdate,
   ) => {
-    setSelectedFile(oldSelectedFile => {
-      if (
-        !oldSelectedFile ||
-        generateAbsolutePath(file) !== generateAbsolutePath(oldSelectedFile)
-      ) {
-        if (onFileUpdate) {
-          fileUpdate.current = onFileUpdate;
+    if (event && event.ctrlKey) {
+      setSelectedFile(oldSelectedFile => {
+        if (
+          !oldSelectedFile ||
+          generateAbsolutePath(file) !== generateAbsolutePath(oldSelectedFile)
+        ) {
+          if (onFileUpdate) {
+            fileUpdate.current = onFileUpdate;
+          }
+          return file;
         }
-        return file;
-      }
+        return undefined;
+      });
+    } else {
       return undefined;
-    });
+    }
+  };
+
+  const onDeleteFile: FileBrowserProps['onDelelteFile'] = file => {
+    if (
+      selectedFile &&
+      generateAbsolutePath(selectedFile).startsWith(generateAbsolutePath(file))
+    ) {
+      setSelectedFile(undefined);
+    }
   };
 
   const saveMeta = (file: IFileDescriptor) => {
@@ -103,16 +114,7 @@ export default function FileBrowserWithMeta() {
       <div className={cx(flex, growBig)}>
         <FileBrowser
           onFileClick={onFileClick}
-          onDelelteFile={file => {
-            if (
-              selectedFile &&
-              generateAbsolutePath(selectedFile).startsWith(
-                generateAbsolutePath(file),
-              )
-            ) {
-              setSelectedFile(undefined);
-            }
-          }}
+          onDelelteFile={onDeleteFile}
           selectedPaths={
             selectedFile ? [generateAbsolutePath(selectedFile)] : []
           }

@@ -7,7 +7,7 @@ import { Item, Layout, DndLinearLayout } from './LinearTabLayout/LinearLayout';
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
 const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
 const TreeView = React.lazy(() => import('./Variable/VariableTree'));
-const Editor = React.lazy(() => import('./EntityEditor'));
+const EntityEditor = React.lazy(() => import('./EntityEditor'));
 const FileBrowserWithMeta = React.lazy(() =>
   import('./FileBrowser/FileBrowser'),
 );
@@ -20,6 +20,26 @@ const layout = css({
   flexDirection: 'column',
   height: '100%',
 });
+
+export interface LayoutTabsProps {
+  tab: string;
+  path: string;
+}
+
+interface LayoutTabsMap {
+  [id: string]: LayoutTabsProps;
+}
+
+export const layoutTabs = {
+  Variables: { tab: 'Variables', path: './Variable/VariableTree' },
+  PageDisplay: { tab: 'Page', path: './Page/PageDisplay' },
+  StateMachineEditor: { tab: 'StateMachine', path: './StateMachineEditor' },
+  EntityEditor: { tab: 'EntityEditor', path: './EntityEditor' },
+  FileBrowserWithMeta: { tab: 'Files', path: './FileBrowser/FileBrowser' },
+  LibraryEditor: { tab: 'Scripts', path: './ScriptEditors/LibraryEditor' },
+  LanguageEditor: { tab: 'LanguageEditor', path: './LanguageEditor' },
+  PlayLocal: { tab: 'PlayLocal', path: './PlayLocal' },
+};
 
 export default class AppLayout extends React.Component<
   {},
@@ -37,6 +57,14 @@ export default class AppLayout extends React.Component<
         <div className={layout}>
           <Header />
           <DndLinearLayout
+            // tabs={Object.keys(layoutTabs).map(key => {
+            //   const Component = React.lazy(() => import(layoutTabs[key].path));
+            //   return (
+            //     <Item key={key} label={layoutTabs[key].tab}>
+            //       <Component />
+            //     </Item>
+            //   );
+            // })}
             tabs={[
               <Item key="Variables" label="Variables">
                 <TreeView />
@@ -47,8 +75,8 @@ export default class AppLayout extends React.Component<
               <Item key="StateMachine" label="StateMachine">
                 <StateMachineEditor />
               </Item>,
-              <Item key="Editor" label="Editor">
-                <Editor />
+              <Item key="EntityEditor" label="EntityEditor">
+                <EntityEditor />
               </Item>,
               <Item key="Files" label="Files">
                 <FileBrowserWithMeta />
@@ -70,7 +98,7 @@ export default class AppLayout extends React.Component<
               </Item>
             </Layout>
             <Layout>
-              <Item key="PlayLocal" label="PlayLocal">
+              <Item label="PlayLocal">
                 <PlayLocal />
               </Item>
               <Item label="Page">
@@ -84,8 +112,8 @@ export default class AppLayout extends React.Component<
               </Item>
             </Layout>
             <Layout>
-              <Item label="Editor">
-                <Editor />
+              <Item label="EntityEditor">
+                <EntityEditor />
               </Item>
               <Item label="Scripts">
                 <LibraryEditor />

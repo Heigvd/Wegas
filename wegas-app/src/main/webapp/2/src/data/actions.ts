@@ -59,7 +59,7 @@ export const ActionCreator = {
   MANAGED_MODE: (data: {
     // Nearly empty shells
     deletedEntities: {
-      [K in keyof NormalizedData]: { [id: string]: IAbstractEntity }
+      [K in keyof NormalizedData]: { [id: string]: IAbstractEntity };
     };
     updatedEntities: NormalizedData;
   }) => createAction(ActionType.MANAGED_MODE, data),

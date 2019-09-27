@@ -43,7 +43,6 @@ export const AddMenuParent = asyncSFC(
     dispatch: StoreDispatch;
     onSelect?: () => void;
   }) => {
-    // const focusTab = React.useContext(focusTabContext);
     const items = await buildMenuItems(variable);
     return (
       <Menu
@@ -70,7 +69,6 @@ export const AddMenuChoice = asyncSFC(
     dispatch: StoreDispatch;
     onSelect?: () => void;
   }) => {
-    // const focusTab = React.useContext(focusTabContext);
     const items = await buildMenuItems(variable);
     return (
       <Menu
