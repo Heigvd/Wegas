@@ -52,37 +52,6 @@ YUI.add("wegas-i18n", function(Y) {
                 }
             }
         };
-        /**
-         * String extension with additional methods
-         * to transform given string
-         *
-         * @constructor I18nString
-         * @extends String
-         * @param String str the given string
-         */
-        function I18nString(str) {
-            this.value = str;
-        }
-        I18nString.prototype = new String();
-        I18nString.prototype.toString = function() {
-            return "" + this.value;
-        };
-        I18nString.prototype.valueOf = I18nString.prototype.toString;
-        /**
-         * Capitalize sentence's first letter.
-         * Uppercase first letter, language dependant
-         */
-        I18nString.prototype.capitalize = function() {
-            this.value = config[currentLanguage()].capitalize.call(this.value);
-            return this;
-        };
-        /**
-         * Colonize sentence, append ":" to it, language dependant
-         */
-        I18nString.prototype.colonize = function() {
-            this.value = config[currentLanguage()].colonize.call(this.value);
-            return this;
-        };
         /*
          * Take the initial string and replace ALL parameters by theirs argument value
          * provided by k/v in args object.
@@ -101,7 +70,6 @@ YUI.add("wegas-i18n", function(Y) {
                     return "[I18N] MISSING MANDATORY ARGUMENT \"" + key + "\" FOR \"" + tName + "\"";
                 }
             }
-            // return new I18nString(str);
             return str;
         }
 
@@ -110,9 +78,9 @@ YUI.add("wegas-i18n", function(Y) {
             if (params && params.length) {
                 var value;
                 var match;
-                if (match = /Variable\((.*)\)/.exec(params[0])) {
+                if ((match = /Variable\((.*)\)/.exec(params[0]))) {
                     value = Y.Wegas.Facade.Variable.cache.find("name", match[1]);
-                } else if (match = /VariableInstance\((.*)\)/.exec(params[0])) {
+                } else if ((match = /VariableInstance\((.*)\)/.exec(params[0]))) {
                     value = Y.Wegas.Facade.Variable.cache.find("name", match[1]).getInstance();
                 } else if (params[0] === "Player") {
                     value = Y.Wegas.Facade.Game.cache.getCurrentPlayer();
@@ -734,6 +702,18 @@ YUI.add("wegas-i18n", function(Y) {
                     "<span title='Undo' class='inline-editor-cancel fa fa-undo'></span>" +
                     "<span title='Save' class='inline-editor-validate fa fa-save'></span>" +
                     "</span>";
+            },
+            capitalize: function(value) {
+                return config[currentLanguage()].capitalize.call(value);
+            },
+            colonize: function(value) {
+                return config[currentLanguage()].colonize.call(value);
+            },
+            tCap: function(key, args) {
+                return config[currentLanguage()].capitalize.call(translate(key, args));
+            },
+            tCol: function(key, args) {
+                return config[currentLanguage()].colonize.call(key, args);
             }
         };
     }());

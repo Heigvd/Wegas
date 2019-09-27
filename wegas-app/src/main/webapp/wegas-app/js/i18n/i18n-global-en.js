@@ -41,7 +41,8 @@ YUI.add("wegas-i18n-global-en", function(Y) {
             manager: {
                 title: "Languages Manager"
             },
-            languages: "Languages"
+            languages: "Languages",
+            availables: "Languages available to players"
         },
         errors: {
             conflict: "Your request could not be completed due to a conflict. This usually means you tried to update an outdated element.",

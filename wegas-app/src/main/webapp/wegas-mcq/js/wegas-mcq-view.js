@@ -537,8 +537,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             if (repliesToDisplay.length &&
                 (!cbx || question.getInstance().get("validated"))
                 && !(cbx && question.get("tabular")) && this.get("displayResult") === "inline") {
-                this.resultTitle.set("content", repliesToDisplay.length > 1 ? Y.Wegas.I18n.t('mcq.results')
-                    .capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize());
+                this.resultTitle.set("content", repliesToDisplay.length > 1 ? I18n.tCap('mcq.results') : I18n.tCap('mcq.result'));
                 this.resultTitle.syncUI();
                 var repliesIds = {};
                 for (var i in repliesToDisplay) {
@@ -1185,8 +1184,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                         || effectiveDisplayResult === "dialogue")
                     && (!cbx || questionInstance.get("validated")))
                     || (cbx && questionInstance.get("validated") && questionDescriptor.get("tabular"))) {
-                    this.resultTitle.set("content", validatedReplies.length > 1 ? Y.Wegas.I18n.t('mcq.results')
-                        .capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize());
+                    this.resultTitle.set("content", validatedReplies.length > 1 ? I18n.tCap('mcq.results') : I18n.tCap('mcq.result'));
                     this.resultTitle.syncUI();
                     if (cbx) {
                         validatedReplies = [];

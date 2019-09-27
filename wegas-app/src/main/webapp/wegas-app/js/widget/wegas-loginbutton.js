@@ -62,7 +62,9 @@ YUI.add("wegas-loginbutton", function(Y) {
                                     children:
                                         languages.map(function(item) {
                                             return {
-                                                label: (I18n.getCode() === item.get("code").toUpperCase() ? "<b>" + item.get("lang") + "</b>" : item.get("lang")),
+                                                label: (I18n.getCode() === item.get("code")
+                                                    .toUpperCase() ? "<b>" + I18n.capitalize(item.get("lang")) + "</b>"
+                                                    : I18n.capitalize(item.get("lang"))),
                                                 on: {
                                                     click: function() {
                                                         I18n.setCurrentPlayerCode(item.get("code"));
@@ -77,7 +79,7 @@ YUI.add("wegas-loginbutton", function(Y) {
             this.menu.add([
                 {
                     type: "Button",
-                    label: Y.Wegas.I18n.t('global.logout').capitalize(),
+                    label: I18n.tCap('global.logout'),
                     plugins: [{
                             fn: "OpenUrlAction",
                             cfg: {
@@ -294,7 +296,7 @@ YUI.add("wegas-loginbutton", function(Y) {
                         }]
                 }, {
                     type: "Button",
-                    label: Y.Wegas.I18n.t('global.logout').capitalize(),
+                    label: I18n.tCap('global.logout'),
                     plugins: [{
                             fn: "OpenUrlAction",
                             cfg: {
