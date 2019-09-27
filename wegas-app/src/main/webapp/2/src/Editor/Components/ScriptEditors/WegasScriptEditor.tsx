@@ -3,6 +3,7 @@ import SrcEditor from './SrcEditor';
 import { EditorProps } from './SrcEditor';
 import { store } from '../../../data/store';
 
+// @ts-ignore
 import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasEntities.d.ts';
 
 const variableClasses = Object.values(

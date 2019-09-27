@@ -6,7 +6,7 @@ import getEditionConfig from '../../editionConfig';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../FormView';
 import { DefaultDndProvider } from '../../../Components/DefaultDndProvider';
-import { FileBrowserNode } from './FileBrowserNode';
+import { FileBrowserNode, OnFileClickProps } from './FileBrowserNode';
 import { StyledLabel } from '../../../Components/AutoImport/String/Label';
 
 const grow = css({
@@ -20,10 +20,7 @@ const growBig = css({
 });
 
 interface FileBrowserProps {
-  onFileClick?: (
-    file: IFileDescriptor,
-    onFileUpdate?: (updatedFile: IFileDescriptor) => void,
-  ) => void;
+  onFileClick?: OnFileClickProps;
   onDelelteFile?: (deletedFile: IFileDescriptor) => void;
   selectedPaths?: string[];
 }
@@ -75,6 +72,7 @@ export default function FileBrowserWithMeta() {
     file: IFileDescriptor,
     onFileUpdate?: (updatedFile: IFileDescriptor) => void,
   ) => {
+    setError('');
     setSelectedFile(oldSelectedFile => {
       if (
         !oldSelectedFile ||
@@ -90,12 +88,15 @@ export default function FileBrowserWithMeta() {
   };
 
   const saveMeta = (file: IFileDescriptor) => {
+    setError('');
     FileAPI.updateMetadata(file)
       .then((resFile: IFileDescriptor) => {
         fileUpdate.current(resFile);
         setSelectedFile(file);
       })
-      .catch(({ statusText }: Response) => setError(statusText));
+      .catch((res: Response) =>
+        setError(res.statusText ? res.statusText : 'Connection error'),
+      );
   };
 
   return (
@@ -120,21 +121,14 @@ export default function FileBrowserWithMeta() {
       </div>
       {selectedFile && (
         <div className={cx(flex, grow)}>
-          <StyledLabel
-            value={error}
-            type={'error'}
-            duration={3000}
-            onLabelVanish={() => setError('')}
+          <AsyncVariableForm
+            getConfig={entity =>
+              getEditionConfig(entity) as Promise<Schema<AvailableViews>>
+            }
+            update={saveMeta}
+            entity={selectedFile}
+            error={error}
           />
-          <div className={cx(flex, grow)}>
-            <AsyncVariableForm
-              getConfig={entity =>
-                getEditionConfig(entity) as Promise<Schema<AvailableViews>>
-              }
-              update={saveMeta}
-              entity={selectedFile}
-            />
-          </div>
         </div>
       )}
     </div>

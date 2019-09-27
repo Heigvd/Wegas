@@ -149,22 +149,27 @@ type ModalState =
   | ModalStateDelete
   | ModalStateChangeType;
 
+export type OnFileClickProps = (
+  file: IFileDescriptor,
+  onFileUpdate?: (updatedFile: IFileDescriptor) => void,
+  e?: React.MouseEvent<HTMLDivElement, MouseEvent>,
+) => void;
+
 interface FileBrowserNodeProps {
   defaultFile: IFileDescriptor;
   selectedPaths?: string[];
+  alternateSelectedPaths?: string[];
   defaultOpen?: boolean;
   noBracket?: boolean;
   noDelete?: boolean;
-  onFileClick?: (
-    file: IFileDescriptor,
-    onFileUpdate?: (updatedFile: IFileDescriptor) => void,
-  ) => void;
+  onFileClick?: OnFileClickProps;
   onDelelteFile?: (deletedFile: IFileDescriptor) => void;
 }
 
 export function FileBrowserNode({
   defaultFile,
   selectedPaths = [],
+  alternateSelectedPaths = [],
   defaultOpen = false,
   noBracket = false,
   noDelete = false,
@@ -172,7 +177,10 @@ export function FileBrowserNode({
   onDelelteFile = () => {},
 }: FileBrowserNodeProps) {
   const [open, setOpen] = React.useState(
-    defaultOpen || isChildrenSelected(defaultFile, selectedPaths) || noBracket,
+    defaultOpen ||
+      isChildrenSelected(defaultFile, selectedPaths) ||
+      isChildrenSelected(defaultFile, alternateSelectedPaths) ||
+      noBracket,
   );
   const [modalState, setModalState] = React.useState<ModalState>({
     type: 'close',
@@ -433,7 +441,7 @@ export function FileBrowserNode({
               isDirectory(currentFile) && dropZoneProps.isShallowOver,
             [selectedRow]: isSelected(currentFile, selectedPaths),
           })}
-          onClick={() => onFileClick(currentFile, setCurrentFile)}
+          onClick={e => onFileClick(currentFile, setCurrentFile, e)}
         >
           <IconButton
             icon={getIconForFileType(currentFile.mimeType)}

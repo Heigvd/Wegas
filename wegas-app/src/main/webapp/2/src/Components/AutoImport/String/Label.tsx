@@ -8,7 +8,7 @@ import {
 
 export type LabelStyle = 'normal' | 'warning' | 'error' | 'succes';
 
-interface StyledLabelProps {
+export interface StyledLabelProps {
   /**
    * value - the value of the text
    */
