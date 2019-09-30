@@ -30,7 +30,10 @@ const selectedRowLocal = css({
 });
 
 const selectedRowGlobal = css({
-  borderLeft: 'solid 2px',
+  borderStyle: 'solid',
+  borderWidth: '2px',
+  borderColor: themeVar.primaryDarkerColor,
+  borderRadius: '6px',
 });
 
 const hoverRow = css({
@@ -638,6 +641,7 @@ export function FileBrowserNode({
                       }}
                       onFileClick={onFileClick}
                       selectedLocalPaths={selectedLocalPaths}
+                      selectedGlobalPaths={selectedGlobalPaths}
                     />
                   ))
                 : 'Empty...'

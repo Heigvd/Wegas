@@ -101,9 +101,11 @@ export default function FileBrowserWithMeta() {
         return undefined;
       });
     } else {
-      if (editing &&
+      if (
+        editing &&
         editing.type === 'File' &&
-        generateAbsolutePath(editing.entity) === generateAbsolutePath(file)) {
+        generateAbsolutePath(editing.entity) === generateAbsolutePath(file)
+      ) {
         dispatch(closeEditor());
       } else {
         focusTab(layoutTabs.EntityEditor);
@@ -122,6 +124,7 @@ export default function FileBrowserWithMeta() {
       )
     ) {
       setLocalSelectedFile(undefined);
+      dispatch(closeEditor());
     }
   };
 
@@ -152,7 +155,9 @@ export default function FileBrowserWithMeta() {
             localSelectedFile ? [generateAbsolutePath(localSelectedFile)] : []
           }
           selectedGlobalPaths={
-            (editing && editing.type === 'File') ? [generateAbsolutePath(editing.entity)] : []
+            editing && editing.type === 'File'
+              ? [generateAbsolutePath(editing.entity)]
+              : []
           }
         />
       </div>
