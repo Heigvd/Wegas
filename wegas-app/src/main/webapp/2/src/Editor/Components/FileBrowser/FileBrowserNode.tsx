@@ -25,8 +25,12 @@ const hidden = css({
   display: 'none',
 });
 
-const selectedRow = css({
+const selectedRowLocal = css({
   backgroundColor: themeVar.primaryLighterColor,
+});
+
+const selectedRowGlobal = css({
+  borderLeft: 'solid 2px',
 });
 
 const hoverRow = css({
@@ -157,7 +161,8 @@ type OnFileClickProps = (
 
 export interface FileBrowserNodeProps {
   defaultFile: IFileDescriptor;
-  selectedPaths?: string[];
+  selectedLocalPaths?: string[];
+  selectedGlobalPaths?: string[];
   defaultOpen?: boolean;
   noBracket?: boolean;
   noDelete?: boolean;
@@ -167,7 +172,8 @@ export interface FileBrowserNodeProps {
 
 export function FileBrowserNode({
   defaultFile,
-  selectedPaths = [],
+  selectedLocalPaths = [],
+  selectedGlobalPaths = [],
   defaultOpen = false,
   noBracket = false,
   noDelete = false,
@@ -175,7 +181,10 @@ export function FileBrowserNode({
   onDelelteFile = () => {},
 }: FileBrowserNodeProps) {
   const [open, setOpen] = React.useState(
-    defaultOpen || isChildrenSelected(defaultFile, selectedPaths) || noBracket,
+    defaultOpen ||
+      isChildrenSelected(defaultFile, selectedLocalPaths) ||
+      isChildrenSelected(defaultFile, selectedGlobalPaths) ||
+      noBracket,
   );
   const [modalState, setModalState] = React.useState<ModalState>({
     type: 'close',
@@ -434,7 +443,8 @@ export function FileBrowserNode({
           className={cx(flex, grow, hoverRow, {
             [dropZoneStyle]:
               isDirectory(currentFile) && dropZoneProps.isShallowOver,
-            [selectedRow]: isSelected(currentFile, selectedPaths),
+            [selectedRowLocal]: isSelected(currentFile, selectedLocalPaths),
+            [selectedRowGlobal]: isSelected(currentFile, selectedGlobalPaths),
           })}
           onClick={event => onFileClick(event, currentFile, setCurrentFile)}
         >
@@ -627,7 +637,7 @@ export function FileBrowserNode({
                         onDelelteFile && onDelelteFile(deletedFile);
                       }}
                       onFileClick={onFileClick}
-                      selectedPaths={selectedPaths}
+                      selectedLocalPaths={selectedLocalPaths}
                     />
                   ))
                 : 'Empty...'

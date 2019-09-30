@@ -213,6 +213,12 @@ export default function VariableForm(props: {
             entity: VariableDescriptor.select(editing.id),
           };
         }
+        if (editing.type === 'File') {
+          return {
+            ...editing,
+            entity: editing.entity,
+          };
+        }
         return null;
       }}
     >
@@ -231,7 +237,6 @@ export default function VariableForm(props: {
             ? Promise.resolve(state.config)
             : (getEditionConfig(entity) as Promise<Schema<AvailableViews>>);
         };
-
         return (
           <AsyncVariableForm
             {...props}

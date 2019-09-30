@@ -28,6 +28,12 @@ type Edition =
       actions: EditorAction<IAbstractEntity>;
     }
   | {
+      type: 'File';
+      entity: IFileDescriptor;
+      config?: Schema<AvailableViews>;
+      actions: EditorAction<IFileDescriptor>;
+    }
+  | {
       type: 'VariableCreate';
       '@class': string;
       parentId?: number;
@@ -100,6 +106,12 @@ const global: Reducer<Readonly<GlobalState>> = u(
           config: action.payload.config,
           path: action.payload.path,
           actions: action.payload.actions,
+        };
+        return;
+      case ActionType.FILE_EDIT:
+        state.editing = {
+          type: 'File',
+          ...action.payload,
         };
         return;
       case ActionType.CLOSE_EDITOR:
@@ -257,6 +269,24 @@ export function editStateMachine(
         },
       },
     },
+  });
+}
+/**
+ * Edit FileDescriptor
+ * @param entity
+ * @param path
+ * @param config
+ * @param actions
+ */
+export function editFile(
+  entity: IFileDescriptor,
+  actions: EditorAction<IFileDescriptor> = {},
+  config?: Schema<AvailableViews>,
+) {
+  return ActionCreator.FILE_EDIT({
+    entity,
+    config,
+    actions,
   });
 }
 

@@ -262,14 +262,14 @@ function CTree(props: {
                     if (entityIs<IFSMDescriptor>(variable, 'FSMDescriptor')) {
                       focusTab(layoutTabs.StateMachineEditor);
                     }
-                    getEntityActions(variable!).then(({ edit }) =>
-                      dispatch(
+                    getEntityActions(variable!).then(({ edit }) => {
+                      return dispatch(
                         edit(
                           VariableDescriptor.select(props.variableId)!,
                           props.subPath,
                         ),
-                      ),
-                    );
+                      );
+                    });
                   }}
                 >
                   <span className={nodeContentStyle}>

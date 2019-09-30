@@ -4,6 +4,7 @@ export const MANAGED_MODE = 'RESPONSE/MANAGED';
 
 export const VARIABLE_EDIT = 'VARIABLE/EDIT';
 export const FSM_EDIT = 'FSM/EDIT';
+export const FILE_EDIT = 'FILE/EDIT';
 export const VARIABLE_CREATE = 'VARIABLE/CREATE';
 export const CLOSE_EDITOR = 'EDITOR/CLOSE';
 

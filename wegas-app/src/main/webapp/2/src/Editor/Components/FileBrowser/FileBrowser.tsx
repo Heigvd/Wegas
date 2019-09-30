@@ -8,6 +8,11 @@ import { AvailableViews } from '../FormView';
 import { DefaultDndProvider } from '../../../Components/DefaultDndProvider';
 import { FileBrowserNode, FileBrowserNodeProps } from './FileBrowserNode';
 import { StyledLabel } from '../../../Components/AutoImport/String/Label';
+import { useStore, getDispatch } from '../../../data/store';
+import { editFile, closeEditor } from '../../../data/Reducer/globalState';
+import { shallowIs } from '../../../Helper/shallowIs';
+import { focusTabContext } from '../LinearTabLayout/LinearLayout';
+import { layoutTabs } from '../Layout';
 
 const grow = css({
   flex: '1 1 auto',
@@ -22,13 +27,15 @@ const growBig = css({
 interface FileBrowserProps {
   onFileClick?: FileBrowserNodeProps['onFileClick'];
   onDelelteFile?: FileBrowserNodeProps['onDelelteFile'];
-  selectedPaths?: string[];
+  selectedLocalPaths?: string[];
+  selectedGlobalPaths?: string[];
 }
 
 export function FileBrowser({
   onFileClick,
   onDelelteFile,
-  selectedPaths,
+  selectedLocalPaths,
+  selectedGlobalPaths,
 }: FileBrowserProps) {
   const [rootFile, setRootFile] = React.useState<IFileDescriptor>();
   const [error, setError] = React.useState<string>('');
@@ -48,7 +55,8 @@ export function FileBrowser({
         <StyledLabel value={error} type={'error'} duration={3000} />
         <FileBrowserNode
           defaultFile={rootFile}
-          selectedPaths={selectedPaths}
+          selectedLocalPaths={selectedLocalPaths}
+          selectedGlobalPaths={selectedGlobalPaths}
           noBracket
           noDelete
           onFileClick={onFileClick}
@@ -62,41 +70,58 @@ export function FileBrowser({
 }
 
 export default function FileBrowserWithMeta() {
-  const [selectedFile, setSelectedFile] = React.useState<IFileDescriptor>();
+  const [localSelectedFile, setLocalSelectedFile] = React.useState<
+    IFileDescriptor
+  >();
   const [error, setError] = React.useState<string>('');
   const fileUpdate = React.useRef<(updatedFile: IFileDescriptor) => void>(
     () => {},
   );
+  const editing = useStore(
+    state => state.global.editing,
+    (a, b) => !shallowIs(a, b),
+  );
+  const dispatch = getDispatch();
+  const focusTab = React.useContext(focusTabContext);
 
   const onFileClick: FileBrowserProps['onFileClick'] = (
     event,
     file,
     onFileUpdate,
   ) => {
+    fileUpdate.current = onFileUpdate ? onFileUpdate : () => {};
     if (event && event.ctrlKey) {
-      setSelectedFile(oldSelectedFile => {
+      setLocalSelectedFile(oldSelectedFile => {
         if (
           !oldSelectedFile ||
           generateAbsolutePath(file) !== generateAbsolutePath(oldSelectedFile)
         ) {
-          if (onFileUpdate) {
-            fileUpdate.current = onFileUpdate;
-          }
           return file;
         }
         return undefined;
       });
     } else {
+      if (editing &&
+        editing.type === 'File' &&
+        generateAbsolutePath(editing.entity) === generateAbsolutePath(file)) {
+        dispatch(closeEditor());
+      } else {
+        focusTab(layoutTabs.EntityEditor);
+        dispatch(editFile(file, { save: saveMeta }));
+      }
+
       return undefined;
     }
   };
 
   const onDeleteFile: FileBrowserProps['onDelelteFile'] = file => {
     if (
-      selectedFile &&
-      generateAbsolutePath(selectedFile).startsWith(generateAbsolutePath(file))
+      localSelectedFile &&
+      generateAbsolutePath(localSelectedFile).startsWith(
+        generateAbsolutePath(file),
+      )
     ) {
-      setSelectedFile(undefined);
+      setLocalSelectedFile(undefined);
     }
   };
 
@@ -104,7 +129,15 @@ export default function FileBrowserWithMeta() {
     FileAPI.updateMetadata(file)
       .then((resFile: IFileDescriptor) => {
         fileUpdate.current(resFile);
-        setSelectedFile(file);
+        setLocalSelectedFile(oldSelected => {
+          if (
+            oldSelected &&
+            generateAbsolutePath(oldSelected) === generateAbsolutePath(resFile)
+          ) {
+            return resFile;
+          }
+        });
+        dispatch(editFile(resFile));
       })
       .catch(({ statusText }: Response) => setError(statusText));
   };
@@ -115,12 +148,15 @@ export default function FileBrowserWithMeta() {
         <FileBrowser
           onFileClick={onFileClick}
           onDelelteFile={onDeleteFile}
-          selectedPaths={
-            selectedFile ? [generateAbsolutePath(selectedFile)] : []
+          selectedLocalPaths={
+            localSelectedFile ? [generateAbsolutePath(localSelectedFile)] : []
+          }
+          selectedGlobalPaths={
+            (editing && editing.type === 'File') ? [generateAbsolutePath(editing.entity)] : []
           }
         />
       </div>
-      {selectedFile && (
+      {localSelectedFile && (
         <div className={cx(flex, grow)}>
           <StyledLabel
             value={error}
@@ -134,7 +170,7 @@ export default function FileBrowserWithMeta() {
                 getEditionConfig(entity) as Promise<Schema<AvailableViews>>
               }
               update={saveMeta}
-              entity={selectedFile}
+              entity={localSelectedFile}
             />
           </div>
         </div>
