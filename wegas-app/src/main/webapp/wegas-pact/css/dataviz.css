@@ -1,0 +1,24 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2019  School of Business and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
+
+.wegas-dataviz {
+    background: white !important;
+    box-shadow: none !important;
+}
+
+.wegas-dataviz th {
+    font-weight: bold;
+    padding: 5px;
+    text-align: center;
+}
+
+.wegas-dataviz table {
+    font-family: arial;
+    color: black;
+    text-align: center;
+}
