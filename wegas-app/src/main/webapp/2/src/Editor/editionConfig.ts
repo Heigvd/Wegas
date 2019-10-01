@@ -1,10 +1,15 @@
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { Schema } from 'jsoninput';
-import { StateActions } from '../data/actions';
+import { StateActions, ActionCreator } from '../data/actions';
 import { AvailableViews } from './Components/FormView';
 import { formValidation } from './formValidation';
 import { entityIs } from '../data/entities';
-import { editStateMachine, editVariable } from '../data/Reducer/globalState';
+import {
+  editStateMachine,
+  editVariable,
+  editFile,
+  EditorAction,
+} from '../data/Reducer/globalState';
 
 export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 
@@ -164,17 +169,41 @@ export default async function getEditionConfig<T extends IAbstractEntity>(
   );
 }
 
-export interface EActions {
-  edit: (variable: IAbstractEntity, path?: string[]) => StateActions;
+export interface EActions<T extends IAbstractEntity> {
+  edit: (entity: T, path?: string[], actions?: EditorAction<T>) => StateActions;
 }
 
-export async function getEntityActions(
-  entity: IAbstractEntity,
-): Promise<EActions> {
+export async function getEntityActions<T extends IAbstractEntity>(
+  entity: T,
+): Promise<EActions<T>> {
   if (entityIs<IFSMDescriptor>(entity, 'FSMDescriptor')) {
-    return { edit: editStateMachine };
+    return {
+      edit: (...args) =>
+        editStateMachine((args[0] as unknown) as IFSMDescriptor, args[1]),
+    };
   }
-  return { edit: editVariable };
+  if (entityIs<IFileDescriptor>(entity, 'FileDescriptor')) {
+    return {
+      edit: (...args) =>
+        editFile(
+          (args[0] as unknown) as IFileDescriptor,
+          (args[2] as unknown) as EditorAction<IFileDescriptor>,
+        ),
+    };
+  }
+  if (entityIs<IDirectoryDescriptor>(entity, 'DirectoryDescriptor')) {
+    return {
+      edit: (...args) =>
+        editFile(
+          (args[0] as unknown) as IDirectoryDescriptor,
+          (args[2] as unknown) as EditorAction<IDirectoryDescriptor>,
+        ),
+    };
+  }
+  return {
+    edit: (...args) =>
+      editVariable((args[0] as unknown) as IVariableDescriptor, args[1]),
+  };
 }
 
 export async function getMethodConfig<T extends IAbstractEntity>(

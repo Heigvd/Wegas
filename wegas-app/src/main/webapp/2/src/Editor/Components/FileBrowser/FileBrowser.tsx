@@ -2,7 +2,7 @@ import * as React from 'react';
 import { css, cx } from 'emotion';
 import { generateAbsolutePath, FileAPI } from '../../../API/files.api';
 import { AsyncVariableForm } from '../EntityEditor';
-import getEditionConfig from '../../editionConfig';
+import getEditionConfig, { getEntityActions } from '../../editionConfig';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../FormView';
 import { DefaultDndProvider } from '../../../Components/DefaultDndProvider';
@@ -13,6 +13,8 @@ import { editFile, closeEditor } from '../../../data/Reducer/globalState';
 import { shallowIs } from '../../../Helper/shallowIs';
 import { focusTabContext } from '../LinearTabLayout/LinearLayout';
 import { layoutTabs } from '../Layout';
+import ComponentWithForm from '../FormView/ComponentWithForm';
+import { wlog } from '../../../Helper/wegaslog';
 
 const grow = css({
   flex: '1 1 auto',
@@ -69,117 +71,211 @@ export function FileBrowser({
   );
 }
 
+// export default function FileBrowserWithMeta() {
+//   const [localSelectedFile, setLocalSelectedFile] = React.useState<
+//     IFileDescriptor
+//   >();
+//   const [error, setError] = React.useState<string>('');
+//   const fileUpdate = React.useRef<(updatedFile: IFileDescriptor) => void>(
+//     () => {},
+//   );
+//   const editing = useStore(
+//     state => state.global.editing,
+//     (a, b) => !shallowIs(a, b),
+//   );
+//   const dispatch = getDispatch();
+//   const focusTab = React.useContext(focusTabContext);
+
+//   const onFileClick: FileBrowserProps['onFileClick'] = (
+//     event,
+//     file,
+//     onFileUpdate,
+//   ) => {
+//     fileUpdate.current = onFileUpdate ? onFileUpdate : () => {};
+//     if (event && event.ctrlKey) {
+//       setLocalSelectedFile(oldSelectedFile => {
+//         if (
+//           !oldSelectedFile ||
+//           generateAbsolutePath(file) !== generateAbsolutePath(oldSelectedFile)
+//         ) {
+//           return file;
+//         }
+//         return undefined;
+//       });
+//     } else {
+//       if (
+//         editing &&
+//         'entity' in editing &&
+//         editing.entity.refId === file.refId
+//       ) {
+//         dispatch(closeEditor());
+//       } else {
+//         focusTab(layoutTabs.EntityEditor);
+//         getEntityActions(file).then(({ edit }) => {
+//           return dispatch(edit(file, [], { save: saveMeta }));
+//         });
+//       }
+
+//       return undefined;
+//     }
+//   };
+
+//   const onDeleteFile: FileBrowserProps['onDelelteFile'] = file => {
+//     if (
+//       localSelectedFile &&
+//       generateAbsolutePath(localSelectedFile).startsWith(
+//         generateAbsolutePath(file),
+//       )
+//     ) {
+//       setLocalSelectedFile(undefined);
+//       dispatch(closeEditor());
+//     }
+//   };
+
+//   const saveMeta = (file: IFileDescriptor) => {
+//     FileAPI.updateMetadata(file)
+//       .then((resFile: IFileDescriptor) => {
+//         fileUpdate.current(resFile);
+//         setLocalSelectedFile(oldSelected => {
+//           if (
+//             oldSelected &&
+//             generateAbsolutePath(oldSelected) === generateAbsolutePath(resFile)
+//           ) {
+//             return resFile;
+//           }
+//         });
+//         dispatch(editFile(resFile));
+//       })
+//       .catch(({ statusText }: Response) => setError(statusText));
+//   };
+
+//   return (
+//     <div className={cx(flex, grow)}>
+//       <div className={cx(flex, growBig)}>
+//         <FileBrowser
+//           onFileClick={onFileClick}
+//           onDelelteFile={onDeleteFile}
+//           selectedLocalPaths={
+//             localSelectedFile ? [generateAbsolutePath(localSelectedFile)] : []
+//           }
+//           selectedGlobalPaths={
+//             editing && editing.type === 'File'
+//               ? [generateAbsolutePath(editing.entity)]
+//               : []
+//           }
+//         />
+//       </div>
+//       {localSelectedFile && (
+//         <div className={cx(flex, grow)}>
+//           <StyledLabel
+//             value={error}
+//             type={'error'}
+//             duration={3000}
+//             onLabelVanish={() => setError('')}
+//           />
+//           <div className={cx(flex, grow)}>
+//             <AsyncVariableForm
+//               getConfig={entity =>
+//                 getEditionConfig(entity) as Promise<Schema<AvailableViews>>
+//               }
+//               update={saveMeta}
+//               entity={localSelectedFile}
+//             />
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
 export default function FileBrowserWithMeta() {
   const [localSelectedFile, setLocalSelectedFile] = React.useState<
     IFileDescriptor
   >();
-  const [error, setError] = React.useState<string>('');
   const fileUpdate = React.useRef<(updatedFile: IFileDescriptor) => void>(
     () => {},
   );
-  const editing = useStore(
-    state => state.global.editing,
-    (a, b) => !shallowIs(a, b),
-  );
   const dispatch = getDispatch();
-  const focusTab = React.useContext(focusTabContext);
 
   const onFileClick: FileBrowserProps['onFileClick'] = (
-    event,
-    file,
+    _event,
+    _file,
     onFileUpdate,
   ) => {
     fileUpdate.current = onFileUpdate ? onFileUpdate : () => {};
-    if (event && event.ctrlKey) {
-      setLocalSelectedFile(oldSelectedFile => {
-        if (
-          !oldSelectedFile ||
-          generateAbsolutePath(file) !== generateAbsolutePath(oldSelectedFile)
-        ) {
-          return file;
-        }
-        return undefined;
-      });
-    } else {
-      if (
-        editing &&
-        editing.type === 'File' &&
-        generateAbsolutePath(editing.entity) === generateAbsolutePath(file)
-      ) {
-        dispatch(closeEditor());
-      } else {
-        focusTab(layoutTabs.EntityEditor);
-        dispatch(editFile(file, { save: saveMeta }));
-      }
-
-      return undefined;
-    }
   };
 
-  const onDeleteFile: FileBrowserProps['onDelelteFile'] = file => {
-    if (
-      localSelectedFile &&
-      generateAbsolutePath(localSelectedFile).startsWith(
-        generateAbsolutePath(file),
-      )
-    ) {
-      setLocalSelectedFile(undefined);
-      dispatch(closeEditor());
-    }
-  };
+  // const onDeleteFile: FileBrowserProps['onDelelteFile'] = file => {
+  //   if (
+  //     localSelectedFile &&
+  //     generateAbsolutePath(localSelectedFile).startsWith(
+  //       generateAbsolutePath(file),
+  //     )
+  //   ) {
+  //     setLocalSelectedFile(undefined);
+  //     dispatch(closeEditor());
+  //   }
+  // };
 
-  const saveMeta = (file: IFileDescriptor) => {
+  const onSaveFile = (
+    file: IFileDescriptor,
+    cb: (sucess: IFileDescriptor | string) => void,
+  ) => {
     FileAPI.updateMetadata(file)
       .then((resFile: IFileDescriptor) => {
-        fileUpdate.current(resFile);
-        setLocalSelectedFile(oldSelected => {
-          if (
-            oldSelected &&
-            generateAbsolutePath(oldSelected) === generateAbsolutePath(resFile)
-          ) {
-            return resFile;
-          }
-        });
-        dispatch(editFile(resFile));
+        cb(resFile);
       })
-      .catch(({ statusText }: Response) => setError(statusText));
+      .catch(({ statusText }: Response) => cb(statusText));
+  };
+
+  const onDeleteFile = (
+    file: IFileDescriptor,
+    cb: (sucess: IFileDescriptor | string) => void,
+  ) => {
+    FileAPI.deleteFile(generateAbsolutePath(file), true)
+      .then(deletedFile => cb(deletedFile))
+      .catch(({ statusText }: Response) => cb(statusText));
   };
 
   return (
-    <div className={cx(flex, grow)}>
-      <div className={cx(flex, growBig)}>
-        <FileBrowser
-          onFileClick={onFileClick}
-          onDelelteFile={onDeleteFile}
-          selectedLocalPaths={
-            localSelectedFile ? [generateAbsolutePath(localSelectedFile)] : []
-          }
-          selectedGlobalPaths={
-            editing && editing.type === 'File'
-              ? [generateAbsolutePath(editing.entity)]
-              : []
-          }
-        />
-      </div>
-      {localSelectedFile && (
-        <div className={cx(flex, grow)}>
-          <StyledLabel
-            value={error}
-            type={'error'}
-            duration={3000}
-            onLabelVanish={() => setError('')}
+    <ComponentWithForm
+      onClickItem={onFileClick}
+      onSaveAction={onSaveFile}
+      onDeleteAction={onDeleteFile}
+      moreEditorActions={[
+        {
+          label: 'Test',
+          action: () => wlog('This is a test'),
+        },
+      ]}
+    >
+      {({ onClickItemHandle, mainSelectedItem, secondarySelectedItem }) => {
+        return (
+          <FileBrowser
+            onFileClick={(event, file, onFileUpdate) =>
+              onClickItemHandle(event, file, [], onFileUpdate)
+            }
+            selectedGlobalPaths={
+              mainSelectedItem
+                ? [
+                    generateAbsolutePath(
+                      mainSelectedItem as IAbstractContentDescriptor,
+                    ),
+                  ]
+                : []
+            }
+            selectedLocalPaths={
+              secondarySelectedItem
+                ? [
+                    generateAbsolutePath(
+                      secondarySelectedItem as IAbstractContentDescriptor,
+                    ),
+                  ]
+                : []
+            }
           />
-          <div className={cx(flex, grow)}>
-            <AsyncVariableForm
-              getConfig={entity =>
-                getEditionConfig(entity) as Promise<Schema<AvailableViews>>
-              }
-              update={saveMeta}
-              entity={localSelectedFile}
-            />
-          </div>
-        </div>
-      )}
-    </div>
+        );
+      }}
+    </ComponentWithForm>
   );
 }

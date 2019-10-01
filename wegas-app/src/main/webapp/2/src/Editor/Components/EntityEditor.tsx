@@ -10,13 +10,15 @@ import { deepUpdate } from '../../data/updateUtils';
 import { StoreConsumer } from '../../data/store';
 import { AvailableViews } from './FormView';
 
-interface EditorProps<T> {
+export interface EditorMoreAction<T extends IAbstractEntity> {
+  label: React.ReactNode;
+  action: (entity: T, path?: (string | number)[]) => void;
+};
+
+interface EditorProps<T extends IAbstractEntity> {
   entity?: T;
   update?: (variable: T) => void;
-  actions?: {
-    label: React.ReactNode;
-    action: (entity: T, path?: (string | number)[]) => void;
-  }[];
+  actions?: EditorMoreAction<T>[];
   path?: (string | number)[];
   getConfig(entity: T): Promise<Schema<AvailableViews>>;
 }
@@ -138,7 +140,7 @@ export function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
   return schema;
 }
 
-async function WindowedEditor<T>({
+async function WindowedEditor<T extends IAbstractEntity>({
   entity,
   update,
   actions = [],

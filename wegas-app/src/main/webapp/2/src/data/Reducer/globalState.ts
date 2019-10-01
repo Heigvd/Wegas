@@ -19,35 +19,40 @@ export interface EditorAction<T extends IAbstractEntity> {
     };
   };
 }
-type Edition =
-  | {
-      type: 'Variable';
-      id: number;
-      config?: Schema<AvailableViews>;
-      path?: (string | number)[];
-      actions: EditorAction<IAbstractEntity>;
-    }
-  | {
-      type: 'File';
-      entity: IFileDescriptor;
-      config?: Schema<AvailableViews>;
-      actions: EditorAction<IFileDescriptor>;
-    }
-  | {
-      type: 'VariableCreate';
-      '@class': string;
-      parentId?: number;
-      parentType?: string;
-      config?: Schema<AvailableViews>;
-      actions: EditorAction<IAbstractEntity>;
-    }
-  | {
-      type: 'Component';
-      page: string;
-      path: (string | number)[];
-      config?: Schema<AvailableViews>;
-      actions: EditorAction<IAbstractEntity>;
-    };
+export interface VariableEdition {
+  type: 'Variable';
+  entity: IAbstractEntity;
+  id: number;
+  config?: Schema<AvailableViews>;
+  path?: (string | number)[];
+  actions: EditorAction<IAbstractEntity>;
+}
+export interface FileEdition {
+  type: 'File';
+  entity: IAbstractContentDescriptor;
+  config?: Schema<AvailableViews>;
+  actions: EditorAction<IAbstractContentDescriptor>;
+}
+export interface VariableCreation {
+  type: 'VariableCreate';
+  '@class': string;
+  parentId?: number;
+  parentType?: string;
+  config?: Schema<AvailableViews>;
+  actions: EditorAction<IAbstractEntity>;
+}
+export interface ComponentEdition {
+  type: 'Component';
+  page: string;
+  path: (string | number)[];
+  config?: Schema<AvailableViews>;
+  actions: EditorAction<IAbstractEntity>;
+}
+export type Edition =
+  | VariableEdition
+  | FileEdition
+  | VariableCreation
+  | ComponentEdition;
 export interface GlobalState {
   currentGameModelId: number;
   currentGameId: number;
@@ -274,18 +279,15 @@ export function editStateMachine(
 /**
  * Edit FileDescriptor
  * @param entity
- * @param path
  * @param config
  * @param actions
  */
 export function editFile(
-  entity: IFileDescriptor,
-  actions: EditorAction<IFileDescriptor> = {},
-  config?: Schema<AvailableViews>,
+  entity: IAbstractContentDescriptor,
+  actions: EditorAction<IAbstractContentDescriptor> = {},
 ) {
   return ActionCreator.FILE_EDIT({
     entity,
-    config,
     actions,
   });
 }

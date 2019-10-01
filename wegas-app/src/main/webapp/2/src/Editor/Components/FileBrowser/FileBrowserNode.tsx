@@ -181,7 +181,7 @@ export function FileBrowserNode({
   noBracket = false,
   noDelete = false,
   onFileClick = () => {},
-  onDelelteFile = () => {},
+  onDelelteFile = undefined,
 }: FileBrowserNodeProps) {
   const [open, setOpen] = React.useState(
     defaultOpen ||
@@ -358,20 +358,6 @@ export function FileBrowserNode({
     }
   }
 
-  const deleteFile = (file: IFileDescriptor) => {
-    FileAPI.deleteFile(generateAbsolutePath(file), true)
-      .then(deletedFile => {
-        onDelelteFile && onDelelteFile(deletedFile);
-        setModalState({ type: 'close' });
-      })
-      .catch(({ statusText }: Response) => {
-        setModalState({
-          type: 'error',
-          label: statusText,
-        });
-      });
-  };
-
   const openFile = (file: IFileDescriptor) => {
     const win = window.open(fileURL(generateAbsolutePath(file)), '_blank');
     win!.focus();
@@ -536,23 +522,25 @@ export function FileBrowserNode({
                   />
                 </>
               ))}
-            {modalState.type === 'close' && !noDelete && (
-              <ConfirmButton
-                icon={'trash'}
-                tooltip={'Delete'}
-                onAction={success => {
-                  if (success) {
-                    if (children && children.length > 0) {
-                      setModalState({ type: 'delete' });
-                    } else {
-                      deleteFile(currentFile);
+            {modalState.type === 'close' &&
+              !noDelete &&
+              onDelelteFile !== undefined && (
+                <ConfirmButton
+                  icon={'trash'}
+                  tooltip={'Delete'}
+                  onAction={success => {
+                    if (success) {
+                      if (children && children.length > 0) {
+                        setModalState({ type: 'delete' });
+                      } else {
+                        onDelelteFile(currentFile);
+                      }
                     }
-                  }
-                }}
-                fixedWidth
-              />
-            )}
-            {modalState.type === 'delete' && (
+                  }}
+                  fixedWidth
+                />
+              )}
+            {modalState.type === 'delete' && onDelelteFile !== undefined && (
               <ConfirmButton
                 label="Are you sure to delete the folder and all its subdirectories?"
                 defaultConfirm
@@ -560,7 +548,7 @@ export function FileBrowserNode({
                 tooltip={'Force delete'}
                 onAction={success => {
                   if (success) {
-                    deleteFile(currentFile);
+                    onDelelteFile(currentFile);
                   }
                   setModalState({ type: 'close' });
                 }}

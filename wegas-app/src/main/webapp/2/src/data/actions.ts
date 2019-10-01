@@ -47,10 +47,9 @@ export const ActionCreator = {
     };
   }) => createAction(ActionType.FSM_EDIT, data),
   FILE_EDIT: (data: {
-    entity: IFileDescriptor;
-    config?: Schema<AvailableViews>;
+    entity: IAbstractContentDescriptor;
     actions: {
-      save?: (entity: IFileDescriptor) => void;
+      save?: (entity: IAbstractContentDescriptor) => void;
     };
   }) => createAction(ActionType.FILE_EDIT, data),
   VARIABLE_CREATE: <T extends IAbstractEntity>(data: {
