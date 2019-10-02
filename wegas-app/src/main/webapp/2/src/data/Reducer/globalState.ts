@@ -9,7 +9,10 @@ import { Reducer } from 'redux';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../../Editor/Components/FormView';
 
-type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
+export type actionFn<T extends IAbstractEntity> = (
+  entity: T,
+  path?: string[],
+) => void;
 export interface EditorAction<T extends IAbstractEntity> {
   save?: (entity: T) => void;
   more?: {

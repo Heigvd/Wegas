@@ -104,13 +104,33 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
     }
   };
 
-  const editorActions: EditorAction<T> = {};
+  const globalEditorActions: EditorAction<T> = {};
+  const localEditorActions: EditorMoreAction<T>[] = [];
 
   if (onSaveAction) {
-    editorActions['save'] = entity => onSaveAction(entity, onSaveCallBack);
+    const saveAction = (entity: T) => onSaveAction(entity, onSaveCallBack);
+    globalEditorActions['save'] = saveAction;
+    localEditorActions.push({
+      label: 'Save',
+      action: saveAction,
+    });
+  }
+  if (onDeleteAction) {
+    const deleteAction = (entity: T) =>
+      onDeleteAction(entity, onDeleteCallBack);
+    globalEditorActions['more'] = {
+      delete: {
+        label: 'Delete',
+        action: deleteAction,
+      },
+    };
+    localEditorActions.push({
+      label: 'Delete',
+      action: deleteAction,
+    });
   }
   if (moreEditorActions) {
-    editorActions['more'] = moreEditorActions.reduce(
+    globalEditorActions['more'] = moreEditorActions.reduce(
       (
         old: EditorAction<T>['more'],
         k: EditorMoreAction<T>,
@@ -119,16 +139,9 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
         ...old,
         [typeof k.label === 'string' ? k.label : index]: k,
       }),
-      {},
+      globalEditorActions['more'],
     );
-  }
-  if (onDeleteAction) {
-    editorActions['more'] = {
-      delete: {
-        label: 'Delete',
-        action: entity => onDeleteAction(entity, onDeleteCallBack),
-      },
-    };
+    localEditorActions.push(...moreEditorActions);
   }
 
   const onClickItemHandle: OnClickItemType<T> = (
@@ -152,7 +165,7 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
       } else {
         focusTab(layoutTabs.EntityEditor);
         getEntityActions(entity).then(({ edit }) => {
-          return dispatch(edit(entity, path, editorActions));
+          return dispatch(edit(entity, path, globalEditorActions));
         });
       }
       return undefined;
@@ -184,6 +197,7 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
                 getEditionConfig(entity) as Promise<Schema<AvailableViews>>
               }
               entity={localSelectedEntity}
+              actions={localEditorActions}
             />
           </div>
         </div>
