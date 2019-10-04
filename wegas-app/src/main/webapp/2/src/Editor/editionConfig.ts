@@ -1,6 +1,6 @@
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { Schema } from 'jsoninput';
-import { StateActions, ActionCreator } from '../data/actions';
+import { StateActions } from '../data/actions';
 import { AvailableViews } from './Components/FormView';
 import { formValidation } from './formValidation';
 import { entityIs } from '../data/entities';

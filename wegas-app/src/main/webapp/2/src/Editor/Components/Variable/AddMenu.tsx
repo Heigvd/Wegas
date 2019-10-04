@@ -3,10 +3,14 @@ import produce from 'immer';
 import { Actions } from '../../../data';
 import { getIcon, getLabel, getChildren } from '../../editionConfig';
 import { StoreDispatch } from '../../../data/store';
-import { Menu } from '../../../Components/Menu';
+import { Menu, MenuProps } from '../../../Components/Menu';
 import { FontAwesome, withDefault } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 
+export interface MenuItem {
+  label: JSX.Element;
+  value: string;
+}
 function buildMenuItems(variable: IAbstractEntity) {
   return getChildren(variable).then(children => {
     return children.map(i => {
@@ -40,17 +44,18 @@ export const AddMenuParent = asyncSFC(
     onSelect,
   }: {
     variable: IListDescriptor | IQuestionDescriptor;
-    dispatch: StoreDispatch;
-    onSelect?: () => void;
+    dispatch?: StoreDispatch;
+    onSelect: MenuProps<MenuItem>['onSelect'];
   }) => {
     const items = await buildMenuItems(variable);
     return (
       <Menu
         items={items}
         icon="plus"
-        onSelect={i => {
-          onSelect && onSelect();
-          dispatch(Actions.EditorActions.createVariable(i.value, variable));
+        onSelect={(i, e) => {
+          onSelect && onSelect(i, e);
+          dispatch &&
+            dispatch(Actions.EditorActions.createVariable(i.value, variable));
         }}
       />
     );
@@ -66,8 +71,8 @@ export const AddMenuChoice = asyncSFC(
     onSelect,
   }: {
     variable: IChoiceDescriptor;
-    dispatch: StoreDispatch;
-    onSelect?: () => void;
+    dispatch?: StoreDispatch;
+    onSelect?: MenuProps<MenuItem>['onSelect'];
   }) => {
     const items = await buildMenuItems(variable);
     return (
@@ -76,26 +81,29 @@ export const AddMenuChoice = asyncSFC(
         icon="plus"
         onSelect={i => {
           onSelect && onSelect();
-          dispatch(
-            Actions.EditorActions.createVariable(i.value, variable, {
-              save: (entity: IResult) => {
-                const newChoice = produce(variable, v => {
-                  v.results.push(entity);
-                });
-                const index = newChoice.results.length - 1;
-                dispatch(
-                  Actions.VariableDescriptorActions.updateDescriptor(newChoice),
-                ).then(() =>
+          dispatch &&
+            dispatch(
+              Actions.EditorActions.createVariable(i.value, variable, {
+                save: (entity: IResult) => {
+                  const newChoice = produce(variable, v => {
+                    v.results.push(entity);
+                  });
+                  const index = newChoice.results.length - 1;
                   dispatch(
-                    Actions.EditorActions.editVariable(newChoice, [
-                      'results',
-                      String(index),
-                    ]),
-                  ),
-                );
-              },
-            }),
-          );
+                    Actions.VariableDescriptorActions.updateDescriptor(
+                      newChoice,
+                    ),
+                  ).then(() =>
+                    dispatch(
+                      Actions.EditorActions.editVariable(newChoice, [
+                        'results',
+                        String(index),
+                      ]),
+                    ),
+                  );
+                },
+              }),
+            );
         }}
       />
     );

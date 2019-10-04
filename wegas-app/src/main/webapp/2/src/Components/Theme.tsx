@@ -41,6 +41,15 @@ export const primaryLight = css({
   backgroundColor: themeVar.primaryLighterColor,
   color: themeVar.primaryLighterTextColor,
 });
+export const localSelection = css({
+  backgroundColor: themeVar.primaryLighterColor,
+});
+export const globalSelection = css({
+  borderStyle: 'solid',
+  borderWidth: '2px',
+  borderColor: themeVar.primaryDarkerColor,
+  borderRadius: '6px',
+});
 
 const { Consumer, Provider } = React.createContext<HTMLElement | null>(
   document.body,

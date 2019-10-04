@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useDrop, DragObjectWithType, DropTargetMonitor } from 'react-dnd';
 import { css, cx } from 'emotion';
-import { themeVar } from '../../../Components/Theme';
+import { themeVar, localSelection, globalSelection } from '../../../Components/Theme';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { generateAbsolutePath, FileAPI, fileURL } from '../../../API/files.api';
 import { IconButton } from '../../../Components/Button/IconButton';
@@ -23,17 +23,6 @@ const block = css({
 });
 const hidden = css({
   display: 'none',
-});
-
-const selectedRowLocal = css({
-  backgroundColor: themeVar.primaryLighterColor,
-});
-
-const selectedRowGlobal = css({
-  borderStyle: 'solid',
-  borderWidth: '2px',
-  borderColor: themeVar.primaryDarkerColor,
-  borderRadius: '6px',
 });
 
 const hoverRow = css({
@@ -432,8 +421,8 @@ export function FileBrowserNode({
           className={cx(flex, grow, hoverRow, {
             [dropZoneStyle]:
               isDirectory(currentFile) && dropZoneProps.isShallowOver,
-            [selectedRowLocal]: isSelected(currentFile, selectedLocalPaths),
-            [selectedRowGlobal]: isSelected(currentFile, selectedGlobalPaths),
+            [localSelection]: isSelected(currentFile, selectedLocalPaths),
+            [globalSelection]: isSelected(currentFile, selectedGlobalPaths),
           })}
           onClick={event => onFileClick(event, currentFile, setCurrentFile)}
         >

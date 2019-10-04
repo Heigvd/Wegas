@@ -16,6 +16,10 @@ import { AsyncVariableForm, EditorMoreAction } from '../EntityEditor';
 import getEditionConfig, { getEntityActions } from '../../editionConfig';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '.';
+import { VariableDescriptor } from '../../../data/selectors';
+import { escapeRegExp } from 'lodash-es';
+import { Actions } from '../../../data';
+import { wlog } from '../../../Helper/wegaslog';
 
 const grow = css({
   flex: '1 1 auto',
@@ -27,38 +31,50 @@ const growBig = css({
   flex: '30 1 auto',
 });
 
-type OnClickItemType<T extends IAbstractEntity> = (
-  event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+type OnClickItemFn<T extends IAbstractEntity> = (
+  event: ModifierKeysEvent,
   entity: T,
   path?: string[],
   onEntityUpdate?: (updatedEntity: T) => void,
 ) => void;
 
-type OnUserClickItemType<T extends IAbstractEntity> = (
-  event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+type OnUserClickItemFn<T extends IAbstractEntity> = (
+  event: ModifierKeysEvent,
   entity: T,
   onEntityUpdate?: (updatedEntity: T) => void,
 ) => void;
 
+type OnNewItemFn = (type: string, modifierKeys?: ModifierKeysEvent) => void;
+
 interface ComponentWithFormProps<T extends IAbstractEntity> {
-  onClickItem?: OnUserClickItemType<T>;
+  onClickItem?: OnUserClickItemFn<T>;
   onSaveAction?: (item: T, callback: (sucess: T | string) => void) => void;
   onDeleteAction?: (item: T, callback: (sucess: T | string) => void) => void;
   moreEditorActions?: EditorMoreAction<T>[];
   children: (props: {
-    onClickItemHandle: OnClickItemType<T>;
-    mainSelectedItem?: T;
-    secondarySelectedItem?: T;
+    onClickItemHandle: OnClickItemFn<T>;
+    onNewItemHandle: OnNewItemFn;
+    mainSelectedItem?: IAbstractEntity;
+    secondarySelectedItem?: IAbstractEntity;
   }) => React.ReactElement | null;
 }
 
-const isEditingEntity = (
-  editing?: Readonly<Edition>,
-): editing is VariableEdition | FileEdition =>
-  editing !== undefined && 'entity' in editing;
+const getEntity = (editing?: Edition) => {
+  if (!editing) {
+    return undefined;
+  }
+  if ('entity' in editing) {
+    return editing.entity;
+  }
+  if ('id' in editing) {
+    return VariableDescriptor.select(editing.id);
+  }
+};
 
-const isSameEntity = <T extends IAbstractEntity>(e1: T, e2: T) =>
-  e1.refId === e2.refId;
+const isSameEntity = (
+  e1: IAbstractEntity | Readonly<IAbstractEntity>,
+  e2: IAbstractEntity | Readonly<IAbstractEntity>,
+) => e1.refId && e2.refId && e1.refId === e2.refId;
 
 export default function ComponentWithForm<T extends IAbstractEntity>({
   onClickItem,
@@ -95,7 +111,8 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
 
   const onDeleteCallBack = (sucess: T | string) => {
     if (typeof sucess !== 'string') {
-      if (isEditingEntity(editing) && isSameEntity(editing.entity, sucess)) {
+      const entity = getEntity(editing);
+      if (entity && isSameEntity(sucess, entity)) {
         dispatch(closeEditor());
         setLocalSelectedEntity(undefined);
       }
@@ -144,7 +161,7 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
     localEditorActions.push(...moreEditorActions);
   }
 
-  const onClickItemHandle: OnClickItemType<T> = (
+  const onClickItemHandle: OnClickItemFn<T> = (
     event,
     entity,
     path,
@@ -160,7 +177,8 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
         return undefined;
       });
     } else {
-      if (isEditingEntity(editing) && isSameEntity(editing.entity, entity)) {
+      const editingEntity = getEntity(editing);
+      if (editingEntity && isSameEntity(editingEntity, entity)) {
         dispatch(closeEditor());
       } else {
         focusTab(layoutTabs.EntityEditor);
@@ -172,14 +190,21 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
     }
   };
 
+  const onNewItemHandle: OnNewItemFn = (i, event) => {
+    if (event && event.ctrlKey) {
+      dispatch(Actions.EditorActions.createVariable(i));
+    } else {
+      wlog('not implemented yet');
+    }
+  };
+
   return (
     <div className={cx(flex, grow)}>
       <div className={cx(flex, growBig)}>
         {children({
           onClickItemHandle,
-          mainSelectedItem: isEditingEntity(editing)
-            ? (editing.entity as T)
-            : undefined,
+          onNewItemHandle,
+          mainSelectedItem: getEntity(editing),
           secondarySelectedItem: localSelectedEntity,
         })}
       </div>

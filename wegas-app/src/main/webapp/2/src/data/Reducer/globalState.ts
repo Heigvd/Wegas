@@ -24,7 +24,6 @@ export interface EditorAction<T extends IAbstractEntity> {
 }
 export interface VariableEdition {
   type: 'Variable';
-  entity: IAbstractEntity;
   id: number;
   config?: Schema<AvailableViews>;
   path?: (string | number)[];

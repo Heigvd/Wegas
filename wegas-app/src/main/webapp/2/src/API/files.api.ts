@@ -7,8 +7,8 @@ import { omit } from 'lodash';
  * @param param0 FileDescriptor like object to compute absolute path from
  */
 export function generateAbsolutePath({
-  path,
-  name,
+  path = '',
+  name = '',
 }: {
   path: string;
   name: string;
