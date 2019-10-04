@@ -57,18 +57,14 @@ YUI.add("wegas-review-widgets", function(Y) {
             "           </div>" +
             "       </div>" +
             "       <div class=\"content\">" +
-            "            <div class=\"properties\"><h2>" + I18n.t("review.orchestrator.properties")
-            .capitalize() + "</h2>" +
+            "            <div class=\"properties\"><h2>" + I18n.tCap("review.orchestrator.properties") + "</h2>" +
             "               <div class=\"include-evicted\">" +
             "                   <span class=\"checkbox\">" + I18n.t("review.orchestrator.includeEvicted") + "</span>" +
             "               </div>" +
             "            </div>" +
-            "            <div class=\"overview\"><h2>" + I18n.t("review.orchestrator.overview")
-            .capitalize() + "</h2></div>" +
-            "            <div class=\"reviews\"><h2>" + I18n.t("review.orchestrator.reviews")
-            .capitalize() + "</h2></div>" +
-            "            <div class=\"comments\"><h2>" + I18n.t("review.orchestrator.comments")
-            .capitalize() + "</h2></div>" +
+            "            <div class=\"overview\"><h2>" + I18n.tCap("review.orchestrator.overview") + "</h2></div>" +
+            "            <div class=\"reviews\"><h2>" + I18n.tCap("review.orchestrator.reviews") + "</h2></div>" +
+            "            <div class=\"comments\"><h2>" + I18n.tCap("review.orchestrator.comments") + "</h2></div>" +
             "            <div class=\"charts\"></div>" +
             "        </div>" +
             "    </div>" +
@@ -331,9 +327,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 if (!columns[section]) {
                     // TODO Individual ?
                     this;
-                    columns[section] = [{key: "team-name", label: (this._freeForAll ? I18n.t("wegas.player")
-                                .capitalize() : I18n.t("wegas.team")
-                                .capitalize()), formatter: "{value} <i class=\"fa fa-info-circle\"></i>"}];
+                    columns[section] = [{key: "team-name", label: (this._freeForAll ? I18n.tCap("wegas.player") : I18n.tCap("wegas.team")), formatter: "{value} <i class=\"fa fa-info-circle\"></i>"}];
                 }
                 for (i = 0; i < this._monitoredData.structure[section].length; i++) {
                     group = this._monitoredData.structure[section][i];
@@ -508,11 +502,9 @@ YUI.add("wegas-review-widgets", function(Y) {
 
             node = this.get(CONTENTBOX).one(".charts");
             node.setContent("");
-            //node.append("<h1>" + I18n.t("review.orchestrator.charts").capitalize() + "</h1>");
-            node.append("<div class=\"feedback\"><h2>" + I18n.t("review.orchestrator.charts")
-                .capitalize() + " " + I18n.t("review.orchestrator.reviews") + "</h2></div>");
-            node.append("<div class=\"comments\"><h2>" + I18n.t("review.orchestrator.charts")
-                .capitalize() + " " + I18n.t("review.orchestrator.comments") + "</h2></div>");
+            //node.append("<h1>" + I18n.tCap("review.orchestrator.charts") + "</h1>");
+            node.append("<div class=\"feedback\"><h2>" + I18n.tCap("review.orchestrator.charts") + " " + I18n.t("review.orchestrator.reviews") + "</h2></div>");
+            node.append("<div class=\"comments\"><h2>" + I18n.tCap("review.orchestrator.charts") + " " + I18n.t("review.orchestrator.comments") + "</h2></div>");
 
             maxY = this.getMaxY([prd.get("feedback").get("evaluations"), prd.get("fbComments")
                     .get("evaluations")], evalSummary);
@@ -754,7 +746,7 @@ YUI.add("wegas-review-widgets", function(Y) {
 
             this._submitButton = new Y.Wegas.Button({
                 cssClass: BUTTON,
-                label: I18n.t("review.global.submit").capitalize(),
+                label: I18n.tCap("review.global.submit"),
                 visible: true
             });
             this._mainList.add(this._submitButton);
@@ -1489,7 +1481,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             }
         },
         submit: function() {
-            Wegas.Panel.confirm(I18n.t("review.global.confirmation").capitalize(), Y.bind(function() {
+            Wegas.Panel.confirm(I18n.tCap("review.global.confirmation"), Y.bind(function() {
                 Wegas.Panel.confirmPlayerAction(Y.bind(function(e) {
                     this._submitted = true;
                     this._sendRequest("SubmitReview", true, function(e) {

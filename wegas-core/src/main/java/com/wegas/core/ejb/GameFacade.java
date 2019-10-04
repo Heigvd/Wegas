@@ -160,7 +160,7 @@ public class GameFacade extends BaseFacade<Game> {
 
         if (game.getToken() == null) {
             game.setToken(this.createUniqueToken(game));
-        } else if (this.findByToken(game.getToken()) != null) {
+        } else if (this.findLiveOrBinByToken(game.getToken()) != null) {
             throw WegasErrorMessage.error("This access key is already in use", "COMMONS-SESSIONS-TAKEN-TOKEN-ERROR");
         }
         getEntityManager().persist(game);
@@ -232,7 +232,7 @@ public class GameFacade extends BaseFacade<Game> {
             String genLetter = Helper.genRandomLetters(length);
             key = prefixKey + "-" + genLetter;
 
-            Game foundGameByToken = this.findByToken(key);
+            Game foundGameByToken = this.findLiveOrBinByToken(key);
             if (foundGameByToken == null) {
                 foundUniqueKey = true;
             }
@@ -251,7 +251,7 @@ public class GameFacade extends BaseFacade<Game> {
             throw WegasErrorMessage.error("Access key cannot be empty", "COMMONS-SESSIONS-EMPTY-TOKEN-ERROR");
         }
 
-        Game theGame = this.findByToken(entity.getToken());
+        Game theGame = this.findLiveOrBinByToken(entity.getToken());
 
         if (theGame != null && !theGame.getId().equals(entity.getId())) {
             throw WegasErrorMessage.error("This access key is already in use", "COMMONS-SESSIONS-TAKEN-TOKEN-ERROR");
@@ -289,14 +289,29 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Search for a game with token
+     * Search for a LIVE game with token
      *
      * @param token
      *
      * @return first game found or null
      */
     public Game findByToken(final String token) {
-        final TypedQuery<Game> tq = getEntityManager().createNamedQuery("Game.findByToken", Game.class).setParameter("token", token).setParameter("status", Game.Status.LIVE);
+        return findByStatusAndToken(token, Game.Status.LIVE);
+    }
+
+    public Game findLiveOrBinByToken(final String token) {
+        Game game = findByStatusAndToken(token, Game.Status.LIVE);
+        if (game == null) {
+            game = findByStatusAndToken(token, Game.Status.BIN);
+        }
+        return game;
+    }
+
+    public Game findByStatusAndToken(final String token, Game.Status status) {
+        final TypedQuery<Game> tq = getEntityManager()
+                .createNamedQuery("Game.findByToken", Game.class)
+                .setParameter("token", token)
+                .setParameter("status", status);
         try {
             return tq.getSingleResult();
         } catch (NoResultException ex) {

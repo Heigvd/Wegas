@@ -359,7 +359,7 @@ YUI.add('wegas-layout-menu', function(Y) {
             for (var i in languages) {
                 var item = languages[i];
                 var btn = new Y.Wegas.Text({
-                    content: (I18n.getCode() === item.get("code").toUpperCase() ? "<b>" + item.get("lang") + "</b>" : item.get("lang")),
+                    content: (I18n.getCode() === item.get("code").toUpperCase() ? "<b>" + I18n.capitalize(item.get("lang")) + "</b>" : I18n.capitalize(item.get("lang"))),
                 });
                 btn.plug(Y.Plugin.ExecuteLocalScriptAction, {
                     "targetEvent": "click",

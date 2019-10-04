@@ -42,7 +42,8 @@ YUI.add("wegas-i18n-global-it", function(Y) {
                 manager: {
                     title: "Gestione delle lingue"
                 },
-                languages: "Lingue"
+                languages: "Lingue",
+                availables: "Lingue a disposizione dei giocatori"
             },
             errors: {
                 conflict: "La sua query non ha potuto essere completata dovuta a un conflitto. Questo di solito significa che si è tentato di aggiornare un elemento obsoleto.",

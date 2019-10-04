@@ -2511,7 +2511,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             if (languages && languages.length) {
                 this.add(new Y.Wegas.Text({
                     cssClass: "language-activator-title",
-                    content: "<span>Available Languages</span>"
+                    content: "<span>" + I18n.t("i18n.availables") + "</span>"
                 }));
                 this.list = new Y.Wegas.FlexList({"direction": "horizontal"});
                 for (var i in languages) {
@@ -2519,7 +2519,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
 
                     var btn = new Y.Wegas.Text({
                         cssClass: "gm-language",
-                        content: "<span>" + lang.get("lang") + " (" + lang.get("code") + ")</span>"
+                        content: "<span>" + I18n.capitalize(lang.get("lang")) + " (" + lang.get("code") + ")</span>"
                     });
                     this.list.add(btn);
                     btn.get("boundingBox").getDOMNode().setAttribute("data-lang", lang.get("code"));
