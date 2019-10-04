@@ -79,8 +79,8 @@ export const AddMenuChoice = asyncSFC(
       <Menu
         items={items}
         icon="plus"
-        onSelect={i => {
-          onSelect && onSelect();
+        onSelect={(i, e) => {
+          onSelect && onSelect(i, e);
           dispatch &&
             dispatch(
               Actions.EditorActions.createVariable(i.value, variable, {

@@ -7,8 +7,6 @@ import {
   closeEditor,
   EditorAction,
   Edition,
-  FileEdition,
-  VariableEdition,
 } from '../../../data/Reducer/globalState';
 import { layoutTabs } from '../Layout';
 import { StyledLabel } from '../../../Components/AutoImport/String/Label';
@@ -17,7 +15,6 @@ import getEditionConfig, { getEntityActions } from '../../editionConfig';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '.';
 import { VariableDescriptor } from '../../../data/selectors';
-import { escapeRegExp } from 'lodash-es';
 import { Actions } from '../../../data';
 import { wlog } from '../../../Helper/wegaslog';
 

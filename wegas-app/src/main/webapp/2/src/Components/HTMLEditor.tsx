@@ -235,7 +235,7 @@ export default function HTMLEditor({
       {fileBrowsing.fn && (
         <Modal>
           <FileBrowser
-            onFileClick={file => {
+            onFileClick={(_event, file) => {
               setFileBrowsing({});
               file &&
                 fileBrowsing.fn &&

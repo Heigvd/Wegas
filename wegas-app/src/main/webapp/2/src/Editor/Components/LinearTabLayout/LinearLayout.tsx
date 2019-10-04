@@ -9,7 +9,6 @@ import { DnDTabLayout, ComponentMap, filterMap } from './DnDTabLayout';
 import { wlog } from '../../../Helper/wegaslog';
 
 import 'react-reflex/styles.css';
-import { LayoutTabsProps } from '../Layout';
 
 const splitter = css({
   '&.reflex-container.vertical > .reflex-splitter': {
@@ -28,9 +27,14 @@ const grow = css({
   flex: '1 1 auto',
 });
 
-export const focusTabContext = React.createContext<(tab: LayoutTabsProps) => void>(
-  () => {},
-);
+export interface LayoutTabsProps {
+  tab: string;
+  content: React.LazyExoticComponent<(props?: any) => JSX.Element>;
+}
+
+export const focusTabContext = React.createContext<
+  (tab: LayoutTabsProps) => void
+>(() => {});
 
 type LayoutType = 'ReflexLayoutNode' | 'TabLayoutNode';
 
@@ -795,15 +799,6 @@ interface LinearLayoutProps {
    * tabs - The tabs that can be used in the layout (You must include all the tabs that you use in the children)
    */
   tabs: React.ReactElement<ItemProps>[];
-
-  //// TEST TO REMOVE
-  // tabs: {
-  //   id: string;
-  //   tab: React.ReactNode;
-  //   content: React.LazyExoticComponent<() => JSX.Element>;
-  // }[];
-  //// TEST TO REMOVE
-
   /**
    * children - the layout initial disposition
    * If a layout is saved in the browser, this won't be taken in account unless the saved layout is reset
@@ -830,12 +825,6 @@ function MainLinearLayout(props: LinearLayoutProps) {
       wlog('You must use an Item element to wrap the content of the tab');
     }
   });
-
-  //// TEST TO REMOVE
-  // props.tabs.forEach(tab => {
-  //   tabs.current[tab.id] = tab.tab;
-  // });
-  //// TEST TO REMOVE
 
   const savedLayoutJSON = window.localStorage.getItem('DnDGridLayoutData');
   const savedLayout = savedLayoutJSON
@@ -962,7 +951,7 @@ function MainLinearLayout(props: LinearLayoutProps) {
   logLayouts(layout.layoutMap);
   return (
     <focusTabContext.Provider
-      value={(tab : LayoutTabsProps) => {
+      value={(tab: LayoutTabsProps) => {
         dispatchLayout({ type: 'EXTERNALSELECT', tabKey: tab.tab });
       }}
     >
