@@ -9,6 +9,18 @@ import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepUpdate } from '../../data/updateUtils';
 import { StoreConsumer } from '../../data/store';
 import { AvailableViews } from './FormView';
+import {
+  StyledLabelProps,
+  StyledLabel,
+} from '../../Components/AutoImport/String/Label';
+import { css, cx } from 'emotion';
+
+const grow = css({
+  flex: '1 1 auto',
+});
+const flex = css({
+  display: 'flex',
+});
 
 export interface EditorMoreAction<T extends IAbstractEntity> {
   label: React.ReactNode;
@@ -21,6 +33,7 @@ interface EditorProps<T extends IAbstractEntity> {
   actions?: EditorMoreAction<T>[];
   path?: (string | number)[];
   getConfig(entity: T): Promise<Schema<AvailableViews>>;
+  error?: StyledLabelProps['value'];
 }
 
 type VISIBILITY = 'INTERNAL' | 'PROTECTED' | 'INHERITED' | 'PRIVATE';
@@ -146,6 +159,7 @@ async function WindowedEditor<T extends IAbstractEntity>({
   actions = [],
   getConfig,
   path,
+  error,
 }: EditorProps<T>) {
   let pathEntity = entity;
   if (Array.isArray(path) && path.length > 0) {
@@ -165,20 +179,23 @@ async function WindowedEditor<T extends IAbstractEntity>({
     Schema<AvailableViews>
   >([import('./Form').then(m => m.Form), getConfig(pathEntity)]);
   return (
-    <Form
-      entity={pathEntity}
-      update={update != null ? updatePath : update}
-      actions={actions.map(({ label, action }) => {
-        return {
-          label,
-          action: function(e: T) {
-            action(deepUpdate(entity, path, e) as T, path);
-          },
-        };
-      })}
-      path={path}
-      schema={overrideSchema(entity, schema)}
-    />
+    <div className={cx(flex, grow)}>
+      <StyledLabel value={error} type={'error'} duration={3000} />
+      <Form
+        entity={pathEntity}
+        update={update != null ? updatePath : update}
+        actions={actions.map(({ label, action }) => {
+          return {
+            label,
+            action: function(e: T) {
+              action(deepUpdate(entity, path, e) as T, path);
+            },
+          };
+        })}
+        path={path}
+        schema={overrideSchema(entity, schema)}
+      />
+    </div>
   );
 }
 export const AsyncVariableForm = asyncSFC<EditorProps<{ '@class': string }>>(

@@ -2,7 +2,7 @@ import * as React from 'react';
 import produce from 'immer';
 import { Actions } from '../../../data';
 import { getIcon, getLabel, getChildren } from '../../editionConfig';
-import { StoreDispatch } from '../../../data/store';
+import { StoreDispatch, getDispatch } from '../../../data/store';
 import { Menu, MenuProps } from '../../../Components/Menu';
 import { FontAwesome, withDefault } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
@@ -61,6 +61,29 @@ export const AddMenuParent = asyncSFC(
     );
   },
 );
+export const choiceAction = (
+  parent: IChoiceDescriptor,
+  cb?: (newChoice: IChoiceDescriptor, index: number) => void,
+) => ({
+  save: (entity: IAbstractEntity) => {
+    const newChoice = produce(parent, v => {
+      v.results.push(entity as IResult);
+    });
+    const index = newChoice.results.length - 1;
+    (getDispatch() as StoreDispatch)(
+      Actions.VariableDescriptorActions.updateDescriptor(newChoice),
+    ).then(() =>
+      cb
+        ? cb(newChoice, index)
+        : (getDispatch() as StoreDispatch)(
+            Actions.EditorActions.editVariable(newChoice, [
+              'results',
+              String(index),
+            ]),
+          ),
+    );
+  },
+});
 /**
  * Handle Add button for Choice
  */
@@ -83,26 +106,11 @@ export const AddMenuChoice = asyncSFC(
           onSelect && onSelect(i, e);
           dispatch &&
             dispatch(
-              Actions.EditorActions.createVariable(i.value, variable, {
-                save: (entity: IResult) => {
-                  const newChoice = produce(variable, v => {
-                    v.results.push(entity);
-                  });
-                  const index = newChoice.results.length - 1;
-                  dispatch(
-                    Actions.VariableDescriptorActions.updateDescriptor(
-                      newChoice,
-                    ),
-                  ).then(() =>
-                    dispatch(
-                      Actions.EditorActions.editVariable(newChoice, [
-                        'results',
-                        String(index),
-                      ]),
-                    ),
-                  );
-                },
-              }),
+              Actions.EditorActions.createVariable(
+                i.value,
+                variable,
+                choiceAction(variable),
+              ),
             );
         }}
       />

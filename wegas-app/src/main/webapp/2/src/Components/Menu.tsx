@@ -84,16 +84,18 @@ export class Menu<T extends Item<T>> extends React.Component<MenuProps<T>> {
     } = this.props;
     return (
       <span
-        onKeyDownCapture={e =>
-          (this.keyEvent = {
+        onKeyDownCapture={e => {
+          this.keyEvent = {
             ctrlKey: e.ctrlKey,
             altKey: e.altKey,
-          })
-        }
+          };
+        }}
       >
         <Downshift
           onStateChange={this.onStateChange}
-          onSelect={i => onSelect(i, this.keyEvent)}
+          onSelect={i => {
+            onSelect(i, this.keyEvent);
+          }}
           itemToString={emtpyStr}
         >
           {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
@@ -141,9 +143,9 @@ export class Menu<T extends Item<T>> extends React.Component<MenuProps<T>> {
                             : undefined)}
                         >
                           <Menu
-                            onSelect={v => {
+                            onSelect={(v, e) => {
                               closeMenu();
-                              onSelect(v);
+                              onSelect(v, e);
                             }}
                             items={item.children}
                             direction="right"

@@ -1,7 +1,11 @@
 import * as React from 'react';
 import { useDrop, DragObjectWithType, DropTargetMonitor } from 'react-dnd';
 import { css, cx } from 'emotion';
-import { themeVar, localSelection, globalSelection } from '../../../Components/Theme';
+import {
+  themeVar,
+  localSelection,
+  globalSelection,
+} from '../../../Components/Theme';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { generateAbsolutePath, FileAPI, fileURL } from '../../../API/files.api';
 import { IconButton } from '../../../Components/Button/IconButton';

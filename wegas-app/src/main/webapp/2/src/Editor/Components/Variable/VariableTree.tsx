@@ -19,7 +19,7 @@ import { shallowIs } from '../../../Helper/shallowIs';
 import { Menu } from '../../../Components/Menu';
 import { FontAwesome, withDefault } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
-import { AddMenuParent, AddMenuChoice, MenuItem } from './AddMenu';
+import { AddMenuParent, AddMenuChoice } from './AddMenu';
 import { editorLabel } from '../../../data/methods/VariableDescriptor';
 import { SearchTool } from '../SearchTool';
 import { focusTabContext } from '../LinearTabLayout/LinearLayout';
@@ -31,7 +31,7 @@ import {
 } from '../../../Components/Theme';
 import { layoutTabs } from '../Layout';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
-import ComponentWithForm from '../FormView/ComponentWithForm';
+import ComponentWithForm, { OnNewItemFn } from '../FormView/ComponentWithForm';
 import { wlog } from '../../../Helper/wegaslog';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
@@ -121,6 +121,7 @@ function TreeView({
                     search={search}
                     variableId={v}
                     onEntityClick={onEntityClick}
+                    onNewEntity={onNewEntity}
                     outsideSelection={outsideSelection}
                   />
                 ))
@@ -216,9 +217,9 @@ function CTree(
     if (!isMatch(props.variableId, props.search)) {
       return null;
     }
-    const onSelect = (i: MenuItem, e: ModifierKeysEvent) => {
+    const onSelect: OnNewItemFn = (i, e, p) => {
       props.onNewEntity
-        ? props.onNewEntity(i.value, e)
+        ? props.onNewEntity(i, e, p)
         : focusTab(layoutTabs.EntityEditor);
     };
     return (
@@ -258,13 +259,13 @@ function CTree(
               <AddMenuParent
                 variable={variable}
                 dispatch={props.onNewEntity ? undefined : dispatch}
-                onSelect={onSelect}
+                onSelect={(i, e) => onSelect(i.value, e, variable)}
               />
             ) : entityIs<IChoiceDescriptor>(variable, 'ChoiceDescriptor') ? (
               <AddMenuChoice
                 variable={variable}
                 dispatch={props.onNewEntity ? undefined : dispatch}
-                onSelect={onSelect}
+                onSelect={(i, e) => onSelect(i.value, e, variable)}
               />
             ) : null}
           </span>
@@ -279,6 +280,9 @@ function CTree(
                   key={i}
                   variableId={i}
                   search={props.search}
+                  onEntityClick={props.onEntityClick}
+                  onNewEntity={props.onNewEntity}
+                  outsideSelection={props.outsideSelection}
                 />
               ))
             : entityIs<IChoiceDescriptor>(variable, 'ChoiceDescriptor')
@@ -289,6 +293,9 @@ function CTree(
                   search={props.search}
                   variableId={r.parentId!}
                   subPath={['results', String(index)]}
+                  onEntityClick={props.onEntityClick}
+                  onNewEntity={props.onNewEntity}
+                  outsideSelection={props.outsideSelection}
                 />
               ))
             : null
@@ -305,11 +312,10 @@ type OnEntityClickFn = (
   path?: (string)[],
   onEntityUpdate?: (updatedEntity: IAbstractEntity) => void,
 ) => void;
-type OnNewEntityFn = (type: string, modifierKeys?: ModifierKeysEvent) => void;
 
 interface TreeProps {
   onEntityClick?: OnEntityClickFn;
-  onNewEntity?: OnNewEntityFn;
+  onNewEntity?: OnNewItemFn;
   outsideSelection?: {
     selectedGlobalVariable?: IAbstractEntity;
     selectedLocalVariable?: IAbstractEntity;

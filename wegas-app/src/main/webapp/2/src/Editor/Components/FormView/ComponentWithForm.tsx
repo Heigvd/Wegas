@@ -16,7 +16,8 @@ import { Schema } from 'jsoninput';
 import { AvailableViews } from '.';
 import { VariableDescriptor } from '../../../data/selectors';
 import { Actions } from '../../../data';
-import { wlog } from '../../../Helper/wegaslog';
+import { entityIs } from '../../../data/entities';
+import { choiceAction } from '../Variable/AddMenu';
 
 const grow = css({
   flex: '1 1 auto',
@@ -41,7 +42,11 @@ type OnUserClickItemFn<T extends IAbstractEntity> = (
   onEntityUpdate?: (updatedEntity: T) => void,
 ) => void;
 
-type OnNewItemFn = (type: string, modifierKeys?: ModifierKeysEvent) => void;
+export type OnNewItemFn = (
+  type: string,
+  modifierKeys?: ModifierKeysEvent,
+  parent?: IAbstractEntity,
+) => void;
 
 interface ComponentWithFormProps<T extends IAbstractEntity> {
   onClickItem?: OnUserClickItemFn<T>;
@@ -80,7 +85,11 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
   moreEditorActions,
   children,
 }: ComponentWithFormProps<T>) {
-  const [localSelectedEntity, setLocalSelectedEntity] = React.useState<T>();
+  const [localSelectedEntity, setLocalSelectedEntity] = React.useState<{
+    entity: IAbstractEntity;
+    path?: (string | number)[];
+    actions?: EditorMoreAction<IAbstractEntity>[];
+  }>();
   const [error, setError] = React.useState<string>('');
   const entityUpdate = React.useRef<(updatedEntity: T) => void>(() => {});
   const editing = useStore(
@@ -91,30 +100,33 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
   const focusTab = React.useContext(focusTabContext);
 
   const onSaveCallBack = (sucess: T | string) => {
-    if (typeof sucess !== 'string') {
+    if (sucess && typeof sucess !== 'string') {
       entityUpdate.current(sucess);
       setLocalSelectedEntity(oldSelectedEntity => {
-        if (oldSelectedEntity && sucess.refId === oldSelectedEntity.refId) {
-          return sucess;
+        if (
+          oldSelectedEntity &&
+          sucess.refId === oldSelectedEntity.entity.refId
+        ) {
+          return { ...oldSelectedEntity, entity: sucess };
         }
       });
       getEntityActions(sucess).then(({ edit }) => {
         dispatch(edit(sucess));
       });
     } else {
-      setError(sucess);
+      setError(sucess ? sucess : 'Connection error');
     }
   };
 
   const onDeleteCallBack = (sucess: T | string) => {
-    if (typeof sucess !== 'string') {
+    if (sucess && typeof sucess !== 'string') {
       const entity = getEntity(editing);
       if (entity && isSameEntity(sucess, entity)) {
         dispatch(closeEditor());
         setLocalSelectedEntity(undefined);
       }
     } else {
-      setError(sucess);
+      setError(sucess ? sucess : 'Connection error');
     }
   };
 
@@ -168,8 +180,11 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
     entityUpdate.current = onEntityUpdate ? onEntityUpdate : () => {};
     if (event && event.ctrlKey) {
       setLocalSelectedEntity(oldSelectedEntity => {
-        if (!oldSelectedEntity || entity.refId !== oldSelectedEntity.refId) {
-          return entity;
+        if (
+          !oldSelectedEntity ||
+          entity.refId !== oldSelectedEntity.entity.refId
+        ) {
+          return { entity: entity, path: path };
         }
         return undefined;
       });
@@ -187,11 +202,38 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
     }
   };
 
-  const onNewItemHandle: OnNewItemFn = (i, event) => {
+  const onNewItemHandle: OnNewItemFn = (i, event, parent) => {
     if (event && event.ctrlKey) {
-      dispatch(Actions.EditorActions.createVariable(i));
+      const actions = entityIs<IChoiceDescriptor>(parent, 'ChoiceDescriptor')
+        ? [
+            {
+              label: 'Save',
+              action: choiceAction(parent, (entity, index) =>
+                setLocalSelectedEntity({
+                  entity: entity,
+                  path: ['results', String(index)],
+                }),
+              )['save'],
+            },
+          ]
+        : [];
+      setLocalSelectedEntity({
+        entity: {
+          '@class': i,
+          parentId: parent && parent.parentId,
+          parentType: parent && parent.parentType,
+        } as T,
+        actions: actions,
+      });
     } else {
-      wlog('not implemented yet');
+      const allowedParent =
+        parent &&
+        (entityIs<IListDescriptor>(parent, 'ListDescriptor') ||
+          entityIs<IQuestionDescriptor>(parent, 'QuestionDescriptor') ||
+          entityIs<IChoiceDescriptor>(parent, 'ChoiceDescriptor'))
+          ? parent
+          : undefined;
+      dispatch(Actions.EditorActions.createVariable(i, allowedParent));
     }
   };
 
@@ -202,7 +244,8 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
           onClickItemHandle,
           onNewItemHandle,
           mainSelectedItem: getEntity(editing),
-          secondarySelectedItem: localSelectedEntity,
+          secondarySelectedItem:
+            localSelectedEntity && localSelectedEntity.entity,
         })}
       </div>
       {localSelectedEntity && (
@@ -218,8 +261,12 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
               getConfig={entity =>
                 getEditionConfig(entity) as Promise<Schema<AvailableViews>>
               }
-              entity={localSelectedEntity}
-              actions={localEditorActions}
+              entity={localSelectedEntity.entity}
+              actions={
+                localSelectedEntity.actions
+                  ? [...localEditorActions, ...localSelectedEntity.actions]
+                  : localEditorActions
+              }
             />
           </div>
         </div>
