@@ -17,7 +17,7 @@ import { AvailableViews } from '.';
 import { VariableDescriptor } from '../../../data/selectors';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
-import { choiceAction } from '../Variable/AddMenu';
+import { State } from '../../../data/Reducer/reducers';
 
 const grow = css({
   flex: '1 1 auto',
@@ -29,7 +29,7 @@ const growBig = css({
   flex: '30 1 auto',
 });
 
-type OnClickItemFn<T extends IAbstractEntity> = (
+export type OnClickItemFn<T extends IAbstractEntity> = (
   event: ModifierKeysEvent,
   entity: T,
   path?: string[],
@@ -48,6 +48,11 @@ export type OnNewItemFn = (
   parent?: IAbstractEntity,
 ) => void;
 type EditModes = 'Create' | 'Edit';
+export interface SelectionState {
+  entity: IAbstractEntity;
+  path?: string[];
+  mode?: EditModes;
+}
 export interface ComponentWithFormProps<T extends IAbstractEntity> {
   onClickItem?: OnUserClickItemFn<T>;
   onSaveAction?: (
@@ -55,8 +60,13 @@ export interface ComponentWithFormProps<T extends IAbstractEntity> {
     callback: (sucess: T | string) => void,
     mode: EditModes,
   ) => void;
-  onDeleteAction?: (item: T, callback: (sucess: T | string) => void) => void;
+  onDeleteAction?: (
+    item: T,
+    callback: (sucess: T | string) => void,
+    path?: string[],
+  ) => void;
   moreEditorActions?: EditorMoreAction<T>[];
+  outsideSelection?: SelectionState;
   children: (props: {
     onClickItemHandle: OnClickItemFn<T>;
     onNewItemHandle: OnNewItemFn;
@@ -87,13 +97,15 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
   onSaveAction,
   onDeleteAction,
   moreEditorActions,
+  outsideSelection,
   children,
 }: ComponentWithFormProps<T>) {
-  const [localSelectedEntity, setLocalSelectedEntity] = React.useState<{
-    entity: IAbstractEntity;
-    path?: (string | number)[];
-    mode: EditModes;
-  }>();
+  const [localSelectedEntity, setLocalSelectedEntity] = React.useState(
+    outsideSelection,
+  );
+  React.useEffect(() => setLocalSelectedEntity(outsideSelection), [
+    outsideSelection,
+  ]);
   const [error, setError] = React.useState<string>('');
   const entityUpdate = React.useRef<(updatedEntity: T) => void>(() => {});
   const editing = useStore(
@@ -106,14 +118,11 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
   const onSaveCallBack = (sucess: T | string) => {
     if (sucess && typeof sucess !== 'string') {
       entityUpdate.current(sucess);
-      setLocalSelectedEntity(oldSelectedEntity => {
-        if (
-          oldSelectedEntity &&
-          sucess.refId === oldSelectedEntity.entity.refId
-        ) {
-          return { ...oldSelectedEntity, entity: sucess };
-        }
-      });
+      setLocalSelectedEntity(oldSelectedEntity => ({
+        ...oldSelectedEntity,
+        entity: sucess,
+        mode: 'Edit',
+      }));
       getEntityActions(sucess).then(({ edit }) => {
         dispatch(edit(sucess));
       });
@@ -123,10 +132,16 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
   };
 
   const onDeleteCallBack = (sucess: T | string) => {
+    debugger;
     if (sucess && typeof sucess !== 'string') {
       const entity = getEntity(editing);
       if (entity && isSameEntity(sucess, entity)) {
         dispatch(closeEditor());
+      }
+      if (
+        localSelectedEntity &&
+        isSameEntity(localSelectedEntity.entity, sucess)
+      ) {
         setLocalSelectedEntity(undefined);
       }
     } else {
@@ -141,7 +156,9 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
       onSaveAction(
         entity,
         onSaveCallBack,
-        localSelectedEntity ? localSelectedEntity.mode : 'Create',
+        localSelectedEntity && localSelectedEntity.mode
+          ? localSelectedEntity.mode
+          : 'Create',
       );
     globalEditorActions['save'] = saveAction;
     localEditorActions.push({
@@ -151,7 +168,12 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
   }
   if (onDeleteAction) {
     const deleteAction = (entity: T) =>
-      onDeleteAction(entity, onDeleteCallBack);
+      onDeleteAction(
+        entity,
+        onDeleteCallBack,
+        localSelectedEntity && localSelectedEntity.path,
+      );
+
     globalEditorActions['more'] = {
       delete: {
         label: 'Delete',
@@ -232,6 +254,19 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
     }
   };
 
+  const variable = useStore((state: State) => {
+    if (localSelectedEntity && localSelectedEntity.entity.id !== undefined) {
+      const updatedVariable =
+        state.variableDescriptors[localSelectedEntity.entity.id];
+      if (
+        updatedVariable &&
+        updatedVariable.refId === localSelectedEntity.entity.refId
+      )
+        return updatedVariable;
+    }
+    return undefined;
+  });
+
   return (
     <div className={cx(flex, grow)}>
       <div className={cx(flex, growBig)}>
@@ -256,7 +291,8 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
               getConfig={entity =>
                 getEditionConfig(entity) as Promise<Schema<AvailableViews>>
               }
-              entity={localSelectedEntity.entity}
+              path={localSelectedEntity.path}
+              entity={variable ? variable : localSelectedEntity.entity}
               actions={localEditorActions}
             />
           </div>

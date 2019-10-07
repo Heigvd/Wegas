@@ -1,12 +1,17 @@
 import * as React from 'react';
-import { VariableDescriptor, GameModel } from '../../../data/selectors';
+import { VariableDescriptor } from '../../../data/selectors';
 import { Actions } from '../../../data';
 import { Toolbar } from '../../../Components/Toolbar';
-import { varIsList, entityIs } from '../../../data/entities';
+import { varIsList, entityIs, entityIsPersisted } from '../../../data/entities';
 import { get } from 'lodash-es';
 
 import { Container, Node } from '../Views/TreeView';
-import { moveDescriptor } from '../../../data/Reducer/variableDescriptor';
+import {
+  moveDescriptor,
+  deleteDescriptor,
+  updateDescriptor,
+  createDescriptor,
+} from '../../../data/Reducer/variableDescriptor';
 import {
   getEntityActions,
   getIcon,
@@ -35,7 +40,6 @@ import ComponentWithForm, {
   OnNewItemFn,
   ComponentWithFormProps,
 } from '../FormView/ComponentWithForm';
-import { wlog } from '../../../Helper/wegaslog';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
@@ -189,19 +193,25 @@ function CTree(
   } & TreeProps,
 ): JSX.Element | null {
   const focusTab = React.useContext(focusTabContext);
-  let variable = VariableDescriptor.select(props.variableId);
-  const internalEditing = useStore(
-    state =>
-      state.global.editing != null &&
-      state.global.editing.type === 'Variable' &&
-      props.variableId === state.global.editing.id &&
-      shallowIs(props.subPath || [], state.global.editing.path),
+  const { internalEditing, variable, match } = useStore(
+    state => {
+      let variable = VariableDescriptor.select(props.variableId);
+      if (Array.isArray(props.subPath) && props.subPath.length > 0) {
+        variable = get(variable, props.subPath) as IVariableDescriptor;
+      }
+      return {
+        internalEditing:
+          state.global.editing != null &&
+          state.global.editing.type === 'Variable' &&
+          props.variableId === state.global.editing.id &&
+          shallowIs(props.subPath || [], state.global.editing.path),
+        variable: variable,
+        match: isMatch(props.variableId, props.search),
+      };
+    },
     (a, b) => !shallowIs(a, b),
   );
 
-  if (Array.isArray(props.subPath) && props.subPath.length > 0) {
-    variable = get(variable, props.subPath) as IVariableDescriptor;
-  }
   if (variable) {
     const dispatch = getDispatch();
 
@@ -217,7 +227,7 @@ function CTree(
       const icon = await getIcon(variable!);
       return <FontAwesome icon={withDefault(icon, 'question')} fixedWidth />;
     });
-    if (!isMatch(props.variableId, props.search)) {
+    if (!match) {
       return null;
     }
     const onSelect: OnNewItemFn = (i, e, p) => {
@@ -330,14 +340,10 @@ export function Tree({
   onNewEntity,
   outsideSelection,
 }: TreeProps) {
-  // const ids = useGameModel().itemsIds;
-  const ids = useStore(
-    state => state.gameModels[state.global.currentGameModelId].,
-  );
-  debugger;
+  const ids = useGameModel().itemsIds;
   return (
     <TreeView
-      entities={ids.itemsIds}
+      entities={ids}
       onEntityClick={onEntityClick}
       onNewEntity={onNewEntity}
       outsideSelection={outsideSelection}
@@ -346,42 +352,47 @@ export function Tree({
 }
 
 export default function VariableBrowserWithMeta() {
+  const dispatch: StoreDispatch = getDispatch();
   const onSave: ComponentWithFormProps<IAbstractEntity>['onSaveAction'] = (
     item,
     cb,
     mode,
   ) => {
-    cb(item);
-    // if(entityIs<IChoiceDescriptor>(parent, 'ChoiceDescriptor')){
-    //   return choiceAction(parent, (entity, index) =>
-    //   setLocalSelectedEntity({
-    //     entity: entity,
-    //     path: ['results', String(index)],
-    //   }),
-    // )['save']);
-    // }
-
-    const actions = entityIs<IChoiceDescriptor>(parent, 'ChoiceDescriptor')
-      ? [
-          {
-            label: 'Save',
-            action: choiceAction(parent, (entity, index) =>
-              setLocalSelectedEntity({
-                entity: entity,
-                path: ['results', String(index)],
-              }),
-            )['save'],
-          },
-        ]
-      : [];
     debugger;
+    if (mode === 'Edit') {
+      dispatch(updateDescriptor(item as IVariableDescriptor));
+    } else {
+      dispatch(
+        createDescriptor(
+          item as IVariableDescriptor,
+          VariableDescriptor.select(item.parentId) as
+            | IParentDescriptor
+            | undefined,
+        ),
+      );
+      if (entityIs<IChoiceDescriptor>(item, 'ChoiceDescriptor')) {
+        choiceAction(item, newChoice => cb(newChoice))['save'](item);
+      }
+    }
+  };
+  const onDelete: ComponentWithFormProps<
+    IVariableDescriptor
+  >['onDeleteAction'] = (item, cb, path) => {
+    dispatch(deleteDescriptor(item, path));
+    cb(item);
   };
   return (
     <ComponentWithForm
+      onSaveAction={onSave}
+      onDeleteAction={onDelete}
       moreEditorActions={[
         {
-          label: 'Test',
-          action: () => wlog('This is a test'),
+          label: 'findUsage',
+          action: (entity: IVariableDescriptor) => {
+            if (entityIsPersisted(entity)) {
+              dispatch(Actions.EditorActions.searchUsage(entity));
+            }
+          },
         },
       ]}
     >
