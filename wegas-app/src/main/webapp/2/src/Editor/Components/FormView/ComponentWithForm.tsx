@@ -47,10 +47,14 @@ export type OnNewItemFn = (
   modifierKeys?: ModifierKeysEvent,
   parent?: IAbstractEntity,
 ) => void;
-
-interface ComponentWithFormProps<T extends IAbstractEntity> {
+type EditModes = 'Create' | 'Edit';
+export interface ComponentWithFormProps<T extends IAbstractEntity> {
   onClickItem?: OnUserClickItemFn<T>;
-  onSaveAction?: (item: T, callback: (sucess: T | string) => void) => void;
+  onSaveAction?: (
+    item: T,
+    callback: (sucess: T | string) => void,
+    mode: EditModes,
+  ) => void;
   onDeleteAction?: (item: T, callback: (sucess: T | string) => void) => void;
   moreEditorActions?: EditorMoreAction<T>[];
   children: (props: {
@@ -88,7 +92,7 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
   const [localSelectedEntity, setLocalSelectedEntity] = React.useState<{
     entity: IAbstractEntity;
     path?: (string | number)[];
-    actions?: EditorMoreAction<IAbstractEntity>[];
+    mode: EditModes;
   }>();
   const [error, setError] = React.useState<string>('');
   const entityUpdate = React.useRef<(updatedEntity: T) => void>(() => {});
@@ -132,9 +136,13 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
 
   const globalEditorActions: EditorAction<T> = {};
   const localEditorActions: EditorMoreAction<T>[] = [];
-
   if (onSaveAction) {
-    const saveAction = (entity: T) => onSaveAction(entity, onSaveCallBack);
+    const saveAction = (entity: T) =>
+      onSaveAction(
+        entity,
+        onSaveCallBack,
+        localSelectedEntity ? localSelectedEntity.mode : 'Create',
+      );
     globalEditorActions['save'] = saveAction;
     localEditorActions.push({
       label: 'Save',
@@ -184,7 +192,7 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
           !oldSelectedEntity ||
           entity.refId !== oldSelectedEntity.entity.refId
         ) {
-          return { entity: entity, path: path };
+          return { entity: entity, path: path, mode: 'Edit' };
         }
         return undefined;
       });
@@ -204,26 +212,13 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
 
   const onNewItemHandle: OnNewItemFn = (i, event, parent) => {
     if (event && event.ctrlKey) {
-      const actions = entityIs<IChoiceDescriptor>(parent, 'ChoiceDescriptor')
-        ? [
-            {
-              label: 'Save',
-              action: choiceAction(parent, (entity, index) =>
-                setLocalSelectedEntity({
-                  entity: entity,
-                  path: ['results', String(index)],
-                }),
-              )['save'],
-            },
-          ]
-        : [];
       setLocalSelectedEntity({
         entity: {
           '@class': i,
           parentId: parent && parent.parentId,
           parentType: parent && parent.parentType,
         } as T,
-        actions: actions,
+        mode: 'Create',
       });
     } else {
       const allowedParent =
@@ -262,11 +257,7 @@ export default function ComponentWithForm<T extends IAbstractEntity>({
                 getEditionConfig(entity) as Promise<Schema<AvailableViews>>
               }
               entity={localSelectedEntity.entity}
-              actions={
-                localSelectedEntity.actions
-                  ? [...localEditorActions, ...localSelectedEntity.actions]
-                  : localEditorActions
-              }
+              actions={localEditorActions}
             />
           </div>
         </div>

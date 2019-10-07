@@ -25,7 +25,7 @@ const flex = css({
 export interface EditorMoreAction<T extends IAbstractEntity> {
   label: React.ReactNode;
   action: (entity: T, path?: (string | number)[]) => void;
-};
+}
 
 interface EditorProps<T extends IAbstractEntity> {
   entity?: T;

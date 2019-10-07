@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { VariableDescriptor } from '../../../data/selectors';
+import { VariableDescriptor, GameModel } from '../../../data/selectors';
 import { Actions } from '../../../data';
 import { Toolbar } from '../../../Components/Toolbar';
 import { varIsList, entityIs } from '../../../data/entities';
@@ -19,7 +19,7 @@ import { shallowIs } from '../../../Helper/shallowIs';
 import { Menu } from '../../../Components/Menu';
 import { FontAwesome, withDefault } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
-import { AddMenuParent, AddMenuChoice } from './AddMenu';
+import { AddMenuParent, AddMenuChoice, choiceAction } from './AddMenu';
 import { editorLabel } from '../../../data/methods/VariableDescriptor';
 import { SearchTool } from '../SearchTool';
 import { focusTabContext } from '../LinearTabLayout/LinearLayout';
@@ -31,7 +31,10 @@ import {
 } from '../../../Components/Theme';
 import { layoutTabs } from '../Layout';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
-import ComponentWithForm, { OnNewItemFn } from '../FormView/ComponentWithForm';
+import ComponentWithForm, {
+  OnNewItemFn,
+  ComponentWithFormProps,
+} from '../FormView/ComponentWithForm';
 import { wlog } from '../../../Helper/wegaslog';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
@@ -327,9 +330,14 @@ export function Tree({
   onNewEntity,
   outsideSelection,
 }: TreeProps) {
+  // const ids = useGameModel().itemsIds;
+  const ids = useStore(
+    state => state.gameModels[state.global.currentGameModelId].,
+  );
+  debugger;
   return (
     <TreeView
-      entities={useGameModel().itemsIds}
+      entities={ids.itemsIds}
       onEntityClick={onEntityClick}
       onNewEntity={onNewEntity}
       outsideSelection={outsideSelection}
@@ -338,6 +346,36 @@ export function Tree({
 }
 
 export default function VariableBrowserWithMeta() {
+  const onSave: ComponentWithFormProps<IAbstractEntity>['onSaveAction'] = (
+    item,
+    cb,
+    mode,
+  ) => {
+    cb(item);
+    // if(entityIs<IChoiceDescriptor>(parent, 'ChoiceDescriptor')){
+    //   return choiceAction(parent, (entity, index) =>
+    //   setLocalSelectedEntity({
+    //     entity: entity,
+    //     path: ['results', String(index)],
+    //   }),
+    // )['save']);
+    // }
+
+    const actions = entityIs<IChoiceDescriptor>(parent, 'ChoiceDescriptor')
+      ? [
+          {
+            label: 'Save',
+            action: choiceAction(parent, (entity, index) =>
+              setLocalSelectedEntity({
+                entity: entity,
+                path: ['results', String(index)],
+              }),
+            )['save'],
+          },
+        ]
+      : [];
+    debugger;
+  };
   return (
     <ComponentWithForm
       moreEditorActions={[
