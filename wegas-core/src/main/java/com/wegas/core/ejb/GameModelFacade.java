@@ -693,6 +693,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
             if (newGameModel != null) {
                 newGameModel.setName(this.findUniqueName(srcGameModel.getName(), SCENARIO));
+                newGameModel.getProperties().setLogID("");
 
                 // one should be able to create/modifiy everything
                 newGameModel.setOnGoingPropagation(Boolean.TRUE);
