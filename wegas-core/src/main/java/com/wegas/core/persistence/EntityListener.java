@@ -82,6 +82,7 @@ public class EntityListener {
 
     @PrePersist
     void onPrePersist(Object o) {
+        logger.trace("PrePersist {}", o);
         if (o instanceof JCRClient) {
             this.injectJTABean((JCRClient) o);
         }
@@ -89,6 +90,7 @@ public class EntityListener {
 
     @PostPersist
     void onPostPersist(Object o) {
+        logger.trace("PostPersist {}", o);
 
         if (o instanceof Mergeable) {
             Mergeable m = (Mergeable) o;
@@ -99,7 +101,6 @@ public class EntityListener {
         }
 
         if (o instanceof WithPermission) {
-            logger.debug("PostPersist {}", o);
             if (requestManager != null) {
                 requestManager.assertCreateRight((WithPermission) o);
             } else {
@@ -125,9 +126,9 @@ public class EntityListener {
 
     @PostUpdate
     void onPostUpdate(Object o) {
+        logger.trace("PostUpdate {}", o);
 
         if (o instanceof WithPermission) {
-            logger.debug("PostUpdate {}", o);
             if (requestManager != null) {
                 requestManager.assertUpdateRight((WithPermission) o);
             } else {
@@ -151,6 +152,7 @@ public class EntityListener {
 
     @PreRemove
     void onPreRemove(Object o) {
+        logger.trace("PreRemove {}", o);
         if (o instanceof WithPermission) {
             WithPermission ae = (WithPermission) o;
             if (requestManager != null) {
@@ -185,13 +187,13 @@ public class EntityListener {
 
     @PostLoad
     void onPostLoad(Object o) {
+        logger.trace("PostLoad {}", o);
         if (o instanceof AcceptInjection) {
             AcceptInjection id = (AcceptInjection) o;
             id.setBeanjection(getBeansjection());
         }
 
         if (o instanceof AbstractEntity) {
-            logger.debug("PostLoad {}", o);
             ((AbstractEntity) o).setPersisted(true);
         }
 

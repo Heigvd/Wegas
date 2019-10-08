@@ -166,7 +166,7 @@ public class GameModelController {
         scenarios.add(scenario);
         modelFacade.integrateScenario(model, scenarios);
 
-        return model;
+        return gameModelFacade.find(model.getId());
     }
 
     @GET
