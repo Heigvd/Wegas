@@ -64,6 +64,17 @@
         ];
     };
 
+    Y.namespace("Wegas.Config").ExtraTabs = [
+        {
+            label: "PactStats",
+            children: [{
+                type: "PageLoader",
+                pageLoaderId: "properties",
+                defaultPageId: 8 // Numéro de page 
+            }]
+        }
+    ];
+
     app.once('render', function() {
         /* global Y */
         if (Y.config.Wegas.mode === 'EDIT') {

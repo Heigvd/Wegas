@@ -47,5 +47,8 @@ YUI.addGroup('wegas-pact', {
             requires: 'wegas-panel',
             ws_provides: 'ScriptFiles',
         },
+        'pact-stats': {
+            ws_provides: 'PactStats'
+        }
     },
 });

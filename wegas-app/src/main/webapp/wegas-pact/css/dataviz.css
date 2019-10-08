@@ -9,6 +9,25 @@
 .wegas-dataviz {
     background: white !important;
     box-shadow: none !important;
+    width: auto;
+}
+
+.wegas-dataviz table {
+    font-family: arial;
+    color: black;
+    text-align: center;
+}
+
+.wegas-dataviz tr:hover {
+    background: #bbb;
+}
+
+.wegas-dataviz thead {
+    border-bottom: 1px solid black;
+}
+
+.wegas-dataviz tfoot {
+    border-top: 1px solid black;
 }
 
 .wegas-dataviz th {
@@ -17,8 +36,6 @@
     text-align: center;
 }
 
-.wegas-dataviz table {
-    font-family: arial;
-    color: black;
-    text-align: center;
+.wegas-dataviz td {
+    padding: 5px;
 }
