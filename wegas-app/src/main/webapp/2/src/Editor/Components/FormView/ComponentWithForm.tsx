@@ -22,6 +22,9 @@ const flex = css({
 const growBig = css({
   flex: '30 1 auto',
 });
+const scroll = css({
+  overflow: 'scroll',
+});
 
 const getEntity = (state?: Readonly<Edition>) => {
   if (!state) {
@@ -56,7 +59,6 @@ const getConfig = (state: Readonly<Edition>) => (
     ? Promise.resolve(state.config)
     : (getEditionConfig(entity) as Promise<Schema<AvailableViews>>);
 };
-
 interface ComponentWithFormProps {
   children: (props: {
     localState: Readonly<Edition> | undefined;
@@ -78,7 +80,7 @@ export function ComponentWithForm({ children }: ComponentWithFormProps) {
 
   return (
     <div className={cx(flex, grow)}>
-      <div className={cx(flex, growBig)}>
+      <div className={cx(flex, growBig, scroll)}>
         {children({
           localState,
           localDispatch,
