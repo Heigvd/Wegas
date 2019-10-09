@@ -105,10 +105,6 @@ interface StateMachineEditorProps {
   stateMachine: IFSMDescriptor;
   stateMachineInstance: IFSMInstance;
   dispatch: StoreDispatch;
-  /**
-   * Currently editing a child in the editor
-   */
-  editChild: boolean;
   search: RState['global']['search'];
 }
 interface StateMachineEditorState {
@@ -129,9 +125,6 @@ class StateMachineEditor extends React.Component<
     }
     return { oldProps: nextProps, stateMachine: nextProps.stateMachine };
   }
-  static defaultProps = {
-    editChild: false,
-  };
   constructor(props: StateMachineEditorProps) {
     super(props);
     this.state = { oldProps: props, stateMachine: props.stateMachine };
@@ -377,9 +370,6 @@ class StateMachineEditor extends React.Component<
     if (this.state.plumb != null) {
       this.state.plumb.unbind();
     }
-    if (this.props.editChild) {
-      this.props.dispatch(Actions.EditorActions.closeEditor());
-    }
   }
   componentDidUpdate(
     _prevProps: StateMachineEditorProps,
@@ -443,33 +433,25 @@ class StateMachineEditor extends React.Component<
     );
   }
 }
+
 export default function ConnectedStateMachineEditor() {
+  const stateMachine = React.useRef<IFSMDescriptor>();
   return (
     <StoreConsumer<{
       descriptor: IFSMDescriptor | undefined;
       instance: IFSMInstance | undefined;
-      editChild?: boolean;
       search: RState['global']['search'];
     }>
       selector={s => {
-        const descriptor = s.global.stateMachineEditor
-          ? VariableDescriptor.select<IFSMDescriptor>(
-              s.global.stateMachineEditor.id,
-            )
+        if (s.global.editing && s.global.editing.type === 'VariableFSM') {
+          stateMachine.current = s.global.editing.entity as IFSMDescriptor;
+        }
+        const instance = stateMachine.current
+          ? getInstance(stateMachine.current)
           : undefined;
-        const instance =
-          descriptor != null ? getInstance(descriptor) : undefined;
-        const editChild =
-          s.global.editing &&
-          s.global.editing.type === 'Variable' &&
-          s.global.stateMachineEditor &&
-          s.global.editing.id === s.global.stateMachineEditor.id &&
-          s.global.editing.path &&
-          s.global.editing.path.length > 0;
         return {
-          descriptor,
+          descriptor: stateMachine.current,
           instance,
-          editChild,
           search: s.global.search,
         };
       }}
@@ -484,7 +466,6 @@ export default function ConnectedStateMachineEditor() {
               stateMachine={state.descriptor}
               stateMachineInstance={state.instance}
               dispatch={dispatch}
-              editChild={state.editChild}
               search={state.search}
             />
           );
