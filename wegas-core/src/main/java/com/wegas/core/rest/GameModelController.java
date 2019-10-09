@@ -14,6 +14,7 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.cron.EjbTimerFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import java.io.IOException;
@@ -194,7 +195,7 @@ public class GameModelController {
     @GET
     @Path("{modelId : [1-9][0-9]*}/FixVariableTree")
     public void fixTree(@PathParam("modelId") Long modelId) throws IOException, RepositoryException {
-         modelFacade.fixVariableTree(modelId);
+        modelFacade.fixVariableTree(modelId);
     }
 
     /**
@@ -547,6 +548,16 @@ public class GameModelController {
             }
         }
         return games;
+    }
+
+    @DELETE
+    @Path("Force/{entityId: [1-9][0-9]*}")
+    @RequiresRoles("Administrator")
+    public void finalDelete(@PathParam("entityId") Long entityId) {
+        GameModel gm = gameModelFacade.find(entityId);
+        if (gm.getStatus().equals(Status.DELETE)) {
+            gameModelFacade.remove(entityId);
+        }
     }
 
     @DELETE
