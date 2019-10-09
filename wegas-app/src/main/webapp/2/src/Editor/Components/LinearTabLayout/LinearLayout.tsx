@@ -27,6 +27,10 @@ const grow = css({
   flex: '1 1 auto',
 });
 
+const noOverflow = css({
+  overflow:"unset"
+});
+
 export const focusTabContext = React.createContext<(id: string) => void>(
   () => {},
 );
@@ -921,7 +925,7 @@ function MainLinearLayout(props: LinearLayoutProps) {
                   })
                 }
                 minSize={50}
-                className={flex}
+                className={cx(flex,noOverflow)}
               >
                 {renderLayouts(childKey)}
               </ReflexElement>,

@@ -2,7 +2,7 @@ import u from 'immer';
 import { Actions as ACTIONS, Actions } from '..';
 import { ActionCreator, ActionType, StateActions } from '../actions';
 import { VariableDescriptor } from '../selectors';
-import { ThunkResult, store } from '../store';
+import { ThunkResult, store, getDispatch, StoreDispatch } from '../store';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { entityIsPersisted } from '../entities';
 import { Reducer } from 'redux';
@@ -19,10 +19,10 @@ export interface EditorAction<T extends IAbstractEntity> {
     };
   };
 }
-type Edition =
+export type Edition =
   | {
-      type: 'Variable';
-      id: number;
+      type: 'Variable' | 'VariableFSM';
+      entity: IAbstractEntity;
       config?: Schema<AvailableViews>;
       path?: (string | number)[];
       actions: EditorAction<IAbstractEntity>;
@@ -42,17 +42,16 @@ type Edition =
       config?: Schema<AvailableViews>;
       actions: EditorAction<IAbstractEntity>;
     };
-export interface GlobalState {
+export interface EditingState {
+  editing?: Readonly<Edition>;
+}
+export interface GlobalState extends EditingState {
   currentGameModelId: number;
   currentGameId: number;
   currentPlayerId: number;
   currentTeamId: number;
   currentUser: Readonly<IUser>;
-  editing?: Readonly<Edition>;
   currentPageId?: string;
-  stateMachineEditor?: {
-    id: number;
-  };
   pageEdit: Readonly<boolean>;
   pageSrc: Readonly<boolean>;
   search:
@@ -73,6 +72,37 @@ export interface GlobalState {
     socket_id?: string;
   };
 }
+
+export const editorManagement = (
+  state: EditingState,
+  action: StateActions,
+): Edition | undefined => {
+  switch (action.type) {
+    case ActionType.VARIABLE_EDIT:
+    case ActionType.FSM_EDIT:
+      return {
+        type:
+          action.type === ActionType.VARIABLE_EDIT ? 'Variable' : 'VariableFSM',
+        entity: action.payload.entity,
+        config: action.payload.config,
+        path: action.payload.path,
+        actions: action.payload.actions,
+      };
+    case ActionType.CLOSE_EDITOR:
+      return undefined;
+    case ActionType.VARIABLE_CREATE:
+      return {
+        type: 'VariableCreate',
+        '@class': action.payload['@class'],
+        parentId: action.payload.parentId,
+        parentType: action.payload.parentType,
+        actions: action.payload.actions,
+      };
+    default:
+      return state.editing;
+  }
+};
+
 /**
  * Reducer for editor's state
  *
@@ -83,37 +113,6 @@ export interface GlobalState {
 const global: Reducer<Readonly<GlobalState>> = u(
   (state: GlobalState, action: StateActions) => {
     switch (action.type) {
-      case ActionType.VARIABLE_EDIT:
-        state.editing = {
-          type: 'Variable',
-          id: action.payload.id,
-          config: action.payload.config,
-          path: action.payload.path,
-          actions: action.payload.actions,
-        };
-        return;
-      case ActionType.FSM_EDIT:
-        state.stateMachineEditor = { id: action.payload.id };
-        state.editing = {
-          type: 'Variable',
-          id: action.payload.id,
-          config: action.payload.config,
-          path: action.payload.path,
-          actions: action.payload.actions,
-        };
-        return;
-      case ActionType.CLOSE_EDITOR:
-        state.editing = undefined;
-        return;
-      case ActionType.VARIABLE_CREATE:
-        state.editing = {
-          type: 'VariableCreate',
-          '@class': action.payload['@class'],
-          parentId: action.payload.parentId,
-          parentType: action.payload.parentType,
-          actions: action.payload.actions,
-        };
-        return;
       case ActionType.PAGE_EDIT:
         state.editing = {
           type: 'Component',
@@ -165,6 +164,8 @@ const global: Reducer<Readonly<GlobalState>> = u(
       case ActionType.PUSHER_SOCKET:
         state.pusherStatus = action.payload;
         return;
+      default:
+        state.editing = editorManagement(state, action);
     }
     return state;
   },
@@ -216,7 +217,7 @@ export function editVariable(
   },
 ) {
   return ActionCreator.VARIABLE_EDIT({
-    id: entity.id!,
+    entity,
     config,
     path,
     actions,
@@ -234,7 +235,7 @@ export function editStateMachine(
   config?: Schema<AvailableViews>,
 ) {
   return ActionCreator.FSM_EDIT({
-    id: entity.id!,
+    entity,
     config,
     path,
     actions: {
@@ -286,25 +287,28 @@ export function editComponent(page: string, path: string[]) {
 /**
  * Save the content from the editor
  *
+ * The dispatch argument of the save function is not used to ensure that modifications are made in the global state
+ *
  * @export
  * @param {IAbstractEntity} value
  * @returns {ThunkResult}
  */
 export function saveEditor(value: IAbstractEntity): ThunkResult {
-  return function save(dispatch, getState) {
+  return function save(_dispatch, getState) {
     const editMode = getState().global.editing;
     if (editMode == null) {
       return;
     }
+    const globalDispatch = getDispatch() as StoreDispatch;
     switch (editMode.type) {
       case 'Variable':
-        return dispatch(
+        return globalDispatch(
           ACTIONS.VariableDescriptorActions.updateDescriptor(
             value as IVariableDescriptor,
           ),
         );
       case 'VariableCreate':
-        return dispatch(
+        return globalDispatch(
           ACTIONS.VariableDescriptorActions.createDescriptor(
             value as IVariableDescriptor,
             VariableDescriptor.select(editMode.parentId) as

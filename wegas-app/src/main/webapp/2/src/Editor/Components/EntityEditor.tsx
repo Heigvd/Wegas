@@ -2,7 +2,7 @@ import * as React from 'react';
 import { get, cloneDeep } from 'lodash-es';
 import { Schema } from 'jsoninput';
 import { State } from '../../data/Reducer/reducers';
-import { VariableDescriptor, GameModel, Helper } from '../../data/selectors';
+import { GameModel, Helper } from '../../data/selectors';
 import getEditionConfig from '../editionConfig';
 import { Actions } from '../../data';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
@@ -207,10 +207,9 @@ export default function VariableForm(props: {
             },
           };
         }
-        if (editing.type === 'Variable') {
+        if (editing.type === 'Variable' || editing.type === 'VariableFSM') {
           return {
             ...editing,
-            entity: VariableDescriptor.select(editing.id),
           };
         }
         return null;

@@ -6,46 +6,40 @@ import { Schema } from 'jsoninput';
 import { AvailableViews } from '../Editor/Components/FormView';
 
 export { ActionType };
-function createAction<T extends string, P>(type: T, payload: P) {
+export type ActionTypeValues = ValueOf<typeof ActionType>;
+
+function createAction<T extends ActionTypeValues, P>(type: T, payload: P) {
   return {
     type,
     payload,
   };
 }
+const variableEditAction = <TA extends ActionTypeValues>(type: TA) => <
+  TE extends IAbstractEntity
+>(data: {
+  entity: TE;
+  config?: Schema<AvailableViews>;
+  path?: TA extends ValueOf<typeof ActionType.FSM_EDIT>
+    ? (string)[]
+    : (string | number)[];
+  actions: {
+    save?: (entity: TE) => void;
+    more?: {
+      [id: string]: {
+        label: React.ReactNode;
+        action: (entity: TE, path: string[]) => void;
+      };
+    };
+  };
+}) => createAction(type, data);
 /**
  * Simple action creators.
  */
 export const ActionCreator = {
   // ENTITY_UPDATE: (data: NormalizedData) =>
   //   createAction(ActionType.ENTITY_UPDATE, data),
-  VARIABLE_EDIT: <T extends IAbstractEntity>(data: {
-    id: number;
-    config?: Schema<AvailableViews>;
-    path?: (string | number)[];
-    actions: {
-      save?: (entity: T) => void;
-      more?: {
-        [id: string]: {
-          label: React.ReactNode;
-          action: (entity: T, path: string[]) => void;
-        };
-      };
-    };
-  }) => createAction(ActionType.VARIABLE_EDIT, data),
-  FSM_EDIT: (data: {
-    id: number;
-    config?: Schema<AvailableViews>;
-    path?: string[];
-    actions: {
-      save?: (entity: IFSMDescriptor) => void;
-      more?: {
-        [id: string]: {
-          label: React.ReactNode;
-          action: (entity: IFSMDescriptor, path: string[]) => void;
-        };
-      };
-    };
-  }) => createAction(ActionType.FSM_EDIT, data),
+  VARIABLE_EDIT: variableEditAction(ActionType.VARIABLE_EDIT),
+  FSM_EDIT: variableEditAction(ActionType.FSM_EDIT),
   VARIABLE_CREATE: <T extends IAbstractEntity>(data: {
     '@class': string;
     parentId?: number;
@@ -59,7 +53,7 @@ export const ActionCreator = {
   MANAGED_MODE: (data: {
     // Nearly empty shells
     deletedEntities: {
-      [K in keyof NormalizedData]: { [id: string]: IAbstractEntity }
+      [K in keyof NormalizedData]: { [id: string]: IAbstractEntity };
     };
     updatedEntities: NormalizedData;
   }) => createAction(ActionType.MANAGED_MODE, data),
