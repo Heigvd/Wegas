@@ -892,7 +892,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
 
             function updateTrSpan(trSpan, trReadOnlySpan, tr) {
                 var newTr = tr && (tr.translation || (tr.get && tr.get("translation"))) || "";
-                var newStatus = tr && tr.status || "";
+                var newStatus = tr && (tr.status || (tr.get && tr.get("status"))) || "";
                 var cfg;
                 if (trSpan) {
                     cfg = _getCfgFromNode(trSpan);
