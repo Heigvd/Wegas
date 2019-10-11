@@ -591,7 +591,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                     (QuestionInstance) choiceDescriptor.getQuestion().getInstance(player),
                     player);
             try {
-                requestManager.addUpdatedEntities(choiceDescriptor.getEntities());
+                requestManager.addEntity(choiceDescriptor, requestFacade.getUpdatedEntities());
                 if (reply.getIgnored()) {
                     scriptEvent.fire(player, "replyIgnore", replyV);
                 } else {

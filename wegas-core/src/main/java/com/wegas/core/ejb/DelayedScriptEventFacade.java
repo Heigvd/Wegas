@@ -69,8 +69,8 @@ public class DelayedScriptEventFacade implements DelayedScriptEventFacadeI {
              * ManagedModeResponseFilter mock-up.
              * To propagate instances through websockets
                  */
-                Map<String, List<AbstractEntity>> updatedEntities = requestFacade.getUpdatedEntities();
-                Map<String, List<AbstractEntity>> destroyedEntities = requestFacade.getDestroyedEntities();
+                Map<String, List<AbstractEntity>> updatedEntities = rm.getMappedUpdatedEntities();
+                Map<String, List<AbstractEntity>> destroyedEntities = rm.getMappedDestroyedEntities();
 
                 if (!(updatedEntities.isEmpty() && destroyedEntities.isEmpty())) {
                     rm.markPropagationStartTime();

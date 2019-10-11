@@ -830,7 +830,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
      */
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getName() + ", #" + Integer.toHexString(this.hashCode()) + " )";
+        return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getName() + ", #" + Integer.toHexString(this.hashCode()) + ", ref:" + this.getRefId() +" )";
     }
 
     @Override

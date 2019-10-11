@@ -76,8 +76,8 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
         boolean rollbacked = false;
 
-        Map<String, List<AbstractEntity>> updatedEntitiesMap = requestManager.getUpdatedEntities();
-        Map<String, List<AbstractEntity>> destroyedEntitiesMap = requestManager.getDestroyedEntities();
+        Map<String, List<AbstractEntity>> updatedEntitiesMap = requestManager.getMappedUpdatedEntities();
+        Map<String, List<AbstractEntity>> destroyedEntitiesMap = requestManager.getMappedDestroyedEntities();
 
         boolean isManaged = managedMode != null && !managedMode.toLowerCase().equals("false");
 
@@ -151,9 +151,9 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             }
 
             if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty())) {
-                /*
-             * Include all detected updated entites within updatedEntites
-             * (the ones which will be returned to the client)
+                /**
+                 * Include all detected updated entities within updatedEntites
+                 * (the ones which will be returned to the client)
                  */
                 for (Entry<String, List<AbstractEntity>> entry : updatedEntitiesMap.entrySet()) {
                     String audience = entry.getKey();
