@@ -9,6 +9,10 @@ import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepUpdate } from '../../data/updateUtils';
 import { StoreConsumer } from '../../data/store';
 import { AvailableViews } from './FormView';
+import { cx } from 'emotion';
+import { flex, grow, flexColumn } from '../../css/classes';
+import { StyledLabel } from '../../Components/AutoImport/String/Label';
+import { shallowDifferent } from '../../data/connectStore';
 
 interface EditorProps<T> {
   entity?: T;
@@ -19,6 +23,10 @@ interface EditorProps<T> {
   }[];
   path?: (string | number)[];
   getConfig(entity: T): Promise<Schema<AvailableViews>>;
+  error?: {
+    message: string;
+    onVanish: () => void;
+  };
 }
 
 type VISIBILITY = 'INTERNAL' | 'PROTECTED' | 'INHERITED' | 'PRIVATE';
@@ -144,6 +152,7 @@ async function WindowedEditor<T>({
   actions = [],
   getConfig,
   path,
+  error,
 }: EditorProps<T>) {
   let pathEntity = entity;
   if (Array.isArray(path) && path.length > 0) {
@@ -163,26 +172,36 @@ async function WindowedEditor<T>({
     Schema<AvailableViews>
   >([import('./Form').then(m => m.Form), getConfig(pathEntity)]);
   return (
-    <Form
-      entity={pathEntity}
-      update={update != null ? updatePath : update}
-      actions={actions.map(({ label, action }) => {
-        return {
-          label,
-          action: function(e: T) {
-            action(deepUpdate(entity, path, e) as T, path);
-          },
-        };
-      })}
-      path={path}
-      schema={overrideSchema(entity, schema)}
-    />
+    <div className={cx(flex, grow, flexColumn)}>
+      <StyledLabel
+        value={error && error.message}
+        type={'error'}
+        duration={3000}
+        onLabelVanish={error && error.onVanish}
+      />
+      <Form
+        entity={pathEntity}
+        update={update != null ? updatePath : update}
+        actions={actions.map(({ label, action }) => {
+          return {
+            label,
+            action: function(e: T) {
+              action(deepUpdate(entity, path, e) as T, path);
+            },
+          };
+        })}
+        path={path}
+        schema={overrideSchema(entity, schema)}
+      />
+    </div>
   );
 }
 export const AsyncVariableForm = asyncSFC<EditorProps<{ '@class': string }>>(
   WindowedEditor,
   () => <div>load...</div>,
-  ({ err }: { err: Error }) => <span>{err.message}</span>,
+  ({ err }: { err: Error }) => (
+    <span>{err && err.message ? err.message : 'Something went wrong...'}</span>
+  ),
 );
 
 export default function VariableForm(props: {
@@ -194,33 +213,89 @@ export default function VariableForm(props: {
     <StoreConsumer
       selector={(s: State) => {
         const editing = s.global.editing;
-        if (editing == null) {
+        if (!editing) {
           return null;
+        } else {
+          let error = editing.error;
+          if (editing && !editing.error) {
+            const events = s.global.events;
+            if (events.length > 0) {
+              const mainEvent = events[0];
+              if (mainEvent.exceptions.length > 0) {
+                const event = mainEvent.exceptions[0];
+                switch (event['@class']) {
+                  case 'WegasConflictException':
+                    error = 'Conflict between variables';
+                    break;
+                  case 'WegasErrorMessage':
+                    error = event.message;
+                    break;
+                  case 'WegasNotFoundException':
+                    error = event.message;
+                    break;
+                  case 'WegasOutOfBoundException': {
+                    const min = event.min ? event.min : '-∞';
+                    const max = event.max ? event.max : '∞';
+                    error =
+                      '"' +
+                      event.variableName +
+                      '" is out of bound. <br />(' +
+                      event.value +
+                      ' not in [' +
+                      min +
+                      ';' +
+                      max +
+                      '])';
+                    break;
+                  }
+                  case 'WegasScriptException':
+                    error = event.message;
+                    if (event.lineNumber) {
+                      error += ' at line ' + event.lineNumber;
+                    }
+                    if (event.script) {
+                      error += ' in script ' + event.script;
+                    }
+                    break;
+                  case 'WegasWrappedException':
+                    error = 'Unexpected error: ' + event.message;
+                    break;
+                  default:
+                    error = 'Severe error';
+                    break;
+                }
+              }
+            }
+          }
+
+          switch (editing.type) {
+            case 'VariableCreate':
+              return {
+                ...editing,
+                entity: {
+                  '@class': editing['@class'],
+                  parentId: editing.parentId,
+                  parentType: editing.parentType,
+                },
+                error: error,
+              };
+            case 'Variable':
+            case 'VariableFSM':
+            case 'File':
+              return { ...editing, error: error };
+            default:
+              return null;
+          }
         }
-        if (editing.type === 'VariableCreate') {
-          return {
-            ...editing,
-            entity: {
-              '@class': editing['@class'],
-              parentId: editing.parentId,
-              parentType: editing.parentType,
-            },
-          };
-        }
-        if (editing.type === 'Variable' || editing.type === 'VariableFSM') {
-          return {
-            ...editing,
-          };
-        }
-        return null;
       }}
+      shouldUpdate={shallowDifferent}
     >
       {({ state, dispatch }) => {
         if (state == null || state.entity == null) {
           return null;
         }
         const update =
-          'save' in state.actions
+          'actions' in state && 'save' in state.actions
             ? state.actions.save
             : (entity: IAbstractEntity) => {
                 dispatch(Actions.EditorActions.saveEditor(entity));
@@ -237,8 +312,19 @@ export default function VariableForm(props: {
             {...state}
             getConfig={getConfig}
             update={update}
-            actions={Object.values(state.actions.more || {})}
+            actions={Object.values(
+              ('actions' in state && 'more' in state.actions) || {},
+            )}
             entity={state.entity}
+            error={
+              state.error
+                ? {
+                    message: state.error,
+                    onVanish: () =>
+                      dispatch(Actions.EditorActions.editorError(undefined)),
+                  }
+                : undefined
+            }
           />
         );
       }}

@@ -2,12 +2,13 @@ import u from 'immer';
 import { Actions as ACTIONS, Actions } from '..';
 import { ActionCreator, ActionType, StateActions } from '../actions';
 import { VariableDescriptor } from '../selectors';
-import { ThunkResult, store, getDispatch, StoreDispatch } from '../store';
+import { ThunkResult, store } from '../store';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { entityIsPersisted } from '../entities';
 import { Reducer } from 'redux';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../../Editor/Components/FormView';
+import { FileAPI } from '../../API/files.api';
 
 type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IAbstractEntity> {
@@ -26,6 +27,7 @@ export type Edition =
       config?: Schema<AvailableViews>;
       path?: (string | number)[];
       actions: EditorAction<IAbstractEntity>;
+      error?: string;
     }
   | {
       type: 'VariableCreate';
@@ -34,6 +36,7 @@ export type Edition =
       parentType?: string;
       config?: Schema<AvailableViews>;
       actions: EditorAction<IAbstractEntity>;
+      error?: string;
     }
   | {
       type: 'Component';
@@ -41,9 +44,17 @@ export type Edition =
       path: (string | number)[];
       config?: Schema<AvailableViews>;
       actions: EditorAction<IAbstractEntity>;
+      error?: string;
+    }
+  | {
+      type: 'File';
+      entity: IAbstractContentDescriptor;
+      error?: string;
+      cb: (updatedValue: IAbstractEntity) => void;
     };
 export interface EditingState {
   editing?: Readonly<Edition>;
+  events: Readonly<ExceptionEvent[]>;
 }
 export interface GlobalState extends EditingState {
   currentGameModelId: number;
@@ -73,6 +84,25 @@ export interface GlobalState extends EditingState {
   };
 }
 
+/**
+ *
+ * @param state
+ * @param action
+ */
+export const eventManagement = (state: EditingState, action: StateActions) => {
+  switch (action.type) {
+    case ActionType.MANAGED_RESPONSE_ACTION:
+      return [...state.events, ...action.payload.events];
+    default:
+      return state.events;
+  }
+};
+
+/**
+ *  This is a separate switch-case only for editor actions management
+ * @param state
+ * @param action
+ */
 export const editorManagement = (
   state: EditingState,
   action: StateActions,
@@ -88,8 +118,6 @@ export const editorManagement = (
         path: action.payload.path,
         actions: action.payload.actions,
       };
-    case ActionType.CLOSE_EDITOR:
-      return undefined;
     case ActionType.VARIABLE_CREATE:
       return {
         type: 'VariableCreate',
@@ -98,6 +126,18 @@ export const editorManagement = (
         parentType: action.payload.parentType,
         actions: action.payload.actions,
       };
+    case ActionType.FILE_EDIT:
+      return {
+        type: 'File',
+        ...action.payload,
+      };
+    case ActionType.CLOSE_EDITOR:
+      return undefined;
+    case ActionType.EDITOR_ERROR:
+      if (state.editing) {
+        return { ...state.editing, ...action.payload };
+      }
+      return state.editing;
     default:
       return state.editing;
   }
@@ -165,6 +205,7 @@ const global: Reducer<Readonly<GlobalState>> = u(
         state.pusherStatus = action.payload;
         return;
       default:
+        state.events = eventManagement(state, action);
         state.editing = editorManagement(state, action);
     }
     return state;
@@ -179,7 +220,8 @@ const global: Reducer<Readonly<GlobalState>> = u(
     search: { type: 'NONE' },
     pageEdit: false,
     pageSrc: false,
-  },
+    events: [],
+  } as GlobalState,
 );
 export default global;
 
@@ -260,7 +302,20 @@ export function editStateMachine(
     },
   });
 }
-
+/**
+ * Edit File
+ * @param entity
+ * @param cb
+ */
+export function editFile(
+  entity: IAbstractContentDescriptor,
+  cb: (updatedValue: IAbstractContentDescriptor) => void,
+) {
+  return ActionCreator.FILE_EDIT({
+    entity,
+    cb,
+  });
+}
 /**
  * Create a variableDescriptor
  *
@@ -294,21 +349,21 @@ export function editComponent(page: string, path: string[]) {
  * @returns {ThunkResult}
  */
 export function saveEditor(value: IAbstractEntity): ThunkResult {
-  return function save(_dispatch, getState) {
+  return function save(dispatch, getState) {
     const editMode = getState().global.editing;
     if (editMode == null) {
       return;
     }
-    const globalDispatch = getDispatch() as StoreDispatch;
     switch (editMode.type) {
       case 'Variable':
-        return globalDispatch(
+      case 'VariableFSM':
+        return dispatch(
           ACTIONS.VariableDescriptorActions.updateDescriptor(
             value as IVariableDescriptor,
           ),
         );
       case 'VariableCreate':
-        return globalDispatch(
+        return dispatch(
           ACTIONS.VariableDescriptorActions.createDescriptor(
             value as IVariableDescriptor,
             VariableDescriptor.select(editMode.parentId) as
@@ -316,6 +371,14 @@ export function saveEditor(value: IAbstractEntity): ThunkResult {
               | undefined,
           ),
         );
+      case 'File':
+        return dispatch(dispatch => {
+          return FileAPI.updateMetadata(value as IAbstractContentDescriptor)
+            .then((res: IAbstractContentDescriptor) => editMode.cb(res))
+            .catch((res: Error) => {
+              dispatch(ACTIONS.EditorActions.editorError(res.message));
+            });
+        });
     }
   };
 }
@@ -355,6 +418,10 @@ export function closeEditor() {
   return ActionCreator.CLOSE_EDITOR();
 }
 
+export function editorError(error?: string) {
+  return ActionCreator.EDITOR_ERROR({ error });
+}
+
 /**
  * Clear search values
  */
@@ -366,12 +433,14 @@ export function searchClear() {
  * @param value the text to search for
  */
 export function searchGlobal(value: string): ThunkResult {
-  return function(dispatch, getState) {
+  return function(dispatch) {
     dispatch(ActionCreator.SEARCH_ONGOING());
-    const gameModelId = getState().global.currentGameModelId;
-    return VariableDescriptorAPI.contains(gameModelId, value).then(result => {
-      return dispatch(ActionCreator.SEARCH_GLOBAL({ search: value, result }));
-    });
+    const gameModelId = store.getState().global.currentGameModelId;
+    return VariableDescriptorAPI.contains(gameModelId, value)
+      .then(result => {
+        return dispatch(ActionCreator.SEARCH_GLOBAL({ search: value, result }));
+      })
+      .catch((res: Response) => dispatch(editorError(res.statusText)));
   };
 }
 /**
@@ -382,13 +451,15 @@ export function searchUsage(
   variable: IVariableDescriptor & { id: number },
 ): ThunkResult {
   const search = `Variable.find(gameModel, "${variable.name}")`;
-  return function(dispatch, getState) {
+  return function(dispatch) {
     dispatch(ActionCreator.SEARCH_ONGOING());
-    const gameModelId = getState().global.currentGameModelId;
-    return VariableDescriptorAPI.contains(gameModelId, search).then(result => {
-      return dispatch(
-        ActionCreator.SEARCH_USAGE({ variableId: variable.id, result }),
-      );
-    });
+    const gameModelId = store.getState().global.currentGameModelId;
+    return VariableDescriptorAPI.contains(gameModelId, search)
+      .then(result => {
+        return dispatch(
+          ActionCreator.SEARCH_USAGE({ variableId: variable.id, result }),
+        );
+      })
+      .catch((res: Response) => dispatch(editorError(res.statusText)));
   };
 }

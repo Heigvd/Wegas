@@ -9,6 +9,7 @@ import { DnDTabLayout, ComponentMap, filterMap } from './DnDTabLayout';
 import { wlog } from '../../../Helper/wegaslog';
 
 import 'react-reflex/styles.css';
+import { flex, noOverflow, grow } from '../../../css/classes';
 
 const splitter = css({
   '&.reflex-container.vertical > .reflex-splitter': {
@@ -17,18 +18,6 @@ const splitter = css({
   '&.reflex-container.horizontal > .reflex-splitter': {
     height: '5px',
   },
-});
-
-const flex = css({
-  display: 'flex',
-});
-
-const grow = css({
-  flex: '1 1 auto',
-});
-
-const noOverflow = css({
-  overflow:"unset"
 });
 
 export const focusTabContext = React.createContext<(id: string) => void>(
@@ -925,7 +914,7 @@ function MainLinearLayout(props: LinearLayoutProps) {
                   })
                 }
                 minSize={50}
-                className={cx(flex,noOverflow)}
+                className={cx(flex, noOverflow)}
               >
                 {renderLayouts(childKey)}
               </ReflexElement>,

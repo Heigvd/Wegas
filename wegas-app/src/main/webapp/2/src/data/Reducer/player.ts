@@ -12,7 +12,7 @@ export interface PlayerState {
 const players: Reducer<Readonly<PlayerState>> = u(
   (state: PlayerState, action: StateActions) => {
     switch (action.type) {
-      case ActionType.MANAGED_MODE: {
+      case ActionType.MANAGED_RESPONSE_ACTION: {
         const players = action.payload.updatedEntities.players;
         const deletedKeys = Object.keys(action.payload.deletedEntities.players);
         return { ...omit(state, deletedKeys), ...players };

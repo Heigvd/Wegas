@@ -6,7 +6,6 @@ import { StoreDispatch, getDispatch } from '../../../data/store';
 import { Menu, MenuProps } from '../../../Components/Menu';
 import { FontAwesome, withDefault } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
-import { focusTabContext } from '../LinearTabLayout/LinearLayout';
 
 function buildMenuItems(variable: IAbstractEntity) {
   return getChildren(variable).then(children => {
@@ -38,6 +37,7 @@ interface AddMenuProps {
     label: JSX.Element;
     value: string;
   }>['onSelect'];
+  focusTab?: (tab: string) => void;
 }
 
 /**
@@ -48,10 +48,10 @@ export const AddMenuParent = asyncSFC(
     variable,
     localDispatch,
     onSelect,
+    focusTab,
   }: {
     variable: IListDescriptor | IQuestionDescriptor;
   } & AddMenuProps) => {
-    const focusTab = React.useContext(focusTabContext);
     const items = await buildMenuItems(variable);
     return (
       <Menu
@@ -63,7 +63,7 @@ export const AddMenuParent = asyncSFC(
           if (e.ctrlKey && localDispatch) {
             dispatch = localDispatch;
           } else {
-            focusTab('Editor');
+            focusTab && focusTab('Editor');
           }
           dispatch(Actions.EditorActions.createVariable(i.value, variable));
         }}
@@ -79,10 +79,10 @@ export const AddMenuChoice = asyncSFC(
     variable,
     localDispatch,
     onSelect,
+    focusTab,
   }: {
     variable: IChoiceDescriptor;
   } & AddMenuProps) => {
-    const focusTab = React.useContext(focusTabContext);
     const items = await buildMenuItems(variable);
     return (
       <Menu
@@ -95,7 +95,7 @@ export const AddMenuChoice = asyncSFC(
           if (e.ctrlKey && localDispatch) {
             dispatch = localDispatch;
           } else {
-            focusTab('Editor');
+            focusTab && focusTab('Editor');
           }
 
           dispatch(

@@ -1,9 +1,13 @@
-import { normalizeDatas, NormalizedData } from './normalize';
-import { ManagedMode } from '../API/rest';
+import { normalizeDatas, NormalizedData, discriminant } from './normalize';
+import { IManagedResponse } from '../API/rest';
 import * as ActionType from './actionTypes';
 import { PageIndex } from '../API/pages.api';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../Editor/Components/FormView';
+import { StoreDispatch } from './store';
+import { EditingState } from './Reducer/globalState';
+import { shallowDifferent } from './connectStore';
+import { getEntityActions } from '../Editor/editionConfig';
 
 export { ActionType };
 export type ActionTypeValues = ValueOf<typeof ActionType>;
@@ -38,8 +42,14 @@ const variableEditAction = <TA extends ActionTypeValues>(type: TA) => <
 export const ActionCreator = {
   // ENTITY_UPDATE: (data: NormalizedData) =>
   //   createAction(ActionType.ENTITY_UPDATE, data),
+  EDITOR_ERROR: (data: { error?: string }) =>
+    createAction(ActionType.EDITOR_ERROR, data),
   VARIABLE_EDIT: variableEditAction(ActionType.VARIABLE_EDIT),
   FSM_EDIT: variableEditAction(ActionType.FSM_EDIT),
+  FILE_EDIT: (data: {
+    entity: IAbstractContentDescriptor;
+    cb: (newEntity: IAbstractContentDescriptor) => void;
+  }) => createAction(ActionType.FILE_EDIT, data),
   VARIABLE_CREATE: <T extends IAbstractEntity>(data: {
     '@class': string;
     parentId?: number;
@@ -50,13 +60,14 @@ export const ActionCreator = {
     };
   }) => createAction(ActionType.VARIABLE_CREATE, data),
   CLOSE_EDITOR: () => createAction(ActionType.CLOSE_EDITOR, {}),
-  MANAGED_MODE: (data: {
+  MANAGED_RESPONSE_ACTION: (data: {
     // Nearly empty shells
     deletedEntities: {
       [K in keyof NormalizedData]: { [id: string]: IAbstractEntity };
     };
     updatedEntities: NormalizedData;
-  }) => createAction(ActionType.MANAGED_MODE, data),
+    events: any[];
+  }) => createAction(ActionType.MANAGED_RESPONSE_ACTION, data),
   PAGE_EDIT_MODE: (data: boolean) =>
     createAction(ActionType.PAGE_EDIT_MODE, data),
   PAGE_LOAD_ID: (data?: string) => createAction(ActionType.PAGE_LOAD_ID, data),
@@ -87,9 +98,47 @@ export type StateActions<
   A extends keyof typeof ActionCreator = keyof typeof ActionCreator
 > = ReturnType<typeof ActionCreator[A]>;
 
-export function managedMode(payload: ManagedMode) {
-  return ActionCreator.MANAGED_MODE({
-    deletedEntities: normalizeDatas(payload.deletedEntities),
-    updatedEntities: normalizeDatas(payload.updatedEntities),
+export function manageResponseHandler(
+  payload: IManagedResponse,
+  localDispatch?: StoreDispatch,
+  localState?: EditingState,
+) {
+  const deletedEntities = normalizeDatas(payload.deletedEntities);
+  const updatedEntities = normalizeDatas(payload.updatedEntities);
+  const events = payload.events;
+  if (localState && localDispatch) {
+    const editState = localState.editing;
+    const currentEditingEntity =
+      editState && 'entity' in editState && 'id' in editState.entity
+        ? editState.entity
+        : undefined;
+
+    if (currentEditingEntity && currentEditingEntity.id) {
+      const updatedEntity =
+        updatedEntities[
+          discriminant(currentEditingEntity) as keyof NormalizedData
+        ][currentEditingEntity.id];
+      if (shallowDifferent(updatedEntity, currentEditingEntity)) {
+        getEntityActions(updatedEntity).then(
+          ({ edit }) =>
+            editState &&
+            localDispatch(
+              edit(
+                updatedEntity,
+                'path' in editState ? editState.path : undefined,
+              ),
+            ),
+        );
+      }
+    }
+  }
+
+  const managedResponcePayload = ActionCreator.MANAGED_RESPONSE_ACTION({
+    deletedEntities,
+    updatedEntities,
+    events,
   });
+
+  localDispatch && localDispatch(managedResponcePayload);
+  return managedResponcePayload;
 }

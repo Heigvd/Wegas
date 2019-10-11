@@ -13,7 +13,12 @@ import {
   getLabel,
   getChildren,
 } from '../../editionConfig';
-import { StoreDispatch, getDispatch, useStore } from '../../../data/store';
+import {
+  StoreDispatch,
+  getDispatch,
+  useStore,
+  store,
+} from '../../../data/store';
 import { css, cx } from 'emotion';
 import { shallowIs } from '../../../Helper/shallowIs';
 import { Menu } from '../../../Components/Menu';
@@ -199,7 +204,6 @@ function CTree(
       editing: isEditing(props.variableId, props.subPath, state.global.editing),
     };
   }, shallowDifferent);
-  const globalDispatch = getDispatch();
   const { editing, variable, match } = globalState;
 
   const localEditing = isEditing(
@@ -225,7 +229,7 @@ function CTree(
               [localSelection]: localEditing,
             })}
             onClick={(e: ModifierKeysEvent) => {
-              let dispatch = globalDispatch;
+              let dispatch = store.dispatch;
               if (e.ctrlKey && props.localDispatch) {
                 dispatch = props.localDispatch;
               } else {
@@ -253,11 +257,13 @@ function CTree(
               <AddMenuParent
                 variable={variable}
                 localDispatch={props.localDispatch}
+                focusTab={focusTab}
               />
             ) : entityIs<IChoiceDescriptor>(variable, 'ChoiceDescriptor') ? (
               <AddMenuChoice
                 variable={variable}
                 localDispatch={props.localDispatch}
+                focusTab={focusTab}
               />
             ) : null}
           </span>

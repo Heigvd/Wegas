@@ -4,17 +4,18 @@ import { Connection, Defaults, jsPlumbInstance } from 'jsplumb';
 import * as React from 'react';
 import { IconButton } from '../../Components/Button/IconButton';
 import { VariableDescriptor } from '../../data/selectors';
-import { StoreConsumer, StoreDispatch, getDispatch } from '../../data/store';
+import { StoreDispatch, getDispatch, useStore } from '../../data/store';
 import { entityIs } from '../../data/entities';
 import { Actions } from '../../data';
 import { Toolbar } from '../../Components/Toolbar';
 import { FontAwesome } from './Views/FontAwesome';
 import { getInstance } from '../../data/methods/VariableDescriptor';
 import { themeVar } from '../../Components/Theme';
-import { EditorAction, Edition } from '../../data/Reducer/globalState';
+import { EditorAction } from '../../data/Reducer/globalState';
 import { State as RState } from '../../data/Reducer/reducers';
 import { wlog } from '../../Helper/wegaslog';
 import { ComponentWithForm } from './FormView/ComponentWithForm';
+import { shallowDifferent } from '../../data/connectStore';
 
 const editorStyle = css({
   position: 'relative',
@@ -448,50 +449,51 @@ export function ConnectedStateMachineEditor(props: {
   localDispatch?: StateMachineEditorProps['localDispatch'];
 }) {
   const stateMachine = React.useRef<IFSMDescriptor>();
+  const globalState = useStore(s => {
+    if (
+      s.global.editing &&
+      (s.global.editing.type === 'VariableFSM' ||
+        s.global.editing.type === 'Variable')
+    ) {
+      stateMachine.current = s.global.editing.entity as IFSMDescriptor;
+      const lastFSM = VariableDescriptor.select(
+        s.global.editing.entity.id,
+      ) as IFSMDescriptor;
+      if (shallowDifferent(stateMachine.current, lastFSM))
+        stateMachine.current = lastFSM;
+    }
+    const instance = stateMachine.current
+      ? getInstance(stateMachine.current)
+      : undefined;
+    if (
+      entityIs<IFSMDescriptor>(stateMachine.current, 'FSMDescriptor') &&
+      entityIs<IFSMInstance>(instance, 'FSMInstance')
+    ) {
+      return {
+        descriptor: stateMachine.current,
+        instance,
+        search: s.global.search,
+      };
+    }
+  }, shallowDifferent);
+
   return (
-    <StoreConsumer<{
-      descriptor: IFSMDescriptor | undefined;
-      instance: IFSMInstance | undefined;
-      search: RState['global']['search'];
-    }>
-      selector={s => {
-        if (s.global.editing && s.global.editing.type === 'VariableFSM') {
-          stateMachine.current = s.global.editing.entity as IFSMDescriptor;
+    <ComponentWithForm key={stateMachine.current ? stateMachine.current.id : 0}>
+      {({ localDispatch }) => {
+        if (globalState) {
+          return (
+            <StateMachineEditor
+              {...props}
+              stateMachine={globalState.descriptor}
+              stateMachineInstance={globalState.instance}
+              localDispatch={localDispatch}
+              search={globalState.search}
+            />
+          );
         }
-        const instance = stateMachine.current
-          ? getInstance(stateMachine.current)
-          : undefined;
-        return {
-          descriptor: stateMachine.current,
-          instance,
-          search: s.global.search,
-        };
+        return null;
       }}
-    >
-      {({ state }) => (
-        <ComponentWithForm
-          key={stateMachine.current ? stateMachine.current.id : 0}
-        >
-          {({ localDispatch }) => {
-            if (
-              entityIs<IFSMDescriptor>(state.descriptor, 'FSMDescriptor') &&
-              entityIs<IFSMInstance>(state.instance, 'FSMInstance')
-            ) {
-              return (
-                <StateMachineEditor
-                  {...props}
-                  stateMachine={state.descriptor}
-                  stateMachineInstance={state.instance}
-                  localDispatch={localDispatch}
-                  search={state.search}
-                />
-              );
-            }
-            return null;
-          }}
-        </ComponentWithForm>
-      )}
-    </StoreConsumer>
+    </ComponentWithForm>
   );
 }
 

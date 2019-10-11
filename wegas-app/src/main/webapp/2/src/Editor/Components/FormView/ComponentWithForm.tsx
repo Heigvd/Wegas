@@ -12,18 +12,10 @@ import {
   createStoreConnector,
   shallowDifferent,
 } from '../../../data/connectStore';
+import { flex, grow, autoScroll } from '../../../css/classes';
 
-const grow = css({
-  flex: '1 1 auto',
-});
-const flex = css({
-  display: 'flex',
-});
 const growBig = css({
   flex: '30 1 auto',
-});
-const scroll = css({
-  overflow: 'scroll',
 });
 
 const getEntity = (state?: Readonly<Edition>) => {
@@ -40,13 +32,15 @@ const getEntity = (state?: Readonly<Edition>) => {
     case 'Variable':
     case 'VariableFSM':
       return state.entity;
+    case 'File':
+      return state.entity;
     default:
       return undefined;
   }
 };
 
 const getUpdate = (state: Readonly<Edition>, dispatch: StoreDispatch) =>
-  'save' in state.actions
+  'actions' in state && state.actions.save
     ? state.actions.save
     : (entity: IAbstractEntity) => {
         dispatch(Actions.EditorActions.saveEditor(entity));
@@ -59,6 +53,14 @@ const getConfig = (state: Readonly<Edition>) => (
     ? Promise.resolve(state.config)
     : (getEditionConfig(entity) as Promise<Schema<AvailableViews>>);
 };
+
+const getError = (state: Readonly<Edition>, dispatch: StoreDispatch) =>
+  state.error
+    ? {
+        message: state.error,
+        onVanish: () => dispatch(Actions.EditorActions.editorError(undefined)),
+      }
+    : undefined;
 interface ComponentWithFormProps {
   children: (props: {
     localState: Readonly<Edition> | undefined;
@@ -77,32 +79,28 @@ export function ComponentWithForm({ children }: ComponentWithFormProps) {
   );
   const localDispatch = getLocalDispatch();
   const localEntity = getEntity(localState);
-
   return (
     <div className={cx(flex, grow)}>
-      <div className={cx(flex, growBig, scroll)}>
+      <div className={cx(flex, growBig, autoScroll)}>
         {children({
           localState,
           localDispatch,
         })}
       </div>
       {localState && localEntity && (
-        <div className={cx(flex, grow)}>
-          {/* <StyledLabel
-            value={error}
-            type={'error'}
-            duration={3000}
-            onLabelVanish={() => setError('')}
-          /> */}
-          <div className={cx(flex, grow)}>
-            <AsyncVariableForm
-              {...localState}
-              getConfig={getConfig(localState)}
-              update={getUpdate(localState, localDispatch)}
-              actions={Object.values(localState.actions.more || {})}
-              entity={localEntity}
-            />
-          </div>
+        <div className={cx(flex, grow, autoScroll)}>
+          <AsyncVariableForm
+            {...localState}
+            getConfig={getConfig(localState)}
+            update={getUpdate(localState, localDispatch)}
+            actions={Object.values(
+              'actions' in localState && localState.actions.more
+                ? localState.actions.more
+                : {},
+            )}
+            entity={localEntity}
+            error={getError(localState, localDispatch)}
+          />
         </div>
       )}
     </div>

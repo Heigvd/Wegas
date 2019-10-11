@@ -1,9 +1,11 @@
 // export const ENTITY_UPDATE = 'ENTITY/UPDATE';
 
-export const MANAGED_MODE = 'RESPONSE/MANAGED';
+export const MANAGED_RESPONSE_ACTION = 'RESPONSE/MANAGED';
 
+export const EDITOR_ERROR = 'EDITOR/ERROR';
 export const VARIABLE_EDIT = 'VARIABLE/EDIT';
 export const FSM_EDIT = 'FSM/EDIT';
+export const FILE_EDIT = 'FILE/EDIT';
 export const VARIABLE_CREATE = 'VARIABLE/CREATE';
 export const CLOSE_EDITOR = 'EDITOR/CLOSE';
 

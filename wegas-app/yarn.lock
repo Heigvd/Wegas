@@ -11402,10 +11402,10 @@ react-redux@^5.1.1:
     react-is "^16.6.0"
     react-lifecycles-compat "^3.0.0"
 
-react-reflex@^3.0.16:
-  version "3.0.16"
-  resolved "https://registry.yarnpkg.com/react-reflex/-/react-reflex-3.0.16.tgz#19797d1857c0a3c0e16943d0fde1f389946e89d2"
-  integrity sha512-96vtppG+AwpHCRO2cLjS4evKpSA7xx9ACwq2JiJR73JsA2nnGeoBSVGUKW7gFa9ec6RdExpGzP6OS8rjqALCEg==
+react-reflex@^3.0.18:
+  version "3.0.18"
+  resolved "https://registry.yarnpkg.com/react-reflex/-/react-reflex-3.0.18.tgz#03e3b87dd1c5daac790d175201ef7edc28e95e3f"
+  integrity sha512-xBPWFAoWWGTMyu/2DlcEgSwSKfAiWcBvdkcjil0b/Ua88juXP0cU3F+E7I5CKiMWBEdrRUb0Su64wXXl0TTstg==
   dependencies:
     "@babel/runtime" "^7.0.0"
     lodash.throttle "^4.1.1"
