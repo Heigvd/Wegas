@@ -76,6 +76,8 @@ const dropBottomZone = css({
   bottom: 0,
 });
 
+const dropTabZone = css({ width: '50px' });
+
 export interface ComponentMap {
   [name: string]: React.ReactNode;
 }
@@ -185,8 +187,12 @@ export function DnDTabLayout({
   );
   const [dropTabsProps, dropTabs] = useDrop({
     accept: dndAcceptType,
-    canDrop: () => false,
-    collect: (mon: DropTargetMonitor) => ({ isOver: mon.isOver() }),
+    canDrop: () => true,
+    collect: (mon: DropTargetMonitor) => ({
+      isOver: mon.isOver(),
+      isShallowOver: mon.isOver({ shallow: true }),
+    }),
+    drop: onDropTab(Object.keys(components).length),
   });
 
   /**
@@ -204,39 +210,44 @@ export function DnDTabLayout({
           key={label + 'LEFTDROP'}
           onDrop={onDropTab(i)}
           disabled={!dropTabsProps.isOver}
-        />,
-      );
-
-      tabs.push(
-        <DragTab
-          key={label}
-          label={label}
-          active={label === defaultActiveLabel}
-          onClick={() => {
-            onSelect && onSelect(label);
+          overview={{
+            position: 'left',
+            overviewNode: <div className={dropTabZone}></div>,
           }}
         >
-          <span className={grow}>
-            {label}
-            <IconButton
-              icon="times"
-              tooltip="Remove tab"
-              onClick={() => onDeleteTab(label)}
-              className={
-                label === defaultActiveLabel ? activeButton : inactiveButton
-              }
-            />
-          </span>
-        </DragTab>,
+          <DragTab
+            key={label}
+            label={label}
+            active={label === defaultActiveLabel}
+            onClick={() => {
+              onSelect && onSelect(label);
+            }}
+          >
+            <span className={grow}>
+              {label}
+              <IconButton
+                icon="times"
+                tooltip="Remove tab"
+                onClick={() => onDeleteTab(label)}
+                className={
+                  label === defaultActiveLabel ? activeButton : inactiveButton
+                }
+              />
+            </span>
+          </DragTab>
+        </DropTab>,
       );
 
       // At the end, don't forget to add a dropTab on the right of the last tab
       if (Number(i) === componentsKeys.length - 1) {
         tabs.push(
-          <DropTab
+          <Tab
             key={label + 'RIGHTDROP'}
-            onDrop={onDropTab(i + 1)}
-            disabled={!dropTabsProps.isOver}
+            className={
+              dropTabsProps.isShallowOver
+                ? cx(dropTabZone, dropZoneFocus)
+                : hidden
+            }
           />,
         );
       }
@@ -245,28 +256,38 @@ export function DnDTabLayout({
   };
 
   return (
-    <Toolbar vertical={vertical}>
+    <Toolbar vertical={vertical} className={relative}>
       <Toolbar.Header>
-        <div ref={dropTabs} className={cx(flex, grow, autoScroll)}>
-          {renderTabs()}
-          {selectItems && Object.keys(selectItems).length > 0 && (
-            <Tab key={'-1'}>
-              <Menu
-                items={Object.keys(selectItems).map(label => ({
-                  label: label,
-                  value: label,
-                }))}
-                icon="plus"
-                onSelect={i => {
-                  onSelect && onSelect(i.value);
-                  onNewTab(String(i.value));
-                }}
-                buttonClassName={inactiveButton}
-                listClassName={listStyle}
-              />
-            </Tab>
-          )}
-        </div>
+        {
+          /* Discuss this !(
+          dropLeftProps.isOver ||
+          dropRightProps.isOver ||
+          dropTopProps.isOver ||
+          dropBottomProps.isOver
+        ) && */ <div
+            ref={dropTabs}
+            className={cx(flex, grow, autoScroll)}
+          >
+            {renderTabs()}
+            {selectItems && Object.keys(selectItems).length > 0 && (
+              <Tab key={'-1'}>
+                <Menu
+                  items={Object.keys(selectItems).map(label => ({
+                    label: label,
+                    value: label,
+                  }))}
+                  icon="plus"
+                  onSelect={i => {
+                    onSelect && onSelect(i.value);
+                    onNewTab(String(i.value));
+                  }}
+                  buttonClassName={inactiveButton}
+                  listClassName={listStyle}
+                />
+              </Tab>
+            )}
+          </div>
+        }
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, relative)}>
         <div className={cx(expand, hideOverflow)}>

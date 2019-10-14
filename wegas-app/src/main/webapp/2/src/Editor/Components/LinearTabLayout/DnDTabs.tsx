@@ -3,12 +3,9 @@ import { css, cx } from 'emotion';
 import { useDrag, DropTargetMonitor, useDrop } from 'react-dnd';
 import { primaryLight, primaryDark, themeVar } from '../../../Components/Theme';
 import { DropAction } from './DnDTabLayout';
+import { hidden, flex } from '../../../css/classes';
 
 export const dndAcceptType = 'DnDTab';
-
-const hidden = css({
-  visibility: 'hidden',
-});
 
 const dropZoneFocus = css({
   width: '50px',
@@ -28,7 +25,7 @@ const defaultTabStyle = css({
   verticalAlign: '',
 });
 
-interface TabProps {
+interface TabInternalProps {
   /**
    * active - the state of the tab
    */
@@ -46,6 +43,8 @@ interface TabProps {
    */
   className?: string;
 }
+
+type TabProps = React.PropsWithChildren<TabInternalProps>;
 
 export const Tab = React.forwardRef(
   (props: TabProps, ref: React.RefObject<HTMLDivElement>) => (
@@ -81,9 +80,19 @@ interface DragTabProps extends TabProps {
   onDrag?: (label: string) => void;
 }
 
+interface DnDItem {
+  label: string;
+  type: string;
+  children?: React.PropsWithChildren<{}>['children'];
+}
+
 export function DragTab(props: DragTabProps) {
-  const [, drag] = useDrag({
-    item: { label: props.label, type: dndAcceptType, children: props.children },
+  const [, drag] = useDrag<DnDItem, unknown, unknown>({
+    item: {
+      label: props.label,
+      type: dndAcceptType,
+      children: props.children,
+    },
     begin: () => props.onDrag && props.onDrag(props.label),
   });
 
@@ -102,6 +111,19 @@ export interface DropTabProps extends TabProps {
    * disabled - Allows to disable de component
    */
   disabled?: boolean;
+  /**
+   * overview - An object to configure how to display the overview and what to display (by default, no overview is displayed)
+   */
+  overview?: {
+    /**
+     * position - The position where the overview should be displayed (by default, override the content)
+     */
+    position?: 'left' | 'right' | 'over';
+    /**
+     * overviewNode - An element to display when a dragged item is over the target zone
+     */
+    overviewNode: React.ReactNode;
+  };
 }
 
 export function DropTab(props: DropTabProps) {
@@ -112,27 +134,20 @@ export function DropTab(props: DropTabProps) {
     collect: (mon: DropTargetMonitor) => ({
       isOverCurrent: mon.isOver({ shallow: true }),
       canDrop: mon.canDrop(),
-      item: mon.getItem(),
+      item: mon.getItem() as DnDItem | null,
     }),
   });
 
-  const [style, setStyle] = React.useState('');
+  const [style, setStyle] = React.useState(hidden);
 
   React.useEffect(() => {
     setTimeout(() => {
       setStyle(
-        props.className
-          ? props.className
-          : cx(
-              dropTabProps.canDrop && !props.disabled
-                ? dropTabProps.isOverCurrent
-                  ? dropTabProps.isOverCurrent &&
-                    cx(defaultTabStyle, primaryDark)
-                  : dropZoneFocus
-                : hidden,
-            ),
+        dropTabProps.canDrop && dropTabProps.isOverCurrent && !props.disabled
+          ? dropZoneFocus
+          : hidden,
       );
-    }, 100);
+    }, 50);
   }, [
     dropTabProps.canDrop,
     dropTabProps.isOverCurrent,
@@ -140,9 +155,33 @@ export function DropTab(props: DropTabProps) {
     props.disabled,
   ]);
 
+  const renderTab = (): JSX.Element => {
+    if (props.overview) {
+      switch (props.overview.position) {
+        case 'left':
+          return (
+            <>
+              <div className={style}>{props.overview.overviewNode}</div>
+              {props.children}
+            </>
+          );
+        case 'right':
+          return (
+            <div className={style}>
+              {props.children}
+              {props.overview.overviewNode}
+            </div>
+          );
+        default:
+          return <div className={style}>{props.overview.overviewNode}</div>;
+      }
+    }
+    return <div className={style}>{props.children}</div>;
+  };
+
   return (
-    <Tab {...props} ref={dropTab} className={style}>
-      {dropTabProps.isOverCurrent ? dropTabProps.item.children : props.children}
+    <Tab {...props} ref={dropTab} className={cx(props.className, flex)}>
+      {renderTab()}
     </Tab>
   );
 }
