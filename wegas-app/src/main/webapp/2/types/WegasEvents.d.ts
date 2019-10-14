@@ -27,7 +27,7 @@ interface WegasWrappedException {
   '@class': 'WegasWrappedException';
   message: string;
 }
-type WegasEvents =
+type WegasExceptions =
   | IWegasConflictException
   | WegasErrorMessage
   | WegasNotFoundException
@@ -37,5 +37,11 @@ type WegasEvents =
 
 interface ExceptionEvent {
   '@class': 'ExceptionEvent';
-  exceptions: WegasEvents[];
+  exceptions: WegasExceptions[];
 }
+interface ClientEvent {
+  '@class': 'ClientEvent';
+  error: string;
+}
+
+type WegasEvents = ExceptionEvent | ClientEvent;

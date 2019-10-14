@@ -7,7 +7,7 @@ import getEditionConfig from '../editionConfig';
 import { Actions } from '../../data';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepUpdate } from '../../data/updateUtils';
-import { StoreConsumer } from '../../data/store';
+import { StoreConsumer, StoreDispatch } from '../../data/store';
 import { AvailableViews } from './FormView';
 import { cx } from 'emotion';
 import { flex, grow, flexColumn } from '../../css/classes';
@@ -204,6 +204,71 @@ export const AsyncVariableForm = asyncSFC<EditorProps<{ '@class': string }>>(
   ),
 );
 
+/**
+ * Retrieve error message from stored events
+ * @param state the events stored
+ * @param dispatch the dispatcher fn of the
+ */
+export const getError = (
+  state: Readonly<WegasEvents[]>,
+  dispatch: StoreDispatch,
+) => {
+  const onVanish = () => dispatch(Actions.EditorActions.editorErrorRemove());
+  if (state.length > 0) {
+    const currentEvent = state[0];
+    switch (currentEvent['@class']) {
+      case 'ClientEvent':
+        return { message: currentEvent.error, onVanish };
+      case 'ExceptionEvent': {
+        if (currentEvent.exceptions.length > 0) {
+          const currentException = currentEvent.exceptions[0];
+          switch (currentException['@class']) {
+            case 'WegasConflictException':
+              return { message: 'Conflict between variables', onVanish };
+            case 'WegasErrorMessage':
+              return { message: currentException.message, onVanish };
+            case 'WegasNotFoundException':
+              return { message: currentException.message, onVanish };
+            case 'WegasOutOfBoundException': {
+              const min = currentException.min ? currentException.min : '-∞';
+              const max = currentException.max ? currentException.max : '∞';
+              const error =
+                '"' +
+                currentException.variableName +
+                '" is out of bound. <br>(' +
+                currentException.value +
+                ' not in [' +
+                min +
+                ';' +
+                max +
+                '])';
+              return { message: error, onVanish };
+            }
+            case 'WegasScriptException': {
+              let error = currentException.message;
+              if (currentException.lineNumber) {
+                error += ' at line ' + currentException.lineNumber;
+              }
+              if (currentException.script) {
+                error += ' in script ' + currentException.script;
+              }
+              return { message: error, onVanish };
+            }
+            case 'WegasWrappedException':
+              return {
+                message: 'Unexpected error: ' + currentException.message,
+                onVanish,
+              };
+            default:
+              return { message: 'Severe error', onVanish };
+          }
+        }
+      }
+    }
+  }
+  return undefined;
+};
+
 export default function VariableForm(props: {
   entity?: Readonly<IVariableDescriptor>;
   path?: (string | number)[];
@@ -216,58 +281,6 @@ export default function VariableForm(props: {
         if (!editing) {
           return null;
         } else {
-          let error = editing.error;
-          if (editing && !editing.error) {
-            const events = s.global.events;
-            if (events.length > 0) {
-              const mainEvent = events[0];
-              if (mainEvent.exceptions.length > 0) {
-                const event = mainEvent.exceptions[0];
-                switch (event['@class']) {
-                  case 'WegasConflictException':
-                    error = 'Conflict between variables';
-                    break;
-                  case 'WegasErrorMessage':
-                    error = event.message;
-                    break;
-                  case 'WegasNotFoundException':
-                    error = event.message;
-                    break;
-                  case 'WegasOutOfBoundException': {
-                    const min = event.min ? event.min : '-∞';
-                    const max = event.max ? event.max : '∞';
-                    error =
-                      '"' +
-                      event.variableName +
-                      '" is out of bound. <br />(' +
-                      event.value +
-                      ' not in [' +
-                      min +
-                      ';' +
-                      max +
-                      '])';
-                    break;
-                  }
-                  case 'WegasScriptException':
-                    error = event.message;
-                    if (event.lineNumber) {
-                      error += ' at line ' + event.lineNumber;
-                    }
-                    if (event.script) {
-                      error += ' in script ' + event.script;
-                    }
-                    break;
-                  case 'WegasWrappedException':
-                    error = 'Unexpected error: ' + event.message;
-                    break;
-                  default:
-                    error = 'Severe error';
-                    break;
-                }
-              }
-            }
-          }
-
           switch (editing.type) {
             case 'VariableCreate':
               return {
@@ -277,12 +290,12 @@ export default function VariableForm(props: {
                   parentId: editing.parentId,
                   parentType: editing.parentType,
                 },
-                error: error,
+                events: s.global.events,
               };
             case 'Variable':
             case 'VariableFSM':
             case 'File':
-              return { ...editing, error: error };
+              return { ...editing, events: s.global.events };
             default:
               return null;
           }
@@ -316,15 +329,7 @@ export default function VariableForm(props: {
               ('actions' in state && 'more' in state.actions) || {},
             )}
             entity={state.entity}
-            error={
-              state.error
-                ? {
-                    message: state.error,
-                    onVanish: () =>
-                      dispatch(Actions.EditorActions.editorError(undefined)),
-                  }
-                : undefined
-            }
+            error={getError(state.events, dispatch)}
           />
         );
       }}

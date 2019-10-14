@@ -4,9 +4,9 @@ import { Actions } from '../../../data';
 import getEditionConfig from '../../editionConfig';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '.';
-import { AsyncVariableForm } from '../EntityEditor';
+import { AsyncVariableForm, getError } from '../EntityEditor';
 import { css, cx } from 'emotion';
-import { Edition } from '../../../data/Reducer/globalState';
+import { Edition, closeEditor } from '../../../data/Reducer/globalState';
 import { StoreDispatch } from '../../../data/store';
 import {
   createStoreConnector,
@@ -54,13 +54,6 @@ const getConfig = (state: Readonly<Edition>) => (
     : (getEditionConfig(entity) as Promise<Schema<AvailableViews>>);
 };
 
-const getError = (state: Readonly<Edition>, dispatch: StoreDispatch) =>
-  state.error
-    ? {
-        message: state.error,
-        onVanish: () => dispatch(Actions.EditorActions.editorError(undefined)),
-      }
-    : undefined;
 interface ComponentWithFormProps {
   children: (props: {
     localState: Readonly<Edition> | undefined;
@@ -74,32 +67,36 @@ export function ComponentWithForm({ children }: ComponentWithFormProps) {
     getDispatch: getLocalDispatch,
   } = React.useMemo(() => createStoreConnector(storeFactory()), []);
   const localState = useLocalStore(
-    (state: LocalGlobalState) => state.global.editing,
+    (state: LocalGlobalState) => state.global,
     shallowDifferent,
   );
   const localDispatch = getLocalDispatch();
-  const localEntity = getEntity(localState);
+  const localEntity = getEntity(localState.editing);
   return (
     <div className={cx(flex, grow)}>
       <div className={cx(flex, growBig, autoScroll)}>
         {children({
-          localState,
+          localState: localState.editing,
           localDispatch,
         })}
       </div>
-      {localState && localEntity && (
+      {localState && localState.editing && localEntity && (
         <div className={cx(flex, grow, autoScroll)}>
           <AsyncVariableForm
-            {...localState}
-            getConfig={getConfig(localState)}
-            update={getUpdate(localState, localDispatch)}
-            actions={Object.values(
-              'actions' in localState && localState.actions.more
-                ? localState.actions.more
-                : {},
-            )}
+            {...localState.editing}
+            getConfig={getConfig(localState.editing)}
+            update={getUpdate(localState.editing, localDispatch)}
+            actions={[
+              ...Object.values(
+                'actions' in localState.editing &&
+                  localState.editing.actions.more
+                  ? localState.editing.actions.more
+                  : {},
+              ),
+              { label: 'Close', action: () => localDispatch(closeEditor()) },
+            ]}
             entity={localEntity}
-            error={getError(localState, localDispatch)}
+            error={getError(localState.events, localDispatch)}
           />
         </div>
       )}

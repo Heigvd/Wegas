@@ -42,7 +42,8 @@ const variableEditAction = <TA extends ActionTypeValues>(type: TA) => <
 export const ActionCreator = {
   // ENTITY_UPDATE: (data: NormalizedData) =>
   //   createAction(ActionType.ENTITY_UPDATE, data),
-  EDITOR_ERROR: (data: { error?: string }) =>
+  EDITOR_ERROR_REMOVE: () => createAction(ActionType.EDITOR_ERROR_REMOVE, {}),
+  EDITOR_ERROR: (data: { error: string }) =>
     createAction(ActionType.EDITOR_ERROR, data),
   VARIABLE_EDIT: variableEditAction(ActionType.VARIABLE_EDIT),
   FSM_EDIT: variableEditAction(ActionType.FSM_EDIT),
@@ -66,7 +67,7 @@ export const ActionCreator = {
       [K in keyof NormalizedData]: { [id: string]: IAbstractEntity };
     };
     updatedEntities: NormalizedData;
-    events: any[];
+    events: WegasEvents[];
   }) => createAction(ActionType.MANAGED_RESPONSE_ACTION, data),
   PAGE_EDIT_MODE: (data: boolean) =>
     createAction(ActionType.PAGE_EDIT_MODE, data),
@@ -118,7 +119,10 @@ export function manageResponseHandler(
         updatedEntities[
           discriminant(currentEditingEntity) as keyof NormalizedData
         ][currentEditingEntity.id];
-      if (shallowDifferent(updatedEntity, currentEditingEntity)) {
+      if (
+        updatedEntity &&
+        shallowDifferent(updatedEntity, currentEditingEntity)
+      ) {
         getEntityActions(updatedEntity).then(
           ({ edit }) =>
             editState &&
@@ -140,5 +144,8 @@ export function manageResponseHandler(
   });
 
   localDispatch && localDispatch(managedResponcePayload);
-  return managedResponcePayload;
+  // Event should be filtered here and global event should be kept in the global response
+  const globalResponse = managedResponcePayload;
+  globalResponse.payload.events = [];
+  return globalResponse;
 }

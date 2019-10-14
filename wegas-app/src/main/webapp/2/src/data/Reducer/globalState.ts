@@ -27,7 +27,6 @@ export type Edition =
       config?: Schema<AvailableViews>;
       path?: (string | number)[];
       actions: EditorAction<IAbstractEntity>;
-      error?: string;
     }
   | {
       type: 'VariableCreate';
@@ -36,7 +35,6 @@ export type Edition =
       parentType?: string;
       config?: Schema<AvailableViews>;
       actions: EditorAction<IAbstractEntity>;
-      error?: string;
     }
   | {
       type: 'Component';
@@ -44,17 +42,15 @@ export type Edition =
       path: (string | number)[];
       config?: Schema<AvailableViews>;
       actions: EditorAction<IAbstractEntity>;
-      error?: string;
     }
   | {
       type: 'File';
       entity: IAbstractContentDescriptor;
-      error?: string;
       cb: (updatedValue: IAbstractEntity) => void;
     };
 export interface EditingState {
   editing?: Readonly<Edition>;
-  events: Readonly<ExceptionEvent[]>;
+  events: Readonly<WegasEvents[]>;
 }
 export interface GlobalState extends EditingState {
   currentGameModelId: number;
@@ -89,8 +85,37 @@ export interface GlobalState extends EditingState {
  * @param state
  * @param action
  */
-export const eventManagement = (state: EditingState, action: StateActions) => {
+export const eventManagement = (
+  state: EditingState,
+  action: StateActions,
+): readonly WegasEvents[] => {
   switch (action.type) {
+    case ActionType.EDITOR_ERROR_REMOVE: {
+      const newEvents = [...state.events];
+      if (newEvents.length > 0) {
+        const currentEvent = newEvents[0];
+        switch (currentEvent['@class']) {
+          case 'ClientEvent':
+            newEvents.pop();
+            break;
+          case 'ExceptionEvent': {
+            if (currentEvent.exceptions.length > 0) {
+              currentEvent.exceptions.pop();
+            }
+            if (currentEvent.exceptions.length === 0) {
+              newEvents.pop();
+            }
+            break;
+          }
+        }
+      }
+      return newEvents;
+    }
+    case ActionType.EDITOR_ERROR:
+      return [
+        ...state.events,
+        { '@class': 'ClientEvent', error: action.payload.error },
+      ];
     case ActionType.MANAGED_RESPONSE_ACTION:
       return [...state.events, ...action.payload.events];
     default:
@@ -133,11 +158,6 @@ export const editorManagement = (
       };
     case ActionType.CLOSE_EDITOR:
       return undefined;
-    case ActionType.EDITOR_ERROR:
-      if (state.editing) {
-        return { ...state.editing, ...action.payload };
-      }
-      return state.editing;
     default:
       return state.editing;
   }
@@ -418,8 +438,12 @@ export function closeEditor() {
   return ActionCreator.CLOSE_EDITOR();
 }
 
-export function editorError(error?: string) {
+export function editorError(error: string) {
   return ActionCreator.EDITOR_ERROR({ error });
+}
+
+export function editorErrorRemove() {
+  return ActionCreator.EDITOR_ERROR_REMOVE();
 }
 
 /**

@@ -233,10 +233,10 @@ function CTree(
               if (e.ctrlKey && props.localDispatch) {
                 dispatch = props.localDispatch;
               } else {
-                focusTab('Editor');
                 if (entityIs<IFSMDescriptor>(variable, 'FSMDescriptor')) {
                   focusTab('StateMachine');
                 }
+                focusTab('Editor');
               }
               getEntityActions(variable!).then(({ edit }) =>
                 dispatch(

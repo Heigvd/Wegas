@@ -3,6 +3,7 @@
 export const MANAGED_RESPONSE_ACTION = 'RESPONSE/MANAGED';
 
 export const EDITOR_ERROR = 'EDITOR/ERROR';
+export const EDITOR_ERROR_REMOVE = 'EDITOR/ERROR/REMOVE';
 export const VARIABLE_EDIT = 'VARIABLE/EDIT';
 export const FSM_EDIT = 'FSM/EDIT';
 export const FILE_EDIT = 'FILE/EDIT';
