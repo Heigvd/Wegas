@@ -224,7 +224,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             }
                         },
                         view: {
-                            className: 'wegas-advanced-feature editor-resources-occupations',
+                            className: 'editor-resources-occupations',
                             label: "Unavailabilities",
                             description: "[periods]"
                         }

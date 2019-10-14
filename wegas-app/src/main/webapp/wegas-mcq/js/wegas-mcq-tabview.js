@@ -61,7 +61,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     label = ""; // make sure the label is no null
                     if (question.get("allowMultipleReplies")) {
                         if (cbxType) {
-                            label = Wegas.I18n.t('mcq.answered').capitalize();
+                            label = I18n.tCap('mcq.answered');
                         } else {
                             label = questionInstance.get("replies").length + "x";
                         }

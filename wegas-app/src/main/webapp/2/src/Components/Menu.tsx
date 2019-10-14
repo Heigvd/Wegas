@@ -10,8 +10,8 @@ interface Item<T> {
   disabled?: true;
   children?: T[];
 }
-interface MenuProps<T extends Item<T>> {
-  onSelect: (item: T) => void;
+export interface MenuProps<T extends Item<T>> {
+  onSelect: (item: T, keyEvent: ModifierKeysEvent) => void;
   onOpen?: () => void;
   items: T[];
   label?: React.ReactNode;
@@ -63,11 +63,16 @@ export class Menu<T extends Item<T>> extends React.Component<MenuProps<T>> {
   static defaultProps = {
     direction: 'down',
   };
+  keyEvent: ModifierKeysEvent = {
+    ctrlKey: false,
+    altKey: false,
+  };
   onStateChange = (changes: StateChangeOptions<any>) => {
     if (changes.isOpen != null && changes.isOpen) {
       this.props.onOpen && this.props.onOpen();
     }
   };
+
   render(): JSX.Element {
     const {
       onSelect,
@@ -78,84 +83,96 @@ export class Menu<T extends Item<T>> extends React.Component<MenuProps<T>> {
       listClassName,
     } = this.props;
     return (
-      <Downshift
-        onStateChange={this.onStateChange}
-        onSelect={onSelect}
-        itemToString={emtpyStr}
+      <span
+        onKeyDownCapture={e =>
+          (this.keyEvent = {
+            ctrlKey: e.ctrlKey,
+            altKey: e.altKey,
+          })
+        }
       >
-        {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
-          <div className={String(container)}>
-            <div className={itemStyle} onClick={() => toggleMenu()}>
-              {label}
-              <IconButton
-                icon={withDefault(icon, `caret-${direction}` as Props['icon'])}
-                onClick={ev => {
-                  ev.stopPropagation();
-                  toggleMenu();
-                }}
-                className={buttonClassName}
-              />
-            </div>
+        <Downshift
+          onStateChange={this.onStateChange}
+          onSelect={i => onSelect(i, this.keyEvent)}
+          itemToString={emtpyStr}
+        >
+          {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
+            <div className={String(container)}>
+              <div className={itemStyle} onClick={() => toggleMenu()}>
+                {label}
+                <IconButton
+                  icon={withDefault(
+                    icon,
+                    `caret-${direction}` as Props['icon'],
+                  )}
+                  onClick={ev => {
+                    ev.stopPropagation();
+                    toggleMenu();
+                  }}
+                  className={buttonClassName}
+                />
+              </div>
 
-            {isOpen && (
-              <div
-                className={cx(DIR[direction], listClassName)}
-                ref={n => {
-                  if (
-                    n != null &&
-                    n.style.getPropertyValue('position') !== 'fixed'
-                  ) {
-                    const { left, top } = n.getBoundingClientRect();
-                    n.style.setProperty('left', `${left}px`);
-                    n.style.setProperty('top', `${top}px`);
-                    n.style.setProperty('position', 'fixed');
-                  }
-                }}
-              >
-                {this.props.items.map((item, index) => {
-                  if (Array.isArray(item.children)) {
+              {isOpen && (
+                <div
+                  className={cx(DIR[direction], listClassName)}
+                  ref={n => {
+                    if (
+                      n != null &&
+                      n.style.getPropertyValue('position') !== 'fixed'
+                    ) {
+                      const { left, top } = n.getBoundingClientRect();
+                      n.style.setProperty('left', `${left}px`);
+                      n.style.setProperty('top', `${top}px`);
+                      n.style.setProperty('position', 'fixed');
+                    }
+                  }}
+                >
+                  {this.props.items.map((item, index) => {
+                    if (Array.isArray(item.children)) {
+                      return (
+                        <div
+                          key={index}
+                          {...(!item.disabled
+                            ? getItemProps({
+                                item: item,
+                                onClick: stopPropagation,
+                              })
+                            : undefined)}
+                        >
+                          <Menu
+                            onSelect={(v, e) => {
+                              closeMenu();
+                              onSelect(v, e);
+                            }}
+                            items={item.children}
+                            direction="right"
+                            label={item.label}
+                          />
+                        </div>
+                      );
+                    }
                     return (
                       <div
                         key={index}
                         {...(!item.disabled
                           ? getItemProps({
+                              className: itemStyle,
                               item: item,
                               onClick: stopPropagation,
                             })
                           : undefined)}
                       >
-                        <Menu
-                          onSelect={v => {
-                            closeMenu();
-                            onSelect(v);
-                          }}
-                          items={item.children}
-                          direction="right"
-                          label={item.label}
-                        />
+                        {item.label}
                       </div>
                     );
-                  }
-                  return (
-                    <div
-                      key={index}
-                      {...(!item.disabled
-                        ? getItemProps({
-                            className: itemStyle,
-                            item: item,
-                            onClick: stopPropagation,
-                          })
-                        : undefined)}
-                    >
-                      {item.label}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
-      </Downshift>
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+        </Downshift>
+      </span>
     );
   }
 }

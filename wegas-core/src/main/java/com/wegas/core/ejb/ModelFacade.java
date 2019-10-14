@@ -503,6 +503,9 @@ public class ModelFacade {
 
                 logger.trace("Process variables");
 
+                requestManager.flushAndClearCaches();
+                model = gameModelFacade.find(model.getId());
+
             } catch (CloneNotSupportedException ex) {
                 logger.error("Exception while creating model", ex);
             }
@@ -637,7 +640,7 @@ public class ModelFacade {
     /**
      * Normalise Languages
      * * * * * * * * * * * * * * * * * * * * *
-     * Reset refId (same code, same refid) for each code which exists in the model
+     * Reset refId (same code, same refId) for each code which exists in the model
      * Assert same name, same code
      */
     private void processLanguages(GameModel model, List<GameModel> scenarios) {
@@ -738,7 +741,7 @@ public class ModelFacade {
                             try {
                                 // make sure corresponding descriptors share the same refId
 
-                                String name = model.getName();
+                                String name = modelVd.getName();
                                 VariableDescriptor vd = variableDescriptorFacade.find(scenario, name);
 
                                 MergeHelper.resetRefIds(vd, modelVd, false);
@@ -849,6 +852,59 @@ public class ModelFacade {
     }
 
     /**
+     * EclipseLink seems to do strange things when the first level cache is very full, like re-creating existing variables,
+     * or throwing erratic OptimisticLockException.
+     * <p>
+     * Clearing this cache prevent such a behaviour but such an operation must be used carefully because
+     * all not-flushed entities will be detached after that.
+     *
+     * @param modelId
+     * @param referenceId
+     * @param scenarioId
+     *
+     * @throws RepositoryException
+     */
+    private void doInitialPatchAndClear(Long modelId, Long referenceId, Long scenarioId) throws RepositoryException {
+        requestManager.flushAndClearCaches();
+
+        GameModel model = gameModelFacade.find(modelId);
+        GameModel reference = gameModelFacade.find(referenceId);
+        GameModel scenario = gameModelFacade.find(scenarioId);
+        scenario.setOnGoingPropagation(Boolean.TRUE);
+
+        // generate initial patch against model
+        WegasEntityPatch initialPatch = new WegasEntityPatch(reference, reference, true);
+
+        logger.info("InitialPatch: {}", initialPatch);
+
+        //initialPatch.apply(scenario, null, WegasPatch.PatchMode.OVERRIDE);
+        logger.info("Patch {}", scenario);
+        initialPatch.apply(scenario, scenario);
+        // revive
+        scenario.setBasedOn(model);
+
+        logger.info("Revive {}", scenario);
+
+        logger.debug(Helper.printGameModel(scenario));
+
+        /**
+         * This flush is required by several EntityRevivedEvent listener,
+         * which operate some SQL queries (which didn't return anything before
+         * entities have been flushed to database
+         * <p>
+         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
+         * it will not return any result if this flush not occurs
+         */
+        variableDescriptorFacade.flush();
+
+        variableDescriptorFacade.reviveItems(scenario, scenario, false);
+        //gameModelFacade.reset(scenario); // too much work...
+        this.registerPagesPropagates(scenario);
+
+        requestManager.flushAndClearCaches();
+    }
+
+    /**
      * Attach all scenarios to the given model
      *
      * @param model     the model
@@ -887,6 +943,11 @@ public class ModelFacade {
                         scenario.setPages(pages);
                     }
 
+                    /**
+                     * make sure refids match.
+                     * Create missing descriptors
+                     * move descriptor to correct location
+                     */
                     fixVariableTree(model, scenarios);
 
                     /**
@@ -898,53 +959,37 @@ public class ModelFacade {
                         }
                     }
 
-                    // should reset refid here
-                    // flush to have new descriptors and correct refId in database
-                    variableDescriptorFacade.flush();
-
-                    // generate initial patch agains model
-                    WegasEntityPatch initialPatch = new WegasEntityPatch(reference, reference, true);
-
-                    logger.info("InitialPatch: {}", initialPatch);
+                    requestManager.flushAndClearCaches();
 
                     // apply patch to all scenarios
                     for (GameModel scenario : scenarios) {
-                        //initialPatch.apply(scenario, null, WegasPatch.PatchMode.OVERRIDE);
-                        logger.info("Patch {}", scenario);
-                        initialPatch.apply(scenario, scenario);
-                        // revive
-                        scenario.setBasedOn(model);
-                        variableDescriptorFacade.flush();
-
-                        logger.info("Revive {}", scenario);
-
-                        logger.debug(Helper.printGameModel(scenario));
-
-                        /*
-                         * This flush is required by several EntityRevivedEvent listener,
-                         * which opperate some SQL queries (which didn't return anything before
-                         * entites have been flushed to database
-                         *
-                         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
-                         * it will not return any result if this flush not occurs
-                         */
-                        variableDescriptorFacade.flush();
-
-                        variableDescriptorFacade.reviveItems(scenario, scenario, false);
-                        //gameModelFacade.reset(scenario); // too much work...
-                        this.registerPagesPropagates(scenario);
+                        doInitialPatchAndClear(model.getId(), reference.getId(), scenario.getId());
                     }
+                    requestManager.flushAndClearCaches();
+                    logger.info("AfterInitialPatch");
+
+                    // reload entities after cache clearance
+                    model = gameModelFacade.find(model.getId());
+                    reference = gameModelFacade.find(reference.getId());
 
                     Map<String, List<GameModel>> translationSources = new HashMap<>();
 
                     // go through all languages from all scenarios
                     for (GameModel gameModel : allGameModels) {
+                        gameModel = gameModelFacade.find(gameModel.getId());
                         for (GameModelLanguage gml : gameModel.getLanguages()) {
                             translationSources.putIfAbsent(gml.getCode(), new ArrayList<>());
                             List<GameModel> gmRef = translationSources.get(gml.getCode());
                             gmRef.add(gameModel);
+                            gameModel.setOnGoingPropagation(Boolean.TRUE);
                         }
                     }
+
+                    requestManager.flushAndClearCaches();
+                    logger.info("AfterLanguageFetch");
+
+                    model = gameModelFacade.find(model.getId());
+                    reference = gameModelFacade.find(reference.getId());
 
                     // inscript translations
                     for (Entry<String, List<GameModel>> entry : translationSources.entrySet()) {
@@ -952,17 +997,25 @@ public class ModelFacade {
                         List<GameModel> gms = entry.getValue();
 
                         if (gms.contains(model)) {
-                            for (GameModel scen : gms) {
+                            for (GameModel s : gms) {
+                                GameModel scen = gameModelFacade.find(s.getId());
                                 if (scen.isScenario()) {
+                                    logger.info("Before Import in {}", scen);
                                     i18nFacade.importTranslations(scen, model, reference, languageCode);
+                                    variableDescriptorFacade.flush();
+                                    logger.info("After Import in {}", scen);
                                 }
                             }
                         }
                     }
 
                     this.syncRepository(model);
+                    logger.info("After RepoSync");
+
+                    requestManager.flushAndClearCaches();
 
                     for (GameModel scenario : scenarios) {
+                        scenario = gameModelFacade.find(scenario.getId());
                         if (scenario.isScenario()) {
                             scenario.setOnGoingPropagation(Boolean.FALSE);
                         }
@@ -992,13 +1045,14 @@ public class ModelFacade {
     private void registerPagesPropagates(GameModel scenario) throws RepositoryException {
 
         Pages pages = jCRConnectorProvider.getPages(scenario);
-        // extract IDS now as the session woulad have been closed in the callback (afterCommit !)
+        // extract IDS now as the session would have been closed in the callback (afterCommit !)
         Set<String> pagesIDs = pages.getPagesContent().keySet();
+        Long id = scenario.getId();
 
         pages.afterCommit((t) -> {
-            websocketFacade.pageIndexUpdate(scenario.getId(), requestManager.getSocketId());
+            websocketFacade.pageIndexUpdate(id, requestManager.getSocketId());
             for (String pageId : pagesIDs) {
-                websocketFacade.pageUpdate(scenario.getId(), pageId, requestManager.getSocketId());
+                websocketFacade.pageUpdate(id, pageId, requestManager.getSocketId());
             }
         });
     }
@@ -1047,7 +1101,7 @@ public class ModelFacade {
      * Move vd according to the position of the corresponding modelVd
      *
      * @param vd      the misplaced descriptor
-     * @param modelVd the correpsonding descriptor in the model
+     * @param modelVd the corresponding descriptor in the model
      */
     private void move(VariableDescriptor vd, VariableDescriptor modelVd) {
         // should move find to according to model structure before patching
@@ -1236,7 +1290,9 @@ public class ModelFacade {
                     }
                 }
             }
-            return gameModel;
+
+            // make sure to return a managed entity
+            return gameModelFacade.find(gameModel.getId());
         } else {
             throw WegasErrorMessage.error("GameModel " + gameModel + " is not a model (sic)");
         }

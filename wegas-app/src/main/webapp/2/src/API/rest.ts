@@ -32,11 +32,11 @@ function COMMON_CONFIG(
     headers: HEADERS,
   };
 }
-export interface ManagedMode {
+export interface IManagedResponse {
   '@class': 'ManagedResponse';
   deletedEntities: IAbstractEntity[];
-  events: any[];
   updatedEntities: IAbstractEntity[];
+  events: any[];
 }
 type View = 'Editor' | 'Instance' | 'Export';
 
@@ -66,6 +66,9 @@ export function rest(
     }
     throw res;
   });
+  // const oReq = new XMLHttpRequest();
+  // oReq.open(options.method ? options.method : 'GET', `${API_ENDPOINT}${v}${u}`);
+  // oReq.send();
 }
 export function managedModeRequest(
   url: string,
@@ -81,5 +84,7 @@ export function managedModeRequest(
     },
     view,
     contentType,
-  ).then(data => data.json() as Promise<ManagedMode>);
+  )
+    .then(data => data.json() as Promise<IManagedResponse>)
+    .catch(data => data.json() as Promise<IManagedResponse>);
 }

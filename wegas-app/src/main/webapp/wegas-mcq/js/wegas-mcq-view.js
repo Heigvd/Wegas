@@ -169,15 +169,18 @@ YUI.add('wegas-mcq-view', function(Y) {
             }
 
 
-            if (whQuestionInstance.get("unread")) {
-                whQuestionInstance.set("unread", false); // avoid sync hell
-                Y.Wegas.Facade.Variable.sendRequest({
-                    request: "/QuestionDescriptor/Read/" +
-                        Wegas.Facade.Game.get('currentPlayerId') + "/" + whQuestion.get("id"),
-                    cfg: {
-                        method: "PUT"
-                    }
-                });
+
+            if (Y.fire("playerAction", {})) {
+                if (whQuestionInstance.get("unread")) {
+                    whQuestionInstance.set("unread", false); // avoid sync hell
+                    Y.Wegas.Facade.Variable.sendRequest({
+                        request: "/QuestionDescriptor/Read/" +
+                            Wegas.Facade.Game.get('currentPlayerId') + "/" + whQuestion.get("id"),
+                        cfg: {
+                            method: "PUT"
+                        }
+                    });
+                }
             }
         },
         getAttrValueOrDefault: function(attrName, defaultValue) {
@@ -317,29 +320,31 @@ YUI.add('wegas-mcq-view', function(Y) {
         _submit: function() {
             if (this.isAllValid()) {
                 //this.showOverlay();
-                var iId = this.get("variable.evaluated").getInstance().get("id");
-                Y.Wegas.Facade.Variable.sendRequest({
-                    request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
-                    cfg: {
-                        method: "POST",
-                        data: {
-                            "@class": "Script",
-                            content: this.getSaveScript() + "QuestionFacade.validateQuestion(" + iId + ", self);"
+                Y.Wegas.Panel.confirmPlayerAction(Y.bind(function() {
+                    var iId = this.get("variable.evaluated").getInstance().get("id");
+                    Y.Wegas.Facade.Variable.sendRequest({
+                        request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
+                        cfg: {
+                            method: "POST",
+                            data: {
+                                "@class": "Script",
+                                content: this.getSaveScript() + "QuestionFacade.validateQuestion(" + iId + ", self);"
+                            }
+                        },
+                        on: {
+                            success: Y.bind(function() {
+                                //this.hideOverlay();
+                                /*if (this.__hackParent) {
+                                 Y.later(500, this.__hackParent, this.__hackParent.selectNextUnread);
+                                 }*/
+                            }, this),
+                            failure: Y.bind(function() {
+                                //this.hideOverlay();
+                                this.showMessage("error", "Something went wrong");
+                            }, this)
                         }
-                    },
-                    on: {
-                        success: Y.bind(function() {
-                            //this.hideOverlay();
-                            /*if (this.__hackParent) {
-                             Y.later(500, this.__hackParent, this.__hackParent.selectNextUnread);
-                             }*/
-                        }, this),
-                        failure: Y.bind(function() {
-                            //this.hideOverlay();
-                            this.showMessage("error", "Something went wrong");
-                        }, this)
-                    }
-                });
+                    });
+                }, this));
             }
         },
         /**
@@ -537,8 +542,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             if (repliesToDisplay.length &&
                 (!cbx || question.getInstance().get("validated"))
                 && !(cbx && question.get("tabular")) && this.get("displayResult") === "inline") {
-                this.resultTitle.set("content", repliesToDisplay.length > 1 ? Y.Wegas.I18n.t('mcq.results')
-                    .capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize());
+                this.resultTitle.set("content", repliesToDisplay.length > 1 ? I18n.tCap('mcq.results') : I18n.tCap('mcq.result'));
                 this.resultTitle.syncUI();
                 var repliesIds = {};
                 for (var i in repliesToDisplay) {
@@ -584,15 +588,17 @@ YUI.add('wegas-mcq-view', function(Y) {
             }
 
 
-            if (choiceInstance.get("unread")) {
-                choiceInstance.set("unread", false); // avoid sync hell
-                Y.Wegas.Facade.Variable.sendRequest({
-                    request: "/QuestionDescriptor/Read/" +
-                        Y.Wegas.Facade.Game.get('currentPlayerId') + "/" + choice.get("id"),
-                    cfg: {
-                        method: "PUT"
-                    }
-                });
+            if (Y.fire("playerAction", {})) {
+                if (choiceInstance.get("unread")) {
+                    choiceInstance.set("unread", false); // avoid sync hell
+                    Y.Wegas.Facade.Variable.sendRequest({
+                        request: "/QuestionDescriptor/Read/" +
+                            Y.Wegas.Facade.Game.get('currentPlayerId') + "/" + choice.get("id"),
+                        cfg: {
+                            method: "PUT"
+                        }
+                    });
+                }
             }
 
             if (noFeedbacks) {
@@ -898,155 +904,97 @@ YUI.add('wegas-mcq-view', function(Y) {
             this.lockable.unlock();
         },
         selectChoice: function(e) {
-            if (this.get("disabled")) {
-                return;
-            }
-            var choiceWidget = Y.Widget.getByNode(e.target.ancestor(".wegas-mcqchoice")),
-                choice = choiceWidget.get("choice.evaluated"),
-                question = choiceWidget.get("question.evaluated");
-            if (question.get("cbx")) {
-                //select or cancel ?
-                var replies = choice.getInstance().get("replies");
-                if (replies.length > 0) {
-                    for (var i in replies) {
-                        this.beforeRequest();
-                        Y.Wegas.Facade.Variable.sendRequest({
-                            request: "/QuestionDescriptor/CancelReply/" + replies[i].get('id')
-                                + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
-                            cfg: {
-                                method: "GET"
-                            },
-                            on: {
-                                success: Y.bind(this.onSuccess, this),
-                                failure: Y.bind(this.onFailure, this)
-                            }
-                        });
-                    }
-                } else {
-                    this.beforeRequest();
-                    Y.Wegas.Facade.Variable.sendRequest({
-                        request: "/QuestionDescriptor/SelectChoice/" + choice.get('id')
-                            + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
-                            + "/StartTime/0",
-                        cfg: {
-                            method: "GET" // initially: POST
-                        },
-                        on: {
-                            success: Y.bind(this.onSuccess, this),
-                            failure: Y.bind(this.onFailure, this)
-                        }
-                    });
-                }
-            } else if (this.getEffectiveDisplayMode() === "dialogue") {
-                //select or cancel ?
-                var replies = choice.getInstance().get("replies"),
-                    pendingReplies = [],
-                    validatedReplies = [];
-
-                for (var i in replies) {
-                    if (replies[i].get("validated")) {
-                        validatedReplies.push(replies[i]);
-                    } else {
-                        pendingReplies.push(replies[i]);
-                    }
-                }
-
-                if (pendingReplies.length) {
-                    for (var i in pendingReplies) {
-                        this.beforeRequest();
-                        Y.Wegas.Facade.Variable.sendRequest({
-                            request: "/QuestionDescriptor/QuietCancelReply/" + pendingReplies[i].get('id')
-                                + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
-                            cfg: {
-                                method: "GET"
-                            },
-                            on: {
-                                success: Y.bind(this.onSuccess, this),
-                                failure: Y.bind(this.onFailure, this)
-                            }
-                        });
-                    }
-                } else {
-                    this.beforeRequest();
-                    Y.Wegas.Facade.Variable.sendRequest({
-                        request: "/QuestionDescriptor/DeselectOthersAndSelectChoice/" + choice.get('id')
-                            + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
-                            + "/StartTime/0",
-                        cfg: {
-                            method: "GET" // initially: POST
-                        },
-                        on: {
-                            success: Y.bind(this.onSuccess, this),
-                            failure: Y.bind(this.onFailure, this)
-                        }
-                    });
-                }
-            } else {
-                this.beforeRequest();
-                Y.Wegas.Facade.Variable.sendRequest({
-                    request: "/QuestionDescriptor/SelectAndValidateChoice/" + choice.get('id') + "/Player/" +
-                        Wegas.Facade.Game.get('currentPlayerId'),
-                    cfg: {
-                        method: "POST"
-                    },
-                    on: {
-                        success: Y.bind(this.onSuccess, this),
-                        failure: Y.bind(this.onFailure, this)
-                    }
-                });
-            }
-        },
-        validateQuestion: function(e) {
-            if (this.get("disabled")) {
-                return;
-            }
-            var questionDescriptor = this.get("variable.evaluated"),
-                questionInstance = questionDescriptor.getInstance(),
-                minQ, maxQ;
-
-            if (questionDescriptor.get("cbx")) { // doublecheck
-                // Prevent validation of questions with too few replies
-                if (Y.Lang.isNumber(questionDescriptor.get("minReplies"))) {
-                    minQ = questionDescriptor.get("minReplies");
-                } else {
-                    minQ = 1;
-                }
-                if (questionInstance.get("replies").length < minQ) {
-                    this.onFailure();
-                    if (minQ === 1) {
-                        Wegas.Alerts.showMessage("warn", Y.Wegas.I18n.t('mcq.noReply'));
-                    } else {
-                        Wegas.Alerts.showMessage("warn", Y.Wegas.I18n.t('mcq.notEnoughReply', {min: minQ}));
-                    }
+            Y.Wegas.Panel.confirmPlayerAction(Y.bind(function() {
+                if (this.get("disabled")) {
                     return;
                 }
-
-                this.beforeRequest();
-                Y.Wegas.Facade.Variable.sendRequest({
-                    request: "/QuestionDescriptor/ValidateQuestion/" + questionInstance.get('id')
-                        + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
-                    cfg: {
-                        method: "POST"
-                    },
-                    on: {
-                        success: Y.bind(this.onSuccess, this),
-                        failure: Y.bind(this.onFailure, this)
+                var choiceWidget = Y.Widget.getByNode(e.target.ancestor(".wegas-mcqchoice")),
+                    choice = choiceWidget.get("choice.evaluated"),
+                    question = choiceWidget.get("question.evaluated");
+                if (question.get("cbx")) {
+                    //select or cancel ?
+                    var replies = choice.getInstance().get("replies");
+                    if (replies.length > 0) {
+                        for (var i in replies) {
+                            this.beforeRequest();
+                            Y.Wegas.Facade.Variable.sendRequest({
+                                request: "/QuestionDescriptor/CancelReply/" + replies[i].get('id')
+                                    + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
+                                cfg: {
+                                    method: "GET"
+                                },
+                                on: {
+                                    success: Y.bind(this.onSuccess, this),
+                                    failure: Y.bind(this.onFailure, this)
+                                }
+                            });
+                        }
+                    } else {
+                        this.beforeRequest();
+                        Y.Wegas.Facade.Variable.sendRequest({
+                            request: "/QuestionDescriptor/SelectChoice/" + choice.get('id')
+                                + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
+                                + "/StartTime/0",
+                            cfg: {
+                                method: "GET" // initially: POST
+                            },
+                            on: {
+                                success: Y.bind(this.onSuccess, this),
+                                failure: Y.bind(this.onFailure, this)
+                            }
+                        });
                     }
-                });
-            } else if (this.getEffectiveDisplayMode() === "dialogue") {
-                // validate all pendings replies (usually only one...)
-                var replies = Y.Array.filter(questionInstance.get("replies"), function(reply) {
-                    return !reply.get("validated");
-                }, this);
+                } else if (this.getEffectiveDisplayMode() === "dialogue") {
+                    //select or cancel ?
+                    var replies = choice.getInstance().get("replies"),
+                        pendingReplies = [],
+                        validatedReplies = [];
 
-                for (var i in replies) {
-                    var reply = replies[i];
+                    for (var i in replies) {
+                        if (replies[i].get("validated")) {
+                            validatedReplies.push(replies[i]);
+                        } else {
+                            pendingReplies.push(replies[i]);
+                        }
+                    }
+
+                    if (pendingReplies.length) {
+                        for (var i in pendingReplies) {
+                            this.beforeRequest();
+                            Y.Wegas.Facade.Variable.sendRequest({
+                                request: "/QuestionDescriptor/QuietCancelReply/" + pendingReplies[i].get('id')
+                                    + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
+                                cfg: {
+                                    method: "GET"
+                                },
+                                on: {
+                                    success: Y.bind(this.onSuccess, this),
+                                    failure: Y.bind(this.onFailure, this)
+                                }
+                            });
+                        }
+                    } else {
+                        this.beforeRequest();
+                        Y.Wegas.Facade.Variable.sendRequest({
+                            request: "/QuestionDescriptor/DeselectOthersAndSelectChoice/" + choice.get('id')
+                                + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
+                                + "/StartTime/0",
+                            cfg: {
+                                method: "GET" // initially: POST
+                            },
+                            on: {
+                                success: Y.bind(this.onSuccess, this),
+                                failure: Y.bind(this.onFailure, this)
+                            }
+                        });
+                    }
+                } else {
                     this.beforeRequest();
                     Y.Wegas.Facade.Variable.sendRequest({
-                        request: "/QuestionDescriptor/ValidateReply/" + reply.get("id")
-                            + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
+                        request: "/QuestionDescriptor/SelectAndValidateChoice/" + choice.get('id') + "/Player/" +
+                            Wegas.Facade.Game.get('currentPlayerId'),
                         cfg: {
-                            method: "GET" // initially: POST
+                            method: "POST"
                         },
                         on: {
                             success: Y.bind(this.onSuccess, this),
@@ -1054,7 +1002,69 @@ YUI.add('wegas-mcq-view', function(Y) {
                         }
                     });
                 }
-            }
+            }, this));
+        },
+        validateQuestion: function(e) {
+            Y.Wegas.Panel.confirmPlayerAction(Y.bind(function() {
+                if (this.get("disabled")) {
+                    return;
+                }
+                var questionDescriptor = this.get("variable.evaluated"),
+                    questionInstance = questionDescriptor.getInstance(),
+                    minQ, maxQ;
+
+                if (questionDescriptor.get("cbx")) { // doublecheck
+                    // Prevent validation of questions with too few replies
+                    if (Y.Lang.isNumber(questionDescriptor.get("minReplies"))) {
+                        minQ = questionDescriptor.get("minReplies");
+                    } else {
+                        minQ = 1;
+                    }
+                    if (questionInstance.get("replies").length < minQ) {
+                        this.onFailure();
+                        if (minQ === 1) {
+                            Wegas.Alerts.showMessage("warn", Y.Wegas.I18n.t('mcq.noReply'));
+                        } else {
+                            Wegas.Alerts.showMessage("warn", Y.Wegas.I18n.t('mcq.notEnoughReply', {min: minQ}));
+                        }
+                        return;
+                    }
+
+                    this.beforeRequest();
+                    Y.Wegas.Facade.Variable.sendRequest({
+                        request: "/QuestionDescriptor/ValidateQuestion/" + questionInstance.get('id')
+                            + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
+                        cfg: {
+                            method: "POST"
+                        },
+                        on: {
+                            success: Y.bind(this.onSuccess, this),
+                            failure: Y.bind(this.onFailure, this)
+                        }
+                    });
+                } else if (this.getEffectiveDisplayMode() === "dialogue") {
+                    // validate all pendings replies (usually only one...)
+                    var replies = Y.Array.filter(questionInstance.get("replies"), function(reply) {
+                        return !reply.get("validated");
+                    }, this);
+
+                    for (var i in replies) {
+                        var reply = replies[i];
+                        this.beforeRequest();
+                        Y.Wegas.Facade.Variable.sendRequest({
+                            request: "/QuestionDescriptor/ValidateReply/" + reply.get("id")
+                                + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
+                            cfg: {
+                                method: "GET" // initially: POST
+                            },
+                            on: {
+                                success: Y.bind(this.onSuccess, this),
+                                failure: Y.bind(this.onFailure, this)
+                            }
+                        });
+                    }
+                }
+            }, this));
         },
         isCbx: function() {
             return this.get("variable.evaluated").get("cbx");
@@ -1166,15 +1176,17 @@ YUI.add('wegas-mcq-view', function(Y) {
                     delete this.choices[id];
                 }
 
-                if (questionInstance.get("unread")) {
-                    questionInstance.set("unread", false); // avoid sync hell
-                    Y.Wegas.Facade.Variable.sendRequest({
-                        request: "/QuestionDescriptor/Read/" +
-                            Wegas.Facade.Game.get('currentPlayerId') + "/" + questionDescriptor.get("id"),
-                        cfg: {
-                            method: "PUT"
-                        }
-                    });
+                if (Y.fire("playerAction", {})) {
+                    if (questionInstance.get("unread")) {
+                        questionInstance.set("unread", false); // avoid sync hell
+                        Y.Wegas.Facade.Variable.sendRequest({
+                            request: "/QuestionDescriptor/Read/" +
+                                Wegas.Facade.Game.get('currentPlayerId') + "/" + questionDescriptor.get("id"),
+                            cfg: {
+                                method: "PUT"
+                            }
+                        });
+                    }
                 }
 
                 var noFeedbacks = true;
@@ -1185,8 +1197,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                         || effectiveDisplayResult === "dialogue")
                     && (!cbx || questionInstance.get("validated")))
                     || (cbx && questionInstance.get("validated") && questionDescriptor.get("tabular"))) {
-                    this.resultTitle.set("content", validatedReplies.length > 1 ? Y.Wegas.I18n.t('mcq.results')
-                        .capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize());
+                    this.resultTitle.set("content", validatedReplies.length > 1 ? I18n.tCap('mcq.results') : I18n.tCap('mcq.result'));
                     this.resultTitle.syncUI();
                     if (cbx) {
                         validatedReplies = [];

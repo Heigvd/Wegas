@@ -7,6 +7,7 @@
  */
 package com.wegas.core.rest.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.WebsocketFacade;
@@ -19,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -74,8 +76,8 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
         boolean rollbacked = false;
 
-        Map<String, List<AbstractEntity>> updatedEntitiesMap = requestManager.getUpdatedEntities();
-        Map<String, List<AbstractEntity>> destroyedEntitiesMap = requestManager.getDestroyedEntities();
+        Map<String, List<AbstractEntity>> updatedEntitiesMap = requestManager.getMappedUpdatedEntities();
+        Map<String, List<AbstractEntity>> destroyedEntitiesMap = requestManager.getMappedDestroyedEntities();
 
         boolean isManaged = managedMode != null && !managedMode.toLowerCase().equals("false");
 
@@ -149,9 +151,9 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             }
 
             if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty())) {
-                /*
-             * Include all detected updated entites within updatedEntites
-             * (the ones which will be returned to the client)
+                /**
+                 * Include all detected updated entities within updatedEntites
+                 * (the ones which will be returned to the client)
                  */
                 for (Entry<String, List<AbstractEntity>> entry : updatedEntitiesMap.entrySet()) {
                     String audience = entry.getKey();
@@ -198,6 +200,18 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             // Be sure it is json, a void method won't add this.
             response.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
+        } else {
+            if (response.getEntity() instanceof Exception || requestManager.getExceptionCounter() > 0 || response.getStatusInfo().getStatusCode() >= 400) {
+                rollbacked = true;
+                Object entity = response.getEntity();
+                if (entity instanceof Exception) {
+                    try {
+                        response.setEntity(JacksonMapperProvider.getMapper().writeValueAsString(entity));
+                    } catch (JsonProcessingException ex) {
+                        logger.error("Failed to serialize exception {}", entity);
+                    }
+                }
+            }
         }
 
         String socketId = requestManager.getSocketId();
@@ -205,16 +219,18 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         String eSocketId = (!isManaged || socketId == null || !socketId.matches("^[\\d\\.]+$"))
                 ? null : socketId;
 
-        if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty())) {
-            requestManager.markPropagationStartTime();
-            websocketFacade.onRequestCommit(updatedEntitiesMap, destroyedEntitiesMap,
-                    socketId);
-            requestManager.markPropagationEndTime();
-        }
+        if (!rollbacked) {
+            if (!(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty())) {
+                requestManager.markPropagationStartTime();
+                websocketFacade.onRequestCommit(updatedEntitiesMap, destroyedEntitiesMap,
+                        socketId);
+                requestManager.markPropagationEndTime();
+            }
 
-        requestManager.getUpdatedGameModelContent().forEach(gameModelContent
-                -> websocketFacade.gameModelContentUpdate(gameModelContent, eSocketId)
-        );
+            requestManager.getUpdatedGameModelContent().forEach(gameModelContent
+                    -> websocketFacade.gameModelContentUpdate(gameModelContent, eSocketId)
+            );
+        }
 
         //requestFacade.flushClear();
         requestManager.markSerialisationStartTime();

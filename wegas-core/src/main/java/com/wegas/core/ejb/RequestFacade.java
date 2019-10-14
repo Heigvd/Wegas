@@ -12,10 +12,9 @@ import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.persistence.User;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -55,7 +54,7 @@ public class RequestFacade {
     private StateMachineFacade stateMachineFacade;
 
     @Inject
-    private GameModelFacade gameModelFacade;
+    private JPACacheHelper jpaCacheHelper;
 
     /**
      *
@@ -196,7 +195,7 @@ public class RequestFacade {
      *
      * @return all entities which were updated during the transaction
      */
-    public Map<String, List<AbstractEntity>> getUpdatedEntities() {
+    public Set<AbstractEntity> getUpdatedEntities() {
         return requestManager.getUpdatedEntities();
     }
 
@@ -204,10 +203,15 @@ public class RequestFacade {
      *
      * @return all entities which were destroyed during the transaction
      */
-    public Map<String, List<AbstractEntity>> getDestroyedEntities() {
+    public Set<AbstractEntity> getDestroyedEntities() {
         return requestManager.getDestroyedEntities();
     }
 
+    /**
+     * Not sure it's deprecated... should test...
+     * @deprecated
+     */
+    @Deprecated
     public void flushClear() {
         requestManager.getEntityManager().flush();
         requestManager.clear();

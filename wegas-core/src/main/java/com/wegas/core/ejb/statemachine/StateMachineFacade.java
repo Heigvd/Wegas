@@ -83,16 +83,14 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
         if (context == null || context.getPlayers() == null) {
             logger.error("No Player Provided...");
             Player player = null;
-            for (Entry<String, List<AbstractEntity>> entry : requestManager.getUpdatedEntities().entrySet()) {
-                for (AbstractEntity entity : entry.getValue()) {
-                    if (entity instanceof VariableInstance) {
-                        VariableInstance vi = (VariableInstance) entity;
-                        InstanceOwner owner = vi.getOwner();
-                        if (owner != null) {
-                            player = owner.getAnyLivePlayer();
-                        }
-                        break;
+            for (AbstractEntity entity : requestManager.getUpdatedEntities()) {
+                if (entity instanceof VariableInstance) {
+                    VariableInstance vi = (VariableInstance) entity;
+                    InstanceOwner owner = vi.getOwner();
+                    if (owner != null) {
+                        player = owner.getAnyLivePlayer();
                     }
+                    break;
                 }
                 if (player != null) {
                     break;
@@ -298,7 +296,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                     fsmI.transitionHistoryAdd(transitionId);
                     DialogueState nextState = (DialogueState) fsmI.getCurrentState();
 
-                    requestManager.addEntity(fsmI.getAudience(), fsmI, requestManager.getUpdatedEntities());
+                    requestManager.addUpdatedEntity(fsmI);
                     /* Force in case next state == current state */
 
                     if (fsmI.getCurrentState().getOnEnterEvent() != null) {

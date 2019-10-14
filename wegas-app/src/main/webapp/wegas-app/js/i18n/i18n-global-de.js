@@ -41,7 +41,8 @@ YUI.add("wegas-i18n-global-de", function(Y) {
             manager: {
                 title: "Sprachen-Manager"
             },
-            languages: "Sprachen"
+            languages: "Sprachen",
+            availables: "Sprachen, die den Spielern zur Verfügung stehen"
         },
         errors: {
             conflict: "Ihre Anfrage kann nicht bearbeitet werden, da bei der Ausführung ein Konflikt aufgetreten ist. Dies bedeutet wahrscheinlich, dass Sie versucht haben, ein Element gleichzeitig mit einem anderen Benutzer zu ändern.",

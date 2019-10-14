@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { cx } from 'emotion';
 import { Toolbar } from '../../Components/Toolbar';
 import { IconButton } from '../../Components/Button/IconButton';
 import { themeVar } from '../../Components/Theme';
@@ -13,11 +13,7 @@ import { AvailableViews } from './FormView';
 import getEditionConfig from '../editionConfig';
 import { overrideSchema } from './EntityEditor';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
-
-const grow = css({ flex: '1 1 auto' });
-const flex = css({ display: 'flex' });
-const column = css({ flexDirection: 'column' });
-const centered = css({ justifyContent: 'center' });
+import { flex, grow, centeredContent, flexColumn } from '../../css/classes';
 
 const edition = { color: themeVar.primaryDarkerColor };
 const simple = { color: themeVar.primaryLighterColor };
@@ -72,7 +68,7 @@ export default function LanguageEditor() {
                 return (
                   <React.Fragment key={language.code}>
                     {index > 0 && (
-                      <div className={cx(flex, grow, centered)}>
+                      <div className={cx(flex, grow, centeredContent)}>
                         <IconButton
                           icon="arrows-alt-h"
                           tooltip="Priorize language on the right"
@@ -91,7 +87,7 @@ export default function LanguageEditor() {
                         />
                       </div>
                     )}
-                    <div className={cx(flex, grow, centered)}>
+                    <div className={cx(flex, grow, centeredContent)}>
                       {language.code}
                       <input
                         type="checkbox"
@@ -159,9 +155,9 @@ export default function LanguageEditor() {
                   return (
                     <div
                       key={language.code}
-                      className={cx(flex, grow, centered)}
+                      className={cx(flex, grow, centeredContent)}
                     >
-                      <div className={column}>
+                      <div className={flexColumn}>
                         <div>{`${language.lang} (${language.code})`}</div>
                         {editMode && <LanguageForm />}
                       </div>
