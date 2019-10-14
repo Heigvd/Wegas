@@ -1,10 +1,10 @@
 import { Reducer } from 'redux';
 import u from 'immer';
-import { managedMode, StateActions, ActionType } from '../actions';
+import { manageResponseHandler, StateActions, ActionType } from '../actions';
 import { Actions as Act } from '..';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { deepRemove } from '../updateUtils';
-import { ThunkResult } from '../store';
+import { ThunkResult, store } from '../store';
 
 export interface VariableDescriptorState {
   [id: string]: Readonly<IVariableDescriptor> | undefined;
@@ -13,7 +13,7 @@ export interface VariableDescriptorState {
 const variableDescriptors: Reducer<Readonly<VariableDescriptorState>> = u(
   (state: VariableDescriptorState, action: StateActions) => {
     switch (action.type) {
-      case ActionType.MANAGED_MODE: {
+      case ActionType.MANAGED_RESPONSE_ACTION: {
         const updateList = action.payload.updatedEntities.variableDescriptors;
         const deletedIds = Object.keys(
           action.payload.deletedEntities.variableDescriptors,
@@ -42,20 +42,23 @@ export default variableDescriptors;
 
 export function getAll(): ThunkResult {
   return function(dispatch, getState) {
-    const gameModelId = getState().global.currentGameModelId;
-    return VariableDescriptorAPI.getAll(gameModelId).then(res =>
-      dispatch(managedMode(res)),
-    );
+    const gameModelId = store.getState().global.currentGameModelId;
+    return VariableDescriptorAPI.getAll(gameModelId).then(res => {
+      return store.dispatch(
+        manageResponseHandler(res, dispatch, getState().global),
+      );
+    });
   };
 }
 
 export function updateDescriptor(
   variableDescriptor: IVariableDescriptor,
-): ThunkResult<Promise<StateActions>> {
+): ThunkResult<Promise<StateActions | void>> {
   return function(dispatch, getState) {
-    const gameModelId = getState().global.currentGameModelId;
+    const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.update(gameModelId, variableDescriptor).then(
-      res => dispatch(managedMode(res)),
+      res =>
+        store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };
 }
@@ -65,13 +68,15 @@ export function moveDescriptor(
   parent?: IParentDescriptor,
 ): ThunkResult {
   return function(dispatch, getState) {
-    const gameModelId = getState().global.currentGameModelId;
+    const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.move(
       gameModelId,
       variableDescriptor,
       index,
       parent,
-    ).then(res => dispatch(managedMode(res)));
+    ).then(res =>
+      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
   };
 }
 export function createDescriptor(
@@ -79,13 +84,13 @@ export function createDescriptor(
   parent?: IParentDescriptor,
 ): ThunkResult {
   return function(dispatch, getState) {
-    const gameModelId = getState().global.currentGameModelId;
+    const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.post(
       gameModelId,
       variableDescriptor,
       parent,
     ).then(res => {
-      dispatch(managedMode(res));
+      store.dispatch(manageResponseHandler(res, dispatch, getState().global));
       // Assume entity[0] is what we just created.
       return dispatch(
         Act.EditorActions.editVariable(
@@ -114,20 +119,21 @@ export function deleteDescriptor(
   return function(dispatch, getState) {
     if (path.length > 0) {
       const vs = deepRemove(variableDescriptor, path) as IVariableDescriptor;
-      return dispatch(updateDescriptor(vs));
+      return store.dispatch(updateDescriptor(vs));
     }
-    const gameModelId = getState().global.currentGameModelId;
+    const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.delete(gameModelId, variableDescriptor).then(
-      res => dispatch(managedMode(res)),
+      res =>
+        store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };
 }
 
 export function reset(): ThunkResult {
   return function(dispatch, getState) {
-    const gameModelId = getState().global.currentGameModelId;
+    const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.reset(gameModelId).then(res =>
-      dispatch(managedMode(res)),
+      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };
 }

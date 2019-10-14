@@ -44,7 +44,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
     getFileList(
       absoluteDirectoryPath: string = '',
       recursive?: boolean,
-    ): Promise<IFileDescriptor[]> {
+    ): Promise<IAbstractContentDescriptor[]> {
       return rest(
         FILE_BASE(gameModelId) +
           (recursive ? 'recurseList' : 'list') +
@@ -61,7 +61,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
     deleteFile(
       absolutePath: string,
       force?: boolean,
-    ): Promise<IFileDescriptor> {
+    ): Promise<IAbstractContentDescriptor> {
       return rest(
         FILE_BASE(gameModelId) +
           (force ? 'force/' : '') +
@@ -86,7 +86,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
       path: string = '',
       file?: File,
       force: boolean = false,
-    ): Promise<IFileDescriptor> {
+    ): Promise<IAbstractContentDescriptor> {
       const data = new FormData();
       data.append('name', name);
       data.append('file', file as Blob);
@@ -104,7 +104,9 @@ export const FileAPIFactory = (gameModelId?: number) => {
      * Get metata of a specific file/directory
      * @param absolutePath the absolute path of the file (if undefined, takes root (/))
      */
-    getFileMeta(absolutePath: string = ''): Promise<IFileDescriptor> {
+    getFileMeta(
+      absolutePath: string = '',
+    ): Promise<IAbstractContentDescriptor> {
       return rest(FILE_BASE(gameModelId) + 'meta' + absolutePath).then(
         (res: Response) => {
           return res.json();
@@ -115,7 +117,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
      * Update file metadata
      * @param file the file to update
      */
-    updateMetadata(file: IFileDescriptor) {
+    updateMetadata(file: IAbstractContentDescriptor) {
       return rest(
         FILE_BASE(gameModelId) + 'update' + generateAbsolutePath(file),
         {
@@ -133,7 +135,7 @@ export const FileAPIFactory = (gameModelId?: number) => {
     /**
      * Delete the whole file tree
      */
-    destruct(): Promise<IFileDescriptor> {
+    destruct(): Promise<IAbstractContentDescriptor> {
       return rest(
         FILE_BASE(gameModelId) +
           'destruct' +

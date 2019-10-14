@@ -8,36 +8,16 @@ import { Reparentable } from '../Reparentable';
 import { cx, css } from 'emotion';
 import { themeVar } from '../../../Components/Theme';
 import { DropActionType } from './LinearLayout';
-
-const hidden = css({
-  display: 'none',
-});
-
-const grow = css({
-  flex: '1 1 auto',
-});
-const flex = css({
-  display: 'flex',
-});
-const relative = css({
-  position: 'relative',
-});
-const absoute = css({
-  position: 'absolute',
-});
-
-const expand = css({
-  width: '100%',
-  height: '100%',
-});
-
-const scroll = css({
-  overflow: 'auto',
-});
-
-const noscroll = css({
-  overflow: 'hidden',
-});
+import {
+  grow,
+  flex,
+  relative,
+  absoute,
+  expand,
+  hidden,
+  hideOverflow,
+  autoScroll,
+} from '../../../css/classes';
 
 const buttonStyle = {
   ':hover,:focus': {
@@ -267,7 +247,7 @@ export function DnDTabLayout({
   return (
     <Toolbar vertical={vertical}>
       <Toolbar.Header>
-        <div ref={dropTabs} className={cx(flex, grow, scroll)}>
+        <div ref={dropTabs} className={cx(flex, grow, autoScroll)}>
           {renderTabs()}
           {selectItems && Object.keys(selectItems).length > 0 && (
             <Tab key={'-1'}>
@@ -289,8 +269,8 @@ export function DnDTabLayout({
         </div>
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, relative)}>
-        <div className={cx(expand, noscroll)}>
-          <div className={cx(scroll, absoute, expand, flex)}>
+        <div className={cx(expand, hideOverflow)}>
+          <div className={cx(autoScroll, absoute, expand, flex)}>
             {Object.keys(components).map(label => (
               <Reparentable
                 key={label}

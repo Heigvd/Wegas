@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Menu } from './Menu';
 import { useGameModel } from './Hooks/useGameModel';
-import { wlog } from '../Helper/wegaslog';
 
 interface LangProviderProps {
   lang?: string;
@@ -24,11 +23,7 @@ function LangHandler({
   lang,
   children,
 }: Readonly<LangProviderProps>) {
-  const gameModelLanguages = useGameModel().languages.filter(language => {
-    wlog('useGameModel');
-    return language.active;
-  });
-
+  const gameModelLanguages = useGameModel().languages;
   const getAvailableLanguages = availableLang
     ? availableLang
     : gameModelLanguages;

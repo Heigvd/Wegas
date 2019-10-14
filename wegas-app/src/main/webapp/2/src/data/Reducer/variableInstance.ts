@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 import u from 'immer';
-import { ActionType, StateActions, managedMode } from '../actions';
+import { ActionType, StateActions, manageResponseHandler } from '../actions';
 import { VariableInstanceAPI } from '../../API/variableInstance.api';
 import { ThunkResult } from '../store';
 import { Player } from '../selectors';
@@ -14,7 +14,7 @@ export interface VariableInstanceState {
 const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
   (state: VariableInstanceState, action: StateActions) => {
     switch (action.type) {
-      case ActionType.MANAGED_MODE: {
+      case ActionType.MANAGED_RESPONSE_ACTION: {
         const updateList = action.payload.updatedEntities.variableInstances;
         const deletedIds = Object.keys(
           action.payload.deletedEntities.variableInstances,
@@ -44,7 +44,7 @@ export function getAll(): ThunkResult<Promise<StateActions>> {
   return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     return VariableInstanceAPI.getAll(gameModelId).then(res =>
-      dispatch(managedMode(res)),
+      dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };
 }
@@ -69,7 +69,9 @@ export function runScript(
       p.id,
       finalScript,
       context,
-    ).then(res => dispatch(managedMode(res)));
+    ).then(res =>
+      dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
   };
 }
 
@@ -88,6 +90,8 @@ export function selectAndValidate(
       gameModelId,
       p.id,
       choice,
-    ).then(res => dispatch(managedMode(res)));
+    ).then(res =>
+      dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
   };
 }
