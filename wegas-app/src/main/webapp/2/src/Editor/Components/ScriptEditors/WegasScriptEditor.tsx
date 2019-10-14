@@ -3,6 +3,8 @@ import SrcEditor from './SrcEditor';
 import { EditorProps } from './SrcEditor';
 import { store } from '../../../data/store';
 
+// using raw-loader works but you need to put the whole file name and ts doesn't like it
+// @ts-ignore
 import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasEntities.d.ts';
 
 const variableClasses = Object.values(
