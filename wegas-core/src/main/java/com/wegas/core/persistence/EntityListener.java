@@ -107,16 +107,9 @@ public class EntityListener {
                 logger.error("PostPersist NO SECURITY FACADE");
             }
         }
-
-        if (o instanceof Broadcastable) {
-            Broadcastable b = (Broadcastable) o;
-            Map<String, List<AbstractEntity>> entities = b.getEntities();
-            if (b instanceof Team || b instanceof Player || b instanceof VariableInstance || b instanceof VariableDescriptor) {
-                logger.debug("PropagateNew: {} :: {}", b.getClass().getSimpleName(), ((AbstractEntity) b).getId());
-                requestManager.addUpdatedEntities(entities);
-            } else {
-                logger.debug("Unhandled new broadcastable entity: {}", b);
-            }
+        if (o instanceof AbstractEntity) {
+            logger.debug("PropagateNew: {} :: {}", o.getClass().getSimpleName(), ((AbstractEntity) o).getId());
+            requestManager.addUpdatedEntity((AbstractEntity) o);
         }
 
         if (o instanceof GameModelContent) {
@@ -136,13 +129,9 @@ public class EntityListener {
             }
         }
 
-        if (o instanceof Broadcastable) {
-            Broadcastable b = (Broadcastable) o;
-            if (b instanceof AbstractEntity) {
-                logger.debug("PropagateUpdate: {} :: {}", b.getClass().getSimpleName(), ((AbstractEntity) b).getId());
-                Map<String, List<AbstractEntity>> entities = b.getEntities();
-                requestManager.addUpdatedEntities(entities);
-            }
+        if (o instanceof AbstractEntity) {
+            logger.debug("PropagateUpdate: {} :: {}", o.getClass().getSimpleName(), ((AbstractEntity) o).getId());
+            requestManager.addUpdatedEntity((AbstractEntity) o);
         }
 
         if (o instanceof GameModelContent) {
@@ -162,25 +151,9 @@ public class EntityListener {
             }
         }
 
-        if (o instanceof Broadcastable) {
-            Broadcastable b = (Broadcastable) o;
-            Map<String, List<AbstractEntity>> entities = b.getEntities();
-            if (entities != null) {
-                logger.debug("PreRemove {}", o);
-                if (b instanceof VariableDescriptor || b instanceof VariableInstance || b instanceof Game || b instanceof GameModel) {
-                    logger.debug("PropagateDestroy (#: {}): {} :: {}", entities.size(), b.getClass().getSimpleName(), ((AbstractEntity) b).getId());
-                    requestManager.addDestroyedEntities(entities);
-                } else if (b instanceof Team || b instanceof Player) {
-                    logger.debug("PropagateUpdateOnDestroy (#: {}): {} :: {}", entities.size(), b.getClass().getSimpleName(), ((AbstractEntity) b).getId());
-                    requestManager.addUpdatedEntities(entities);
-                } else {
-                    logger.debug("Unhandled destroyed broadcastable entity: {}", b);
-                }
-            }
-        }
-
-        if (o instanceof AbstractEntity) {
+        if (o instanceof AbstractEntity){
             AbstractEntity ae = (AbstractEntity) o;
+            requestManager.addDestroyedEntity(ae);
             ae.updateCacheOnDelete(getBeansjection());
         }
     }

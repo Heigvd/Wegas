@@ -453,6 +453,24 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
+     * Find a unique logId
+     *
+     * @param oName
+     *
+     * @return new unique name
+     */
+    public String findUniqueLogId(String oName) {
+
+        String newName = oName != null ? oName : "newLogId";
+
+        TypedQuery<String> query = this.getEntityManager()
+                .createNamedQuery("GameModel.findDistinctLogIds", String.class);
+        List<String> usedLogIds = query.getResultList();
+
+        return Helper.findUniqueLabel(newName, usedLogIds);
+    }
+
+    /**
      * Open both File and History repository through the jctConnectorProvider.
      * <p>
      * If one of the repository does not yet exists, it will be create and saved at JTA commit
@@ -504,7 +522,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
-                try (ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
+                try ( ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
 
                     // serialise the json
                     ZipEntry gameModelEntry = new ZipEntry("gamemodel.json");
@@ -693,7 +711,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
             if (newGameModel != null) {
                 newGameModel.setName(this.findUniqueName(srcGameModel.getName(), SCENARIO));
-                newGameModel.getProperties().setLogID("");
+
+                newGameModel.getProperties().setLogID(findUniqueLogId(newGameModel.getProperties().getLogID()));
 
                 // one should be able to create/modifiy everything
                 newGameModel.setOnGoingPropagation(Boolean.TRUE);

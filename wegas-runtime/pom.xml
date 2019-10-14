@@ -197,7 +197,7 @@
                         <payara.bindHttpPort>28080</payara.bindHttpPort>
                         <payara.clusterEnabled>true</payara.clusterEnabled>
                         <payara.cmdOptions>-Dwegas.http.threads=9 -Dwegas.db.name=wegas_test -Djcr.repository.URI= -Dwegas.db.host=localhost -Dwegas.nb_populators=3 -Declipselink.cache.coordination.protocol=fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager -Declipselink.cache.coordination.channel=WegasLocalTest </payara.cmdOptions>
-                        <payara.extraMicroOptions>--port 28080 --addlibs ${project.basedir}/target/extra-libs --domainconfig ${project.basedir}/src/main/resources/domain.xml --logproperties ${project.basedir}/../wegas-core/src/test/resources/logging.properties</payara.extraMicroOptions>
+                        <payara.extraMicroOptions>--port 28080 --addlibs ${project.basedir}/target/extra-libs --domainconfig ${project.basedir}/src/main/resources/domain.xml --logproperties ${project.basedir}/../wegas-core/src/test/resources/logging.properties --interfaces 127.0.0.1</payara.extraMicroOptions>
                     </systemProperties>
                 </configuration>
             </plugin>

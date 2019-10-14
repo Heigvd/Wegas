@@ -1,9 +1,9 @@
 /*
- * Wegas
- * http://wegas.albasim.ch
- *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
- * Licensed under the MIT License
+* Wegas
+* http://wegas.albasim.ch
+*
+* Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+* Licensed under the MIT License
  */
 package com.wegas.core;
 
@@ -122,19 +122,18 @@ public class Helper {
         return lookupBy(new InitialContext(), type, type);
     }
 
-    /*
-    public static HazelcastInstance getHazelcastInstance() {
-        HazelcastInstance instance;
-        try {
-            Context ctx = new InitialContext();
-            instance = (HazelcastInstance) ctx.lookup("payara/Hazelcast");
-            return instance;
-        } catch (NamingException ex) {
-            logger.error("No Hazelcast instance", ex);
-            return null;
-        }
-    }
-     */
+//    public static HazelcastInstance getHazelcastInstance() {
+//        HazelcastInstance instance;
+//        try {
+//            Context ctx = new InitialContext();
+//            instance = (HazelcastInstance) ctx.lookup("payara/Hazelcast");
+//            return instance;
+//        } catch (NamingException ex) {
+//            logger.error("No Hazelcast instance", ex);
+//            return null;
+//        }
+//    }
+
     /**
      * Copy and sort the given list
      *
@@ -957,6 +956,7 @@ public class Helper {
      * @param <V> value type
      */
     public static class LRUCache<K, V> extends LinkedHashMap<K, V> {
+
         ConcurrentHashMap<K, V> yaja;
 
         private int cacheSize;
