@@ -104,7 +104,6 @@ YUI.add('wegas-mcq-view', function(Y) {
                                     "content": "false"
                                 },
                                 clickSelect: true,
-                                numSelectable: 1,
                                 readonly: {
                                     "content": "return " + this.readonly + ";"
                                 },
