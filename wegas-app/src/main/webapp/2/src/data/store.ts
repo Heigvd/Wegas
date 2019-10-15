@@ -8,7 +8,7 @@ import { Page } from './selectors';
 import '../API/websocket';
 
 // Used by redux dev tool extension
-const composeEnhancers: typeof compose =
+export const composeEnhancers: typeof compose =
   (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 export const store = createStore(
   combineReducers<State, StateActions>(reducers),
