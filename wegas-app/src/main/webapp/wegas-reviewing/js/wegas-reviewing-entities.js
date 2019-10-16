@@ -42,8 +42,9 @@ YUI.add('wegas-reviewing-entities', function(Y) {
      * PeerReviewescriptor mapper
      */
     persistence.PeerReviewDescriptor = Y.Base.create("PeerReviewDescriptor", persistence.VariableDescriptor, [], {
-        helloWorld: function() {
-            return "hello, world!\n";
+        hasReviews: function() {
+            var instance = this.getInstance();
+            return instance.get("reviewed").length > 0 || instance.get("toReview").length > 0;
         },
         getIconCss: function() {
             return 'fa fa-users fa-1';
