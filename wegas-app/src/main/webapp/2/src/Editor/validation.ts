@@ -94,7 +94,7 @@ export function validation<Args extends unknown[], Ref>(
   function isEmpty(value: ISEMPTY): validator<Args> {
     return (...args) => {
         const a = leafValidation(value.isEmpty)(...args);
-        return typeof a === 'array' && a.length === 0;
+        return a instanceof Array && a.length === 0;
     }
   }
   interface ISTRUE {
