@@ -10,7 +10,7 @@ import { varIsList } from '../entities';
  * @returns {(Readonly<IVariableDescriptor> | undefined)}
  */
 export function select<T extends IVariableDescriptor = IVariableDescriptor>(
-  id?: number,
+  id?: number | null,
 ): Readonly<T> | undefined;
 /**
  * Find a list of variableDescriptor for a list of ids
@@ -23,7 +23,7 @@ export function select<T extends IVariableDescriptor = IVariableDescriptor>(
   id: number[],
 ): (Readonly<T> | undefined)[];
 export function select<T extends IVariableDescriptor = IVariableDescriptor>(
-  id: number | number[] | undefined,
+  id?: number | number[] | null,
 ) {
   if (id == null) {
     return;
@@ -133,7 +133,7 @@ export function flatten<
     }
 
     if (varIsList(descriptor)) {
-      ret.push(...(flatten<T, E>(descriptor, ...cls)));
+      ret.push(...flatten<T, E>(descriptor, ...cls));
     }
   });
   return ret;

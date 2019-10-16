@@ -6,7 +6,7 @@ import { varIsList, entityIs } from '../../../data/entities';
 import { get } from 'lodash-es';
 
 import { Container, Node } from '../Views/TreeView';
-import { moveDescriptor } from '../../../data/Reducer/variableDescriptor';
+import { moveDescriptor } from '../../../data/Reducer/VariableDescriptorReducer';
 import {
   getEntityActions,
   getIcon,
@@ -25,7 +25,7 @@ import { Menu } from '../../../Components/Menu';
 import { FontAwesome, withDefault } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { AddMenuParent, AddMenuChoice } from './AddMenu';
-import { editorLabel } from '../../../data/methods/VariableDescriptor';
+import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { SearchTool } from '../SearchTool';
 import { focusTabContext } from '../LinearTabLayout/LinearLayout';
 import { useAsync } from '../../../Components/Hooks/useAsync';
@@ -309,7 +309,7 @@ export function Tree() {
 export default function TreeWithMeta() {
   const entities = useGameModel().itemsIds;
   return (
-    <ComponentWithForm>
+    <ComponentWithForm entityEditor>
       {({ localState, localDispatch }) => {
         return (
           <TreeView

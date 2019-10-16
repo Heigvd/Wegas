@@ -8,6 +8,7 @@ import { StoreDispatch } from './store';
 import { EditingState } from './Reducer/globalState';
 import { shallowDifferent } from './connectStore';
 import { getEntityActions } from '../Editor/editionConfig';
+import { TeamState } from './Reducer/teams';
 
 export { ActionType };
 export type ActionTypeValues = ValueOf<typeof ActionType>;
@@ -93,6 +94,10 @@ export const ActionCreator = {
     gameModelLanguage: IGameModelLanguage;
     gameModelId: string;
   }) => createAction(ActionType.LANGUAGE_EDIT, data),
+  TEAM_FETCH_ALL: (data: { teams: TeamState }) =>
+    createAction(ActionType.TEAM_FETCH_ALL, data),
+  GAME_FETCH: (data: { game: IGame }) =>
+    createAction(ActionType.GAME_FETCH, data),
 };
 
 export type StateActions<

@@ -13,8 +13,9 @@ import { cx } from 'emotion';
 import { flex, grow, flexColumn } from '../../css/classes';
 import { StyledLabel } from '../../Components/AutoImport/String/Label';
 import { shallowDifferent } from '../../data/connectStore';
+import { Edition } from '../../data/Reducer/globalState';
 
-interface EditorProps<T> {
+export interface EditorProps<T> {
   entity?: T;
   update?: (variable: T) => void;
   actions?: {
@@ -269,6 +270,41 @@ export const getError = (
   return undefined;
 };
 
+export const getConfig = (state: Readonly<Edition>) => (
+  entity: IVariableDescriptor,
+) => {
+  return 'config' in state && state.config != null
+    ? Promise.resolve(state.config)
+    : (getEditionConfig(entity) as Promise<Schema<AvailableViews>>);
+};
+
+export const getUpdate = (state: Readonly<Edition>, dispatch: StoreDispatch) =>
+  'actions' in state && state.actions.save
+    ? state.actions.save
+    : (entity: IAbstractEntity) => {
+        dispatch(Actions.EditorActions.saveEditor(entity));
+      };
+
+export const getEntity = (state?: Readonly<Edition>) => {
+  if (!state) {
+    return undefined;
+  }
+  switch (state.type) {
+    case 'VariableCreate':
+      return {
+        '@class': state['@class'],
+        parentId: state.parentId,
+        parentType: state.parentType,
+      };
+    case 'Variable':
+    case 'VariableFSM':
+    case 'File':
+      return state.entity;
+    default:
+      return undefined;
+  }
+};
+
 export default function VariableForm(props: {
   entity?: Readonly<IVariableDescriptor>;
   path?: (string | number)[];
@@ -281,23 +317,11 @@ export default function VariableForm(props: {
         if (!editing) {
           return null;
         } else {
-          switch (editing.type) {
-            case 'VariableCreate':
-              return {
-                ...editing,
-                entity: {
-                  '@class': editing['@class'],
-                  parentId: editing.parentId,
-                  parentType: editing.parentType,
-                },
-                events: s.global.events,
-              };
-            case 'Variable':
-            case 'VariableFSM':
-            case 'File':
-              return { ...editing, events: s.global.events };
-            default:
-              return null;
+          const entity = getEntity(editing);
+          if (entity == null) {
+            return null;
+          } else {
+            return { editing, entity, events: s.global.events };
           }
         }
       }}
@@ -307,26 +331,16 @@ export default function VariableForm(props: {
         if (state == null || state.entity == null) {
           return null;
         }
-        const update =
-          'actions' in state && 'save' in state.actions
-            ? state.actions.save
-            : (entity: IAbstractEntity) => {
-                dispatch(Actions.EditorActions.saveEditor(entity));
-              };
-        const getConfig = (entity: IVariableDescriptor) => {
-          return 'config' in state && state.config != null
-            ? Promise.resolve(state.config)
-            : (getEditionConfig(entity) as Promise<Schema<AvailableViews>>);
-        };
 
         return (
           <AsyncVariableForm
             {...props}
             {...state}
-            getConfig={getConfig}
-            update={update}
+            getConfig={getConfig(state.editing)}
+            update={getUpdate(state.editing, dispatch)}
             actions={Object.values(
-              ('actions' in state && 'more' in state.actions) || {},
+              ('actions' in state.editing && 'more' in state.editing.actions) ||
+                {},
             )}
             entity={state.entity}
             error={getError(state.events, dispatch)}

@@ -5,6 +5,7 @@ import {
   GameModel,
   Player,
 } from '../selectors';
+import { store } from '../store';
 
 export function editorLabel(vd: {
   label: ITranslatableContent;
@@ -49,5 +50,23 @@ export function getInstance<I extends IVariableInstance>(
         parentId: vd.id,
         scopeKey: 0,
       }) as IorUndef;
+  }
+}
+
+export function getScopeEntity(
+  vi: Readonly<{ parentId?: number | null; scopeKey?: number | null }>,
+): IPlayer | ITeam | IGameModel | undefined {
+  const vd = VariableDescriptor.select(vi.parentId);
+  if (vd == null || vi.scopeKey == null) {
+    return undefined;
+  }
+  const state = store.getState();
+  switch (vd.scopeType) {
+    case 'PlayerScope':
+      return state.players[vi.scopeKey];
+    case 'TeamScope':
+      return state.teams[vi.scopeKey];
+    case 'GameModelScope':
+      return state.gameModels[vi.scopeKey];
   }
 }

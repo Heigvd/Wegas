@@ -2,7 +2,7 @@ import { Reducer } from 'redux';
 import u from 'immer';
 import { ActionType, StateActions, manageResponseHandler } from '../actions';
 import { VariableInstanceAPI } from '../../API/variableInstance.api';
-import { ThunkResult } from '../store';
+import { ThunkResult, store } from '../store';
 import { Player } from '../selectors';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { QuestionDescriptorAPI } from '../../API/questionDescriptor.api';
@@ -39,6 +39,17 @@ const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
 export default variableInstances;
 
 //ACTIONS
+
+export function updateInstance(
+  variableInstance: IVariableInstance,
+): ThunkResult<Promise<StateActions | void>> {
+  return function(dispatch, getState) {
+    const gameModelId = store.getState().global.currentGameModelId;
+    return VariableInstanceAPI.update(gameModelId, variableInstance).then(res =>
+      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
+  };
+}
 
 export function getAll(): ThunkResult<Promise<StateActions>> {
   return function(dispatch, getState) {

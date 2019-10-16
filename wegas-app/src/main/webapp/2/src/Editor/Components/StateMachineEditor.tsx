@@ -9,7 +9,7 @@ import { entityIs } from '../../data/entities';
 import { Actions } from '../../data';
 import { Toolbar } from '../../Components/Toolbar';
 import { FontAwesome } from './Views/FontAwesome';
-import { getInstance } from '../../data/methods/VariableDescriptor';
+import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { themeVar } from '../../Components/Theme';
 import { EditorAction } from '../../data/Reducer/globalState';
 import { State as RState } from '../../data/Reducer/reducers';
@@ -445,7 +445,9 @@ class StateMachineEditor extends React.Component<
   }
 }
 
-export function ConnectedStateMachineEditor(props: {
+export function ConnectedStateMachineEditor({
+  localDispatch,
+}: {
   localDispatch?: StateMachineEditorProps['localDispatch'];
 }) {
   const stateMachine = React.useRef<IFSMDescriptor>();
@@ -477,29 +479,28 @@ export function ConnectedStateMachineEditor(props: {
     }
   }, shallowDifferent);
 
-  return (
-    <ComponentWithForm key={stateMachine.current ? stateMachine.current.id : 0}>
-      {({ localDispatch }) => {
-        if (globalState) {
-          return (
-            <StateMachineEditor
-              {...props}
-              stateMachine={globalState.descriptor}
-              stateMachineInstance={globalState.instance}
-              localDispatch={localDispatch}
-              search={globalState.search}
-            />
-          );
-        }
-        return null;
-      }}
-    </ComponentWithForm>
-  );
+  // return (
+  //   <ComponentWithForm key={stateMachine.current ? stateMachine.current.id : 0}>
+  //     {({ localDispatch }) => {
+  //       if (globalState) {
+  return globalState ? (
+    <StateMachineEditor
+      stateMachine={globalState.descriptor}
+      stateMachineInstance={globalState.instance}
+      localDispatch={localDispatch}
+      search={globalState.search}
+    />
+  ) : null;
+  //       }
+  //       return null;
+  //     }}
+  //   </ComponentWithForm>
+  // );
 }
 
 export default function StateMachineEditorWithMeta() {
   return (
-    <ComponentWithForm>
+    <ComponentWithForm entityEditor>
       {({ localDispatch }) => {
         return <ConnectedStateMachineEditor localDispatch={localDispatch} />;
       }}

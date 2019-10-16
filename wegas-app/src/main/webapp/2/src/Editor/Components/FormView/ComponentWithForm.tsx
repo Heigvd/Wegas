@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { storeFactory, LocalGlobalState } from '../../../data/storeFactory';
-import { Actions } from '../../../data';
-import getEditionConfig from '../../editionConfig';
-import { Schema } from 'jsoninput';
-import { AvailableViews } from '.';
-import { AsyncVariableForm, getError } from '../EntityEditor';
+import {
+  AsyncVariableForm,
+  getError,
+  getConfig,
+  getUpdate,
+  getEntity,
+} from '../EntityEditor';
 import { css, cx } from 'emotion';
 import { Edition, closeEditor } from '../../../data/Reducer/globalState';
 import { StoreDispatch } from '../../../data/store';
@@ -13,55 +15,44 @@ import {
   shallowDifferent,
 } from '../../../data/connectStore';
 import { flex, grow, autoScroll } from '../../../css/classes';
+import {
+  InstancesEditor,
+  InstancesEditorProps,
+} from '../Variable/InstancesEditor';
+import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 
 const growBig = css({
   flex: '30 1 auto',
 });
 
-const getEntity = (state?: Readonly<Edition>) => {
-  if (!state) {
-    return undefined;
-  }
-  switch (state.type) {
-    case 'VariableCreate':
-      return {
-        '@class': state['@class'],
-        parentId: state.parentId,
-        parentType: state.parentType,
-      };
-    case 'Variable':
-    case 'VariableFSM':
-      return state.entity;
-    case 'File':
-      return state.entity;
-    default:
-      return undefined;
-  }
-};
-
-const getUpdate = (state: Readonly<Edition>, dispatch: StoreDispatch) =>
-  'actions' in state && state.actions.save
-    ? state.actions.save
-    : (entity: IAbstractEntity) => {
-        dispatch(Actions.EditorActions.saveEditor(entity));
-      };
-
-const getConfig = (state: Readonly<Edition>) => (
-  entity: IVariableDescriptor,
-) => {
-  return 'config' in state && state.config != null
-    ? Promise.resolve(state.config)
-    : (getEditionConfig(entity) as Promise<Schema<AvailableViews>>);
-};
-
-interface ComponentWithFormProps {
-  children: (props: {
-    localState: Readonly<Edition> | undefined;
-    localDispatch: StoreDispatch;
-  }) => React.ReactElement | null;
+export interface ComponentWithFormChildrenProps {
+  localState: Readonly<Edition> | undefined;
+  localDispatch: StoreDispatch;
 }
 
-export function ComponentWithForm({ children }: ComponentWithFormProps) {
+interface ComponentWithFormProps {
+  children: (
+    props: ComponentWithFormChildrenProps,
+  ) => React.ReactElement | null;
+  entityEditor?: boolean;
+}
+
+function instancesEd(props: InstancesEditorProps) {
+  return Promise.resolve<
+    typeof import('../Variable/InstancesEditor')['InstancesEditor']
+  >(import('../Variable/InstancesEditor').then(m => m.InstancesEditor(props)));
+}
+
+const AsyncInstancesEditor = asyncSFC<InstancesEditorProps>(instancesEd);
+
+//function WindowedEditor<T>({ entity, update, actions, getConfig, path, error, }: EditorProps<T>): Promise<JSX.Element | null>
+//function instancesEd(): Promise<({ state, dispatch, actions, }: InstancesEditorProps) => JSX.Element | null>
+//function instancesEd(props: InstancesEditorProps): Promise<({ state, dispatch, actions, }: InstancesEditorProps) => JSX.Element | null>
+
+export function ComponentWithForm({
+  children,
+  entityEditor,
+}: ComponentWithFormProps) {
   const {
     useStore: useLocalStore,
     getDispatch: getLocalDispatch,
@@ -70,8 +61,10 @@ export function ComponentWithForm({ children }: ComponentWithFormProps) {
     (state: LocalGlobalState) => state.global,
     shallowDifferent,
   );
+  const [instanceView, setInstanceView] = React.useState(false);
   const localDispatch = getLocalDispatch();
   const localEntity = getEntity(localState.editing);
+
   return (
     <div className={cx(flex, grow)}>
       <div className={cx(flex, growBig, autoScroll)}>
@@ -94,11 +87,22 @@ export function ComponentWithForm({ children }: ComponentWithFormProps) {
                   : {},
               ),
               { label: 'Close', action: () => localDispatch(closeEditor()) },
+              {
+                label: 'Instance',
+                action: () => setInstanceView(show => !show),
+              },
             ]}
             entity={localEntity}
             error={getError(localState.events, localDispatch)}
           />
         </div>
+      )}
+      {instanceView && entityEditor && (
+        <InstancesEditor
+          state={{ global: localState }}
+          dispatch={localDispatch}
+          actions={[{ label: 'Close', action: () => setInstanceView(false) }]}
+        />
       )}
     </div>
   );

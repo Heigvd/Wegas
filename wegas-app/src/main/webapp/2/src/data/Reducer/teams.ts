@@ -1,7 +1,9 @@
 import { Reducer } from 'redux';
 import u from 'immer';
-import { ActionType, StateActions } from '../actions';
+import { ActionType, StateActions, ActionCreator } from '../actions';
 import { omit } from 'lodash-es';
+import { ThunkResult, store } from '../store';
+import { TeamAPI } from '../../API/teams.api';
 
 export interface TeamState {
   [id: string]: Readonly<ITeam>;
@@ -17,6 +19,18 @@ const teams: Reducer<Readonly<TeamState>> = u(
         const deletedKeys = Object.keys(action.payload.deletedEntities.teams);
         return { ...omit(state, deletedKeys), ...teams };
       }
+      case ActionType.TEAM_FETCH_ALL: {
+        return action.payload.teams;
+      }
+      // case ActionType.GAME_FETCH: {
+      //   return {
+      //     ...state,
+      //     ...action.payload.game.teams.reduce(
+      //       (oldTeams, t) => t.id && { ...oldTeams, [t.id]: t },
+      //       {},
+      //     ),
+      //   };
+      // }
     }
     return state;
   },
@@ -29,3 +43,16 @@ const teams: Reducer<Readonly<TeamState>> = u(
   ),
 );
 export default teams;
+
+/**
+ * Get all teams
+ * @param gameModel the new version of the game model
+ */
+export function getTeams(): ThunkResult {
+  return function() {
+    const gameId = store.getState().global.currentGameId;
+    return TeamAPI.getAll(gameId).then(res => {
+      return store.dispatch(ActionCreator.TEAM_FETCH_ALL({ teams: res }));
+    });
+  };
+}
