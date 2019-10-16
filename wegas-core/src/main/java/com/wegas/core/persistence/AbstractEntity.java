@@ -26,6 +26,7 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.View.StringView;
 import com.wegas.editor.View.View;
+import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -46,7 +47,8 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "Player", value = Player.class),
     @JsonSubTypes.Type(name = "Team", value = Team.class),
     @JsonSubTypes.Type(name = "VariableDescriptor", value = VariableDescriptor.class),
-    @JsonSubTypes.Type(name = "VariableInstance", value = VariableInstance.class)
+    @JsonSubTypes.Type(name = "VariableInstance", value = VariableInstance.class),
+    @JsonSubTypes.Type(name = "EvaluationInstance", value = EvaluationInstance.class)
 })
 /**
  * Default EclipseLink coodinationType (SEND_OBJECT_CHANGE) leads to buggy coordination for some object (eg ChoiceDescriptor and result).

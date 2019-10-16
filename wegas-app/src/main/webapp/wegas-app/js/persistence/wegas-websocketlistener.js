@@ -160,9 +160,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 this._after();
             });
         },
-        onCustomEvent: function(data) {
-            var payload = Y.JSON.parse(data);
-            // BEURK
+        onCustomEvent: function(payload) {
             Y.Wegas.Facade.Variable.fire(payload.type, payload.payload);
         },
         forceEntityUpdate: function(data) {

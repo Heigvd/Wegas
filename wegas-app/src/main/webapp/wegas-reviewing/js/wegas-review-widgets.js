@@ -952,7 +952,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 prdNodes = [];
                 this._panel.destroyAll();
             }
-            if (prdNodes.length === 1){
+            if (prdNodes.length === 1) {
                 prdNodes = prdNodes[0].children;
             }
 
@@ -1257,8 +1257,11 @@ YUI.add("wegas-review-widgets", function(Y) {
          */
         addEvaluation: function(ev, container, mode) {
             var klass = ev.get("@class"),
-                widget, readonly = mode === "read", cfg = {
+                widget,
+                readonly = mode === "read",
+                cfg = {
                     evaluation: ev,
+                    descriptor: this.get("descriptor"),
                     readonly: readonly,
                     showStatus: false
                 };
@@ -1756,6 +1759,9 @@ YUI.add("wegas-review-widgets", function(Y) {
         }
     }, {
         ATTRS: {
+            descriptor: {
+                type: "PeerReviewDescriptor"
+            },
             evaluation: {
                 type: "GradeInstance"
             },
@@ -1805,6 +1811,33 @@ YUI.add("wegas-review-widgets", function(Y) {
                 value: value
             };
         },
+        bindUpdateEvaluations: function() {
+            if (this.onEvalUpdate) {
+                this.onEvalUpdate.detach();
+            }
+            var evaluation = this.get("evaluation");
+            if (evaluation) {
+                this.onEvalUpdate = Y.Wegas.Facade.Variable.after("TextEvaluationInstance_" + evaluation.get("id") + ':LiveUpdate', this.liveLock, this);
+            }
+        },
+        liveLock: function(entity) {
+            this._setContent(entity.value);
+            this.setStatus("someone is editing");
+            if (this.waitLiveLock) {
+                this.waitLiveLock.cancel();
+            } else {
+                this.showLiveOverlay();
+            }
+            this.waitLiveLock = Y.later(1000, this, function() {
+                this.waitLiveLock = null;
+                this.hideLiveOverlay();
+                this.setStatus("");
+            });
+        },
+        bindUI: function() {
+            Y.Wegas.TextEvalInput.superclass.bindUI.apply(this);
+            this.after("evaluationChange", this.bindUpdateEvaluations, this);
+        },
         /*save: function(value) {
          this.get("evaluation").set("value", value);
          return true;
@@ -1817,8 +1850,26 @@ YUI.add("wegas-review-widgets", function(Y) {
                 this._initialContent = value;
                 ev.set("value", value);
                 cb.removeClass("loading");
-                this.fire("saved", this.getPayload(e.value));
+                this.fireSaved(e.value);
             }
+        },
+        fireEditing: function(content) {
+            var prd = this.get("descriptor");
+            var pri = prd.getInstance();
+            var payload = this.getPayload();
+
+            var evaluation = this.get("evaluation").toObject();
+            evaluation.value = content;
+
+            Y.Wegas.Facade.GameModel.sendRequest({
+                request: "/LiveEdition/private-" + prd.get("scopeType")
+                    .replace("Scope", "-" + pri.get("scopeKey")),
+                cfg: {
+                    method: 'POST',
+                    data: evaluation
+                }
+            });
+            this.fire('editing', payload);
         },
         syncUI: function(quiet) {
             var evl, value;
@@ -1847,10 +1898,18 @@ YUI.add("wegas-review-widgets", function(Y) {
                     evl.set("value", this.editor.getContent());
                 }
             }
+        },
+        destructor: function() {
+            if (this.onEvalUpdate) {
+                this.onEvalUpdate.detach();
+            }
         }
     }, {
         EDITORNAME: "TextEvalInput",
         ATTRS: {
+            descriptor: {
+                type: "PeerReviewDescriptor"
+            },
             evaluation: {
                 type: "TextEvaluationInstance"
             },
@@ -1975,6 +2034,9 @@ YUI.add("wegas-review-widgets", function(Y) {
         }
     }, {
         ATTRS: {
+            descriptor: {
+                type: "PeerReviewDescriptor"
+            },
             evaluation: {
                 type: "CategorizedEvaluationInstance"
             },

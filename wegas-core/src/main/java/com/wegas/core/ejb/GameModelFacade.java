@@ -33,6 +33,7 @@ import com.wegas.core.merge.patch.WegasEntityPatch;
 import com.wegas.core.merge.patch.WegasPatch;
 import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.merge.utils.WegasFieldProperties;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.Mergeable;
@@ -935,6 +936,15 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     public void resetTeam(final Player player) {
         teamFacade.reset(player.getTeam());
+    }
+
+    /**
+     * Someone can ask GameModelController#LiveEdition/ to inform a given audience such an entity is being edited.
+     * Thus, others users may display the new entity before it is fully flushed in database. client may also prevent
+     * users to edit this entity (prevent co-edition)
+     */
+    public void liveUpdate(String channel, AbstractEntity entity) {
+        websocketFacade.sendLiveUpdate(channel, entity.getClass().getSimpleName() + "_" + entity.getId(), entity, requestManager.getSocketId());
     }
 
     /**

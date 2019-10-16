@@ -247,6 +247,22 @@ public class WebsocketFacade {
     }
 
     /**
+     * @param channel
+     * @param entity
+     * @param socketId
+     */
+    public void sendLiveUpdate(String channel, String objectId, Object entity, final String socketId) {
+        if (this.pusher != null) {
+            try {
+                pusher.trigger(channel, "CustomEvent",
+                        parseJSON("{\"@class\": \"CustomEvent\", \"type\": \"" + objectId + ":LiveUpdate\", \"payload\": " + toJson(entity) + "}"), socketId);
+            } catch (IOException ex) {
+                logger.error("Fails to send custom event");
+            }
+        }
+    }
+
+    /**
      * @param property
      *
      * @return the property value
