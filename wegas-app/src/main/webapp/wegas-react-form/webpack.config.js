@@ -93,7 +93,7 @@ module.exports = {
         ],
     },
     devServer: {
-        port: 3000,
+        port: 3003,
         overlay: true,
         publicPath: '/Wegas/wegas-react-form/dist/',
         proxy: {

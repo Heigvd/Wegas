@@ -19,6 +19,7 @@ export function validation<Args extends unknown[], Ref>(
     | EQUALS
     | NOTEQUALS
     | ISDEFINED
+    | ISEMPTY
     | ISTRUE
     | ISFALSE
     | LESSTHAN
@@ -83,6 +84,18 @@ export function validation<Args extends unknown[], Ref>(
   }
   function isDefined(value: ISDEFINED): validator<Args> {
     return (...args) => leafValidation(value.isDefined)(...args) != null;
+  }
+  interface ISEMPTY {
+    isEmpty: Ref;
+  }
+  function isIsEmpty(value: validationSchema): value is ISEMPTY {
+    return 'isEmpty' in value;
+  }
+  function isEmpty(value: ISEMPTY): validator<Args> {
+    return (...args) => {
+        const a = leafValidation(value.isEmpty)(...args);
+        return a instanceof Array && a.length === 0;
+    }
   }
   interface ISTRUE {
     isTrue: Ref;
@@ -172,6 +185,8 @@ export function validation<Args extends unknown[], Ref>(
       return notEquals(schema);
     } else if (isIsDefined(schema)) {
       return isDefined(schema);
+    } else if (isIsEmpty(schema)) {
+      return isEmpty(schema);
     } else if (isIsTrue(schema)) {
       return isTrue(schema);
     } else if (isIsFalse(schema)) {

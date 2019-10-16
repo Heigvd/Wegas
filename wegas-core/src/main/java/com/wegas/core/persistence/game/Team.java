@@ -67,7 +67,10 @@ import javax.validation.constraints.NotNull;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DebugTeam", value = DebugTeam.class)
 })
+
 @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.gameTeams.game.id = :gameId")
+
+
 @NamedQuery(name = "Team.findToPopulate", query = "SELECT a FROM Team a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
 public class Team extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, Populatable {
 
@@ -107,7 +110,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @Lob
     @JsonView(value = Views.EditorI.class)
-    @WegasEntityProperty(view = @View(label = "Notes", value =Textarea.class))
+    @WegasEntityProperty(view = @View(label = "Notes", value = Textarea.class))
     private String notes;
 
     /**
@@ -201,7 +204,11 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @JsonBackReference(value = "game-team")
     public Game getGame() {
-        return getGameTeams().getGame();
+        if (getGameTeams() != null) {
+            return getGameTeams().getGame();
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -217,7 +224,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @JsonManagedReference(value = "player-team")
     @Override
-    @WegasExtraProperty(optional = false, nullable=false, view=@View(label = "Players", value = Hidden.class))
+    @WegasExtraProperty(optional = false, nullable = false, view = @View(label = "Players", value = Hidden.class))
     public List<Player> getPlayers() {
         return players;
     }
@@ -396,7 +403,12 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
 
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
-        return this.getGame().getEntities();
+        Game game = this.getGame();
+        if (game != null) {
+            return this.getGame().getEntities();
+        } else {
+            return null;
+        }
     }
 
     @Override

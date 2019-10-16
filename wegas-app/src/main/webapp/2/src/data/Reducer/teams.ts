@@ -12,7 +12,7 @@ export interface TeamState {
 const teams: Reducer<Readonly<TeamState>> = u(
   (state: TeamState, action: StateActions) => {
     switch (action.type) {
-      case ActionType.MANAGED_MODE: {
+      case ActionType.MANAGED_RESPONSE_ACTION: {
         const teams = action.payload.updatedEntities.teams;
         const deletedKeys = Object.keys(action.payload.deletedEntities.teams);
         return { ...omit(state, deletedKeys), ...teams };

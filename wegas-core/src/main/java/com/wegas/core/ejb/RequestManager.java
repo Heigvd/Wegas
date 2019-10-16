@@ -17,6 +17,7 @@ import com.wegas.core.exception.client.WegasAccessDenied;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.*;
@@ -164,6 +165,9 @@ public class RequestManager implements RequestManagerI {
     @Inject
     private WebsocketFacade websocketFacade;
 
+    @Inject
+    private JPACacheHelper jpaCacheHelper;
+
     /**
      * SL4j Logger
      */
@@ -254,12 +258,12 @@ public class RequestManager implements RequestManagerI {
     /**
      * Contains all updated entities
      */
-    private Map<String, List<AbstractEntity>> updatedEntities = new HashMap<>();
+    private Set<AbstractEntity> updatedEntities = new HashSet<>();
 
     /**
      * List of entities which have been deleted during the request
      */
-    private Map<String, List<AbstractEntity>> destroyedEntities = new HashMap<>();
+    private Set<AbstractEntity> destroyedEntities = new HashSet<>();
 
     /**
      * Contains all permission already granted to the current user during the request
@@ -295,6 +299,8 @@ public class RequestManager implements RequestManagerI {
      * the Nashorn script context to use during the request
      */
     private ScriptContext currentScriptContext = null;
+
+    private boolean clearCacheOnDestroy = false;
 
     /**
      * Internal value to pretty print logs
@@ -361,8 +367,12 @@ public class RequestManager implements RequestManagerI {
      *
      * @param entities entities to register
      */
-    public void addUpdatedEntities(Map<String, List<AbstractEntity>> entities) {
+    public void addUpdatedEntities(Set<AbstractEntity> entities) {
         this.addEntities(entities, updatedEntities);
+    }
+
+    public void addUpdatedEntity(AbstractEntity entity) {
+        this.addEntity(entity, updatedEntities);
     }
 
     /**
@@ -370,8 +380,18 @@ public class RequestManager implements RequestManagerI {
      *
      * @param entities the entities which have been destroyed
      */
-    public void addDestroyedEntities(Map<String, List<AbstractEntity>> entities) {
+    public void addDestroyedEntities(Set<AbstractEntity> entities) {
         this.addEntities(entities, destroyedEntities);
+    }
+
+    /**
+     *
+     * Register an entity as destroyed entity
+     *
+     * @param entity the entity which have been destroyed
+     */
+    public void addDestroyedEntity(AbstractEntity entity) {
+        this.addEntity(entity, destroyedEntities);
     }
 
     /**
@@ -380,45 +400,12 @@ public class RequestManager implements RequestManagerI {
      * @param entities  entities list mapped by their audience
      * @param container entities destination
      */
-    private void addEntities(Map<String, List<AbstractEntity>> entities,
-            Map<String, List<AbstractEntity>> container) {
+    private void addEntities(Set<AbstractEntity> entities, Set<AbstractEntity> container) {
         if (entities != null) {
-            for (Map.Entry<String, List<AbstractEntity>> entry : entities.entrySet()) {
-                this.addEntities(entry.getKey(), entry.getValue(), container);
+            for (AbstractEntity entity : entities) {
+                this.addEntity(entity, container);
             }
         }
-    }
-
-    /**
-     * Add entities to the container, using audience as container map key
-     *
-     * @param audience  entities audiences
-     * @param entities  entities to register
-     * @param container the container
-     */
-    private void addEntities(String audience, List<AbstractEntity> entities,
-            Map<String, List<AbstractEntity>> container) {
-        for (AbstractEntity entity : entities) {
-            this.addEntity(audience, entity, container);
-        }
-    }
-
-    /**
-     * Does the container contains the given entity?
-     *
-     * @param container the container to search in
-     * @param entity    the needle
-     *
-     * @return true if the entity has been found within the container
-     */
-    public boolean contains(Map<String, List<AbstractEntity>> container,
-            AbstractEntity entity) {
-        for (List<AbstractEntity> entities : container.values()) {
-            if (entities.contains(entity)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -427,12 +414,10 @@ public class RequestManager implements RequestManagerI {
      * @param container the container to remove the entity from
      * @param entity    entity to remove
      */
-    private void removeEntityFromContainer(Map<String, List<AbstractEntity>> container, AbstractEntity entity) {
-        for (List<AbstractEntity> entities : container.values()) {
-            if (entities.contains(entity)) {
-                logger.debug("remove {}", entity);
-                entities.remove(entity);
-            }
+    private void removeEntityFromContainer(Set<AbstractEntity> container, AbstractEntity entity) {
+        if (container.contains(entity)) {
+            logger.debug("remove {}", entity);
+            container.remove(entity);
         }
     }
 
@@ -449,31 +434,26 @@ public class RequestManager implements RequestManagerI {
      * in the destroyed one</li>
      * </ul>
      *
-     * @param audience  entity audience
      * @param entity    the entity to register
      * @param container the container to register the entity in
      */
-    public void addEntity(String audience, AbstractEntity entity, Map<String, List<AbstractEntity>> container) {
+    public void addEntity(AbstractEntity entity, Set<AbstractEntity> container) {
 
         boolean add = true;
         if (container == destroyedEntities) {
             removeEntityFromContainer(updatedEntities, entity);
         } else if (container == updatedEntities) {
-            if (contains(destroyedEntities, entity)) {
+            if (destroyedEntities.contains(entity)) {
                 add = false;
             }
         }
 
         if (add) {
-            if (!container.containsKey(audience)) {
-                container.put(audience, new ArrayList<>());
-            }
             // make sure to add up to date entity
-            List<AbstractEntity> entities = container.get(audience);
-            if (entities.contains(entity)) {
-                entities.remove(entity);
+            if (container.contains(entity)) {
+                container.remove(entity);
             }
-            entities.add(entity);
+            container.add(entity);
         }
     }
 
@@ -593,10 +573,73 @@ public class RequestManager implements RequestManagerI {
         this.updatedEntities.clear();
     }
 
+    private void removeAll(Map<String, List<AbstractEntity>> container,
+            Map<String, List<AbstractEntity>> toRemove) {
+        if (toRemove != null) {
+            for (Entry<String, List<AbstractEntity>> entry : toRemove.entrySet()) {
+                String audience = entry.getKey();
+
+                List<AbstractEntity> get = container.get(audience);
+
+                if (get != null) {
+                    get.removeAll(entry.getValue());
+                }
+            }
+        }
+    }
+
+    private void addAll(Map<String, List<AbstractEntity>> container,
+            Map<String, List<AbstractEntity>> toAdd) {
+        if (toAdd != null) {
+            for (Entry<String, List<AbstractEntity>> entry : toAdd.entrySet()) {
+                String audience = entry.getKey();
+                if (!container.containsKey(audience)) {
+                    container.put(audience, new LinkedList<>());
+                }
+                container.get(audience).addAll(entry.getValue());
+            }
+        }
+    }
+
+    public Map<String, List<AbstractEntity>> getMappedUpdatedEntities() {
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
+
+        for (AbstractEntity entity : updatedEntities) {
+            if (entity instanceof Broadcastable) {
+                addAll(map, ((Broadcastable) entity).getEntities());
+            }
+        }
+
+        for (AbstractEntity entity : destroyedEntities) {
+            if (entity instanceof Broadcastable) {
+                if (entity instanceof Team || entity instanceof Player) {
+                    //hack -> entities containes the game -> update
+                    addAll(map, ((Broadcastable) entity).getEntities());
+                } else {
+                    removeAll(map, ((Broadcastable) entity).getEntities());
+                }
+            }
+        }
+        return map;
+    }
+
+    public Map<String, List<AbstractEntity>> getMappedDestroyedEntities() {
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
+
+        for (AbstractEntity entity : destroyedEntities) {
+            if (entity instanceof Broadcastable) {
+                if (!(entity instanceof Team || entity instanceof Player)) {
+                    addAll(map, ((Broadcastable) entity).getEntities());
+                }
+            }
+        }
+        return map;
+    }
+
     /**
-     * @return entities which have just been updated, mapped by their owner
+     * @return entities which have just been updated
      */
-    public Map<String, List<AbstractEntity>> getUpdatedEntities() {
+    public Set<AbstractEntity> getUpdatedEntities() {
         return updatedEntities;
     }
 
@@ -622,7 +665,7 @@ public class RequestManager implements RequestManagerI {
      *
      * @return the destroyedEntites container
      */
-    public Map<String, List<AbstractEntity>> getDestroyedEntities() {
+    public Set<AbstractEntity> getDestroyedEntities() {
         return destroyedEntities;
     }
 
@@ -1002,7 +1045,7 @@ public class RequestManager implements RequestManagerI {
 
         Helper.log(logger, level,
                 "Request [{}] \"{} {}\" for {} processed in {} ms ( processing: {}; management: {}, propagation: {}, serialisation: {}) => {}",
-                this.requestId, this.getMethod(), this.getPath(), info, 
+                this.requestId, this.getMethod(), this.getPath(), info,
                 totalDuration, processingDuration, managementDuration, propagationDuration, serialisationDuration,
                 this.status);
     }
@@ -1020,6 +1063,32 @@ public class RequestManager implements RequestManagerI {
      */
     public void clear() {
         this.getEntityManager().clear();
+    }
+
+    /**
+     *
+     */
+    public void flushAndClearCaches() {
+        // flush all changes in db, but do not update the 2nd level cache
+        this.getEntityManager().flush();
+        // clear the first level cache
+        this.getEntityManager().clear();
+
+        /**
+         * At this point, just flushed entities are outdated in the 2nd level cache
+         * We MUST evict them all
+         */
+        jpaCacheHelper.evictUpdatedEntitiesLocalOnly();
+
+        /**
+         * Moreover, cache synchronisation will fail and others instances 2nd level cache will be outdated too
+         * Ask to requestManager to clear them too at the end of the request
+         */
+        this.pleaseClearCacheAtCompletion();
+    }
+
+    void pleaseClearCacheAtCompletion() {
+        this.clearCacheOnDestroy = true;
     }
 
     /**
@@ -1049,6 +1118,11 @@ public class RequestManager implements RequestManagerI {
         this.logRequest();
 
         //this.getEntityManager().flush();
+        if (clearCacheOnDestroy) {
+            // ask each instances to clear 2nd level cache
+            jpaCacheHelper.evictUpdatedEntities();
+        }
+
         this.clear();
     }
 
