@@ -36,12 +36,12 @@ const VI_BASE = ({
   return path;
 };
 export const VariableInstanceAPI = {
-  getByPlayer(playerId?: number, gameModelId?: number) {
-    return rest(
+  getByPlayer(gameModelId?: number, playerId?: number) {
+    return managedModeRequest(
       `${VI_BASE({ gameModelId })}/AllPlayerInstances/${
         playerId !== undefined ? playerId : CurrentPlayerId
       }`,
-    ).then((res: Response) => res.json());
+    );
   },
   getByDescriptor(
     variableDescriptor: IVariableDescriptor,

@@ -56,8 +56,7 @@ export function updateInstance(
 
 export function getAll(): ThunkResult<Promise<StateActions>> {
   return function(dispatch, getState) {
-    const gameModelId = getState().global.currentGameModelId;
-    return VariableInstanceAPI.getByPlayer(gameModelId).then(res =>
+    return VariableInstanceAPI.getByPlayer().then(res =>
       dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };
