@@ -8,10 +8,6 @@ import {
   StyledLabel,
   LabelStyle,
 } from '../../../Components/AutoImport/String/Label';
-import { store } from '../../../data/store';
-// using raw-loader works but you need to put the whole file name and ts doesn't like it
-// @ts-ignore
-import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasEntities.d.ts';
 import { WegasScriptEditor } from './WegasScriptEditor';
 
 const infoDuration = 5000;
@@ -150,33 +146,6 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
     );
     setEditing(false);
   };
-
-  const variableClasses = Object.values(
-    store.getState().variableDescriptors,
-  ).reduce<{ [variable: string]: string }>((newObject, variable) => {
-    if (variable !== undefined && variable.name !== undefined) {
-      newObject[variable.name] = variable['@class'];
-    }
-    return newObject;
-  }, {});
-
-  const libContent =
-    entitiesSrc +
-    `type Exclude<T, U> = T extends U ? never : T;
-    type Pick<T, K extends keyof T> = {
-      [P in K]: T[P];
-    };
-    interface GameModel{}
-    interface VariableClasses {${Object.keys(variableClasses).reduce(
-      (s, k) => s + k + ':I' + variableClasses[k] + ';\n',
-      '',
-    )}}
-    class Variable {
-      static find: <T extends keyof VariableClasses>(
-        gameModel: GameModel,
-        name: T
-      ) => VariableClasses[T];
-    }`;
 
   return (
     <Toolbar className={fullHeight}>
