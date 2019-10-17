@@ -12,6 +12,7 @@ import { store } from '../../../data/store';
 // using raw-loader works but you need to put the whole file name and ts doesn't like it
 // @ts-ignore
 import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasEntities.d.ts';
+import { WegasScriptEditor } from './WegasScriptEditor';
 
 const infoDuration = 5000;
 
@@ -196,19 +197,12 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
                 width: '50vw',
               }}
             >
-              <SrcEditor
+              <WegasScriptEditor
                 value={jsContent.current}
-                language={'javascript'}
                 onChange={value => {
                   jsContent.current = value;
                 }}
-                defaultFocus={true}
-                defaultExtraLibs={[
-                  {
-                    content: libContent,
-                    name: 'Userscript.d.ts',
-                  },
-                ]}
+                defaultFocus
                 onSave={onAcceptJS}
               />
             </div>

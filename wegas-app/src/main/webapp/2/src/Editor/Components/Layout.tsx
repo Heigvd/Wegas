@@ -13,6 +13,7 @@ const FileBrowserWithMeta = React.lazy(() =>
 );
 const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
 const LanguageEditor = React.lazy(() => import('./LanguageEditor'));
+const PlayLocal = React.lazy(() => import('./PlayLocal'));
 
 const layout = css({
   display: 'flex',
@@ -58,6 +59,9 @@ export default class AppLayout extends React.Component<
               <Item key="LanguageEditor" label="LanguageEditor">
                 <LanguageEditor />
               </Item>,
+              <Item key="PlayLocal" label="PlayLocal">
+                <PlayLocal />
+              </Item>,
             ]}
           >
             <Layout>
@@ -66,6 +70,9 @@ export default class AppLayout extends React.Component<
               </Item>
             </Layout>
             <Layout>
+              <Item key="PlayLocal" label="PlayLocal">
+                <PlayLocal />
+              </Item>
               <Item label="Page">
                 <PageDisplay />
               </Item>
