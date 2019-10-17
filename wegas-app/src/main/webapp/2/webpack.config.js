@@ -113,7 +113,7 @@ const modules = {
     ],
   },
   devServer: {
-    port: 3000,
+    port: 3003,
     overlay: true,
     publicPath: '/Wegas/2/dist/',
     proxy: {

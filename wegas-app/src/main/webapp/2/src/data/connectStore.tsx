@@ -5,11 +5,14 @@ import { shallowIs } from '../Helper/shallowIs';
 function id<T>(x: T) {
   return x;
 }
-function refDifferent(a: unknown, b: unknown) {
+export function refDifferent(a: unknown, b: unknown) {
   return a !== b;
 }
-function shallowDifferent(a: unknown, b: unknown) {
+export function shallowDifferent<T>(a: T, b: T) {
   return !shallowIs(a, b);
+}
+export function deepDifferent<T>(a: T, b: T) {
+  return !(JSON.stringify(a) === JSON.stringify(b));
 }
 export function createStoreConnector<S extends Store>(store: S) {
   type State = ReturnType<S['getState']>;

@@ -17,6 +17,7 @@ import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
 import com.wegas.core.ejb.ConcurrentHelper;
 import com.wegas.core.ejb.JPACacheHelper;
+import com.wegas.core.jcr.JackrabbitConnector;
 import fish.payara.micro.cdi.Inbound;
 import fish.payara.micro.cdi.Outbound;
 import java.io.ByteArrayOutputStream;
@@ -83,6 +84,8 @@ public class UtilsController {
     @Inject
     private JPACacheHelper jpaCacheHelper;
 
+    @Inject
+    private JackrabbitConnector jcrConnector;
 
     private static final String SET_LEVEL_EVENT = "Wegas_setLoggerLevel";
 
@@ -593,6 +596,18 @@ public class UtilsController {
         concurrentHelper.unlock(token, audience, true);
         return "ok";
     }
+
+
+    /**
+     * Request all cluster instances to clear JPA l2 cache
+     */
+    @DELETE
+    @Path("JCR_GC")
+    public void jcrGC() {
+        jcrConnector.revisionGC();
+    }
+
+
 
     /**
      * Returns the current time according to the server.

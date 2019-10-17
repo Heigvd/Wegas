@@ -16,6 +16,7 @@ import com.wegas.core.persistence.Mergeable;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import org.apache.commons.lang3.Validate;
 
 /**
@@ -40,6 +41,14 @@ public class WegasRefs {
                 return ((Number) o).doubleValue();
             }
             return Double.NaN;
+        }
+
+        public Collection resolveAsCollection(Object self, Mergeable object) {
+            Object o = this.resolve(self, object);
+            if (o instanceof Collection) {
+                return (Collection)o;
+            }
+            return null;
         }
     }
 

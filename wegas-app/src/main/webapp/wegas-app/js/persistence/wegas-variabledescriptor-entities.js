@@ -777,7 +777,25 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         sortable: true,
                         highlight: true
                     }
-                }
+                },
+                maxSelectable: {
+                    index: 1,
+                    required: false,
+                    type: ["number", "null"],
+                    value: 1,
+                    view: {
+                        "featureLevel": "DEFAULT",
+                        "index": 1,
+                        "label": "Maximum",
+                        "layout": "shortInline"
+                    },
+                    errored: function(val, formVal){
+                        return val < 1;
+                    },
+                    visible: function(val, formVal){
+                        return formVal.allowedValues && formVal.allowedValues.length >= 1;
+                    }
+                },
             },
             METHODS: {
                 setValue: {

@@ -1,7 +1,11 @@
 import * as React from 'react';
 import { useDrop, DragObjectWithType, DropTargetMonitor } from 'react-dnd';
 import { css, cx } from 'emotion';
-import { themeVar } from '../../../Components/Theme';
+import {
+  themeVar,
+  localSelection,
+  globalSelection,
+} from '../../../Components/Theme';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { generateAbsolutePath, FileAPI, fileURL } from '../../../API/files.api';
 import { IconButton } from '../../../Components/Button/IconButton';
@@ -11,23 +15,9 @@ import { GameModel } from '../../../data/selectors';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { file } from '@babel/types';
 import { StyledLabel } from '../../../Components/AutoImport/String/Label';
-
-const grow = css({
-  flex: '1 1 auto',
-});
-const flex = css({
-  display: 'flex',
-});
-const block = css({
-  display: 'block',
-});
-const hidden = css({
-  display: 'none',
-});
-
-const selectedRow = css({
-  backgroundColor: themeVar.primaryLighterColor,
-});
+import { store, StoreDispatch } from '../../../data/store';
+import { editFile } from '../../../data/Reducer/globalState';
+import { flex, grow, hidden, block } from '../../../css/classes';
 
 const hoverRow = css({
   cursor: 'pointer',
@@ -42,13 +32,18 @@ const dropZoneStyle = css({
   borderColor: 'red',
 });
 
-const isDirectory = (file: IFileDescriptor) =>
+const isDirectory = (file: IAbstractContentDescriptor) =>
   file.mimeType === 'application/wfs-directory';
 
-const isSelected = (file: IFileDescriptor, selectedPaths: string[]) =>
-  selectedPaths.includes(generateAbsolutePath(file));
+const isSelected = (
+  file: IAbstractContentDescriptor,
+  selectedPaths: string[],
+) => selectedPaths.includes(generateAbsolutePath(file));
 
-const isChildrenSelected = (file: IFileDescriptor, selectedPaths: string[]) => {
+const isChildrenSelected = (
+  file: IAbstractContentDescriptor,
+  selectedPaths: string[],
+) => {
   for (const path in selectedPaths) {
     if (path.includes(generateAbsolutePath(file))) {
       return true;
@@ -57,7 +52,10 @@ const isChildrenSelected = (file: IFileDescriptor, selectedPaths: string[]) => {
   return false;
 };
 
-const sortFiles = (a: IFileDescriptor, b: IFileDescriptor): number => {
+const sortFiles = (
+  a: IAbstractContentDescriptor,
+  b: IAbstractContentDescriptor,
+): number => {
   if (
     (isDirectory(a) && isDirectory(b)) ||
     (!isDirectory(a) && !isDirectory(b))
@@ -75,7 +73,7 @@ const gameModelDependsOnModel = () => {
   );
 };
 
-const isUploadAllowed = (file?: IFileDescriptor) => {
+const isUploadAllowed = (file?: IAbstractContentDescriptor) => {
   return (
     file &&
     (!gameModelDependsOnModel() ||
@@ -149,38 +147,47 @@ type ModalState =
   | ModalStateDelete
   | ModalStateChangeType;
 
-interface FileBrowserNodeProps {
-  defaultFile: IFileDescriptor;
-  selectedPaths?: string[];
+export interface FileBrowserNodeProps {
+  defaultFile: IAbstractContentDescriptor;
+  selectedLocalPaths?: string[];
+  selectedGlobalPaths?: string[];
   defaultOpen?: boolean;
   noBracket?: boolean;
   noDelete?: boolean;
   onFileClick?: (
-    file: IFileDescriptor,
-    onFileUpdate?: (updatedFile: IFileDescriptor) => void,
+    file: IAbstractContentDescriptor,
+    onFileUpdate?: (updatedFile: IAbstractContentDescriptor) => void,
   ) => void;
-  onDelelteFile?: (deletedFile: IFileDescriptor) => void;
+  onDelelteFile?: (deletedFile: IAbstractContentDescriptor) => void;
+  localDispatch?: StoreDispatch;
 }
 
 export function FileBrowserNode({
   defaultFile,
-  selectedPaths = [],
+  selectedLocalPaths = [],
+  selectedGlobalPaths = [],
   defaultOpen = false,
   noBracket = false,
   noDelete = false,
   onFileClick = () => {},
   onDelelteFile = () => {},
+  localDispatch,
 }: FileBrowserNodeProps) {
   const [open, setOpen] = React.useState(
-    defaultOpen || isChildrenSelected(defaultFile, selectedPaths) || noBracket,
+    defaultOpen ||
+      isChildrenSelected(defaultFile, selectedLocalPaths) ||
+      isChildrenSelected(defaultFile, selectedGlobalPaths) ||
+      noBracket,
   );
   const [modalState, setModalState] = React.useState<ModalState>({
     type: 'close',
   });
-  const [children, setChildren] = React.useState<IFileDescriptor[]>();
-  const [currentFile, setCurrentFile] = React.useState<IFileDescriptor>(
-    defaultFile,
-  );
+  const [children, setChildren] = React.useState<
+    IAbstractContentDescriptor[]
+  >();
+  const [currentFile, setCurrentFile] = React.useState<
+    IAbstractContentDescriptor
+  >(defaultFile);
   const [nbUploadingFiles, dispatchUploadingFiles] = React.useReducer(
     (uploadCount: number, action: { type: 'increment' | 'decrement' }) => {
       switch (action.type) {
@@ -198,8 +205,8 @@ export function FileBrowserNode({
   const uploader = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
-    if (isDirectory(currentFile)) {
-      FileAPI.getFileList(generateAbsolutePath(currentFile))
+    if (isDirectory(defaultFile)) {
+      FileAPI.getFileList(generateAbsolutePath(defaultFile))
         .then(files => {
           setChildren(files);
         })
@@ -211,7 +218,7 @@ export function FileBrowserNode({
           setChildren([]);
         });
     }
-  }, [currentFile]);
+  }, [defaultFile]);
 
   const openUploader = (event: React.MouseEvent) => {
     event.stopPropagation();
@@ -266,7 +273,7 @@ export function FileBrowserNode({
 
   function insertFile(
     file: File,
-    onAction?: (newFile?: IFileDescriptor) => void,
+    onAction?: (newFile?: IAbstractContentDescriptor) => void,
     force: boolean = false,
   ) {
     const oldFile = getChildren(file.name);
@@ -328,9 +335,9 @@ export function FileBrowserNode({
 
   function insertFiles(
     files: FileList,
-    onAction?: (newFiles: IFileDescriptor[]) => void,
+    onAction?: (newFiles: IAbstractContentDescriptor[]) => void,
   ) {
-    const successFiles: IFileDescriptor[] = [];
+    const successFiles: IAbstractContentDescriptor[] = [];
     for (let i = 0; i < files.length; ++i) {
       insertFile(files[i], newFile => {
         if (newFile) {
@@ -343,7 +350,7 @@ export function FileBrowserNode({
     }
   }
 
-  const deleteFile = (file: IFileDescriptor) => {
+  const deleteFile = (file: IAbstractContentDescriptor) => {
     FileAPI.deleteFile(generateAbsolutePath(file), true)
       .then(deletedFile => {
         onDelelteFile && onDelelteFile(deletedFile);
@@ -357,7 +364,7 @@ export function FileBrowserNode({
       });
   };
 
-  const openFile = (file: IFileDescriptor) => {
+  const openFile = (file: IAbstractContentDescriptor) => {
     const win = window.open(fileURL(generateAbsolutePath(file)), '_blank');
     win!.focus();
   };
@@ -431,9 +438,18 @@ export function FileBrowserNode({
           className={cx(flex, grow, hoverRow, {
             [dropZoneStyle]:
               isDirectory(currentFile) && dropZoneProps.isShallowOver,
-            [selectedRow]: isSelected(currentFile, selectedPaths),
+            [localSelection]: isSelected(currentFile, selectedLocalPaths),
+            [globalSelection]: isSelected(currentFile, selectedGlobalPaths),
           })}
-          onClick={() => onFileClick(currentFile, setCurrentFile)}
+          onClick={(e: ModifierKeysEvent) => {
+            /// OLD
+            onFileClick(currentFile, setCurrentFile);
+
+            /// NEW
+            const dispatch =
+              e.ctrlKey && localDispatch ? localDispatch : store.dispatch;
+            dispatch(editFile(currentFile, setCurrentFile));
+          }}
         >
           <IconButton
             icon={getIconForFileType(currentFile.mimeType)}
@@ -624,7 +640,9 @@ export function FileBrowserNode({
                         onDelelteFile && onDelelteFile(deletedFile);
                       }}
                       onFileClick={onFileClick}
-                      selectedPaths={selectedPaths}
+                      selectedLocalPaths={selectedLocalPaths}
+                      selectedGlobalPaths={selectedGlobalPaths}
+                      localDispatch={localDispatch}
                     />
                   ))
                 : 'Empty...'

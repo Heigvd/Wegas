@@ -368,6 +368,7 @@ public class MergeHelper {
                 AbstractEntity entity = (AbstractEntity) target;
                 if (references != null && references.length > 0 && references[0] != null) {
                     entity.forceRefId(references[0].getRefId());
+                    logger.trace("Forrce RefId : {}", entity);
                 } else {
                     if (clear) {
                         entity.forceRefId(null);
@@ -390,12 +391,11 @@ public class MergeHelper {
         MergeHelper.visitMergeable(target, true, new RefidResetter(clear), reference);
     }
 
-
     private static class NameResetter implements MergeableVisitor {
 
         @Override
         public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references) {
-            if (target instanceof NamedEntity){
+            if (target instanceof NamedEntity) {
                 ((NamedEntity) target).setName(target.getClass().getSimpleName());
             }
             return true;

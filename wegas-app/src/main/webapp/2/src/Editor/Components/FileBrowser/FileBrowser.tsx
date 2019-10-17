@@ -1,39 +1,28 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
 import { generateAbsolutePath, FileAPI } from '../../../API/files.api';
-import { AsyncVariableForm } from '../EntityEditor';
-import getEditionConfig from '../../editionConfig';
-import { Schema } from 'jsoninput';
-import { AvailableViews } from '../FormView';
 import { DefaultDndProvider } from '../../../Components/DefaultDndProvider';
-import { FileBrowserNode } from './FileBrowserNode';
+import { FileBrowserNode, FileBrowserNodeProps } from './FileBrowserNode';
 import { StyledLabel } from '../../../Components/AutoImport/String/Label';
-
-const grow = css({
-  flex: '1 1 auto',
-});
-const flex = css({
-  display: 'flex',
-});
-const growBig = css({
-  flex: '30 1 auto',
-});
+import { ComponentWithForm } from '../FormView/ComponentWithForm';
+import { StoreDispatch } from '../../../data/store';
+import { grow } from '../../../css/classes';
 
 interface FileBrowserProps {
-  onFileClick?: (
-    file: IFileDescriptor,
-    onFileUpdate?: (updatedFile: IFileDescriptor) => void,
-  ) => void;
-  onDelelteFile?: (deletedFile: IFileDescriptor) => void;
-  selectedPaths?: string[];
+  onFileClick?: FileBrowserNodeProps['onFileClick'];
+  onDelelteFile?: FileBrowserNodeProps['onDelelteFile'];
+  selectedLocalPaths?: string[];
+  selectedGlobalPaths?: string[];
+  localDispatch?: StoreDispatch;
 }
 
 export function FileBrowser({
   onFileClick,
   onDelelteFile,
-  selectedPaths,
+  selectedLocalPaths,
+  selectedGlobalPaths,
+  localDispatch,
 }: FileBrowserProps) {
-  const [rootFile, setRootFile] = React.useState<IFileDescriptor>();
+  const [rootFile, setRootFile] = React.useState<IAbstractContentDescriptor>();
   const [error, setError] = React.useState<string>('');
 
   React.useEffect(() => {
@@ -51,11 +40,13 @@ export function FileBrowser({
         <StyledLabel value={error} type={'error'} duration={3000} />
         <FileBrowserNode
           defaultFile={rootFile}
-          selectedPaths={selectedPaths}
+          selectedLocalPaths={selectedLocalPaths}
+          selectedGlobalPaths={selectedGlobalPaths}
           noBracket
           noDelete
           onFileClick={onFileClick}
           onDelelteFile={onDelelteFile}
+          localDispatch={localDispatch}
         />
       </div>
     </DefaultDndProvider>
@@ -65,78 +56,20 @@ export function FileBrowser({
 }
 
 export default function FileBrowserWithMeta() {
-  const [selectedFile, setSelectedFile] = React.useState<IFileDescriptor>();
-  const [error, setError] = React.useState<string>('');
-  const fileUpdate = React.useRef<(updatedFile: IFileDescriptor) => void>(
-    () => {},
-  );
-
-  const onFileClick = (
-    file: IFileDescriptor,
-    onFileUpdate?: (updatedFile: IFileDescriptor) => void,
-  ) => {
-    setSelectedFile(oldSelectedFile => {
-      if (
-        !oldSelectedFile ||
-        generateAbsolutePath(file) !== generateAbsolutePath(oldSelectedFile)
-      ) {
-        if (onFileUpdate) {
-          fileUpdate.current = onFileUpdate;
-        }
-        return file;
-      }
-      return undefined;
-    });
-  };
-
-  const saveMeta = (file: IFileDescriptor) => {
-    FileAPI.updateMetadata(file)
-      .then((resFile: IFileDescriptor) => {
-        fileUpdate.current(resFile);
-        setSelectedFile(file);
-      })
-      .catch(({ statusText }: Response) => setError(statusText));
-  };
-
   return (
-    <div className={cx(flex, grow)}>
-      <div className={cx(flex, growBig)}>
-        <FileBrowser
-          onFileClick={onFileClick}
-          onDelelteFile={file => {
-            if (
-              selectedFile &&
-              generateAbsolutePath(selectedFile).startsWith(
-                generateAbsolutePath(file),
-              )
-            ) {
-              setSelectedFile(undefined);
+    <ComponentWithForm>
+      {({ localState, localDispatch }) => {
+        return (
+          <FileBrowser
+            selectedLocalPaths={
+              localState && localState.type === 'File'
+                ? [generateAbsolutePath(localState.entity)]
+                : []
             }
-          }}
-          selectedPaths={
-            selectedFile ? [generateAbsolutePath(selectedFile)] : []
-          }
-        />
-      </div>
-      {selectedFile && (
-        <div className={cx(flex, grow)}>
-          <StyledLabel
-            value={error}
-            type={'error'}
-            duration={3000}
-            onLabelVanish={() => setError('')}
+            localDispatch={localDispatch}
           />
-          <div className={cx(flex, grow)}>
-            <AsyncVariableForm
-              getConfig={entity =>
-                getEditionConfig(entity) as Promise<Schema<AvailableViews>>
-              }
-              update={saveMeta}
-              entity={selectedFile}
-            />
-          </div>
-        </div>
-      )}
-    </div>
+        );
+      }}
+    </ComponentWithForm>
   );
 }

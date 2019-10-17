@@ -1,9 +1,12 @@
 // export const ENTITY_UPDATE = 'ENTITY/UPDATE';
 
-export const MANAGED_MODE = 'RESPONSE/MANAGED';
+export const MANAGED_RESPONSE_ACTION = 'RESPONSE/MANAGED';
 
+export const EDITOR_ERROR = 'EDITOR/ERROR';
+export const EDITOR_ERROR_REMOVE = 'EDITOR/ERROR/REMOVE';
 export const VARIABLE_EDIT = 'VARIABLE/EDIT';
 export const FSM_EDIT = 'FSM/EDIT';
+export const FILE_EDIT = 'FILE/EDIT';
 export const VARIABLE_CREATE = 'VARIABLE/CREATE';
 export const CLOSE_EDITOR = 'EDITOR/CLOSE';
 
@@ -23,3 +26,7 @@ export const PUSHER_SOCKET = 'PUSHER/SOCKET';
 
 export const GAMEMODEL_EDIT = 'GAMEMODEL/EDIT';
 export const LANGUAGE_EDIT = 'LANGUAGE/EDIT';
+
+export const TEAM_FETCH_ALL = 'TEAM/FETCH/ALL';
+
+export const GAME_FETCH = 'GAME/FETCH';

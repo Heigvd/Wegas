@@ -1,4 +1,4 @@
-import { getInstance as rawGetInstance } from '../methods/VariableDescriptor';
+import { getInstance as rawGetInstance } from '../methods/VariableDescriptorMethods';
 import { proxyfy } from '.';
 import { TranslatableContent } from '../i18n';
 

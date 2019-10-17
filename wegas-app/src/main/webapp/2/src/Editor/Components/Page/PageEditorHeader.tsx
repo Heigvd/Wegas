@@ -59,13 +59,14 @@ class PageSelector extends React.Component<
                 {i.name ? `${i.name} (${i.id})` : i.id}
                 <ConfirmButton
                   icon="trash"
-                  onClick={e => {
-                    e.stopPropagation();
-                    this.props
-                      .dispatch(Actions.PageActions.deletePage(i.id))
-                      .then(index => {
-                        this.buildIndex(index.payload);
-                      });
+                  onAction={success => {
+                    if (success) {
+                      this.props
+                        .dispatch(Actions.PageActions.deletePage(i.id))
+                        .then(index => {
+                          this.buildIndex(index.payload);
+                        });
+                    }
                   }}
                 />
               </span>
@@ -91,7 +92,9 @@ class PageSelector extends React.Component<
         label={this.props.label}
         onOpen={this.loadIndex}
         items={this.state.index}
-        onSelect={i => (i.id ? this.onPageChange(i.id) : this.onPageCreate())}
+        onSelect={i =>
+          i.id !== undefined ? this.onPageChange(i.id) : this.onPageCreate()
+        }
       />
     );
   }

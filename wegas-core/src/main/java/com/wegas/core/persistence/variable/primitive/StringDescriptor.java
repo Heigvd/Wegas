@@ -15,14 +15,23 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.annotations.Errored;
 import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.annotations.Scriptable;
+import com.wegas.core.persistence.annotations.WegasConditions.IsEmpty;
+import com.wegas.core.persistence.annotations.WegasConditions.Not;
+import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.ValueGenerators.EmptyArray;
+import com.wegas.editor.ValueGenerators.One;
 import com.wegas.editor.View.ArrayView;
+import com.wegas.editor.View.CommonView;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.NumberView;
 import com.wegas.editor.View.View;
+import com.wegas.editor.Visible;
+import com.wegas.mcq.persistence.QuestionDescriptor.CheckPositiveness;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -52,7 +61,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      */
     //@NotNull
     //@Pattern(regexp = "^\\w*$")
-    @WegasEntityProperty(view = @View(label ="Pattern", value = Hidden.class))
+    @WegasEntityProperty(view = @View(label = "Pattern", value = Hidden.class))
     private String validationPattern;
 
     /**
@@ -62,9 +71,20 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
     @JsonDeserialize(using = EnumItem.ListDeserializer.class)
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label= "Allowed Values", value = ArrayView.HighlightAndSortable.class))
+            view = @View(label = "Allowed Values", value = ArrayView.HighlightAndSortable.class))
     //@WegasEntityProperty(callback = EnumItem.EnumItemMergeCallback.class)
     private List<EnumItem> allowedValues = new ArrayList<>();
+
+    @WegasEntityProperty(proposal = One.class,
+            view = @View(
+                    label = "Maximum",
+                    layout = CommonView.LAYOUT.shortInline,
+                    value = NumberView.WithInfinityPlaceholder.class,
+                    index = 1
+            ))
+    @Errored(CheckPositiveness.class)
+    @Visible(IsEnumeration.class)
+    private Integer maxSelectable;
 
     /**
      *
@@ -124,6 +144,14 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
         }
     }
 
+    public Integer getMaxSelectable() {
+        return maxSelectable;
+    }
+
+    public void setMaxSelectable(Integer maxSelectable) {
+        this.maxSelectable = maxSelectable;
+    }
+
     @Override
     public void registerItem(EnumItem item) {
         item.setParentString(this);
@@ -175,6 +203,22 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      */
     public void setValue(Player p, JSObject value) {
         this.getInstance(p).setValue(value);
+    }
+
+    /**
+     *
+     * @param p
+     * @param value
+     *
+     * @return
+     */
+    @Scriptable(label = " number of selected values is")
+    public int countSelectedValues(Player p, String value) {
+        StringInstance instance = this.getInstance(p);
+
+        String[] values = instance.parseValues(instance.getValue());
+
+        return value.length();
     }
 
     /**
@@ -238,5 +282,12 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
             }
         }
 
+    }
+
+    public static class IsEnumeration extends Not {
+
+        public IsEnumeration() {
+            super(new IsEmpty(new Field(null, "allowedValues")));
+        }
     }
 }

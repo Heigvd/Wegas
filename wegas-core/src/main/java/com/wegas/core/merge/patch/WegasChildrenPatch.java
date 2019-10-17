@@ -7,10 +7,12 @@
  */
 package com.wegas.core.merge.patch;
 
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.WegasCallback;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
@@ -131,7 +133,12 @@ public final class WegasChildrenPatch extends WegasPatch {
                         theMap.put("" + i + ":" + get, get);
                         // theMap.put(i, get);
                     } else {
-                        theMap.put(((Mergeable) get).getRefId(), get);
+                        Mergeable m = (Mergeable) get;
+                        if (Helper.isNullOrEmpty(m.getRefId())) {
+                            // no refiId means new object, set it
+                            m.setRefId(m.getClass().getSimpleName() + ":#" + i + ":" + Helper.genToken(6));
+                        }
+                        theMap.put(m.getRefId(), get);
                     }
                 }
             }

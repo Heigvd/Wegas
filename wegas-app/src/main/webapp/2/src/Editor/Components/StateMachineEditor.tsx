@@ -4,15 +4,20 @@ import { Connection, Defaults, jsPlumbInstance } from 'jsplumb';
 import * as React from 'react';
 import { IconButton } from '../../Components/Button/IconButton';
 import { VariableDescriptor } from '../../data/selectors';
-import { StoreConsumer, StoreDispatch } from '../../data/store';
+import { StoreDispatch, useStore } from '../../data/store';
 import { entityIs } from '../../data/entities';
 import { Actions } from '../../data';
 import { Toolbar } from '../../Components/Toolbar';
 import { FontAwesome } from './Views/FontAwesome';
-import { getInstance } from '../../data/methods/VariableDescriptor';
+import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { themeVar } from '../../Components/Theme';
 import { EditorAction } from '../../data/Reducer/globalState';
 import { State as RState } from '../../data/Reducer/reducers';
+import { wlog } from '../../Helper/wegaslog';
+import { ComponentWithForm } from './FormView/ComponentWithForm';
+import { shallowDifferent } from '../../data/connectStore';
+import { store } from '../../data/store';
+import { forceScroll, grow } from '../../css/classes';
 
 const editorStyle = css({
   position: 'relative',
@@ -104,11 +109,7 @@ const JS_PLUMB_OPTIONS: Defaults = {
 interface StateMachineEditorProps {
   stateMachine: IFSMDescriptor;
   stateMachineInstance: IFSMInstance;
-  dispatch: StoreDispatch;
-  /**
-   * Currently editing a child in the editor
-   */
-  editChild: boolean;
+  localDispatch?: StoreDispatch;
   search: RState['global']['search'];
 }
 interface StateMachineEditorState {
@@ -129,9 +130,6 @@ class StateMachineEditor extends React.Component<
     }
     return { oldProps: nextProps, stateMachine: nextProps.stateMachine };
   }
-  static defaultProps = {
-    editChild: false,
-  };
   constructor(props: StateMachineEditorProps) {
     super(props);
     this.state = { oldProps: props, stateMachine: props.stateMachine };
@@ -224,8 +222,10 @@ class StateMachineEditor extends React.Component<
   moveState = (id: number, pos: [number, number]) => {
     this.setState(
       produce((state: StateMachineEditorState) => {
-        state.stateMachine.states[id].editorPosition.x = pos[0];
-        state.stateMachine.states[id].editorPosition.y = pos[1];
+        state.stateMachine.states[id].editorPosition.x =
+          pos[0] < 0 ? 0 : pos[0];
+        state.stateMachine.states[id].editorPosition.y =
+          pos[1] < 0 ? 0 : pos[1];
       }),
     );
   };
@@ -260,7 +260,7 @@ class StateMachineEditor extends React.Component<
       }),
     );
   };
-  editState = (id: number) => {
+  editState = (e: ModifierKeysEvent, id: number) => {
     const actions: EditorAction<IFSMDescriptor>['more'] = {};
     if (id !== this.props.stateMachine.defaultInstance.currentStateId) {
       actions.delete = {
@@ -270,7 +270,11 @@ class StateMachineEditor extends React.Component<
         },
       };
     }
-    this.props.dispatch(
+    const dispatch =
+      e.ctrlKey && this.props.localDispatch
+        ? this.props.localDispatch
+        : store.dispatch;
+    dispatch(
       Actions.EditorActions.editVariable(
         this.props.stateMachine,
         ['states', id],
@@ -281,10 +285,14 @@ class StateMachineEditor extends React.Component<
       ),
     );
   };
-  editTransition = (path: [number, number]) => {
+  editTransition = (e: ModifierKeysEvent, path: [number, number]) => {
     const stateId = path[0];
     const transitionIndex = path[1];
-    this.props.dispatch(
+    const dispatch =
+      e.ctrlKey && this.props.localDispatch
+        ? this.props.localDispatch
+        : store.dispatch;
+    dispatch(
       Actions.EditorActions.editVariable(
         this.props.stateMachine,
         ['states', String(stateId), 'transitions', String(transitionIndex)],
@@ -377,9 +385,6 @@ class StateMachineEditor extends React.Component<
     if (this.state.plumb != null) {
       this.state.plumb.unbind();
     }
-    if (this.props.editChild) {
-      this.props.dispatch(Actions.EditorActions.closeEditor());
-    }
   }
   componentDidUpdate(
     _prevProps: StateMachineEditorProps,
@@ -395,7 +400,7 @@ class StateMachineEditor extends React.Component<
       oldStateMachine !== stateMachine &&
       this.props.stateMachine !== stateMachine
     ) {
-      this.props.dispatch(
+      store.dispatch(
         Actions.VariableDescriptorActions.updateDescriptor(stateMachine),
       );
     }
@@ -443,55 +448,60 @@ class StateMachineEditor extends React.Component<
     );
   }
 }
-export default function ConnectedStateMachineEditor() {
+
+export function ConnectedStateMachineEditor({
+  localDispatch,
+}: {
+  localDispatch?: StateMachineEditorProps['localDispatch'];
+}) {
+  const stateMachine = React.useRef<IFSMDescriptor>();
+  const globalState = useStore(s => {
+    if (
+      s.global.editing &&
+      (s.global.editing.type === 'VariableFSM' ||
+        s.global.editing.type === 'Variable')
+    ) {
+      stateMachine.current = s.global.editing.entity as IFSMDescriptor;
+      const lastFSM = VariableDescriptor.select(
+        s.global.editing.entity.id,
+      ) as IFSMDescriptor;
+      if (shallowDifferent(stateMachine.current, lastFSM))
+        stateMachine.current = lastFSM;
+    }
+    const instance = stateMachine.current
+      ? getInstance(stateMachine.current)
+      : undefined;
+    if (
+      entityIs<IFSMDescriptor>(stateMachine.current, 'FSMDescriptor') &&
+      entityIs<IFSMInstance>(instance, 'FSMInstance')
+    ) {
+      return {
+        descriptor: stateMachine.current,
+        instance,
+        search: s.global.search,
+      };
+    }
+  }, shallowDifferent);
+
+  return globalState ? (
+    <div className={cx(grow, forceScroll)}>
+      <StateMachineEditor
+        stateMachine={globalState.descriptor}
+        stateMachineInstance={globalState.instance}
+        localDispatch={localDispatch}
+        search={globalState.search}
+      />
+    </div>
+  ) : null;
+}
+
+export default function StateMachineEditorWithMeta() {
   return (
-    <StoreConsumer<{
-      descriptor: IFSMDescriptor | undefined;
-      instance: IFSMInstance | undefined;
-      editChild?: boolean;
-      search: RState['global']['search'];
-    }>
-      selector={s => {
-        const descriptor = s.global.stateMachineEditor
-          ? VariableDescriptor.select<IFSMDescriptor>(
-              s.global.stateMachineEditor.id,
-            )
-          : undefined;
-        const instance =
-          descriptor != null ? getInstance(descriptor) : undefined;
-        const editChild =
-          s.global.editing &&
-          s.global.editing.type === 'Variable' &&
-          s.global.stateMachineEditor &&
-          s.global.editing.id === s.global.stateMachineEditor.id &&
-          s.global.editing.path &&
-          s.global.editing.path.length > 0;
-        return {
-          descriptor,
-          instance,
-          editChild,
-          search: s.global.search,
-        };
+    <ComponentWithForm entityEditor>
+      {({ localDispatch }) => {
+        return <ConnectedStateMachineEditor localDispatch={localDispatch} />;
       }}
-    >
-      {({ state, dispatch }) => {
-        if (
-          entityIs<IFSMDescriptor>(state.descriptor, 'FSMDescriptor') &&
-          entityIs<IFSMInstance>(state.instance, 'FSMInstance')
-        ) {
-          return (
-            <StateMachineEditor
-              stateMachine={state.descriptor}
-              stateMachineInstance={state.instance}
-              dispatch={dispatch}
-              editChild={state.editChild}
-              search={state.search}
-            />
-          );
-        }
-        return null;
-      }}
-    </StoreConsumer>
+    </ComponentWithForm>
   );
 }
 
@@ -522,10 +532,14 @@ class State extends React.Component<{
   initialState: boolean;
   plumb: jsPlumbInstance;
   currentState: boolean;
-  editState: (id: number) => void;
+  editState: (e: ModifierKeysEvent, id: number) => void;
   deleteState: (id: number) => void;
   moveState: (id: number, pos: [number, number]) => void;
-  editTransition: (path: [number, number], transition: ITransition) => void;
+  editTransition: (
+    e: ModifierKeysEvent,
+    path: [number, number],
+    transition: ITransition,
+  ) => void;
   search: RState['global']['search'];
 }> {
   container: Element | null = null;
@@ -555,7 +569,8 @@ class State extends React.Component<{
       delete plumb.getManagedElements()[this.props.id];
     }
   }
-  onClickEdit = () => this.props.editState(this.props.id);
+  onClickEdit = (e: ModifierKeysEvent) =>
+    this.props.editState(e, this.props.id);
   isBeingSearched = () => {
     const { label, onEnterEvent } = this.props.state;
     const searched =
@@ -587,7 +602,10 @@ class State extends React.Component<{
         <Toolbar vertical>
           <Toolbar.Content className="content">{state.label}</Toolbar.Content>
           <Toolbar.Header>
-            <IconButton icon="edit" onClick={this.onClickEdit} />
+            <IconButton
+              icon="edit"
+              onClick={(e: ModifierKeysEvent) => this.onClickEdit(e)}
+            />
             <div className={sourceStyle}>
               <FontAwesome icon="project-diagram" />
             </div>
@@ -620,7 +638,11 @@ class Transition extends React.Component<{
   plumb: jsPlumbInstance;
   parent: number;
   position: number;
-  editTransition: (path: [number, number], transition: ITransition) => void;
+  editTransition: (
+    e: ModifierKeysEvent,
+    path: [number, number],
+    transition: ITransition,
+  ) => void;
   search: RState['global']['search'];
 }> {
   connection: Connection | null = null;
@@ -639,12 +661,16 @@ class Transition extends React.Component<{
       target: String(tgt),
       ...(src === tgt ? ({ connector: ['StateMachine'] } as any) : undefined),
     });
-    (this.connection as any).bind('click', (connection: any) => {
-      this.props.editTransition(
-        [this.props.parent, this.props.position],
-        connection.getParameter('transition'),
-      );
-    });
+    (this.connection as any).bind(
+      'click',
+      (connection: any, e: ModifierKeysEvent) => {
+        this.props.editTransition(
+          e,
+          [this.props.parent, this.props.position],
+          connection.getParameter('transition'),
+        );
+      },
+    );
     this.updateData();
   }
   componentDidUpdate() {
@@ -671,7 +697,7 @@ class Transition extends React.Component<{
           .getElement().className = className.replace(searchHighlighted, '');
       }
     } catch (e) {
-      console.error(e);
+      wlog(e);
     }
   };
   componentWillUnmount() {

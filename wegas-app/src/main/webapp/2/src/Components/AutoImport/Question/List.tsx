@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { TranslatableContent } from '../../../data/i18n';
-import { flatten } from '../../../data/selectors/VariableDescriptor';
 import { StoreConsumer, StoreDispatch } from '../../../data/store';
 import { VariableDescriptor } from '../../../data/selectors';
 import { EntityChooser } from '../../EntityChooser';
-import { getInstance } from '../../../data/methods/VariableDescriptor';
+import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { css } from 'emotion';
 import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
 import { themeVar } from '../../Theme';
 import { IconButton } from '../../Button/IconButton';
-import { selectAndValidate } from '../../../data/Reducer/variableInstance';
+import { selectAndValidate } from '../../../data/Reducer/VariableInstanceReducer';
+import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
 
 /**
  * Query subtree / instance about a QuestionDescriptor
@@ -72,8 +72,12 @@ function ReplyDisplay({ reply }: { reply: IReply }) {
       <div
         dangerouslySetInnerHTML={{
           __html: reply.ignored
-            ? reply.ignorationAnswer ? TranslatableContent.toString(reply.ignorationAnswer) : ''
-            : reply.answer ? TranslatableContent.toString(reply.answer) : '',
+            ? reply.ignorationAnswer
+              ? TranslatableContent.toString(reply.ignorationAnswer)
+              : ''
+            : reply.answer
+            ? TranslatableContent.toString(reply.answer)
+            : '',
         }}
       />
     </div>
@@ -192,7 +196,9 @@ class QuestionDisplay extends React.Component<{
       <>
         <div
           dangerouslySetInnerHTML={{
-            __html: descriptor.description ? TranslatableContent.toString(descriptor.description) : '', 
+            __html: descriptor.description
+              ? TranslatableContent.toString(descriptor.description)
+              : '',
           }}
         />
         {choices.map((choice, i) => {

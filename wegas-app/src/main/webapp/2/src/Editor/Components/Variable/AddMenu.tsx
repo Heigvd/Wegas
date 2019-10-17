@@ -2,8 +2,8 @@ import * as React from 'react';
 import produce from 'immer';
 import { Actions } from '../../../data';
 import { getIcon, getLabel, getChildren } from '../../editionConfig';
-import { StoreDispatch } from '../../../data/store';
-import { Menu } from '../../../Components/Menu';
+import { StoreDispatch, store } from '../../../data/store';
+import { Menu, MenuProps } from '../../../Components/Menu';
 import { FontAwesome, withDefault } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 
@@ -30,27 +30,41 @@ function buildMenuItems(variable: IAbstractEntity) {
     });
   });
 }
+
+interface AddMenuProps {
+  localDispatch?: StoreDispatch;
+  onSelect?: MenuProps<{
+    label: JSX.Element;
+    value: string;
+  }>['onSelect'];
+  focusTab?: (tab: string) => void;
+}
+
 /**
  * handle Add button for List / Question
  */
 export const AddMenuParent = asyncSFC(
   async ({
     variable,
-    dispatch,
+    localDispatch,
     onSelect,
+    focusTab,
   }: {
     variable: IListDescriptor | IQuestionDescriptor;
-    dispatch: StoreDispatch;
-    onSelect?: () => void;
-  }) => {
-    // const focusTab = React.useContext(focusTabContext);
+  } & AddMenuProps) => {
     const items = await buildMenuItems(variable);
     return (
       <Menu
         items={items}
         icon="plus"
-        onSelect={i => {
-          onSelect && onSelect();
+        onSelect={(i, e) => {
+          onSelect && onSelect(i, e);
+          let dispatch = store.dispatch;
+          if (e.ctrlKey && localDispatch) {
+            dispatch = localDispatch;
+          } else {
+            focusTab && focusTab('Editor');
+          }
           dispatch(Actions.EditorActions.createVariable(i.value, variable));
         }}
       />
@@ -63,21 +77,27 @@ export const AddMenuParent = asyncSFC(
 export const AddMenuChoice = asyncSFC(
   async ({
     variable,
-    dispatch,
+    localDispatch,
     onSelect,
+    focusTab,
   }: {
     variable: IChoiceDescriptor;
-    dispatch: StoreDispatch;
-    onSelect?: () => void;
-  }) => {
-    // const focusTab = React.useContext(focusTabContext);
+  } & AddMenuProps) => {
     const items = await buildMenuItems(variable);
     return (
       <Menu
         items={items}
         icon="plus"
-        onSelect={i => {
-          onSelect && onSelect();
+        onSelect={(i, e) => {
+          onSelect && onSelect(i, e);
+          const globalDispatch = store.dispatch;
+          let dispatch = globalDispatch;
+          if (e.ctrlKey && localDispatch) {
+            dispatch = localDispatch;
+          } else {
+            focusTab && focusTab('Editor');
+          }
+
           dispatch(
             Actions.EditorActions.createVariable(i.value, variable, {
               save: (entity: IResult) => {
@@ -85,7 +105,7 @@ export const AddMenuChoice = asyncSFC(
                   v.results.push(entity);
                 });
                 const index = newChoice.results.length - 1;
-                dispatch(
+                globalDispatch(
                   Actions.VariableDescriptorActions.updateDescriptor(newChoice),
                 ).then(() =>
                   dispatch(
