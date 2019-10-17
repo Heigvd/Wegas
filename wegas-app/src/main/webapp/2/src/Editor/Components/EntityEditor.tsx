@@ -335,12 +335,13 @@ export default function VariableForm(props: {
         return (
           <AsyncVariableForm
             {...props}
-            {...state}
+            {...state.editing}
             getConfig={getConfig(state.editing)}
             update={getUpdate(state.editing, dispatch)}
             actions={Object.values(
-              ('actions' in state.editing && 'more' in state.editing.actions) ||
-                {},
+              'actions' in state.editing && state.editing.actions.more
+                ? state.editing.actions.more
+                : {},
             )}
             entity={state.entity}
             error={getError(state.events, dispatch)}

@@ -15,11 +15,9 @@ import {
   shallowDifferent,
 } from '../../../data/connectStore';
 import { flex, grow, autoScroll } from '../../../css/classes';
-import {
-  InstancesEditor,
-  InstancesEditorProps,
-} from '../Variable/InstancesEditor';
+import { InstancesEditorProps } from '../Variable/InstancesEditor';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
+import { Toolbar } from '../../../Components/Toolbar';
 
 const growBig = css({
   flex: '30 1 auto',
@@ -37,17 +35,14 @@ interface ComponentWithFormProps {
   entityEditor?: boolean;
 }
 
-function instancesEd(props: InstancesEditorProps) {
-  return Promise.resolve<
-    typeof import('../Variable/InstancesEditor')['InstancesEditor']
-  >(import('../Variable/InstancesEditor').then(m => m.InstancesEditor(props)));
-}
-
-const AsyncInstancesEditor = asyncSFC<InstancesEditorProps>(instancesEd);
-
-//function WindowedEditor<T>({ entity, update, actions, getConfig, path, error, }: EditorProps<T>): Promise<JSX.Element | null>
-//function instancesEd(): Promise<({ state, dispatch, actions, }: InstancesEditorProps) => JSX.Element | null>
-//function instancesEd(props: InstancesEditorProps): Promise<({ state, dispatch, actions, }: InstancesEditorProps) => JSX.Element | null>
+const AsyncInstancesEditor = asyncSFC<InstancesEditorProps>(
+  async (props: InstancesEditorProps) => {
+    const InstancesEditor = await Promise.resolve<
+      typeof import('../Variable/InstancesEditor')['InstancesEditor']
+    >(import('../Variable/InstancesEditor').then(m => m.InstancesEditor));
+    return <InstancesEditor {...props} />;
+  },
+);
 
 export function ComponentWithForm({
   children,
@@ -64,7 +59,22 @@ export function ComponentWithForm({
   const [instanceView, setInstanceView] = React.useState(false);
   const localDispatch = getLocalDispatch();
   const localEntity = getEntity(localState.editing);
-
+  const actions = [
+    ...Object.values(
+      localState.editing &&
+        'actions' in localState.editing &&
+        localState.editing.actions.more
+        ? localState.editing.actions.more
+        : {},
+    ),
+    { label: 'Close', action: () => localDispatch(closeEditor()) },
+  ];
+  if (entityEditor) {
+    actions.push({
+      label: 'Instance',
+      action: () => setInstanceView(show => !show),
+    });
+  }
   return (
     <div className={cx(flex, grow)}>
       <div className={cx(flex, growBig, autoScroll)}>
@@ -73,36 +83,34 @@ export function ComponentWithForm({
           localDispatch,
         })}
       </div>
-      {localState && localState.editing && localEntity && (
+      {localState.editing && localEntity && (
         <div className={cx(flex, grow, autoScroll)}>
           <AsyncVariableForm
             {...localState.editing}
             getConfig={getConfig(localState.editing)}
             update={getUpdate(localState.editing, localDispatch)}
-            actions={[
-              ...Object.values(
-                'actions' in localState.editing &&
-                  localState.editing.actions.more
-                  ? localState.editing.actions.more
-                  : {},
-              ),
-              { label: 'Close', action: () => localDispatch(closeEditor()) },
-              {
-                label: 'Instance',
-                action: () => setInstanceView(show => !show),
-              },
-            ]}
+            actions={actions}
             entity={localEntity}
             error={getError(localState.events, localDispatch)}
           />
         </div>
       )}
       {instanceView && entityEditor && (
-        <InstancesEditor
-          state={{ global: localState }}
-          dispatch={localDispatch}
-          actions={[{ label: 'Close', action: () => setInstanceView(false) }]}
-        />
+        <div className={cx(flex, grow, autoScroll)}>
+          <Toolbar>
+            <Toolbar.Header>
+              <button onClick={() => setInstanceView(false)}>
+                Close instance editor
+              </button>
+            </Toolbar.Header>
+            <Toolbar.Content>
+              <AsyncInstancesEditor
+                state={{ global: localState }}
+                dispatch={localDispatch}
+              />
+            </Toolbar.Content>
+          </Toolbar>
+        </div>
       )}
     </div>
   );

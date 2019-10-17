@@ -42,11 +42,14 @@ export default variableInstances;
 
 export function updateInstance(
   variableInstance: IVariableInstance,
+  cb?: () => void,
 ): ThunkResult<Promise<StateActions | void>> {
   return function(dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
-    return VariableInstanceAPI.update(gameModelId, variableInstance).then(res =>
-      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    return VariableInstanceAPI.update(variableInstance, gameModelId).then(res =>
+      store.dispatch(
+        manageResponseHandler(res, dispatch, getState().global, cb),
+      ),
     );
   };
 }
@@ -54,7 +57,7 @@ export function updateInstance(
 export function getAll(): ThunkResult<Promise<StateActions>> {
   return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
-    return VariableInstanceAPI.getAll(gameModelId).then(res =>
+    return VariableInstanceAPI.getByPlayer(gameModelId).then(res =>
       dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };

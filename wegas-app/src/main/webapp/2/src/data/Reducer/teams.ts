@@ -20,17 +20,11 @@ const teams: Reducer<Readonly<TeamState>> = u(
         return { ...omit(state, deletedKeys), ...teams };
       }
       case ActionType.TEAM_FETCH_ALL: {
-        return action.payload.teams;
+        return action.payload.teams.reduce(
+          (oldTeams, t) => t.id !== undefined && { ...oldTeams, [t.id]: t },
+          {},
+        );
       }
-      // case ActionType.GAME_FETCH: {
-      //   return {
-      //     ...state,
-      //     ...action.payload.game.teams.reduce(
-      //       (oldTeams, t) => t.id && { ...oldTeams, [t.id]: t },
-      //       {},
-      //     ),
-      //   };
-      // }
     }
     return state;
   },

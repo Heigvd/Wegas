@@ -13,12 +13,7 @@ import {
   getLabel,
   getChildren,
 } from '../../editionConfig';
-import {
-  StoreDispatch,
-  getDispatch,
-  useStore,
-  store,
-} from '../../../data/store';
+import { StoreDispatch, useStore, store } from '../../../data/store';
 import { css, cx } from 'emotion';
 import { shallowIs } from '../../../Helper/shallowIs';
 import { Menu } from '../../../Components/Menu';
@@ -70,7 +65,7 @@ interface TreeProps {
 function TreeView({ variables, localState, localDispatch }: TreeProps) {
   const [search, setSearch] = React.useState('');
   const { data } = useAsync(itemsPromise);
-  const globalDispatch = getDispatch() as StoreDispatch;
+  const globalDispatch = store.dispatch;
 
   return (
     <Toolbar>

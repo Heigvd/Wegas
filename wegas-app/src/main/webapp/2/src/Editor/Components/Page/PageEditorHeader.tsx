@@ -92,7 +92,9 @@ class PageSelector extends React.Component<
         label={this.props.label}
         onOpen={this.loadIndex}
         items={this.state.index}
-        onSelect={i => (i.id ? this.onPageChange(i.id) : this.onPageCreate())}
+        onSelect={i =>
+          i.id !== undefined ? this.onPageChange(i.id) : this.onPageCreate()
+        }
       />
     );
   }

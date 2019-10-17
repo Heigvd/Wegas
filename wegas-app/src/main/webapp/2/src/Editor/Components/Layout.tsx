@@ -18,7 +18,7 @@ const InstancesEditor = React.lazy(() => import('./Variable/InstancesEditor'));
 const layout = css({
   display: 'flex',
   flexDirection: 'column',
-  height: '100%',
+  height: '100vh',
 });
 
 export default class AppLayout extends React.Component<

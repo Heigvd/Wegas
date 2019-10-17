@@ -1,5 +1,4 @@
 import { rest } from './rest';
-import { TeamState } from '../data/Reducer/teams';
 
 /*
 GET	/Wegas/rest/GameModel/{gameModelId: ([1-9][0-9]*)?}{s: /?}Game/{gameId : ([1-9][0-9]*)?}{s2: /?}Team
@@ -17,7 +16,7 @@ export const TeamAPI = {
    * Get all team of a game
    * @param gameId the id of the game
    */
-  getAll(gameId: number): Promise<TeamState> {
+  getAll(gameId: number): Promise<ITeam[]> {
     return rest(TEAM_BASE(gameId)).then((res: Response) => {
       return res.json();
     });

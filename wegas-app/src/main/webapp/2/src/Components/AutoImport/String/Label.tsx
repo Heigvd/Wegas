@@ -28,6 +28,24 @@ interface StyledLabelProps {
   onLabelVanish?: () => void;
 }
 
+function colorByType(type?: LabelStyle) {
+  switch (type) {
+    case 'succes': {
+      return themeVar.successColor;
+    }
+    case 'warning': {
+      return themeVar.warningColor;
+    }
+    case 'error': {
+      return themeVar.errorColor;
+    }
+    case 'normal':
+    default: {
+      return themeVar.primaryLighterColor;
+    }
+  }
+}
+
 /**
  * StyledLabel is a component that creates a styled label with text
  */
@@ -53,27 +71,7 @@ export function StyledLabel({
     };
   }, [value, duration, onLabelVanish]);
 
-  let color = '';
-
-  switch (type) {
-    case 'succes': {
-      color = themeVar.successColor;
-      break;
-    }
-    case 'warning': {
-      color = themeVar.warningColor;
-      break;
-    }
-    case 'error': {
-      color = themeVar.errorColor;
-      break;
-    }
-    case 'normal':
-    default: {
-      color = themeVar.primaryLighterColor;
-      break;
-    }
-  }
+  const color = colorByType(type);
 
   return (
     <div

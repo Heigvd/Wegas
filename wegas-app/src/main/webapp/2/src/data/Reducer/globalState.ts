@@ -257,33 +257,44 @@ export function editVariable(
   entity: IVariableDescriptor,
   path: (string | number)[] = [],
   config?: Schema<AvailableViews>,
-  actions: EditorAction<IVariableDescriptor> = {
-    more: {
-      delete: {
-        label: 'delete',
-        action: (entity: IVariableDescriptor, path?: string[]) => {
-          store.dispatch(
-            Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
-          );
-        },
-      },
-      findUsage: {
-        label: 'findUsage',
-        action: (entity: IVariableDescriptor) => {
-          if (entityIsPersisted(entity)) {
-            store.dispatch(Actions.EditorActions.searchUsage(entity));
-          }
-        },
-      },
-    },
-  },
-) {
-  return ActionCreator.VARIABLE_EDIT({
-    entity,
-    config,
-    path,
-    actions,
-  });
+  actions?: EditorAction<IVariableDescriptor>,
+): ThunkResult {
+  return function(dispatch) {
+    const currentActions: EditorAction<IVariableDescriptor> =
+      actions != null
+        ? actions
+        : {
+            more: {
+              delete: {
+                label: 'delete',
+                action: (entity: IVariableDescriptor, path?: string[]) => {
+                  dispatch(
+                    Actions.VariableDescriptorActions.deleteDescriptor(
+                      entity,
+                      path,
+                    ),
+                  );
+                },
+              },
+              findUsage: {
+                label: 'findUsage',
+                action: (entity: IVariableDescriptor) => {
+                  if (entityIsPersisted(entity)) {
+                    dispatch(Actions.EditorActions.searchUsage(entity));
+                  }
+                },
+              },
+            },
+          };
+    dispatch(
+      ActionCreator.VARIABLE_EDIT({
+        entity,
+        config,
+        path,
+        actions: currentActions,
+      }),
+    );
+  };
 }
 /**
  * Edit StateMachine
@@ -295,32 +306,39 @@ export function editStateMachine(
   entity: IFSMDescriptor,
   path: string[] = [],
   config?: Schema<AvailableViews>,
-) {
-  return ActionCreator.FSM_EDIT({
-    entity,
-    config,
-    path,
-    actions: {
-      more: {
-        delete: {
-          label: 'delete',
-          action: (entity: IFSMDescriptor, path?: string[]) => {
-            store.dispatch(
-              Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
-            );
+): ThunkResult {
+  return function(dispatch) {
+    dispatch(
+      ActionCreator.FSM_EDIT({
+        entity,
+        config,
+        path,
+        actions: {
+          more: {
+            delete: {
+              label: 'delete',
+              action: (entity: IFSMDescriptor, path?: string[]) => {
+                dispatch(
+                  Actions.VariableDescriptorActions.deleteDescriptor(
+                    entity,
+                    path,
+                  ),
+                );
+              },
+            },
+            findUsage: {
+              label: 'findUsage',
+              action: (entity: IFSMDescriptor) => {
+                if (entityIsPersisted(entity)) {
+                  dispatch(Actions.EditorActions.searchUsage(entity));
+                }
+              },
+            },
           },
         },
-        findUsage: {
-          label: 'findUsage',
-          action: (entity: IFSMDescriptor) => {
-            if (entityIsPersisted(entity)) {
-              store.dispatch(Actions.EditorActions.searchUsage(entity));
-            }
-          },
-        },
-      },
-    },
-  });
+      }),
+    );
+  };
 }
 /**
  * Edit File
@@ -476,11 +494,11 @@ export function searchUsage(
 ): ThunkResult {
   const search = `Variable.find(gameModel, "${variable.name}")`;
   return function(dispatch) {
-    dispatch(ActionCreator.SEARCH_ONGOING());
+    store.dispatch(ActionCreator.SEARCH_ONGOING());
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.contains(gameModelId, search)
       .then(result => {
-        return dispatch(
+        return store.dispatch(
           ActionCreator.SEARCH_USAGE({ variableId: variable.id, result }),
         );
       })

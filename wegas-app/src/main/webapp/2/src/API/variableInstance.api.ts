@@ -1,4 +1,4 @@
-import { managedModeRequest } from './rest';
+import { managedModeRequest, rest } from './rest';
 
 /*
 GET	/Wegas/rest/GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}VariableDescriptor/{variableDescriptorId : ([1-9][0-9]*)?}{sep2: /?}VariableInstance
@@ -10,35 +10,50 @@ PUT	/Wegas/rest/GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}VariableDescript
 GET	/Wegas/rest/GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}VariableDescriptor/{variableDescriptorId : ([1-9][0-9]*)?}{sep2: /?}VariableInstance/{variableInstanceId: [1-9][0-9]*}
 */
 
-const VI_BASE = (
-  gameModelId: number,
-  v?: IVariableDescriptor | IVariableInstance,
-) => {
-  let path = `/GameModel/${gameModelId}/VariableDescriptor`;
-  if (v && v['@class'] === 'VariableDescriptor') {
-    if (v.id) {
+const VI_BASE = ({
+  gameModelId,
+  v,
+}: {
+  gameModelId?: number;
+  v?: IVariableDescriptor | IVariableInstance;
+}) => {
+  let path = `/GameModel/`;
+  if (gameModelId) {
+    path += `${gameModelId}/`;
+  }
+  path += 'VariableDescriptor';
+  if (v && v['@class'].includes('Descriptor')) {
+    if (v.id !== undefined) {
       path += `/${v.id}`;
     }
   }
   path += '/VariableInstance';
-  if (v && v['@class'] === 'VariableInstance') {
-    if (v.id) {
+  if (v && v['@class'].includes('Instance')) {
+    if (v.id !== undefined) {
       path += `/${v.id}`;
     }
   }
   return path;
 };
 export const VariableInstanceAPI = {
-  getAll(gameModelId: number) {
-    return managedModeRequest(
-      `${VI_BASE(gameModelId)}/AllPlayerInstances/${CurrentPlayerId}`,
-      undefined,
-      'Editor',
+  getByPlayer(playerId?: number, gameModelId?: number) {
+    return rest(
+      `${VI_BASE({ gameModelId })}/AllPlayerInstances/${
+        playerId !== undefined ? playerId : CurrentPlayerId
+      }`,
+    ).then((res: Response) => res.json());
+  },
+  getByDescriptor(
+    variableDescriptor: IVariableDescriptor,
+    gameModelId?: number,
+  ): Promise<IVariableInstance[]> {
+    return rest(VI_BASE({ v: variableDescriptor, gameModelId })).then(
+      (res: Response) => res.json(),
     );
   },
-  update(gameModelId: number, variableInstance: IVariableInstance) {
+  update(variableInstance: IVariableInstance, gameModelId?: number) {
     return managedModeRequest(
-      `${VI_BASE(gameModelId, variableInstance)}`,
+      `${VI_BASE({ v: variableInstance, gameModelId })}`,
       { method: 'PUT', body: JSON.stringify(variableInstance) },
       'Editor',
     );

@@ -24,7 +24,8 @@ const players: Reducer<Readonly<PlayerState>> = u(
             (oldTeams, t) => ({
               ...oldTeams,
               ...t.players.reduce(
-                (oldPlayers, p) => p.id && { ...oldPlayers, [p.id]: p },
+                (oldPlayers, p) =>
+                  p.id !== undefined && { ...oldPlayers, [p.id]: p },
                 {},
               ),
             }),

@@ -23,6 +23,9 @@ export const noOverflow = css({
 export const autoScroll = css({
   overflow: 'auto',
 });
+export const forceScroll = css({
+  overflow: 'scroll',
+});
 export const hideOverflow = css({
   overflow: 'hidden',
 });

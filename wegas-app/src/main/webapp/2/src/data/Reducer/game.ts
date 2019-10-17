@@ -21,7 +21,7 @@ const games: Reducer<Readonly<GameState>> = u(
         return { ...omit(state, deletedKeys), ...games };
       }
       case ActionType.GAME_FETCH: {
-        if (action.payload.game.id) {
+        if (action.payload.game.id !== undefined) {
           state[action.payload.game.id] = action.payload.game;
         }
         break;
