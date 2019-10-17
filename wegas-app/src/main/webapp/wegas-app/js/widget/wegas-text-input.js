@@ -792,6 +792,15 @@ YUI.add('wegas-text-input', function(Y) {
                 value: value
             };
         },
+        getNumSelectable: function(){
+            var numSelectable = this.get('numSelectable');
+            if (Y.Lang.isNumber(numSelectable)){
+                return numSelectable;
+            } else {
+                var desc = this.get('variable.evaluated');
+                return desc.get("maxSelectable") || Number.POSITIVE_INFINITY;
+            }
+        },
         /**
          * Try to save value.
          * @param {type} value the new value to save
@@ -818,7 +827,7 @@ YUI.add('wegas-text-input', function(Y) {
                     }));
                     return false;
                 }
-                numSelectable = this.get('numSelectable');
+                numSelectable = this.getNumSelectable();
                 if (numSelectable > 1) {
                     iValue = inst.get('value');
                     if (!iValue) {
@@ -1009,9 +1018,10 @@ YUI.add('wegas-text-input', function(Y) {
                     } else {
                         values = JSON.parse(value);
                     }
-                    var maxReached = values.length >= this.get("numSelectable");
+                    var numSelectable = this.getNumSelectable();
+                    var maxReached = values.length >= numSelectable;
 
-                    select.toggleClass("maximumReached", maxReached && this.get("numSelectable") !== 1);
+                    select.toggleClass("maximumReached", maxReached && numSelectable !== 1);
 
                     /*if (!Y.Lang.isArray(values)) {
                      values = [values];
@@ -1176,7 +1186,6 @@ YUI.add('wegas-text-input', function(Y) {
             },
             numSelectable: {
                 type: 'number',
-                value: 1,
                 index: 32,
                 visible: function(val, formVal) {
                     return formVal.clickSelect;

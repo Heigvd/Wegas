@@ -55,7 +55,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import javax.ejb.Asynchronous;
 import javax.xml.bind.DatatypeConverter;
 
@@ -260,20 +259,20 @@ public class Xapi implements XapiI {
         boolean logDebug = Helper.getWegasProperty("xapi.log_debug_player", "false").equals("true");
 
         if (player == null) {
-            logger.warn("No player");
+            logger.debug("No player");
             return false;
         } else if (!logDebug && (player.getTeam() instanceof DebugTeam || player.getTeam() instanceof DebugTeam)) {
-            logger.warn("Do not log statements for debug players");
+            logger.debug("Do not log statements for debug players");
             return false;
         } else if (Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID())) {
-            logger.warn("No Log ID defined");
+            logger.debug("No Log ID defined");
             return false;
         } else if (Helper.isNullOrEmpty(this.getAgentHomePage())) {
-            logger.warn("No Agent homepage");
+            logger.debug("No Agent homepage");
             return false;
         } else if (Helper.isNullOrEmpty(Helper.getWegasProperty("xapi.auth"))
                 || Helper.isNullOrEmpty(Helper.getWegasProperty("xapi.host"))) {
-            logger.warn("XAPI host/auth are not defined");
+            logger.debug("XAPI host/auth are not defined");
             return false;
         }
         return true;

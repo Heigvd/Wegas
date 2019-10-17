@@ -8,7 +8,13 @@ function optionNameToString(result, name) {
     if (!name || !name.values || name.values.length <= 0) {
         return ['undefined'];
     }
-    return name.values.map(v => result.get(v)).join(separator);
+    return name.values.map((v, i) => {
+        if (name.mapFn && name.mapFn[i]){
+            return name.mapFn[i](result.get(v), getY());
+        }else {
+            return result.get(v);
+        }
+    }).join(separator);
 }
 function EntityArrayFieldSelect(props) {
     const Y = getY();
@@ -44,6 +50,7 @@ EntityArrayFieldSelect.propTypes = {
         entity: PropTypes.string,
         name: PropTypes.shape({
             values: PropTypes.arrayOf(PropTypes.string),
+            mapFn: PropTypes.arrayOf(PropTypes.func),
             separator: PropTypes.string,
         }),
     }).isRequired,

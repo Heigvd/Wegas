@@ -165,7 +165,7 @@ export default async function getEditionConfig<T extends IAbstractEntity>(
 }
 
 export interface EActions {
-  edit: (variable: IAbstractEntity, path?: string[]) => StateActions;
+  edit: (variable: IAbstractEntity, path?: (number | string)[]) => StateActions;
 }
 
 export async function getEntityActions(

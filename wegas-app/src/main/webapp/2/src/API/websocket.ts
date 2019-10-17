@@ -2,7 +2,7 @@
 // import { inflate } from 'pako';
 import { store } from '../data/store';
 import { updatePusherStatus } from '../data/Reducer/globalState';
-import { managedMode } from '../data/actions';
+import { manageResponseHandler } from '../data/actions';
 import { Actions } from '../data';
 import * as React from 'react';
 
@@ -211,7 +211,7 @@ class WebSocketListener {
       case 'EntityDestroyedEvent':
       case 'CustomEvent':
         return store.dispatch(
-          managedMode({
+          manageResponseHandler({
             '@class': 'ManagedResponse',
             deletedEntities: (data as ICustomEventData).deletedEntities,
             updatedEntities: (data as ICustomEventData).updatedEntities,

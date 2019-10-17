@@ -154,7 +154,7 @@ YUI.add('wegas-dashboard', function(Y) {
                     "order": -1,
                     "icon": "fa fa-pie-chart",
                     "itemType": "action",
-                    "label": "View statistics",
+                    "label": "Download statistics (CSV file)",
                     "hasGlobal": true,
                     "do": function(owner, payload) {
                         var logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties")

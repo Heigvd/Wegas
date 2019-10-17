@@ -8,6 +8,7 @@ import { entityIsPersisted } from '../entities';
 import { Reducer } from 'redux';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../../Editor/Components/FormView';
+import { FileAPI } from '../../API/files.api';
 
 type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IAbstractEntity> {
@@ -19,10 +20,10 @@ export interface EditorAction<T extends IAbstractEntity> {
     };
   };
 }
-type Edition =
+export type Edition =
   | {
-      type: 'Variable';
-      id: number;
+      type: 'Variable' | 'VariableFSM';
+      entity: IAbstractEntity;
       config?: Schema<AvailableViews>;
       path?: (string | number)[];
       actions: EditorAction<IAbstractEntity>;
@@ -41,18 +42,23 @@ type Edition =
       path: (string | number)[];
       config?: Schema<AvailableViews>;
       actions: EditorAction<IAbstractEntity>;
+    }
+  | {
+      type: 'File';
+      entity: IAbstractContentDescriptor;
+      cb: (updatedValue: IAbstractEntity) => void;
     };
-export interface GlobalState {
+export interface EditingState {
+  editing?: Readonly<Edition>;
+  events: Readonly<WegasEvents[]>;
+}
+export interface GlobalState extends EditingState {
   currentGameModelId: number;
   currentGameId: number;
   currentPlayerId: number;
   currentTeamId: number;
   currentUser: Readonly<IUser>;
-  editing?: Readonly<Edition>;
   currentPageId?: string;
-  stateMachineEditor?: {
-    id: number;
-  };
   pageEdit: Readonly<boolean>;
   pageSrc: Readonly<boolean>;
   search:
@@ -73,6 +79,90 @@ export interface GlobalState {
     socket_id?: string;
   };
 }
+
+/**
+ *
+ * @param state
+ * @param action
+ */
+export const eventManagement = (
+  state: EditingState,
+  action: StateActions,
+): readonly WegasEvents[] => {
+  switch (action.type) {
+    case ActionType.EDITOR_ERROR_REMOVE: {
+      const newEvents = [...state.events];
+      if (newEvents.length > 0) {
+        const currentEvent = newEvents[0];
+        switch (currentEvent['@class']) {
+          case 'ClientEvent':
+            newEvents.pop();
+            break;
+          case 'ExceptionEvent': {
+            if (currentEvent.exceptions.length > 0) {
+              currentEvent.exceptions.pop();
+            }
+            if (currentEvent.exceptions.length === 0) {
+              newEvents.pop();
+            }
+            break;
+          }
+        }
+      }
+      return newEvents;
+    }
+    case ActionType.EDITOR_ERROR:
+      return [
+        ...state.events,
+        { '@class': 'ClientEvent', error: action.payload.error },
+      ];
+    case ActionType.MANAGED_RESPONSE_ACTION:
+      return [...state.events, ...action.payload.events];
+    default:
+      return state.events;
+  }
+};
+
+/**
+ *  This is a separate switch-case only for editor actions management
+ * @param state
+ * @param action
+ */
+export const editorManagement = (
+  state: EditingState,
+  action: StateActions,
+): Edition | undefined => {
+  switch (action.type) {
+    case ActionType.VARIABLE_EDIT:
+    case ActionType.FSM_EDIT:
+      return {
+        type:
+          action.type === ActionType.VARIABLE_EDIT ? 'Variable' : 'VariableFSM',
+        entity: action.payload.entity,
+        config: action.payload.config,
+        path: action.payload.path,
+        actions: action.payload.actions,
+      };
+    case ActionType.VARIABLE_CREATE:
+      return {
+        type: 'VariableCreate',
+        '@class': action.payload['@class'],
+        parentId: action.payload.parentId,
+        parentType: action.payload.parentType,
+        actions: action.payload.actions,
+      };
+    case ActionType.FILE_EDIT:
+      return {
+        type: 'File',
+        ...action.payload,
+      };
+    case ActionType.CLOSE_EDITOR:
+      return undefined;
+    default:
+      return state.editing;
+  }
+};
+
 /**
  * Reducer for editor's state
  *
@@ -83,37 +173,6 @@ export interface GlobalState {
 const global: Reducer<Readonly<GlobalState>> = u(
   (state: GlobalState, action: StateActions) => {
     switch (action.type) {
-      case ActionType.VARIABLE_EDIT:
-        state.editing = {
-          type: 'Variable',
-          id: action.payload.id,
-          config: action.payload.config,
-          path: action.payload.path,
-          actions: action.payload.actions,
-        };
-        return;
-      case ActionType.FSM_EDIT:
-        state.stateMachineEditor = { id: action.payload.id };
-        state.editing = {
-          type: 'Variable',
-          id: action.payload.id,
-          config: action.payload.config,
-          path: action.payload.path,
-          actions: action.payload.actions,
-        };
-        return;
-      case ActionType.CLOSE_EDITOR:
-        state.editing = undefined;
-        return;
-      case ActionType.VARIABLE_CREATE:
-        state.editing = {
-          type: 'VariableCreate',
-          '@class': action.payload['@class'],
-          parentId: action.payload.parentId,
-          parentType: action.payload.parentType,
-          actions: action.payload.actions,
-        };
-        return;
       case ActionType.PAGE_EDIT:
         state.editing = {
           type: 'Component',
@@ -165,6 +224,9 @@ const global: Reducer<Readonly<GlobalState>> = u(
       case ActionType.PUSHER_SOCKET:
         state.pusherStatus = action.payload;
         return;
+      default:
+        state.events = eventManagement(state, action);
+        state.editing = editorManagement(state, action);
     }
     return state;
   },
@@ -178,7 +240,8 @@ const global: Reducer<Readonly<GlobalState>> = u(
     search: { type: 'NONE' },
     pageEdit: false,
     pageSrc: false,
-  },
+    events: [],
+  } as GlobalState,
 );
 export default global;
 
@@ -216,7 +279,7 @@ export function editVariable(
   },
 ) {
   return ActionCreator.VARIABLE_EDIT({
-    id: entity.id!,
+    entity,
     config,
     path,
     actions,
@@ -234,7 +297,7 @@ export function editStateMachine(
   config?: Schema<AvailableViews>,
 ) {
   return ActionCreator.FSM_EDIT({
-    id: entity.id!,
+    entity,
     config,
     path,
     actions: {
@@ -259,7 +322,20 @@ export function editStateMachine(
     },
   });
 }
-
+/**
+ * Edit File
+ * @param entity
+ * @param cb
+ */
+export function editFile(
+  entity: IAbstractContentDescriptor,
+  cb: (updatedValue: IAbstractContentDescriptor) => void,
+) {
+  return ActionCreator.FILE_EDIT({
+    entity,
+    cb,
+  });
+}
 /**
  * Create a variableDescriptor
  *
@@ -286,6 +362,8 @@ export function editComponent(page: string, path: string[]) {
 /**
  * Save the content from the editor
  *
+ * The dispatch argument of the save function is not used to ensure that modifications are made in the global state
+ *
  * @export
  * @param {IAbstractEntity} value
  * @returns {ThunkResult}
@@ -298,6 +376,7 @@ export function saveEditor(value: IAbstractEntity): ThunkResult {
     }
     switch (editMode.type) {
       case 'Variable':
+      case 'VariableFSM':
         return dispatch(
           ACTIONS.VariableDescriptorActions.updateDescriptor(
             value as IVariableDescriptor,
@@ -312,6 +391,14 @@ export function saveEditor(value: IAbstractEntity): ThunkResult {
               | undefined,
           ),
         );
+      case 'File':
+        return dispatch(dispatch => {
+          return FileAPI.updateMetadata(value as IAbstractContentDescriptor)
+            .then((res: IAbstractContentDescriptor) => editMode.cb(res))
+            .catch((res: Error) => {
+              dispatch(ACTIONS.EditorActions.editorError(res.message));
+            });
+        });
     }
   };
 }
@@ -351,6 +438,14 @@ export function closeEditor() {
   return ActionCreator.CLOSE_EDITOR();
 }
 
+export function editorError(error: string) {
+  return ActionCreator.EDITOR_ERROR({ error });
+}
+
+export function editorErrorRemove() {
+  return ActionCreator.EDITOR_ERROR_REMOVE();
+}
+
 /**
  * Clear search values
  */
@@ -362,12 +457,14 @@ export function searchClear() {
  * @param value the text to search for
  */
 export function searchGlobal(value: string): ThunkResult {
-  return function(dispatch, getState) {
+  return function(dispatch) {
     dispatch(ActionCreator.SEARCH_ONGOING());
-    const gameModelId = getState().global.currentGameModelId;
-    return VariableDescriptorAPI.contains(gameModelId, value).then(result => {
-      return dispatch(ActionCreator.SEARCH_GLOBAL({ search: value, result }));
-    });
+    const gameModelId = store.getState().global.currentGameModelId;
+    return VariableDescriptorAPI.contains(gameModelId, value)
+      .then(result => {
+        return dispatch(ActionCreator.SEARCH_GLOBAL({ search: value, result }));
+      })
+      .catch((res: Response) => dispatch(editorError(res.statusText)));
   };
 }
 /**
@@ -378,13 +475,15 @@ export function searchUsage(
   variable: IVariableDescriptor & { id: number },
 ): ThunkResult {
   const search = `Variable.find(gameModel, "${variable.name}")`;
-  return function(dispatch, getState) {
+  return function(dispatch) {
     dispatch(ActionCreator.SEARCH_ONGOING());
-    const gameModelId = getState().global.currentGameModelId;
-    return VariableDescriptorAPI.contains(gameModelId, search).then(result => {
-      return dispatch(
-        ActionCreator.SEARCH_USAGE({ variableId: variable.id, result }),
-      );
-    });
+    const gameModelId = store.getState().global.currentGameModelId;
+    return VariableDescriptorAPI.contains(gameModelId, search)
+      .then(result => {
+        return dispatch(
+          ActionCreator.SEARCH_USAGE({ variableId: variable.id, result }),
+        );
+      })
+      .catch((res: Response) => dispatch(editorError(res.statusText)));
   };
 }
