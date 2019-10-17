@@ -165,6 +165,29 @@ YUI.add('wegas-mcq-view', function(Y) {
                 this._submitButton.on("click", this.submit, this);
                 this._buttonContainer.add(this._submitButton);
                 this.mainList.add(this._buttonContainer);
+            } else {
+                var feedback = I18n.t(whQuestionInstance.get("feedback"));
+                if (feedback) {
+                    // validated -> show feedback if any
+                    this.resultTitle = new Y.Wegas.Text({
+                        cssClass: "mcq-view__results-title",
+                        content: I18n.tCap('mcq.result')
+                    });
+
+                    this.resultList = new Y.Wegas.FlexList({
+                        cssClass: "mcq-view__results"
+                    });
+
+                    this.feedback = new Y.Wegas.Text({
+                        cssClass: "wegas-mcqview__result",
+                        content: '<div class="mcq-reply-content">' + feedback + '</div>'
+                    });
+
+                    this.resultList.add(this.feedback);
+
+                    this.mainList.add(this.resultTitle);
+                    this.mainList.add(this.resultList);
+                }
             }
 
 
@@ -1190,16 +1213,39 @@ YUI.add('wegas-mcq-view', function(Y) {
 
                 var noFeedbacks = true;
 
+                var repliesAtBottom = [];
+
                 if (validatedReplies.length && (
-                    (effectiveDisplayResult === "bottom"
+                    (
+                        effectiveDisplayResult === "bottom"
                         || effectiveDisplayResult === "newBottom"
                         || effectiveDisplayResult === "dialogue")
-                    && (!cbx || questionInstance.get("validated")))
-                    || (cbx && questionInstance.get("validated") && questionDescriptor.get("tabular"))) {
-                    this.resultTitle.set("content", validatedReplies.length > 1 ? I18n.tCap('mcq.results') : I18n.tCap('mcq.result'));
+                    && (
+                        !cbx
+                        || questionInstance.get("validated")
+                        )
+                    )
+                    || (
+                        cbx
+                        && questionInstance.get("validated")
+                        && questionDescriptor.get("tabular")
+                        )
+                    ) {
+                    repliesAtBottom = validatedReplies;
+                } else if (effectiveDisplayResult === "inline") {
+
+                    for (i in validatedReplies) {
+                        if (!validatedReplies[i].getChoiceDescriptor().getInstance().get("active")) {
+                            repliesAtBottom.push(replies[i]);
+                        }
+                    }
+                }
+
+                if (repliesAtBottom.length) {
+                    this.resultTitle.set("content", repliesAtBottom.length > 1 ? I18n.tCap('mcq.results') : I18n.tCap('mcq.result'));
                     this.resultTitle.syncUI();
                     if (cbx) {
-                        validatedReplies = [];
+                        repliesAtBottom = [];
                         // select replies according to order of choices
                         for (i = 0; i < choices.length; i += 1) {
                             var choiceD = choices[i],
@@ -1208,13 +1254,13 @@ YUI.add('wegas-mcq-view', function(Y) {
 
                             // skip inactive choices or choices without replies
                             if (choiceI.get("active") && cReplies && cReplies.length > 0 && cReplies[0].get("validated")) {
-                                validatedReplies.push(cReplies[0]);
+                                repliesAtBottom.push(cReplies[0]);
                             }
                         }
                     }
                     var repliesIds = {};
-                    for (var i in validatedReplies) {
-                        var reply = validatedReplies[i];
+                    for (var i in repliesAtBottom) {
+                        var reply = repliesAtBottom[i];
                         repliesIds[reply.get("id")] = true;
                         if (this.results[reply.get("id")]) {
                             noFeedbacks = false;
