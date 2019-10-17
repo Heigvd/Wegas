@@ -10,6 +10,7 @@ package com.wegas.core.persistence.annotations;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.annotations.WegasRefs.Ref;
+import java.util.Collection;
 import java.util.Objects;
 import org.apache.commons.lang3.Validate;
 
@@ -166,6 +167,32 @@ public final class WegasConditions {
             try {
                 Object resolve = a.resolve(self, object);
                 return resolve != null;
+            } catch (Exception ex) {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * true if the refs is resolvable to a collection and if this collection is empty
+     */
+    public static class IsEmpty extends Condition {
+
+        private final Ref a;
+
+        public IsEmpty(Ref a) {
+            this.a = a;
+        }
+
+        public Ref getIsEmpty() {
+            return a;
+        }
+
+        @Override
+        public boolean eval(Object self, Mergeable object) {
+            try {
+                Collection resolve = a.resolveAsCollection(self, object);
+                return resolve != null && resolve.isEmpty();
             } catch (Exception ex) {
                 return false;
             }
