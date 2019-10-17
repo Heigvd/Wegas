@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getInstance } from '../../data/methods/VariableDescriptor';
+import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { Player, VariableDescriptor } from '../../data/selectors';
 import { useStore } from '../../data/store';
 

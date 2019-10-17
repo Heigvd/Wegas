@@ -26,6 +26,8 @@ function storeInit() {
       store.dispatch(Actions.EditorActions.pageLoadId(defaultId));
     }
   });
+  store.dispatch(Actions.GameActions.getGame());
+  store.dispatch(Actions.TeamActions.getTeams());
 }
 storeInit();
 

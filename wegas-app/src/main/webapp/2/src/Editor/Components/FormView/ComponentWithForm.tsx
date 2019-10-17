@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { storeFactory, LocalGlobalState } from '../../../data/storeFactory';
-import { Actions } from '../../../data';
-import getEditionConfig from '../../editionConfig';
-import { Schema } from 'jsoninput';
-import { AvailableViews } from '.';
-import { AsyncVariableForm, getError } from '../EntityEditor';
+import {
+  AsyncVariableForm,
+  getError,
+  getConfig,
+  getUpdate,
+  getEntity,
+} from '../EntityEditor';
 import { css, cx } from 'emotion';
 import { Edition, closeEditor } from '../../../data/Reducer/globalState';
 import { StoreDispatch } from '../../../data/store';
@@ -13,55 +15,39 @@ import {
   shallowDifferent,
 } from '../../../data/connectStore';
 import { flex, grow, autoScroll } from '../../../css/classes';
+import { InstancesEditorProps } from '../Variable/InstancesEditor';
+import { asyncSFC } from '../../../Components/HOC/asyncSFC';
+import { Toolbar } from '../../../Components/Toolbar';
 
 const growBig = css({
   flex: '30 1 auto',
 });
 
-const getEntity = (state?: Readonly<Edition>) => {
-  if (!state) {
-    return undefined;
-  }
-  switch (state.type) {
-    case 'VariableCreate':
-      return {
-        '@class': state['@class'],
-        parentId: state.parentId,
-        parentType: state.parentType,
-      };
-    case 'Variable':
-    case 'VariableFSM':
-      return state.entity;
-    case 'File':
-      return state.entity;
-    default:
-      return undefined;
-  }
-};
-
-const getUpdate = (state: Readonly<Edition>, dispatch: StoreDispatch) =>
-  'actions' in state && state.actions.save
-    ? state.actions.save
-    : (entity: IAbstractEntity) => {
-        dispatch(Actions.EditorActions.saveEditor(entity));
-      };
-
-const getConfig = (state: Readonly<Edition>) => (
-  entity: IVariableDescriptor,
-) => {
-  return 'config' in state && state.config != null
-    ? Promise.resolve(state.config)
-    : (getEditionConfig(entity) as Promise<Schema<AvailableViews>>);
-};
-
-interface ComponentWithFormProps {
-  children: (props: {
-    localState: Readonly<Edition> | undefined;
-    localDispatch: StoreDispatch;
-  }) => React.ReactElement | null;
+export interface ComponentWithFormChildrenProps {
+  localState: Readonly<Edition> | undefined;
+  localDispatch: StoreDispatch;
 }
 
-export function ComponentWithForm({ children }: ComponentWithFormProps) {
+interface ComponentWithFormProps {
+  children: (
+    props: ComponentWithFormChildrenProps,
+  ) => React.ReactElement | null;
+  entityEditor?: boolean;
+}
+
+const AsyncInstancesEditor = asyncSFC<InstancesEditorProps>(
+  async (props: InstancesEditorProps) => {
+    const InstancesEditor = await Promise.resolve<
+      typeof import('../Variable/InstancesEditor')['InstancesEditor']
+    >(import('../Variable/InstancesEditor').then(m => m.InstancesEditor));
+    return <InstancesEditor {...props} />;
+  },
+);
+
+export function ComponentWithForm({
+  children,
+  entityEditor,
+}: ComponentWithFormProps) {
   const {
     useStore: useLocalStore,
     getDispatch: getLocalDispatch,
@@ -70,8 +56,25 @@ export function ComponentWithForm({ children }: ComponentWithFormProps) {
     (state: LocalGlobalState) => state.global,
     shallowDifferent,
   );
+  const [instanceView, setInstanceView] = React.useState(false);
   const localDispatch = getLocalDispatch();
   const localEntity = getEntity(localState.editing);
+  const actions = [
+    ...Object.values(
+      localState.editing &&
+        'actions' in localState.editing &&
+        localState.editing.actions.more
+        ? localState.editing.actions.more
+        : {},
+    ),
+    { label: 'Close', action: () => localDispatch(closeEditor()) },
+  ];
+  if (entityEditor) {
+    actions.push({
+      label: 'Instance',
+      action: () => setInstanceView(show => !show),
+    });
+  }
   return (
     <div className={cx(flex, grow)}>
       <div className={cx(flex, growBig, autoScroll)}>
@@ -80,24 +83,33 @@ export function ComponentWithForm({ children }: ComponentWithFormProps) {
           localDispatch,
         })}
       </div>
-      {localState && localState.editing && localEntity && (
+      {localState.editing && localEntity && (
         <div className={cx(flex, grow, autoScroll)}>
           <AsyncVariableForm
             {...localState.editing}
             getConfig={getConfig(localState.editing)}
             update={getUpdate(localState.editing, localDispatch)}
-            actions={[
-              ...Object.values(
-                'actions' in localState.editing &&
-                  localState.editing.actions.more
-                  ? localState.editing.actions.more
-                  : {},
-              ),
-              { label: 'Close', action: () => localDispatch(closeEditor()) },
-            ]}
+            actions={actions}
             entity={localEntity}
             error={getError(localState.events, localDispatch)}
           />
+        </div>
+      )}
+      {instanceView && entityEditor && (
+        <div className={cx(flex, grow, autoScroll)}>
+          <Toolbar>
+            <Toolbar.Header>
+              <button onClick={() => setInstanceView(false)}>
+                Close instance editor
+              </button>
+            </Toolbar.Header>
+            <Toolbar.Content>
+              <AsyncInstancesEditor
+                state={{ global: localState }}
+                dispatch={localDispatch}
+              />
+            </Toolbar.Content>
+          </Toolbar>
         </div>
       )}
     </div>

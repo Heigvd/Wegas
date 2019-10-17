@@ -17,6 +17,22 @@ const players: Reducer<Readonly<PlayerState>> = u(
         const deletedKeys = Object.keys(action.payload.deletedEntities.players);
         return { ...omit(state, deletedKeys), ...players };
       }
+      case ActionType.TEAM_FETCH_ALL: {
+        return {
+          ...state,
+          ...Object.values(action.payload.teams).reduce(
+            (oldTeams, t) => ({
+              ...oldTeams,
+              ...t.players.reduce(
+                (oldPlayers, p) =>
+                  p.id !== undefined && { ...oldPlayers, [p.id]: p },
+                {},
+              ),
+            }),
+            {},
+          ),
+        };
+      }
     }
     return state;
   },

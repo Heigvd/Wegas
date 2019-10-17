@@ -1,4 +1,4 @@
-import { getInstance } from '../methods/VariableDescriptor';
+import { getInstance } from '../methods/VariableDescriptorMethods';
 
 export function getValue(nd: INumberDescriptor) {
   return (self: IPlayer) => {

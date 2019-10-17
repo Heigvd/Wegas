@@ -4,18 +4,20 @@ import { Connection, Defaults, jsPlumbInstance } from 'jsplumb';
 import * as React from 'react';
 import { IconButton } from '../../Components/Button/IconButton';
 import { VariableDescriptor } from '../../data/selectors';
-import { StoreDispatch, getDispatch, useStore } from '../../data/store';
+import { StoreDispatch, useStore } from '../../data/store';
 import { entityIs } from '../../data/entities';
 import { Actions } from '../../data';
 import { Toolbar } from '../../Components/Toolbar';
 import { FontAwesome } from './Views/FontAwesome';
-import { getInstance } from '../../data/methods/VariableDescriptor';
+import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { themeVar } from '../../Components/Theme';
 import { EditorAction } from '../../data/Reducer/globalState';
 import { State as RState } from '../../data/Reducer/reducers';
 import { wlog } from '../../Helper/wegaslog';
 import { ComponentWithForm } from './FormView/ComponentWithForm';
 import { shallowDifferent } from '../../data/connectStore';
+import { store } from '../../data/store';
+import { forceScroll, grow } from '../../css/classes';
 
 const editorStyle = css({
   position: 'relative',
@@ -220,8 +222,10 @@ class StateMachineEditor extends React.Component<
   moveState = (id: number, pos: [number, number]) => {
     this.setState(
       produce((state: StateMachineEditorState) => {
-        state.stateMachine.states[id].editorPosition.x = pos[0];
-        state.stateMachine.states[id].editorPosition.y = pos[1];
+        state.stateMachine.states[id].editorPosition.x =
+          pos[0] < 0 ? 0 : pos[0];
+        state.stateMachine.states[id].editorPosition.y =
+          pos[1] < 0 ? 0 : pos[1];
       }),
     );
   };
@@ -269,7 +273,7 @@ class StateMachineEditor extends React.Component<
     const dispatch =
       e.ctrlKey && this.props.localDispatch
         ? this.props.localDispatch
-        : (getDispatch() as StoreDispatch);
+        : store.dispatch;
     dispatch(
       Actions.EditorActions.editVariable(
         this.props.stateMachine,
@@ -287,7 +291,7 @@ class StateMachineEditor extends React.Component<
     const dispatch =
       e.ctrlKey && this.props.localDispatch
         ? this.props.localDispatch
-        : (getDispatch() as StoreDispatch);
+        : store.dispatch;
     dispatch(
       Actions.EditorActions.editVariable(
         this.props.stateMachine,
@@ -396,7 +400,7 @@ class StateMachineEditor extends React.Component<
       oldStateMachine !== stateMachine &&
       this.props.stateMachine !== stateMachine
     ) {
-      (getDispatch() as StoreDispatch)(
+      store.dispatch(
         Actions.VariableDescriptorActions.updateDescriptor(stateMachine),
       );
     }
@@ -445,7 +449,9 @@ class StateMachineEditor extends React.Component<
   }
 }
 
-export function ConnectedStateMachineEditor(props: {
+export function ConnectedStateMachineEditor({
+  localDispatch,
+}: {
   localDispatch?: StateMachineEditorProps['localDispatch'];
 }) {
   const stateMachine = React.useRef<IFSMDescriptor>();
@@ -477,29 +483,21 @@ export function ConnectedStateMachineEditor(props: {
     }
   }, shallowDifferent);
 
-  return (
-    <ComponentWithForm key={stateMachine.current ? stateMachine.current.id : 0}>
-      {({ localDispatch }) => {
-        if (globalState) {
-          return (
-            <StateMachineEditor
-              {...props}
-              stateMachine={globalState.descriptor}
-              stateMachineInstance={globalState.instance}
-              localDispatch={localDispatch}
-              search={globalState.search}
-            />
-          );
-        }
-        return null;
-      }}
-    </ComponentWithForm>
-  );
+  return globalState ? (
+    <div className={cx(grow, forceScroll)}>
+      <StateMachineEditor
+        stateMachine={globalState.descriptor}
+        stateMachineInstance={globalState.instance}
+        localDispatch={localDispatch}
+        search={globalState.search}
+      />
+    </div>
+  ) : null;
 }
 
 export default function StateMachineEditorWithMeta() {
   return (
-    <ComponentWithForm>
+    <ComponentWithForm entityEditor>
       {({ localDispatch }) => {
         return <ConnectedStateMachineEditor localDispatch={localDispatch} />;
       }}

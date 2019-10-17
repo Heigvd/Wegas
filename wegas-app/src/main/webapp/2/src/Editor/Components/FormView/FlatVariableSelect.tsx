@@ -3,9 +3,9 @@ import {Choices, default as Select} from './Select';
 import {WidgetProps} from 'jsoninput/typings/types';
 import {LabeledView} from './labeled';
 import {CommonView} from './commonView';
-import * as VariableDescriptor from '../../../data/selectors/VariableDescriptor';
+import * as VariableDescriptor from '../../../data/selectors/VariableDescriptorSelector';
 import * as GameModel from '../../../data/selectors/GameModel';
-import {editorLabel} from '../../../data/methods/VariableDescriptor';
+import {editorLabel} from '../../../data/methods/VariableDescriptorMethods';
 import {entityIs} from '../../../data/entities';
 
 interface IFlatVariableSelectProps extends WidgetProps.BaseProps {

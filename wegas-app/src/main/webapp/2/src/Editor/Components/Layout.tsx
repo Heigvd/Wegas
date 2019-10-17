@@ -13,11 +13,12 @@ const FileBrowserWithMeta = React.lazy(() =>
 );
 const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
 const LanguageEditor = React.lazy(() => import('./LanguageEditor'));
+const InstancesEditor = React.lazy(() => import('./Variable/InstancesEditor'));
 
 const layout = css({
   display: 'flex',
   flexDirection: 'column',
-  height: '100%',
+  height: '100vh',
 });
 
 export default class AppLayout extends React.Component<
@@ -58,6 +59,9 @@ export default class AppLayout extends React.Component<
               <Item key="LanguageEditor" label="LanguageEditor">
                 <LanguageEditor />
               </Item>,
+              <Item key="InstancesEditor" label="InstancesEditor">
+                <InstancesEditor />
+              </Item>,
             ]}
           >
             <Layout>
@@ -85,6 +89,9 @@ export default class AppLayout extends React.Component<
               </Item>
               <Item label="LanguageEditor">
                 <LanguageEditor />
+              </Item>
+              <Item label="InstancesEditor">
+                <InstancesEditor />
               </Item>
             </Layout>
           </DndLinearLayout>

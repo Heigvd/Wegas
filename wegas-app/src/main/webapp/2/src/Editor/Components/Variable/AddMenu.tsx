@@ -2,7 +2,7 @@ import * as React from 'react';
 import produce from 'immer';
 import { Actions } from '../../../data';
 import { getIcon, getLabel, getChildren } from '../../editionConfig';
-import { StoreDispatch, getDispatch } from '../../../data/store';
+import { StoreDispatch, store } from '../../../data/store';
 import { Menu, MenuProps } from '../../../Components/Menu';
 import { FontAwesome, withDefault } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
@@ -59,7 +59,7 @@ export const AddMenuParent = asyncSFC(
         icon="plus"
         onSelect={(i, e) => {
           onSelect && onSelect(i, e);
-          let dispatch = getDispatch() as StoreDispatch;
+          let dispatch = store.dispatch;
           if (e.ctrlKey && localDispatch) {
             dispatch = localDispatch;
           } else {
@@ -90,7 +90,7 @@ export const AddMenuChoice = asyncSFC(
         icon="plus"
         onSelect={(i, e) => {
           onSelect && onSelect(i, e);
-          const globalDispatch = getDispatch() as StoreDispatch;
+          const globalDispatch = store.dispatch;
           let dispatch = globalDispatch;
           if (e.ctrlKey && localDispatch) {
             dispatch = localDispatch;

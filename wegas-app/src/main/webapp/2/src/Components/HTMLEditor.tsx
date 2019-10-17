@@ -15,16 +15,10 @@ import 'tinymce/plugins/code';
 import 'tinymce/plugins/table';
 import 'tinymce/plugins/paste';
 import 'tinymce/plugins/advlist';
-// Skins must also be imported
+// Skin must also be imported
 import 'tinymce/skins/ui/oxide/skin.min.css';
-import 'tinymce/skins/content/default/content.css';
-import 'tinymce/skins/ui/oxide/content.min.css';
-import 'tinymce/skins/ui/oxide/content.inline.min.css';
-// import 'tinymce/skins/lightgray/content.min.css';
-// import 'tinymce/skins/lightgray/skin.min.css';
 
 import { Editor } from '@tinymce/tinymce-react';
-
 import { Modal } from './Modal';
 import { generateAbsolutePath, fileURL } from '../API/files.api';
 import { WidgetProps } from 'jsoninput/typings/types';
