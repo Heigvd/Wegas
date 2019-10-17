@@ -165,6 +165,29 @@ YUI.add('wegas-mcq-view', function(Y) {
                 this._submitButton.on("click", this.submit, this);
                 this._buttonContainer.add(this._submitButton);
                 this.mainList.add(this._buttonContainer);
+            } else {
+                var feedback = I18n.t(whQuestionInstance.get("feedback"));
+                if (feedback) {
+                    // validated -> show feedback if any
+                    this.resultTitle = new Y.Wegas.Text({
+                        cssClass: "mcq-view__results-title",
+                        content: I18n.tCap('mcq.result')
+                    });
+
+                    this.resultList = new Y.Wegas.FlexList({
+                        cssClass: "mcq-view__results"
+                    });
+
+                    this.feedback = new Y.Wegas.Text({
+                        cssClass: "wegas-mcqview__result",
+                        content: '<div class="mcq-reply-content">' + feedback + '</div>'
+                    });
+
+                    this.resultList.add(this.feedback);
+
+                    this.mainList.add(this.resultTitle);
+                    this.mainList.add(this.resultList);
+                }
             }
 
 
