@@ -5,7 +5,7 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import { StoreConsumer } from '../../../data/store';
 import { varIsList } from '../../../data/entities';
 import { VariableDescriptor, GameModel } from '../../../data/selectors';
-import { editorLabel } from '../../../data/methods/VariableDescriptor';
+import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { CommonViewContainer, CommonView } from './commonView';
 import { LabeledView, Labeled } from './labeled';
 import { inputStyle } from './String';

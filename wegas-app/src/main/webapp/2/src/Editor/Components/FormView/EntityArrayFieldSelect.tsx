@@ -3,11 +3,11 @@ import Select from './Select';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { LabeledView } from './labeled';
 import { CommonView } from './commonView';
-import * as VariableDescriptor from '../../../data/selectors/VariableDescriptor';
+import * as VariableDescriptor from '../../../data/selectors/VariableDescriptorSelector';
 import {
   getInstance,
   editorLabel,
-} from '../../../data/methods/VariableDescriptor';
+} from '../../../data/methods/VariableDescriptorMethods';
 
 interface IName {
   values: string[];

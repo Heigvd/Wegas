@@ -5,9 +5,10 @@ import { PageIndex } from '../API/pages.api';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../Editor/Components/FormView';
 import { StoreDispatch } from './store';
-import { EditingState } from './Reducer/globalState';
+import { EditingState, closeEditor, Edition } from './Reducer/globalState';
 import { shallowDifferent } from './connectStore';
 import { getEntityActions } from '../Editor/editionConfig';
+import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
 
 export { ActionType };
 export type ActionTypeValues = ValueOf<typeof ActionType>;
@@ -93,20 +94,49 @@ export const ActionCreator = {
     gameModelLanguage: IGameModelLanguage;
     gameModelId: string;
   }) => createAction(ActionType.LANGUAGE_EDIT, data),
+  TEAM_FETCH_ALL: (data: { teams: ITeam[] }) =>
+    createAction(ActionType.TEAM_FETCH_ALL, data),
+  GAME_FETCH: (data: { game: IGame }) =>
+    createAction(ActionType.GAME_FETCH, data),
 };
 
 export type StateActions<
   A extends keyof typeof ActionCreator = keyof typeof ActionCreator
 > = ReturnType<typeof ActionCreator[A]>;
 
+// TOOLS
+
+export const closeEditorWhenDeletedVariable = (
+  deletedVariables: VariableDescriptorState,
+  dispatch: StoreDispatch,
+  editing?: Readonly<Edition>,
+) =>
+  editing &&
+  'entity' in editing &&
+  'id' in editing.entity &&
+  Object.keys(deletedVariables).includes(String(editing.entity.id)) &&
+  dispatch(closeEditor());
+
 export function manageResponseHandler(
   payload: IManagedResponse,
   localDispatch?: StoreDispatch,
   localState?: EditingState,
+  cb?: (payload: {
+    updatedEntities: NormalizedData;
+    deletedEntities: NormalizedData;
+    events: WegasEvents[];
+  }) => void,
 ) {
   const deletedEntities = normalizeDatas(payload.deletedEntities);
+  if (localDispatch && localState) {
+    closeEditorWhenDeletedVariable(
+      deletedEntities.variableDescriptors,
+      localDispatch,
+      localState.editing,
+    );
+  }
+
   const updatedEntities = normalizeDatas(payload.updatedEntities);
-  const events = payload.events;
   if (localState && localDispatch) {
     const editState = localState.editing;
     const currentEditingEntity =
@@ -114,7 +144,7 @@ export function manageResponseHandler(
         ? editState.entity
         : undefined;
 
-    if (currentEditingEntity && currentEditingEntity.id) {
+    if (currentEditingEntity && currentEditingEntity.id !== undefined) {
       const updatedEntity =
         updatedEntities[
           discriminant(currentEditingEntity) as keyof NormalizedData
@@ -136,15 +166,19 @@ export function manageResponseHandler(
       }
     }
   }
-
-  const managedResponcePayload = ActionCreator.MANAGED_RESPONSE_ACTION({
+  const managedValues = {
     deletedEntities,
     updatedEntities,
-    events,
-  });
+    events: payload.events,
+  };
+  cb && cb(managedValues);
 
+  const managedResponcePayload = ActionCreator.MANAGED_RESPONSE_ACTION(
+    managedValues,
+  );
   localDispatch && localDispatch(managedResponcePayload);
-  // Event should be filtered here and global event should be kept in the global response
+
+  // TODO : Event should be filtered here and global event should be kept in the global response
   const globalResponse = managedResponcePayload;
   globalResponse.payload.events = [];
   return globalResponse;

@@ -36,7 +36,7 @@ export interface IManagedResponse {
   '@class': 'ManagedResponse';
   deletedEntities: IAbstractEntity[];
   updatedEntities: IAbstractEntity[];
-  events: any[];
+  events: WegasEvents[];
 }
 type View = 'Editor' | 'Instance' | 'Export';
 

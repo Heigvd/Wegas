@@ -1,10 +1,10 @@
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { Schema } from 'jsoninput';
-import { StateActions } from '../data/actions';
 import { AvailableViews } from './Components/FormView';
 import { formValidation } from './formValidation';
 import { entityIs } from '../data/entities';
 import { editStateMachine, editVariable } from '../data/Reducer/globalState';
+import { ThunkResult } from '../data/store';
 
 export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 
@@ -165,7 +165,11 @@ export default async function getEditionConfig<T extends IAbstractEntity>(
 }
 
 export interface EActions {
-  edit: (variable: IAbstractEntity, path?: (number | string)[]) => StateActions;
+  edit: (
+    variable: IAbstractEntity,
+    path?: (number | string)[],
+    config?: Schema<AvailableViews>,
+  ) => ThunkResult;
 }
 
 export async function getEntityActions(
