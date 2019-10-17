@@ -569,10 +569,16 @@ public class SchemaGenerator extends AbstractMojo {
             });
             script.append(")");
 
-            script.append("{").append(System.lineSeparator());
+            Type genericReturnType = method.getGenericReturnType();
+            Type reified = TypeResolver.reify(genericReturnType, klass);
+            String tsReturnType = javaToTSType(reified, null);
+
+            script.append(" : Readonly<").append(tsReturnType).append(">");
+
+            script.append(" {").append(System.lineSeparator());
             script.append("    return ").append(methodName).append("({} as any)(");
             Arrays.stream(method.getParameters()).forEach(p -> script.append(p.getName()).append(","));
-            script.append(");").append(System.lineSeparator());
+            script.append(") as Readonly<").append(tsReturnType).append(">;").append(System.lineSeparator());
             script.append("  }").append(System.lineSeparator());
         });
 
@@ -1129,7 +1135,7 @@ public class SchemaGenerator extends AbstractMojo {
                     returns = "boolean";
                 } else {
                     returns = "undef";
-                    getLog().error("Unknow return type " + m, null);
+                    getLog().error("Unknown return type " + m);
                     // TODO: throw error
                 }
             } else {
