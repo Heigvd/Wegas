@@ -21,6 +21,8 @@ import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.*;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.aai.AaiRealm;
 import com.wegas.core.security.ejb.AccountFacade;
@@ -628,7 +630,10 @@ public class RequestManager implements RequestManagerI {
 
         for (AbstractEntity entity : destroyedEntities) {
             if (entity instanceof Broadcastable) {
-                if (!(entity instanceof Team || entity instanceof Player)) {
+                if (entity instanceof VariableDescriptor
+                        || entity instanceof VariableInstance
+                        || entity instanceof Game
+                        || entity instanceof GameModel) {
                     addAll(map, ((Broadcastable) entity).getEntities());
                 }
             }
