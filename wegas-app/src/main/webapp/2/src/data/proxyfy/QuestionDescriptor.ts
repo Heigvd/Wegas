@@ -33,23 +33,40 @@
 
 // export type ScriptableQuestionDescriptor = QuestionDescriptorMethod & IQuestionDescriptor;
 
-// import { getInstance as rawGetInstance } from '../methods/VariableDescriptorMethods';
-// import { store } from '../store';
+import { getInstance as rawGetInstance } from '../methods/VariableDescriptorMethods';
 
-// export function isReplied(qd: IQuestionDescriptor) {
-//   return (self: IPlayer) => {
-//     store.getState().variableDescriptors[qd.parentId]
-//     const i = rawGetInstance(qd, self);
-//     if (i) {
-//       return i.;
-//     }
-//   };
-// }
-// export function isFalse(bd: IBooleanDescriptor) {
-//   return getValue(bd);
-// }
-// export function setValue(_bd: IBooleanDescriptor) {
-//   return (_self: IPlayer, _value: boolean) => {
-//     throw Error('This is readonly');
-//   };
-// }
+export function setValidated(_qd: IQuestionDescriptor) {
+  return (_self: IPlayer, _value: boolean) => {
+    throw Error('This is readonly');
+  };
+}
+
+export function activate(_qd: IQuestionDescriptor) {
+  return (_self: IPlayer) => {
+    throw Error('This is readonly');
+  };
+}
+
+export function isActive(qd: IQuestionDescriptor) {
+  return (self: IPlayer) => {
+    const i = rawGetInstance(qd, self);
+    if (i) {
+      return i.active;
+    }
+  };
+}
+
+export function getValidated(qd: IQuestionDescriptor) {
+  return (self: IPlayer) => {
+    const i = rawGetInstance(qd, self);
+    if (i) {
+      return i.validated;
+    }
+  };
+}
+
+export function deactivate(_qd: IQuestionDescriptor) {
+  return (_self: IPlayer) => {
+    throw Error('This is readonly');
+  };
+}

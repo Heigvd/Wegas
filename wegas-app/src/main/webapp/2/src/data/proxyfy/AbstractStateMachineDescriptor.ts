@@ -31,9 +31,13 @@ export function wentThroughState(fsmd: IFSMDescriptor) {
 }
 
 export function isDisabled(fsmd: IFSMDescriptor) {
-  return !isEnabled(fsmd);
+  return (self: IPlayer) => {
+    return !isEnabled(fsmd)(self);
+  };
 }
 
 export function notWentThroughState(fsmd: IFSMDescriptor) {
-  return !wentThroughState(fsmd);
+  return (self: IPlayer, stateKey: number) => {
+    return !wentThroughState(fsmd)(self, stateKey);
+  };
 }
