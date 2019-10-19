@@ -1,8 +1,8 @@
-import { getInstance } from '../methods/VariableDescriptorMethods';
+import { getInstance as rawGetInstance } from '../methods/VariableDescriptorMethods';
 
 export function getValue(nd: INumberDescriptor) {
   return (self: IPlayer) => {
-    const i = getInstance(nd, self);
+    const i = rawGetInstance(nd, self);
     if (i) {
       return i.value;
     }
