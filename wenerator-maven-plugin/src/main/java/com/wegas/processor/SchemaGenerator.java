@@ -1,22 +1,39 @@
 package com.wegas.processor;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.beans.IntrospectionException;
+import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import javax.json.Json;
+import javax.json.JsonMergePatch;
+import javax.json.JsonValue;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -36,6 +53,9 @@ import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.editor.Schema;
 import com.wegas.editor.Schemas;
+import com.wegas.editor.ValueGenerators;
+import com.wegas.editor.ValueGenerators.Undefined;
+import com.wegas.editor.Visible;
 import com.wegas.editor.JSONSchema.JSONArray;
 import com.wegas.editor.JSONSchema.JSONBoolean;
 import com.wegas.editor.JSONSchema.JSONExtendedSchema;
@@ -48,28 +68,9 @@ import com.wegas.editor.JSONSchema.JSONType;
 import com.wegas.editor.JSONSchema.JSONUnknown;
 import com.wegas.editor.JSONSchema.JSONWRef;
 import com.wegas.editor.JSONSchema.UndefinedSchema;
-import com.wegas.editor.ValueGenerators;
-import com.wegas.editor.ValueGenerators.Undefined;
 import com.wegas.editor.View.CommonView;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.View;
-import com.wegas.editor.Visible;
-import java.beans.Introspector;
-import java.io.StringReader;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import javax.json.Json;
-import javax.json.JsonMergePatch;
-import javax.json.JsonValue;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -80,7 +81,6 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.reflections.Reflections;
 
 import net.jodah.typetools.TypeResolver;
-import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 
 @Mojo(name = "schema", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class SchemaGenerator extends AbstractMojo {
@@ -971,27 +971,29 @@ public class SchemaGenerator extends AbstractMojo {
         }
 
         if (type instanceof Class) {
+            String className = ((Class) type).getSimpleName();
             if (otherObjectsTypeD.containsKey(type)) {
-                return ((Class) type).getSimpleName();
+                return className;
             } else if (new TypeToken<Mergeable>() {
             }.isSupertypeOf(type)) {
                 return getTsInterfaceName((Class<? extends Mergeable>) type, genericity);
             } else {
-                String typeDef = "interface " + ((Class) type).getSimpleName() + "{\n";
-                for (Field f : ((Class<?>) type).getDeclaredFields()) {
-                    PropertyDescriptor propertyDescriptor;
-                    try {
-                        propertyDescriptor = new PropertyDescriptor(f.getName(), f.getDeclaringClass());
-                    } catch (IntrospectionException e) {
-                        continue;
+                if(className != "void"){
+                    String typeDef = "interface " + className + "{\n";
+                    for (Field f : ((Class<?>) type).getDeclaredFields()) {
+                        PropertyDescriptor propertyDescriptor;
+                        try {
+                            propertyDescriptor = new PropertyDescriptor(f.getName(), f.getDeclaringClass());
+                        } catch (IntrospectionException e) {
+                            continue;
+                        }
+                        typeDef += "  " + f.getName() + ": "
+                                + javaToTSType(propertyDescriptor.getReadMethod().getGenericReturnType(), genericity) + ";\n";
                     }
-                    typeDef += "  " + f.getName() + ": "
-                            + javaToTSType(propertyDescriptor.getReadMethod().getGenericReturnType(), genericity) + ";\n";
+                    typeDef += "}\n";
+                    otherObjectsTypeD.put(type, typeDef);
                 }
-                typeDef += "}\n";
-                otherObjectsTypeD.put(type, typeDef);
-
-                return ((Class) type).getSimpleName();
+                return className;
             }
         }
         if (type instanceof ParameterizedType) {

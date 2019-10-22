@@ -40,15 +40,17 @@ export function setCurrentResult(_cd: IChoiceDescriptor) {
 //   }
 // }
 
-// export function hasBeenSelected(cd: IChoiceDescriptor) {
-//   return (self: IPlayer) => {
-//     const cdi = rawGetInstance(cd, self);
-//     if (cdi) {
-//       cdi.
-//       return i.;
-//     }
-//   };
-// }
+export function hasBeenSelected(cd: IChoiceDescriptor) {
+  return (self: IPlayer) => {
+    if(cd.parentId){
+    const cdi = rawGetInstance(cd.parentId, self);
+    if (cdi) {
+      cdi.
+      return i.;
+    }
+  };
+}
+}
 // export function isFalse(bd: IBooleanDescriptor) {
 //   return getValue(bd);
 // }
