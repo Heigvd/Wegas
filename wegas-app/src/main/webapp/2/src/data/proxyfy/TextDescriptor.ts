@@ -3,10 +3,10 @@ import { TranslatableContent } from '../i18n';
 
 export function getValue(td: ITextDescriptor) {
   return (self: IPlayer) => {
-    const i = rawGetInstance(td, self);
-    if (i) {
+    const ti = rawGetInstance(td, self);
+    if (ti) {
       return TranslatableContent.toString(
-        i.trValue === undefined ? null : i.trValue,
+        ti.trValue === undefined ? null : ti.trValue,
       );
     }
   };

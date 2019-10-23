@@ -18,11 +18,8 @@ const variableClasses = Object.values(
 
 const libContent =
   entitiesSrc +
-  `type Exclude<T, U> = T extends U ? never : T;
-    type Pick<T, K extends keyof T> = {
-      [P in K]: T[P];
-    };
-    interface GameModel{}
+  ` interface GameModel{}
+    declare const gameModel : GameModel;
     interface VariableClasses {${Object.keys(variableClasses).reduce(
       (s, k) => s + k + ':I' + variableClasses[k] + ';\n',
       '',

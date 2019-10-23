@@ -8,9 +8,9 @@ export function setState(_prd: IPeerReviewDescriptor) {
 
 export function getState(prd: IPeerReviewDescriptor) {
   return (self: IPlayer) => {
-    const i = rawGetInstance(prd, self);
-    if (i) {
-      return i.reviewState;
+    const pri = rawGetInstance(prd, self);
+    if (pri) {
+      return pri.reviewState;
     }
   };
 }

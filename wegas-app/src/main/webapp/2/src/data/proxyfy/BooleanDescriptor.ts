@@ -2,9 +2,9 @@ import { getInstance as rawGetInstance } from '../methods/VariableDescriptorMeth
 
 export function getValue(bd: IBooleanDescriptor) {
   return (self: IPlayer) => {
-    const i = rawGetInstance(bd, self);
-    if (i) {
-      return i.value;
+    const bi = rawGetInstance(bd, self);
+    if (bi) {
+      return bi.value;
     }
   };
 }

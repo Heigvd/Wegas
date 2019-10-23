@@ -2,9 +2,9 @@ import { getInstance as rawGetInstance } from '../methods/VariableDescriptorMeth
 
 export function getValue(nd: INumberDescriptor) {
   return (self: IPlayer) => {
-    const i = rawGetInstance(nd, self);
-    if (i) {
-      return i.value;
+    const ni = rawGetInstance(nd, self);
+    if (ni) {
+      return ni.value;
     }
   };
 }

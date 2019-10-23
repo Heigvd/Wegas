@@ -27,6 +27,19 @@
 // }
 
 import { getInstance as rawGetInstance } from '../methods/VariableDescriptorMethods';
+import { VariableDescriptor } from '../selectors';
+import { proxyfy } from '.';
+import { isStillAnswerabled } from './QuestionDescriptor';
+
+// INSTANCE METHODS HELPERS (should be moved somewhere else, like I...Instance.ts ???)
+export function getReplies(ci: IChoiceInstance, validated?: boolean) {
+  if (validated) {
+    return ci.replies.filter(r => r.validated);
+  } else {
+    return ci.replies;
+  }
+}
+//////////////////////////////////////////////////////////////////////////////////////
 
 export function setCurrentResult(_cd: IChoiceDescriptor) {
   return (_self: IPlayer, _resultName: string) => {
@@ -34,34 +47,78 @@ export function setCurrentResult(_cd: IChoiceDescriptor) {
   };
 }
 
-// for (Reply r : result.getChoiceDescriptor().getQuestion().getInstance(defaultValues, player).getReplies(player, true)) {
-//   if (r.getResult().getChoiceDescriptor().equals(result.getChoiceDescriptor())) {
-//       hasBeenSelected = true;
-//   }
-// }
-
 export function hasBeenSelected(cd: IChoiceDescriptor) {
   return (self: IPlayer) => {
-    if(cd.parentId){
-    const cdi = rawGetInstance(cd.parentId, self);
-    if (cdi) {
-      cdi.
-      return i.;
+    const ci = rawGetInstance(cd, self);
+    if (ci) {
+      for (const r of getReplies(ci, true)) {
+        if (!r.ignored) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+}
+
+export function hasNotBeenSelected(cd: IChoiceDescriptor) {
+  return (self: IPlayer) => !hasBeenSelected(cd)(self);
+}
+
+export function hasBeenIgnored(cd: IChoiceDescriptor) {
+  return (self: IPlayer) => {
+    if (!hasBeenSelected(cd)) {
+      const ci = rawGetInstance(cd, self);
+      if (ci) {
+        const qd = proxyfy(
+          VariableDescriptor.select<IQuestionDescriptor>(ci.parentId),
+        );
+        if (qd) {
+          const qi = rawGetInstance(qd, self);
+          if (qi) {
+            if (qi.validated || !isStillAnswerabled(qd)) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
+  };
+}
+
+export function activate(_cd: IChoiceDescriptor) {
+  return (_self: IPlayer) => {
+    throw Error('This is readonly');
+  };
+}
+
+export function hasResultBeenApplied(cd: IChoiceDescriptor) {
+  return (self: IPlayer, resultName: string) => {
+    const ci = rawGetInstance(cd, self);
+    if (ci) {
+      const replies = getReplies(ci);
+      for (const r of replies) {
+        if (r.resultName === resultName) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+}
+
+export function isActive(cd: IChoiceDescriptor) {
+  return (self: IPlayer) => {
+    const ci = rawGetInstance(cd, self);
+    if (ci) {
+      return ci.active;
     }
   };
 }
+
+export function deactivate(_cd: IChoiceDescriptor) {
+  return (_self: IPlayer) => {
+    throw Error('This is readonly');
+  };
 }
-// export function isFalse(bd: IBooleanDescriptor) {
-//   return getValue(bd);
-// }
-// export function isFalse(bd: IBooleanDescriptor) {
-//   return getValue(bd);
-// }
-// export function isFalse(bd: IBooleanDescriptor) {
-//   return getValue(bd);
-// }
-// export function setValue(_bd: IBooleanDescriptor) {
-//   return (_self: IPlayer, _value: number) => {
-//     throw Error('This is readonly');
-//   };
-// }

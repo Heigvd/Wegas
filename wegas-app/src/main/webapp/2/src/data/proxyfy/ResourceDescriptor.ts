@@ -19,9 +19,9 @@ export function activate(_rd: IResourceDescriptor) {
 
 export function getActive(rd: IResourceDescriptor) {
   return (self: IPlayer) => {
-    const i = rawGetInstance(rd, self);
-    if (i) {
-      return i.active;
+    const ri = rawGetInstance(rd, self);
+    if (ri) {
+      return ri.active;
     }
   };
 }
@@ -34,18 +34,18 @@ export function addNumberAtInstanceProperty(_rd: IResourceDescriptor) {
 
 export function getNumberInstanceProperty(rd: IResourceDescriptor) {
   return (self: IPlayer, key: string) => {
-    const i = rawGetInstance(rd, self);
-    if (i) {
-      return Number(i.properties[key]);
+    const ri = rawGetInstance(rd, self);
+    if (ri) {
+      return Number(ri.properties[key]);
     }
   };
 }
 
 export function getStringInstanceProperty(rd: IResourceDescriptor) {
   return (self: IPlayer, key: string) => {
-    const i = rawGetInstance(rd, self);
-    if (i) {
-      return i.properties[key];
+    const ri = rawGetInstance(rd, self);
+    if (ri) {
+      return ri.properties[key];
     }
   };
 }

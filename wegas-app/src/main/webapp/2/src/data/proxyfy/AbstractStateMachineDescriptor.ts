@@ -14,18 +14,18 @@ export function enable(_fsmd: IFSMDescriptor) {
 
 export function isEnabled(fsmd: IFSMDescriptor) {
   return (self: IPlayer) => {
-    const i = rawGetInstance(fsmd, self);
-    if (i) {
-      return i.enabled;
+    const fsmi = rawGetInstance(fsmd, self);
+    if (fsmi) {
+      return fsmi.enabled;
     }
   };
 }
 
 export function wentThroughState(fsmd: IFSMDescriptor) {
   return (self: IPlayer, stateKey: number) => {
-    const i = rawGetInstance(fsmd, self);
-    if (i) {
-      return i.transitionHistory.includes(stateKey);
+    const fsmi = rawGetInstance(fsmd, self);
+    if (fsmi) {
+      return fsmi.transitionHistory.includes(stateKey);
     }
   };
 }

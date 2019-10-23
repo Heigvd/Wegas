@@ -1,39 +1,44 @@
-// import {isReplied, isNotReplied, isStillAnswerabled, setValidated, activate, isActive, getValidated, deactivate, } from '../../proxyfy/QuestionDescriptor';
-// import {getInstance, } from '../../proxyfy/VariableDescriptor';
-
-// class QuestionDescriptorMethod {
-//   public isReplied(p: IPlayer, ) : Readonly<boolean> {
-//     return isReplied({} as any)(p,) as Readonly<boolean>;
-//   }
-//   public isNotReplied(p: IPlayer, ) : Readonly<boolean> {
-//     return isNotReplied({} as any)(p,) as Readonly<boolean>;
-//   }
-//   public isStillAnswerabled(p: IPlayer, ) : Readonly<boolean> {
-//     return isStillAnswerabled({} as any)(p,) as Readonly<boolean>;
-//   }
-//   public setValidated(p: IPlayer, value: boolean, ) : Readonly<void> {
-//     return setValidated({} as any)(p,value,) as Readonly<void>;
-//   }
-//   public activate(p: IPlayer, ) : Readonly<void> {
-//     return activate({} as any)(p,) as Readonly<void>;
-//   }
-//   public getInstance(player: IPlayer, ) : Readonly<IQuestionInstance> {
-//     return getInstance({} as any)(player,) as Readonly<IQuestionInstance>;
-//   }
-//   public isActive(p: IPlayer, ) : Readonly<boolean> {
-//     return isActive({} as any)(p,) as Readonly<boolean>;
-//   }
-//   public getValidated(p: IPlayer, ) : Readonly<boolean> {
-//     return getValidated({} as any)(p,) as Readonly<boolean>;
-//   }
-//   public deactivate(p: IPlayer, ) : Readonly<void> {
-//     return deactivate({} as any)(p,) as Readonly<void>;
-//   }
-// }
-
-// export type ScriptableQuestionDescriptor = QuestionDescriptorMethod & IQuestionDescriptor;
-
 import { getInstance as rawGetInstance } from '../methods/VariableDescriptorMethods';
+import { VariableDescriptor } from '../selectors';
+import { getReplies as getChoiceReplies } from './ChoiceDescriptor';
+
+// INSTANCE METHODS HELPERS (should be moved somewhere else, like I...Instance.ts ???)
+export function getReplies(
+  qd: IQuestionDescriptor,
+  validated?: boolean,
+  self?: IPlayer,
+) {
+  let replies: IReply[] = [];
+  VariableDescriptor.flatten<IChoiceDescriptor>(qd).map(cd => {
+    const ci = rawGetInstance(cd, self);
+    if (ci) {
+      replies = [...replies, ...getChoiceReplies(ci, validated)];
+    }
+  });
+  return replies;
+}
+//////////////////////////////////////////////////////////////////////////////////////
+
+export function isReplied(qd: IQuestionDescriptor) {
+  return (self: IPlayer) => getReplies(qd, true, self).length > 0;
+}
+
+export function isNotReplied(qd: IQuestionDescriptor) {
+  return (self: IPlayer) => isReplied(qd)(self);
+}
+
+export function isStillAnswerabled(qd: IQuestionDescriptor) {
+  return (self: IPlayer) => {
+    if (qd.maxReplies != null) {
+      const nbReplies = getReplies(qd, true, self).filter(r => !r.ignored)
+        .length;
+      if (nbReplies >= qd.maxReplies) {
+        return false;
+      }
+    }
+    return true;
+  };
+}
 
 export function setValidated(_qd: IQuestionDescriptor) {
   return (_self: IPlayer, _value: boolean) => {
@@ -49,18 +54,18 @@ export function activate(_qd: IQuestionDescriptor) {
 
 export function isActive(qd: IQuestionDescriptor) {
   return (self: IPlayer) => {
-    const i = rawGetInstance(qd, self);
-    if (i) {
-      return i.active;
+    const qi = rawGetInstance(qd, self);
+    if (qi) {
+      return qi.active;
     }
   };
 }
 
 export function getValidated(qd: IQuestionDescriptor) {
   return (self: IPlayer) => {
-    const i = rawGetInstance(qd, self);
-    if (i) {
-      return i.validated;
+    const qi = rawGetInstance(qd, self);
+    if (qi) {
+      return qi.validated;
     }
   };
 }

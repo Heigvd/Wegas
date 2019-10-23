@@ -1,43 +1,39 @@
-// import {getValue, isValueSelected, setValue, isNotSelectedValue, countSelectedValues, } from '../../proxyfy/StringDescriptor';
-// import {getInstance, } from '../../proxyfy/VariableDescriptor';
-
-// class StringDescriptorMethod {
-//   public getValue(p: IPlayer, ) : Readonly<string> {
-//     return getValue({} as any)(p,) as Readonly<string>;
-//   }
-//   public isValueSelected(p: IPlayer, value: string, ) : Readonly<boolean> {
-//     return isValueSelected({} as any)(p,value,) as Readonly<boolean>;
-//   }
-//   public setValue(p: IPlayer, value: ITranslatableContent, ) : Readonly<void> {
-//     return setValue({} as any)(p,value,) as Readonly<void>;
-//   }
-//   public getInstance(player: IPlayer, ) : Readonly<IStringInstance> {
-//     return getInstance({} as any)(player,) as Readonly<IStringInstance>;
-//   }
-//   public isNotSelectedValue(p: IPlayer, value: string, ) : Readonly<boolean> {
-//     return isNotSelectedValue({} as any)(p,value,) as Readonly<boolean>;
-//   }
-//   public countSelectedValues(p: IPlayer, value: string, ) : Readonly<number> {
-//     return countSelectedValues({} as any)(p,value,) as Readonly<number>;
-//   }
-// }
-
-// export type ScriptableStringDescriptor = StringDescriptorMethod & IStringDescriptor;
-
 import { getInstance as rawGetInstance } from '../methods/VariableDescriptorMethods';
 import { TranslatableContent } from '../i18n';
 
+// INSTANCE METHODS HELPERS (should be moved somewhere else, like I...Instance.ts ???)
+export function parseValues(sd: IStringDescriptor, self: IPlayer) {
+  const json = getValue(sd)(self);
+  if (json) {
+    try {
+      return JSON.parse(json) as string[];
+    } catch (_e) {
+      return [];
+    }
+  }
+  return [];
+}
+//////////////////////////////////////////////////////////////////////////////////////
+
 export function getValue(sd: IStringDescriptor) {
   return (self: IPlayer) => {
-    const i = rawGetInstance(sd, self);
-    if (i) {
-      return TranslatableContent.toString(i.trValue);
+    const si = rawGetInstance(sd, self);
+    if (si) {
+      return TranslatableContent.toString(si.trValue);
     }
   };
 }
 
 export function isValueSelected(sd: IStringDescriptor) {
-  return (self: IPlayer, value: string) => {};
+  return (self: IPlayer, value: string) => {
+    const values = parseValues(sd, self);
+    for (const v of values) {
+      if (v === value) {
+        return true;
+      }
+    }
+    return false;
+  };
 }
 
 export function setValue(_sd: IStringDescriptor) {
@@ -47,11 +43,10 @@ export function setValue(_sd: IStringDescriptor) {
 }
 
 export function isNotSelectedValue(sd: IStringDescriptor) {
-  return (self: IPlayer, value: string) => {
-    return !isValueSelected(sd)(self, value);
-  };
+  return (self: IPlayer, value: string) => !isValueSelected(sd)(self, value);
 }
 
 export function countSelectedValues(sd: IStringDescriptor) {
-  return (self: IPlayer, value: string) => {};
+  return (self: IPlayer, value: string) =>
+    parseValues(sd, self).filter(v => v === value).length;
 }
