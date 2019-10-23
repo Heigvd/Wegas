@@ -597,7 +597,7 @@ public class SchemaGenerator extends AbstractMojo {
             imports.forEach((from, list) -> {
                 ret.append("import {");
                 list.forEach(i -> ret.append(i).append(", "));
-                ret.append("} from '../../proxyfy/").append(from).append("';").append(System.lineSeparator());
+                ret.append("} from '../../proxyfy/methods/").append(from).append("';").append(System.lineSeparator());
             });
 
             return ret.toString()
