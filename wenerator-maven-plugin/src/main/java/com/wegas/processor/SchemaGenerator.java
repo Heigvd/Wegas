@@ -111,6 +111,7 @@ public class SchemaGenerator extends AbstractMojo {
     @Parameter(property = "schema.pkg", required = true)
     private String[] pkg;
     private final Map<String, String> tsInterfaces;
+    private final Map<String, String> tsScriptableInterfaces;
     private final Map<String, String> inheritance;
 
     public SchemaGenerator() {
@@ -127,6 +128,7 @@ public class SchemaGenerator extends AbstractMojo {
         this.classFilter = cf;
 
         this.tsInterfaces = new HashMap<>();
+        this.tsScriptableInterfaces = new HashMap<>();
         this.inheritance = new HashMap<>();
     }
 
@@ -227,19 +229,19 @@ public class SchemaGenerator extends AbstractMojo {
         return atClass;
     }
 
-    private String getTsInterfaceName(String className, Map<String, String> genericity) {
+    private String getTsInterfaceName(String className, Map<String, String> genericity, String suffix) {
         try {
             Class<?> forName = Class.forName(className);
             if (Mergeable.class.isAssignableFrom(forName)) {
-                return getTsInterfaceName((Class<? extends Mergeable>) forName, genericity);
+                return getTsInterfaceName((Class<? extends Mergeable>) forName, genericity, suffix);
             }
         } catch (ClassNotFoundException ex) {
         }
         throw WegasErrorMessage.error(className + " not found");
     }
 
-    private String getTsInterfaceName(Class<? extends Mergeable> klass, Map<String, String> genericity) {
-        String tsName = "I" + Mergeable.getJSONClassName(klass);
+    private String getTsInterfaceName(Class<? extends Mergeable> klass, Map<String, String> genericity, String suffix) {
+        String tsName = suffix + Mergeable.getJSONClassName(klass);
         if (genericity != null) {
             if (genericity.containsKey(tsName)) {
                 return genericity.get(tsName);
@@ -298,13 +300,15 @@ public class SchemaGenerator extends AbstractMojo {
         }
     }
 
-    private void generateTsInterface(WegasEntityFields wEF, Map<Method, WegasExtraProperty> extraProperties) {
+    private void generateTsInterface(WegasEntityFields wEF, Map<Method, WegasExtraProperty> extraProperties, boolean generateScriptableTSClass) {
         Class<? extends Mergeable> c = wEF.getTheClass();
 
         boolean isAbstract = Modifier.isAbstract(c.getModifiers());
 
         StringBuilder sb = new StringBuilder();
-        sb.append("interface ").append(getTsInterfaceName(c, null));
+        String interfaceSuffix = generateScriptableTSClass ? "IS" : "I";
+        String initSequence = generateScriptableTSClass ? "export class " : "interface ";
+        sb.append("interface ").append(getTsInterfaceName(c, null, interfaceSuffix));
         // classname to paramter type map (eg. VariableInstance -> T)
         Map<String, String> genericity = new HashMap<>();
         List<String> genericityOrder = new ArrayList<>();
@@ -334,7 +338,7 @@ public class SchemaGenerator extends AbstractMojo {
                 if (!isAbstract) {
                     sb.append("WithoutAtClass<");
                 }
-                sb.append(getTsInterfaceName((Class<? extends Mergeable>) c.getSuperclass(), null));
+                sb.append(getTsInterfaceName((Class<? extends Mergeable>) c.getSuperclass(), null, interfaceSuffix));
 
                 Type[] gTypes = c.getSuperclass().getTypeParameters();
                 if (gTypes != null && gTypes.length > 0) {
@@ -392,14 +396,29 @@ public class SchemaGenerator extends AbstractMojo {
             sb.append(entry.getValue());
         }
 
+        if(generateScriptableTSClass){
+            Map<String, ScriptableMethod> allMethods = new HashMap<>();
+            allMethods.putAll(Arrays.stream(c.getMethods())
+            .filter(m -> m.isAnnotationPresent(Scriptable.class) && !m.isBridge())
+            .collect(Collectors.toMap((Method m) -> m.getName(), ScriptableMethod::new)));
+
+            generateMethods(sb,allMethods,null,c,false);
+        }
+
         sb.append("}\n");
 
         if (dryRun) {
             System.out.println(c.getSimpleName() + ":");
             System.out.println(sb);
         } else {
-            String iName = getTsInterfaceName(c, null);
-            tsInterfaces.put(iName, "/*\n * " + iName + "\n */\n" + sb + "\n");
+            String iName = getTsInterfaceName(c, null, interfaceSuffix);
+            String iContent =  "/*\n * " + iName + "\n */\n" + sb + "\n";
+            if(generateScriptableTSClass){
+                tsScriptableInterfaces.put(iName, iContent);
+            }
+            else{
+                tsInterfaces.put(iName, iContent);
+            }
         }
 
     }
@@ -511,8 +530,25 @@ public class SchemaGenerator extends AbstractMojo {
     /**
      *
      */
-    private void writeTsInterfacesToFile() {
+    private void writeAnyInterfacesToFile(StringBuilder sb, Map<String, String> interfaces, String fileName) {
+        getLog().warn("Interfaces => " + new Integer(interfaces.size()).toString() + " -- " + fileName );
+        interfaces.keySet().stream().sorted().map(interfaces::get).forEach(sb::append);
 
+        this.otherObjectsTypeD.forEach((klass, typeDef) -> {
+            sb.append("/*\n * ").append(((Class) klass).getSimpleName()).append("\n */\n");
+            sb.append(typeDef).append("\n");
+        });
+
+        File f = new File(outputTypings, fileName);
+
+        try (FileWriter fw = new FileWriter(f)) {
+            fw.write(sb.toString());
+        } catch (IOException ex) {
+            getLog().error("Failed to write " + f.getAbsolutePath(), ex);
+        }
+    }
+
+    private void writeTsInterfacesToFile() {
         StringBuilder sb = new StringBuilder();
 
         sb.append("/**\n" + " * Remove specified keys.\n" + " */\n" + "type WithoutAtClass<Type> = Pick<\n"
@@ -527,20 +563,56 @@ public class SchemaGenerator extends AbstractMojo {
                 .append("  readonly parentId?: number;\n")
                 .append("}\n");
 
-        tsInterfaces.keySet().stream().sorted().map(tsInterfaces::get).forEach(sb::append);
+        writeAnyInterfacesToFile(sb,tsInterfaces, "WegasEntities.d.ts");
+    }
 
-        this.otherObjectsTypeD.forEach((klass, typeDef) -> {
-            sb.append("/*\n * ").append(((Class) klass).getSimpleName()).append("\n */\n");
-            sb.append(typeDef).append("\n");
+    private void writeTsScriptableInterfacesToFile() {
+        writeAnyInterfacesToFile(new StringBuilder(),tsScriptableInterfaces, "WegasScriptableEntities.d.ts");
+    }
+
+    private void generateMethods(StringBuilder builder, Map<String, ScriptableMethod> methods, Map<String, List<String>> imports, Class<? extends Mergeable> klass, boolean implementation){
+        methods.forEach((k, v) -> {
+            Method method = v.m;
+            String from = method.getDeclaringClass().getSimpleName();
+            String methodName = method.getName();
+
+            if(imports != null){
+                imports.putIfAbsent(from, new ArrayList<>());
+                imports.get(from).add(methodName);    
+            }
+
+            if(implementation){
+                builder.append("  public ");
+            }
+            else{
+                builder.append("  ");
+            }
+            builder.append(methodName).append("(");
+            Arrays.stream(method.getParameters()).forEach(p -> {
+                Type type = p.getParameterizedType();
+                Type reified = TypeResolver.reify(type, method.getDeclaringClass());
+                builder.append(p.getName()).append(": ").append(javaToTSType(reified, null));
+                builder.append(", ");
+            });
+            builder.append(")");
+
+            Type genericReturnType = method.getGenericReturnType();
+            Type reified = TypeResolver.reify(genericReturnType, klass);
+            String tsReturnType = javaToTSType(reified, null);
+
+            builder.append(" : Readonly<").append(tsReturnType).append(">");
+
+            if(implementation){
+                builder.append(" {").append(System.lineSeparator());
+                builder.append("    return ").append(methodName).append("({} as any)(");
+                Arrays.stream(method.getParameters()).forEach(p -> builder.append(p.getName()).append(","));
+                builder.append(") as Readonly<").append(tsReturnType).append(">;").append(System.lineSeparator());
+                builder.append("  }").append(System.lineSeparator());
+            }
+            else{
+                builder.append(";").append(System.lineSeparator());
+            }
         });
-
-        File f = new File(outputTypings, "WegasEntities.d.ts");
-
-        try (FileWriter fw = new FileWriter(f)) {
-            fw.write(sb.toString());
-        } catch (IOException ex) {
-            getLog().error("Failed to write " + f.getAbsolutePath(), ex);
-        }
     }
 
     private String getTsScriptableClass(Class<? extends Mergeable> klass, Map<String, ScriptableMethod> methods) {
@@ -552,35 +624,7 @@ public class SchemaGenerator extends AbstractMojo {
         script.append("class ").append(className).append("Method")
                 .append(" {").append(System.lineSeparator());
 
-        methods.forEach((k, v) -> {
-            Method method = v.m;
-            String from = method.getDeclaringClass().getSimpleName();
-            String methodName = method.getName();
-
-            imports.putIfAbsent(from, new ArrayList<>());
-            imports.get(from).add(methodName);
-
-            script.append("  public ").append(methodName).append("(");
-            Arrays.stream(method.getParameters()).forEach(p -> {
-                Type type = p.getParameterizedType();
-                Type reified = TypeResolver.reify(type, method.getDeclaringClass());
-                script.append(p.getName()).append(": ").append(javaToTSType(reified, null));
-                script.append(", ");
-            });
-            script.append(")");
-
-            Type genericReturnType = method.getGenericReturnType();
-            Type reified = TypeResolver.reify(genericReturnType, klass);
-            String tsReturnType = javaToTSType(reified, null);
-
-            script.append(" : Readonly<").append(tsReturnType).append(">");
-
-            script.append(" {").append(System.lineSeparator());
-            script.append("    return ").append(methodName).append("({} as any)(");
-            Arrays.stream(method.getParameters()).forEach(p -> script.append(p.getName()).append(","));
-            script.append(") as Readonly<").append(tsReturnType).append(">;").append(System.lineSeparator());
-            script.append("  }").append(System.lineSeparator());
-        });
+        generateMethods(script,methods,imports,klass,true);
 
         script.append("}");
         script.append(System.lineSeparator());
@@ -675,7 +719,12 @@ public class SchemaGenerator extends AbstractMojo {
                     /*
                      * Generate TS interface for classes only
                      */
-                    this.generateTsInterface(wEF, extraProperties);
+                    this.generateTsInterface(wEF, extraProperties, false);
+                    /*
+                     * Generate TS interface for proxy classes
+                     */
+                    this.generateTsInterface(wEF, extraProperties, true);
+
                 }
                 this.generateInheritanceTable(wEF);
 
@@ -792,6 +841,7 @@ public class SchemaGenerator extends AbstractMojo {
 
         if (!dryRun) {
             writeTsInterfacesToFile();
+            writeTsScriptableInterfacesToFile();
             writeInheritanceToFile();
         }
     }
@@ -976,7 +1026,7 @@ public class SchemaGenerator extends AbstractMojo {
                 return className;
             } else if (new TypeToken<Mergeable>() {
             }.isSupertypeOf(type)) {
-                return getTsInterfaceName((Class<? extends Mergeable>) type, genericity);
+                return getTsInterfaceName((Class<? extends Mergeable>) type, genericity, "I");
             } else {
                 if(className != "void"){
                     String typeDef = "interface " + className + "{\n";
@@ -999,7 +1049,7 @@ public class SchemaGenerator extends AbstractMojo {
         if (type instanceof ParameterizedType) {
             ParameterizedType pType = (ParameterizedType) type;
             String typeName = pType.getRawType().getTypeName();
-            return getTsInterfaceName(typeName, genericity);
+            return getTsInterfaceName(typeName, genericity, "I");
         }
         return "undef";
     }

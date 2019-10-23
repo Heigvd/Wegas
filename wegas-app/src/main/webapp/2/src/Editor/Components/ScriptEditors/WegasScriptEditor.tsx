@@ -5,7 +5,7 @@ import { store } from '../../../data/store';
 
 // using raw-loader works but you need to put the whole file name and ts doesn't like it
 // @ts-ignore
-import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasEntities.d.ts';
+import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasScriptableEntities.d.ts';
 
 const variableClasses = Object.values(
   store.getState().variableDescriptors,
@@ -21,7 +21,7 @@ const libContent =
   ` interface GameModel{}
     declare const gameModel : GameModel;
     interface VariableClasses {${Object.keys(variableClasses).reduce(
-      (s, k) => s + k + ':I' + variableClasses[k] + ';\n',
+      (s, k) => s + k + ':IS' + variableClasses[k] + ';\n',
       '',
     )}}
     class Variable {
