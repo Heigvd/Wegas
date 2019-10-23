@@ -33,7 +33,7 @@ const Eval = React.memo(function Eval({ script }: { script: string }) {
 Eval.displayName = 'Eval';
 
 export default function PlayLocal() {
-  const [script, setScript] = React.useState('Varia');
+  const [script, setScript] = React.useState('Variable.find(gameModel,"aaaa")');
   const debouncedScript = useDebounce(script, 300);
 
   return (
