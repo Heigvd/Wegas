@@ -32,14 +32,21 @@ const Eval = React.memo(function Eval({ script }: { script: string }) {
 });
 Eval.displayName = 'Eval';
 
+const testScript =
+  '\tconst variable = "aaaa";\nreturn Variable.find(gameModel,variable).getValue(self);';
+
 export default function PlayLocal() {
-  const [script, setScript] = React.useState('Variable.find(gameModel,"aaaa")');
+  const [script, setScript] = React.useState(testScript);
   const debouncedScript = useDebounce(script, 300);
 
   return (
     <div className={container}>
       <div className={editor}>
-        <WegasScriptEditor value={script} onChange={e => setScript(e)} />
+        <WegasScriptEditor
+          value={script}
+          onChange={e => setScript(e)}
+          returnType={'number'}
+        />
       </div>
       <ErrorBoundary script={debouncedScript}>
         <Eval script={debouncedScript} />

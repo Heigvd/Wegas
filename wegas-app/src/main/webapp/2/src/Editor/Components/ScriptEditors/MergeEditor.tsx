@@ -8,33 +8,12 @@ import DiffEditor, {
   DiffEditorLineChanges,
 } from './DiffEditor';
 import { StyledLabel } from '../../../Components/AutoImport/String/Label';
+import { arrayToText, textToArray } from './SrcEditor';
 
 const diffLabel = css({
   color: themeVar.primaryLighterColor,
   padding: '5px',
 });
-
-/**
- * textToArray split a text into an array of lines
- *
- * @param text - the text to be splitted
- */
-const textToArray = (text: string): string[] => {
-  return text.split(/\r?\n/);
-};
-
-/**
- * arrayToText merge an array of lines into a single string
- *
- * @param lines - the array of lines
- */
-const arrayToText = (lines: string[]): string => {
-  let text = '';
-  for (let i = 0; i < lines.length; ++i) {
-    text += lines[i] + (i !== lines.length - 1 ? '\n' : '');
-  }
-  return text;
-};
 
 /**
  * getTextLines slice lines in a text

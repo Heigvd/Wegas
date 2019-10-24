@@ -527,11 +527,7 @@ public class SchemaGenerator extends AbstractMojo {
         }
     }
 
-    /**
-     *
-     */
-    private void writeAnyInterfacesToFile(StringBuilder sb, Map<String, String> interfaces, String fileName) {
-        getLog().warn("Interfaces => " + new Integer(interfaces.size()).toString() + " -- " + fileName );
+    private void writeInterfacesToFile(StringBuilder sb, Map<String, String> interfaces, String fileName) {
         interfaces.keySet().stream().sorted().map(interfaces::get).forEach(sb::append);
 
         this.otherObjectsTypeD.forEach((klass, typeDef) -> {
@@ -563,11 +559,30 @@ public class SchemaGenerator extends AbstractMojo {
                 .append("  readonly parentId?: number;\n")
                 .append("}\n");
 
-        writeAnyInterfacesToFile(sb,tsInterfaces, "WegasEntities.d.ts");
+        writeInterfacesToFile(sb,tsInterfaces, "WegasEntities.d.ts");
     }
 
     private void writeTsScriptableInterfacesToFile() {
-        writeAnyInterfacesToFile(new StringBuilder(),tsScriptableInterfaces, "WegasScriptableEntities.d.ts");
+        StringBuilder sb = new StringBuilder();
+
+        /**
+         * Creating ts type allowing all of scriptable WegasEntities names
+         */
+        sb.append("type ScriptableInterfaceName = ");
+        ArrayList<String> intKeys = new ArrayList<String>(tsScriptableInterfaces.keySet());
+        intKeys.forEach(key -> {
+            sb.append(System.lineSeparator())
+                .append("  | ")
+                .append("'" + key + "'");
+        });
+        sb.append(";")
+            .append(System.lineSeparator())
+            .append(System.lineSeparator());
+
+        /**
+         * Creating all interfaces with callable methods for scripts
+         */
+        writeInterfacesToFile(sb,tsScriptableInterfaces, "WegasScriptableEntities.d.ts");
     }
 
     private void generateMethods(StringBuilder builder, Map<String, ScriptableMethod> methods, Map<String, List<String>> imports, Class<? extends Mergeable> klass, boolean implementation){

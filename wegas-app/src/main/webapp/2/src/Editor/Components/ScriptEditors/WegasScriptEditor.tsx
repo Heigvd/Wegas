@@ -1,11 +1,29 @@
 import * as React from 'react';
-import SrcEditor from './SrcEditor';
+import SrcEditor, { MonacoEditor, textToArray, arrayToText } from './SrcEditor';
 import { EditorProps } from './SrcEditor';
 import { store } from '../../../data/store';
 
 // using raw-loader works but you need to put the whole file name and ts doesn't like it
 // @ts-ignore
 import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasScriptableEntities.d.ts';
+import { wlog } from '../../../Helper/wegaslog';
+
+type PrimitiveTypeName =
+  | 'boolean'
+  | 'number'
+  | 'string'
+  | 'object'
+  | 'unknown'
+  | 'never'
+  | 'void';
+
+interface WegasScriptEditorProps extends EditorProps {
+  returnType?: ScriptableInterfaceName | PrimitiveTypeName;
+}
+
+type MonacoSelectionChangeEvent = Parameters<
+  Parameters<MonacoEditor['onDidChangeCursorSelection']>[0]
+>[0];
 
 const variableClasses = Object.values(
   store.getState().variableDescriptors,
@@ -31,27 +49,174 @@ const libContent =
       ) => VariableClasses[T];
     }`;
 
-// Will allow to make readonly parts in the editor
-//   editor.onDidChangeCursorPosition(function (e) {
-//     if (e.position.lineNumber < 3) {
-//         this.editor.setPosition({
-//             lineNumber:3,
-//             column: 1
-//         });
-//     }
-// });
+const header = (type?: string) => {
+  const cleanType = type !== undefined ? type.replace(/\r?\n/, '') : '';
+  return `/*\n *\tPlease always respect the return type : ${cleanType}\n *\tPlease only write in JS even if the editor let you write in TS\n */\n() : ${cleanType} => {\n`;
+};
+const headerSize = textToArray(header()).length;
+const footer = () => `\n};`;
+const footerSize = textToArray(footer()).length - 1;
 
-export function WegasScriptEditor(props: EditorProps) {
+const cleaner = (
+  val: string,
+  returnType: WegasScriptEditorProps['returnType'],
+) => {
+  let cleanedValue = val;
+  // Header cleaning
+  let lines = textToArray(cleanedValue);
+  if (
+    arrayToText(lines.slice(0, headerSize - 1)) !==
+    header(returnType).slice(0, -1)
+  ) {
+    cleanedValue =
+      header(returnType) +
+      arrayToText(lines).replace(header(returnType).slice(0, -1), '');
+  }
+
+  // Footer cleaning
+  lines = textToArray(cleanedValue);
+  if (lines.length > 0 && lines[lines.length - 1] !== footer().substr(1)) {
+    lines[lines.length - 1] = lines[lines.length - 1].replace(
+      footer().substr(1),
+      '',
+    );
+    cleanedValue = arrayToText(lines) + footer();
+  }
+  return cleanedValue;
+};
+
+const trimmer = (val: string, fn?: (val: string) => void) => {
+  const newLines = textToArray(val)
+    /* Removes header and footer */
+    .filter(
+      (_line, index, array) =>
+        index >= headerSize - 1 && index < array.length - footerSize,
+    );
+
+  // Removing the last return statement (space and tabs before included)
+  const lastReturnIndex = newLines.findIndex(val => val.includes('return'), -1);
+  if (lastReturnIndex > -1) {
+    newLines[lastReturnIndex] = newLines[lastReturnIndex].replace(
+      /(\t| )*(return )/,
+      '',
+    );
+  }
+  return fn && fn(arrayToText(newLines));
+};
+
+export function WegasScriptEditor(props: WegasScriptEditorProps) {
+  let editorLock: ((editor: MonacoEditor) => void) | undefined = undefined;
+  let functionValue: string | undefined = undefined;
+  let trimFunction = React.useCallback(
+    (
+      val: string,
+      fn?: (val: string) => void,
+      _returnType?: WegasScriptEditorProps['returnType'],
+    ) => fn && fn(val),
+    [],
+  );
+  const editorRef = React.useRef<MonacoEditor>();
+  const valueRef = React.useRef<string>();
+
+  if (props.returnType !== undefined) {
+    trimFunction = trimmer;
+    let value = props.defaultValue || props.value || '';
+    const lines = textToArray(value);
+    if (lines.length > 0 && !lines[lines.length - 1].includes('return')) {
+      lines[lines.length - 1] = '\treturn ' + lines[lines.length - 1];
+      value = arrayToText(lines);
+    }
+    functionValue = `${header(props.returnType)}${value}${footer()}`;
+
+    editorLock = (editor: MonacoEditor) => {
+      editorRef.current = editor;
+      functionValue && onChange(functionValue);
+      // Allow to make some lines of the editor readonly
+      editor.onDidChangeCursorSelection((e: MonacoSelectionChangeEvent) => {
+        const textLines = textToArray(editor.getValue()).length;
+        const trimStartUp = e.selection.startLineNumber < headerSize;
+        const trimStartDown =
+          e.selection.startLineNumber > textLines - footerSize;
+        const trimEndUp = e.selection.endLineNumber < headerSize;
+        const trimEndDown = e.selection.endLineNumber > textLines - footerSize;
+
+        wlog(`Start onDidChangeCursorSelection event`);
+        wlog(`Current limits => [${headerSize},${textLines - footerSize}]`);
+        wlog(
+          `Current selection => [${e.selection.startLineNumber},${e.selection.endLineNumber}]`,
+        );
+        wlog(
+          `Selection modifiers => [[${trimStartUp},${trimStartUp}],[${trimEndUp},${trimEndDown}]]`,
+        );
+
+        if (trimStartUp || trimStartDown || trimEndUp || trimEndDown) {
+          let startLine = e.selection.startLineNumber;
+          let endLine = e.selection.endLineNumber;
+
+          if (trimStartUp) {
+            startLine = headerSize;
+          } else if (trimStartDown) {
+            startLine = textLines - footerSize;
+          }
+
+          if (trimEndUp) {
+            endLine = headerSize;
+          } else if (trimEndDown) {
+            endLine = textLines - footerSize;
+          }
+
+          wlog(`New selection => [${startLine},${endLine}]`);
+
+          editor.setSelection({
+            ...e.selection,
+            startLineNumber: startLine,
+            endLineNumber: endLine,
+          });
+
+          const editorPosition = editor.getPosition();
+          if (editorPosition) {
+            editor.setPosition({
+              column: editorPosition.column,
+              lineNumber: endLine,
+            });
+          }
+        }
+        wlog(`End onDidChangeCursorSelection event\n\n`);
+      });
+    };
+  }
+
+  const onChange = React.useCallback(
+    val => {
+      // Avoiding footer or header deletion by user
+      if (valueRef.current !== val && editorRef.current && props.returnType) {
+        valueRef.current = cleaner(val, props.returnType);
+        editorRef.current.setValue(valueRef.current);
+      }
+      trimFunction(
+        valueRef.current ? valueRef.current : val,
+        props.onChange,
+        props.returnType,
+      );
+    },
+    [trimFunction, props.onChange, props.returnType],
+  );
+
   return (
     <SrcEditor
       {...props}
-      language={'javascript'}
+      language={'typescript'}
       defaultExtraLibs={[
         {
           content: libContent,
           name: 'Userscript.d.ts',
         },
       ]}
+      value={functionValue}
+      onEditorReady={editorLock}
+      onChange={onChange}
+      onBlur={val => trimFunction(val, props.onBlur)}
+      onSave={val => trimFunction(val, props.onSave)}
     />
   );
 }
