@@ -44,6 +44,7 @@ public class EMailFacade {
      * @param toType
      * @param mimetype
      * @param replyToOrCC false -> add ReplyTo: replyTo true : acc CC: replyTo
+     *
      * @throws javax.mail.MessagingException when something went wrong
      */
     public void send(String to, String from, String replyTo,
@@ -58,7 +59,7 @@ public class EMailFacade {
         props.setProperty("mail.smtp.auth", Helper.getWegasProperty("mail.smtp.auth"));
         props.put("mail.smtp.port", Helper.getWegasProperty("mail.smtp.port"));
         if (Helper.getWegasProperty("mail.smtp.starttls.enable").equals("true")) {
-            props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.ssl.trust", Helper.getWegasProperty("mail.smtp.host"));
         } else {
             props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
@@ -73,7 +74,7 @@ public class EMailFacade {
             }
         });
 
-        javax.mail.Message msg = new MimeMessage(session);
+        MimeMessage msg = new MimeMessage(session);
 
         msg.setFrom(new InternetAddress(from));
         msg.setRecipients(toType, InternetAddress.parse(to, false));
@@ -83,7 +84,7 @@ public class EMailFacade {
 
         if (replyTo != null) {
             if (replyToOrCC) {
-                msg.setHeader("Reply-To", replyTo);
+                msg.setReplyTo(InternetAddress.parse(replyTo));
             } else {
                 msg.addRecipients(RecipientType.CC, InternetAddress.parse(replyTo, false));
             }
