@@ -1,12 +1,14 @@
 import * as React from 'react';
 import SrcEditor, { MonacoEditor, textToArray, arrayToText } from './SrcEditor';
 import { EditorProps } from './SrcEditor';
-import { store } from '../../../data/store';
+import { store, useStore } from '../../../data/store';
 
 // using raw-loader works but you need to put the whole file name and ts doesn't like it
 // @ts-ignore
 import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasScriptableEntities.d.ts';
 import { wlog } from '../../../Helper/wegaslog';
+import { shallowDifferent } from '../../../data/connectStore';
+import { State } from '../../../data/Reducer/reducers';
 
 type PrimitiveTypeName =
   | 'boolean'
@@ -24,30 +26,6 @@ interface WegasScriptEditorProps extends EditorProps {
 type MonacoSelectionChangeEvent = Parameters<
   Parameters<MonacoEditor['onDidChangeCursorSelection']>[0]
 >[0];
-
-const variableClasses = Object.values(
-  store.getState().variableDescriptors,
-).reduce<{ [variable: string]: string }>((newObject, variable) => {
-  if (variable !== undefined && variable.name !== undefined) {
-    newObject[variable.name] = variable['@class'];
-  }
-  return newObject;
-}, {});
-
-const libContent =
-  entitiesSrc +
-  ` interface GameModel{}
-    declare const gameModel : GameModel;
-    interface VariableClasses {${Object.keys(variableClasses).reduce(
-      (s, k) => s + k + ':IS' + variableClasses[k] + ';\n',
-      '',
-    )}}
-    class Variable {
-      static find: <T extends keyof VariableClasses>(
-        gameModel: GameModel,
-        name: T
-      ) => VariableClasses[T];
-    }`;
 
 const header = (type?: string) => {
   const cleanType = type !== undefined ? type.replace(/\r?\n/, '') : '';
@@ -117,6 +95,30 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   );
   const editorRef = React.useRef<MonacoEditor>();
   const valueRef = React.useRef<string>();
+
+  const libContent = useStore((s: State) => {
+    const variableClasses = Object.values(s.variableDescriptors).reduce<{
+      [variable: string]: string;
+    }>((newObject, variable) => {
+      if (variable !== undefined && variable.name !== undefined) {
+        newObject[variable.name] = variable['@class'];
+      }
+      return newObject;
+    }, {});
+
+    return ` interface GameModel{}
+            declare const gameModel : GameModel;
+            interface VariableClasses {${Object.keys(variableClasses).reduce(
+              (s, k) => s + k + ':IS' + variableClasses[k] + ';\n',
+              '',
+            )}}
+            class Variable {
+              static find: <T extends keyof VariableClasses>(
+                gameModel: GameModel,
+                name: T
+              ) => VariableClasses[T];
+            }`;
+  }, shallowDifferent);
 
   if (props.returnType !== undefined) {
     trimFunction = trimmer;
@@ -206,10 +208,14 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     <SrcEditor
       {...props}
       language={'typescript'}
-      defaultExtraLibs={[
+      extraLibs={[
+        {
+          content: entitiesSrc,
+          name: 'ScriptableEntites.d.ts',
+        },
         {
           content: libContent,
-          name: 'Userscript.d.ts',
+          name: 'VariablesTypes.d.ts',
         },
       ]}
       value={functionValue}

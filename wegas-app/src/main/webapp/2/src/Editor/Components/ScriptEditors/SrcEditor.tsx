@@ -1,6 +1,7 @@
 import { css } from 'emotion';
 import * as React from 'react';
 import { SizedDiv } from '../../../Components/SizedDiv';
+import { deepDifferent } from '../../../data/connectStore';
 
 export type MonacoEditor = ReturnType<
   typeof import('monaco-editor').editor.create
@@ -83,7 +84,7 @@ export interface EditorProps {
   /**
    * defaultExtraLibs - libraries to add to the editor intellisense
    */
-  defaultExtraLibs?: { content: string; name?: string }[];
+  extraLibs?: { content: string; name?: string }[];
   /**
    * onEditorReady - Callback to give the editor the a higher component
    */
@@ -111,6 +112,17 @@ export const textToArray = (text: string): string[] => text.split(/\r?\n/);
 export const arrayToText = (lines: string[]): string =>
   lines.reduce((newString, line) => newString + line + '\n', '').slice(0, -1);
 
+const addExtraLib = (
+  service: typeof import('monaco-editor').languages.typescript['javascriptDefaults'],
+  extraLibs?: EditorProps['extraLibs'],
+) => {
+  if (extraLibs) {
+    for (const lib of extraLibs) {
+      service.addExtraLib(lib.content, lib.name);
+    }
+  }
+};
+
 /**
  * SrcEditor is a component uses monaco-editor to create a code edition panel
  */
@@ -126,7 +138,9 @@ class SrcEditor extends React.Component<EditorProps> {
       nextProps.language !== this.props.language ||
       nextProps.readonly !== this.props.readonly ||
       nextProps.minimap !== this.props.minimap ||
-      nextProps.cursorOffset !== this.props.cursorOffset
+      nextProps.cursorOffset !== this.props.cursorOffset ||
+      nextProps.cursorOffset !== this.props.cursorOffset ||
+      deepDifferent(nextProps.extraLibs, this.props.extraLibs)
     );
   }
 
@@ -167,6 +181,21 @@ class SrcEditor extends React.Component<EditorProps> {
           this.editor.setPosition(model.getPositionAt(this.props.cursorOffset));
         }
       }
+      if (deepDifferent(prevProps.extraLibs, this.props.extraLibs)) {
+        import('monaco-editor').then(monaco => {
+          if (this.props.language === 'javascript') {
+            addExtraLib(
+              monaco.languages.typescript.javascriptDefaults,
+              this.props.extraLibs,
+            );
+          } else if (this.props.language === 'typescript') {
+            addExtraLib(
+              monaco.languages.typescript.typescriptDefaults,
+              this.props.extraLibs,
+            );
+          }
+        });
+      }
       this.editor.layout();
     }
   }
@@ -199,14 +228,10 @@ class SrcEditor extends React.Component<EditorProps> {
             noLib: false,
             allowNonTsExtensions: true,
           });
-          if (this.props.defaultExtraLibs) {
-            for (const lib of this.props.defaultExtraLibs) {
-              monaco.languages.typescript.javascriptDefaults.addExtraLib(
-                lib.content,
-                lib.name,
-              );
-            }
-          }
+          addExtraLib(
+            monaco.languages.typescript.javascriptDefaults,
+            this.props.extraLibs,
+          );
         }
 
         // Next code should be called only in typescript...
@@ -214,17 +239,13 @@ class SrcEditor extends React.Component<EditorProps> {
           monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
             noLib: false,
             allowNonTsExtensions: true,
-            //allowJs: true, /* Has been disabled since the file cannot contain types */
+            //allowJs: true, /* Has been disabled since it forbid to use types */
             checkJs: false,
           });
-          if (this.props.defaultExtraLibs) {
-            for (const lib of this.props.defaultExtraLibs) {
-              monaco.languages.typescript.typescriptDefaults.addExtraLib(
-                lib.content,
-                lib.name,
-              );
-            }
-          }
+          addExtraLib(
+            monaco.languages.typescript.typescriptDefaults,
+            this.props.extraLibs,
+          );
         }
 
         const model = monaco.editor.createModel(
