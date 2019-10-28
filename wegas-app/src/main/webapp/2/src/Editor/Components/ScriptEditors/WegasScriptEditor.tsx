@@ -1,7 +1,13 @@
 import * as React from 'react';
-import SrcEditor, { MonacoEditor, textToArray, arrayToText } from './SrcEditor';
+import SrcEditor, {
+  MonacoSCodeEditor,
+  textToArray,
+  arrayToText,
+  MonacoCodeEditor,
+  MonacoEditor,
+} from './SrcEditor';
 import { EditorProps } from './SrcEditor';
-import { store, useStore } from '../../../data/store';
+import { useStore } from '../../../data/store';
 
 // using raw-loader works but you need to put the whole file name and ts doesn't like it
 // @ts-ignore
@@ -9,6 +15,8 @@ import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasScriptabl
 import { wlog } from '../../../Helper/wegaslog';
 import { shallowDifferent } from '../../../data/connectStore';
 import { State } from '../../../data/Reducer/reducers';
+
+type MonacoEditorCursorEvent = import('monaco-editor').editor.ICursorSelectionChangedEvent;
 
 type PrimitiveTypeName =
   | 'boolean'
@@ -22,10 +30,6 @@ type PrimitiveTypeName =
 interface WegasScriptEditorProps extends EditorProps {
   returnType?: ScriptableInterfaceName | PrimitiveTypeName;
 }
-
-type MonacoSelectionChangeEvent = Parameters<
-  Parameters<MonacoEditor['onDidChangeCursorSelection']>[0]
->[0];
 
 const header = (type?: string) => {
   const cleanType = type !== undefined ? type.replace(/\r?\n/, '') : '';
@@ -83,7 +87,7 @@ const trimmer = (val: string, fn?: (val: string) => void) => {
 };
 
 export function WegasScriptEditor(props: WegasScriptEditorProps) {
-  let editorLock: ((editor: MonacoEditor) => void) | undefined = undefined;
+  let editorLock: ((editor: MonacoSCodeEditor) => void) | undefined = undefined;
   let functionValue: string | undefined = undefined;
   let trimFunction = React.useCallback(
     (
@@ -93,7 +97,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     ) => fn && fn(val),
     [],
   );
-  const editorRef = React.useRef<MonacoEditor>();
+  const editorRef = React.useRef<MonacoSCodeEditor>();
   const valueRef = React.useRef<string>();
 
   const libContent = useStore((s: State) => {
@@ -130,11 +134,11 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     }
     functionValue = `${header(props.returnType)}${value}${footer()}`;
 
-    editorLock = (editor: MonacoEditor) => {
+    editorLock = (editor: MonacoSCodeEditor) => {
       editorRef.current = editor;
       functionValue && onChange(functionValue);
       // Allow to make some lines of the editor readonly
-      editor.onDidChangeCursorSelection((e: MonacoSelectionChangeEvent) => {
+      editor.onDidChangeCursorSelection((e: MonacoEditorCursorEvent) => {
         const textLines = textToArray(editor.getValue()).length;
         const trimStartUp = e.selection.startLineNumber < headerSize;
         const trimStartDown =

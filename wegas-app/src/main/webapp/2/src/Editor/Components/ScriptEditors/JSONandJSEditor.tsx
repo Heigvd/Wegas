@@ -2,13 +2,15 @@ import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
 import { css } from 'emotion';
 import { Modal } from '../../../Components/Modal';
-import SrcEditor from './SrcEditor';
+import SrcEditor, { MonacoEditor, MonacoCodeEditor } from './SrcEditor';
 import { KeyMod, KeyCode } from 'monaco-editor';
 import {
   StyledLabel,
   LabelStyle,
 } from '../../../Components/AutoImport/String/Label';
 import { WegasScriptEditor } from './WegasScriptEditor';
+
+type MonacoEditorToken = import('monaco-editor').Token;
 
 const infoDuration = 5000;
 
@@ -43,10 +45,7 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
     setError(onSave(content));
   };
 
-  const editJS = (
-    monaco: typeof import('monaco-editor'),
-    editor: import('monaco-editor').editor.ICodeEditor,
-  ) => {
+  const editJS = (monaco: MonacoEditor, editor: MonacoCodeEditor) => {
     try {
       setError({});
       const cursorPosition = editor.getPosition();
@@ -56,12 +55,10 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
         let totalOffset = 0;
         const tokens = monaco.editor
           .tokenize(editorValue, 'json')
-          .reduce<{ token: import('monaco-editor').Token; line: number }[]>(
+          .reduce<{ token: MonacoEditorToken; line: number }[]>(
             (newTokens, tokens, line) => {
               const newT = newTokens.concat(
-                tokens.reduce<
-                  { token: import('monaco-editor').Token; line: number }[]
-                >(
+                tokens.reduce<{ token: MonacoEditorToken; line: number }[]>(
                   (nt, t) =>
                     nt.concat({
                       token: {

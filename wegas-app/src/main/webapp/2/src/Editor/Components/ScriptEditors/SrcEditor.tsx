@@ -3,9 +3,10 @@ import * as React from 'react';
 import { SizedDiv } from '../../../Components/SizedDiv';
 import { deepDifferent } from '../../../data/connectStore';
 
-export type MonacoEditor = ReturnType<
-  typeof import('monaco-editor').editor.create
->;
+export type MonacoEditor = typeof import('monaco-editor');
+export type MonacoLangaugesServices = typeof import('monaco-editor').languages.typescript.typescriptDefaults;
+export type MonacoCodeEditor = import('monaco-editor').editor.ICodeEditor;
+export type MonacoSCodeEditor = import('monaco-editor').editor.IStandaloneCodeEditor;
 
 interface EditorAction {
   /**
@@ -23,10 +24,7 @@ interface EditorAction {
   /**
    * run - the function to be fired with the action
    */
-  run: (
-    monaco: typeof import('monaco-editor'),
-    editor: import('monaco-editor').editor.ICodeEditor,
-  ) => void;
+  run: (monaco: MonacoEditor, editor: MonacoCodeEditor) => void;
 }
 
 export interface EditorProps {
@@ -88,7 +86,7 @@ export interface EditorProps {
   /**
    * onEditorReady - Callback to give the editor the a higher component
    */
-  onEditorReady?: (editor: MonacoEditor) => void;
+  onEditorReady?: (editor: MonacoSCodeEditor) => void;
 }
 
 const overflowHide = css({
@@ -113,7 +111,7 @@ export const arrayToText = (lines: string[]): string =>
   lines.reduce((newString, line) => newString + line + '\n', '').slice(0, -1);
 
 const addExtraLib = (
-  service: typeof import('monaco-editor').languages.typescript['javascriptDefaults'],
+  service: MonacoLangaugesServices,
   extraLibs?: EditorProps['extraLibs'],
 ) => {
   if (extraLibs) {
@@ -127,7 +125,7 @@ const addExtraLib = (
  * SrcEditor is a component uses monaco-editor to create a code edition panel
  */
 class SrcEditor extends React.Component<EditorProps> {
-  private editor: MonacoEditor | null = null;
+  private editor: MonacoSCodeEditor | null = null;
   private lastValue?: string = '';
   private outsideChange: boolean = false;
   private container: HTMLDivElement | null = null;
