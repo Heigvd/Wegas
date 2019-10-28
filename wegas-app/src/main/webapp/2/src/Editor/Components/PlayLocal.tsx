@@ -33,7 +33,7 @@ const Eval = React.memo(function Eval({ script }: { script: string }) {
 Eval.displayName = 'Eval';
 
 const testScript =
-  '\tconst variable = "aaaa";\nreturn Variable.find(gameModel,variable).getValue(self);';
+  '\tconst variable = "aaaa";\nVariable.find(gameModel,variable).getValue(self);';
 
 export default function PlayLocal() {
   const [script, setScript] = React.useState(testScript);

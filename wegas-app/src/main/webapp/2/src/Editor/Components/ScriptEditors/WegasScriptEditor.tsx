@@ -3,8 +3,6 @@ import SrcEditor, {
   MonacoSCodeEditor,
   textToArray,
   arrayToText,
-  MonacoCodeEditor,
-  MonacoEditor,
 } from './SrcEditor';
 import { EditorProps } from './SrcEditor';
 import { useStore } from '../../../data/store';
@@ -13,7 +11,7 @@ import { useStore } from '../../../data/store';
 // @ts-ignore
 import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasScriptableEntities.d.ts';
 import { wlog } from '../../../Helper/wegaslog';
-import { shallowDifferent } from '../../../data/connectStore';
+import { shallowDifferent, deepDifferent } from '../../../data/connectStore';
 import { State } from '../../../data/Reducer/reducers';
 
 type MonacoEditorCursorEvent = import('monaco-editor').editor.ICursorSelectionChangedEvent;
@@ -27,8 +25,12 @@ type PrimitiveTypeName =
   | 'never'
   | 'void';
 
+export type WegasScriptEditorReturnType =
+  | ScriptableInterfaceName
+  | PrimitiveTypeName;
+
 interface WegasScriptEditorProps extends EditorProps {
-  returnType?: ScriptableInterfaceName | PrimitiveTypeName;
+  returnType?: WegasScriptEditorReturnType;
 }
 
 const header = (type?: string) => {
@@ -39,66 +41,129 @@ const headerSize = textToArray(header()).length;
 const footer = () => `\n};`;
 const footerSize = textToArray(footer()).length - 1;
 
-const cleaner = (
+/**
+ * formatScriptToFunction - if the return type is defined, return the script wrapped in a function
+ * @param val - The script value
+ * @param returnType - The return type of the script
+ */
+const formatScriptToFunction = (
   val: string,
-  returnType: WegasScriptEditorProps['returnType'],
+  returnType?: WegasScriptEditorReturnType,
 ) => {
-  let cleanedValue = val;
-  // Header cleaning
-  let lines = textToArray(cleanedValue);
-  if (
-    arrayToText(lines.slice(0, headerSize - 1)) !==
-    header(returnType).slice(0, -1)
-  ) {
-    cleanedValue =
-      header(returnType) +
-      arrayToText(lines).replace(header(returnType).slice(0, -1), '');
+  if (returnType !== undefined) {
+    let newValue = val;
+    const lines = textToArray(newValue);
+    if (lines.length > 0 && !lines[lines.length - 1].includes('return')) {
+      lines[lines.length - 1] = '\treturn ' + lines[lines.length - 1];
+    } else {
+      lines[lines.length - 1] = lines[lines.length - 1].replace(
+        /.*(return).* /,
+        '\treturn ',
+      );
+    }
+    newValue = arrayToText(lines);
+    return `${header(returnType)}${newValue}${footer()}`;
   }
-
-  // Footer cleaning
-  lines = textToArray(cleanedValue);
-  if (lines.length > 0 && lines[lines.length - 1] !== footer().substr(1)) {
-    lines[lines.length - 1] = lines[lines.length - 1].replace(
-      footer().substr(1),
-      '',
-    );
-    cleanedValue = arrayToText(lines) + footer();
-  }
-  return cleanedValue;
-};
-
-const trimmer = (val: string, fn?: (val: string) => void) => {
-  const newLines = textToArray(val)
-    /* Removes header and footer */
-    .filter(
-      (_line, index, array) =>
-        index >= headerSize - 1 && index < array.length - footerSize,
-    );
-
-  // Removing the last return statement (space and tabs before included)
-  const lastReturnIndex = newLines.findIndex(val => val.includes('return'), -1);
-  if (lastReturnIndex > -1) {
-    newLines[lastReturnIndex] = newLines[lastReturnIndex].replace(
-      /(\t| )*(return )/,
-      '',
-    );
-  }
-  return fn && fn(arrayToText(newLines));
+  return val;
 };
 
 export function WegasScriptEditor(props: WegasScriptEditorProps) {
+  const { defaultValue, value, returnType } = props;
   let editorLock: ((editor: MonacoSCodeEditor) => void) | undefined = undefined;
-  let functionValue: string | undefined = undefined;
-  let trimFunction = React.useCallback(
-    (
-      val: string,
-      fn?: (val: string) => void,
-      _returnType?: WegasScriptEditorProps['returnType'],
-    ) => fn && fn(val),
-    [],
-  );
+  // let functionValue: string | undefined = undefined;
   const editorRef = React.useRef<MonacoSCodeEditor>();
-  const valueRef = React.useRef<string>();
+  // const valueRef = React.useRef<string>();
+  const [currentValue, setCurrentValue] = React.useState<string>(
+    defaultValue || value || '',
+  );
+  const [refresh, setRefresh] = React.useState<boolean>(false);
+  const toggleRefresh = React.useCallback(() => setRefresh(old => !old), [
+    setRefresh,
+  ]);
+
+  React.useEffect(
+    () =>
+      setCurrentValue(oldVal => {
+        const newValue = value ? value : '';
+        if (deepDifferent(oldVal, newValue)) {
+          return newValue;
+        }
+        return oldVal;
+      }),
+    [value, returnType],
+  );
+
+  /**
+   * acceptFunctionStyle - Returning false if return type needed and function is not parsable
+   * Verifies if the user didn't delete header, footer and return statement.
+   * @param val - The new script value
+   * @param returnType - The script return type needed
+   */
+  const acceptFunctionStyle = (
+    val?: string,
+    returnType?: WegasScriptEditorReturnType,
+  ) => {
+    const newVal = val ? val : '';
+    if (returnType !== undefined) {
+      const lines = textToArray(newVal);
+      if (
+        // Header protection
+        arrayToText(lines.slice(0, headerSize - 1)) !==
+          header(returnType).slice(0, -1) ||
+        // Footer protection
+        (lines.length > 0 &&
+          lines[lines.length - footerSize] !== footer().substr(1)) ||
+        // Return protection
+        (lines.length > 1 &&
+          lines[lines.length - footerSize - 1].search(/(\t|\n| )(return )/) ===
+            -1)
+      ) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  /**
+   * trimFunctionToScript - If return type defined this function will trim the function and call back with only script value
+   * @param val - The content of the editor
+   * @param fn - the callback function
+   */
+  const trimFunctionToScript = React.useCallback(
+    (val?: string, fn?: (val: string) => void) => {
+      let newValue = val ? val : '';
+      if (returnType !== undefined) {
+        if (acceptFunctionStyle(newValue, returnType)) {
+          const newLines = textToArray(newValue)
+            /* Removes header and footer */
+            .filter(
+              (_line, index, array) =>
+                index >= headerSize - 1 && index < array.length - footerSize,
+            );
+
+          // Removing the last return statement (space and tabs before included)
+          const lastReturnIndex = newLines.findIndex(
+            val => val.includes('return'),
+            -1,
+          );
+          if (lastReturnIndex > -1) {
+            newLines[lastReturnIndex] = newLines[lastReturnIndex].replace(
+              /(\t| )*(return )/,
+              '',
+            );
+          }
+          newValue = arrayToText(newLines);
+          setCurrentValue(newValue);
+          return fn && fn(newValue);
+        }
+        toggleRefresh();
+        return;
+      }
+      setCurrentValue(newValue);
+      return fn && fn(newValue);
+    },
+    [returnType, toggleRefresh],
+  );
 
   const libContent = useStore((s: State) => {
     const variableClasses = Object.values(s.variableDescriptors).reduce<{
@@ -124,19 +189,10 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
             }`;
   }, shallowDifferent);
 
-  if (props.returnType !== undefined) {
-    trimFunction = trimmer;
-    let value = props.defaultValue || props.value || '';
-    const lines = textToArray(value);
-    if (lines.length > 0 && !lines[lines.length - 1].includes('return')) {
-      lines[lines.length - 1] = '\treturn ' + lines[lines.length - 1];
-      value = arrayToText(lines);
-    }
-    functionValue = `${header(props.returnType)}${value}${footer()}`;
-
+  if (returnType !== undefined) {
     editorLock = (editor: MonacoSCodeEditor) => {
       editorRef.current = editor;
-      functionValue && onChange(functionValue);
+      // functionValue && onChange(functionValue);
       // Allow to make some lines of the editor readonly
       editor.onDidChangeCursorSelection((e: MonacoEditorCursorEvent) => {
         const textLines = textToArray(editor.getValue()).length;
@@ -192,24 +248,9 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     };
   }
 
-  const onChange = React.useCallback(
-    val => {
-      // Avoiding footer or header deletion by user
-      if (valueRef.current !== val && editorRef.current && props.returnType) {
-        valueRef.current = cleaner(val, props.returnType);
-        editorRef.current.setValue(valueRef.current);
-      }
-      trimFunction(
-        valueRef.current ? valueRef.current : val,
-        props.onChange,
-        props.returnType,
-      );
-    },
-    [trimFunction, props.onChange, props.returnType],
-  );
-
   return (
     <SrcEditor
+      key={Number(refresh)}
       {...props}
       language={'typescript'}
       extraLibs={[
@@ -222,11 +263,11 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
           name: 'VariablesTypes.d.ts',
         },
       ]}
-      value={functionValue}
+      value={formatScriptToFunction(currentValue, returnType)}
       onEditorReady={editorLock}
-      onChange={onChange}
-      onBlur={val => trimFunction(val, props.onBlur)}
-      onSave={val => trimFunction(val, props.onSave)}
+      onChange={val => trimFunctionToScript(val, props.onChange)}
+      onBlur={val => trimFunctionToScript(val, props.onBlur)}
+      onSave={val => trimFunctionToScript(val, props.onSave)}
     />
   );
 }
