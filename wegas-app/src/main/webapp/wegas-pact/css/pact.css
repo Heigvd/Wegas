@@ -628,3 +628,49 @@ API TOOLTIP
 .wegas-hostmode .history-success {
     color: green;
 }
+
+
+/*****  Dashboard, Stats tab  *****/
+
+.pact-stats {
+    background: white !important;
+    box-shadow: none !important;
+    padding: 10px;
+    width: fit-content;
+}
+
+.pact-stats table {
+    font-family: arial;
+    color: black;
+    text-align: center;
+}
+
+.pact-stats table colgroup .even {
+    background: #fff;
+}
+
+.pact-stats table colgroup .odd {
+    background: #ddd;
+}
+
+.pact-stats tr:hover {
+    background: #bbb;
+}
+
+.pact-stats thead {
+    border-bottom: 1px solid black;
+}
+
+.pact-stats tfoot {
+    border-top: 1px solid black;
+}
+
+.pact-stats th {
+    font-weight: bold;
+    padding: 5px;
+    text-align: center;
+}
+
+.pact-stats td {
+    padding: 5px;
+}
