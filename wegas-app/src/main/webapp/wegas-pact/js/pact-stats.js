@@ -6,15 +6,12 @@ YUI.add('pact-stats', function (Y) {
         PROGGAME_LEVEL_PREFIX = OBJECT_PREFIX + "proggame-level/",
         PROGGAME_THEORY_PREFIX = OBJECT_PREFIX + "proggame-theory/",
         ANNOTATED_FILENAME = "xapi-annotated.csv",
-        // Existing game levels as an easily iterable enumeration. Attribute values give the corresponding position.
-        // @TODO make this dynamic, depending on actually available game levels!
-        LEVELS = {11:1, 12:2, 21:3, 22:4, 23:5, 24:6, 31:7, 32:8, 33:9, 34:10, 41:11, 42:12};
-        
-    var MIN_LEVELS_OUTLIERS = 3;
+        PACT_STATS_CLASS = ".pact-stats-widget",
+        MIN_LEVELS_OUTLIERS = 3;
 
     Y.Wegas.PactStats = Y.Base.create("pact-stats", Y.Widget,
             [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        CONTENT_TEMPLATE: '<div class="pact-stats-widget" style="background:white;"></div>',
+        CONTENT_TEMPLATE: '<div class="' + PACT_STATS_CLASS.substr(1) + '"></div>',
 
 
         // Returns an object where each entry is the data of a distinct team.
@@ -34,10 +31,10 @@ YUI.add('pact-stats', function (Y) {
         // Filters out outliers, i.e. teams with less than given number of code submissions or completed levels.
         // The minimal number of levels is obviously the strongest condition.
         removeOutliers: function(teams) {
-            var minLevels = minLevels || MIN_LEVELS_OUTLIERS;
+            var minLevels = MIN_LEVELS_OUTLIERS;
             for (var team in teams) {
                 var lastLevel = this.markCompletedLevels(teams[team]);
-                if (lastLevel < 0 || LEVELS[lastLevel] < minLevels) {
+                if (lastLevel < 0 || this.levels[lastLevel] < minLevels) {
                     delete teams[team];
                 }
             }
@@ -86,7 +83,7 @@ YUI.add('pact-stats', function (Y) {
                 prevLevel = -1,
                 prevLevelEnd = -1,
                 i;
-            for (var level in LEVELS) {
+            for (var level in this.levels) {
                 completed = this.indexOf(team, "completed", PROGGAME_LEVEL_PREFIX + level, completed);
                 if (completed > 0) {
                     for (i = prevLevelEnd+1; i <= completed; i++) {
@@ -227,26 +224,26 @@ YUI.add('pact-stats', function (Y) {
                 }
             }
             var stdev = Math.sqrt(sumSq / nb);
-            return { sum: total, mean: avg, stdev: stdev };
+            return { card: nb, sum: total, mean: avg, stdev: stdev };
         },
 
         // Convenience function to store digest of 'column' of 'inputTable' into 'target'
         digestAndStoreColumn: function(inputTable, column, target) {
             var digestObj = this.digestColumn(inputTable, column);
             target.Sum[column] = digestObj.sum;
-            target.Mean[column] = digestObj.mean.toFixed(2);
-            target.Stdev[column] = digestObj.stdev.toFixed(2);
+            target.Mean[column] = digestObj.card !== 0 ? digestObj.mean.toFixed(2) : '';
+            target.Stdev[column] = digestObj.card !== 0 ? digestObj.stdev.toFixed(2) : '';
         },
             
         addCounters: function (teams, outputTable) {
             var currError, lvl, colIsOdd = true;
             
             this.teamsOutputHeaders.push("Submits", "Syntax errs", "Semantic errs", "Successes");
-            this.teamsOutputColgroups.push({ span: 5, style: "background: white" });
-            for (lvl in LEVELS) {
-                var strLvl = lvl/10;
+            this.teamsOutputColgroups.push({ span: 5, clazz: "even" });
+            for (lvl in this.levels) {
+                var strLvl = (lvl/10).toFixed(1);
                 this.teamsOutputHeaders.push("Submits "+strLvl, "Synt. "+strLvl, "Sem. "+strLvl);
-                this.teamsOutputColgroups.push({ span: 3, style: (colIsOdd ? "background: #ddd;" : "background: #fff") });
+                this.teamsOutputColgroups.push({ span: 3, clazz: (colIsOdd ? "odd" : "even") });
                 colIsOdd = !colIsOdd;
             }
 
@@ -257,7 +254,7 @@ YUI.add('pact-stats', function (Y) {
                 outputTable[team].semanticErrors = currError.semanticErrors;
                 outputTable[team].successes = currError.successes;
                 
-                for (lvl in LEVELS) {
+                for (lvl in this.levels) {
                     currError = this.countSubmissionsForLevel(teams[team], lvl);
                     outputTable[team]["submits"+lvl] = currError.submissions;
                     outputTable[team]["syntaxErrors"+lvl] = currError.syntaxErrors;
@@ -270,7 +267,7 @@ YUI.add('pact-stats', function (Y) {
             this.digestAndStoreColumn(outputTable, "semanticErrors", this.teamsTableBottom);
             this.digestAndStoreColumn(outputTable, "successes", this.teamsTableBottom);
 
-            for (lvl in LEVELS) {
+            for (lvl in this.levels) {
                 this.digestAndStoreColumn(outputTable, "submits"+lvl, this.teamsTableBottom);
                 this.digestAndStoreColumn(outputTable, "syntaxErrors"+lvl, this.teamsTableBottom);
                 this.digestAndStoreColumn(outputTable, "semanticErrors"+lvl, this.teamsTableBottom);
@@ -279,7 +276,7 @@ YUI.add('pact-stats', function (Y) {
         
         prepareOutputTable: function(teams) {
             var teamsOutput = {};
-            this.teamsOutputHeaders = ["Team"];
+            this.teamsOutputHeaders = ["Joueur"];
             this.teamsOutputColgroups = [];
             this.teamsTableBottom = {
                 Sum : {},
@@ -297,7 +294,7 @@ YUI.add('pact-stats', function (Y) {
             var str = "<table><colgroup>";
             for (var g in this.teamsOutputColgroups) {
                 var gConf = this.teamsOutputColgroups[g];
-                str += '<col span="' + gConf.span + '" style="' + gConf.style + '">';
+                str += '<col span="' + gConf.span + '" class="' + gConf.clazz + '">';
             }
             str += "</colgroup>";
             // Generate Headers
@@ -328,12 +325,66 @@ YUI.add('pact-stats', function (Y) {
                 str += "</tr>";
             }
             str += "</tfoot></table>";
-            Y.one(".pact-stats-widget").setStyle('padding','10px').setStyle('text-align','right');
-            Y.one(".pact-stats-widget").setHTML(str);
+            Y.one(PACT_STATS_CLASS).append(str);
         },
         
+        abort: function(msg) {
+            Y.one(PACT_STATS_CLASS).setHTML("<p>" + msg + "</p>");
+            throw new Exception(msg);
+        },
+
+        getGameLevels: function () {
+            var ctx = this;
+            return new Y.Promise(function(resolve) {
+                Y.Wegas.Facade.Variable.script.remoteEval(
+                    'gameModel.getPages();',
+                    {
+                        on: {
+                            success: function(res) {
+                                var pages = JSON.parse(res.data.response),
+                                    levels = {},
+                                    nbPages = 0,
+                                    currPageNo = 0;
+                                if (pages) {
+                                    pages = pages.updatedEntities[0];
+                                    // Find the first game level page (normally 10 or 11)
+                                    for (var p in pages) {
+                                        var page = pages[p];
+                                        if (page.type === "ProgGameLevel") {
+                                            currPageNo = +p;
+                                            break;
+                                        }
+                                    }
+                                    if (currPageNo){
+                                        do {
+                                            nbPages++;
+                                            levels[currPageNo] = nbPages;
+                                            // Make sure object keys are numbers to enable later iteration in increasing order
+                                            currPageNo = +pages[currPageNo].onWin;
+                                        } while (currPageNo !== undefined && currPageNo < 900);
+                                        ctx.levels = levels;
+                                        var liste = '';
+                                        for (var lvl in levels) {
+                                            liste += (lvl/10).toFixed(1) + ' &nbsp;';
+                                        }
+                                        Y.one(PACT_STATS_CLASS).append("Niveaux actifs dans ce jeu : " + liste + '<div style="margin-bottom:10px;">&nbsp;</div>');
+                                        resolve("got levels");
+                                    } else {
+                                        ctx.abort("Impossible de trouver les pages de jeu");
+                                    }
+                                }
+                            },
+                            failure: function() {
+                                ctx.abort("Problème de comm avec le serveur");
+                            }
+                        }
+                    }
+                );
+            });
+        },
+
         initializer: function () {
-            if (Y.one("body.wegas-hostmode")) {
+            this.getGameLevels().then(Y.bind(function() {
                 var owner = {
                     name: "Game",
                     id: Y.Wegas.Facade.Game.cache.getCurrentGame().get("id")
@@ -349,40 +400,47 @@ YUI.add('pact-stats', function (Y) {
                             this.datatable = this.csv2obj(response);
                             this.shortenVerbs(this.datatable);
                             this.teams = this.splitTeams(this.datatable);
+                            if (Object.keys(this.teams).length === 0) {
+                                this.abort("Aucun joueur n'a commencé");
+                            }
                             this.teams = this.removeOutliers(this.teams);
+                            if (Object.keys(this.teams).length === 0) {
+                                this.abort("Aucun joueur n'a suffisamment avancé pour produire des statistiques utiles");
+                            }
                             this.checkTimestamps(this.teams);
                             this.teamsOutput = this.prepareOutputTable(this.teams);
                             this.addCounters(this.teams, this.teamsOutput);
                             this.genOutput(this.teamsOutput);
                         }, this),
                         failure: function () {
-                            alert("Could not load session statistics");
+                            this.abort("Appel REST échoué pour obtenir les logs");
                         }
                     }
                 });
-            }
-            this.download(ANNOTATED_FILENAME, callback);
+                // @TODO charger les annotations permettant de corriger les stats:
+                this.download(ANNOTATED_FILENAME, this.csv2obj);
+            }, this));
         },
-        
-        download: function(url, callback) {
+
+        download: function(url, callbackF) {
             var cfg = {
                     method: "GET"
                 },
                 handler, request;
-            function onComplete(transactionId, responseObject, callback) {
+            function onComplete(transactionId, responseObject, e) {
                 handler.detach();
                 if (responseObject.status === 200) {
                     this.source = responseObject.responseText;
-                    Y.bind(callback, this)();
+                    Y.bind(callbackF, this)();
                 } else {
-                    alert("Erreur " + responseObject.status + " lors du chargement du fichier source");
+                    Y.log("Erreur " + responseObject.status + " lors du chargement du fichier annoté");
                 }
             }
-            handler = Y.on('io:complete', onComplete, this, callback);
+            handler = Y.on('io:complete', onComplete, this, callbackF);
             request = Y.io(url, cfg);
         },
 
-        
+
         csv2obj: function (csv) {
             var lines = this.CSVToArray(csv),
                 result = [],

@@ -66,11 +66,10 @@
 
     Y.namespace("Wegas.Config").ExtraTabs = [
         {
-            label: "PactStats",
+            label: "Stats de base",
+            targetMode: "host",
             children: [{
-                type: "PageLoader",
-                pageLoaderId: "properties",
-                defaultPageId: 8 // Numéro de page 
+                type: "PactStats"
             }]
         }
     ];
