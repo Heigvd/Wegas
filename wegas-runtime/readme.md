@@ -6,26 +6,20 @@
 
 #### Install
 ```shell
-docker run -p 5432 --name wegas_postgres -d postgres:11-alpine 
+docker run -d -p 5432:5432 --name wegas_postgres -d postgres:11-alpine 
 ```
 
 #### Configure
 ```shell
 echo "CREATE USER \"user\" WITH PASSWORD '1234' SUPERUSER;
-CREATE DATABASE "wegas_dev";
-CREATE DATABASE "wegas_test";" | sudo -u postgres psql
+CREATE DATABASE \"wegas_dev\" OWNER \"user\";
+CREATE DATABASE \"wegas_test\" OWNER \"user\";" | sudo -u postgres psql
 ```
 
 ### Jackrabbit backend (MongoDB)
 #### Install
 ```shell
-docker run -p 27017 --name wegas_mongo -d mongo:4.0.11
-```
-
-### Neo4J
-#### Install
-```shell
-docker run -p 7687 --name wegas_neo4j -d --env NEO4J_AUTH=neo4j/1234 neo4j:3.1.2
+docker run -p 27017:27017 --name wegas_mongo -d mongo:4.0.11
 ```
 
 ## Build
