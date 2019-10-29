@@ -6,15 +6,16 @@ import SrcEditor, {
 } from './SrcEditor';
 import { EditorProps } from './SrcEditor';
 import { useStore } from '../../../data/store';
+import { shallowDifferent, deepDifferent } from '../../../data/connectStore';
+import { State } from '../../../data/Reducer/reducers';
+import { KeyMod, KeyCode } from 'monaco-editor';
 
 // using raw-loader works but you need to put the whole file name and ts doesn't like it
 // @ts-ignore
 import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasScriptableEntities.d.ts';
-import { wlog } from '../../../Helper/wegaslog';
-import { shallowDifferent, deepDifferent } from '../../../data/connectStore';
-import { State } from '../../../data/Reducer/reducers';
 
 type MonacoEditorCursorEvent = import('monaco-editor').editor.ICursorSelectionChangedEvent;
+type MonacoEditorRange = import('monaco-editor').IRange;
 
 type PrimitiveTypeName =
   | 'boolean'
@@ -70,9 +71,14 @@ const formatScriptToFunction = (
 export function WegasScriptEditor(props: WegasScriptEditorProps) {
   const { defaultValue, value, returnType } = props;
   let editorLock: ((editor: MonacoSCodeEditor) => void) | undefined = undefined;
-  // let functionValue: string | undefined = undefined;
   const editorRef = React.useRef<MonacoSCodeEditor>();
-  // const valueRef = React.useRef<string>();
+  // const [currentSelection, setSelection] = React.useState<MonacoEditorRange>();
+  const selectionRef = React.useRef<MonacoEditorRange>({
+    startColumn: 1,
+    endColumn: 1,
+    startLineNumber: headerSize,
+    endLineNumber: headerSize,
+  });
   const [currentValue, setCurrentValue] = React.useState<string>(
     defaultValue || value || '',
   );
@@ -148,7 +154,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
           );
           if (lastReturnIndex > -1) {
             newLines[lastReturnIndex] = newLines[lastReturnIndex].replace(
-              /(\t| )*(return )/,
+              /(\n|\t| )*(return )/,
               '',
             );
           }
@@ -192,58 +198,23 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   if (returnType !== undefined) {
     editorLock = (editor: MonacoSCodeEditor) => {
       editorRef.current = editor;
-      // functionValue && onChange(functionValue);
-      // Allow to make some lines of the editor readonly
+      // Allow to make lines of the editor readonly
       editor.onDidChangeCursorSelection((e: MonacoEditorCursorEvent) => {
-        const textLines = textToArray(editor.getValue()).length;
-        const trimStartUp = e.selection.startLineNumber < headerSize;
-        const trimStartDown =
-          e.selection.startLineNumber > textLines - footerSize;
-        const trimEndUp = e.selection.endLineNumber < headerSize;
-        const trimEndDown = e.selection.endLineNumber > textLines - footerSize;
+        if (deepDifferent(selectionRef.current, e.selection)) {
+          const textLines = textToArray(editor.getValue()).length;
+          const trimStartUp = e.selection.startLineNumber < headerSize;
+          const trimStartDown =
+            e.selection.startLineNumber > textLines - footerSize;
+          const trimEndUp = e.selection.endLineNumber < headerSize;
+          const trimEndDown =
+            e.selection.endLineNumber > textLines - footerSize;
 
-        wlog(`Start onDidChangeCursorSelection event`);
-        wlog(`Current limits => [${headerSize},${textLines - footerSize}]`);
-        wlog(
-          `Current selection => [${e.selection.startLineNumber},${e.selection.endLineNumber}]`,
-        );
-        wlog(
-          `Selection modifiers => [[${trimStartUp},${trimStartUp}],[${trimEndUp},${trimEndDown}]]`,
-        );
-
-        if (trimStartUp || trimStartDown || trimEndUp || trimEndDown) {
-          let startLine = e.selection.startLineNumber;
-          let endLine = e.selection.endLineNumber;
-
-          if (trimStartUp) {
-            startLine = headerSize;
-          } else if (trimStartDown) {
-            startLine = textLines - footerSize;
-          }
-
-          if (trimEndUp) {
-            endLine = headerSize;
-          } else if (trimEndDown) {
-            endLine = textLines - footerSize;
-          }
-
-          wlog(`New selection => [${startLine},${endLine}]`);
-
-          editor.setSelection({
-            ...e.selection,
-            startLineNumber: startLine,
-            endLineNumber: endLine,
-          });
-
-          const editorPosition = editor.getPosition();
-          if (editorPosition) {
-            editor.setPosition({
-              column: editorPosition.column,
-              lineNumber: endLine,
-            });
+          if (trimStartUp || trimStartDown || trimEndUp || trimEndDown) {
+            editor.setSelection(selectionRef.current);
+          } else {
+            selectionRef.current = e.selection;
           }
         }
-        wlog(`End onDidChangeCursorSelection event\n\n`);
       });
     };
   }
@@ -255,11 +226,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       language={'typescript'}
       extraLibs={[
         {
-          content: entitiesSrc,
-          name: 'ScriptableEntites.d.ts',
-        },
-        {
-          content: libContent,
+          content: entitiesSrc + libContent,
           name: 'VariablesTypes.d.ts',
         },
       ]}
@@ -268,6 +235,25 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       onChange={val => trimFunctionToScript(val, props.onChange)}
       onBlur={val => trimFunctionToScript(val, props.onBlur)}
       onSave={val => trimFunctionToScript(val, props.onSave)}
+      defaultActions={[
+        {
+          id: 'SelectAllWithScriptFunction',
+          label: 'Ctrl + A avoiding header and footer',
+          keybindings: [KeyMod.CtrlCmd | KeyCode.KEY_A],
+          run: (_monaco, editor) => {
+            const editorLines = textToArray(editor.getValue());
+            const lastEditableLine =
+              textToArray(editor.getValue()).length - footerSize;
+            const range = {
+              startColumn: 1,
+              endColumn: editorLines[lastEditableLine - 1].length,
+              startLineNumber: headerSize,
+              endLineNumber: lastEditableLine,
+            };
+            editor.setSelection(range);
+          },
+        },
+      ]}
     />
   );
 }

@@ -38,7 +38,6 @@ const testScript =
 export default function PlayLocal() {
   const [script, setScript] = React.useState(testScript);
   const debouncedScript = useDebounce(script, 300);
-
   return (
     <div className={container}>
       <div className={editor}>
