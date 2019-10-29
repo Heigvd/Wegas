@@ -575,6 +575,10 @@ YUI.add('wegas-dashboard', function(Y) {
                             var fallback = false;
                             if (def.kind) {
                                 if (def.kind === "boolean") {
+                                    if (o.column.valueTransformer) {
+                                        o.value = o.column.valueTransformer.call(this, o.value);
+                                    }
+
                                     if (def.preventClick) {
                                         o.cell.setHTML("<span class=\"bloc__value bloc__boolean\">" + (o.value ? "✔" : "✕") + "</span>");
                                     } else {
