@@ -21,6 +21,7 @@ doc/Wegas.uml~
 
 # NetBean Files #
 #################
+**/nbproject
 faces-config.NavData
 nb-configuration.xml
 #nbactions.xml
