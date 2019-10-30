@@ -1,22 +1,39 @@
 package com.wegas.processor;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.beans.IntrospectionException;
+import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import javax.json.Json;
+import javax.json.JsonMergePatch;
+import javax.json.JsonValue;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -30,11 +47,15 @@ import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.editor.Schema;
 import com.wegas.editor.Schemas;
+import com.wegas.editor.ValueGenerators;
+import com.wegas.editor.ValueGenerators.Undefined;
+import com.wegas.editor.Visible;
 import com.wegas.editor.JSONSchema.JSONArray;
 import com.wegas.editor.JSONSchema.JSONBoolean;
 import com.wegas.editor.JSONSchema.JSONExtendedSchema;
@@ -47,28 +68,9 @@ import com.wegas.editor.JSONSchema.JSONType;
 import com.wegas.editor.JSONSchema.JSONUnknown;
 import com.wegas.editor.JSONSchema.JSONWRef;
 import com.wegas.editor.JSONSchema.UndefinedSchema;
-import com.wegas.editor.ValueGenerators;
-import com.wegas.editor.ValueGenerators.Undefined;
 import com.wegas.editor.View.CommonView;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.View;
-import com.wegas.editor.Visible;
-import java.beans.Introspector;
-import java.io.StringReader;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import javax.json.Json;
-import javax.json.JsonMergePatch;
-import javax.json.JsonValue;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -99,12 +101,17 @@ public class SchemaGenerator extends AbstractMojo {
      */
     @Parameter(defaultValue = "${project.build.directory}/generated/schema", property = "schema.output", required = true)
     private File outputDirectory;
+
     @Parameter(defaultValue = "${project.build.directory}/generated/typings", property = "schema.typings", required = true)
     private File outputTypings;
+
+    @Parameter(defaultValue = "${project.build.directory}/generated/scriptables", property = "schema.scriptables", required = true)
+    private File outputScriptables;
 
     @Parameter(property = "schema.pkg", required = true)
     private String[] pkg;
     private final Map<String, String> tsInterfaces;
+    private final Map<String, String> tsScriptableInterfaces;
     private final Map<String, String> inheritance;
 
     public SchemaGenerator() {
@@ -121,6 +128,7 @@ public class SchemaGenerator extends AbstractMojo {
         this.classFilter = cf;
 
         this.tsInterfaces = new HashMap<>();
+        this.tsScriptableInterfaces = new HashMap<>();
         this.inheritance = new HashMap<>();
     }
 
@@ -221,19 +229,19 @@ public class SchemaGenerator extends AbstractMojo {
         return atClass;
     }
 
-    private String getTsInterfaceName(String className, Map<String, String> genericity) {
+    private String getTsInterfaceName(String className, Map<String, String> genericity, String suffix) {
         try {
             Class<?> forName = Class.forName(className);
             if (Mergeable.class.isAssignableFrom(forName)) {
-                return getTsInterfaceName((Class<? extends Mergeable>) forName, genericity);
+                return getTsInterfaceName((Class<? extends Mergeable>) forName, genericity, suffix);
             }
         } catch (ClassNotFoundException ex) {
         }
         throw WegasErrorMessage.error(className + " not found");
     }
 
-    private String getTsInterfaceName(Class<? extends Mergeable> klass, Map<String, String> genericity) {
-        String tsName = "I" + Mergeable.getJSONClassName(klass);
+    private String getTsInterfaceName(Class<? extends Mergeable> klass, Map<String, String> genericity, String suffix) {
+        String tsName = suffix + Mergeable.getJSONClassName(klass);
         if (genericity != null) {
             if (genericity.containsKey(tsName)) {
                 return genericity.get(tsName);
@@ -292,13 +300,15 @@ public class SchemaGenerator extends AbstractMojo {
         }
     }
 
-    private void generateTsInterface(WegasEntityFields wEF, Map<Method, WegasExtraProperty> extraProperties) {
+    private void generateTsInterface(WegasEntityFields wEF, Map<Method, WegasExtraProperty> extraProperties, boolean generateScriptableTSClass) {
         Class<? extends Mergeable> c = wEF.getTheClass();
 
         boolean isAbstract = Modifier.isAbstract(c.getModifiers());
 
         StringBuilder sb = new StringBuilder();
-        sb.append("interface ").append(getTsInterfaceName(c, null));
+        String interfaceSuffix = generateScriptableTSClass ? "IS" : "I";
+        String initSequence = generateScriptableTSClass ? "export class " : "interface ";
+        sb.append("interface ").append(getTsInterfaceName(c, null, interfaceSuffix));
         // classname to paramter type map (eg. VariableInstance -> T)
         Map<String, String> genericity = new HashMap<>();
         List<String> genericityOrder = new ArrayList<>();
@@ -328,7 +338,7 @@ public class SchemaGenerator extends AbstractMojo {
                 if (!isAbstract) {
                     sb.append("WithoutAtClass<");
                 }
-                sb.append(getTsInterfaceName((Class<? extends Mergeable>) c.getSuperclass(), null));
+                sb.append(getTsInterfaceName((Class<? extends Mergeable>) c.getSuperclass(), null, interfaceSuffix));
 
                 Type[] gTypes = c.getSuperclass().getTypeParameters();
                 if (gTypes != null && gTypes.length > 0) {
@@ -386,14 +396,29 @@ public class SchemaGenerator extends AbstractMojo {
             sb.append(entry.getValue());
         }
 
+        if(generateScriptableTSClass){
+            Map<String, ScriptableMethod> allMethods = new HashMap<>();
+            allMethods.putAll(Arrays.stream(c.getMethods())
+            .filter(m -> m.isAnnotationPresent(Scriptable.class) && !m.isBridge())
+            .collect(Collectors.toMap((Method m) -> m.getName(), ScriptableMethod::new)));
+
+            generateMethods(sb,allMethods,null,c,false);
+        }
+
         sb.append("}\n");
 
         if (dryRun) {
             System.out.println(c.getSimpleName() + ":");
             System.out.println(sb);
         } else {
-            String iName = getTsInterfaceName(c, null);
-            tsInterfaces.put(iName, "/*\n * " + iName + "\n */\n" + sb + "\n");
+            String iName = getTsInterfaceName(c, null, interfaceSuffix);
+            String iContent =  "/*\n * " + iName + "\n */\n" + sb + "\n";
+            if(generateScriptableTSClass){
+                tsScriptableInterfaces.put(iName, iContent);
+            }
+            else{
+                tsInterfaces.put(iName, iContent);
+            }
         }
 
     }
@@ -502,11 +527,24 @@ public class SchemaGenerator extends AbstractMojo {
         }
     }
 
-    /**
-     *
-     */
-    private void writeTsInterfacesToFile() {
+    private void writeInterfacesToFile(StringBuilder sb, Map<String, String> interfaces, String fileName) {
+        interfaces.keySet().stream().sorted().map(interfaces::get).forEach(sb::append);
 
+        this.otherObjectsTypeD.forEach((klass, typeDef) -> {
+            sb.append("/*\n * ").append(((Class) klass).getSimpleName()).append("\n */\n");
+            sb.append(typeDef).append("\n");
+        });
+
+        File f = new File(outputTypings, fileName);
+
+        try (FileWriter fw = new FileWriter(f)) {
+            fw.write(sb.toString());
+        } catch (IOException ex) {
+            getLog().error("Failed to write " + f.getAbsolutePath(), ex);
+        }
+    }
+
+    private void writeTsInterfacesToFile() {
         StringBuilder sb = new StringBuilder();
 
         sb.append("/**\n" + " * Remove specified keys.\n" + " */\n" + "type WithoutAtClass<Type> = Pick<\n"
@@ -521,19 +559,109 @@ public class SchemaGenerator extends AbstractMojo {
                 .append("  readonly parentId?: number;\n")
                 .append("}\n");
 
-        tsInterfaces.keySet().stream().sorted().map(tsInterfaces::get).forEach(sb::append);
+        writeInterfacesToFile(sb,tsInterfaces, "WegasEntities.d.ts");
+    }
 
-        this.otherObjectsTypeD.forEach((klass, typeDef) -> {
-            sb.append("/*\n * ").append(((Class) klass).getSimpleName()).append("\n */\n");
-            sb.append(typeDef).append("\n");
+    private void writeTsScriptableInterfacesToFile() {
+        StringBuilder sb = new StringBuilder();
+
+        /**
+         * Creating ts type allowing all of scriptable WegasEntities names
+         */
+        sb.append("type ScriptableInterfaceName = ");
+        ArrayList<String> intKeys = new ArrayList<String>(tsScriptableInterfaces.keySet());
+        intKeys.forEach(key -> {
+            sb.append(System.lineSeparator())
+                .append("  | ")
+                .append("'" + key + "'");
         });
+        sb.append(";")
+            .append(System.lineSeparator())
+            .append(System.lineSeparator());
 
-        File f = new File(outputTypings, "WegasEntities.d.ts");
+        /**
+         * Creating all interfaces with callable methods for scripts
+         */
+        writeInterfacesToFile(sb,tsScriptableInterfaces, "WegasScriptableEntities.d.ts");
+    }
 
-        try (FileWriter fw = new FileWriter(f)) {
-            fw.write(sb.toString());
-        } catch (IOException ex) {
-            getLog().error("Failed to write " + f.getAbsolutePath(), ex);
+    private void generateMethods(StringBuilder builder, Map<String, ScriptableMethod> methods, Map<String, List<String>> imports, Class<? extends Mergeable> klass, boolean implementation){
+        methods.forEach((k, v) -> {
+            Method method = v.m;
+            String from = method.getDeclaringClass().getSimpleName();
+            String methodName = method.getName();
+
+            if(imports != null){
+                imports.putIfAbsent(from, new ArrayList<>());
+                imports.get(from).add(methodName);    
+            }
+
+            if(implementation){
+                builder.append("  public ");
+            }
+            else{
+                builder.append("  ");
+            }
+            builder.append(methodName).append("(");
+            Arrays.stream(method.getParameters()).forEach(p -> {
+                Type type = p.getParameterizedType();
+                Type reified = TypeResolver.reify(type, method.getDeclaringClass());
+                builder.append(p.getName()).append(": ").append(javaToTSType(reified, null));
+                builder.append(", ");
+            });
+            builder.append(")");
+
+            Type genericReturnType = method.getGenericReturnType();
+            Type reified = TypeResolver.reify(genericReturnType, klass);
+            String tsReturnType = javaToTSType(reified, null);
+
+            builder.append(" : Readonly<").append(tsReturnType).append(">");
+
+            if(implementation){
+                builder.append(" {").append(System.lineSeparator());
+                builder.append("    return ").append(methodName).append("({} as any)(");
+                Arrays.stream(method.getParameters()).forEach(p -> builder.append(p.getName()).append(","));
+                builder.append(") as Readonly<").append(tsReturnType).append(">;").append(System.lineSeparator());
+                builder.append("  }").append(System.lineSeparator());
+            }
+            else{
+                builder.append(";").append(System.lineSeparator());
+            }
+        });
+    }
+
+    private String getTsScriptableClass(Class<? extends Mergeable> klass, Map<String, ScriptableMethod> methods) {
+        String className = this.baseFileName(klass);
+
+        Map<String, List<String>> imports = new HashMap<>();
+
+        StringBuilder script = new StringBuilder();
+        script.append("class ").append(className).append("Method")
+                .append(" {").append(System.lineSeparator());
+
+        generateMethods(script,methods,imports,klass,true);
+
+        script.append("}");
+        script.append(System.lineSeparator());
+        script.append(System.lineSeparator());
+
+        script.append("export type Scriptable").append(className) // <- exported type
+                .append(" = ").append(className).append("Method & I").append(className).append(";");
+
+        if (imports.isEmpty()) {
+            return script.toString();
+        } else {
+            StringBuilder ret = new StringBuilder();
+
+            imports.forEach((from, list) -> {
+                ret.append("import {");
+                list.forEach(i -> ret.append(i).append(", "));
+                ret.append("} from '../../proxyfy/methods/").append(from).append("';").append(System.lineSeparator());
+            });
+
+            return ret.toString()
+                    + System.lineSeparator()
+                    + script;
         }
     }
 
@@ -542,7 +670,7 @@ public class SchemaGenerator extends AbstractMojo {
         Set<Class<? extends Mergeable>> classes;
 
         if (!dryRun) {
-            pkg = new String[] { "com.wegas" };
+            pkg = new String[]{"com.wegas"};
             classes = new Reflections((Object[]) pkg).getSubTypesOf(Mergeable.class);
 
             if (outputDirectory.isFile()) {
@@ -551,9 +679,14 @@ public class SchemaGenerator extends AbstractMojo {
             if (outputTypings.isFile()) {
                 throw new MojoExecutionException(outputTypings.getAbsolutePath() + " is not a directory");
             }
+            if (outputScriptables.isFile()) {
+                throw new MojoExecutionException(outputScriptables.getAbsolutePath() + " is not a directory");
+            }
+
             getLog().info("Writing to " + outputDirectory.getAbsolutePath());
             outputDirectory.mkdirs();
             outputTypings.mkdirs();
+            outputScriptables.mkdirs();
         } else {
             getLog().info("DryRun: do not generate any files");
             classes = new HashSet<>(Arrays.asList(this.classFilter));
@@ -573,7 +706,8 @@ public class SchemaGenerator extends AbstractMojo {
                 WegasEntityFields wEF = new WegasEntityFields(c);
 
                 final Config config = new Config();
-                Map<String, ScriptableMethod> methods = config.getMethods();
+                Map<String, ScriptableMethod> allMethods = new HashMap<>();
+                Map<String, ScriptableMethod> schemaMethods = config.getMethods();
 
                 Map<Method, WegasExtraProperty> allExtraProperties = new HashMap<>();
                 Map<Method, WegasExtraProperty> extraProperties = new HashMap<>();
@@ -600,7 +734,12 @@ public class SchemaGenerator extends AbstractMojo {
                     /*
                      * Generate TS interface for classes only
                      */
-                    this.generateTsInterface(wEF, extraProperties);
+                    this.generateTsInterface(wEF, extraProperties, false);
+                    /*
+                     * Generate TS interface for proxy classes
+                     */
+                    this.generateTsInterface(wEF, extraProperties, true);
+
                 }
                 this.generateInheritanceTable(wEF);
 
@@ -608,11 +747,18 @@ public class SchemaGenerator extends AbstractMojo {
                  * Process all public methods (including inherited ones)
                  */
                 // abstract classes too ? restrict ton concretes ??
-                methods.putAll(Arrays.stream(c.getMethods())
-                        // brige: methods duplicated when return type is overloaded (see
+                allMethods.putAll(Arrays.stream(c.getMethods())
+                        // brige: schemaMethods duplicated when return type is overloaded (see
                         // PrimitiveDesc.getValue)
                         .filter(m -> m.isAnnotationPresent(Scriptable.class) && !m.isBridge())
                         .collect(Collectors.toMap((Method m) -> m.getName(), ScriptableMethod::new)));
+
+                // schema should only contains wysiwyg methods
+                allMethods.forEach((k, v) -> {
+                    if (v.m.getAnnotation(Scriptable.class).wysiwyg()) {
+                        schemaMethods.put(k, v);
+                    }
+                });
 
                 /**
                  * Generate JSON Schema : Process all fields (including inherited ones)
@@ -669,26 +815,35 @@ public class SchemaGenerator extends AbstractMojo {
                     }
 
                     // Write
-                    String fileName = jsonFileName(c);
+                    String jsonFileName = jsonFileName(c);
+                    String classFileName = scriptableClassFileName(c);
 
-                    if (jsonBuiltFileNames.containsKey(fileName)) {
+                    if (jsonBuiltFileNames.containsKey(jsonFileName)) {
                         // At that point seems we have duplicate "@class"
-                        getLog().error("Duplicate file name " + fileName + "classes "
-                                + jsonBuiltFileNames.get(fileName) + " <> " + c.getName());
+                        getLog().error("Duplicate file name " + jsonFileName + "classes "
+                                + jsonBuiltFileNames.get(jsonFileName) + " <> " + c.getName());
                         return;
                     }
-                    jsonBuiltFileNames.put(fileName, wEF.getTheClass().getName());
+                    jsonBuiltFileNames.put(jsonFileName, wEF.getTheClass().getName());
 
                     if (!dryRun) {
-                        File f = new File(outputDirectory, fileName);
+                        File f = new File(outputDirectory, jsonFileName);
                         try (FileWriter fw = new FileWriter(f)) {
                             fw.write(configToString(config, patches));
                         } catch (IOException ex) {
                             getLog().error("Failed to write " + f.getAbsolutePath(), ex);
                         }
+                        File f2 = new File(outputScriptables, classFileName);
+                        try (FileWriter fw = new FileWriter(f2)) {
+                            fw.write(getTsScriptableClass(c, allMethods));
+                        } catch (IOException ex) {
+                            getLog().error("Failed to write " + f.getAbsolutePath(), ex);
+                        }
                     } else {
-                        System.out.println(fileName);
+                        System.out.println(jsonFileName);
                         System.out.println(configToString(config, patches));
+                        System.out.println(classFileName);
+                        System.out.println(getTsScriptableClass(c, allMethods));
                     }
                 }
             } catch (NoClassDefFoundError nf) {
@@ -701,6 +856,7 @@ public class SchemaGenerator extends AbstractMojo {
 
         if (!dryRun) {
             writeTsInterfacesToFile();
+            writeTsScriptableInterfacesToFile();
             writeInheritanceToFile();
         }
     }
@@ -711,7 +867,6 @@ public class SchemaGenerator extends AbstractMojo {
             Class<? extends JSONSchema> schemaOverride,
             String name, View view, List<Errored> erroreds,
             Visible visible,
-
             boolean optional,
             boolean nullable,
             Class<? extends ValueGenerators.ValueGenerator> proposal,
@@ -786,6 +941,10 @@ public class SchemaGenerator extends AbstractMojo {
 
     private String jsonFileName(Class<? extends Mergeable> cls) {
         return this.baseFileName(cls) + ".json";
+    }
+
+    private String scriptableClassFileName(Class<? extends Mergeable> cls) {
+        return this.baseFileName(cls) + ".ts";
     }
 
     private String baseFileName(Class<? extends Mergeable> cls) {
@@ -877,33 +1036,35 @@ public class SchemaGenerator extends AbstractMojo {
         }
 
         if (type instanceof Class) {
+            String className = ((Class) type).getSimpleName();
             if (otherObjectsTypeD.containsKey(type)) {
-                return ((Class) type).getSimpleName();
+                return className;
             } else if (new TypeToken<Mergeable>() {
             }.isSupertypeOf(type)) {
-                return getTsInterfaceName((Class<? extends Mergeable>) type, genericity);
+                return getTsInterfaceName((Class<? extends Mergeable>) type, genericity, "I");
             } else {
-                String typeDef = "interface " + ((Class) type).getSimpleName() + "{\n";
-                for (Field f : ((Class<?>) type).getDeclaredFields()) {
-                    PropertyDescriptor propertyDescriptor;
-                    try {
-                        propertyDescriptor = new PropertyDescriptor(f.getName(), f.getDeclaringClass());
-                    } catch (IntrospectionException e) {
-                        continue;
+                if(className != "void"){
+                    String typeDef = "interface " + className + "{\n";
+                    for (Field f : ((Class<?>) type).getDeclaredFields()) {
+                        PropertyDescriptor propertyDescriptor;
+                        try {
+                            propertyDescriptor = new PropertyDescriptor(f.getName(), f.getDeclaringClass());
+                        } catch (IntrospectionException e) {
+                            continue;
+                        }
+                        typeDef += "  " + f.getName() + ": "
+                                + javaToTSType(propertyDescriptor.getReadMethod().getGenericReturnType(), genericity) + ";\n";
                     }
-                    typeDef += "  " + f.getName() + ": "
-                            + javaToTSType(propertyDescriptor.getReadMethod().getGenericReturnType(), genericity) + ";\n";
+                    typeDef += "}\n";
+                    otherObjectsTypeD.put(type, typeDef);
                 }
-                typeDef += "}\n";
-                otherObjectsTypeD.put(type, typeDef);
-
-                return ((Class) type).getSimpleName();
+                return className;
             }
         }
         if (type instanceof ParameterizedType) {
             ParameterizedType pType = (ParameterizedType) type;
             String typeName = pType.getRawType().getTypeName();
-            return getTsInterfaceName(typeName, genericity);
+            return getTsInterfaceName(typeName, genericity, "I");
         }
         return "undef";
     }
@@ -1041,7 +1202,7 @@ public class SchemaGenerator extends AbstractMojo {
                     returns = "boolean";
                 } else {
                     returns = "undef";
-                    getLog().error("Unknow return type " + m, null);
+                    getLog().error("Unknown return type " + m);
                     // TODO: throw error
                 }
             } else {
@@ -1097,7 +1258,7 @@ public class SchemaGenerator extends AbstractMojo {
     }
 
     /**
-     * JSONShemas for attributes and methods
+     * JSONShemas for attributes and schemaMethods
      */
     private static class Config {
 
@@ -1128,7 +1289,7 @@ public class SchemaGenerator extends AbstractMojo {
      * @throws MojoExecutionException
      */
     public static final void main(String... args) throws MojoExecutionException {
-        SchemaGenerator wenerator = new SchemaGenerator(true, ListDescriptor.class);
+        SchemaGenerator wenerator = new SchemaGenerator(true, NumberDescriptor.class, AaiAccount.class);
         wenerator.execute();
     }
 }

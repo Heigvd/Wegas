@@ -2,16 +2,15 @@ import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
 import { css } from 'emotion';
 import { Modal } from '../../../Components/Modal';
-import SrcEditor from './SrcEditor';
+import SrcEditor, { MonacoEditor, MonacoCodeEditor } from './SrcEditor';
 import { KeyMod, KeyCode } from 'monaco-editor';
 import {
   StyledLabel,
   LabelStyle,
 } from '../../../Components/AutoImport/String/Label';
-import { store } from '../../../data/store';
-// using raw-loader works but you need to put the whole file name and ts doesn't like it
-// @ts-ignore
-import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasEntities.d.ts';
+import { WegasScriptEditor } from './WegasScriptEditor';
+
+type MonacoEditorToken = import('monaco-editor').Token;
 
 const infoDuration = 5000;
 
@@ -46,10 +45,7 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
     setError(onSave(content));
   };
 
-  const editJS = (
-    monaco: typeof import('monaco-editor'),
-    editor: import('monaco-editor').editor.ICodeEditor,
-  ) => {
+  const editJS = (monaco: MonacoEditor, editor: MonacoCodeEditor) => {
     try {
       setError({});
       const cursorPosition = editor.getPosition();
@@ -59,12 +55,10 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
         let totalOffset = 0;
         const tokens = monaco.editor
           .tokenize(editorValue, 'json')
-          .reduce<{ token: import('monaco-editor').Token; line: number }[]>(
+          .reduce<{ token: MonacoEditorToken; line: number }[]>(
             (newTokens, tokens, line) => {
               const newT = newTokens.concat(
-                tokens.reduce<
-                  { token: import('monaco-editor').Token; line: number }[]
-                >(
+                tokens.reduce<{ token: MonacoEditorToken; line: number }[]>(
                   (nt, t) =>
                     nt.concat({
                       token: {
@@ -150,33 +144,6 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
     setEditing(false);
   };
 
-  const variableClasses = Object.values(
-    store.getState().variableDescriptors,
-  ).reduce<{ [variable: string]: string }>((newObject, variable) => {
-    if (variable !== undefined && variable.name !== undefined) {
-      newObject[variable.name] = variable['@class'];
-    }
-    return newObject;
-  }, {});
-
-  const libContent =
-    entitiesSrc +
-    `type Exclude<T, U> = T extends U ? never : T;
-    type Pick<T, K extends keyof T> = {
-      [P in K]: T[P];
-    };
-    interface GameModel{}
-    interface VariableClasses {${Object.keys(variableClasses).reduce(
-      (s, k) => s + k + ':I' + variableClasses[k] + ';\n',
-      '',
-    )}}
-    class Variable {
-      static find: <T extends keyof VariableClasses>(
-        gameModel: GameModel,
-        name: T
-      ) => VariableClasses[T];
-    }`;
-
   return (
     <Toolbar className={fullHeight}>
       <Toolbar.Header>
@@ -196,19 +163,12 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
                 width: '50vw',
               }}
             >
-              <SrcEditor
+              <WegasScriptEditor
                 value={jsContent.current}
-                language={'javascript'}
                 onChange={value => {
                   jsContent.current = value;
                 }}
-                defaultFocus={true}
-                defaultExtraLibs={[
-                  {
-                    content: libContent,
-                    name: 'Userscript.d.ts',
-                  },
-                ]}
+                defaultFocus
                 onSave={onAcceptJS}
               />
             </div>
