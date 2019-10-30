@@ -4,6 +4,7 @@ import { SizedDiv } from '../../../Components/SizedDiv';
 import { deepDifferent } from '../../../data/connectStore';
 
 export type MonacoEditor = typeof import('monaco-editor');
+export type MonacoEditorProperties = import('monaco-editor').editor.IEditorConstructionOptions;
 export type MonacoLangaugesServices = typeof import('monaco-editor').languages.typescript.typescriptDefaults;
 export type MonacoCodeEditor = import('monaco-editor').editor.ICodeEditor;
 export type MonacoSCodeEditor = import('monaco-editor').editor.IStandaloneCodeEditor;
@@ -41,6 +42,10 @@ export interface EditorProps {
    * minimap - the editor shows a minimap of the code
    */
   minimap?: boolean;
+  /**
+   * noGutter - If true, completely hides the left margin (line numbers and symbols)
+   */
+  noGutter?: boolean;
   /**
    * readonly - the editor is not listening to keys
    */
@@ -87,6 +92,10 @@ export interface EditorProps {
    * onEditorReady - Callback to give the editor the a higher component
    */
   onEditorReady?: (editor: MonacoSCodeEditor) => void;
+  /**
+   * defaultProperties - Add specific properties for monaco-editor
+   */
+  defaultProperties?: MonacoEditorProperties;
 }
 
 const overflowHide = css({
@@ -253,11 +262,21 @@ class SrcEditor extends React.Component<EditorProps> {
             ? monaco.Uri.parse(this.props.defaultUri)
             : undefined,
         );
+        let gutter = {};
+        if (this.props.noGutter) {
+          gutter = {
+            lineNumbers: 'off',
+            glyphMargin: false,
+            folding: false,
+          };
+        }
         this.editor = monaco.editor.create(this.container, {
           theme: 'vs-dark',
           model: model,
           readOnly: this.props.readonly,
           minimap: { enabled: this.props.minimap },
+          ...gutter,
+          ...this.props.defaultProperties,
         });
         if (this.props.onEditorReady) {
           this.props.onEditorReady(this.editor);

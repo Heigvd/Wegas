@@ -21,7 +21,11 @@ import { IconButton } from '../../../../Components/Button/IconButton';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { Labeled, LabeledView } from '../labeled';
 import { Statements } from './Statements';
-import SrcEditor from '../../ScriptEditors/SrcEditor';
+import { wlog } from '../../../../Helper/wegaslog';
+import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
+import { css } from 'emotion';
+
+const scriptEdit = css({ height: '5em', marginTop: '0.8em', width: '500px' });
 
 function literalToExpression(expr: Expression) {
   return isBooleanLiteral(expr, { value: true })
@@ -151,7 +155,9 @@ export class Script extends React.Component<ScriptProps, ScriptState> {
     this.setState(s => ({ srcMode: !s.srcMode }));
   };
   componentDidCatch(error: Error) {
-    this.setState({ srcMode: true, error: error.message });
+    // this.setState({ srcMode: true, error: error.message });
+    wlog(error);
+    this.setState({ error: error.message });
   }
   render() {
     const props = this.props;
@@ -173,14 +179,9 @@ export class Script extends React.Component<ScriptProps, ScriptState> {
                 onClick={this.toggleSrc}
               />
               {this.state.srcMode ? (
-                <div
-                  style={{
-                    height: '5em',
-                  }}
-                >
-                  <SrcEditor
+                <div className={scriptEdit}>
+                  <WegasScriptEditor
                     value={scriptObject(props.value)}
-                    language="javascript"
                     onChange={v =>
                       props.onChange({
                         '@class': 'Script',
@@ -188,6 +189,8 @@ export class Script extends React.Component<ScriptProps, ScriptState> {
                         content: v,
                       })
                     }
+                    minimap={false}
+                    // noGutter={true}
                   />
                 </div>
               ) : (
