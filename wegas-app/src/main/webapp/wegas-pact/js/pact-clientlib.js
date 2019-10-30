@@ -64,6 +64,16 @@
         ];
     };
 
+    Y.namespace("Wegas.Config").ExtraTabs = [
+        {
+            label: "Stats de base",
+            targetMode: "host",
+            children: [{
+                type: "PactStats"
+            }]
+        }
+    ];
+
     app.once('render', function() {
         /* global Y */
         if (Y.config.Wegas.mode === 'EDIT') {

@@ -351,6 +351,7 @@
                     <source>1.8</source>
                     <target>1.8</target>
                     <!-- Using nashorn internal -->
+                    <parameters>true</parameters>
                     <compilerArgument>-XDignore.symbol.file</compilerArgument>
                 </configuration>
             </plugin>

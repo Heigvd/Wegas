@@ -28,6 +28,7 @@ import {
 } from './globalMethod';
 import JSEditor from '../Views/asyncJSEditor';
 import { containerStyle } from '../Views/conditionImpactStyle';
+import { ErrorCatch } from '../Views/ErrorCatch';
 
 const errorStyle = css({
     color: '#999',
@@ -320,12 +321,16 @@ export class ErrorCatcher extends React.Component {
             }));
         }
     }
-    componentDidCatch(error, info) {
+    // eslint-disable-next-line
+    componentDidCatch(error, _info) {
         this.setState(() => ({
-            hasErrored: true,
+            // hasErrored: true,
             error,
-            info,
+            // info,
         }));
+    }
+    static getDerivedStateFromError(error) {
+        return { error };
     }
     handleErrorBlur(target, editor) {
         const val = editor.getValue();
@@ -360,6 +365,7 @@ ErrorCatcher.propTypes = {
     onChange: PropTypes.func.isRequired,
 };
 export default function SecuredImpact(props) {
+    // For un unknown reason, componentDidCatch method in the ErrorCatcher fails when called the first time
     return (
         <ErrorCatcher node={props.node} onChange={props.onChange}>
             <Impact {...props} />

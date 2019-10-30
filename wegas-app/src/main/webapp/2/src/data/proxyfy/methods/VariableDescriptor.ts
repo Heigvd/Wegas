@@ -1,6 +1,6 @@
-import { getInstance as rawGetInstance } from '../methods/VariableDescriptorMethods';
-import { proxyfy } from '.';
-import { TranslatableContent } from '../i18n';
+import { getInstance as rawGetInstance } from '../../methods/VariableDescriptorMethods';
+import { proxyfy } from '..';
+import { TranslatableContent } from '../../i18n';
 
 export function getInstance<I extends IVariableInstance>(
   vd: IVariableDescriptor<I>,
