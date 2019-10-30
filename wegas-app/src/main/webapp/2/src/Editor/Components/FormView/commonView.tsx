@@ -32,8 +32,6 @@ const LAYOUTS = {
   }),
 };
 
-export type FeatureLevel = 'ADVANCED' | 'INTERNAL' | 'DEFAULT';
-
 export interface CommonView {
   borderTop?: boolean;
   layout?: keyof typeof LAYOUTS;

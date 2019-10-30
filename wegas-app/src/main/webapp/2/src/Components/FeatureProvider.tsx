@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { FeatureLevel } from '../Editor/Components/FormView/commonView';
 import { Menu } from './Menu';
+import { FeatureLevel } from './Hooks/types/scriptEditorGlobals';
 
 const availableFeatures: FeatureLevel[] = ['ADVANCED', 'INTERNAL'];
 export const featuresCTX = React.createContext<{

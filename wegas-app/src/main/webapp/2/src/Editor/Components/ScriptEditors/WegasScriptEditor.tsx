@@ -13,6 +13,9 @@ import { KeyMod, KeyCode } from 'monaco-editor';
 // using raw-loader works but you need to put the whole file name and ts doesn't like it
 // @ts-ignore
 import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasScriptableEntities.d.ts';
+// @ts-ignore
+import globalSrc from '!!raw-loader!../../../Components/Hooks/types/scriptEditorGlobals.ts';
+import { wlog } from '../../../Helper/wegaslog';
 
 type MonacoEditorCursorEvent = import('monaco-editor').editor.ICursorSelectionChangedEvent;
 type MonacoEditorRange = import('monaco-editor').IRange;
@@ -181,15 +184,15 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       return newObject;
     }, {});
 
-    return ` interface GameModel{}
-            declare const gameModel : GameModel;
+    return `declare const gameModel : ISGameModel;
+            declare const self : ISPlayer;
             interface VariableClasses {${Object.keys(variableClasses).reduce(
               (s, k) => s + k + ':IS' + variableClasses[k] + ';\n',
               '',
             )}}
             class Variable {
               static find: <T extends keyof VariableClasses>(
-                gameModel: GameModel,
+                gameModel: ISGameModel,
                 name: T
               ) => VariableClasses[T];
             }`;
@@ -226,7 +229,10 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       language={'typescript'}
       extraLibs={[
         {
-          content: entitiesSrc + libContent,
+          content: `${entitiesSrc}\n${libContent}\n${globalSrc.replace(
+            /^(export )/gm,
+            '',
+          )}`,
           name: 'VariablesTypes.d.ts',
         },
       ]}

@@ -7,7 +7,7 @@ import { Item, Layout, DndLinearLayout } from './LinearTabLayout/LinearLayout';
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
 const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
 const TreeView = React.lazy(() => import('./Variable/VariableTree'));
-const Editor = React.lazy(() => import('./EntityEditor'));
+const EntityEditor = React.lazy(() => import('./EntityEditor'));
 const FileBrowserWithMeta = React.lazy(() =>
   import('./FileBrowser/FileBrowser'),
 );
@@ -49,7 +49,7 @@ export default class AppLayout extends React.Component<
                 <StateMachineEditor />
               </Item>,
               <Item key="Editor" label="Editor">
-                <Editor />
+                <EntityEditor />
               </Item>,
               <Item key="Files" label="Files">
                 <FileBrowserWithMeta />
@@ -89,7 +89,7 @@ export default class AppLayout extends React.Component<
             </Layout>
             <Layout>
               <Item label="Editor">
-                <Editor />
+                <EntityEditor />
               </Item>
               <Item label="Scripts">
                 <LibraryEditor />

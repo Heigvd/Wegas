@@ -215,7 +215,7 @@ class SrcEditor extends React.Component<EditorProps> {
     ]).then(([monaco, t]) => {
       if (this.container != null) {
         this.lastValue = this.props.value;
-        // Next line should be called only in json page editor...
+
         if (this.props.language === 'json') {
           monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
             validate: true,
@@ -229,10 +229,9 @@ class SrcEditor extends React.Component<EditorProps> {
           });
         }
 
-        // Next code should be called only in javascript...
         if (this.props.language === 'javascript') {
           monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-            noLib: false,
+            noLib: true,
             allowNonTsExtensions: true,
           });
           addExtraLib(
@@ -241,13 +240,12 @@ class SrcEditor extends React.Component<EditorProps> {
           );
         }
 
-        // Next code should be called only in typescript...
         if (this.props.language === 'typescript') {
           monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-            noLib: false,
+            noLib: true,
             allowNonTsExtensions: true,
             //allowJs: true, /* Has been disabled since it forbid to use types */
-            checkJs: false,
+            checkJs: true,
           });
           addExtraLib(
             monaco.languages.typescript.typescriptDefaults,

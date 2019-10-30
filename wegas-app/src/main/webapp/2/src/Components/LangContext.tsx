@@ -9,12 +9,12 @@ interface LangProviderProps {
 }
 interface Context extends LangProviderProps {
   lang: string;
-  toggleLang: (lang: string) => void;
+  selectLang: (lang: string) => void;
   availableLang: IGameModelLanguage[];
 }
 export const LangContext = React.createContext<Context>({
   lang: '',
-  toggleLang: () => {},
+  selectLang: () => {},
   availableLang: [],
 });
 
@@ -43,7 +43,7 @@ function LangHandler({
     });
   }, [getAvailableLanguages, getCurrentLanguage]);
 
-  function toggleLang(lang: string) {
+  function selectLang(lang: string) {
     setCurrentLang(lang);
   }
   return (
@@ -51,7 +51,7 @@ function LangHandler({
       value={{
         availableLang: availableLang ? availableLang : gameModelLanguages,
         lang: currentLang,
-        toggleLang,
+        selectLang,
       }}
     >
       {children}
@@ -68,7 +68,9 @@ export const LangProvider = React.memo(LangHandler);
  * Language selector allows to select language inside the language context given by the LangProvider
  */
 export function LangToggler() {
-  const { lang, toggleLang, availableLang } = React.useContext(LangContext);
+  const { lang, selectLang: toggleLang, availableLang } = React.useContext(
+    LangContext,
+  );
   return (
     <Menu
       label={lang}

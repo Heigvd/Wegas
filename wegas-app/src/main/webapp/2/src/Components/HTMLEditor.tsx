@@ -18,7 +18,7 @@ import 'tinymce/plugins/advlist';
 // Skin must also be imported
 import 'tinymce/skins/ui/oxide/skin.min.css';
 
-import { Editor } from '@tinymce/tinymce-react';
+import { Editor as TinyEditor } from '@tinymce/tinymce-react';
 import { Modal } from './Modal';
 import { generateAbsolutePath, fileURL } from '../API/files.api';
 import { WidgetProps } from 'jsoninput/typings/types';
@@ -212,7 +212,7 @@ export default function HTMLEditor({
           )}
         </div>
 
-        <Editor
+        <TinyEditor
           initialValue={value}
           init={config(toolBarId, {
             testbutton: { text: 'test', className: 'testclass' },

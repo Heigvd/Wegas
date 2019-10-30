@@ -7,7 +7,7 @@ import { Actions } from '../../data';
 import { FontAwesome } from './Views/FontAwesome';
 import { FeatureToggler } from '../../Components/FeatureProvider';
 import { LangToggler } from '../../Components/LangContext';
-import { flex, itemCenter, grow } from '../../css/classes';
+import { flex, itemCenter, grow, foregroundContent } from '../../css/classes';
 
 export default function Header() {
   return (
@@ -18,7 +18,7 @@ export default function Header() {
       })}
     >
       {({ state: { gameModel, user }, dispatch }) => (
-        <div className={cx(flex, itemCenter)}>
+        <div className={cx(flex, itemCenter, foregroundContent)}>
           <h2 className={grow}>{gameModel.name}</h2>
           <LangToggler />
           <FeatureToggler />
