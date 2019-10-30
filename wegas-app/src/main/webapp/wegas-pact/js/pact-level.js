@@ -713,10 +713,11 @@ YUI.add('pact-level', function(Y) {
                     INFO,
                     PROGGAMELEVEL
                 );
-                var level = Y.Wegas.Facade.Variable.cache
+                var resultStatus = result[0],
+                    level = Y.Wegas.Facade.Variable.cache
                     .find('name', 'currentLevel')
                     .get('value');
-                switch (result[0]) {
+                switch (resultStatus) {
                     case 'success':
                         var commands = result[1];
 
@@ -782,11 +783,13 @@ YUI.add('pact-level', function(Y) {
                 this.set('state', IDLE);
                 this.highlight(result[2], true);
                 batchRemoteCall(
-                    function(code, level) {
-                        Log.post(Log.level(code, level, false, false));
+                    function(code, level, success) {
+                        Log.post(Log.level(code, level, success, false));
                     },
                     code,
-                    level
+                    level,
+                    // As above, distinguish infinite loop timeouts:
+                    resultStatus==='timeout'
                 );
 
                 this.persistExecution();
