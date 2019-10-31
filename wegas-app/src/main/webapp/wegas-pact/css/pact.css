@@ -639,10 +639,21 @@ API TOOLTIP
     width: fit-content;
 }
 
+.pact-stats .pact-stats-header {
+    font-size: 110%;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.pact-stats .pact-stats-footer {
+    margin-top: 20px;
+}
+
 .pact-stats table {
     font-family: arial;
     color: black;
     text-align: center;
+    border: 1px solid #ccc;
 }
 
 .pact-stats table colgroup .even {
@@ -653,7 +664,7 @@ API TOOLTIP
     background: #ddd;
 }
 
-.pact-stats tr:hover {
+.pact-stats tr:not(.header):hover {
     background: #bbb;
 }
 
