@@ -617,7 +617,10 @@ public class RequestManager implements RequestManagerI {
                 if (entity instanceof Team || entity instanceof Player) {
                     //hack -> entities containes the game -> update
                     addAll(map, ((Broadcastable) entity).getEntities());
-                } else {
+                } else if (entity instanceof VariableDescriptor
+                        || entity instanceof VariableInstance
+                        || entity instanceof Game
+                        || entity instanceof GameModel) {
                     removeAll(map, ((Broadcastable) entity).getEntities());
                 }
             }
