@@ -639,6 +639,17 @@ API TOOLTIP
     width: fit-content;
 }
 
+.pact-stats .pact-stats-options {
+    height: 10px;
+}
+
+.pact-stats .pact-stats-options #refresh {
+    position: absolute;    
+    right: 10px;
+    color: #878787;
+    cursor: pointer;
+}
+
 .pact-stats .pact-stats-header {
     font-size: 110%;
     font-weight: bold;
@@ -687,7 +698,8 @@ API TOOLTIP
 }
 
 .pact-stats .sequence {
-    line-height: 1.3;
+    /*line-height: 1.3;*/
+    border: 1px solid #aaa;
 }
 
 .pact-stats .sequence * {

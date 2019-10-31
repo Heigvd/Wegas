@@ -32,12 +32,13 @@ YUI.add('pact-stats', function (Y) {
         CONTENT_TEMPLATE:
                     '<div class="' + PACT_STATS_CLASS.substr(1) + '"><div class="' +
                         PACT_STATS_OPTIONS.substr(1) + '">' +
+                        '<i class="fa fa-2x fa-refresh" id="refresh"></i>' +
                         '</div><div class="' + 
                         PACT_STATS_HEADER.substr(1) + '"></div><div class="' + 
                         PACT_STATS_TABLE.substr(1) + '"></div><div class="' + 
-                        PACT_STATS_FOOTER.substr(1) + '">' +
+                        PACT_STATS_FOOTER.substr(1) + '"></div>' +
                         '<button type="button" id="downloadTable">Télécharger fichier CSV</button>' +
-                        '</div></div>',
+                        '</div>',
 
         // Quick and simple export of table #TABLE_ID into a csv
         // From https://stackoverflow.com/questions/15547198/export-html-table-to-csv
@@ -282,8 +283,7 @@ YUI.add('pact-stats', function (Y) {
                         Y.log("Pas de fin de lecture de la théorie pour le joueur " + team.actor);
                     } else {
                         var duration = Math.round((team[endTopic].timestamp - currStmt.timestamp) / 1000);
-                        // @DEBUG:
-                        topic += ' de ' + currStmt.timestamp.toTimeString().substr(0,8) + ' à ' + team[endTopic].timestamp.toTimeString().substr(0,8);
+                        //topic += ' de ' + currStmt.timestamp.toTimeString().substr(0,8) + ' à ' + team[endTopic].timestamp.toTimeString().substr(0,8);
                         levelTheoryDuration += duration;
                         theoryDuration += duration;
                         sequence += '<span class="theory" title="Theory: ' + topic + '">TH:'+ duration + 's</span>';
@@ -364,12 +364,12 @@ YUI.add('pact-stats', function (Y) {
             
             this.outputColgroupHeaders.push("GLOBAL");
             this.outputColumnHeaders.push("Submits", "Syntax errs", "Semantic errs", "Successes", "Theory reads", "Theory [secs]");  //, "Sequence");
-            this.outputColgroups.push({ span: 7, clazz: "even" });
+            this.outputColgroups.push({ span: 6, clazz: "even" });
             var colGroup = 3;
             for (lvl in this.levels) {
                 var strLvl = (lvl/10).toFixed(1);
                 this.outputColgroupHeaders.push("Niv. "+strLvl);
-                this.outputColumnHeaders.push("Submits", "Synt.", "Sem.", "Theory", "Theory [secs]");  //, "Sequence");
+                this.outputColumnHeaders.push("Submits", "Synt.", "Sem.", "Theory", "Theory [secs]", "Sequence");
                 this.outputColgroups.push({ span: 6, clazz: (colGroup%2 === 1 ? "odd" : "even") });
                 colGroup++;;
             }
@@ -490,7 +490,9 @@ YUI.add('pact-stats', function (Y) {
             Y.one(PACT_STATS_HEADER).append("<p>" + msg + "</p>");
         },
         
-        clearHeader: function(msg) {
+        clearPage: function(msg) {
+            Y.one(PACT_STATS_FOOTER).setHTML("");
+            Y.one(PACT_STATS_TABLE).setHTML("");
             Y.one(PACT_STATS_HEADER).setHTML("");
         },
 
@@ -549,59 +551,74 @@ YUI.add('pact-stats', function (Y) {
             });
         },
 
-        // Invoked when the dashboard tab is visible
-        refreshTab: function(e) {
-            Y.log("Refresh tab");
-            // The containing tab is selected:
+        // Invoked when the dashboard tab gets visible
+        refreshFromTab: function(e) {
             if (e.newVal) {
-                this.clearHeader();
-                var owner = {
-                    name: "Game",
-                    id: Y.Wegas.Facade.Game.cache.getCurrentGame().get("id")
-                };
-                var logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val").logID;
-                var path = owner.name === "Game" || owner.name === "DebugGame" ? "Games" : "Teams";
-
-                Y.io(Y.Wegas.app.get("base") + "rest/Statistics/Export/" + logId + "/" + path + "/" + owner.id, {
-                    "method": "GET",
-                    on: {
-                        success: Y.bind(function (rId, xmlHttpRequest) {
-                            var response = xmlHttpRequest.response;
-                            this.datatable = this.csv2obj(response);
-                            this.shortenVerbs(this.datatable);
-                            this.shortenObjects(this.datatable);
-                            this.teams = this.splitTeams(this.datatable);
-                            var nbTeamsInitial = Object.keys(this.teams).length;
-                            if (nbTeamsInitial === 0) {
-                                this.abort("Aucun joueur n'a commencé.");
-                            }
-                            this.teams = this.removeOutliers(this.teams);
-                            var nbTeams2 = Object.keys(this.teams).length,
-                                diffTeams = nbTeamsInitial - nbTeams2;
-                            if (nbTeams2 === 0) {
-                                this.abort("Aucun joueur n'a suffisamment avancé pour produire des statistiques utiles.");
-                            } else if (diffTeams > 0) {
-                                this.addHeader("" + diffTeams + " joueur(s) écarté(s) pour avoir terminé moins de " + MIN_LEVELS_OUTLIERS + " niveaux.");
-                            }
-                            this.addHeader("Pour simplifier, les éventuels niveaux non terminés sont ignorés.");
-                            this.checkTimestamps(this.teams);
-                            this.teamsOutput = this.prepareOutputTable(this.teams);
-                            this.addCounters(this.teams, this.teamsOutput);
-                            this.genOutput(this.teamsOutput);
-                        }, this),
-                        failure: Y.bind(function () {
-                            this.abort("Impossible de télécharger les logs.");
-                        }, this)
-                    }
-                });
+                this.refresh();
             }
         },
         
+        refreshFromIcon: function() {
+            var btn = this.get("contentBox").one("#refresh").addClass("fa-spin");
+            this.refresh();
+            Y.later(1000, this, function(){ btn.removeClass("fa-spin"); });
+        },
+        
+        // Refresh page (tab contents)
+        refresh: function() {
+            this.clearPage();
+            var owner = {
+                name: "Game",
+                id: Y.Wegas.Facade.Game.cache.getCurrentGame().get("id")
+            };
+            var logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val").logID;
+            var path = owner.name === "Game" || owner.name === "DebugGame" ? "Games" : "Teams";
+
+            Y.io(Y.Wegas.app.get("base") + "rest/Statistics/Export/" + logId + "/" + path + "/" + owner.id, {
+                "method": "GET",
+                on: {
+                    success: Y.bind(function (rId, xmlHttpRequest) {
+                        var response = xmlHttpRequest.response;
+                        this.datatable = this.csv2obj(response);
+                        this.shortenVerbs(this.datatable);
+                        this.shortenObjects(this.datatable);
+                        this.teams = this.splitTeams(this.datatable);
+                        var nbTeamsInitial = Object.keys(this.teams).length;
+                        if (nbTeamsInitial === 0) {
+                            this.abort("Aucun joueur n'a commencé.");
+                        }
+                        this.teams = this.removeOutliers(this.teams);
+                        var nbTeams2 = Object.keys(this.teams).length,
+                            diffTeams = nbTeamsInitial - nbTeams2;
+                        if (nbTeams2 === 0) {
+                            this.abort("Aucun joueur n'a suffisamment avancé pour produire des statistiques utiles.");
+                        } else if (diffTeams > 0) {
+                            this.addHeader("" + diffTeams + " joueur(s) écarté(s) pour avoir terminé moins de " + MIN_LEVELS_OUTLIERS + " niveaux.");
+                        }
+                        this.addHeader("Pour simplifier, les éventuels niveaux non terminés sont ignorés.");
+                        this.checkTimestamps(this.teams);
+                        this.teamsOutput = this.prepareOutputTable(this.teams);
+                        this.addCounters(this.teams, this.teamsOutput);
+                        this.genOutput(this.teamsOutput);
+                    }, this),
+                    failure: Y.bind(function () {
+                        this.abort("Impossible de télécharger les logs.");
+                    }, this)
+                }
+            });
+        },
+        
+        
         bindUI: function() {
             // Detect when the tab continaing this widget is selected:
-            this.get("parent").after("selectedChange", Y.bind(this.refreshTab, this));
+            this.handlers.push(
+                this.get("parent").after("selectedChange", Y.bind(this.refreshFromTab, this))
+            );
             this.handlers.push(
                 this.get("contentBox").delegate('click', this.exportTableToCSV, "#downloadTable", this)
+            );
+            this.handlers.push(
+                this.get("contentBox").delegate('click', this.refreshFromIcon, "#refresh", this)
             );
         },
         
