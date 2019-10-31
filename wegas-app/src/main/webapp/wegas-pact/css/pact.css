@@ -685,3 +685,31 @@ API TOOLTIP
 .pact-stats td {
     padding: 5px;
 }
+
+.pact-stats .sequence {
+    line-height: 1.3;
+}
+
+.pact-stats .sequence * {
+    padding: 0 2px;
+}
+
+.pact-stats .sequence .initialize-level {
+    background: transparent;
+}
+
+.pact-stats .sequence .success {
+    background: lightgreen;
+}
+
+.pact-stats .sequence .syntax-error {
+    background: red;
+}
+
+.pact-stats .sequence .semantic-error {
+    background: orange;
+}
+
+.pact-stats .sequence .theory {
+    background: lightblue;
+}

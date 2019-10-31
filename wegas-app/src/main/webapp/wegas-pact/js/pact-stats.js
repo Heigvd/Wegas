@@ -15,7 +15,8 @@ YUI.add('pact-stats', function (Y) {
         OBJECT_PROGGAME_PREFIX = "internal://wegas/",
         OBJECT_ACTIVITY_PREFIX = "act:wegas/",
         THEORY_SHORTOBJECT = "proggame-theory",
-        PROGGAME_LEVEL_PREFIX = OBJECT_PROGGAME_PREFIX + "proggame-level/",
+        PROGGAME_LEVEL_SHORTOBJECT = "proggame-level",
+        PROGGAME_LEVEL_PREFIX = OBJECT_PROGGAME_PREFIX + PROGGAME_LEVEL_SHORTOBJECT + "/",
         PROGGAME_THEORY_PREFIX = OBJECT_PROGGAME_PREFIX + THEORY_SHORTOBJECT + "/",
         ANNOTATED_FILENAME = "xapi-annotated.csv",
         PACT_STATS_CLASS = ".pact-stats-widget",
@@ -42,9 +43,9 @@ YUI.add('pact-stats', function (Y) {
         // From https://stackoverflow.com/questions/15547198/export-html-table-to-csv
         exportTableToCSV: function() {
             // Select rows from table_id
-            var rows = document.querySelectorAll('table#' + TABLE_ID + ' tr');
-            // Construct csv
-            var csv = [];
+            var rows = document.querySelectorAll('table#' + TABLE_ID + ' tr'),
+                csv = [],
+                numberFormatter = new Intl.NumberFormat('fr-CH', { style: 'decimal', useGrouping: false, maximumFractionDigits: 2 });
             for (var i = 0; i < rows.length; i++) {
                 var row = [], cols = rows[i].querySelectorAll('td, th');
                 for (var j = 0; j < cols.length; j++) {
@@ -52,8 +53,16 @@ YUI.add('pact-stats', function (Y) {
                     var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ')
                     // Escape double-quote with double-double-quote (see https://stackoverflow.com/questions/17808511/properly-escape-a-double-quote-in-csv)
                     data = data.replace(/"/g, '""');
-                    // JH: Push escaped string (duplicate it as many times as required by colspan)
-                    for (var rs = 1; rs <= cols[j].colSpan; rs++) {
+                    // JH: Localize floating-point numbers (dots vs commas) to enable direct loading into Excel
+                    if (data !== '' && !isNaN(data)) {
+                        data = numberFormatter.format(data);
+                    }
+                    // JH: duplicate cells as many times as required by colspan:
+                    if (cols[j].colSpan > 1) {
+                        for (var rs = 1; rs <= cols[j].colSpan; rs++) {
+                            row.push('"' + data + '"');
+                        }
+                    } else {
                         row.push('"' + data + '"');
                     }
                 }
@@ -181,15 +190,20 @@ YUI.add('pact-stats', function (Y) {
             return { 
                 submissions: '', syntaxErrors: '', semanticErrors: '', 
                 successes: '', resubmissions: '',
-                theoryReads: '', theoryDuration: ''};
+                theoryReads: '', theoryDuration: '',
+                sequence: ''
+            };
         },
         
-        newLevelSummary: function(submissions, resubmissions, syntaxErrors, semanticErrors, successes, theoryReads, theoryDuration) {
+        newLevelSummary: function(submissions, resubmissions,
+                                  syntaxErrors, semanticErrors, successes,
+                                  theoryReads, theoryDuration, sequence) {
             return { 
                 submissions: submissions, resubmissions: resubmissions, 
                 syntaxErrors: syntaxErrors, semanticErrors: semanticErrors, 
                 successes: successes,
-                theoryReads: theoryReads, theoryDuration: theoryDuration
+                theoryReads: theoryReads, theoryDuration: theoryDuration,
+                sequence: sequence
             };
         },
         
@@ -206,12 +220,13 @@ YUI.add('pact-stats', function (Y) {
             if (end < 0) {
                 return this.newUnfinishedLevel();
             }
-            return this.countSubmissions(team, start, end-1);
+            return this.analyzeEvents(team, start, end-1);
         },
         
         // Count submissions, syntax and semantic errors for team between fromPos and toPos (included)
         // Also count theory reads and durations.
-        countSubmissions: function (team, fromPos, toPos) {
+        // Also indicate order of significant events.
+        analyzeEvents: function (team, fromPos, toPos) {
             fromPos = fromPos || 0;
             toPos = toPos || team.length-1;
             var syntaxErrors = 0,
@@ -221,7 +236,9 @@ YUI.add('pact-stats', function (Y) {
                 duplicatas = 0,
                 prevCode = '',
                 theoryReads = 0,
-                theoryDuration = 0;
+                theoryDuration = 0,
+                levelTheoryDuration = 0,
+                sequence = '<span class="sequence">';
         
             for (var i = fromPos; i <= toPos; i++) {
                 var currStmt = team[i];
@@ -239,14 +256,17 @@ YUI.add('pact-stats', function (Y) {
                     if (currStmt.completion === "false") {
                         if (currStmt.success === "false") {
                             syntaxErrors++;
+                            sequence += '<span class="syntax-error" title="Syntax error">SYN</span>';
                         } else {
                             semanticErrors++;
+                            sequence += '<span class="semantic-error" title="Semantic error">SEM</span>';
                         }
                     } else {
                         if (currStmt.success === "false") {
                             alert("combinaison impossible");
                         } else {
                             successes++;
+                            sequence += '<span class="success" title="Success">OK</span>';
                         }
                     }
                 // Investigate theory reads WHICHEVER topic is consulted and IGNORING any interleaved global suspend/resume verbs.
@@ -256,17 +276,26 @@ YUI.add('pact-stats', function (Y) {
                            currStmt.shortObject === THEORY_SHORTOBJECT) {
                     theoryReads++;
                     var topic = currStmt.objectParam;
-                    // Find the corresponding "suspended" verb and compute the time
+                    // Find the corresponding "suspended" verb and compute the duration
                     var endTopic = this.indexOf(team, "suspended", PROGGAME_THEORY_PREFIX + topic, i+1);
                     if (endTopic < 0) {
                         Y.log("Pas de fin de lecture de la théorie pour le joueur " + team.actor);
                     } else {
-                        theoryDuration += (team[endTopic].timestamp - currStmt.timestamp);
+                        var duration = Math.round((team[endTopic].timestamp - currStmt.timestamp) / 1000);
+                        // @DEBUG:
+                        topic += ' de ' + currStmt.timestamp.toTimeString().substr(0,8) + ' à ' + team[endTopic].timestamp.toTimeString().substr(0,8);
+                        levelTheoryDuration += duration;
+                        theoryDuration += duration;
+                        sequence += '<span class="theory" title="Theory: ' + topic + '">TH:'+ duration + 's</span>';
                     }
+                } else if (currStmt.shortVerb === "initialized" && 
+                           currStmt.shortObject === PROGGAME_LEVEL_SHORTOBJECT) {
+                    levelTheoryDuration = 0;
+                    sequence += '<span class="initialize-level"> </span>';
                 }
             }
-            theoryDuration = Math.round(theoryDuration/1000);
-            return this.newLevelSummary(submissions, duplicatas, syntaxErrors, semanticErrors, successes, theoryReads, theoryDuration);
+            sequence += '</span>';
+            return this.newLevelSummary(submissions, duplicatas, syntaxErrors, semanticErrors, successes, theoryReads, theoryDuration, sequence);
         },
 
         calcSum: function (teams, column) {
@@ -323,29 +352,37 @@ YUI.add('pact-stats', function (Y) {
             target.Stdev[column] = digestObj.card !== 0 ? digestObj.stdev : '';
         },
             
+        // Convenience function to store empty digest into 'column' of 'target'
+        emptyDigestAndStoreColumn: function(column, target) {
+            target.Sum[column] = '';
+            target.Mean[column] = '';
+            target.Stdev[column] = '';
+        },
+
         addCounters: function (teams, outputTable) {
             var currError, lvl;
             
-            this.outputColgroupHeaders.push("Global");
-            this.outputColumnHeaders.push("Submits", "Syntax errs", "Semantic errs", "Successes", "Theory reads", "Theory [secs]");
-            this.outputColgroups.push({ span: 6, clazz: "even" });
+            this.outputColgroupHeaders.push("GLOBAL");
+            this.outputColumnHeaders.push("Submits", "Syntax errs", "Semantic errs", "Successes", "Theory reads", "Theory [secs]");  //, "Sequence");
+            this.outputColgroups.push({ span: 7, clazz: "even" });
             var colGroup = 3;
             for (lvl in this.levels) {
                 var strLvl = (lvl/10).toFixed(1);
                 this.outputColgroupHeaders.push("Niv. "+strLvl);
-                this.outputColumnHeaders.push("Submits", "Synt.", "Sem.", "Theory", "Theory [secs]");
-                this.outputColgroups.push({ span: 5, clazz: (colGroup%2 === 1 ? "odd" : "even") });
+                this.outputColumnHeaders.push("Submits", "Synt.", "Sem.", "Theory", "Theory [secs]");  //, "Sequence");
+                this.outputColgroups.push({ span: 6, clazz: (colGroup%2 === 1 ? "odd" : "even") });
                 colGroup++;;
             }
 
             for (var team in teams) {
-                currError = this.countSubmissions(teams[team]);
+                currError = this.analyzeEvents(teams[team]);
                 outputTable[team].submits = currError.submissions;
                 outputTable[team].syntaxErrors = currError.syntaxErrors;
                 outputTable[team].semanticErrors = currError.semanticErrors;
                 outputTable[team].successes = currError.successes;
                 outputTable[team].theoryReads = currError.theoryReads;
                 outputTable[team].theoryDuration = currError.theoryDuration;
+                //outputTable[team].sequence = currError.sequence;
                 
                 for (lvl in this.levels) {
                     currError = this.countSubmissionsForLevel(teams[team], lvl);
@@ -354,6 +391,7 @@ YUI.add('pact-stats', function (Y) {
                     outputTable[team]["semanticErrors"+lvl] = currError.semanticErrors;
                     outputTable[team]["theoryReads"+lvl] = currError.theoryReads;
                     outputTable[team]["theoryDuration"+lvl] = currError.theoryDuration;
+                    outputTable[team]["sequence"+lvl] = currError.sequence;
                 }
             }
             
@@ -363,6 +401,7 @@ YUI.add('pact-stats', function (Y) {
             this.digestAndStoreColumn(outputTable, "successes", this.teamsTableBottom);
             this.digestAndStoreColumn(outputTable, "theoryReads", this.teamsTableBottom);
             this.digestAndStoreColumn(outputTable, "theoryDuration", this.teamsTableBottom);
+            //this.emptyDigestAndStoreColumn("sequence", this.teamsTableBottom);
 
             for (lvl in this.levels) {
                 this.digestAndStoreColumn(outputTable, "submits"+lvl, this.teamsTableBottom);
@@ -370,6 +409,7 @@ YUI.add('pact-stats', function (Y) {
                 this.digestAndStoreColumn(outputTable, "semanticErrors"+lvl, this.teamsTableBottom);
                 this.digestAndStoreColumn(outputTable, "theoryReads"+lvl, this.teamsTableBottom);
                 this.digestAndStoreColumn(outputTable, "theoryDuration"+lvl, this.teamsTableBottom);
+                this.emptyDigestAndStoreColumn("sequence"+lvl, this.teamsTableBottom);
             }
         },
         
@@ -419,10 +459,11 @@ YUI.add('pact-stats', function (Y) {
                 str += "<tr>";
                 str += "<th>" + team + "</th>";
                 for (var item in currTeam) {
-                    if (Number.isSafeInteger(currTeam[item]) || currTeam[item] === '') {
-                        str += "<td>" + currTeam[item] + "</td>";                        
+                    var currItem = currTeam[item];
+                    if (currItem === '' || isNaN(currItem) || Number.isSafeInteger(currItem)) {
+                        str += "<td>" + currItem + "</td>";                        
                     } else {
-                        str += "<td>" + currTeam[item].toFixed(nbDecimals) + "</td>";                        
+                        str += "<td>" + currItem.toFixed(nbDecimals) + "</td>";                        
                     }
                 }
                 str += "</tr>";
