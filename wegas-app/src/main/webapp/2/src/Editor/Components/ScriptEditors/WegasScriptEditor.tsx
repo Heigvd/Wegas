@@ -9,37 +9,28 @@ import { useStore } from '../../../data/store';
 import { shallowDifferent, deepDifferent } from '../../../data/connectStore';
 import { State } from '../../../data/Reducer/reducers';
 import { KeyMod, KeyCode } from 'monaco-editor';
+import { GameModel } from '../../../data/selectors';
+import { wlog } from '../../../Helper/wegaslog';
+import { WegasScriptEditorReturnTypeName } from '../../../Components/Hooks/types/scriptMethodGlobals';
 
 // using raw-loader works but you need to put the whole file name and ts doesn't like it
 // @ts-ignore
 import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasScriptableEntities.d.ts';
 // @ts-ignore
-import globalSrc from '!!raw-loader!../../../Components/Hooks/types/scriptEditorGlobals.ts';
-import { wlog } from '../../../Helper/wegaslog';
+import editorGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/scriptEditorGlobals.ts';
+// @ts-ignore
+import methodGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/scriptMethodGlobals.ts';
 
 type MonacoEditorCursorEvent = import('monaco-editor').editor.ICursorSelectionChangedEvent;
 type MonacoEditorRange = import('monaco-editor').IRange;
 
-type PrimitiveTypeName =
-  | 'boolean'
-  | 'number'
-  | 'string'
-  | 'object'
-  | 'unknown'
-  | 'never'
-  | 'void';
-
-export type WegasScriptEditorReturnType =
-  | ScriptableInterfaceName
-  | PrimitiveTypeName;
-
 interface WegasScriptEditorProps extends EditorProps {
-  returnType?: WegasScriptEditorReturnType;
+  returnType?: WegasScriptEditorReturnTypeName;
 }
 
 const header = (type?: string) => {
   const cleanType = type !== undefined ? type.replace(/\r?\n/, '') : '';
-  return `/*\n *\tPlease always respect the return type : ${cleanType}\n *\tPlease only write in JS even if the editor let you write in TS\n */\n() : ${cleanType} => {\n`;
+  return `/*\n *\tPlease always respect the return type : ${cleanType}\n *\tPlease only write in JS even if the editor let you write in TS\n */\n() : ${cleanType} => {\n\t`;
 };
 const headerSize = textToArray(header()).length;
 const footer = () => `\n};`;
@@ -52,10 +43,14 @@ const footerSize = textToArray(footer()).length - 1;
  */
 const formatScriptToFunction = (
   val: string,
-  returnType?: WegasScriptEditorReturnType,
+  returnType?: WegasScriptEditorReturnTypeName,
 ) => {
   if (returnType !== undefined) {
     let newValue = val;
+    // Removing first tab if exists
+    if (newValue.length > 0 && newValue[0] === '\t') {
+      newValue = newValue.substring(1);
+    }
     const lines = textToArray(newValue);
     if (lines.length > 0 && !lines[lines.length - 1].includes('return')) {
       lines[lines.length - 1] = '\treturn ' + lines[lines.length - 1];
@@ -75,7 +70,6 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   const { defaultValue, value, returnType } = props;
   let editorLock: ((editor: MonacoSCodeEditor) => void) | undefined = undefined;
   const editorRef = React.useRef<MonacoSCodeEditor>();
-  // const [currentSelection, setSelection] = React.useState<MonacoEditorRange>();
   const selectionRef = React.useRef<MonacoEditorRange>({
     startColumn: 1,
     endColumn: 1,
@@ -110,7 +104,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
    */
   const acceptFunctionStyle = (
     val?: string,
-    returnType?: WegasScriptEditorReturnType,
+    returnType?: WegasScriptEditorReturnTypeName,
   ) => {
     const newVal = val ? val : '';
     if (returnType !== undefined) {
@@ -118,7 +112,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       if (
         // Header protection
         arrayToText(lines.slice(0, headerSize - 1)) !==
-          header(returnType).slice(0, -1) ||
+          header(returnType).slice(0, -2) ||
         // Footer protection
         (lines.length > 0 &&
           lines[lines.length - footerSize] !== footer().substr(1)) ||
@@ -134,7 +128,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   };
 
   /**
-   * trimFunctionToScript - If return type defined this function will trim the function and call back with only script value
+   * trimFunctionToScript - If return type defined this function will trim the header, footer and return statement of the function and call back with only script value
    * @param val - The content of the editor
    * @param fn - the callback function
    */
@@ -165,6 +159,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
           setCurrentValue(newValue);
           return fn && fn(newValue);
         }
+        // If the user deleted the function's header, footer or return statement, the value is rolled back
         toggleRefresh();
         return;
       }
@@ -184,6 +179,12 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       return newObject;
     }, {});
 
+    const globalMethods = s.global.methods;
+
+    const currentLanguages = Object.values(
+      GameModel.selectCurrent().languages,
+    ).reduce((lt, l) => `${lt} | '${l.code}'`, '');
+
     return `declare const gameModel : ISGameModel;
             declare const self : ISPlayer;
             interface VariableClasses {${Object.keys(variableClasses).reduce(
@@ -195,7 +196,20 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
                 gameModel: ISGameModel,
                 name: T
               ) => VariableClasses[T];
-            }`;
+            }
+            type CurrentLanguages = ${currentLanguages};
+            interface EditorClass extends GlobalEditorClass {
+              setLanguage: (lang: { code: ISGameModelLanguage['code'] } | CurrentLanguages) => void;
+            }
+            declare const Editor: EditorClass;
+            interface GlobalMethods {${Object.keys(globalMethods).reduce(
+              (s, k) => s + k + ':() => ' + globalMethods[k].returnType + ';\n',
+              '',
+            )}}
+            interface MethodClass extends GlobalMethodClass {
+              getMethod: <T extends keyof GlobalMethods>(name : T) => WegasScriptEditorNameAndTypes[T];
+            }
+            declare const Methods : MethodClass`;
   }, shallowDifferent);
 
   if (returnType !== undefined) {
@@ -222,6 +236,8 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     };
   }
 
+  wlog(editorGlobalSrc.replace(/^(export )/gm, ''));
+
   return (
     <SrcEditor
       key={Number(refresh)}
@@ -229,10 +245,10 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       language={'typescript'}
       extraLibs={[
         {
-          content: `${entitiesSrc}\n${libContent}\n${globalSrc.replace(
+          content: `${entitiesSrc}\n${editorGlobalSrc.replace(
             /^(export )/gm,
             '',
-          )}`,
+          )}\n${methodGlobalSrc.replace(/^(export )/gm, '')}\n${libContent}`,
           name: 'VariablesTypes.d.ts',
         },
       ]}

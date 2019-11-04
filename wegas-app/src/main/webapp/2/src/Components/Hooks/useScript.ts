@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { proxyfy } from '../../data/proxyfy';
 import { Player, VariableDescriptor as VDSelect } from '../../data/selectors';
-import { useStore } from '../../data/store';
+import { useStore, store } from '../../data/store';
 import { featuresCTX } from '../FeatureProvider';
 import * as React from 'react';
 import {
@@ -11,6 +11,13 @@ import {
 } from './types/scriptEditorGlobals';
 import { LangContext } from '../LangContext';
 import { useGameModel } from './useGameModel';
+import {
+  GlobalMethodClass,
+  WegasScriptEditorReturnTypeName,
+  WegasScriptEditorNameAndTypes,
+  GlobalMethodAdd,
+} from './types/scriptMethodGlobals';
+import { Actions } from '../../data';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -23,6 +30,7 @@ interface GlobalClasses {
   self?: Readonly<Readonly<IPlayer>>;
   Variable: GlobalVariableClass;
   Editor: GlobalEditorClass;
+  Methods: GlobalMethodClass;
 }
 
 const sandbox = document.createElement('iframe');
@@ -80,6 +88,18 @@ export function useScript<ReturnValue>(script: string) {
     getLanguage: () => gameModel.languages.find(l => l.code === lang),
     setLanguage: lang =>
       selectLang(typeof lang === 'string' ? lang : lang.code),
+  };
+
+  // Methods class
+  globals.Methods = {
+    addMethod: <T extends WegasScriptEditorReturnTypeName>(
+      name: string,
+      returnType: T,
+      method: () => WegasScriptEditorNameAndTypes[T],
+    ) => {
+      store.dispatch(Actions.EditorActions.addMethod(name, returnType, method));
+    },
+    getMethod: (name: string) => store.getState().global.methods[name].method,
   };
 
   const fn = useCallback(

@@ -9,6 +9,13 @@ import { Reducer } from 'redux';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../../Editor/Components/FormView';
 import { FileAPI } from '../../API/files.api';
+import {
+  WegasScriptEditorReturnTypeName,
+  WegasScriptEditorReturnType,
+  WegasScriptEditorNameAndTypes,
+  GlobalMethodClass,
+  GlobalMethodAdd,
+} from '../../Components/Hooks/types/scriptMethodGlobals';
 
 type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IAbstractEntity> {
@@ -77,6 +84,12 @@ export interface GlobalState extends EditingState {
   pusherStatus: {
     status: string;
     socket_id?: string;
+  };
+  methods: {
+    [name: string]: {
+      returnType?: WegasScriptEditorReturnTypeName;
+      method: () => WegasScriptEditorReturnType;
+    };
   };
 }
 
@@ -224,6 +237,15 @@ const global: Reducer<Readonly<GlobalState>> = u(
       case ActionType.PUSHER_SOCKET:
         state.pusherStatus = action.payload;
         return;
+      case ActionType.EDITOR_ADD_METHOD:
+        state.methods = {
+          ...state.methods,
+          [action.payload.name]: {
+            returnType: action.payload.type,
+            method: action.payload.method,
+          },
+        };
+        return;
       default:
         state.events = eventManagement(state, action);
         state.editing = editorManagement(state, action);
@@ -241,6 +263,7 @@ const global: Reducer<Readonly<GlobalState>> = u(
     pageEdit: false,
     pageSrc: false,
     events: [],
+    methods: {},
   } as GlobalState,
 );
 export default global;
@@ -504,4 +527,17 @@ export function searchUsage(
       })
       .catch((res: Response) => dispatch(editorError(res.statusText)));
   };
+}
+
+/**
+ * Add a custom method to the gameModel's global state
+ * @param name - the name of the method
+ * @param method - the method to add
+ */
+export function addMethod<T extends WegasScriptEditorReturnTypeName>(
+  name: string,
+  returnType: T,
+  method: () => WegasScriptEditorNameAndTypes[T],
+) {
+  return ActionCreator.EDITOR_ADD_METHOD({ name, returnType, method });
 }

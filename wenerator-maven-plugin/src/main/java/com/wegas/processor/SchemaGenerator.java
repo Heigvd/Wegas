@@ -564,18 +564,33 @@ public class SchemaGenerator extends AbstractMojo {
 
     private void writeTsScriptableInterfacesToFile() {
         StringBuilder sb = new StringBuilder();
+        ArrayList<String> intKeys = new ArrayList<String>(tsScriptableInterfaces.keySet());
 
         /**
-         * Creating ts type allowing all of scriptable WegasEntities names
+         * Creating ts interface linking real classes and stringified classes
          */
-        sb.append("type ScriptableInterfaceName = ");
-        ArrayList<String> intKeys = new ArrayList<String>(tsScriptableInterfaces.keySet());
+        sb.append("interface WegasEntitesNamesAndClasses {");
         intKeys.forEach(key -> {
             sb.append(System.lineSeparator())
-                .append("  | ")
-                .append("'" + key + "'");
+                .append("  " + key + " : ")
+                .append(key + ";");
         });
-        sb.append(";")
+        sb.append(System.lineSeparator())
+            .append("}")
+            .append(System.lineSeparator())
+            .append(System.lineSeparator());
+
+        /**
+         * Creating ts type allowing every generated WegasEntities as string
+         */
+        sb.append("type ScriptableInterfaceName = keyof WegasEntitesNamesAndClasses;")
+            .append(System.lineSeparator())
+            .append(System.lineSeparator());
+
+        /**
+         * Creating ts type allowing every generated WegasEntities
+         */
+        sb.append("type ScriptableInterface = WegasEntitesNamesAndClasses[ScriptableInterfaceName];")
             .append(System.lineSeparator())
             .append(System.lineSeparator());
 

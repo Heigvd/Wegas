@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { featuresCTX } from '../../../Components/FeatureProvider';
+import { FeatureLevel } from '../../../Components/Hooks/types/scriptEditorGlobals';
 
 const containerStyle = css({
   position: 'relative',

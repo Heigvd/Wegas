@@ -44,7 +44,9 @@ function LangHandler({
   }, [getAvailableLanguages, getCurrentLanguage]);
 
   function selectLang(lang: string) {
-    setCurrentLang(lang);
+    if (gameModelLanguages.find(l => l.code === lang)) {
+      setCurrentLang(lang);
+    }
   }
   return (
     <LangContext.Provider
@@ -68,9 +70,7 @@ export const LangProvider = React.memo(LangHandler);
  * Language selector allows to select language inside the language context given by the LangProvider
  */
 export function LangToggler() {
-  const { lang, selectLang: toggleLang, availableLang } = React.useContext(
-    LangContext,
-  );
+  const { lang, selectLang, availableLang } = React.useContext(LangContext);
   return (
     <Menu
       label={lang}
@@ -78,7 +78,7 @@ export function LangToggler() {
         id: language.code,
         label: `${language.code} : ${language.lang}`,
       }))}
-      onSelect={item => toggleLang(item.id)}
+      onSelect={item => selectLang(item.id)}
     />
   );
 }

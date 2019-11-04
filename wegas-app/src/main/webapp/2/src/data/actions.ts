@@ -9,6 +9,11 @@ import { EditingState, closeEditor, Edition } from './Reducer/globalState';
 import { shallowDifferent } from './connectStore';
 import { getEntityActions } from '../Editor/editionConfig';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
+import {
+  WegasScriptEditorReturnTypeName,
+  WegasScriptEditorReturnType,
+  WegasScriptEditorNameAndTypes,
+} from '../Components/Hooks/types/scriptMethodGlobals';
 
 export { ActionType };
 export type ActionTypeValues = ValueOf<typeof ActionType>;
@@ -46,6 +51,11 @@ export const ActionCreator = {
   EDITOR_ERROR_REMOVE: () => createAction(ActionType.EDITOR_ERROR_REMOVE, {}),
   EDITOR_ERROR: (data: { error: string }) =>
     createAction(ActionType.EDITOR_ERROR, data),
+  EDITOR_ADD_METHOD: <T extends WegasScriptEditorReturnTypeName>(data: {
+    name: string;
+    returnType: T;
+    method: () => WegasScriptEditorNameAndTypes[T];
+  }) => createAction(ActionType.EDITOR_ADD_METHOD, data),
   VARIABLE_EDIT: variableEditAction(ActionType.VARIABLE_EDIT),
   FSM_EDIT: variableEditAction(ActionType.FSM_EDIT),
   FILE_EDIT: (data: {
