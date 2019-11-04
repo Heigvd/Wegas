@@ -13,8 +13,6 @@ import {
   WegasScriptEditorReturnTypeName,
   WegasScriptEditorReturnType,
   WegasScriptEditorNameAndTypes,
-  GlobalMethodClass,
-  GlobalMethodAdd,
 } from '../../Components/Hooks/types/scriptMethodGlobals';
 
 type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
@@ -241,7 +239,7 @@ const global: Reducer<Readonly<GlobalState>> = u(
         state.methods = {
           ...state.methods,
           [action.payload.name]: {
-            returnType: action.payload.type,
+            returnType: action.payload.returnType,
             method: action.payload.method,
           },
         };

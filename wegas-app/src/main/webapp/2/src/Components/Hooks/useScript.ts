@@ -15,7 +15,6 @@ import {
   GlobalMethodClass,
   WegasScriptEditorReturnTypeName,
   WegasScriptEditorNameAndTypes,
-  GlobalMethodAdd,
 } from './types/scriptMethodGlobals';
 import { Actions } from '../../data';
 

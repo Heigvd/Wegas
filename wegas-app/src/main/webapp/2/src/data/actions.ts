@@ -11,7 +11,6 @@ import { getEntityActions } from '../Editor/editionConfig';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
 import {
   WegasScriptEditorReturnTypeName,
-  WegasScriptEditorReturnType,
   WegasScriptEditorNameAndTypes,
 } from '../Components/Hooks/types/scriptMethodGlobals';
 
