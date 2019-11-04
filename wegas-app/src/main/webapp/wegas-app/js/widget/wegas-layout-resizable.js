@@ -354,6 +354,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                         // cWidget.after("render", this.syncUI, this );
                         cWidget.render(target);
                         this.widgets.push(cWidget);
+                        cWidget.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this);
                     }
                 } else {
                     target.setStyle("width", "0");
