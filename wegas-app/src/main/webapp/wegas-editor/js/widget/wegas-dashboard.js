@@ -874,8 +874,7 @@ YUI.add('wegas-dashboard', function(Y) {
                 for (var j in items) {
                     body += '<div class="checkbox' + (items[j].active ? ' selected' : '') + '" data-group="' + group + '" data-cbx="' + items[j].id + '">' + items[j].label + "</div>";
                 }
-                body += '<button class="customize-group-submit-button">OK</button>';
-                body += "</div>";
+                body += '<button class="customize-group-submit-button">OK</button></div>';
                 this._display(title, body, true, Y.bind(function() {
                     this.syncUI();
                 }, this));
@@ -915,10 +914,12 @@ YUI.add('wegas-dashboard', function(Y) {
             this.detailsOverlay.set("onClose", onClose);
         },
         closeDetails: function(event) {
-            event && event.halt(true);
-            this.detailsOverlay.hide();
-            this.detailsTarget = null;
-            this.detailsOverlay.get("onClose") && this.detailsOverlay.get("onClose")();
+            if (this.detailsOverlay.get("visible")) {
+                event && event.halt(true);
+                this.detailsOverlay.hide();
+                this.detailsTarget = null;
+                this.detailsOverlay.get("onClose") && this.detailsOverlay.get("onClose")();
+            }
         },
         /*
          ** Opens a new tab where the given data is posted:
