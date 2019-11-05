@@ -20,6 +20,8 @@ import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasScriptabl
 import editorGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/scriptEditorGlobals.ts';
 // @ts-ignore
 import methodGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/scriptMethodGlobals.ts';
+// @ts-ignore
+import jsonformtypes from '!!raw-loader!../../../../../../../../node_modules/jsoninput/typings/types.d.ts';
 
 type MonacoEditorCursorEvent = import('monaco-editor').editor.ICursorSelectionChangedEvent;
 type MonacoEditorRange = import('monaco-editor').IRange;
@@ -236,7 +238,8 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     };
   }
 
-  wlog(editorGlobalSrc.replace(/^(export )/gm, ''));
+  const test = arrayToText(textToArray(jsonformtypes).slice(2));
+  wlog(test);
 
   return (
     <SrcEditor
@@ -248,7 +251,10 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
           content: `${entitiesSrc}\n${editorGlobalSrc.replace(
             /^(export )/gm,
             '',
-          )}\n${methodGlobalSrc.replace(/^(export )/gm, '')}\n${libContent}`,
+          )}\n${methodGlobalSrc.replace(
+            /^(export )/gm,
+            '',
+          )}\n${libContent}/*\n${test}*/`,
           name: 'VariablesTypes.d.ts',
         },
       ]}

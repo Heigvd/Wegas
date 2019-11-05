@@ -5,6 +5,7 @@ import { formValidation } from './formValidation';
 import { entityIs } from '../data/entities';
 import { editStateMachine, editVariable } from '../data/Reducer/globalState';
 import { ThunkResult } from '../data/store';
+import { SimpleSchema } from '../Components/Hooks/types/scriptShemaGlobals';
 
 export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 
@@ -25,15 +26,6 @@ export interface MethodConfig {
   };
 }
 
-type SimpleSchema =
-  | {}
-  | {
-      properties?: {
-        [props: string]: SimpleSchema;
-      };
-      additionalProperties?: SimpleSchema;
-    }
-  | { items?: SimpleSchema[] | SimpleSchema };
 /**
  * Traverse the schema, update each Schema in this schema with updater functions
  * @param schema Schema to visit
@@ -159,9 +151,14 @@ async function injectRef(schema: { $wref?: string }): Promise<Schema> {
 export default async function getEditionConfig<T extends IAbstractEntity>(
   entity: T,
 ): Promise<Schema> {
-  return fetchConfig(entity['@class'] + '.json').then(res =>
-    schemaUpdater(res.schema, injectRef, updateVisibility, updatedErrored),
-  );
+  return fetchConfig(entity['@class'] + '.json').then(res => {
+    return schemaUpdater(
+      res.schema,
+      injectRef,
+      updateVisibility,
+      updatedErrored,
+    );
+  });
 }
 
 export interface EActions {

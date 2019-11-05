@@ -14,6 +14,7 @@ import {
   WegasScriptEditorReturnType,
   WegasScriptEditorNameAndTypes,
 } from '../../Components/Hooks/types/scriptMethodGlobals';
+import { CustomSchemaFN } from '../../Components/Hooks/types/scriptShemaGlobals';
 
 type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IAbstractEntity> {
@@ -89,6 +90,12 @@ export interface GlobalState extends EditingState {
       method: () => WegasScriptEditorReturnType;
     };
   };
+  // schemas: {
+  //   filtered: {
+  //     [type: string]: CustomSchemaFN;
+  //   };
+  //   custom: CustomSchemaFN[];
+  // };
 }
 
 /**
@@ -262,6 +269,10 @@ const global: Reducer<Readonly<GlobalState>> = u(
     pageSrc: false,
     events: [],
     methods: {},
+    // schemas: {
+    //   filtered: {},
+    //   custom: [],
+    // },
   } as GlobalState,
 );
 export default global;

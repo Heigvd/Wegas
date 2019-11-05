@@ -7,13 +7,20 @@ import getEditionConfig from '../editionConfig';
 import { Actions } from '../../data';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepUpdate } from '../../data/updateUtils';
-import { StoreConsumer, StoreDispatch } from '../../data/store';
+import {
+  StoreConsumer,
+  StoreDispatch,
+  store,
+  useStore,
+} from '../../data/store';
 import { AvailableViews } from './FormView';
 import { cx } from 'emotion';
 import { flex, grow, flexColumn } from '../../css/classes';
 import { StyledLabel } from '../../Components/AutoImport/String/Label';
-import { shallowDifferent } from '../../data/connectStore';
+import { shallowDifferent, deepDifferent } from '../../data/connectStore';
 import { Edition } from '../../data/Reducer/globalState';
+import { SimpleSchema } from '../../Components/Hooks/types/scriptShemaGlobals';
+import { wlog } from '../../Helper/wegaslog';
 
 export interface EditorProps<T> {
   entity?: T;
@@ -147,7 +154,7 @@ export function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
   return schema;
 }
 
-async function WindowedEditor<T>({
+async function WindowedEditor<T extends IMergeable>({
   entity,
   update,
   actions = [],
@@ -159,6 +166,33 @@ async function WindowedEditor<T>({
   if (Array.isArray(path) && path.length > 0) {
     pathEntity = get(entity, path);
   }
+
+  // const customSchema = useStore(s => {
+  //   // First try to get schema from simple filters
+  //   const newSchemaFn =
+  //     s.global.shemas.filtered[(pathEntity as IMergeable)['@class']];
+  //   let newSchema: Schema<AvailableViews> | undefined;
+  //   if (newSchemaFn !== undefined) {
+  //     newSchema = newSchemaFn(pathEntity as IMergeable);
+  //   }
+  //   // Then try to get shema from complex filters
+  //   for (const sh of s.global.shemas.custom) {
+  //     const nfSchema = sh(pathEntity as IMergeable);
+  //     if (nfSchema) {
+  //       newSchema = nfSchema;
+  //       break;
+  //     }
+  //   }
+  //   return newSchema;
+  // }, deepDifferent);
+
+  // const filteredSchemas = useStore(s => {
+  //   return s.global.schemas.filtered;
+  // }, shallowDifferent);
+  // const customSchemas = useStore(s => {
+  //   return s.global.schemas.custom;
+  // }, shallowDifferent);
+
   if (pathEntity === undefined) {
     // return <span>There is nothing to edit</span>;
     return null;
@@ -172,6 +206,27 @@ async function WindowedEditor<T>({
     typeof import('./Form')['Form'],
     Schema<AvailableViews>
   >([import('./Form').then(m => m.Form), getConfig(pathEntity)]);
+
+  // debugger;
+
+  // // First try to get schema from simple filters
+  // let customSchema: SimpleSchema | undefined;
+  // const simpleCustomShemaFN = customSchemas.filtered[pathEntity['@class']];
+  // if (customSchemas.filtered[pathEntity['@class']]) {
+  //   customSchema = simpleCustomShemaFN(pathEntity, schema);
+  // }
+  // // Then try to get shema from complex filters
+  // for (const sh of customSchemas.custom) {
+  //   const nfSchema = sh(pathEntity, schema);
+  //   if (nfSchema !== undefined) {
+  //     customSchema = nfSchema;
+  //     break;
+  //   }
+  // }
+
+  // wlog(customSchema !== undefined ? customSchema : schema);
+  // debugger;
+
   return (
     <div className={cx(flex, grow, flexColumn)}>
       <StyledLabel
@@ -192,6 +247,10 @@ async function WindowedEditor<T>({
           };
         })}
         path={path}
+        // schema={overrideSchema(
+        //   entity,
+        //   customSchema !== undefined ? customSchema : schema,
+        // )}
         schema={overrideSchema(entity, schema)}
       />
     </div>
