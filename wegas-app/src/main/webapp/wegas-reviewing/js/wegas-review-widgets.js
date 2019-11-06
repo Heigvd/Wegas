@@ -1894,7 +1894,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                     this._quiet = false;
                 });
             } else {
-                this._quiet = quiet;
+                this._quiet = false;
                 if (!this.get("readonly.evaluated")) {
                     evl.set("value", this.editor.getContent());
                 }
