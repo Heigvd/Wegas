@@ -27,12 +27,8 @@ YUI.add('wegas-text-input', function(Y) {
             this.onHostEvent("*:saved", this.onSaved, this);
             this.onHostEvent("*:editing", this.onEdit, this);
             this.onHostEvent("*:revert", this.onRevert, this);
-            this.onHostEvent("*", this.onEvent, this);
 
             this.locks = {};
-        },
-        onEvent: function(e) {
-            Y.log("BITCH: " + e);
         },
         destructor: function() {
             for (var k in this.handlers) {
@@ -345,7 +341,7 @@ YUI.add('wegas-text-input', function(Y) {
             if (text) {
                 var instance = text.getInstance();
                 this.onInstanceUpdate = Y.Wegas.Facade.Instance.after(instance.get("id") + ':updatedInstance', this.syncUI, this);
-                this.onInstanceLiveUpdate = Y.Wegas.Facade.Variable.after("VariableInstance_" + instance.get("id") + ':LiveUpdate', this.liveLock, this);
+                this.onInstanceLiveUpdate = Y.Wegas.Facade.Variable.after("TextInstance_" + instance.get("id") + ':LiveUpdate', this.liveLock, this);
             }
         },
         bindUI: function() {
