@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { LibraryAPI, ILibraries } from '../../API/library.api';
 import { wlog } from '../../Helper/wegaslog';
+import { scriptEval, useGlobals } from '../../Components/Hooks/useScript';
 
 interface WegasLibraries {
   CSS: ILibraries;
@@ -12,6 +13,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
     CSS: {},
     JS: {},
   });
+  useGlobals();
 
   React.useEffect(() => {
     LibraryAPI.getAllLibraries('CSS')
@@ -34,6 +36,20 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
         wlog('Cannot get the scripts');
       });
   }, []);
+
+  React.useEffect(
+    () =>
+      Object.keys(libraries.JS).forEach(libKey => {
+        try {
+          scriptEval(libraries.JS[libKey].content);
+        } catch (e) {
+          wlog(libraries.JS[libKey].content);
+          wlog(e);
+        }
+      }),
+    [libraries.JS],
+  );
+
   return (
     <>
       {Object.keys(libraries.CSS).map(libKey => {
@@ -44,17 +60,6 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
         );
       })}
       {props.children}
-      {Object.keys(libraries.JS).map(libKey => {
-        return (
-          <script
-            className="WegasScript"
-            key={'JS' + libKey}
-            type="text/javascript"
-          >
-            {libraries.JS[libKey].content}
-          </script>
-        );
-      })}
     </>
   );
 }

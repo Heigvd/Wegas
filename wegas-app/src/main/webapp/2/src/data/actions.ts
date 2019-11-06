@@ -13,6 +13,7 @@ import {
   WegasScriptEditorReturnTypeName,
   WegasScriptEditorNameAndTypes,
 } from '../Components/Hooks/types/scriptMethodGlobals';
+import { CustomSchemaFN } from '../Components/Hooks/types/scriptSchemaGlobals';
 
 export { ActionType };
 export type ActionTypeValues = ValueOf<typeof ActionType>;
@@ -50,11 +51,16 @@ export const ActionCreator = {
   EDITOR_ERROR_REMOVE: () => createAction(ActionType.EDITOR_ERROR_REMOVE, {}),
   EDITOR_ERROR: (data: { error: string }) =>
     createAction(ActionType.EDITOR_ERROR, data),
-  EDITOR_ADD_METHOD: <T extends WegasScriptEditorReturnTypeName>(data: {
+  EDITOR_SET_METHOD: <T extends WegasScriptEditorReturnTypeName>(data: {
     name: string;
     returnType: T;
     method: () => WegasScriptEditorNameAndTypes[T];
-  }) => createAction(ActionType.EDITOR_ADD_METHOD, data),
+  }) => createAction(ActionType.EDITOR_SET_METHOD, data),
+  EDITOR_SET_SCHEMA: (data: {
+    name: string;
+    schemaFN?: CustomSchemaFN;
+    simpleFilter?: WegasClassNames;
+  }) => createAction(ActionType.EDITOR_SET_SCHEMA, data),
   VARIABLE_EDIT: variableEditAction(ActionType.VARIABLE_EDIT),
   FSM_EDIT: variableEditAction(ActionType.FSM_EDIT),
   FILE_EDIT: (data: {

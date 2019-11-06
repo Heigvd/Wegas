@@ -32,8 +32,7 @@ const Eval = React.memo(function Eval({ script }: { script: string }) {
 });
 Eval.displayName = 'Eval';
 
-const testScript =
-  '\tMethods.addMethod("test2","number",()=>1234);\nMethods.getMethod("test2")();';
+const testScript = 'Methods.getMethod("test2")();';
 
 export default function PlayLocal() {
   const [script, setScript] = React.useState(testScript);

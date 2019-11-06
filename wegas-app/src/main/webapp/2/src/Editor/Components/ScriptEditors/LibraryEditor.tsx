@@ -12,11 +12,13 @@ import { GameModel } from '../../../data/selectors';
 import { omit } from 'lodash-es';
 import u from 'immer';
 import { WebSocketEvent, useWebsocket } from '../../../API/websocket';
-import SrcEditor from './SrcEditor';
+import SrcEditor, { EditorProps } from './SrcEditor';
 import MergeEditor from './MergeEditor';
 import { StyledLabel } from '../../../Components/AutoImport/String/Label';
 import { TextPrompt } from '../TextPrompt';
 import { ConfirmButton } from '../../../Components/Button/ConfirmButton';
+import { WegasScriptEditor } from './WegasScriptEditor';
+import { scriptEval, useGlobals } from '../../../Components/Hooks/useScript';
 
 type IVisibility = IAbstractContentDescriptor['visibility'];
 const visibilities: IVisibility[] = [
@@ -341,6 +343,11 @@ interface ModalStateClose {
   type: 'close';
 }
 
+interface ModalStateWarn {
+  type: 'warn';
+  label: string;
+}
+
 interface ModalStateError {
   type: 'error';
   label: string;
@@ -350,7 +357,11 @@ interface ModalStateLibname {
   type: 'libname';
 }
 
-type ModalState = ModalStateClose | ModalStateError | ModalStateLibname;
+type ModalState =
+  | ModalStateClose
+  | ModalStateError
+  | ModalStateLibname
+  | ModalStateWarn;
 
 interface ScriptEditorProps {
   /**
@@ -375,6 +386,9 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
   const [modalState, setModalState] = React.useState<ModalState>({
     type: 'close',
   });
+
+  // Allows to load the globals in the script evaluator
+  useGlobals();
 
   /**
    * A callback for websocket event management
@@ -462,6 +476,20 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           dispatchStateAction({
             type: 'SaveLibrary',
           });
+          if (scriptType === 'ClientScript') {
+            try {
+              scriptEval(
+                librariesState.libraries[librariesState.selected].library
+                  .content,
+              );
+            } catch (e) {
+              setModalState({
+                type: 'warn',
+                label:
+                  'The library has been saved but the script contains errors',
+              });
+            }
+          }
         })
         .catch(() => {
           setModalState({
@@ -510,6 +538,16 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
   }, [scriptType]);
 
   const libEntry = librariesState.libraries[librariesState.selected];
+
+  const CurrentEditor = React.useCallback(
+    (props: EditorProps) =>
+      getScriptLanguage(scriptType) === 'javascript' ? (
+        <WegasScriptEditor {...props} clientScript />
+      ) : (
+        <SrcEditor {...props} />
+      ),
+    [scriptType],
+  );
 
   return (
     <Toolbar>
@@ -591,7 +629,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
                   <IconButton
                     icon="save"
                     tooltip="Save the script"
-                    onClick={() => onSaveLibrary()}
+                    onClick={onSaveLibrary}
                   />
                 )}
                 {isDeleteAllowed(librariesState) && (
@@ -644,7 +682,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             onResolved={onSaveLibrary}
           />
         ) : librariesState.selected ? (
-          <SrcEditor
+          <CurrentEditor
             value={
               librariesState.selected
                 ? librariesState.libraries[librariesState.selected].library

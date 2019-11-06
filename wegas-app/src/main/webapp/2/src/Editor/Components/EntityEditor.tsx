@@ -7,19 +7,17 @@ import getEditionConfig from '../editionConfig';
 import { Actions } from '../../data';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepUpdate } from '../../data/updateUtils';
-import {
-  StoreConsumer,
-  StoreDispatch,
-  store,
-  useStore,
-} from '../../data/store';
+import { StoreConsumer, StoreDispatch, store } from '../../data/store';
 import { AvailableViews } from './FormView';
 import { cx } from 'emotion';
 import { flex, grow, flexColumn } from '../../css/classes';
 import { StyledLabel } from '../../Components/AutoImport/String/Label';
-import { shallowDifferent, deepDifferent } from '../../data/connectStore';
+import { shallowDifferent } from '../../data/connectStore';
 import { Edition } from '../../data/Reducer/globalState';
-import { SimpleSchema } from '../../Components/Hooks/types/scriptShemaGlobals';
+import {
+  SimpleSchema,
+  TypedEntity,
+} from '../../Components/Hooks/types/scriptSchemaGlobals';
 import { wlog } from '../../Helper/wegaslog';
 
 export interface EditorProps<T> {
@@ -167,30 +165,8 @@ async function WindowedEditor<T extends IMergeable>({
     pathEntity = get(entity, path);
   }
 
-  // const customSchema = useStore(s => {
-  //   // First try to get schema from simple filters
-  //   const newSchemaFn =
-  //     s.global.shemas.filtered[(pathEntity as IMergeable)['@class']];
-  //   let newSchema: Schema<AvailableViews> | undefined;
-  //   if (newSchemaFn !== undefined) {
-  //     newSchema = newSchemaFn(pathEntity as IMergeable);
-  //   }
-  //   // Then try to get shema from complex filters
-  //   for (const sh of s.global.shemas.custom) {
-  //     const nfSchema = sh(pathEntity as IMergeable);
-  //     if (nfSchema) {
-  //       newSchema = nfSchema;
-  //       break;
-  //     }
-  //   }
-  //   return newSchema;
-  // }, deepDifferent);
-
-  // const filteredSchemas = useStore(s => {
-  //   return s.global.schemas.filtered;
-  // }, shallowDifferent);
   // const customSchemas = useStore(s => {
-  //   return s.global.schemas.custom;
+  //   return s.global.schemas;
   // }, shallowDifferent);
 
   if (pathEntity === undefined) {
@@ -207,25 +183,34 @@ async function WindowedEditor<T extends IMergeable>({
     Schema<AvailableViews>
   >([import('./Form').then(m => m.Form), getConfig(pathEntity)]);
 
-  // debugger;
+  // First try to get schema from simple filters
+  debugger;
+  const customSchemas = store.getState().global.schemas;
+  let customSchema: SimpleSchema | void;
+  const simpleCustomShemaName = customSchemas.filtered[pathEntity['@class']];
+  if (simpleCustomShemaName !== undefined) {
+    const nfSchema = customSchemas.views[simpleCustomShemaName](
+      pathEntity as TypedEntity,
+      schema,
+    );
+    if (nfSchema !== undefined) {
+      customSchema = nfSchema;
+    }
+  }
+  // Then try to get shema from complex filters
+  for (const schemaName of customSchemas.unfiltered) {
+    const nfSchema = customSchemas.views[schemaName](
+      pathEntity as TypedEntity,
+      schema,
+    );
+    if (nfSchema !== undefined) {
+      customSchema = nfSchema;
+      break;
+    }
+  }
 
-  // // First try to get schema from simple filters
-  // let customSchema: SimpleSchema | undefined;
-  // const simpleCustomShemaFN = customSchemas.filtered[pathEntity['@class']];
-  // if (customSchemas.filtered[pathEntity['@class']]) {
-  //   customSchema = simpleCustomShemaFN(pathEntity, schema);
-  // }
-  // // Then try to get shema from complex filters
-  // for (const sh of customSchemas.custom) {
-  //   const nfSchema = sh(pathEntity, schema);
-  //   if (nfSchema !== undefined) {
-  //     customSchema = nfSchema;
-  //     break;
-  //   }
-  // }
-
-  // wlog(customSchema !== undefined ? customSchema : schema);
-  // debugger;
+  wlog(customSchema !== undefined ? customSchema : schema);
+  debugger;
 
   return (
     <div className={cx(flex, grow, flexColumn)}>
@@ -247,11 +232,11 @@ async function WindowedEditor<T extends IMergeable>({
           };
         })}
         path={path}
-        // schema={overrideSchema(
-        //   entity,
-        //   customSchema !== undefined ? customSchema : schema,
-        // )}
-        schema={overrideSchema(entity, schema)}
+        schema={overrideSchema(
+          entity,
+          customSchema !== undefined ? customSchema : schema,
+        )}
+        // schema={overrideSchema(entity, schema)}
       />
     </div>
   );

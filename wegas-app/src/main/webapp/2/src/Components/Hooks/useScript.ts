@@ -17,6 +17,7 @@ import {
   WegasScriptEditorNameAndTypes,
 } from './types/scriptMethodGlobals';
 import { Actions } from '../../data';
+import { GlobalSchemaClass, CustomSchemaFN } from './types/scriptSchemaGlobals';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -30,6 +31,7 @@ interface GlobalClasses {
   Variable: GlobalVariableClass;
   Editor: GlobalEditorClass;
   Methods: GlobalMethodClass;
+  Schemas: GlobalSchemaClass;
 }
 
 const sandbox = document.createElement('iframe');
@@ -40,12 +42,7 @@ sandbox.style.display = 'none';
 document.body.appendChild(sandbox);
 const globals = (sandbox.contentWindow as unknown) as GlobalClasses;
 
-/**
- * Hook, execute a script locally.
- * @param script code to execute
- * @returns Last expression or LocalEvalError in case it errors.
- */
-export function useScript<ReturnValue>(script: string) {
+export function useGlobals() {
   // Hooks
   const player = useStore(Player.selectCurrent);
   const gameModel = useGameModel();
@@ -96,16 +93,47 @@ export function useScript<ReturnValue>(script: string) {
       returnType: T,
       method: () => WegasScriptEditorNameAndTypes[T],
     ) => {
-      store.dispatch(Actions.EditorActions.addMethod(name, returnType, method));
+      store.dispatch(Actions.EditorActions.setMethod(name, returnType, method));
     },
     getMethod: (name: string) => store.getState().global.methods[name].method,
   };
 
+  // Schemas class
+  globals.Schemas = {
+    addSchema: (
+      name: string,
+      schemaFN: CustomSchemaFN,
+      simpleFilter?: WegasClassNames,
+    ) => {
+      store.dispatch(
+        Actions.EditorActions.setSchema(name, schemaFN, simpleFilter),
+      );
+    },
+    removeSchema: (name: string) => {
+      store.dispatch(Actions.EditorActions.setSchema(name));
+    },
+  };
+}
+
+export function scriptEval<ReturnValue>(script: string) {
+  return (
+    ((sandbox.contentWindow as unknown) as {
+      eval: (code: string) => ReturnValue;
+    })
+      // 'undefined' so that an empty script don't return '"use strict"'
+      .eval('"use strict";undefined;' + script)
+  );
+}
+
+/**
+ * Hook, execute a script locally.
+ * @param script code to execute
+ * @returns Last expression or LocalEvalError in case it errors.
+ */
+export function useScript<ReturnValue>(script: string) {
+  useGlobals();
   const fn = useCallback(
-    () =>
-      ((sandbox.contentWindow as unknown) as {
-        eval: (code: string) => ReturnValue;
-      }).eval('"use strict";undefined;' + script), // 'undefined' so that an empty script don't return '"use strict"'
+    () => scriptEval<ReturnValue>(script), // 'undefined' so that an empty script don't return '"use strict"'
     [script],
   );
   return useStore(fn);

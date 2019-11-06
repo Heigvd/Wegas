@@ -5,7 +5,7 @@ import { formValidation } from './formValidation';
 import { entityIs } from '../data/entities';
 import { editStateMachine, editVariable } from '../data/Reducer/globalState';
 import { ThunkResult } from '../data/store';
-import { SimpleSchema } from '../Components/Hooks/types/scriptShemaGlobals';
+import { SimpleSchema } from '../Components/Hooks/types/scriptSchemaGlobals';
 
 export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 
