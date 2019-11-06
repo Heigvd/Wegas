@@ -109,14 +109,17 @@ public class Iteration extends AbstractEntity implements DatedEntity {
 
     @WegasEntityProperty(
             optional = false, nullable = false,
-            view = @View(label = "SPI"))
-    private Double spi;
+            view = @View(label = "WSPI"))
+    private Double wspi;
 
     @WegasEntityProperty(
             optional = false, nullable = false,
-            view = @View(label = "WPI"))
-    private Double wpi;
+            view = @View(label = "WCPI"))
+    private Double wcpi;
 
+    @WegasEntityProperty(
+            optional = false, nullable = false,
+            view = @View(label = "CPI"))
     private Double cpi;
 
     private Double wages;
@@ -132,8 +135,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     private List<IterationPlanning> plannedWorkloads = new ArrayList<>();
 
     /**
-     * maps a period number with workload for current period and future ones:
-     * Indicate the planned workload consumption
+     * maps a period number with workload for current period and future ones: Indicate the planned workload consumption
      */
     @ElementCollection
     @JsonIgnore
@@ -143,8 +145,8 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     private List<IterationPlanning> replannedWorkloads = new ArrayList<>();
 
     /**
-     * maps a period number with workload for past period and current one:
-     * indicates the total remaining workload for the corresponding period.
+     * maps a period number with workload for past period and current one: indicates the total remaining workload for
+     * the corresponding period.
      */
     @OneToMany(mappedBy = "iteration", cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
@@ -273,37 +275,36 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     /**
      * Get the Workload Performance Index
      *
-     * @return the WPI
+     * @return the WCPI
      */
-    public Double getWpi() {
-        return this.wpi;
+    public Double getWcpi() {
+        return this.wcpi;
     }
 
-    public void setWpi(Double wpi) {
-        this.wpi = wpi;
+    public void setWcpi(Double wcpi) {
+        this.wcpi = wcpi;
     }
 
     /**
-     * Get the schedule Performance Index
+     * Get the schedule Performance Index based on workloads
      *
-     * @return the SPI
+     * @return the WSPI
      */
-    public Double getSpi() {
-        return spi;
+    public Double getWspi() {
+        return wspi;
     }
 
     /**
      * Set the schedule Performance Index
      *
-     * @param spi
+     * @param wspi
      */
-    public void setSpi(Double spi) {
-        this.spi = spi;
+    public void setWspi(Double wspi) {
+        this.wspi = wspi;
     }
 
     /**
-     * Get the total iteration workloads as it was on the beginning of the
-     * iteration
+     * Get the total iteration workloads as it was on the beginning of the iteration
      *
      * @return iteration total workload
      */
@@ -375,8 +376,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     }
 
     /**
-     * get the workload for each iteration period period number are relative to
-     * beginAt attribute
+     * get the workload for each iteration period period number are relative to beginAt attribute
      *
      * @return planned workload, mapped by relative period number
      */

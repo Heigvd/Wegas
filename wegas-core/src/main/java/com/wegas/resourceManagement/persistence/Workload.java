@@ -66,8 +66,24 @@ public class Workload extends AbstractEntity implements Serializable {
      */
     @WegasEntityProperty(
             nullable = false, optional = false,
-            view = @View(label = "Spent"))
+            view = @View(label = "Spent (AW)"))
     private Double spentWorkload;
+
+    /**
+     * actual cost
+     */
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(label = "Actual Cost (AC)"))
+    private Double ac;
+
+    /**
+     * actual cost
+     */
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(label = "Earned Value (EV)"))
+    private Double ev;
 
     /**
      * Period subdivision step
@@ -115,6 +131,22 @@ public class Workload extends AbstractEntity implements Serializable {
 
     public void setIteration(Iteration iteration) {
         this.iteration = iteration;
+    }
+
+    public Double getAc() {
+        return ac;
+    }
+
+    public void setAc(Double ac) {
+        this.ac = ac;
+    }
+
+    public Double getEv() {
+        return ev;
+    }
+
+    public void setEv(Double ev) {
+        this.ev = ev;
     }
 
     @Override
