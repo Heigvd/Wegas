@@ -7,28 +7,29 @@
  */
 package com.wegas.core.persistence;
 
+import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.INTERNAL;
+import static ch.albasim.wegas.annotations.CommonView.LAYOUT.shortInline;
+import ch.albasim.wegas.annotations.IMergeable;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
-import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
-import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.INTERNAL;
-import static com.wegas.editor.View.CommonView.LAYOUT.shortInline;
 import com.wegas.editor.View.NumberView;
 import com.wegas.editor.View.StringView;
-import com.wegas.editor.View.View;
 
 /**
  *
  * @author maxence
  */
-public interface Mergeable {
+public interface Mergeable extends IMergeable {
 
     /**
      * Get entity cross-gamemodel identifier

@@ -7,9 +7,9 @@
  */
 package com.wegas.core.persistence.annotations;
 
-import com.wegas.editor.ValueGenerators.Undefined;
-import com.wegas.editor.ValueGenerators.ValueGenerator;
-import com.wegas.editor.View.View;
+import ch.albasim.wegas.annotations.ValueGenerator;
+import ch.albasim.wegas.annotations.ValueGenerator.Undefined;
+import ch.albasim.wegas.annotations.View;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

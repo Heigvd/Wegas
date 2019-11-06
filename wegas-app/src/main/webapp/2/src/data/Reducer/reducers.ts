@@ -1,8 +1,10 @@
 import gameModels, { GameModelState } from './gameModel';
+import variableInstances, {
+  VariableInstanceState,
+} from './VariableInstanceReducer';
 import variableDescriptors, {
   VariableDescriptorState,
-} from './variableDescriptor';
-import variableInstances, { VariableInstanceState } from './variableInstance';
+} from './VariableDescriptorReducer';
 import global, { GlobalState } from './globalState';
 import pages, { PageState } from './pageState';
 import games, { GameState } from './game';

@@ -7,14 +7,14 @@
  */
 package com.wegas.resourceManagement.persistence;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.editor.View.View;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.*;
@@ -66,8 +66,24 @@ public class Workload extends AbstractEntity implements Serializable {
      */
     @WegasEntityProperty(
             nullable = false, optional = false,
-            view = @View(label = "Spent"))
+            view = @View(label = "Spent (AW)"))
     private Double spentWorkload;
+
+    /**
+     * actual cost
+     */
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(label = "Actual Cost (AC)"))
+    private Double ac;
+
+    /**
+     * actual cost
+     */
+    @WegasEntityProperty(
+            nullable = false, optional = false,
+            view = @View(label = "Earned Value (EV)"))
+    private Double ev;
 
     /**
      * Period subdivision step
@@ -115,6 +131,22 @@ public class Workload extends AbstractEntity implements Serializable {
 
     public void setIteration(Iteration iteration) {
         this.iteration = iteration;
+    }
+
+    public Double getAc() {
+        return ac;
+    }
+
+    public void setAc(Double ac) {
+        this.ac = ac;
+    }
+
+    public Double getEv() {
+        return ev;
+    }
+
+    public void setEv(Double ev) {
+        this.ev = ev;
     }
 
     @Override

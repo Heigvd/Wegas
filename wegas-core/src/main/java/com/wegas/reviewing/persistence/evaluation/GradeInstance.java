@@ -7,9 +7,9 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.editor.View.View;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 

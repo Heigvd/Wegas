@@ -1,5 +1,6 @@
 package com.wegas.editor.JSONSchema;
 
+import ch.albasim.wegas.annotations.JSONSchema;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class JSONRef implements JSONSchema {

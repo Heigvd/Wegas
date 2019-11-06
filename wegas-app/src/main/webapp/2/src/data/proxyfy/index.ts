@@ -1,17 +1,6 @@
 import { inheritanceChain } from '../entities';
-import * as ListDescriptor from './ListDescriptor';
-import * as NumberDescriptor from './NumberDescriptor';
-import * as VariableDescriptor from './VariableDescriptor';
+import { methods } from './methods';
 
-export const methods: {
-  [cls: string]: {
-    [prop: string]: (entity: IAbstractEntity) => unknown;
-  };
-} = {
-  VariableDescriptor,
-  NumberDescriptor,
-  ListDescriptor,
-};
 const traps = {
   get: function(
     obj: Record<string | number, unknown>,

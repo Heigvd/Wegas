@@ -7,13 +7,13 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import ch.albasim.wegas.annotations.Scriptable;
+import ch.albasim.wegas.annotations.View;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.annotations.Param;
-import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.View.I18nHtmlView;
-import com.wegas.editor.View.View;
 import javax.persistence.Entity;
 import jdk.nashorn.api.scripting.JSObject;
 

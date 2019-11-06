@@ -7,12 +7,12 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import ch.albasim.wegas.annotations.View;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.editor.JSONSchema.JSONObject;
 import com.wegas.editor.Schema;
 import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.View;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.*;

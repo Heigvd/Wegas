@@ -1,5 +1,5 @@
-import * as VariableDescriptor from './VariableDescriptor';
-import * as VariableInstance from './VariableInstance';
+import * as VariableDescriptor from './VariableDescriptorSelector';
+import * as VariableInstance from './VariableInstanceSelector';
 import * as Global from './Global';
 import * as GameModel from './GameModel';
 import * as Game from './Game';

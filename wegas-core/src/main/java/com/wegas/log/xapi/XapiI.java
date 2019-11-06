@@ -7,9 +7,8 @@
  */
 package com.wegas.log.xapi;
 
-import java.util.List;
-
 import gov.adlnet.xapi.model.*;
+import java.util.List;
 import java.util.Map;
 
 public interface XapiI {

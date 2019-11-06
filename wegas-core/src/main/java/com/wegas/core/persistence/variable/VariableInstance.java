@@ -7,16 +7,18 @@
  */
 package com.wegas.core.persistence.variable;
 
+import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.WithPermission;
-import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -27,9 +29,7 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.Zero;
-import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.View;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.wh.WhQuestionInstance;
@@ -361,8 +361,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * Get instance descriptor through its scope for regular instance or
-     * the default descriptor id for default instances
+     * Get instance descriptor through its scope for regular instance or the default descriptor id for default instances
      *
      * @return descriptor id
      */
@@ -420,8 +419,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return the team or null if this instance doesn't belong to a team
-     *         (belonging to the game for instance)
+     * @return the team or null if this instance doesn't belong to a team (belonging to the game for instance)
      */
     @JsonIgnore
     public TeamScope getTeamScope() {
@@ -466,8 +464,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * return instance descriptor equals the instance is a default or effective
-     * one
+     * return instance descriptor equals the instance is a default or effective one
      *
      * @return instance descriptor
      */
@@ -487,8 +484,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return the gameModelScope of instance id gameModel scoped, null
-     *         otherwise
+     * @return the gameModelScope of instance id gameModel scoped, null otherwise
      */
     public GameModelScope getGameModelScope() {
         return gameModelScope;
@@ -526,8 +522,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     /**
      *
-     * @return string representation of the instance (class name, id, default or
-     *         not, ...)
+     * @return string representation of the instance (class name, id, default or not, ...)
      */
     @Override
     public String toString() {

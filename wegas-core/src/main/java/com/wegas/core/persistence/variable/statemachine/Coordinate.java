@@ -7,12 +7,10 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  *

@@ -7,15 +7,6 @@
  */
 package com.wegas.log.xapi;
 
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.RequestManager;
@@ -42,10 +33,6 @@ import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade.ReplyValidate;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import gov.adlnet.xapi.client.StatementClient;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import gov.adlnet.xapi.model.*;
 import gov.adlnet.xapi.util.Base64;
 import java.io.IOException;
@@ -53,11 +40,19 @@ import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import javax.ejb.Asynchronous;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.xml.bind.DatatypeConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Stateless
 @LocalBean
@@ -260,20 +255,20 @@ public class Xapi implements XapiI {
         boolean logDebug = Helper.getWegasProperty("xapi.log_debug_player", "false").equals("true");
 
         if (player == null) {
-            logger.warn("No player");
+            logger.debug("No player");
             return false;
         } else if (!logDebug && (player.getTeam() instanceof DebugTeam || player.getTeam() instanceof DebugTeam)) {
-            logger.warn("Do not log statements for debug players");
+            logger.debug("Do not log statements for debug players");
             return false;
         } else if (Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID())) {
-            logger.warn("No Log ID defined");
+            logger.debug("No Log ID defined");
             return false;
         } else if (Helper.isNullOrEmpty(this.getAgentHomePage())) {
-            logger.warn("No Agent homepage");
+            logger.debug("No Agent homepage");
             return false;
         } else if (Helper.isNullOrEmpty(Helper.getWegasProperty("xapi.auth"))
                 || Helper.isNullOrEmpty(Helper.getWegasProperty("xapi.host"))) {
-            logger.warn("XAPI host/auth are not defined");
+            logger.debug("XAPI host/auth are not defined");
             return false;
         }
         return true;

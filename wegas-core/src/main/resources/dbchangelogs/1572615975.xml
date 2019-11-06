@@ -1,0 +1,13 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="maxence" id="1572615986941-1">
+        <renameColumn tableName="iteration" newColumnName="wcpi" oldColumnName="wpi" />
+        <renameColumn tableName="iteration" newColumnName="wspi" oldColumnName="spi" />
+    </changeSet>
+    <changeSet author="maxence" id="1572615986941-2">
+        <addColumn tableName="workload">
+            <column name="ev" type="FLOAT8(17)" />
+            <column name="ac" type="FLOAT8(17)" />
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

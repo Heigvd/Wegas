@@ -2,11 +2,12 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.editor;
 
+import ch.albasim.wegas.annotations.ValueGenerator;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModelProperties;
@@ -25,19 +26,6 @@ import java.util.Map;
  * @author maxence
  */
 public class ValueGenerators {
-
-    public static interface ValueGenerator {
-
-        public Object getValue();
-    }
-
-    public static class Undefined implements ValueGenerator {
-
-        @Override
-        public Object getValue() {
-            return null;
-        }
-    }
 
     public static class Zero implements ValueGenerator {
 

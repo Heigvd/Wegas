@@ -7,12 +7,12 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
+import ch.albasim.wegas.annotations.CommonView;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.annotations.Errored;
-import com.wegas.editor.View.CommonView;
+import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.View;
 import javax.persistence.Entity;
 
 /**

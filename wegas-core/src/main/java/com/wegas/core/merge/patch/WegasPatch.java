@@ -7,17 +7,17 @@
  */
 package com.wegas.core.merge.patch;
 
+import ch.albasim.wegas.annotations.ProtectionLevel;
+import static ch.albasim.wegas.annotations.ProtectionLevel.CASCADED;
+import ch.albasim.wegas.annotations.WegasCallback;
 import com.wegas.core.IndentLogger;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.utils.LifecycleCollector;
-import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
-import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.lang.reflect.Method;
 import java.util.ArrayList;

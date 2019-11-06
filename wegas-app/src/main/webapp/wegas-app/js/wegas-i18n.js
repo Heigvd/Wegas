@@ -713,7 +713,7 @@ YUI.add("wegas-i18n", function(Y) {
                 return config[currentLanguage()].capitalize.call(translate(key, args));
             },
             tCol: function(key, args) {
-                return config[currentLanguage()].colonize.call(key, args);
+                return config[currentLanguage()].colonize.call(translate(key, args));
             }
         };
     }());

@@ -7,20 +7,21 @@
  */
 package com.wegas.core.merge.patch;
 
+import ch.albasim.wegas.annotations.EmptyCallback;
+import ch.albasim.wegas.annotations.ProtectionLevel;
+import ch.albasim.wegas.annotations.WegasCallback;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.DefaultWegasFactory;
-import com.wegas.core.merge.utils.EmptyCallback;
 import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.LifecycleCollector.CollectedEntity;
 import com.wegas.core.merge.utils.LifecycleCollector.OrphanContainer;
 import com.wegas.core.merge.utils.MergeHelper;
-import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.merge.utils.WegasEntitiesHelper;
 import com.wegas.core.merge.utils.WegasEntityFields;
 import com.wegas.core.merge.utils.WegasFactory;
@@ -32,7 +33,6 @@ import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
-import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;

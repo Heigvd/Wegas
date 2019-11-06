@@ -7,11 +7,12 @@
  */
 package com.wegas.resourceManagement.persistence;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.VariableProperty;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -20,7 +21,6 @@ import com.wegas.editor.ValueGenerators.EmptyMap;
 import com.wegas.editor.ValueGenerators.True;
 import com.wegas.editor.View.ArrayView;
 import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.View;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import java.util.ArrayList;
 import java.util.HashSet;

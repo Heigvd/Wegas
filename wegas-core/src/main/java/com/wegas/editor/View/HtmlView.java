@@ -7,6 +7,8 @@
  */
 package com.wegas.editor.View;
 
+import ch.albasim.wegas.annotations.CommonView;
+
 /**
  * @author maxence
  */

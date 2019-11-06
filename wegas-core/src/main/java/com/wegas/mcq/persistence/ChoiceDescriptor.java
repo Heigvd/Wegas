@@ -7,6 +7,12 @@
  */
 package com.wegas.mcq.persistence;
 
+import ch.albasim.wegas.annotations.CommonView;
+import ch.albasim.wegas.annotations.IMergeable;
+import ch.albasim.wegas.annotations.Scriptable;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasCallback;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -14,36 +20,30 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.persistence.annotations.WegasEntity;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.persistence.annotations.Scriptable;
-import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.DescriptorListI;
-import com.wegas.core.persistence.variable.ListDescriptor;
-import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.rest.util.Views;
-import com.wegas.editor.Visible;
 import com.wegas.core.persistence.annotations.WegasConditions.And;
 import com.wegas.core.persistence.annotations.WegasConditions.Equals;
 import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
 import com.wegas.core.persistence.annotations.WegasConditions.IsTrue;
 import com.wegas.core.persistence.annotations.WegasConditions.Not;
 import com.wegas.core.persistence.annotations.WegasConditions.Or;
+import com.wegas.core.persistence.annotations.WegasEntity;
 import com.wegas.core.persistence.annotations.WegasRefs.Const;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.DescriptorListI;
+import com.wegas.core.persistence.variable.ListDescriptor;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.One;
 import com.wegas.editor.ValueGenerators.Zero;
-import com.wegas.editor.View.CommonView;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.I18nHtmlView;
 import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.View;
+import com.wegas.editor.Visible;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import java.util.ArrayList;
 import java.util.List;
@@ -480,7 +480,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     public static class ChoiceDescriptorMergeCallback implements WegasCallback {
 
         @Override
-        public void postUpdate(Mergeable entity, Object ref, Object identifier) {
+        public void postUpdate(IMergeable entity, Object ref, Object identifier) {
             if (entity instanceof ChoiceDescriptor) {
                 ChoiceDescriptor cd = (ChoiceDescriptor) entity;
                 // set names and labels unique
@@ -493,7 +493,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     public static class ResultMergeCallback implements WegasCallback {
 
         @Override
-        public Object remove(Object entity, Mergeable container, Object identifier) {
+        public Object remove(Object entity, IMergeable container, Object identifier) {
             if (entity instanceof Result) {
                 Result resultToRemove = (Result) entity;
                 resultToRemove.updateCacheOnDelete(resultToRemove.getChoiceDescriptor().beans);

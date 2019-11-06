@@ -15,14 +15,13 @@ import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import javax.ejb.EJBException;
+import javax.inject.Inject;
+import javax.naming.NamingException;
+import javax.script.ScriptException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
-import javax.naming.NamingException;
-import javax.script.ScriptException;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)

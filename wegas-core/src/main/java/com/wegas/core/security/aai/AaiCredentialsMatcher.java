@@ -7,7 +7,6 @@
  */
 package com.wegas.core.security.aai;
 
-import com.wegas.core.security.aai.AaiAuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.credential.CredentialsMatcher;

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { IconButton } from '../../Components/Button/IconButton';
 import { Modal } from '../../Components/Modal';
 import { Actions } from '../../data';
-import { editorLabel } from '../../data/methods/VariableDescriptor';
+import { editorLabel } from '../../data/methods/VariableDescriptorMethods';
 import { State } from '../../data/Reducer/reducers';
 import { VariableDescriptor } from '../../data/selectors';
 import { StoreConsumer, StoreDispatch } from '../../data/store';

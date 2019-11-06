@@ -1,7 +1,9 @@
 import { Reducer } from 'redux';
 import u from 'immer';
-import { ActionType, StateActions } from '../actions';
+import { ActionType, StateActions, ActionCreator } from '../actions';
 import { omit } from 'lodash-es';
+import { store, ThunkResult } from '../store';
+import { GameAPI } from '../../API/games.api';
 // import normalizeData from '../normalize/index';
 
 export interface GameState {
@@ -18,9 +20,28 @@ const games: Reducer<Readonly<GameState>> = u(
         const deletedKeys = Object.keys(action.payload.deletedEntities.games);
         return { ...omit(state, deletedKeys), ...games };
       }
+      case ActionType.GAME_FETCH: {
+        if (action.payload.game.id !== undefined) {
+          state[action.payload.game.id] = action.payload.game;
+        }
+        break;
+      }
     }
     return state;
   },
   { [CurrentGame.id!]: CurrentGame },
 );
 export default games;
+
+/**
+ * Get all teams
+ * @param gameModel the new version of the game model
+ */
+export function getGame(): ThunkResult {
+  return function() {
+    const gameId = store.getState().global.currentGameId;
+    return GameAPI.get(gameId).then(res => {
+      return store.dispatch(ActionCreator.GAME_FETCH({ game: res }));
+    });
+  };
+}

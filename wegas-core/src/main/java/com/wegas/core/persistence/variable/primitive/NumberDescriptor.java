@@ -7,31 +7,31 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import ch.albasim.wegas.annotations.CommonView;
+import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
+import ch.albasim.wegas.annotations.IMergeable;
+import ch.albasim.wegas.annotations.Scriptable;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasCallback;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
+import com.wegas.core.persistence.annotations.Errored;
+import com.wegas.core.persistence.annotations.WegasConditions.And;
+import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
+import com.wegas.core.persistence.annotations.WegasConditions.LessThan;
 import com.wegas.core.persistence.annotations.WegasEntity;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.editor.ValueGenerators.Twenty;
+import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.NumberView;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.wegas.core.persistence.annotations.Errored;
-import com.wegas.core.persistence.annotations.Scriptable;
-import com.wegas.core.persistence.annotations.WegasConditions.And;
-import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
-import com.wegas.core.persistence.annotations.WegasConditions.LessThan;
-import com.wegas.core.persistence.annotations.WegasExtraProperty;
-import com.wegas.core.persistence.annotations.WegasRefs.Field;
-import com.wegas.editor.ValueGenerators.Twenty;
-import com.wegas.editor.View.CommonView;
-import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.View;
 
 /**
  *
@@ -256,7 +256,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
     public static class ValdateDefaultValue implements WegasCallback {
 
         @Override
-        public void postUpdate(Mergeable entity, Object ref, Object identifier) {
+        public void postUpdate(IMergeable entity, Object ref, Object identifier) {
             if (entity instanceof NumberDescriptor) {
                 NumberDescriptor nd = (NumberDescriptor) entity;
                 NumberInstance ni = nd.getDefaultInstance();

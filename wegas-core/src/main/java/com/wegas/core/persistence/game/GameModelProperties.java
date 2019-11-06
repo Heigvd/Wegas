@@ -7,11 +7,12 @@
  */
 package com.wegas.core.persistence.game;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
-import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyString;
@@ -19,7 +20,6 @@ import com.wegas.editor.ValueGenerators.False;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.SelectView.FreeForAllSelector;
 import com.wegas.editor.View.StringView;
-import com.wegas.editor.View.View;
 import java.io.Serializable;
 import javax.persistence.*;
 

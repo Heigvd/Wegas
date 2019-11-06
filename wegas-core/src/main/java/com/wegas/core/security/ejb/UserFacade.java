@@ -31,17 +31,16 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.messaging.ejb.EMailFacade;
 import java.util.*;
-import javax.inject.Inject;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.naming.NamingException;
 import javax.persistence.Query;
-import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.shiro.SecurityUtils;
@@ -779,7 +778,7 @@ public class UserFacade extends BaseFacade<User> {
      * If an address is invalid (but syntactically correct), it should not prevent from sending to the other addressees.
      */
     public void sendEmail(Email email) /* throws MessagingException */ {
-        int nbExceptions = 0;
+        List<Exception> exceptions = new ArrayList<>();
         EMailFacade emailFacade = new EMailFacade();
         for (Player p : email.getTo()) {
             Player rP = playerFacade.find(p.getId());
@@ -792,7 +791,7 @@ public class UserFacade extends BaseFacade<User> {
                             email.getBody(),
                             Message.RecipientType.TO, "text/html; charset=utf-8", true);
                 } catch (MessagingException e) {
-                    nbExceptions++;
+                    exceptions.add(e);
                 }
             }
         }
@@ -803,10 +802,13 @@ public class UserFacade extends BaseFacade<User> {
                     email.getSubject(),
                     email.getBody(), Message.RecipientType.TO, "text/html; charset=utf-8", true);
         } catch (MessagingException e) {
-            nbExceptions++;
+            exceptions.add(e);
         }
-        if (nbExceptions > 0) {
-            throw WegasErrorMessage.error(nbExceptions + " error(s) while sending email");
+        if (!exceptions.isEmpty()) {
+            for (Exception e :exceptions){
+                logger.error("saendMail {}", e);
+            }
+            throw WegasErrorMessage.error(exceptions.size() + " error(s) while sending email");
         }
     }
 

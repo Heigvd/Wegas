@@ -6,26 +6,21 @@ import { varIsList, entityIs } from '../../../data/entities';
 import { get } from 'lodash-es';
 
 import { Container, Node } from '../Views/TreeView';
-import { moveDescriptor } from '../../../data/Reducer/variableDescriptor';
+import { moveDescriptor } from '../../../data/Reducer/VariableDescriptorReducer';
 import {
   getEntityActions,
   getIcon,
   getLabel,
   getChildren,
 } from '../../editionConfig';
-import {
-  StoreDispatch,
-  getDispatch,
-  useStore,
-  store,
-} from '../../../data/store';
+import { StoreDispatch, useStore, store } from '../../../data/store';
 import { css, cx } from 'emotion';
 import { shallowIs } from '../../../Helper/shallowIs';
 import { Menu } from '../../../Components/Menu';
 import { FontAwesome, withDefault } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { AddMenuParent, AddMenuChoice } from './AddMenu';
-import { editorLabel } from '../../../data/methods/VariableDescriptor';
+import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { SearchTool } from '../SearchTool';
 import { focusTabContext } from '../LinearTabLayout/LinearLayout';
 import { useAsync } from '../../../Components/Hooks/useAsync';
@@ -70,7 +65,7 @@ interface TreeProps {
 function TreeView({ variables, localState, localDispatch }: TreeProps) {
   const [search, setSearch] = React.useState('');
   const { data } = useAsync(itemsPromise);
-  const globalDispatch = getDispatch() as StoreDispatch;
+  const globalDispatch = store.dispatch;
 
   return (
     <Toolbar>
@@ -309,7 +304,7 @@ export function Tree() {
 export default function TreeWithMeta() {
   const entities = useGameModel().itemsIds;
   return (
-    <ComponentWithForm>
+    <ComponentWithForm entityEditor>
       {({ localState, localDispatch }) => {
         return (
           <TreeView

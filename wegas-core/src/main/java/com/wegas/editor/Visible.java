@@ -8,13 +8,12 @@
 
 package com.wegas.editor;
 
+import com.wegas.core.persistence.annotations.WegasConditions.Condition;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import com.wegas.core.persistence.annotations.WegasConditions.Condition;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD })

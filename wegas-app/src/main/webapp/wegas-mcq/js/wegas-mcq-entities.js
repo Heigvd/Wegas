@@ -60,7 +60,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     return false;
                 } else {
                     var qReplies = qInstance.getValidatedReplies();
-
                     if (qReplies) {
                         if (this.get('maxReplies')) {
                             // is maximum reached?
@@ -1169,7 +1168,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             description: Y.Wegas.Helper.getTranslationAttr({
                 label: "Description",
-                index: 12,
+                index: 10,
                 type: HTML
             }),
             defaultInstance: {
@@ -1209,9 +1208,14 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         view: {
                             type: HIDDEN
                         }
-                    }
+                    },
+                    feedback: Y.Wegas.Helper.getTranslationAttr({
+                        label: "Feedback",
+                        index: 10,
+                        type: HTML
+                    })
                 },
-                index: 3
+                index: 20
             }
         },
         EDITMENU: {
@@ -1299,6 +1303,22 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 label: "is active",
                 returns: BOOLEAN,
                 arguments: [SELFARG]
+            },
+            setFeedback: {
+                label: 'set feedback',
+                className: 'wegas-method-returnline',
+                arguments: [
+                    SELFARG,
+                    Y.Wegas.Helper.getTranslationAttr({type: HTML})
+                ]
+            },
+            getFeedback: {
+                label: "feedback",
+                returns: STRING,
+                arguments: [SELFARG],
+                localEval: function(player) {
+                    return I18n.t(this.getInstance(player).get("feedback"));
+                }
             }
         }
     });
@@ -1323,7 +1343,12 @@ YUI.add('wegas-mcq-entities', function(Y) {
             unread: {
                 value: true,
                 type: BOOLEAN
-            }
+            },
+            feedback: Y.Wegas.Helper.getTranslationAttr({
+                label: "Feedback",
+                index: 10,
+                type: HTML
+            })
         }
     });
 });
