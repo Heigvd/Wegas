@@ -12,7 +12,8 @@
 YUI.add('wegas-dashboard', function(Y) {
     "use strict";
 
-    var TITLE_TEMPLATE = "<span class='team-name'></span>",
+    var DASHBOARD_LOCALSTORAGE = "wegas-dashboard-monitoring",
+        TITLE_TEMPLATE = "<span class='team-name'></span>",
         LINK_TEMPLATE = "<span class='details__link details__link__closed'>Details</span>",
         BASE_TEMPLATE = "<div><div class='team-details__notes'><textarea class='infos-comments' placeholder='Enter a comment here'></textarea></div>" + "</div>",
         TEAM_LIST_TEMPLATE = "<div class='team-details__players'><ul class='team-details__players__list'></ul>" + "</div>",
@@ -141,9 +142,20 @@ YUI.add('wegas-dashboard', function(Y) {
 
             this.detailsOverlay.get("contentBox").addClass("wegas-dashboard-monitor--popup-overlay");
             this.detailsTarget = null;
+            
+            var cfg = localStorage.getItem(DASHBOARD_LOCALSTORAGE) || {};
+            if (typeof cfg === "string") {
+                try {
+                    cfg = JSON.parse(cfg);
+                } catch (e) {
+                    cfg = {};
+                }
+            }
 
             this.preferences = {
-                main: {},
+                main: {
+                    monitoring: cfg
+                },
             };
         },
         getDefaultTableStructure: function() {
@@ -387,23 +399,21 @@ YUI.add('wegas-dashboard', function(Y) {
                                             items: {},
                                             customizable: false
                                         },
-                                            prefs = this.preferences.main[results.structure[i].title] || {};
+                                        prefs = this.preferences.main[results.structure[i].title] || {};
                                         for (j in results.structure[i].items) {
                                             item = results.structure[i].items[j];
                                             currGroup.items[item.id] = item;
-                                            if (!prefs[item.id]) {
-                                                prefs[item.id] = {
-                                                    id: item.id,
-                                                    label: item.label || item.id,
-                                                    active: item.active
-                                                };
-                                            }
-                                            if (item.active === false) {
-                                                // Until we make this option a standard, only show it when at least one column is inactive:
+                                            var isActive = prefs[item.id] ? prefs[item.id].active : item.active;
+                                            prefs[item.id] = {
+                                                id: item.id,
+                                                label: item.label || item.id,
+                                                active: isActive
+                                            };
+                                            
+                                            // Until we make this option a standard, only show it when at least one column is initially inactive:
+                                            if (item.active === false && !currGroup.customizable) {
                                                 currGroup.customizable = true;
-                                                if (currGroup.label.indexOf("customize-group") < 0) {
-                                                    currGroup.label = '<span class="customize-group" data-group="' + currGroup.id + '" title="Customize columns">' + currGroup.label + '</span>';
-                                                }
+                                                currGroup.label = '<span class="customize-group" data-group="' + currGroup.id + '" title="Customize columns">' + currGroup.label + '</span>';
                                             }
                                         }
                                         this._monitoredData.structure.main.def[results.structure[i].title] = currGroup;
@@ -839,14 +849,15 @@ YUI.add('wegas-dashboard', function(Y) {
                 group = target.getData("group"),
                 cbx = target.getData("cbx"),
                 items = this.preferences.main[group],
-                empty = true;
+                empty = true,
+                storedPrefs = {};
 
             items[cbx].active = !(items[cbx].active);
-            // Don't allow empty monitoring groups ...
             for (var item in items) {
+                storedPrefs[item] = { active: items[item].active };
+                // Don't allow empty monitoring groups ...
                 if (items[item].active) {
                     empty = false;
-                    break;
                 }
             }
             if (empty) {
@@ -858,6 +869,8 @@ YUI.add('wegas-dashboard', function(Y) {
                 } else {
                     target.removeClass("selected");
                 }
+                // Update localStorage:
+                localStorage.setItem(DASHBOARD_LOCALSTORAGE, JSON.stringify(storedPrefs));
             }
             event.halt(true);
         },
