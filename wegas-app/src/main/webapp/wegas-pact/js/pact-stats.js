@@ -1,17 +1,90 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2019  School of Business and Engineering Vaud, Comem, MEI, HES-SO
+ * Licensed under the MIT License
+ * 
+ * Author: J.Hulaas, oct. 2019
+ */
+
 YUI.add('pact-stats', function (Y) {
     "use strict";
     
     var OBJECT_ID = "object id", // In Cyril's logs it's just "object"
-        OBJECT_PREFIX = "internal://wegas/",
-        PROGGAME_LEVEL_PREFIX = OBJECT_PREFIX + "proggame-level/",
-        PROGGAME_THEORY_PREFIX = OBJECT_PREFIX + "proggame-theory/",
+        OBJECT_PROGGAME_PREFIX = "internal://wegas/",
+        OBJECT_ACTIVITY_PREFIX = "act:wegas/",
+        THEORY_SHORTOBJECT = "proggame-theory",
+        PROGGAME_LEVEL_SHORTOBJECT = "proggame-level",
+        PROGGAME_LEVEL_PREFIX = OBJECT_PROGGAME_PREFIX + PROGGAME_LEVEL_SHORTOBJECT + "/",
+        PROGGAME_THEORY_PREFIX = OBJECT_PROGGAME_PREFIX + THEORY_SHORTOBJECT + "/",
         ANNOTATED_FILENAME = "xapi-annotated.csv",
         PACT_STATS_CLASS = ".pact-stats-widget",
-        MIN_LEVELS_OUTLIERS = 3;
+        PACT_STATS_OPTIONS = ".pact-stats-options",
+        PACT_STATS_HEADER = ".pact-stats-header",
+        PACT_STATS_TABLE = ".pact-stats-table",
+        PACT_STATS_FOOTER = ".pact-stats-footer",
+        TABLE_ID = "pact-stats",
+        MIN_LEVELS_OUTLIERS = 2;
 
     Y.Wegas.PactStats = Y.Base.create("pact-stats", Y.Widget,
             [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        CONTENT_TEMPLATE: '<div class="' + PACT_STATS_CLASS.substr(1) + '"></div>',
+        CONTENT_TEMPLATE:
+                    '<div class="' + PACT_STATS_CLASS.substr(1) + '"><div class="' +
+                        PACT_STATS_OPTIONS.substr(1) + '">' +
+                        '<input type="checkbox" id="exclude-outliers" name="exclude-outliers"><label for="exclude-outliers"> Exclure les joueurs n\'ayant pas terminé au moins 2 niveaux</label><br>' +
+                        '<input type="checkbox" id="exclude-unfinished" name="exclude-unfinished"><label for="exclude-unfinished"> Exclure les niveaux non terminés (chez tous les joueurs)</label>' +
+                        '<i class="fa fa-2x fa-refresh" id="refresh"></i>' +
+                        '</div><div class="' + 
+                        PACT_STATS_HEADER.substr(1) + '"></div><div class="' + 
+                        PACT_STATS_TABLE.substr(1) + '"></div><div class="' + 
+                        PACT_STATS_FOOTER.substr(1) + '"></div>' +
+                        'Pour télécharger le fichier CSV, choisir un séparateur décimal : <button type="button" id="downloadTableComma">Virgule</button>&nbsp;<button type="button" id="downloadTablePoint">Point</button>' +
+                        '</div>',
+
+        // Quick and simple export of table #TABLE_ID into a csv
+        // From https://stackoverflow.com/questions/15547198/export-html-table-to-csv
+        exportTableToCSV: function(decimalSeparator) {
+            // Select rows from table_id
+            var rows = document.querySelectorAll('table#' + TABLE_ID + ' tr'),
+                csv = [],
+                numberFormatter = decimalSeparator === ',' ?
+                    new Intl.NumberFormat('fr-CH', { style: 'decimal', useGrouping: false, maximumFractionDigits: 2 }) :
+                    new Intl.NumberFormat('en-US', { style: 'decimal', useGrouping: false, maximumFractionDigits: 2 });
+            for (var i = 0; i < rows.length; i++) {
+                var row = [], cols = rows[i].querySelectorAll('td, th');
+                for (var j = 0; j < cols.length; j++) {
+                    // Clean innertext to remove multiple spaces and jumpline (break csv)
+                    var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ')
+                    // Escape double-quote with double-double-quote (see https://stackoverflow.com/questions/17808511/properly-escape-a-double-quote-in-csv)
+                    data = data.replace(/"/g, '""');
+                    // JH: Localize floating-point numbers (dots vs commas) to enable direct loading into Excel
+                    if (data !== '' && !isNaN(data)) {
+                        data = numberFormatter.format(data);
+                    }
+                    // JH: duplicate cells as many times as required by colspan:
+                    if (cols[j].colSpan > 1) {
+                        for (var rs = 1; rs <= cols[j].colSpan; rs++) {
+                            row.push('"' + data + '"');
+                        }
+                    } else {
+                        row.push('"' + data + '"');
+                    }
+                }
+                csv.push(row.join(';'));
+            }
+            var csv_string = csv.join('\n');
+            // Download it
+            var filename = TABLE_ID + '_' + new Date().toLocaleDateString() + '.csv';
+            var link = document.createElement('a');
+            link.style.display = 'none';
+            link.setAttribute('target', '_blank');
+            link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv_string));
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        },
 
 
         // Returns an object where each entry is the data of a distinct team.
@@ -25,16 +98,18 @@ YUI.add('pact-stats', function (Y) {
                     teams[currTeam] = [datatable[i]];
                 }
             }
+            for (var t in teams) {
+                this.setupTeamLevels(teams[t]);
+            }
             return teams;
         },
 
-        // Filters out outliers, i.e. teams with less than given number of code submissions or completed levels.
-        // The minimal number of levels is obviously the strongest condition.
+        // Filters out outliers, i.e. teams with less than given number of completed levels.
         removeOutliers: function(teams) {
-            var minLevels = MIN_LEVELS_OUTLIERS;
             for (var team in teams) {
-                var lastLevel = this.markCompletedLevels(teams[team]);
-                if (lastLevel < 0 || this.levels[lastLevel] < minLevels) {
+                var levels = this.getLevels(teams[team]),
+                    lastLevel = levels.length > 0 ? levels[levels.length-1].level : 0;
+                if (lastLevel <= 0 || this.levels[lastLevel] < MIN_LEVELS_OUTLIERS) {
                     delete teams[team];
                 }
             }
@@ -42,16 +117,18 @@ YUI.add('pact-stats', function (Y) {
         },
         
         // Checks if timestamps are in chronological order (which they should)
+        // and replaces string-based timestamps by corresponding Date objects.
         checkTimestamps: function(teams) {
             var ok = true,
                 nbAlerts = 0,
                 badTeam = '';
             for (var team in teams) {
                 var currTeam = teams[team],
-                    t = "0";
+                    t = new Date("0");
                 for (var i = 0; i < currTeam.length; i++) {
-                    var nextT = currTeam[i].timestamp;
-                    if (nextT >= t || new Date(nextT) >= new Date(t)) {
+                    var nextT = new Date(currTeam[i].timestamp);
+                    currTeam[i].timestamp = nextT;
+                    if (nextT >= t) {
                         t = nextT;
                     } else {
                         nbAlerts++;
@@ -61,7 +138,7 @@ YUI.add('pact-stats', function (Y) {
                 }
             }
             if (nbAlerts > 0) {
-                alert("Data not in chronological order, at least for team " + badTeam);
+                alert("Data not in chronological order, at least for user/team " + badTeam);
             }
             return ok;
         },
@@ -75,39 +152,72 @@ YUI.add('pact-stats', function (Y) {
             }
             return nb;
         },
+        
+        // Returns the level info object for the given team.
+        // Param "team" may be a the name of the team or directly its object.
+        getLevels: function(team) {
+            if (typeof team === "string") {
+                return this.teams[team][0].levels;
+            } else {
+                return team[0].levels;                
+            }
+        },
 
-        // Sets attribute completed=true for all statements of completed levels (to prevent statistics on abandoned levels).
+        getName: function(team) {
+            return team[0].team;
+        },
+        
+        // Adds attribute "levelInfo" to all statements: { level, start, end, completed }
+        // Adds attribute "levels" to the team object: [ levelInfo, ... ]
         // Returns the last completed level.
-        markCompletedLevels: function(team) {
-            var completed = 0,
+        setupTeamLevels: function(team) {
+            var levels = [],
+                completed = 0,
                 prevLevel = -1,
                 prevLevelEnd = -1,
-                i;
+                i, levelInfo;
+            
             for (var level in this.levels) {
                 completed = this.indexOf(team, "completed", PROGGAME_LEVEL_PREFIX + level, completed);
                 if (completed > 0) {
-                    for (i = prevLevelEnd+1; i <= completed; i++) {
-                        team[i].completed = true;
+                    var firstStmtNo = prevLevelEnd+1,
+                        lookAhead = completed+1;
+                    // Integrate statements following the completion of the level, like variable updates, up to the start of the next level:
+                    while (lookAhead < team.length && team[lookAhead].shortVerb !== "initialized") {
+                        lookAhead++;
+                    }
+                    completed = lookAhead-1;
+                    if (firstStmtNo < completed) {
+                        levelInfo = { level: level, start: firstStmtNo, end: completed, completed: true };
+                        team[firstStmtNo].levelInfo = levelInfo;
+                        levels[level] = levelInfo;
+                    }
+                    for (i = firstStmtNo; i <= completed; i++) {
+                        team[i].levelInfo = levelInfo;
                     }
                     prevLevelEnd = completed;
                     prevLevel = level;
                 } else {
-                    // No more completed levels, mark remaining statements as not completed and exit.
+                    // Level not completed, mark remaining statements as not completed and exit.
+                    levelInfo = { level: level, start: prevLevelEnd+1, end: team.length-1, completed: false };
                     for (i = prevLevelEnd+1; i < team.length; i++) {
-                        team[i].completed = false;
+                        team[i].levelInfo = levelInfo;
                     }
-                    return prevLevel;
+                    levels[level] = levelInfo;
+                    break;
                 }
             }
+            team[0].levels = levels;
             return prevLevel;
         },
 
         
         // Returns the index of the chronologically first given verb with the given objectId,
         // or -1 if not found.
-        indexOf: function (team, verb, objectId, startFrom) {
+        indexOf: function (team, verb, objectId, startFrom, upperBound) {
             startFrom = startFrom || 0;
-            for (var i = startFrom; i < team.length; i++) {
+            upperBound = upperBound || team.length-1;
+            for (var i = startFrom; i <= upperBound; i++) {
                 if (team[i].shortVerb === verb &&
                     team[i][OBJECT_ID] === objectId) {
                     return i;
@@ -116,43 +226,68 @@ YUI.add('pact-stats', function (Y) {
             return -1;
         },
         
-        noNewSubmissions: function() {
-            return { submissions: '', syntaxErrors: '', semanticErrors: '', successes: '', resubmissions: '' };
+        newUnfinishedLevel: function() {
+            return { 
+                submissions: '', syntaxErrors: '', semanticErrors: '', 
+                successes: '', resubmissions: '',
+                theoryReads: '', theoryDuration: '',
+                sequence: ''
+            };
         },
         
-        newSubmissionSummary: function(submissions, resubmissions, syntaxErrors, semanticErrors, successes) {
-            return { submissions: submissions, resubmissions: resubmissions, syntaxErrors: syntaxErrors, semanticErrors: semanticErrors, successes: successes };
+        newLevelSummary: function(submissions, resubmissions,
+                                  syntaxErrors, semanticErrors, successes,
+                                  theoryReads, theoryDuration, sequence) {
+            return { 
+                submissions: submissions, resubmissions: resubmissions, 
+                syntaxErrors: syntaxErrors, semanticErrors: semanticErrors, 
+                successes: successes,
+                theoryReads: theoryReads, theoryDuration: theoryDuration,
+                sequence: sequence
+            };
         },
         
-        // Count syntax and semantic errors at given level.
-        // Arg level must follow the internal format, i.e. "11" for "1.1"
-        countSubmissionsForLevel: function (team, level) {
-            level = level || 11;
-            var start = this.indexOf(team, "initialized", PROGGAME_LEVEL_PREFIX + level);
-            if (start < 0) {
-                return this.noNewSubmissions();
+        // Count submissions, syntax and semantic errors for the given team.
+        // If argument 'level' is undefined, count events for the whole game.
+        // Also count theory reads and durations.
+        // Also return the sequence of significant events.
+        countEvents: function (team, level) {
+            var fromPos, toPos;
+            if (!level) {
+                // Process the whole game:
+                fromPos = 0;
+                toPos = team.length-1;
+                // Check if this player did not even finish the first level:
+                if (!team[0].levelInfo.completed && this.excludeUnfinishedLevels) {
+                    return this.newUnfinishedLevel();
+                }
+            } else {
+                var levelInfo = this.getLevels(team)[level];
+                if (levelInfo) {
+                    fromPos = levelInfo.start;
+                    toPos = levelInfo.end;
+                    if (!levelInfo.completed && this.excludeUnfinishedLevels) {
+                        return this.newUnfinishedLevel();
+                    }
+                } else {
+                    return this.newUnfinishedLevel();
+                }
             }
-            start++;
-            var end = this.indexOf(team, "completed", PROGGAME_LEVEL_PREFIX + level, start);
-            if (end < 0) {
-                return this.noNewSubmissions();
-            }
-            return this.countSubmissions(team, start, end-1);
-        },
-        
-        // Count submissions, syntax and semantic errors for team between fromPos and toPos (included)
-        countSubmissions: function (team, fromPos, toPos) {
-            fromPos = fromPos || 0;
-            toPos = toPos || team.length-1;
+            
             var syntaxErrors = 0,
                 semanticErrors = 0,
                 successes = 0,
                 submissions = 0,
                 duplicatas = 0,
-                prevCode = '';
+                prevCode = '',
+                theoryReads = 0,
+                theoryDuration = 0,
+                reads = [],
+                sequence = '<span class="sequence" data-team="' + this.getName(team) + '" data-level="' + (level ? level : -1) + '">';
+
             for (var i = fromPos; i <= toPos; i++) {
                 var currStmt = team[i];
-                if (!currStmt.completed) {
+                if (!currStmt.levelInfo.completed && this.excludeUnfinishedLevels) {
                     break;
                 }
                 if (currStmt.shortVerb === "submit") {
@@ -166,21 +301,114 @@ YUI.add('pact-stats', function (Y) {
                     if (currStmt.completion === "false") {
                         if (currStmt.success === "false") {
                             syntaxErrors++;
+                            sequence += '<span class="syntax-error" title="Syntax error (' + currStmt.timestamp.toTimeString().substr(0,8) + ')">SYN</span>';
                         } else {
                             semanticErrors++;
+                            sequence += '<span class="semantic-error" title="Semantic error (' + currStmt.timestamp.toTimeString().substr(0,8) + ')">SEM</span>';
                         }
                     } else {
                         if (currStmt.success === "false") {
                             alert("combinaison impossible");
                         } else {
                             successes++;
+                            sequence += '<span class="success" title="Success ('+ currStmt.timestamp.toTimeString().substr(0,8) + ')">OK</span>';
                         }
                     }
+                // Investigate theory reads WHICHEVER topic is consulted.
+                // This code is expected to correctly manage interleaved suspend/resume verbs for different theory topics,
+                // therefore we scan all statements sequentially, without skipping any potential "resume" of another topic in-between.
+                } else if ((currStmt.shortVerb === "initialized" || currStmt.shortVerb === "resumed") && 
+                           currStmt.shortObject === THEORY_SHORTOBJECT &&
+                           !currStmt._accounted) {
+                    theoryReads++;
+                    var topic = currStmt.objectParam;
+                    currStmt._accounted = true;
+                    reads.push(currStmt);
+                    // Find the corresponding "suspended" verb
+                    var endTopic = this.indexOf(team, "suspended", PROGGAME_THEORY_PREFIX + topic, i+1, toPos);
+                    if (endTopic < 0) {
+                        Y.log("Pas de fin de lecture de la théorie pour le joueur " + this.getName(team));
+                        // Arrange for duration to be null:
+                        endTopic = i;
+                    } else {
+                        // Try to concatenate chained resumed/suspended sequences on the same theory topic.
+                        // (the player may indeed spend a lot of time reading without interacting much with the GUI).
+                        var lookAhead = endTopic+1,
+                            lookAheadStmt = team[lookAhead];
+                        while (lookAheadStmt &&
+                               lookAheadStmt.shortVerb === "resumed" && 
+                               lookAheadStmt.shortObject === THEORY_SHORTOBJECT &&
+                               lookAheadStmt.objectParam === topic) {
+                            lookAheadStmt._accounted = true;
+                            reads.push(lookAheadStmt);
+                            var endTopic2 = this.indexOf(team, "suspended", PROGGAME_THEORY_PREFIX + topic, lookAhead+1, toPos);
+                            if (endTopic2 < 0) {
+                                Y.log("Pas de fin de lecture de la théorie pour le joueur " + this.getName(team));
+                                break;
+                            }
+                            Y.log("Concatenate theory reads on topic '" + topic + "' at " + lookAheadStmt.timestamp + " (stmt " + lookAhead + ")");
+                            endTopic = endTopic2;
+                            lookAhead = endTopic2+1;
+                            lookAheadStmt = team[lookAhead];
+                        }
+                    }
+                    var duration = Math.round((team[endTopic].timestamp - currStmt.timestamp) / 1000);
+                    topic += ' (' + currStmt.timestamp.toTimeString().substr(0,8) + ' - ' + team[endTopic].timestamp.toTimeString().substr(0,8) + ")";
+                    theoryDuration += duration;
+                    sequence += '<span class="theory" title="Theory: ' + topic + '">TH:'+ duration + 's</span>';
+                } else if (currStmt.shortVerb === "initialized" && 
+                           currStmt.shortObject === PROGGAME_LEVEL_SHORTOBJECT) {
+                    sequence += '<span class="initialize-level"> </span>';
                 }
             }
-            return this.newSubmissionSummary(submissions, duplicatas, syntaxErrors, semanticErrors, successes);
+            sequence += '</span>';
+            for (var r in reads) {
+                reads[r]._accounted = false;
+            }
+
+            return this.newLevelSummary(submissions, duplicatas, syntaxErrors, semanticErrors, successes, theoryReads, theoryDuration, sequence);
+        },
+        
+        // Produces a textual listing of the given level for the given team
+        dumpLevel: function(teamName, level) {
+            var team = this.teams[teamName],
+                interval = this.getLevels(team)[level],
+                lines = [];
+            if (interval.start < 0 || interval.end < 0) {
+                Y.log("dumpLevel impossible");
+            }
+            for (var i = interval.start; i <= interval.end; i++) {
+                var curr = team[i];
+                lines.push(curr.timestamp.toTimeString().substr(0,8) + ' &nbsp; ' + 
+                        curr.shortVerb + ' &nbsp; ' + curr.shortObject + ' &nbsp; ' + 
+                        (curr.objectParam ? curr.objectParam : ''));
+            }
+            var panel = this.getPanel({
+                content:
+                    '<div class="no-user-select header"><div class="title">Joueur: ' + 
+                    teamName + ' - Niveau: ' + (level/10).toFixed(1) +
+                    '</div><button class="yui3-button close-button">X</button></div>' +
+                    '<div style="margin:30px auto;"><div style="text-align:left; margin:auto; width: fit-content;">' +
+                    lines.join('<br>') +
+                    "</div></div>"
+            });
         },
 
+        getPanel: function(cfg) {
+            var panel = new Y.Wegas.Panel(
+                Y.mix(cfg, {
+                    modal: false,
+                    centered: true,
+                    width: 300,
+                    buttons: {}
+                })
+            ).render();
+            panel.plug(Y.Plugin.DraggablePanel, {});
+            panel.get('boundingBox').addClass('proggame-stats-panel')
+                    .one('button').on('click', function(){ panel.exit(); });
+            return panel;
+        },
+            
         calcSum: function (teams, column) {
             var total = 0;
             for (var team in teams) {
@@ -231,34 +459,50 @@ YUI.add('pact-stats', function (Y) {
         digestAndStoreColumn: function(inputTable, column, target) {
             var digestObj = this.digestColumn(inputTable, column);
             target.Sum[column] = digestObj.sum;
-            target.Mean[column] = digestObj.card !== 0 ? digestObj.mean.toFixed(2) : '';
-            target.Stdev[column] = digestObj.card !== 0 ? digestObj.stdev.toFixed(2) : '';
+            target.Mean[column] = digestObj.card !== 0 ? digestObj.mean : '';
+            target.Stdev[column] = digestObj.card !== 0 ? digestObj.stdev : '';
         },
             
+        // Convenience function to store empty digest into 'column' of 'target'
+        emptyDigestAndStoreColumn: function(column, target) {
+            target.Sum[column] = '';
+            target.Mean[column] = '';
+            target.Stdev[column] = '';
+        },
+
         addCounters: function (teams, outputTable) {
-            var currError, lvl, colIsOdd = true;
+            var currError, lvl;
             
-            this.teamsOutputHeaders.push("Submits", "Syntax errs", "Semantic errs", "Successes");
-            this.teamsOutputColgroups.push({ span: 5, clazz: "even" });
+            this.outputColgroupHeaders.push("GLOBAL");
+            this.outputColumnHeaders.push("Submits", "Syntax errs", "Semantic errs", "Successes", "Theory reads", "Theory [secs]");  //, "Sequence");
+            this.outputColgroups.push({ span: 6, clazz: "even" });
+            var colGroup = 3;
             for (lvl in this.levels) {
                 var strLvl = (lvl/10).toFixed(1);
-                this.teamsOutputHeaders.push("Submits "+strLvl, "Synt. "+strLvl, "Sem. "+strLvl);
-                this.teamsOutputColgroups.push({ span: 3, clazz: (colIsOdd ? "odd" : "even") });
-                colIsOdd = !colIsOdd;
+                this.outputColgroupHeaders.push("Niv. "+strLvl);
+                this.outputColumnHeaders.push("Submits", "Synt.", "Sem.", "Theory", "Theory [secs]", "Sequence");
+                this.outputColgroups.push({ span: 6, clazz: (colGroup%2 === 1 ? "odd" : "even") });
+                colGroup++;;
             }
 
             for (var team in teams) {
-                currError = this.countSubmissions(teams[team]);
+                currError = this.countEvents(teams[team]);
                 outputTable[team].submits = currError.submissions;
                 outputTable[team].syntaxErrors = currError.syntaxErrors;
                 outputTable[team].semanticErrors = currError.semanticErrors;
                 outputTable[team].successes = currError.successes;
+                outputTable[team].theoryReads = currError.theoryReads;
+                outputTable[team].theoryDuration = currError.theoryDuration;
+                //outputTable[team].sequence = currError.sequence;
                 
                 for (lvl in this.levels) {
-                    currError = this.countSubmissionsForLevel(teams[team], lvl);
+                    currError = this.countEvents(teams[team], lvl);
                     outputTable[team]["submits"+lvl] = currError.submissions;
                     outputTable[team]["syntaxErrors"+lvl] = currError.syntaxErrors;
                     outputTable[team]["semanticErrors"+lvl] = currError.semanticErrors;
+                    outputTable[team]["theoryReads"+lvl] = currError.theoryReads;
+                    outputTable[team]["theoryDuration"+lvl] = currError.theoryDuration;
+                    outputTable[team]["sequence"+lvl] = currError.sequence;
                 }
             }
             
@@ -266,18 +510,25 @@ YUI.add('pact-stats', function (Y) {
             this.digestAndStoreColumn(outputTable, "syntaxErrors", this.teamsTableBottom);
             this.digestAndStoreColumn(outputTable, "semanticErrors", this.teamsTableBottom);
             this.digestAndStoreColumn(outputTable, "successes", this.teamsTableBottom);
+            this.digestAndStoreColumn(outputTable, "theoryReads", this.teamsTableBottom);
+            this.digestAndStoreColumn(outputTable, "theoryDuration", this.teamsTableBottom);
+            //this.emptyDigestAndStoreColumn("sequence", this.teamsTableBottom);
 
             for (lvl in this.levels) {
                 this.digestAndStoreColumn(outputTable, "submits"+lvl, this.teamsTableBottom);
                 this.digestAndStoreColumn(outputTable, "syntaxErrors"+lvl, this.teamsTableBottom);
                 this.digestAndStoreColumn(outputTable, "semanticErrors"+lvl, this.teamsTableBottom);
+                this.digestAndStoreColumn(outputTable, "theoryReads"+lvl, this.teamsTableBottom);
+                this.digestAndStoreColumn(outputTable, "theoryDuration"+lvl, this.teamsTableBottom);
+                this.emptyDigestAndStoreColumn("sequence"+lvl, this.teamsTableBottom);
             }
         },
         
         prepareOutputTable: function(teams) {
             var teamsOutput = {};
-            this.teamsOutputHeaders = ["Joueur"];
-            this.teamsOutputColgroups = [];
+            this.outputColgroupHeaders = [""];
+            this.outputColumnHeaders = ["Joueur"];
+            this.outputColgroups = [{ span: 1, clazz: "odd"}];
             this.teamsTableBottom = {
                 Sum : {},
                 Mean : {},
@@ -290,17 +541,26 @@ YUI.add('pact-stats', function (Y) {
             return teamsOutput;
         },
         
-        genOutput: function (teamsOutputTable) {
-            var str = "<table><colgroup>";
-            for (var g in this.teamsOutputColgroups) {
-                var gConf = this.teamsOutputColgroups[g];
+        genOutput: function (teamsOutputTable, nbDecimals) {
+            nbDecimals = nbDecimals || 2;
+            var str = '<table id="' + TABLE_ID + '"><colgroup>';
+            for (var g in this.outputColgroups) {
+                var gConf = this.outputColgroups[g];
                 str += '<col span="' + gConf.span + '" class="' + gConf.clazz + '">';
             }
             str += "</colgroup>";
-            // Generate Headers
+            // Generate Group Headers
             str += '<thead><tr class="header">';
-            for (var head in this.teamsOutputHeaders) {
-                var currHead = this.teamsOutputHeaders[head];
+            for (var colgroup in this.outputColgroupHeaders) {
+                var currHead = this.outputColgroupHeaders[colgroup],
+                    span = this.outputColgroups[colgroup].span;
+                str += '<th colspan="' + span + '">' + currHead + '</th>';
+            }
+            str += "</tr>";
+            // Generate Column Headers
+            str += '<tr class="header">';
+            for (var head in this.outputColumnHeaders) {
+                var currHead = this.outputColumnHeaders[head];
                 str += '<th>' + currHead + '</th>';
             }
             str += "</tr></thead><tbody>";
@@ -310,7 +570,12 @@ YUI.add('pact-stats', function (Y) {
                 str += "<tr>";
                 str += "<th>" + team + "</th>";
                 for (var item in currTeam) {
-                    str += "<td>" + currTeam[item] + "</td>";
+                    var currItem = currTeam[item];
+                    if (currItem === '' || isNaN(currItem) || Number.isSafeInteger(currItem)) {
+                        str += "<td>" + currItem + "</td>";                        
+                    } else {
+                        str += "<td>" + currItem.toFixed(nbDecimals) + "</td>";                        
+                    }
                 }
                 str += "</tr>";
             }
@@ -320,17 +585,31 @@ YUI.add('pact-stats', function (Y) {
                 var curr = this.teamsTableBottom[line];
                 str += '<tr class="' + line.toLowerCase() + '"><th>' + line + '</th>';
                 for (var item2 in curr) {
-                    str += "<td>" + curr[item2] + "</td>";
+                    if (Number.isSafeInteger(curr[item2]) || curr[item2] === '') {
+                        str += "<td>" + curr[item2] + "</td>";
+                    } else {
+                        str += "<td>" + curr[item2].toFixed(nbDecimals) + "</td>";                        
+                    }
                 }
                 str += "</tr>";
             }
             str += "</tfoot></table>";
-            Y.one(PACT_STATS_CLASS).append(str);
+            Y.one(PACT_STATS_TABLE).setHTML(str);
         },
         
+        addHeader: function(msg) {
+            Y.one(PACT_STATS_HEADER).append("<p>" + msg + "</p>");
+        },
+        
+        clearPage: function(msg) {
+            Y.one(PACT_STATS_FOOTER).setHTML("");
+            Y.one(PACT_STATS_TABLE).setHTML("");
+            Y.one(PACT_STATS_HEADER).setHTML("");
+        },
+
         abort: function(msg) {
-            Y.one(PACT_STATS_CLASS).setHTML("<p>" + msg + "</p>");
-            throw new Exception(msg);
+            Y.one(PACT_STATS_HEADER).append("<p>" + msg + "</p>");
+            throw msg;
         },
 
         getGameLevels: function () {
@@ -367,7 +646,7 @@ YUI.add('pact-stats', function (Y) {
                                         for (var lvl in levels) {
                                             liste += (lvl/10).toFixed(1) + ' &nbsp;';
                                         }
-                                        Y.one(PACT_STATS_CLASS).append("Niveaux actifs dans ce jeu : " + liste + '<div style="margin-bottom:10px;">&nbsp;</div>');
+                                        ctx.addHeader("Niveaux actifs dans ce jeu : " + liste);
                                         resolve("got levels");
                                     } else {
                                         ctx.abort("Impossible de trouver les pages de jeu");
@@ -383,43 +662,130 @@ YUI.add('pact-stats', function (Y) {
             });
         },
 
-        initializer: function () {
-            this.getGameLevels().then(Y.bind(function() {
-                var owner = {
-                    name: "Game",
-                    id: Y.Wegas.Facade.Game.cache.getCurrentGame().get("id")
-                };
-                var logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val").logID;
-                var path = owner.name === "Game" || owner.name === "DebugGame" ? "Games" : "Teams";
+        // Invoked when the dashboard tab gets visible
+        refreshFromTab: function(e) {
+            if (e.newVal) {
+                this.updateOptions();
+                this.refresh();
+            }
+        },
+        
+        // Invoked by the refresh button
+        refreshFromIcon: function() {
+            var btn = this.get("contentBox").one("#refresh").addClass("fa-spin");
+            this.refresh();
+            Y.later(1000, this, function(){ btn.removeClass("fa-spin"); });
+        },
+        
+        // Refresh page (tab contents)
+        refresh: function() {
+            this.clearPage();
+            var owner = {
+                name: "Game",
+                id: Y.Wegas.Facade.Game.cache.getCurrentGame().get("id")
+            };
+            var logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val").logID;
+            var path = owner.name === "Game" || owner.name === "DebugGame" ? "Games" : "Teams";
 
-                Y.io(Y.Wegas.app.get("base") + "rest/Statistics/Export/" + logId + "/" + path + "/" + owner.id, {
-                    "method": "GET",
-                    on: {
-                        success: Y.bind(function (rId, xmlHttpRequest) {
-                            var response = xmlHttpRequest.response;
-                            this.datatable = this.csv2obj(response);
-                            this.shortenVerbs(this.datatable);
-                            this.teams = this.splitTeams(this.datatable);
-                            if (Object.keys(this.teams).length === 0) {
-                                this.abort("Aucun joueur n'a commencé");
-                            }
-                            this.teams = this.removeOutliers(this.teams);
-                            if (Object.keys(this.teams).length === 0) {
-                                this.abort("Aucun joueur n'a suffisamment avancé pour produire des statistiques utiles");
-                            }
-                            this.checkTimestamps(this.teams);
-                            this.teamsOutput = this.prepareOutputTable(this.teams);
-                            this.addCounters(this.teams, this.teamsOutput);
-                            this.genOutput(this.teamsOutput);
-                        }, this),
-                        failure: function () {
-                            this.abort("Appel REST échoué pour obtenir les logs");
+            Y.io(Y.Wegas.app.get("base") + "rest/Statistics/Export/" + logId + "/" + path + "/" + owner.id, {
+                "method": "GET",
+                on: {
+                    success: Y.bind(function (rId, xmlHttpRequest) {
+                        var response = xmlHttpRequest.response;
+                        this.datatable = this.csv2obj(response);
+                        this.shortenVerbs(this.datatable);
+                        this.shortenObjects(this.datatable);
+                        this.teams = this.splitTeams(this.datatable);
+                        var nbTeamsInitial = Object.keys(this.teams).length;
+                        if (nbTeamsInitial === 0) {
+                            this.abort("Aucun joueur n'a commencé.");
                         }
-                    }
-                });
+                        if (this.excludeOutliers) {
+                            this.teams = this.removeOutliers(this.teams);
+                            var nbTeams2 = Object.keys(this.teams).length,
+                                diffTeams = nbTeamsInitial - nbTeams2;
+                            if (nbTeams2 === 0) {
+                                this.abort("Aucun joueur n'a suffisamment avancé pour produire des statistiques utiles.");
+                            } else if (diffTeams > 0) {
+                                this.addHeader("" + diffTeams + " joueur(s) écarté(s) pour avoir terminé moins de " + MIN_LEVELS_OUTLIERS + " niveaux.");
+                            }
+                        }
+                        this.checkTimestamps(this.teams);
+                        this.teamsOutput = this.prepareOutputTable(this.teams);
+                        this.addCounters(this.teams, this.teamsOutput);
+                        this.genOutput(this.teamsOutput);
+                    }, this),
+                    failure: Y.bind(function () {
+                        this.abort("Impossible de télécharger les logs.");
+                    }, this)
+                }
+            });
+        },
+        
+        
+        bindUI: function() {
+            var cb = this.get("contentBox");
+            // Detects when the tab continaing this widget is selected:
+            this.handlers.push(
+                this.get("parent").after("selectedChange", Y.bind(this.refreshFromTab, this))
+            );
+            this.handlers.push(
+                cb.delegate('click', function(){ this.exportTableToCSV(',') }, "#downloadTableComma", this)
+            );
+            this.handlers.push(
+                cb.delegate('click', function(){ this.exportTableToCSV('.') }, "#downloadTablePoint", this)
+            );
+            this.handlers.push(
+                cb.delegate('click', this.refreshFromIcon, "#refresh", this)
+            );
+            this.handlers.push(
+                cb.delegate('click', function(e){
+                    this.dumpLevel(e.currentTarget.getData()["team"], e.currentTarget.getData()["level"]);
+                },
+                ".sequence", this)
+            );
+            this.handlers.push(
+                cb.delegate('click', this.updateOptions, PACT_STATS_OPTIONS + " input", this)
+            );
+        },
+
+        updateOptions: function (e) {
+            var cb = this.get("contentBox"),
+                cbx1 = cb.one("#exclude-outliers"),
+                cbx2 = cb.one("#exclude-unfinished");
+            this.excludeOutliers = cbx1.get("checked");
+            this.excludeUnfinishedLevels = cbx2.get("checked");
+            // Param 'e' should be defined only if invoked by a click on a checkbox:
+            if (e) {
+                this.refresh();
+            }
+        },
+
+        initOptions: function () {
+            var cb = this.get("contentBox"),
+                cbx1 = cb.one("#exclude-outliers"),
+                cbx2 = cb.one("#exclude-unfinished");
+
+            this.excludeOutliers = true;
+            this.excludeUnfinishedLevels = true;
+
+            cbx1.set("checked", this.excludeOutliers);
+            cbx2.set("checked", this.excludeUnfinishedLevels);
+        },
+        
+        initializer: function () {
+            this.initOptions();
+            this.handlers = [];
+            this.getGameLevels().then(Y.bind(function(){
                 // @TODO charger les annotations permettant de corriger les stats:
-                this.download(ANNOTATED_FILENAME, this.csv2obj);
+                //this.download(ANNOTATED_FILENAME, this.csv2obj);
             }, this));
+        },
+
+        destructor: function () {
+            for (var k in this.handlers) {
+                this.handlers[k].detach();
+            }
         },
 
         download: function(url, callbackF) {
@@ -479,12 +845,12 @@ YUI.add('pact-stats', function (Y) {
         shortenVerbs: function(datatable) {
             var verbs = [],
                 shortVerbs = [],
-                i, obj, pos;
+                i, stmt, pos;
             for (i = 0; i < datatable.length; i++) {
-                obj = datatable[i];
-                if (verbs.indexOf(obj.verb) === -1) {
-                    verbs.push(obj.verb);
-                    var parts = obj.verb.split('/'),
+                stmt = datatable[i];
+                if (verbs.indexOf(stmt.verb) === -1) {
+                    verbs.push(stmt.verb);
+                    var parts = stmt.verb.split('/'),
                         lastPart = parts[parts.length-1];
                     if (shortVerbs.indexOf(lastPart) === -1) {
                         shortVerbs.push(lastPart);
@@ -495,12 +861,52 @@ YUI.add('pact-stats', function (Y) {
                 }
             }
             for (i = 0; i < datatable.length; i++) {
-                obj = datatable[i];
-                pos = verbs.indexOf(obj.verb);
-                obj.shortVerb = shortVerbs[pos];
+                stmt = datatable[i];
+                pos = verbs.indexOf(stmt.verb);
+                stmt.shortVerb = shortVerbs[pos];
             }            
         },
 
+        // Adds a "shortObject" and "objectParam" to all entries of the given datatable
+        shortenObjects: function(datatable) {
+            var objects = [],
+                shortObjects = [],
+                isInternal,
+                i, stmt, obj, pos, parts;
+            // First identify all types of xAPI objects (and store any objectParams).
+            // Objects in PACT have a fixed structure, as opposed to the verbs used.
+            for (i = 0; i < datatable.length; i++) {
+                stmt = datatable[i];
+                obj = stmt[OBJECT_ID];
+                parts = obj.split('/');
+                isInternal = obj.indexOf(OBJECT_PROGGAME_PREFIX) === 0;
+                if (isInternal) {
+                    if (parts[4]) {
+                        stmt.objectParam = parts[4];
+                    }
+                } else if (stmt.shortVerb === "author") {
+                    // Just a simplification for dumpLevel():
+                    stmt.objectParam = stmt.result;
+                }
+                if (objects.indexOf(obj) === -1) {
+                    objects.push(obj);
+                    var lastPart = isInternal ?
+                        parts[3] : // "best object identifier"
+                        parts[2]; // Name of the modified variable
+                    if (shortObjects.indexOf(lastPart) !== -1 &&
+                        !stmt.objectParam) {
+                        alert("Duplicate object: " + lastPart);
+                    }
+                    shortObjects.push(lastPart);
+                }
+            }
+            // Then create the new fields:
+            for (i = 0; i < datatable.length; i++) {
+                stmt = datatable[i];
+                pos = objects.indexOf(stmt[OBJECT_ID]);
+                stmt.shortObject = shortObjects[pos];
+            }            
+        },
 
         /**
          * From http://www.bennadel.com/blog/1504-ask-ben-parsing-csv-strings-with-javascript-exec-regular-expression-command.htm
@@ -558,19 +964,3 @@ YUI.add('pact-stats', function (Y) {
     });
 
 }, 'V1', {requires: ['node']});
-
-/*
-Y.use(['wegas-pact-stats', 'node'], function () {
-    Y.log("USE PACT Stats");
-    setTimeout(function () {
-        var pageLoader = Y.Wegas.PageLoader && Y.Wegas.PageLoader.find('previewPageLoader');
-        if (pageLoader) {
-            pageLoader.on('contentUpdated', function (e) {
-                Y.Wegas.PactStats.prototype.init();
-            });
-        } else {
-            Y.log("PageLoader unavailable");
-        }
-    }, 1000);
-});
-*/
