@@ -1169,13 +1169,13 @@ YUI.add("wegas-review-widgets", function(Y) {
                         });
                         // Title
                         /*this._panel.destroyAll();
-
+                         
                          this._currentPanel = new Y.Wegas.Text({
                          editable: false,
                          cssClass: "wegas-review-treeview__title__panel",
                          content: "<h2>RTFM</h2>"
                          });
-
+                         
                          this._panel.add(this._currentPanel);
                          */
                         break;
@@ -1849,9 +1849,10 @@ YUI.add("wegas-review-widgets", function(Y) {
             if (!this._quiet) {
                 this._initialContent = value;
                 ev.set("value", value);
-                cb.removeClass("loading");
                 this.fireSaved(e.value);
             }
+
+            cb.removeClass("loading");
         },
         fireEditing: function(content) {
             var prd = this.get("descriptor");
