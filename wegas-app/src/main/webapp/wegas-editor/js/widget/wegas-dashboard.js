@@ -12,8 +12,7 @@
 YUI.add('wegas-dashboard', function(Y) {
     "use strict";
 
-    var DASHBOARD_LOCALSTORAGE = "wegas-dashboard-monitoring",
-        TITLE_TEMPLATE = "<span class='team-name'></span>",
+    var TITLE_TEMPLATE = "<span class='team-name'></span>",
         LINK_TEMPLATE = "<span class='details__link details__link__closed'>Details</span>",
         BASE_TEMPLATE = "<div><div class='team-details__notes'><textarea class='infos-comments' placeholder='Enter a comment here'></textarea></div>" + "</div>",
         TEAM_LIST_TEMPLATE = "<div class='team-details__players'><ul class='team-details__players__list'></ul>" + "</div>",
@@ -127,9 +126,10 @@ YUI.add('wegas-dashboard', function(Y) {
         CONTENT_TEMPLATE: "<div class='dashboard-v3'></div>",
         initializer: function() {
             this.handlers = {};
-            this._freeForAll = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties")
-                .get("val").freeForAll;
-            this.logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val").logID;
+            var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(),
+                gmProps = gm.get("properties");
+            this._freeForAll = gmProps.get("val").freeForAll;
+            this.logId = gmProps.get("val").logID;
 
             this.datatables = {};
 
@@ -143,7 +143,9 @@ YUI.add('wegas-dashboard', function(Y) {
             this.detailsOverlay.get("contentBox").addClass("wegas-dashboard-monitor--popup-overlay");
             this.detailsTarget = null;
             
-            var cfg = localStorage.getItem(DASHBOARD_LOCALSTORAGE) || {};
+            // Use scenario name as name space for these preferences:
+            this.clientPrefs = "wegas-dashboard-" + gm.get("name").replace(/\s+/g,'');
+            var cfg = localStorage.getItem(this.clientPrefs) || {};
             if (typeof cfg === "string") {
                 try {
                     cfg = JSON.parse(cfg);
@@ -410,8 +412,8 @@ YUI.add('wegas-dashboard', function(Y) {
                                                 active: isActive
                                             };
                                             
-                                            // Until we make this option a standard, only show it when at least one column is initially inactive:
-                                            if (item.active === false && !currGroup.customizable) {
+                                            // Until we make this option a standard, only show its icon when at least one column is inactive:
+                                            if ((item.active === false || isActive === false) && !currGroup.customizable) {
                                                 currGroup.customizable = true;
                                                 currGroup.label = '<span class="customize-group" data-group="' + currGroup.id + '" title="Customize columns">' + currGroup.label + '</span>';
                                             }
@@ -870,7 +872,7 @@ YUI.add('wegas-dashboard', function(Y) {
                     target.removeClass("selected");
                 }
                 // Update localStorage:
-                localStorage.setItem(DASHBOARD_LOCALSTORAGE, JSON.stringify(storedPrefs));
+                localStorage.setItem(this.clientPrefs, JSON.stringify(storedPrefs));
             }
             event.halt(true);
         },
