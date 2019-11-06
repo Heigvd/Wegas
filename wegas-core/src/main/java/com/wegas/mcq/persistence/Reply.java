@@ -7,14 +7,15 @@
  */
 package com.wegas.mcq.persistence;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
@@ -25,7 +26,6 @@ import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.View.I18nHtmlView;
 import com.wegas.editor.View.NumberView;
 import com.wegas.editor.View.StringView;
-import com.wegas.editor.View.View;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;

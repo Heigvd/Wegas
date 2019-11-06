@@ -7,19 +7,19 @@
  */
 package com.wegas.mcq.persistence.wh;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.False;
 import com.wegas.editor.ValueGenerators.True;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.I18nHtmlView;
-import com.wegas.editor.View.View;
+import com.wegas.mcq.persistence.ReadableInstance;
 import static java.lang.Boolean.FALSE;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import com.wegas.mcq.persistence.ReadableInstance;
-import javax.persistence.CascadeType;
 import javax.persistence.Index;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;

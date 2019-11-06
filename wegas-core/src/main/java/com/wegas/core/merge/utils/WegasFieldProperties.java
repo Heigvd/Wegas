@@ -7,7 +7,7 @@
  */
 package com.wegas.core.merge.utils;
 
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.annotations.Errored;
 import com.wegas.editor.Erroreds;

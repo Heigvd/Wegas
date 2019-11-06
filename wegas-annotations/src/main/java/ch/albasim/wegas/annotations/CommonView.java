@@ -1,9 +1,8 @@
-package com.wegas.editor.View;
+package ch.albasim.wegas.annotations;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.util.StdConverter;
-import com.wegas.core.persistence.variable.ModelScoped;
 
 public class CommonView extends BaseView {
 
@@ -33,7 +32,7 @@ public class CommonView extends BaseView {
 
     private LAYOUT layout = LAYOUT.none;
 
-    public ModelScoped.ProtectionLevel protectionLevel;
+    public ProtectionLevel protectionLevel;
 
     /**
      * @return the index

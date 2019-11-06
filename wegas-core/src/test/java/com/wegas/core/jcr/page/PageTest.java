@@ -9,7 +9,6 @@ package com.wegas.core.jcr.page;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.wegas.core.ejb.PageFacade;
@@ -19,7 +18,6 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.test.arquillian.AbstractArquillianTest;
-import java.io.IOException;
 import java.io.StringReader;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;

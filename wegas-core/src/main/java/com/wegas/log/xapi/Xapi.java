@@ -7,15 +7,6 @@
  */
 package com.wegas.log.xapi;
 
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.RequestManager;
@@ -42,10 +33,6 @@ import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade.ReplyValidate;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import gov.adlnet.xapi.client.StatementClient;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import gov.adlnet.xapi.model.*;
 import gov.adlnet.xapi.util.Base64;
 import java.io.IOException;
@@ -53,10 +40,19 @@ import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.ejb.Asynchronous;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.xml.bind.DatatypeConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Stateless
 @LocalBean

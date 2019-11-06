@@ -7,6 +7,7 @@
  */
 package com.wegas.editor.JSONSchema;
 
+import ch.albasim.wegas.annotations.JSONSchema;
 import com.wegas.editor.View.FlatVariableSelectView;
 
 /**

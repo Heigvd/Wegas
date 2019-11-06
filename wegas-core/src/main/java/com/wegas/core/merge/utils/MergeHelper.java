@@ -7,13 +7,13 @@
  */
 package com.wegas.core.merge.utils;
 
+import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.ModelScoped;
-import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.lang.reflect.Method;
 import java.util.ArrayList;

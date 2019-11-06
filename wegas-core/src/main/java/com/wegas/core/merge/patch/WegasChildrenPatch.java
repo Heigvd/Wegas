@@ -7,16 +7,16 @@
  */
 package com.wegas.core.merge.patch;
 
+import ch.albasim.wegas.annotations.IMergeable;
+import ch.albasim.wegas.annotations.ProtectionLevel;
+import ch.albasim.wegas.annotations.WegasCallback;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.merge.utils.LifecycleCollector;
-import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
-import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -217,7 +217,7 @@ public final class WegasChildrenPatch extends WegasPatch {
 
                             WegasCallback registerChild = new WegasCallback() {
                                 @Override
-                                public void add(Object child, Mergeable container, Object identifier) {
+                                public void add(Object child, IMergeable container, Object identifier) {
 
                                     if (childrenList != null) {
                                         logger.info("Add child {}", child);
@@ -238,7 +238,7 @@ public final class WegasChildrenPatch extends WegasPatch {
                                 }
 
                                 @Override
-                                public Object remove(Object child, Mergeable container, Object identifier) {
+                                public Object remove(Object child, IMergeable container, Object identifier) {
                                     Object key = null;
                                     if (childrenList != null) {
                                         logger.info("remove child {}", child);

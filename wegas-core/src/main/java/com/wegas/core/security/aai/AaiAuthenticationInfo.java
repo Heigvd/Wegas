@@ -8,12 +8,11 @@
 package com.wegas.core.security.aai;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import java.util.ArrayList;
+import java.util.Collection;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Wegas

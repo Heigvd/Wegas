@@ -8,8 +8,8 @@
 package com.wegas.test;
 
 import com.wegas.core.Helper;
-import static org.junit.Assert.assertEquals;
 import org.junit.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  *

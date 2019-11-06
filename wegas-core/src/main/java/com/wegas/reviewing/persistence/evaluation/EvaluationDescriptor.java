@@ -7,11 +7,13 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
+import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
@@ -20,10 +22,8 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.One;
-import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.I18nHtmlView;
 import com.wegas.editor.View.I18nStringView;
-import com.wegas.editor.View.View;
 import java.util.Collection;
 import java.util.List;
 import javax.persistence.*;

@@ -12,19 +12,18 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.log.xapi.Xapi;
 import java.io.IOException;
-import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.Stateless;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class contains the methods used to access the Wegas statistics. It uses

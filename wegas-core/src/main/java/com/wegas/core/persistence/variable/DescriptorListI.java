@@ -7,15 +7,15 @@
  */
 package com.wegas.core.persistence.variable;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.WithId;
-import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;

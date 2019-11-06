@@ -1,13 +1,14 @@
 package com.wegas.editor.JSONSchema;
 
-import com.wegas.core.persistence.annotations.Errored;
-import com.wegas.core.persistence.annotations.WegasConditions.Condition;
+import ch.albasim.wegas.annotations.BaseView;
+import ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL;
+import ch.albasim.wegas.annotations.JSONSchema;
+import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.util.StdConverter;
-import com.wegas.core.persistence.variable.ModelScoped;
-import com.wegas.editor.View.BaseView;
-import com.wegas.editor.View.CommonView.FEATURE_LEVEL;
+import com.wegas.core.persistence.annotations.Errored;
+import com.wegas.core.persistence.annotations.WegasConditions.Condition;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +28,7 @@ abstract public class JSONExtendedSchema implements JSONSchema, WithView, WithEr
 
     private FEATURE_LEVEL featureLevel;
 
-    private ModelScoped.ProtectionLevel protectionLevel;
+    private ProtectionLevel protectionLevel;
 
     private Object value;
 
@@ -94,11 +95,11 @@ abstract public class JSONExtendedSchema implements JSONSchema, WithView, WithEr
 
     @JsonSerialize(converter = ProtectionConverter.class)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public ModelScoped.ProtectionLevel getProtectionLevel() {
+    public ProtectionLevel getProtectionLevel() {
         return protectionLevel;
     }
 
-    public void setProtectionLevel(ModelScoped.ProtectionLevel protectionLevel) {
+    public void setProtectionLevel(ProtectionLevel protectionLevel) {
         this.protectionLevel = protectionLevel;
     }
 
@@ -129,11 +130,11 @@ abstract public class JSONExtendedSchema implements JSONSchema, WithView, WithEr
         }
     }
 
-    public static class ProtectionConverter extends StdConverter<ModelScoped.ProtectionLevel, String> {
+    public static class ProtectionConverter extends StdConverter<ProtectionLevel, String> {
 
         @Override
-        public String convert(ModelScoped.ProtectionLevel level) {
-            if (ModelScoped.ProtectionLevel.CASCADED.equals(level)) {
+        public String convert(ProtectionLevel level) {
+            if (ProtectionLevel.CASCADED.equals(level)) {
                 return null;
             }
             return level.toString();

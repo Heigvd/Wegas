@@ -7,29 +7,29 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import ch.albasim.wegas.annotations.CommonView;
+import ch.albasim.wegas.annotations.IMergeable;
+import ch.albasim.wegas.annotations.Scriptable;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasCallback;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
-import com.wegas.core.persistence.annotations.WegasEntity;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.annotations.Errored;
 import com.wegas.core.persistence.annotations.Param;
-import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.annotations.WegasConditions.IsEmpty;
 import com.wegas.core.persistence.annotations.WegasConditions.Not;
+import com.wegas.core.persistence.annotations.WegasEntity;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.One;
 import com.wegas.editor.View.ArrayView;
-import com.wegas.editor.View.CommonView;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.I18nHtmlView;
 import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.View;
 import com.wegas.editor.Visible;
 import com.wegas.mcq.persistence.QuestionDescriptor.CheckPositiveness;
 import java.util.ArrayList;
@@ -274,7 +274,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
     public static class StringDescriptorMergeCallback implements WegasCallback {
 
         @Override
-        public void postUpdate(Mergeable entity, Object ref, Object identifier) {
+        public void postUpdate(IMergeable entity, Object ref, Object identifier) {
             if (entity instanceof StringDescriptor) {
                 StringDescriptor sd = (StringDescriptor) entity;
                 // set names and labels unique

@@ -7,12 +7,13 @@
  */
 package com.wegas.core.security.persistence;
 
+import ch.albasim.wegas.annotations.IMergeable;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasCallback;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.Helper;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
@@ -23,7 +24,6 @@ import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.View;
 import java.util.*;
 import javax.persistence.*;
 import org.apache.shiro.crypto.RandomNumberGenerator;
@@ -398,7 +398,7 @@ public abstract class AbstractAccount extends AbstractEntity {
     public static class CheckEmailChange implements WegasCallback {
 
         @Override
-        public void preUpdate(Mergeable entity, Object ref, Object identifier) {
+        public void preUpdate(IMergeable entity, Object ref, Object identifier) {
             if (entity instanceof JpaAccount && "email".equals(identifier)) {
                 JpaAccount account = (JpaAccount) entity;
                 if (!account.getEmail().equals(ref)) {

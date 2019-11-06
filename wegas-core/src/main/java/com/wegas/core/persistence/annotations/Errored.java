@@ -8,8 +8,8 @@
 
 package com.wegas.core.persistence.annotations;
 
-import com.wegas.editor.Erroreds;
 import com.wegas.core.persistence.annotations.WegasConditions.Condition;
+import com.wegas.editor.Erroreds;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Repeatable;

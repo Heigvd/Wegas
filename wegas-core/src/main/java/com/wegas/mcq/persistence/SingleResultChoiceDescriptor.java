@@ -7,18 +7,17 @@
  */
 package com.wegas.mcq.persistence;
 
+import ch.albasim.wegas.annotations.View;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.editor.JSONSchema.JSONArray;
+import com.wegas.editor.Schema;
+import com.wegas.editor.View.ArrayView;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
-
-import com.wegas.editor.Schema;
-import com.wegas.editor.JSONSchema.JSONArray;
-import com.wegas.editor.View.ArrayView;
-import com.wegas.editor.View.View;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *

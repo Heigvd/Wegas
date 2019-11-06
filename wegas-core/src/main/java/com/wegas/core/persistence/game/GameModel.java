@@ -7,6 +7,11 @@
  */
 package com.wegas.core.persistence.game;
 
+import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.INTERNAL;
+import ch.albasim.wegas.annotations.ProtectionLevel;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
@@ -16,16 +21,13 @@ import com.wegas.core.jcr.jta.JCRClient;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
-import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.variable.DescriptorListI;
-import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -37,12 +39,10 @@ import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.ValueGenerators.GmProperties;
-import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.INTERNAL;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.NumberView;
 import com.wegas.editor.View.StringView;
 import com.wegas.editor.View.Textarea;
-import com.wegas.editor.View.View;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.jcr.RepositoryException;
@@ -271,7 +271,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * the same time.
      */
     @Transient
-    @WegasEntityProperty(includeByDefault = false, protectionLevel = ModelScoped.ProtectionLevel.ALL, notSerialized = true)
+    @WegasEntityProperty(includeByDefault = false, protectionLevel = ProtectionLevel.ALL, notSerialized = true)
     @JsonView({Views.ExportI.class})
     private Map<String, JsonNode> pages;
 

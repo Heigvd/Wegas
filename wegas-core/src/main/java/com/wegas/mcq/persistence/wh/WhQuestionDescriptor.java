@@ -7,12 +7,13 @@
  */
 package com.wegas.mcq.persistence.wh;
 
+import ch.albasim.wegas.annotations.Scriptable;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.annotations.Param;
-import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -22,7 +23,6 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.I18nHtmlView;
-import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;

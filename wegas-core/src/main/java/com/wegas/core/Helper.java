@@ -7,6 +7,7 @@
  */
 package com.wegas.core;
 
+import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.hazelcast.core.Cluster;
 import com.hazelcast.core.Member;
 import com.wegas.core.i18n.persistence.TranslatableContent;
@@ -16,7 +17,6 @@ import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
-import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.EnumItem;

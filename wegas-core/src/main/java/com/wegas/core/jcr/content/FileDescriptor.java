@@ -7,12 +7,12 @@
  */
 package com.wegas.core.jcr.content;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.editor.View.TimestampView;
-import com.wegas.editor.View.View;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;

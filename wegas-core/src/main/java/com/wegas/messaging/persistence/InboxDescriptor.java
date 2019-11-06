@@ -7,21 +7,21 @@
  */
 package com.wegas.messaging.persistence;
 
+import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
+import ch.albasim.wegas.annotations.Scriptable;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.annotations.Param;
-import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.False;
-import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.I18nHtmlView;
 import com.wegas.editor.View.I18nStringView;
-import com.wegas.editor.View.View;
-import java.util.List;
 import static java.lang.Boolean.FALSE;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import jdk.nashorn.api.scripting.JSObject;

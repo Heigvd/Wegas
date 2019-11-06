@@ -7,8 +7,8 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.editor.View.View;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -5,18 +5,14 @@
  * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.persistence.annotations;
+package ch.albasim.wegas.annotations;
 
-import com.wegas.editor.JSONSchema.JSONSchema;
-import com.wegas.editor.JSONSchema.UndefinedSchema;
-import com.wegas.editor.ValueGenerators.Undefined;
-import com.wegas.editor.ValueGenerators.ValueGenerator;
+import ch.albasim.wegas.annotations.ValueGenerator.Undefined;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.wegas.editor.View.View;
 
 /**
  * A methods annotated with WegasExtryProperty will be taken into account while generating schema config for the client
@@ -36,6 +32,7 @@ public @interface WegasExtraProperty {
 
     /**
      * Editor's view.
+     * @return 
      */
     View view() default @View(label = ""); // @TODO Remove default value
 
@@ -61,7 +58,8 @@ public @interface WegasExtraProperty {
     Class<? extends JSONSchema> schema() default UndefinedSchema.class;
 
     /**
-     * initial propsal
+     * initial proposal
+     * @return 
      */
     Class<? extends ValueGenerator> proposal() default Undefined.class;
 }

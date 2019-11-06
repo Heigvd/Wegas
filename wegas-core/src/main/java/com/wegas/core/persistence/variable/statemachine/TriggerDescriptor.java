@@ -7,20 +7,20 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import ch.albasim.wegas.annotations.IMergeable;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasCallback;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.annotations.WegasEntity;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyScript;
 import com.wegas.editor.ValueGenerators.False;
 import com.wegas.editor.ValueGenerators.True;
 import com.wegas.editor.View.ScriptView;
-import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
@@ -273,7 +273,7 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
     public static class MergeTriggerHack implements WegasCallback {
 
         @Override
-        public void postUpdate(Mergeable entity, Object ref, Object identifier) {
+        public void postUpdate(IMergeable entity, Object ref, Object identifier) {
             if (entity instanceof TriggerDescriptor) {
                 TriggerDescriptor td = (TriggerDescriptor) entity;
                 td.buildStateMachine();

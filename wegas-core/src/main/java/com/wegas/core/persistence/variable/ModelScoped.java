@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
@@ -44,33 +44,6 @@ public interface ModelScoped {
          * scenarist: write
          */
         PRIVATE
-    }
-
-    /**
-     * protection against scenario writes
-     */
-    public static enum ProtectionLevel {
-        /**
-         * Fetch from parent
-         */
-        CASCADED,
-        /**
-         * standard level for everything but default instances
-         * INTERNAL and PROTECTED are readonly for scenarist
-         */
-        PROTECTED,
-        /**
-         * open protected world to scenarist
-         */
-        INTERNAL,
-        /**
-         * Only PRIVATE is writable
-         */
-        INHERITED,
-        /**
-         * Always protected
-         */
-        ALL
     }
 
     Visibility getVisibility();

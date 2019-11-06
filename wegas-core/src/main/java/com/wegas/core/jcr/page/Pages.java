@@ -10,12 +10,12 @@ package com.wegas.core.jcr.page;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.AlphanumericComparator;
+import com.wegas.core.jcr.jta.JTARepositoryConnector;
 import java.util.*;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import org.slf4j.LoggerFactory;
-import com.wegas.core.jcr.jta.JTARepositoryConnector;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)

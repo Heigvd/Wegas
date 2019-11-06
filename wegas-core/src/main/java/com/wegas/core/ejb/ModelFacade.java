@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -30,7 +31,6 @@ import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
-import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.State;
@@ -59,8 +59,6 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import org.slf4j.Logger;

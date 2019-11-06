@@ -7,9 +7,9 @@
  */
 package com.wegas.core.persistence.annotations;
 
+import ch.albasim.wegas.annotations.EmptyCallback;
+import ch.albasim.wegas.annotations.WegasCallback;
 import com.wegas.core.merge.utils.DefaultWegasFactory;
-import com.wegas.core.merge.utils.EmptyCallback;
-import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.merge.utils.WegasFactory;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

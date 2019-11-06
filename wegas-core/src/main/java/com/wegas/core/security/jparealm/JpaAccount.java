@@ -7,9 +7,9 @@
  */
 package com.wegas.core.security.jparealm;
 
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.Helper;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.security.persistence.AbstractAccount;
 import javax.persistence.*;
 import org.apache.shiro.crypto.RandomNumberGenerator;

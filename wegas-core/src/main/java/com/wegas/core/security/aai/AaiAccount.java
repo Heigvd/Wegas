@@ -9,11 +9,11 @@
  */
 package com.wegas.core.security.aai;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.editor.View.StringView;
-import com.wegas.editor.View.View;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;

@@ -7,18 +7,18 @@
  */
 package com.wegas.core.persistence.variable;
 
+import ch.albasim.wegas.annotations.IMergeable;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasCallback;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.annotations.WegasEntity;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -191,7 +191,7 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
     public static class ValidateAllowedItemsCallback implements WegasCallback {
 
         @Override
-        public void postUpdate(Mergeable entity, Object ref, Object identifier) {
+        public void postUpdate(IMergeable entity, Object ref, Object identifier) {
             if (entity instanceof ListDescriptor) {
                 ListDescriptor listDescriptor = (ListDescriptor) entity;
                 String shortcut = listDescriptor.getAddShortcut();

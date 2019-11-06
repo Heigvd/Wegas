@@ -1,5 +1,7 @@
 package com.wegas.editor.JSONSchema;
 
+import ch.albasim.wegas.annotations.JSONSchema;
+
 public class JSONArray extends JSONType {
     private JSONSchema items;
     private Integer minItems;
