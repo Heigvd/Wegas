@@ -7,18 +7,28 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import ch.albasim.wegas.annotations.CommonView;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.NumberListener;
+import com.wegas.core.persistence.annotations.Errored;
+import com.wegas.core.persistence.annotations.WegasConditions.And;
+import com.wegas.core.persistence.annotations.WegasConditions.GreaterThan;
+import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
+import com.wegas.core.persistence.annotations.WegasConditions.LessThan;
+import com.wegas.core.persistence.annotations.WegasRefs.Field;
+import com.wegas.core.persistence.annotations.WegasRefs.Self;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.ValueGenerators.EmptyArray;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
@@ -28,16 +38,6 @@ import javax.persistence.EntityListeners;
 import javax.persistence.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.wegas.core.persistence.annotations.Errored;
-import com.wegas.core.persistence.annotations.WegasConditions.And;
-import com.wegas.core.persistence.annotations.WegasConditions.GreaterThan;
-import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
-import com.wegas.core.persistence.annotations.WegasConditions.LessThan;
-import com.wegas.core.persistence.annotations.WegasRefs.Field;
-import com.wegas.core.persistence.annotations.WegasRefs.Self;
-import com.wegas.editor.ValueGenerators.EmptyArray;
-import com.wegas.editor.View.CommonView;
-import com.wegas.editor.View.View;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)

@@ -11,6 +11,7 @@
 /* DASHBOARD */
 .dashboard-v3 .dashboard-toolbar > div {
     justify-content: flex-end;
+    overflow-x: hidden;
 }
 
 .dashboard-v3 .global-button {

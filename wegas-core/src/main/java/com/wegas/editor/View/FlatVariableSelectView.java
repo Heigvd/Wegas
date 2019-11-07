@@ -7,9 +7,9 @@
  */
 package com.wegas.editor.View;
 
+import ch.albasim.wegas.annotations.CommonView;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
-import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.TextDescriptor;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import java.util.ArrayList;

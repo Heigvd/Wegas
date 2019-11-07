@@ -12,6 +12,8 @@ package com.wegas.core.ejb.nashorn;
  */
 
 import com.wegas.core.exception.client.WegasRuntimeException;
+import java.util.ArrayList;
+import java.util.Collections;
 import jdk.nashorn.internal.ir.*;
 import jdk.nashorn.internal.ir.visitor.SimpleNodeVisitor;
 import jdk.nashorn.internal.parser.Parser;
@@ -19,9 +21,6 @@ import jdk.nashorn.internal.runtime.Context;
 import jdk.nashorn.internal.runtime.ErrorManager;
 import jdk.nashorn.internal.runtime.Source;
 import jdk.nashorn.internal.runtime.options.Options;
-
-import java.util.ArrayList;
-import java.util.Collections;
 
 public class JSTool {
     /**

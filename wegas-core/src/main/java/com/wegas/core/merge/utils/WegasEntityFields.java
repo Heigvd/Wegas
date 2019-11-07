@@ -7,9 +7,11 @@
  */
 package com.wegas.core.merge.utils;
 
-import com.wegas.core.persistence.annotations.WegasEntity;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.EmptyCallback;
+import ch.albasim.wegas.annotations.WegasCallback;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.annotations.WegasEntity;
 import java.beans.IntrospectionException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

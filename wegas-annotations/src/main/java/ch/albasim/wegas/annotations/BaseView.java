@@ -1,4 +1,4 @@
-package com.wegas.editor.View;
+package ch.albasim.wegas.annotations;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

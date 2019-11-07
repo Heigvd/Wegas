@@ -1103,10 +1103,13 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             cpi: {
                 type: NUMBER
             },
-            wpi: {
+            cpi: {
                 type: NUMBER
             },
-            spi: {
+            wcpi: {
+                type: NUMBER
+            },
+            wspi: {
                 type: NUMBER
             },
             totalWorkload: {
@@ -1126,6 +1129,50 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             createdTime: {
                 transient: true
+            }
+        }
+    });
+
+    persistence.Workload = Y.Base.create("Workload", persistence.Entity, [], {
+    }, {
+        ATTRS: {
+            "ac": {
+                "type": "number",
+                "view": {
+                    "label": "Actual Cost (AC)"
+                }
+            },
+            "ev": {
+                "type": "number",
+                "view": {
+                    "label": "Earned Value (EV)"
+                }
+            },
+            "lastWorkedStep": {
+                "type": "number",
+                "view": {
+                    "label": "Last worked step",
+                    readOnly: true
+                }
+            },
+            "periodNumber": {
+                "type": "number",
+                "view": {
+                    "label": "Period number",
+                    readOnly: true
+                }
+            },
+            "spentWorkload": {
+                "type": "number",
+                "view": {
+                    "label": "Spent (AW)"
+                }
+            },
+            "workload": {
+                "type": "number",
+                "view": {
+                    "label": "Workload"
+                }
             }
         }
     });

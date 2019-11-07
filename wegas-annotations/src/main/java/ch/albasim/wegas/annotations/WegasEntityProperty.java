@@ -5,21 +5,13 @@
  * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.persistence.annotations;
+package ch.albasim.wegas.annotations;
 
+import ch.albasim.wegas.annotations.ValueGenerator.Undefined;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import com.wegas.core.merge.utils.EmptyCallback;
-import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.variable.ModelScoped;
-import com.wegas.editor.JSONSchema.JSONSchema;
-import com.wegas.editor.JSONSchema.UndefinedSchema;
-import com.wegas.editor.ValueGenerators.Undefined;
-import com.wegas.editor.ValueGenerators.ValueGenerator;
-import com.wegas.editor.View.View;
 
 /**
  * A field annotated with WegasPropertyProperty will be taken into account while {@link com.wegas.core.merge.patch.WegasEntityPatch patching}
@@ -95,7 +87,7 @@ public @interface WegasEntityProperty {
      * @return list of visibility for which OVERRIDE mode is allowed to be propagated
      */
     //public ModelScoped.Visibility[] cascadeOverride() default {ModelScoped.Visibility.INTERNAL, ModelScoped.Visibility.PROTECTED};
-    public ModelScoped.ProtectionLevel protectionLevel() default ModelScoped.ProtectionLevel.CASCADED;
+    public ProtectionLevel protectionLevel() default ProtectionLevel.CASCADED;
 
     /**
      * Indicate if this property is "searchable".
@@ -106,6 +98,7 @@ public @interface WegasEntityProperty {
 
     /**
      * Editor's view.
+     * @return 
      */
     View view() default @View(label = ""); // @TODO Remove default value
 
@@ -117,7 +110,8 @@ public @interface WegasEntityProperty {
     Class<? extends JSONSchema> schema() default UndefinedSchema.class;
 
     /**
-     * initial propsal
+     * initial proposal
+     * @return 
      */
     Class<? extends ValueGenerator> proposal() default Undefined.class;
 

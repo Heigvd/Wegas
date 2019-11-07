@@ -7,12 +7,12 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.persistence.variable.primitive.Enumeration;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.persistence.variable.primitive.EnumItem;
+import com.wegas.core.persistence.variable.primitive.Enumeration;
 import com.wegas.editor.ValueGenerators.EmptyArray;
-import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;

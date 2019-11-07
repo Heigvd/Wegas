@@ -16,14 +16,13 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
+import java.util.Collection;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.script.ScriptContext;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang3.ArrayUtils;
-
-import javax.inject.Inject;
-import javax.enterprise.context.RequestScoped;
-import java.util.Collection;
-import javax.script.ScriptContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

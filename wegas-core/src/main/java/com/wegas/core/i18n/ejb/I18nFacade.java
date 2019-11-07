@@ -7,6 +7,7 @@
  */
 package com.wegas.core.i18n.ejb;
 
+import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.wegas.core.Helper;
 import com.wegas.core.api.I18nFacadeI;
 import com.wegas.core.ejb.GameModelFacade;
@@ -38,7 +39,6 @@ import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.ModelScoped;
-import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.statemachine.State;

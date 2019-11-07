@@ -7,6 +7,7 @@
  */
 package com.wegas.core.merge.utils;
 
+import ch.albasim.wegas.annotations.WegasCallback;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.Mergeable;
 import java.util.ArrayList;

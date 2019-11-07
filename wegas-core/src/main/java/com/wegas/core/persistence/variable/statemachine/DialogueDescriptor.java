@@ -7,16 +7,14 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import ch.albasim.wegas.annotations.View;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.editor.JSONSchema.JSONObject;
 import com.wegas.editor.Schema;
 import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.View;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.Entity;

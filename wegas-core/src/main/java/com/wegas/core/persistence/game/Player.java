@@ -7,12 +7,14 @@
  */
 package com.wegas.core.persistence.game;
 
+import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.Helper;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
@@ -27,10 +29,8 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.Zero;
-import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.NumberView;
 import com.wegas.editor.View.StringView;
-import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;

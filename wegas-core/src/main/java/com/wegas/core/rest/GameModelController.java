@@ -13,6 +13,7 @@ import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.cron.EjbTimerFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.Player;
@@ -585,4 +586,9 @@ public class GameModelController {
         return null;
     }
 
+    @POST
+    @Path("LiveEdition/{channel}")
+    public void propagateLiveEdition(@PathParam("channel") String channel, AbstractEntity entity){
+        gameModelFacade.liveUpdate(channel, entity);
+    }
 }

@@ -7,10 +7,10 @@
  */
 package com.wegas.core.persistence;
 
-import com.wegas.core.persistence.annotations.WegasExtraProperty;
-import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
+import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.View;
 
 /**
  *

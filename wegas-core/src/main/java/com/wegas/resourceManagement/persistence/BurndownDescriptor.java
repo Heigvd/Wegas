@@ -7,17 +7,17 @@
  */
 package com.wegas.resourceManagement.persistence;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.View.HtmlView;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.View.HtmlView;
-import com.wegas.editor.View.View;
 
 /**
  *

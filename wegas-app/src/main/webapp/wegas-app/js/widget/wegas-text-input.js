@@ -27,12 +27,8 @@ YUI.add('wegas-text-input', function(Y) {
             this.onHostEvent("*:saved", this.onSaved, this);
             this.onHostEvent("*:editing", this.onEdit, this);
             this.onHostEvent("*:revert", this.onRevert, this);
-            this.onHostEvent("*", this.onEvent, this);
 
             this.locks = {};
-        },
-        onEvent: function(e) {
-            Y.log("BITCH: " + e);
         },
         destructor: function() {
             for (var k in this.handlers) {
@@ -338,10 +334,14 @@ YUI.add('wegas-text-input', function(Y) {
             if (this.onInstanceUpdate) {
                 this.onInstanceUpdate.detach();
             }
-            var question = this.get('variable.evaluated');
-            if (question) {
-                this.onInstanceUpdate = Y.Wegas.Facade.Instance.after(question.getInstance()
-                    .get("id") + ':updatedInstance', this.syncUI, this);
+            if (this.onInstanceLiveUpdate) {
+                this.onInstanceLiveUpdate.detach();
+            }
+            var text = this.get('variable.evaluated');
+            if (text) {
+                var instance = text.getInstance();
+                this.onInstanceUpdate = Y.Wegas.Facade.Instance.after(instance.get("id") + ':updatedInstance', this.syncUI, this);
+                this.onInstanceLiveUpdate = Y.Wegas.Facade.Variable.after("TextInstance_" + instance.get("id") + ':LiveUpdate', this.liveLock, this);
             }
         },
         bindUI: function() {
@@ -349,20 +349,42 @@ YUI.add('wegas-text-input', function(Y) {
             this.after("variableChange", this.bindUpdatedInstance, this);
             this.on('save', this._save);
         },
+        showLiveOverlay: function() {
+            Y.Plugin.PopupListener.showOverlay(this.get("contentBox"));
+        },
+        hideLiveOverlay: function() {
+            Y.Plugin.PopupListener.hideOverlay(this.get("contentBox"));
+        },
+        liveLock: function(entity) {
+            this._setContent(I18n.t(entity.trValue));
+            this.setStatus("someone is editing");
+            if (this.waitLiveLock) {
+                this.waitLiveLock.cancel();
+            } else {
+                this.showLiveOverlay();
+            }
+            this.waitLiveLock = Y.later(1000, this, function() {
+                this.waitLiveLock = null;
+                this.hideLiveOverlay();
+                this.setStatus("");
+            });
+        },
         syncUI: function() {
             this.setContent();
         },
         setContent: function() {
+            this._setContent(this.getInitialContent());
+        },
+        _setContent: function(content) {
             if (this.get('readonly.evaluated')) {
                 this.get('contentBox')
                     .one('.wegas-text-input-editor')
                     .setContent(
                         '<div class="readonly wegas-template-content">' +
-                        this.getInitialContent() +
+                        content +
                         '</div>'
                         );
             } else {
-                var content = this.getInitialContent();
                 if (this.editor) {
                     if (content != this._initialContent) {
                         this._initialContent = content;
@@ -392,9 +414,37 @@ YUI.add('wegas-text-input', function(Y) {
                     .setContent('<p class="' + klass + '">' + msg + '</p>');
             }
         },
+        fireEditing: function(content) {
+            var payload = this.getPayload(content);
+            var textInstance = payload.descriptor.getInstance().toObject();
+
+            var oneTr = textInstance.trValue.translations[I18n.getCode()];
+            oneTr.translation = content;
+            textInstance.trValue.translations = {};
+            textInstance.trValue.translations[I18n.getCode()] = oneTr;
+
+            this.fire('editing', payload);
+
+            Y.Wegas.Facade.GameModel.sendRequest({
+                request: "/LiveEdition/private-" + payload.descriptor.get("scopeType")
+                    .replace("Scope", "-" + textInstance.scopeKey),
+                cfg: {
+                    method: 'POST',
+                    data: textInstance
+                }
+            });
+        },
+        fireStopEditing: function(content) {
+            this.fire('stopEditing', this.getPayload(content));
+        },
+        fireSaved: function(content) {
+            this.fire('saved', this.getPayload(content));
+        },
+        fireSave: function(content) {
+            this.fire('save', this.getPayload(content));
+        },
         _onChange: function() {
-            var content = this.editor.getContent(),
-                desc = this.get('variable.evaluated');
+            var content = this.editor.getContent();
             if (this.previousContent === undefined || this.previousContent !== content) {
                 this.previousContent = content;
                 if (this.get('showSaveButton') || !this.get('selfSaving')) {
@@ -403,7 +453,7 @@ YUI.add('wegas-text-input', function(Y) {
                     this.setStatus('');
                 }
                 this.updateCounters();
-                this.fire('editing', this.getPayload(content));
+                this.fireEditing(content);
                 this.valueChanged(content);
                 if (!this.get('showSaveButton')) {
                     if (this.wait) {
@@ -412,13 +462,13 @@ YUI.add('wegas-text-input', function(Y) {
                     if (this.get('selfSaving')) {
                         this.wait = Y.later(1000, this, function() {
                             this.wait = null;
-                            this.fire('stopEditing', this.getPayload(content));
+                            this.fireStopEditing(content);
                             this.onSave();
                         });
                     } else {
                         this.wait = Y.later(1000, this, function() {
                             this.wait = null;
-                            this.fire('stopEditing', this.getPayload(content));
+                            this.fireStopEditing(content);
                         });
                         this.onSave();
                     }
@@ -556,7 +606,7 @@ YUI.add('wegas-text-input', function(Y) {
             );
         },
         _saved: function(value) {
-            this.fire('saved', this.getPayload(value));
+            this.fireSaved(value);
             if (this.waitForValue === value) {
                 this.waitForValue = null;
                 if (this.queuedValue) {
@@ -568,12 +618,11 @@ YUI.add('wegas-text-input', function(Y) {
             }
         },
         save: function(value) {
-            var desc = this.get('variable.evaluated'),
-                cb = this.get('contentBox');
+            var cb = this.get('contentBox');
             if (this.get('selfSaving')) {
                 cb.addClass('loading');
             }
-            this.fire('save', this.getPayload(value));
+            this.fireSave(value);
             return true;
         },
         getEditorLabel: function() {
@@ -595,6 +644,9 @@ YUI.add('wegas-text-input', function(Y) {
             });
             if (this.onInstanceUpdate) {
                 this.onInstanceUpdate.detach();
+            }
+            if (this.onInstanceLiveUpdate) {
+                this.onInstanceLiveUpdate.detach();
             }
             if (this.addButton) {
                 this.addButton.destroy();
@@ -792,9 +844,9 @@ YUI.add('wegas-text-input', function(Y) {
                 value: value
             };
         },
-        getNumSelectable: function(){
+        getNumSelectable: function() {
             var numSelectable = this.get('numSelectable');
-            if (Y.Lang.isNumber(numSelectable)){
+            if (Y.Lang.isNumber(numSelectable)) {
                 return numSelectable;
             } else {
                 var desc = this.get('variable.evaluated');

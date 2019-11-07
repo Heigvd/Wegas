@@ -7,8 +7,9 @@
  */
 package com.wegas.core.security.persistence;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
@@ -16,7 +17,6 @@ import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.View.Textarea;
-import com.wegas.editor.View.View;
 import java.util.*;
 import javax.persistence.Basic;
 import javax.persistence.Cacheable;

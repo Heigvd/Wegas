@@ -25,28 +25,32 @@ YUI.add('pact-stats', function (Y) {
         PACT_STATS_TABLE = ".pact-stats-table",
         PACT_STATS_FOOTER = ".pact-stats-footer",
         TABLE_ID = "pact-stats",
-        MIN_LEVELS_OUTLIERS = 3;
+        MIN_LEVELS_OUTLIERS = 2;
 
     Y.Wegas.PactStats = Y.Base.create("pact-stats", Y.Widget,
             [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         CONTENT_TEMPLATE:
                     '<div class="' + PACT_STATS_CLASS.substr(1) + '"><div class="' +
                         PACT_STATS_OPTIONS.substr(1) + '">' +
+                        '<input type="checkbox" id="exclude-outliers" name="exclude-outliers"><label for="exclude-outliers"> Exclure les joueurs n\'ayant pas terminé au moins 2 niveaux</label><br>' +
+                        '<input type="checkbox" id="exclude-unfinished" name="exclude-unfinished"><label for="exclude-unfinished"> Exclure les niveaux non terminés (chez tous les joueurs)</label>' +
                         '<i class="fa fa-2x fa-refresh" id="refresh"></i>' +
                         '</div><div class="' + 
                         PACT_STATS_HEADER.substr(1) + '"></div><div class="' + 
                         PACT_STATS_TABLE.substr(1) + '"></div><div class="' + 
                         PACT_STATS_FOOTER.substr(1) + '"></div>' +
-                        '<button type="button" id="downloadTable">Télécharger fichier CSV</button>' +
+                        'Pour télécharger le fichier CSV, choisir un séparateur décimal : <button type="button" id="downloadTableComma">Virgule</button>&nbsp;<button type="button" id="downloadTablePoint">Point</button>' +
                         '</div>',
 
         // Quick and simple export of table #TABLE_ID into a csv
         // From https://stackoverflow.com/questions/15547198/export-html-table-to-csv
-        exportTableToCSV: function() {
+        exportTableToCSV: function(decimalSeparator) {
             // Select rows from table_id
             var rows = document.querySelectorAll('table#' + TABLE_ID + ' tr'),
                 csv = [],
-                numberFormatter = new Intl.NumberFormat('fr-CH', { style: 'decimal', useGrouping: false, maximumFractionDigits: 2 });
+                numberFormatter = decimalSeparator === ',' ?
+                    new Intl.NumberFormat('fr-CH', { style: 'decimal', useGrouping: false, maximumFractionDigits: 2 }) :
+                    new Intl.NumberFormat('en-US', { style: 'decimal', useGrouping: false, maximumFractionDigits: 2 });
             for (var i = 0; i < rows.length; i++) {
                 var row = [], cols = rows[i].querySelectorAll('td, th');
                 for (var j = 0; j < cols.length; j++) {
@@ -94,16 +98,18 @@ YUI.add('pact-stats', function (Y) {
                     teams[currTeam] = [datatable[i]];
                 }
             }
+            for (var t in teams) {
+                this.setupTeamLevels(teams[t]);
+            }
             return teams;
         },
 
         // Filters out outliers, i.e. teams with less than given number of completed levels.
-        // The minimal number of levels is obviously the strongest condition.
         removeOutliers: function(teams) {
-            var minLevels = MIN_LEVELS_OUTLIERS;
             for (var team in teams) {
-                var lastLevel = this.markCompletedLevels(teams[team]);
-                if (lastLevel < 0 || this.levels[lastLevel] < minLevels) {
+                var levels = this.getLevels(teams[team]),
+                    lastLevel = levels.length > 0 ? levels[levels.length-1].level : 0;
+                if (lastLevel <= 0 || this.levels[lastLevel] < MIN_LEVELS_OUTLIERS) {
                     delete teams[team];
                 }
             }
@@ -132,7 +138,7 @@ YUI.add('pact-stats', function (Y) {
                 }
             }
             if (nbAlerts > 0) {
-                alert("Data not in chronological order, at least for team " + badTeam);
+                alert("Data not in chronological order, at least for user/team " + badTeam);
             }
             return ok;
         },
@@ -146,39 +152,72 @@ YUI.add('pact-stats', function (Y) {
             }
             return nb;
         },
+        
+        // Returns the level info object for the given team.
+        // Param "team" may be a the name of the team or directly its object.
+        getLevels: function(team) {
+            if (typeof team === "string") {
+                return this.teams[team][0].levels;
+            } else {
+                return team[0].levels;                
+            }
+        },
 
-        // Sets attribute completed=true for all statements of completed levels (to prevent statistics on abandoned levels).
+        getName: function(team) {
+            return team[0].team;
+        },
+        
+        // Adds attribute "levelInfo" to all statements: { level, start, end, completed }
+        // Adds attribute "levels" to the team object: [ levelInfo, ... ]
         // Returns the last completed level.
-        markCompletedLevels: function(team) {
-            var completed = 0,
+        setupTeamLevels: function(team) {
+            var levels = [],
+                completed = 0,
                 prevLevel = -1,
                 prevLevelEnd = -1,
-                i;
+                i, levelInfo;
+            
             for (var level in this.levels) {
                 completed = this.indexOf(team, "completed", PROGGAME_LEVEL_PREFIX + level, completed);
                 if (completed > 0) {
-                    for (i = prevLevelEnd+1; i <= completed; i++) {
-                        team[i].completed = true;
+                    var firstStmtNo = prevLevelEnd+1,
+                        lookAhead = completed+1;
+                    // Integrate statements following the completion of the level, like variable updates, up to the start of the next level:
+                    while (lookAhead < team.length && team[lookAhead].shortVerb !== "initialized") {
+                        lookAhead++;
+                    }
+                    completed = lookAhead-1;
+                    if (firstStmtNo < completed) {
+                        levelInfo = { level: level, start: firstStmtNo, end: completed, completed: true };
+                        team[firstStmtNo].levelInfo = levelInfo;
+                        levels[level] = levelInfo;
+                    }
+                    for (i = firstStmtNo; i <= completed; i++) {
+                        team[i].levelInfo = levelInfo;
                     }
                     prevLevelEnd = completed;
                     prevLevel = level;
                 } else {
-                    // No more completed levels, mark remaining statements as not completed and exit.
+                    // Level not completed, mark remaining statements as not completed and exit.
+                    levelInfo = { level: level, start: prevLevelEnd+1, end: team.length-1, completed: false };
                     for (i = prevLevelEnd+1; i < team.length; i++) {
-                        team[i].completed = false;
+                        team[i].levelInfo = levelInfo;
                     }
-                    return prevLevel;
+                    levels[level] = levelInfo;
+                    break;
                 }
             }
+            team[0].levels = levels;
             return prevLevel;
         },
 
         
         // Returns the index of the chronologically first given verb with the given objectId,
         // or -1 if not found.
-        indexOf: function (team, verb, objectId, startFrom) {
+        indexOf: function (team, verb, objectId, startFrom, upperBound) {
             startFrom = startFrom || 0;
-            for (var i = startFrom; i < team.length; i++) {
+            upperBound = upperBound || team.length-1;
+            for (var i = startFrom; i <= upperBound; i++) {
                 if (team[i].shortVerb === verb &&
                     team[i][OBJECT_ID] === objectId) {
                     return i;
@@ -208,28 +247,33 @@ YUI.add('pact-stats', function (Y) {
             };
         },
         
-        // Count syntax and semantic errors at given level.
-        // Arg level must follow the internal format, i.e. "11" for "1.1"
-        countSubmissionsForLevel: function (team, level) {
-            level = level || 11;
-            var start = this.indexOf(team, "initialized", PROGGAME_LEVEL_PREFIX + level);
-            if (start < 0) {
-                return this.newUnfinishedLevel();
-            }
-            start++;
-            var end = this.indexOf(team, "completed", PROGGAME_LEVEL_PREFIX + level, start);
-            if (end < 0) {
-                return this.newUnfinishedLevel();
-            }
-            return this.analyzeEvents(team, start, end-1);
-        },
-        
-        // Count submissions, syntax and semantic errors for team between fromPos and toPos (included)
+        // Count submissions, syntax and semantic errors for the given team.
+        // If argument 'level' is undefined, count events for the whole game.
         // Also count theory reads and durations.
-        // Also indicate order of significant events.
-        analyzeEvents: function (team, fromPos, toPos) {
-            fromPos = fromPos || 0;
-            toPos = toPos || team.length-1;
+        // Also return the sequence of significant events.
+        countEvents: function (team, level) {
+            var fromPos, toPos;
+            if (!level) {
+                // Process the whole game:
+                fromPos = 0;
+                toPos = team.length-1;
+                // Check if this player did not even finish the first level:
+                if (!team[0].levelInfo.completed && this.excludeUnfinishedLevels) {
+                    return this.newUnfinishedLevel();
+                }
+            } else {
+                var levelInfo = this.getLevels(team)[level];
+                if (levelInfo) {
+                    fromPos = levelInfo.start;
+                    toPos = levelInfo.end;
+                    if (!levelInfo.completed && this.excludeUnfinishedLevels) {
+                        return this.newUnfinishedLevel();
+                    }
+                } else {
+                    return this.newUnfinishedLevel();
+                }
+            }
+            
             var syntaxErrors = 0,
                 semanticErrors = 0,
                 successes = 0,
@@ -238,12 +282,12 @@ YUI.add('pact-stats', function (Y) {
                 prevCode = '',
                 theoryReads = 0,
                 theoryDuration = 0,
-                levelTheoryDuration = 0,
-                sequence = '<span class="sequence">';
-        
+                reads = [],
+                sequence = '<span class="sequence" data-team="' + this.getName(team) + '" data-level="' + (level ? level : -1) + '">';
+
             for (var i = fromPos; i <= toPos; i++) {
                 var currStmt = team[i];
-                if (!currStmt.completed) {
+                if (!currStmt.levelInfo.completed && this.excludeUnfinishedLevels) {
                     break;
                 }
                 if (currStmt.shortVerb === "submit") {
@@ -257,47 +301,114 @@ YUI.add('pact-stats', function (Y) {
                     if (currStmt.completion === "false") {
                         if (currStmt.success === "false") {
                             syntaxErrors++;
-                            sequence += '<span class="syntax-error" title="Syntax error">SYN</span>';
+                            sequence += '<span class="syntax-error" title="Syntax error (' + currStmt.timestamp.toTimeString().substr(0,8) + ')">SYN</span>';
                         } else {
                             semanticErrors++;
-                            sequence += '<span class="semantic-error" title="Semantic error">SEM</span>';
+                            sequence += '<span class="semantic-error" title="Semantic error (' + currStmt.timestamp.toTimeString().substr(0,8) + ')">SEM</span>';
                         }
                     } else {
                         if (currStmt.success === "false") {
                             alert("combinaison impossible");
                         } else {
                             successes++;
-                            sequence += '<span class="success" title="Success">OK</span>';
+                            sequence += '<span class="success" title="Success ('+ currStmt.timestamp.toTimeString().substr(0,8) + ')">OK</span>';
                         }
                     }
-                // Investigate theory reads WHICHEVER topic is consulted and IGNORING any interleaved global suspend/resume verbs.
+                // Investigate theory reads WHICHEVER topic is consulted.
                 // This code is expected to correctly manage interleaved suspend/resume verbs for different theory topics,
                 // therefore we scan all statements sequentially, without skipping any potential "resume" of another topic in-between.
-                } else if (currStmt.shortVerb === "resumed" && 
-                           currStmt.shortObject === THEORY_SHORTOBJECT) {
+                } else if ((currStmt.shortVerb === "initialized" || currStmt.shortVerb === "resumed") && 
+                           currStmt.shortObject === THEORY_SHORTOBJECT &&
+                           !currStmt._accounted) {
                     theoryReads++;
                     var topic = currStmt.objectParam;
-                    // Find the corresponding "suspended" verb and compute the duration
-                    var endTopic = this.indexOf(team, "suspended", PROGGAME_THEORY_PREFIX + topic, i+1);
+                    currStmt._accounted = true;
+                    reads.push(currStmt);
+                    // Find the corresponding "suspended" verb
+                    var endTopic = this.indexOf(team, "suspended", PROGGAME_THEORY_PREFIX + topic, i+1, toPos);
                     if (endTopic < 0) {
-                        Y.log("Pas de fin de lecture de la théorie pour le joueur " + team.actor);
+                        Y.log("Pas de fin de lecture de la théorie pour le joueur " + this.getName(team));
+                        // Arrange for duration to be null:
+                        endTopic = i;
                     } else {
-                        var duration = Math.round((team[endTopic].timestamp - currStmt.timestamp) / 1000);
-                        //topic += ' de ' + currStmt.timestamp.toTimeString().substr(0,8) + ' à ' + team[endTopic].timestamp.toTimeString().substr(0,8);
-                        levelTheoryDuration += duration;
-                        theoryDuration += duration;
-                        sequence += '<span class="theory" title="Theory: ' + topic + '">TH:'+ duration + 's</span>';
+                        // Try to concatenate chained resumed/suspended sequences on the same theory topic.
+                        // (the player may indeed spend a lot of time reading without interacting much with the GUI).
+                        var lookAhead = endTopic+1,
+                            lookAheadStmt = team[lookAhead];
+                        while (lookAheadStmt &&
+                               lookAheadStmt.shortVerb === "resumed" && 
+                               lookAheadStmt.shortObject === THEORY_SHORTOBJECT &&
+                               lookAheadStmt.objectParam === topic) {
+                            lookAheadStmt._accounted = true;
+                            reads.push(lookAheadStmt);
+                            var endTopic2 = this.indexOf(team, "suspended", PROGGAME_THEORY_PREFIX + topic, lookAhead+1, toPos);
+                            if (endTopic2 < 0) {
+                                Y.log("Pas de fin de lecture de la théorie pour le joueur " + this.getName(team));
+                                break;
+                            }
+                            Y.log("Concatenate theory reads on topic '" + topic + "' at " + lookAheadStmt.timestamp + " (stmt " + lookAhead + ")");
+                            endTopic = endTopic2;
+                            lookAhead = endTopic2+1;
+                            lookAheadStmt = team[lookAhead];
+                        }
                     }
+                    var duration = Math.round((team[endTopic].timestamp - currStmt.timestamp) / 1000);
+                    topic += ' (' + currStmt.timestamp.toTimeString().substr(0,8) + ' - ' + team[endTopic].timestamp.toTimeString().substr(0,8) + ")";
+                    theoryDuration += duration;
+                    sequence += '<span class="theory" title="Theory: ' + topic + '">TH:'+ duration + 's</span>';
                 } else if (currStmt.shortVerb === "initialized" && 
                            currStmt.shortObject === PROGGAME_LEVEL_SHORTOBJECT) {
-                    levelTheoryDuration = 0;
                     sequence += '<span class="initialize-level"> </span>';
                 }
             }
             sequence += '</span>';
+            for (var r in reads) {
+                reads[r]._accounted = false;
+            }
+
             return this.newLevelSummary(submissions, duplicatas, syntaxErrors, semanticErrors, successes, theoryReads, theoryDuration, sequence);
         },
+        
+        // Produces a textual listing of the given level for the given team
+        dumpLevel: function(teamName, level) {
+            var team = this.teams[teamName],
+                interval = this.getLevels(team)[level],
+                lines = [];
+            if (interval.start < 0 || interval.end < 0) {
+                Y.log("dumpLevel impossible");
+            }
+            for (var i = interval.start; i <= interval.end; i++) {
+                var curr = team[i];
+                lines.push(curr.timestamp.toTimeString().substr(0,8) + ' &nbsp; ' + 
+                        curr.shortVerb + ' &nbsp; ' + curr.shortObject + ' &nbsp; ' + 
+                        (curr.objectParam ? curr.objectParam : ''));
+            }
+            var panel = this.getPanel({
+                content:
+                    '<div class="no-user-select header"><div class="title">Joueur: ' + 
+                    teamName + ' - Niveau: ' + (level/10).toFixed(1) +
+                    '</div><button class="yui3-button close-button">X</button></div>' +
+                    '<div style="margin:30px auto;"><div style="text-align:left; margin:auto; width: fit-content;">' +
+                    lines.join('<br>') +
+                    "</div></div>"
+            });
+        },
 
+        getPanel: function(cfg) {
+            var panel = new Y.Wegas.Panel(
+                Y.mix(cfg, {
+                    modal: false,
+                    centered: true,
+                    width: 300,
+                    buttons: {}
+                })
+            ).render();
+            panel.plug(Y.Plugin.DraggablePanel, {});
+            panel.get('boundingBox').addClass('proggame-stats-panel')
+                    .one('button').on('click', function(){ panel.exit(); });
+            return panel;
+        },
+            
         calcSum: function (teams, column) {
             var total = 0;
             for (var team in teams) {
@@ -375,7 +486,7 @@ YUI.add('pact-stats', function (Y) {
             }
 
             for (var team in teams) {
-                currError = this.analyzeEvents(teams[team]);
+                currError = this.countEvents(teams[team]);
                 outputTable[team].submits = currError.submissions;
                 outputTable[team].syntaxErrors = currError.syntaxErrors;
                 outputTable[team].semanticErrors = currError.semanticErrors;
@@ -385,7 +496,7 @@ YUI.add('pact-stats', function (Y) {
                 //outputTable[team].sequence = currError.sequence;
                 
                 for (lvl in this.levels) {
-                    currError = this.countSubmissionsForLevel(teams[team], lvl);
+                    currError = this.countEvents(teams[team], lvl);
                     outputTable[team]["submits"+lvl] = currError.submissions;
                     outputTable[team]["syntaxErrors"+lvl] = currError.syntaxErrors;
                     outputTable[team]["semanticErrors"+lvl] = currError.semanticErrors;
@@ -554,10 +665,12 @@ YUI.add('pact-stats', function (Y) {
         // Invoked when the dashboard tab gets visible
         refreshFromTab: function(e) {
             if (e.newVal) {
+                this.updateOptions();
                 this.refresh();
             }
         },
         
+        // Invoked by the refresh button
         refreshFromIcon: function() {
             var btn = this.get("contentBox").one("#refresh").addClass("fa-spin");
             this.refresh();
@@ -587,15 +700,16 @@ YUI.add('pact-stats', function (Y) {
                         if (nbTeamsInitial === 0) {
                             this.abort("Aucun joueur n'a commencé.");
                         }
-                        this.teams = this.removeOutliers(this.teams);
-                        var nbTeams2 = Object.keys(this.teams).length,
-                            diffTeams = nbTeamsInitial - nbTeams2;
-                        if (nbTeams2 === 0) {
-                            this.abort("Aucun joueur n'a suffisamment avancé pour produire des statistiques utiles.");
-                        } else if (diffTeams > 0) {
-                            this.addHeader("" + diffTeams + " joueur(s) écarté(s) pour avoir terminé moins de " + MIN_LEVELS_OUTLIERS + " niveaux.");
+                        if (this.excludeOutliers) {
+                            this.teams = this.removeOutliers(this.teams);
+                            var nbTeams2 = Object.keys(this.teams).length,
+                                diffTeams = nbTeamsInitial - nbTeams2;
+                            if (nbTeams2 === 0) {
+                                this.abort("Aucun joueur n'a suffisamment avancé pour produire des statistiques utiles.");
+                            } else if (diffTeams > 0) {
+                                this.addHeader("" + diffTeams + " joueur(s) écarté(s) pour avoir terminé moins de " + MIN_LEVELS_OUTLIERS + " niveaux.");
+                            }
                         }
-                        this.addHeader("Pour simplifier, les éventuels niveaux non terminés sont ignorés.");
                         this.checkTimestamps(this.teams);
                         this.teamsOutput = this.prepareOutputTable(this.teams);
                         this.addCounters(this.teams, this.teamsOutput);
@@ -610,23 +724,61 @@ YUI.add('pact-stats', function (Y) {
         
         
         bindUI: function() {
-            // Detect when the tab continaing this widget is selected:
+            var cb = this.get("contentBox");
+            // Detects when the tab continaing this widget is selected:
             this.handlers.push(
                 this.get("parent").after("selectedChange", Y.bind(this.refreshFromTab, this))
             );
             this.handlers.push(
-                this.get("contentBox").delegate('click', this.exportTableToCSV, "#downloadTable", this)
+                cb.delegate('click', function(){ this.exportTableToCSV(',') }, "#downloadTableComma", this)
             );
             this.handlers.push(
-                this.get("contentBox").delegate('click', this.refreshFromIcon, "#refresh", this)
+                cb.delegate('click', function(){ this.exportTableToCSV('.') }, "#downloadTablePoint", this)
             );
+            this.handlers.push(
+                cb.delegate('click', this.refreshFromIcon, "#refresh", this)
+            );
+            this.handlers.push(
+                cb.delegate('click', function(e){
+                    this.dumpLevel(e.currentTarget.getData()["team"], e.currentTarget.getData()["level"]);
+                },
+                ".sequence", this)
+            );
+            this.handlers.push(
+                cb.delegate('click', this.updateOptions, PACT_STATS_OPTIONS + " input", this)
+            );
+        },
+
+        updateOptions: function (e) {
+            var cb = this.get("contentBox"),
+                cbx1 = cb.one("#exclude-outliers"),
+                cbx2 = cb.one("#exclude-unfinished");
+            this.excludeOutliers = cbx1.get("checked");
+            this.excludeUnfinishedLevels = cbx2.get("checked");
+            // Param 'e' should be defined only if invoked by a click on a checkbox:
+            if (e) {
+                this.refresh();
+            }
+        },
+
+        initOptions: function () {
+            var cb = this.get("contentBox"),
+                cbx1 = cb.one("#exclude-outliers"),
+                cbx2 = cb.one("#exclude-unfinished");
+
+            this.excludeOutliers = true;
+            this.excludeUnfinishedLevels = true;
+
+            cbx1.set("checked", this.excludeOutliers);
+            cbx2.set("checked", this.excludeUnfinishedLevels);
         },
         
         initializer: function () {
+            this.initOptions();
             this.handlers = [];
             this.getGameLevels().then(Y.bind(function(){
                 // @TODO charger les annotations permettant de corriger les stats:
-                this.download(ANNOTATED_FILENAME, this.csv2obj);
+                //this.download(ANNOTATED_FILENAME, this.csv2obj);
             }, this));
         },
 
@@ -728,8 +880,13 @@ YUI.add('pact-stats', function (Y) {
                 obj = stmt[OBJECT_ID];
                 parts = obj.split('/');
                 isInternal = obj.indexOf(OBJECT_PROGGAME_PREFIX) === 0;
-                if (isInternal && parts[4]) {
-                    stmt.objectParam = parts[4];
+                if (isInternal) {
+                    if (parts[4]) {
+                        stmt.objectParam = parts[4];
+                    }
+                } else if (stmt.shortVerb === "author") {
+                    // Just a simplification for dumpLevel():
+                    stmt.objectParam = stmt.result;
                 }
                 if (objects.indexOf(obj) === -1) {
                     objects.push(obj);

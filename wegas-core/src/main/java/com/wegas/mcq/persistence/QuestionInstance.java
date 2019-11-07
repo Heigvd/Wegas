@@ -7,17 +7,17 @@
  */
 package com.wegas.mcq.persistence;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.False;
 import com.wegas.editor.ValueGenerators.True;
 import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.View;
 import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
 import java.util.List;

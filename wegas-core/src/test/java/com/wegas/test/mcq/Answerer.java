@@ -8,9 +8,9 @@
 package com.wegas.test.mcq;
 
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
-import javax.inject.Inject;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 /**
  *

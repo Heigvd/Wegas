@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -22,9 +23,9 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.persistence.Translation;
+import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnector.WorkspaceType;
 import com.wegas.core.jcr.content.DescriptorFactory;
@@ -33,6 +34,7 @@ import com.wegas.core.merge.patch.WegasEntityPatch;
 import com.wegas.core.merge.patch.WegasPatch;
 import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.merge.utils.WegasFieldProperties;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.Mergeable;
@@ -46,7 +48,6 @@ import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
@@ -938,6 +939,15 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
+     * Someone can ask GameModelController#LiveEdition/ to inform a given audience such an entity is being edited.
+     * Thus, others users may display the new entity before it is fully flushed in database. client may also prevent
+     * users to edit this entity (prevent co-edition)
+     */
+    public void liveUpdate(String channel, AbstractEntity entity) {
+        websocketFacade.sendLiveUpdate(channel, entity.getClass().getSimpleName() + "_" + entity.getId(), entity, requestManager.getSocketId());
+    }
+
+    /**
      * Find all gameModel matching the given type and the given status the current user has access too.
      *
      * @param type
@@ -1076,12 +1086,12 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         MergeHelper.visitMergeable(gameModel, Boolean.TRUE, new MergeHelper.MergeableVisitor() {
             @Override
-            public boolean visit(Mergeable target, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
+            public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
                 return true;
             }
 
             @Override
-            public void visitProperty(Object target, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object[] references) {
+            public void visitProperty(Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object[] references) {
                 if (field != null) {
                     if (field.getAnnotation() != null) {
                         if (field.getAnnotation().searchable()) {
@@ -1215,7 +1225,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         }
 
         @Override
-        public boolean visit(Mergeable target, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references) {
+        public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references) {
             if (target instanceof Translation) {
                 Translation tr = (Translation) target;
 
@@ -1235,7 +1245,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         }
 
         @Override
-        public void visitProperty(Object target, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references) {
+        public void visitProperty(Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references) {
             if (!this.isProtected(ancestors.peekFirst(), protectionLevel)) {
                 if (field != null) {
                     if (field.getAnnotation() != null) {
@@ -1297,7 +1307,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
          * @throws IllegalArgumentException
          * @throws InvocationTargetException
          */
-        private void update(Object newValue, Object target, ModelScoped.ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references)
+        private void update(Object newValue, Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references)
                 throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
             if (field.getType() == WegasFieldProperties.FieldType.CHILDREN) {
                 Object get = field.getPropertyDescriptor().getReadMethod().invoke(ancestors.peekFirst());
@@ -1326,7 +1336,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         }
 
         public void processPages(GameModel gameModel) {
-            if (!this.isProtected(gameModel, ModelScoped.ProtectionLevel.ALL)) {
+            if (!this.isProtected(gameModel, ProtectionLevel.ALL)) {
                 Map<String, JsonNode> pages = gameModel.getPages();
                 for (Entry<String, JsonNode> entry : pages.entrySet()) {
                     JsonNode page = entry.getValue();

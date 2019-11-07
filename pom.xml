@@ -18,6 +18,7 @@
         <!--<module>wegas-mcq</module>-->
         <module>wenerator-maven-plugin</module>
         <module>wegas-runtime</module>
+        <module>wegas-annotations</module>
     </modules>
 
     <developers>

@@ -5,9 +5,8 @@
  * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.merge.utils;
+package ch.albasim.wegas.annotations;
 
-import com.wegas.core.persistence.Mergeable;
 
 /**
  *
@@ -24,7 +23,7 @@ public interface WegasCallback {
      * @param container  list/map which contains the new entity
      * @param identifier entity identifier (map key or position in list)
      */
-    default public void add(Object child, Mergeable container, Object identifier) {
+    default public void add(Object child, IMergeable container, Object identifier) {
 
     }
 
@@ -35,7 +34,7 @@ public interface WegasCallback {
      * @param newValue
      * @param identifier
      */
-    default public void preUpdate(Mergeable entity, Object newValue, Object identifier) {
+    default public void preUpdate(IMergeable entity, Object newValue, Object identifier) {
 
     }
 
@@ -46,7 +45,7 @@ public interface WegasCallback {
      * @param ref
      * @param identifier
      */
-    default public void postUpdate(Mergeable entity, Object ref, Object identifier) {
+    default public void postUpdate(IMergeable entity, Object ref, Object identifier) {
 
     }
 
@@ -59,7 +58,7 @@ public interface WegasCallback {
      *
      * @return child key (key for map and idx for list), null if nothing was removed
      */
-    default public Object remove(Object child, Mergeable container, Object identifier) {
+    default public Object remove(Object child, IMergeable container, Object identifier) {
         return null;
     }
 
@@ -69,7 +68,7 @@ public interface WegasCallback {
      * @param entity
      * @param identifier
      */
-    default public void persist(Mergeable entity, Object identifier) {
+    default public void persist(IMergeable entity, Object identifier) {
 
     }
 
@@ -79,7 +78,7 @@ public interface WegasCallback {
      * @param entity
      * @param identifier
      */
-    default public void destroy(Mergeable entity, Object identifier) {
+    default public void destroy(IMergeable entity, Object identifier) {
 
     }
 

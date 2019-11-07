@@ -7,12 +7,13 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -20,18 +21,17 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.utils.StringInstanceCustomizer;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.View.I18nStringView;
-import com.wegas.editor.View.View;
 import java.io.IOException;
+import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import jdk.nashorn.api.scripting.JSObject;
+import org.eclipse.persistence.annotations.Customizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.persistence.Entity;
-import java.util.List;
-import org.eclipse.persistence.annotations.Customizer;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)

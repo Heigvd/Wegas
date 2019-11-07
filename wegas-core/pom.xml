@@ -15,6 +15,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.wegas</groupId>
+            <artifactId>wegas-annotations</artifactId>
+            <version>${project.version}</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
         </dependency>
@@ -329,6 +335,23 @@
                             </resources>
                         </configuration>
                     </execution>
+
+                    <execution>
+                        <id>copy-annotations-generated</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>true</overwrite>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory> 
+                            <resources>
+                                <resource>
+                                    <directory>target/generated-sources/annotations</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -353,6 +376,9 @@
                     <!-- Using nashorn internal -->
                     <parameters>true</parameters>
                     <compilerArgument>-XDignore.symbol.file</compilerArgument>
+                    <annotationProcessors>
+                        <proc>ch.albasim.wegas.annotations.processor.JavaDocExtractor</proc>
+                    </annotationProcessors>
                 </configuration>
             </plugin>
 

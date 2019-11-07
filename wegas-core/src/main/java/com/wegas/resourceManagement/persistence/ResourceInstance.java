@@ -7,21 +7,21 @@
  */
 package com.wegas.resourceManagement.persistence;
 
+import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
+import ch.albasim.wegas.annotations.IMergeable;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasCallback;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyMap;
-import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
 import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.View;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
@@ -317,7 +317,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
     public static class ResourceInstanceMergeCallback implements WegasCallback {
 
         @Override
-        public Object remove(Object entity, Mergeable container, Object identifier) {
+        public Object remove(Object entity, IMergeable container, Object identifier) {
             if (entity instanceof Assignment) {
                 Assignment assignment = (Assignment) entity;
                 TaskInstance parent = (TaskInstance) VariableInstanceFacade.lookup().find(assignment.getTaskInstance().getId());

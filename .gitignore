@@ -47,3 +47,4 @@ Icon?
 Thumbs.db
 
 .vscode
+/wegas-annotations/target/

@@ -7,9 +7,11 @@
  */
 package com.wegas.core.security.util;
 
+import com.wegas.core.ejb.RequestManager;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -33,6 +35,9 @@ public class BlacklistFilter implements Filter {
     final Logger logger = LoggerFactory.getLogger(BlacklistFilter.class);
 
     private static final List<String> blacklist = new ArrayList<>();
+
+    @Inject
+    private RequestManager requestManager;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -82,7 +87,7 @@ public class BlacklistFilter implements Filter {
 
             String url = req.getRequestURI().replaceFirst("^" + req.getContextPath(), "");
 
-            if (isBlacklisted(url)){
+            if (!requestManager.isAdmin() && isBlacklisted(url)){
                 // Blacklist URL -> forbidden
                 logger.error("Trying to access blacklisted content ( {} ) ! ", url);
                 resp.setStatus(403);

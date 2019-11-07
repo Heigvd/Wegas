@@ -934,16 +934,30 @@ YUI.add("wegas-review-widgets", function(Y) {
 
         },
         syncTree: function() {
-            var nodes = this._genTreeView();
-            if (nodes[1] && nodes[1].children.length === 0) {
-                nodes.pop();
+            var prdNodes = this._genTreeView();
+            var something = false;
+            for (var i in prdNodes) {
+                var nodes = prdNodes[i].children;
+
+                if (nodes[1] && nodes[1].children.length === 0) {
+                    nodes.pop();
+                }
+                if (nodes[0] && nodes[0].children.length === 0) {
+                    nodes.shift();
+                } else {
+                    something = true;
+                }
             }
-            if (nodes[0] && nodes[0].children.length === 0) {
-                nodes.shift();
+            if (!something) {
+                prdNodes = [];
                 this._panel.destroyAll();
             }
+            if (prdNodes.length === 1) {
+                prdNodes = prdNodes[0].children;
+            }
+
             this._treeview.destroyAll();
-            this._treeview.add(nodes);
+            this._treeview.add(prdNodes);
             this._treeview.syncUI();
             this.updateTreeSelection();
         },
@@ -984,7 +998,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                         .get("id") === review.get("id")) {
                         if (review.get("reviewState") !== this._currentPanel._status) {
                             // Build new
-                            this.renderReviewWidget(review, this._currentPanel.get("title"), this._currentPanel.get("reviewer"));
+                            this.renderReviewWidget(prd, review, this._currentPanel.get("title"), this._currentPanel.get("reviewer"));
                         } else {
                             this._currentPanel.set("review", review);
                             this._currentPanel.syncUI();
@@ -999,12 +1013,54 @@ YUI.add("wegas-review-widgets", function(Y) {
                 this.handlers[k].detach();
             }
         },
-        _genTreeView: function() {
+        getEntities: function() {
+            var prds, prd, pri, queue,
+                entities = [];
+            prds = this.get("variable.evaluated");
 
-            var prd = this.get("variable.evaluated"),
-                pri = prd.getInstance(), i, j,
+            if (!Y.Lang.isArray(prds)) {
+                queue = [prds];
+            } else {
+                queue = prds;
+            }
+
+            while ((prd = queue.shift())) {
+                if (prd instanceof Wegas.persistence.PeerReviewDescriptor) {
+                    if (prd.hasReviews()) {
+                        entities.push(prd);
+                    }
+                } else if (prd instanceof Wegas.persistence.ListDescriptor) {
+                    queue = queue.concat(prd.get("items"));
+                }
+            }
+            return entities;
+        },
+        _genTreeView: function() {
+            var vars = this.getEntities();
+            var nodes = [];
+            for (var i in vars) {
+                var prd = vars[i];
+
+                nodes.push({
+                    label: I18n.t(prd.get("label")),
+                    type: "TreeNode",
+                    collapsed: false,
+                    selected: 0,
+                    data: {
+                        type: "PRD_TITLE"
+                    },
+                    children: this._genTreeViewForPrd(prd),
+                    iconCSS: "fa fa-users",
+                    cssClass: "title"
+                });
+            }
+            return nodes;
+        },
+        _genTreeViewForPrd: function(prd) {
+            var i, j,
+                pri = prd.getInstance(),
                 types = ["toReview", "reviewed"],
-                reviews, root, nodes = [], i, review, node;
+                reviews, nodes = [], review, node;
 
             nodes.push({
                 label: I18n.t("review.tabview.toReviewTitle"),
@@ -1049,6 +1105,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                             iconCSS: "fa fa-user-circle-o",
                             data: {
                                 type: "REVIEW",
+                                descriptor: prd,
                                 review: review,
                                 reviewer: (i === 0)
                             }
@@ -1078,7 +1135,7 @@ YUI.add("wegas-review-widgets", function(Y) {
         //isNodeExpanded: function(entity) {
         //return this.RememberExpandedTreeView.expandedIds[entity.get("id")] || false;
         //},
-        renderReviewWidget: function(review, label, reviewer) {
+        renderReviewWidget: function(prd, review, label, reviewer) {
             if (this._currentPanel) {
                 this._panel.destroyAll();
             }
@@ -1086,7 +1143,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             this._currentPanel = new Wegas.ReviewWidget({
                 title: label,
                 review: review,
-                descriptor: this.get("variable.evaluated"),
+                descriptor: prd,
                 reviewer: reviewer,
                 showSubmitButton: this.get("showSubmitButton")
             });
@@ -1103,7 +1160,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             if (data) {
                 switch (data.type) {
                     case "REVIEW":
-                        this.renderReviewWidget(data.review, e.target.get("label"), data.reviewer);
+                        this.renderReviewWidget(data.descriptor, data.review, e.target.get("label"), data.reviewer);
                         break;
                     default:
                         Y.later(0, this, function() {
@@ -1134,7 +1191,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 view: {
                     type: "variableselect",
                     label: "Peer Review Descriptor",
-                    classFilter: ["PeerReviewDescriptor"]
+                    classFilter: ["PeerReviewDescriptor", "ListDescriptor"]
                 }
             },
             showSubmitButton: {
@@ -1200,8 +1257,11 @@ YUI.add("wegas-review-widgets", function(Y) {
          */
         addEvaluation: function(ev, container, mode) {
             var klass = ev.get("@class"),
-                widget, readonly = mode === "read", cfg = {
+                widget,
+                readonly = mode === "read",
+                cfg = {
                     evaluation: ev,
+                    descriptor: this.get("descriptor"),
                     readonly: readonly,
                     showStatus: false
                 };
@@ -1387,7 +1447,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 var id;
                 for (id in this.locks) {
                     if (this.locks.hasOwnProperty(id) && this.locks[id]) {
-                        // at least one evaluation is being edited -> do not save yet 
+                        // at least one evaluation is being edited -> do not save yet
                         // but wait for edition end
                         return;
                     }
@@ -1699,6 +1759,9 @@ YUI.add("wegas-review-widgets", function(Y) {
         }
     }, {
         ATTRS: {
+            descriptor: {
+                type: "PeerReviewDescriptor"
+            },
             evaluation: {
                 type: "GradeInstance"
             },
@@ -1748,6 +1811,33 @@ YUI.add("wegas-review-widgets", function(Y) {
                 value: value
             };
         },
+        bindUpdateEvaluations: function() {
+            if (this.onEvalUpdate) {
+                this.onEvalUpdate.detach();
+            }
+            var evaluation = this.get("evaluation");
+            if (evaluation) {
+                this.onEvalUpdate = Y.Wegas.Facade.Variable.after("TextEvaluationInstance_" + evaluation.get("id") + ':LiveUpdate', this.liveLock, this);
+            }
+        },
+        liveLock: function(entity) {
+            this._setContent(entity.value);
+            this.setStatus("someone is editing");
+            if (this.waitLiveLock) {
+                this.waitLiveLock.cancel();
+            } else {
+                this.showLiveOverlay();
+            }
+            this.waitLiveLock = Y.later(1000, this, function() {
+                this.waitLiveLock = null;
+                this.hideLiveOverlay();
+                this.setStatus("");
+            });
+        },
+        bindUI: function() {
+            Y.Wegas.TextEvalInput.superclass.bindUI.apply(this);
+            this.after("evaluationChange", this.bindUpdateEvaluations, this);
+        },
         /*save: function(value) {
          this.get("evaluation").set("value", value);
          return true;
@@ -1759,9 +1849,28 @@ YUI.add("wegas-review-widgets", function(Y) {
             if (!this._quiet) {
                 this._initialContent = value;
                 ev.set("value", value);
-                cb.removeClass("loading");
-                this.fire("saved", this.getPayload(e.value));
+                this.fireSaved(e.value);
             }
+
+            cb.removeClass("loading");
+        },
+        fireEditing: function(content) {
+            var prd = this.get("descriptor");
+            var pri = prd.getInstance();
+            var payload = this.getPayload();
+
+            var evaluation = this.get("evaluation").toObject();
+            evaluation.value = content;
+
+            Y.Wegas.Facade.GameModel.sendRequest({
+                request: "/LiveEdition/private-" + prd.get("scopeType")
+                    .replace("Scope", "-" + pri.get("scopeKey")),
+                cfg: {
+                    method: 'POST',
+                    data: evaluation
+                }
+            });
+            this.fire('editing', payload);
         },
         syncUI: function(quiet) {
             var evl, value;
@@ -1785,15 +1894,23 @@ YUI.add("wegas-review-widgets", function(Y) {
                     this._quiet = false;
                 });
             } else {
-                this._quiet = quiet;
+                this._quiet = false;
                 if (!this.get("readonly.evaluated")) {
                     evl.set("value", this.editor.getContent());
                 }
+            }
+        },
+        destructor: function() {
+            if (this.onEvalUpdate) {
+                this.onEvalUpdate.detach();
             }
         }
     }, {
         EDITORNAME: "TextEvalInput",
         ATTRS: {
+            descriptor: {
+                type: "PeerReviewDescriptor"
+            },
             evaluation: {
                 type: "TextEvaluationInstance"
             },
@@ -1918,6 +2035,9 @@ YUI.add("wegas-review-widgets", function(Y) {
         }
     }, {
         ATTRS: {
+            descriptor: {
+                type: "PeerReviewDescriptor"
+            },
             evaluation: {
                 type: "CategorizedEvaluationInstance"
             },

@@ -7,12 +7,6 @@
  */
 package com.wegas.mcq.ejb;
 
-import com.wegas.mcq.persistence.QuestionInstance;
-import com.wegas.mcq.persistence.ChoiceDescriptor;
-import com.wegas.mcq.persistence.QuestionDescriptor;
-import com.wegas.mcq.persistence.ChoiceInstance;
-import com.wegas.mcq.persistence.Reply;
-import com.wegas.mcq.persistence.Result;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
@@ -25,6 +19,12 @@ import com.wegas.core.persistence.variable.ListInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
+import com.wegas.mcq.persistence.ChoiceDescriptor;
+import com.wegas.mcq.persistence.ChoiceInstance;
+import com.wegas.mcq.persistence.QuestionDescriptor;
+import com.wegas.mcq.persistence.QuestionInstance;
+import com.wegas.mcq.persistence.Reply;
+import com.wegas.mcq.persistence.Result;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import javax.inject.Inject;
 import javax.naming.NamingException;

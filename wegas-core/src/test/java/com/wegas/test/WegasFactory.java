@@ -14,7 +14,7 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.ListInstance;
-import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.EnumItem;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
@@ -99,7 +99,7 @@ public class WegasFactory {
      *
      * @return
      */
-    public ObjectDescriptor createObjectDescriptor(GameModel gameModel, DescriptorListI parent, String name, String label, ModelScoped.Visibility visibility, String... values) {
+    public ObjectDescriptor createObjectDescriptor(GameModel gameModel, DescriptorListI parent, String name, String label, Visibility visibility, String... values) {
         ObjectDescriptor desc = new ObjectDescriptor();
         desc.setName(name);
         desc.setLabel(TranslatableContent.build(gameModel.getLanguages().get(0).getCode(), label));
@@ -145,7 +145,7 @@ public class WegasFactory {
      *
      * @return the brand new number descriptor
      */
-    public NumberDescriptor createNumberDescriptor(GameModel gameModel, DescriptorListI parent, String name, String label, ModelScoped.Visibility visibility, Double min, Double max, Double defaultValue, Double... history) {
+    public NumberDescriptor createNumberDescriptor(GameModel gameModel, DescriptorListI parent, String name, String label, Visibility visibility, Double min, Double max, Double defaultValue, Double... history) {
         NumberDescriptor desc = new NumberDescriptor();
         List<Double> hist = new ArrayList<>();
         for (Double h : history) {
@@ -178,7 +178,7 @@ public class WegasFactory {
      *
      * @return the brand new trigger descriptor
      */
-    public TriggerDescriptor createTriggerDescriptor(GameModel gameModel, DescriptorListI parent, String name, String label, ModelScoped.Visibility visibility, String condition, String impact) {
+    public TriggerDescriptor createTriggerDescriptor(GameModel gameModel, DescriptorListI parent, String name, String label, Visibility visibility, String condition, String impact) {
         TriggerDescriptor desc = new TriggerDescriptor();
         desc.setName(name);
         desc.setLabel(TranslatableContent.build(gameModel.getLanguages().get(0).getCode(), label));
@@ -209,7 +209,7 @@ public class WegasFactory {
      * @return brand new persisted state machine
      */
     public StateMachineDescriptor createStateMachineDescriptor(GameModel gameModel, DescriptorListI parent,
-            String name, String label, ModelScoped.Visibility visibility) {
+            String name, String label, Visibility visibility) {
         StateMachineDescriptor desc = new StateMachineDescriptor();
         desc.setName(name);
         desc.setLabel(TranslatableContent.build(gameModel.getLanguages().get(0).getCode(), label));
