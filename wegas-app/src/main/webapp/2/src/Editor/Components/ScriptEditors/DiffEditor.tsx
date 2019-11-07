@@ -49,7 +49,7 @@ interface DiffEditorProps {
   /**
    * langauge - the editor language
    */
-  language?: 'javascript' | 'css' | 'json';
+  language?: 'typescript' | 'css' | 'json';
   /**
    * idx - the index of the diff to be focused
    */

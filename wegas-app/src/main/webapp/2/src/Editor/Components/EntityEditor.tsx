@@ -18,7 +18,6 @@ import {
   SimpleSchema,
   TypedEntity,
 } from '../../Components/Hooks/types/scriptSchemaGlobals';
-import { wlog } from '../../Helper/wegaslog';
 
 export interface EditorProps<T> {
   entity?: T;
@@ -184,7 +183,6 @@ async function WindowedEditor<T extends IMergeable>({
   >([import('./Form').then(m => m.Form), getConfig(pathEntity)]);
 
   // First try to get schema from simple filters
-  debugger;
   const customSchemas = store.getState().global.schemas;
   let customSchema: SimpleSchema | void;
   const simpleCustomShemaName = customSchemas.filtered[pathEntity['@class']];
@@ -208,9 +206,6 @@ async function WindowedEditor<T extends IMergeable>({
       break;
     }
   }
-
-  wlog(customSchema !== undefined ? customSchema : schema);
-  debugger;
 
   return (
     <div className={cx(flex, grow, flexColumn)}>

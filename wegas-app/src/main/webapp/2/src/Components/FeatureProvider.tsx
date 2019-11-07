@@ -35,10 +35,20 @@ export const FeatureProvider = React.memo(FeatureContext);
 /**
  * Features selector allows to select features inside the feature context given by the FeatureProvider
  */
-
 export function FeatureToggler() {
   const { currentFeatures, setFeature, removeFeature } = React.useContext(
     featuresCTX,
+  );
+
+  const selectFeature = React.useCallback(
+    (feature: FeatureLevel) => {
+      if (currentFeatures.includes(feature)) {
+        removeFeature(feature);
+      } else {
+        setFeature(feature);
+      }
+    },
+    [currentFeatures, setFeature, removeFeature],
   );
 
   return React.useMemo(
@@ -52,22 +62,16 @@ export function FeatureToggler() {
               <input
                 type="checkbox"
                 defaultChecked={currentFeatures.includes(feature)}
-                onChange={e => {
-                  if (e.target.checked) {
-                    setFeature(feature);
-                  } else {
-                    removeFeature(feature);
-                  }
-                }}
+                onChange={() => selectFeature(feature)}
                 onClick={e => e.stopPropagation()}
               />
               {feature}
             </>
           ),
         }))}
-        onSelect={() => {}}
+        onSelect={({ id: feature }) => selectFeature(feature)}
       />
     ),
-    [currentFeatures, removeFeature, setFeature],
+    [currentFeatures, selectFeature],
   );
 }

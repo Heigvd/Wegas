@@ -32,7 +32,8 @@ const Eval = React.memo(function Eval({ script }: { script: string }) {
 });
 Eval.displayName = 'Eval';
 
-const testScript = 'Methods.getMethod("test2")();';
+const testScript =
+  'const tsTest : SimpleSchema = {};\nMethods.getMethod("test2")();';
 
 export default function PlayLocal() {
   const [script, setScript] = React.useState(testScript);

@@ -13,6 +13,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
     CSS: {},
     JS: {},
   });
+
   useGlobals();
 
   React.useEffect(() => {

@@ -56,12 +56,13 @@ const formatScriptToFunction = (
       newValue = newValue.substring(1);
     }
     const lines = textToArray(newValue);
+    const tabber = lines.length > 1 ? '\t' : '';
     if (lines.length > 0 && !lines[lines.length - 1].includes('return')) {
-      lines[lines.length - 1] = '\treturn ' + lines[lines.length - 1];
+      lines[lines.length - 1] = tabber + 'return ' + lines[lines.length - 1];
     } else {
       lines[lines.length - 1] = lines[lines.length - 1].replace(
         /.*(return).* /,
-        '\treturn ',
+        tabber + 'return ',
       );
     }
     newValue = arrayToText(lines);
