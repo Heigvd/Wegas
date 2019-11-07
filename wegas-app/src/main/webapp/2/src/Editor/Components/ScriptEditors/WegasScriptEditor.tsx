@@ -3,6 +3,8 @@ import SrcEditor, {
   MonacoSCodeEditor,
   textToArray,
   arrayToText,
+  MonacoEditor,
+  MonacoCodeEditor,
 } from './SrcEditor';
 import { EditorProps } from './SrcEditor';
 import { useStore } from '../../../data/store';
@@ -21,8 +23,6 @@ import editorGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/script
 import methodGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/scriptMethodGlobals.ts';
 // @ts-ignore
 import schemaGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/scriptSchemaGlobals.ts';
-// @ts-ignore
-import jsonformtypes from '!!raw-loader!../../../../../../../../node_modules/jsoninput/typings/types.d.ts';
 
 type MonacoEditorCursorEvent = import('monaco-editor').editor.ICursorSelectionChangedEvent;
 type MonacoEditorRange = import('monaco-editor').IRange;
@@ -260,35 +260,13 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     };
   }
 
-  const test = arrayToText(textToArray(jsonformtypes).slice(2));
-
-  return (
-    <SrcEditor
-      key={Number(refresh)}
-      {...props}
-      language={'typescript'}
-      extraLibs={[
-        {
-          content: `${entitiesSrc}\n
-          ${cleanLib(editorGlobalSrc)}\n
-          ${cleanLib(methodGlobalSrc)}\n
-          ${cleanLib(schemaGlobalSrc)}\n
-          ${libContent}\n
-          /*${test}*/`,
-          name: 'VariablesTypes.d.ts',
-        },
-      ]}
-      value={formatScriptToFunction(currentValue, returnType)}
-      onEditorReady={editorLock}
-      onChange={val => trimFunctionToScript(val, props.onChange)}
-      onBlur={val => trimFunctionToScript(val, props.onBlur)}
-      onSave={val => trimFunctionToScript(val, props.onSave)}
-      defaultActions={[
+  const actions = returnType
+    ? [
         {
           id: 'SelectAllWithScriptFunction',
           label: 'Ctrl + A avoiding header and footer',
           keybindings: [KeyMod.CtrlCmd | KeyCode.KEY_A],
-          run: (_monaco, editor) => {
+          run: (_monaco: MonacoEditor, editor: MonacoCodeEditor) => {
             const editorLines = textToArray(editor.getValue());
             const lastEditableLine =
               textToArray(editor.getValue()).length - footerSize;
@@ -301,7 +279,30 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
             editor.setSelection(range);
           },
         },
+      ]
+    : [];
+
+  return (
+    <SrcEditor
+      key={Number(refresh)}
+      {...props}
+      language={'typescript'}
+      extraLibs={[
+        {
+          content: `${entitiesSrc}\n
+          ${cleanLib(editorGlobalSrc)}\n
+          ${cleanLib(methodGlobalSrc)}\n
+          ${cleanLib(schemaGlobalSrc)}\n
+          ${libContent}\n`,
+          name: 'VariablesTypes.d.ts',
+        },
       ]}
+      value={formatScriptToFunction(currentValue, returnType)}
+      onEditorReady={editorLock}
+      onChange={val => trimFunctionToScript(val, props.onChange)}
+      onBlur={val => trimFunctionToScript(val, props.onBlur)}
+      onSave={val => trimFunctionToScript(val, props.onSave)}
+      defaultActions={actions}
     />
   );
 }

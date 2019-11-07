@@ -344,7 +344,7 @@ interface ModalStateClose {
 }
 
 interface ModalStateWarn {
-  type: 'warn';
+  type: 'warning';
   label: string;
 }
 
@@ -484,7 +484,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
               );
             } catch (e) {
               setModalState({
-                type: 'warn',
+                type: 'warning',
                 label:
                   'The library has been saved but the script contains errors',
               });
