@@ -7,6 +7,7 @@
  */
 package com.wegas.core.rest;
 
+import com.wegas.core.XlsxBuilder;
 import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
@@ -20,6 +21,7 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +35,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 
@@ -82,8 +87,7 @@ public class GameController {
      *
      * @return game matching entityId
      *
-     * @throws AuthorizationException current user doesn't have access to the
-     *                                requested game
+     * @throws AuthorizationException current user doesn't have access to the requested game
      */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
@@ -228,7 +232,7 @@ public class GameController {
 
     @GET
     @Path("{gameId : [1-9][0-9]*}/ExportMembers")
-    public Response forward(@PathParam("gameId") Long gameId) throws UnsupportedEncodingException {
+    public Response exportMembers(@PathParam("gameId") Long gameId) throws UnsupportedEncodingException {
         Game game = gameFacade.find(gameId);
         StringBuilder sb = new StringBuilder();
 
@@ -264,6 +268,66 @@ public class GameController {
                         + filename).build();
     }
 
+    @GET
+    @Path("{gameId : [1-9][0-9]*}/ExportMembers.xlsx")
+    public Response exportMembersXlsx(@PathParam("gameId") Long gameId) throws UnsupportedEncodingException {
+        Game game = gameFacade.find(gameId);
+
+        XlsxBuilder xlsx = new XlsxBuilder("players details");
+
+        CellStyle headerStyle = xlsx.createHeaderStyle();
+        xlsx.addValue("Team Name", headerStyle);
+        xlsx.addValue("Team Notes", headerStyle);
+        xlsx.addValue("Team Creation Date", headerStyle);
+        xlsx.addValue("Team Status", headerStyle);
+        xlsx.addValue("Player Name", headerStyle);
+        xlsx.addValue("Player E-Mail", headerStyle);
+        xlsx.addValue("Email verified", headerStyle);
+        xlsx.addValue("Player Join Time", headerStyle);
+        xlsx.addValue("Player Language", headerStyle);
+        xlsx.addValue("Player Status", headerStyle);
+
+        for (Team t : game.getTeams()) {
+            if (t instanceof DebugTeam == false) {
+                for (Player p : t.getPlayers()) {
+                    xlsx.newRow();
+                    xlsx.addValue(t.getName());
+                    xlsx.addValue(t.getNotes());
+
+                    xlsx.addValue(t.getCreatedTime());
+                    xlsx.addValue(t.getStatus().name());
+
+                    xlsx.addValue(p.getName());
+                    if (p.getUser() != null) {
+                        xlsx.addValue(p.getUser().getMainAccount().getEmail());
+                        xlsx.addValue(Boolean.TRUE.equals(p.getUser().getMainAccount().isVerified()) ? "yes" : "no");
+                    } else {
+                        xlsx.skipCell();
+                        xlsx.skipCell();
+                    }
+                    xlsx.addValue(p.getJoinTime().toString());
+                    xlsx.addValue(game.getGameModel().getLanguageByCode(p.getLang()).getLang());
+                    xlsx.addValue(p.getStatus().name());
+                }
+            }
+        }
+        Workbook workbook = xlsx.getWorkbood();
+
+        StreamingOutput sout;
+        sout = new StreamingOutput() {
+            @Override
+            public void write(OutputStream out) throws IOException, WebApplicationException {
+                workbook.write(out);
+                workbook.close();
+            }
+        };
+
+        String filename = URLEncoder.encode(game.getName().replaceAll("\\" + "s+", "_") + ".xlsx", StandardCharsets.UTF_8.displayName());
+
+        return Response.ok(sout, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                .header("Content-Disposition", "attachment; filename=" + filename).build();
+    }
+
     /**
      * @param entityId
      */
@@ -296,10 +360,9 @@ public class GameController {
     }
 
     /**
-     * Check if a user is logged, Find a game by id and check if this game has
-     * an open access, Check if current user is already a player for this game,
-     * Check if the game is played individually, Create a new team with a new
-     * player linked on the current user for the game found.
+     * Check if a user is logged, Find a game by id and check if this game has an open access, Check if current user is
+     * already a player for this game, Check if the game is played individually, Create a new team with a new player
+     * linked on the current user for the game found.
      *
      * @param request
      * @param gameId

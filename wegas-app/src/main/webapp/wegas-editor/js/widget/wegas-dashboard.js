@@ -224,7 +224,7 @@ YUI.add('wegas-dashboard', function(Y) {
             this.toolbar.add(new Y.Wegas.Text({
                 content: '<a title="Download list of players" href="rest/GameModel/Game/'
                     + game.get("id")
-                    + '/ExportMembers" target="_blank"><span class="fa fa-2x fa-file-excel-o"></span></a>',
+                    + '/ExportMembers.xlsx" target="_blank"><span class="fa fa-2x fa-file-excel-o"></span></a>',
                 cssClass: 'download-members global-button'
             }));
 
