@@ -18,6 +18,7 @@ import {
 } from './types/scriptMethodGlobals';
 import { Actions } from '../../data';
 import { GlobalSchemaClass, CustomSchemaFN } from './types/scriptSchemaGlobals';
+import ts = require('typescript');
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -115,13 +116,13 @@ export function useGlobals() {
   };
 }
 
-export function scriptEval<ReturnValue>(script: string) {
+export function scriptEval<ReturnValue>(tsScript: string) {
   return (
     ((sandbox.contentWindow as unknown) as {
       eval: (code: string) => ReturnValue;
     })
       // 'undefined' so that an empty script don't return '"use strict"'
-      .eval('"use strict";undefined;' + script)
+      .eval('"use strict";undefined;' + ts.transpile(tsScript))
   );
 }
 
