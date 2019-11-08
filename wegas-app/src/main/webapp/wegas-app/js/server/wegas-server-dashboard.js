@@ -123,8 +123,18 @@ var WegasDashboard = (function() {
         });
     }
 
+    function getAllOverviews() {
+        var overviews = [];
+        for (var name in dashConfigs) {
+            overviews.push({
+                name: name,
+                overview: overview(name, true)
+            });
+        }
+        return overviews;
+    }
 
-    function overview(name) {
+    function overview(name, doNotStringify) {
         name = name || "overview";
         overview = {};
 
@@ -284,8 +294,12 @@ var WegasDashboard = (function() {
             });
         }
 
-        // Return stringified object
-        return JSON.stringify(overview);
+        if (doNotStringify) {
+            return overview;
+        } else {
+            // Return stringified object
+            return JSON.stringify(overview);
+        }
     }
 
     return {
@@ -312,6 +326,9 @@ var WegasDashboard = (function() {
         },
         getOverview: function(name) {
             return overview(name);
+        },
+        getAllOverviews: function() {
+            return getAllOverviews();
         },
         setSectionLabel: function(label, sectionName, dashboardName) {
             getOrCreateSection(dashboardName, sectionName).title = label;

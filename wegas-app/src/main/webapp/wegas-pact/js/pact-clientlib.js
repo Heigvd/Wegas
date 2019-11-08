@@ -138,11 +138,7 @@
                             Y.Wegas.Facade.Variable.script.remoteFnEval(
                                 function(unread, token) {
                                     Log.post(
-                                        Log.statement(
-                                            unread ? 'initialized' : 'resumed',
-                                            'theory',
-                                            token
-                                        )
+                                        Log.statement( unread ? 'initialized' : 'resumed', 'theory', token)
                                     );
                                 },
                                 message.get('unread'),
@@ -155,13 +151,7 @@
                         if (message.get('token')) {
                             Y.Wegas.Facade.Variable.script.remoteFnEval(
                                 function(token) {
-                                    Log.post(
-                                        Log.statement(
-                                            'suspended',
-                                            'theory',
-                                            token
-                                        )
-                                    );
+                                    Log.post( Log.statement( 'suspended', 'theory', token));
                                 },
                                 message.get('token')
                             );

@@ -7,7 +7,7 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.XlsxBuilder;
+import com.wegas.core.XlsxSpreadsheet;
 import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
@@ -273,44 +273,7 @@ public class GameController {
     public Response exportMembersXlsx(@PathParam("gameId") Long gameId) throws UnsupportedEncodingException {
         Game game = gameFacade.find(gameId);
 
-        XlsxBuilder xlsx = new XlsxBuilder("players details");
-
-        CellStyle headerStyle = xlsx.createHeaderStyle();
-        xlsx.addValue("Team Name", headerStyle);
-        xlsx.addValue("Team Notes", headerStyle);
-        xlsx.addValue("Team Creation Date", headerStyle);
-        xlsx.addValue("Team Status", headerStyle);
-        xlsx.addValue("Player Name", headerStyle);
-        xlsx.addValue("Player E-Mail", headerStyle);
-        xlsx.addValue("Email verified", headerStyle);
-        xlsx.addValue("Player Join Time", headerStyle);
-        xlsx.addValue("Player Language", headerStyle);
-        xlsx.addValue("Player Status", headerStyle);
-
-        for (Team t : game.getTeams()) {
-            if (t instanceof DebugTeam == false) {
-                for (Player p : t.getPlayers()) {
-                    xlsx.newRow();
-                    xlsx.addValue(t.getName());
-                    xlsx.addValue(t.getNotes());
-
-                    xlsx.addValue(t.getCreatedTime());
-                    xlsx.addValue(t.getStatus().name());
-
-                    xlsx.addValue(p.getName());
-                    if (p.getUser() != null) {
-                        xlsx.addValue(p.getUser().getMainAccount().getEmail());
-                        xlsx.addValue(Boolean.TRUE.equals(p.getUser().getMainAccount().isVerified()) ? "yes" : "no");
-                    } else {
-                        xlsx.skipCell();
-                        xlsx.skipCell();
-                    }
-                    xlsx.addValue(p.getJoinTime().toString());
-                    xlsx.addValue(game.getGameModel().getLanguageByCode(p.getLang()).getLang());
-                    xlsx.addValue(p.getStatus().name());
-                }
-            }
-        }
+        XlsxSpreadsheet xlsx = gameFacade.getXlsxOverview(gameId);
         Workbook workbook = xlsx.getWorkbood();
 
         StreamingOutput sout;

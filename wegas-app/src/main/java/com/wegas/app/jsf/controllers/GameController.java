@@ -128,12 +128,7 @@ public class GameController extends AbstractGameController {
                     if (currentPlayer == null) {
                         // fallback: use a test player
                         for (Game g : gameModel.getGames()) {
-                            for (Team t : g.getTeams()) {
-                                if (t instanceof DebugTeam) {
-                                    currentPlayer = t.getAnyLivePlayer();
-                                    break;
-                                }
-                            }
+                            currentPlayer = g.getTestPlayer();
                         }
                     }
                 }

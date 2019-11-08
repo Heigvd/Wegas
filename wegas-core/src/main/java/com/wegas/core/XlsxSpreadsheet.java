@@ -27,7 +27,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  *
  * @author maxence
  */
-public class XlsxBuilder {
+public class XlsxSpreadsheet {
 
     private Workbook wb;
 
@@ -37,26 +37,15 @@ public class XlsxBuilder {
 
     private int currentRowNumber;
     private int currentColumnNumber;
+    private int maxColumn;
+
+    private CellStyle defaultDateStyle;
 
     /**
      * Create a new Workbook with a default sheet cursor at A1 cell.
      */
-    public XlsxBuilder() {
+    public XlsxSpreadsheet() {
         wb = new XSSFWorkbook();
-        currentRowNumber = 0;
-        currentColumnNumber = 0;
-        currentSheet = wb.createSheet();
-        currentRow = currentSheet.createRow(currentRowNumber);
-    }
-
-    /**
-     * Create a new Workbook with a default named sheet cursor at A1 cell.
-     *
-     * @param sheetName name of the default sheet
-     */
-    public XlsxBuilder(String sheetName) {
-        this();
-        wb.setSheetName(0, sheetName);
     }
 
     /**
@@ -67,9 +56,21 @@ public class XlsxBuilder {
     public CellStyle createHeaderStyle() {
         CellStyle style = wb.createCellStyle();
 
-        Font headerFont = wb.createFont();
-        headerFont.setBold(true);
-        style.setFont(headerFont);
+        Font font = wb.createFont();
+        font.setBold(true);
+        font.setFontHeightInPoints((short) 14);
+        style.setFont(font);
+
+        return style;
+    }
+
+    public CellStyle createSmallerHeaderStyle() {
+        CellStyle style = wb.createCellStyle();
+
+        Font font = wb.createFont();
+        font.setBold(true);
+        font.setFontHeightInPoints((short) 12);
+        style.setFont(font);
 
         return style;
     }
@@ -87,12 +88,34 @@ public class XlsxBuilder {
     }
 
     /**
+     * Add date style to the workbook: DD/MMM/YYYY HH:MM:SS
+     *
+     * @return style to display percentage
+     */
+    public CellStyle createDateStyle() {
+        CellStyle style = wb.createCellStyle();
+        style.setDataFormat(wb.createDataFormat().getFormat("DD/MMM/YYYY HH:MM:SS"));
+        return style;
+    }
+
+    private CellStyle getDefaultDateStyle() {
+        if (this.defaultDateStyle == null) {
+            this.defaultDateStyle = createDateStyle();
+        }
+        return this.defaultDateStyle;
+    }
+
+    /**
      * Get the workbook
      *
      * @return the workbook
      */
     public Workbook getWorkbood() {
         return wb;
+    }
+
+    public Sheet getCurrentSheet() {
+        return currentSheet;
     }
 
     /**
@@ -104,14 +127,28 @@ public class XlsxBuilder {
         return currentRow;
     }
 
+    public Sheet addSheet(String sheetName) {
+        this.maxColumn = 0;
+        this.currentRowNumber = 0;
+        this.currentColumnNumber = 0;
+        if (sheetName != null) {
+            this.currentSheet = wb.createSheet(sheetName);
+        } else {
+            this.currentSheet = wb.createSheet();
+        }
+        this.currentRow = currentSheet.createRow(currentRowNumber);
+
+        return currentSheet;
+    }
+
     /**
      * Create a new row and set cursor to its first column
      *
      * @return the brand new row
      */
     public Row newRow() {
-        currentRow = currentSheet.createRow(currentRowNumber);
         currentRowNumber++;
+        currentRow = currentSheet.createRow(currentRowNumber);
         currentColumnNumber = 0;
         return currentRow;
     }
@@ -129,7 +166,7 @@ public class XlsxBuilder {
             cell.setCellStyle(style);
         }
 
-        currentColumnNumber++;
+        skipCell();
         return cell;
     }
 
@@ -138,6 +175,7 @@ public class XlsxBuilder {
      */
     public void skipCell() {
         currentColumnNumber++;
+        this.maxColumn = Math.max(maxColumn, currentColumnNumber);
     }
 
     /**
@@ -160,23 +198,39 @@ public class XlsxBuilder {
     public Cell addValue(Object value, CellStyle style) {
         Cell cell = this.addCell(style);
 
-        if (value instanceof Calendar) {
-            cell.setCellValue((Calendar) value);
-        } else if (value instanceof Date) {
-            cell.setCellValue((Date) value);
+        if (value instanceof Number) {
+            cell.setCellValue(((Number) value).doubleValue());
         } else if (value instanceof String) {
-            cell.setCellValue((String) value);
+            String v = (String) value;
+            if (v.length() >= 32767) {
+                v = v.substring(0, 32767);
+            }
+            cell.setCellValue(v);
+        } else if (value instanceof Calendar) {
+            cell.setCellValue((Calendar) value);
         } else if (value instanceof Boolean) {
             cell.setCellValue((Boolean) value);
+        } else if (value instanceof Date) {
+            cell.setCellValue((Date) value);
+            setDateStyle(cell, style);
         } else if (value instanceof LocalDate) {
             cell.setCellValue((LocalDate) value);
+            setDateStyle(cell, style);
         } else if (value instanceof LocalDateTime) {
             cell.setCellValue((LocalDateTime) value);
+            setDateStyle(cell, style);
         } else if (value instanceof RichTextString) {
             cell.setCellValue((RichTextString) value);
+            setDateStyle(cell, style);
         }
 
         return cell;
+    }
+
+    private void setDateStyle(Cell cell, CellStyle userStyle) {
+        if (userStyle == null) {
+            cell.setCellStyle(this.getDefaultDateStyle());
+        }
     }
 
     /**
@@ -203,5 +257,31 @@ public class XlsxBuilder {
         XSSFFormulaEvaluator.evaluateAllFormulaCells(wb);
 
         return cell;
+    }
+
+    public void autoWidth() {
+        for (int i = 0; i <= this.maxColumn; i++) {
+            this.currentSheet.autoSizeColumn(i);
+        }
+    }
+
+    public int getCurrentColumnNumber() {
+        return this.currentColumnNumber;
+    }
+
+    public int getCurrentRowNumber() {
+        return currentRowNumber;
+    }
+
+    public void setCurrentRowNumber(int currentRowNumber) {
+        this.currentRowNumber = currentRowNumber;
+    }
+
+    public void setCurrentColumnNumber(int currentColumnNumber) {
+        this.currentColumnNumber = currentColumnNumber;
+    }
+
+    public int getMaxColumn() {
+        return maxColumn;
     }
 }

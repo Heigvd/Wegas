@@ -42,7 +42,7 @@ import javax.validation.constraints.Pattern;
 @Entity
 @Table(
         //uniqueConstraints = {
-            //    @UniqueConstraint(columnNames = {"name"}),
+        //    @UniqueConstraint(columnNames = {"name"}),
         //    @UniqueConstraint(columnNames = {"token"})}, // partial index : WHERE status = LIVE OR status = BIN
         indexes = {
             @Index(columnList = "gamemodel_id"),
@@ -246,6 +246,16 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
         return null;
     }
 
+    @JsonIgnore
+    public Player getTestPlayer() {
+        for (Team t : this.getTeams()) {
+            if (t instanceof DebugTeam) {
+                return t.getAnyLivePlayer();
+            }
+        }
+        return null;
+    }
+
     /**
      * @param t
      */
@@ -376,8 +386,8 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     /**
-     * @param gameModelId the gameModelId to set public void setGameModelId(Long
-     *                    gameModelId) { this.gameModelId = gameModelId; }
+     * @param gameModelId the gameModelId to set public void setGameModelId(Long gameModelId) { this.gameModelId =
+     * gameModelId; }
      */
     /**
      * @return the access
@@ -486,8 +496,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
          */
         DELETE,
         /**
-         * Does not exist anymore. Actually, this status should never persist.
-         * Used internally as game's missing.
+         * Does not exist anymore. Actually, this status should never persist. Used internally as game's missing.
          */
         SUPPRESSED
     }

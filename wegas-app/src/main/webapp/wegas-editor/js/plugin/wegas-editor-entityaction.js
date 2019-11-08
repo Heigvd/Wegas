@@ -138,7 +138,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             i.tooltip = 'Duplicate';
                             break;
                         case "Export":
-                            i = EditEntityAction.stackedIcon(i, 'fa-download');
+                            i = EditEntityAction.stackedIcon(i, 'fa-file-pdf-o');
                             i.tooltip = 'Export';
                             break;
                         case "Search for usages":

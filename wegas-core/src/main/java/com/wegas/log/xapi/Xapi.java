@@ -8,6 +8,7 @@
 package com.wegas.log.xapi;
 
 import com.wegas.core.Helper;
+import com.wegas.core.XlsxSpreadsheet;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
@@ -51,6 +52,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.xml.bind.DatatypeConverter;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -246,8 +248,7 @@ public class Xapi implements XapiI {
     }
 
     /**
-     * Check if there is a current player, not Debug, there is a LogID and xapi is
-     * configured
+     * Check if there is a current player, not Debug, there is a LogID and xapi is configured
      */
     private Boolean isValid() {
         final Player player = manager.getPlayer();
@@ -369,12 +370,22 @@ public class Xapi implements XapiI {
         return client.getQuestionReplies(logId, gameIds, questionName);
     }
 
+    @Deprecated
     public StringBuilder exportCSV(String logId, List<Long> gameIds, String fieldSeparator, String activityPattern) throws IOException {
         return mapStatementsToCSV(getLearningLockerClient().getStatements(logId, gameIds, activityPattern), fieldSeparator);
     }
 
+    @Deprecated
     public StringBuilder exportCSVByTeam(String logId, List<Long> teamIds, String fieldSeparator, String activityPattern) throws IOException {
         return mapStatementsToCSV(getLearningLockerClient().getStatementsByTeams(logId, teamIds, activityPattern), fieldSeparator);
+    }
+
+    public XlsxSpreadsheet exportXLSX(String logId, List<Long> gameIds, String activityPattern) throws IOException {
+        return mapStatementsToXlsx(getLearningLockerClient().getStatements(logId, gameIds, activityPattern));
+    }
+
+    public XlsxSpreadsheet exportXLSXyTeam(String logId, List<Long> teamIds, String activityPattern) throws IOException {
+        return mapStatementsToXlsx(getLearningLockerClient().getStatementsByTeams(logId, teamIds, activityPattern));
     }
 
     private String digest(Map<String, String> registry, String salt, String value) {
@@ -401,6 +412,7 @@ public class Xapi implements XapiI {
         }
     }
 
+    @Deprecated
     public StringBuilder mapStatementsToCSV(List<ProjectedStatement> statements, String fieldSeparator) throws IOException {
 
         Map<String, String> registry = new HashMap<>();
@@ -436,6 +448,46 @@ public class Xapi implements XapiI {
         }
 
         return csv;
+    }
+
+    public XlsxSpreadsheet mapStatementsToXlsx(List<ProjectedStatement> statements) throws IOException {
+
+        Map<String, String> registry = new HashMap<>();
+
+        // hash userId
+        for (ProjectedStatement stmt : statements) {
+            try {
+                User user = userFacade.find(Long.parseLong(stmt.getActor()));
+                Team team = teamFacade.find(Long.parseLong(stmt.getTeam()));
+                Game game = gameFacade.find(Long.parseLong(stmt.getGame()));
+
+                if (user != null) {
+                    stmt.setActor(digest(registry, user.getMainAccount().getSalt(), stmt.getActor()));
+                }
+
+                if (team != null) {
+                    stmt.setTeam(digest(registry, team.getRefId(), stmt.getTeam()));
+                }
+
+                if (game != null) {
+                    stmt.setGame(digest(registry, game.getRefId(), stmt.getGame()));
+                }
+
+            } catch (NumberFormatException ex) {
+            }
+        }
+
+        XlsxSpreadsheet xlsx = new XlsxSpreadsheet();
+        xlsx.addSheet("logs");
+        CellStyle headerStyle = xlsx.createSmallerHeaderStyle();
+
+        ProjectedStatement.writeXSLXHeaders(xlsx, headerStyle);
+        for (ProjectedStatement s : statements) {
+            s.writeXLSXRecord(xlsx, null);
+        }
+
+        xlsx.autoWidth();
+        return xlsx;
     }
 
     public List<Map<String, Object>> getActivityCount(List<Long> gameIds) throws IOException {
