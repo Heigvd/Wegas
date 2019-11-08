@@ -142,6 +142,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     variable: {
                         "name": entity.get("name")
                     },
+                    selfSaving: true,
                     submitVar: this.get("submitVar")
                 });
             }
