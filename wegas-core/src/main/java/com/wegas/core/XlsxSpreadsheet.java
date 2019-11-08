@@ -267,7 +267,10 @@ public class XlsxSpreadsheet {
 
     public void autoWidth() {
         for (int i = 0; i <= this.maxColumn; i++) {
-            this.currentSheet.autoSizeColumn(i);
+            /*
+             * autoSizeColumn does not work on openJDK server version (requires awt Font config...)
+             */
+            //this.currentSheet.autoSizeColumn(i);
         }
     }
 
