@@ -39,7 +39,6 @@ import javax.persistence.TypedQuery;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -563,6 +562,8 @@ public class GameFacade extends BaseFacade<Game> {
 
     public XlsxSpreadsheet getXlsxOverview(Long gameId) {
         Game game = this.find(gameId);
+        boolean includeTestPlayer = !game.getGameModel().isPlay();
+
         XlsxSpreadsheet xlsx = new XlsxSpreadsheet();
         xlsx.addSheet("players details");
 
@@ -579,7 +580,7 @@ public class GameFacade extends BaseFacade<Game> {
         xlsx.addValue("Player Status", headerStyle);
 
         for (Team t : game.getTeams()) {
-            if (t instanceof DebugTeam == false) {
+            if (t instanceof DebugTeam == false || includeTestPlayer) {
                 for (Player p : t.getPlayers()) {
                     xlsx.newRow();
                     xlsx.addValue(t.getName());
@@ -604,12 +605,12 @@ public class GameFacade extends BaseFacade<Game> {
         }
 
         xlsx.autoWidth();
-        loadOverviews(xlsx, game);
+        loadOverviews(xlsx, game, includeTestPlayer);
 
         return xlsx;
     }
 
-    private void loadOverviews(XlsxSpreadsheet xlsx, Game game) {
+    private void loadOverviews(XlsxSpreadsheet xlsx, Game game, boolean includeTestPlayer) {
         Player p = game.getTestPlayer();
         String script = ""
                 + "var result= [];"
@@ -686,35 +687,33 @@ public class GameFacade extends BaseFacade<Game> {
 
             ScriptObjectMirror data = (ScriptObjectMirror) overview.get("data");
             for (String teamId : data.keySet()) {
-                xlsx.newRow();
                 Team team = teamFacade.find(Long.parseLong(teamId));
-                String tName = team.getName();
-                xlsx.addValue(tName);
+                if (team instanceof DebugTeam == false || includeTestPlayer) {
+                    xlsx.newRow();
+                    String tName = team.getName();
+                    xlsx.addValue(tName);
 
-                ScriptObjectMirror teamData = (ScriptObjectMirror) data.get(teamId);
-                for (String itemId : teamData.keySet()) {
-                    Integer itemCol = index.get(itemId);
-                    if (itemCol != null) {
-                        String kind = kinds.get(itemId);
+                    ScriptObjectMirror teamData = (ScriptObjectMirror) data.get(teamId);
+                    for (String itemId : teamData.keySet()) {
+                        Integer itemCol = index.get(itemId);
+                        if (itemCol != null) {
+                            String kind = kinds.get(itemId);
 
-                        Object value = teamData.get(itemId);
+                            Object value = teamData.get(itemId);
 
-                        if (kind.equals("inbox")) {
-                            value = ((ScriptObjectMirror) value).getMember("body");
+                            if (kind.equals("inbox") || kind.equals("text")){
+                                value = ((ScriptObjectMirror) value).getMember("body");
+                            }
+
+                            xlsx.setCurrentColumnNumber(itemCol);
+                            xlsx.addValue(value);
                         }
-
-                        xlsx.setCurrentColumnNumber(itemCol);
-                        xlsx.addValue(value);
                     }
                 }
             }
 
+            xlsx.autoWidth();
+
         }
-
-        logger.error("Yopla");
-    }
-
-    private Object getWorkbood() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

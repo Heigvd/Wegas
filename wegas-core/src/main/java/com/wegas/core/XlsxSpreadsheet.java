@@ -21,6 +21,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Create XLSX document easily
@@ -28,6 +30,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  * @author maxence
  */
 public class XlsxSpreadsheet {
+
+    private static final Logger logger =LoggerFactory.getLogger(XlsxSpreadsheet.class);
 
     private Workbook wb;
 
@@ -222,6 +226,8 @@ public class XlsxSpreadsheet {
         } else if (value instanceof RichTextString) {
             cell.setCellValue((RichTextString) value);
             setDateStyle(cell, style);
+        } else {
+            logger.error("Unhandled value: {} ", value);
         }
 
         return cell;

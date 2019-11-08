@@ -542,7 +542,7 @@ YUI.add('wegas-dashboard', function(Y) {
 
                         item.nodeFormatter = function(o) {
                             var tooltip = o.column.title;
-                            if (o.column.globalOnly && typeof o.column.globalOnly === "string"){
+                            if (o.column.globalOnly && typeof o.column.globalOnly === "string") {
                                 tooltip = o.column.globalOnly;
                             }
                             o.cell.setHTML("<span class=\"dashboard-action " +
@@ -893,7 +893,9 @@ YUI.add('wegas-dashboard', function(Y) {
             if (event.currentTarget !== this.detailsTarget) {
                 body = '<div class="customize-group-window">';
                 for (var j in items) {
-                    body += '<div class="checkbox' + (items[j].active ? ' selected' : '') + '" data-group="' + group + '" data-cbx="' + items[j].id + '">' + items[j].label + "</div>";
+                    if (items[j].label) {
+                        body += '<div class="checkbox' + (items[j].active ? ' selected' : '') + '" data-group="' + group + '" data-cbx="' + items[j].id + '">' + items[j].label + "</div>";
+                    }
                 }
                 body += '<button class="customize-group-submit-button">OK</button></div>';
                 this._display(title, body, true, Y.bind(function() {
