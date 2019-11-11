@@ -370,12 +370,10 @@ public class Xapi implements XapiI {
         return client.getQuestionReplies(logId, gameIds, questionName);
     }
 
-    @Deprecated
     public StringBuilder exportCSV(String logId, List<Long> gameIds, String fieldSeparator, String activityPattern) throws IOException {
         return mapStatementsToCSV(getLearningLockerClient().getStatements(logId, gameIds, activityPattern), fieldSeparator);
     }
 
-    @Deprecated
     public StringBuilder exportCSVByTeam(String logId, List<Long> teamIds, String fieldSeparator, String activityPattern) throws IOException {
         return mapStatementsToCSV(getLearningLockerClient().getStatementsByTeams(logId, teamIds, activityPattern), fieldSeparator);
     }
@@ -412,7 +410,6 @@ public class Xapi implements XapiI {
         }
     }
 
-    @Deprecated
     public StringBuilder mapStatementsToCSV(List<ProjectedStatement> statements, String fieldSeparator) throws IOException {
 
         Map<String, String> registry = new HashMap<>();

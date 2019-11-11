@@ -175,7 +175,7 @@ YUI.add('wegas-dashboard', function(Y) {
                         var logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties")
                             .get("val").logID;
                         var path = owner.name === "Game" || owner.name === "DebugGame" ? "Games" : "Teams";
-                        window.open("rest/Statistics/Export/" + logId
+                        window.open("rest/Statistics/ExportXLSX/" + logId
                             + "/" + path + "/" + owner.get("id"), "_blank");
                     }
                 };
@@ -215,7 +215,7 @@ YUI.add('wegas-dashboard', function(Y) {
 
             if (this.logId) {
                 this.toolbar.add(new Y.Wegas.Text({
-                    content: '<a title="Download statistics (Excel)" href="rest/Statistics/Export/'
+                    content: '<a title="Download statistics (Excel)" href="rest/Statistics/ExportXLSX/'
                         + this.logId + '/Games/' + +game.get('id') + '" '
                         + 'target="_blank"><span class="fa fa-2x fa-pie-chart"></span></a>',
                     cssClass: 'download-stats global-button'

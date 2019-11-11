@@ -94,7 +94,7 @@ public class StatisticController {
     }
 
     @GET
-    @Path("Export/{logid: [^/]+}/Games/{ids: [^/]+}")
+    @Path("ExportXLSX/{logid: [^/]+}/Games/{ids: [^/]+}")
     public Response exportXLSX(@PathParam("logid") String logId,
             @PathParam("ids") String gameIds,
             @QueryParam("activityPattern") String activityPattern) throws IOException {
@@ -124,7 +124,7 @@ public class StatisticController {
     }
 
     @GET
-    @Path("Export/{logid: [^/]+}/Teams/{ids: [^/]+}")
+    @Path("ExportXLSX/{logid: [^/]+}/Teams/{ids: [^/]+}")
     public Response exportXLSXByTeam(@PathParam("logid") String logId,
             @PathParam("ids") String teamIds,
             @QueryParam("activityPattern") String activityPattern) throws IOException {
@@ -156,8 +156,7 @@ public class StatisticController {
     }
 
     @GET
-    @Path("ExportCSV/{logid: [^/]+}/Games/{ids: [^/]+}")
-    @Deprecated
+    @Path("Export/{logid: [^/]+}/Games/{ids: [^/]+}")
     public Response exportCSV(@PathParam("logid") String logId,
             @PathParam("ids") String gameIds,
             @QueryParam("activityPattern") String activityPattern) throws IOException {
@@ -177,8 +176,7 @@ public class StatisticController {
     }
 
     @GET
-    @Path("ExportCSV/{logid: [^/]+}/Teams/{ids: [^/]+}")
-    @Deprecated
+    @Path("Export/{logid: [^/]+}/Teams/{ids: [^/]+}")
     public Response exportCSVByTeam(@PathParam("logid") String logId,
             @PathParam("ids") String teamIds,
             @QueryParam("activityPattern") String activityPattern) throws IOException {

@@ -103,7 +103,7 @@ var WegasDashboard = (function() {
         var fn = function(owner, payload) {
             var logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val").logID;
             var path = owner.name === "Game" || owner.name === "DebugGame" ? "Games" : "Teams";
-            window.open("rest/Statistics/Export/" + logId
+            window.open("rest/Statistics/ExportXLSX/" + logId
                 + "/" + path + "/" + owner.get("id") + "QUERYSTRING", "_blank");
         };
 
