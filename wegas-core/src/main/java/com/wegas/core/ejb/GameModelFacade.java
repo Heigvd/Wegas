@@ -132,7 +132,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     @Inject
     private StateMachineFacade stateMachineFacade;
 
-    @Inject I18nFacade i18nFacade;
+    @Inject
+    I18nFacade i18nFacade;
 
     @Inject
     private PageFacade pageFacade;
@@ -154,8 +155,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * Duplicate game model.
-     * Handle MODEL and SCENARIO.
+     * Duplicate game model. Handle MODEL and SCENARIO.
      *
      * @param entityId id of the gamemodel to duplicate
      *
@@ -250,7 +250,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * Create variable instances for owner (not for its children !)
      *
      * @param gameModel the game model which define variabledescriptors
-     * @param owner     owner to create instances for
+     * @param owner owner to create instances for
      */
     public void createInstances(GameModel gameModel, InstanceOwner owner) {
         for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
@@ -286,7 +286,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * Same as {@link #revivePrivateInstances(com.wegas.core.persistence.InstanceOwner) } but also revive instances owned by owner chilidren
+     * Same as {@link #revivePrivateInstances(com.wegas.core.persistence.InstanceOwner) } but also revive instances
+     * owned by owner chilidren
      *
      * @param owner instances owner
      */
@@ -313,13 +314,11 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * Add a DebugGame (and debug team) within the given game model unless it
-     * already exists
+     * Add a DebugGame (and debug team) within the given game model unless it already exists
      *
      * @param gameModel
      *
-     * @return true if a new debugGame has been added, false if the gameModel
-     *         already has one
+     * @return true if a new debugGame has been added, false if the gameModel already has one
      */
     public boolean addDebugGame(GameModel gameModel) {
         if (!gameModel.hasDebugGame()) {
@@ -345,8 +344,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     /**
      * @param toUpdate GameModel to update
-     * @param source   GameModel to fetch instance from
-     * @param player   instances owner
+     * @param source GameModel to fetch instance from
+     * @param player instances owner
      *
      * @return the gameModel with default instance merged with player's ones
      */
@@ -523,7 +522,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
-                try ( ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
+                try (ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
 
                     // serialise the json
                     ZipEntry gameModelEntry = new ZipEntry("gamemodel.json");
@@ -613,8 +612,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * Duplicate a model to create a brand new one.
-     * The srcGameModel must be a model.
+     * Duplicate a model to create a brand new one. The srcGameModel must be a model.
      *
      * @param entityId id of the model to duplicate must be a MODEL gameModel.
      *
@@ -658,11 +656,10 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * Create a new scenario based on another gameModel (the source).
-     * The source GameModel must be either a MODEL or a SCENARIO.
+     * Create a new scenario based on another gameModel (the source). The source GameModel must be either a MODEL or a
+     * SCENARIO.
      * <ul>
-     * <li><b>MODEL:</b> the new scenario will be a copy of the model,
-     * whithout any PRIVATE content.</li>
+     * <li><b>MODEL:</b> the new scenario will be a copy of the model, whithout any PRIVATE content.</li>
      * <li><b>SCENARIO:</b> the new scenario will be a copy of the source, including PRIVATE content</li>
      * </ul>
      *
@@ -713,7 +710,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             if (newGameModel != null) {
                 newGameModel.setName(this.findUniqueName(srcGameModel.getName(), SCENARIO));
 
-                newGameModel.getProperties().setLogID(findUniqueLogId(newGameModel.getProperties().getLogID()));
+                if (!Helper.isNullOrEmpty(newGameModel.getProperties().getLogID())) {
+                    newGameModel.getProperties().setLogID(findUniqueLogId(newGameModel.getProperties().getLogID()));
+                }
 
                 // one should be able to create/modifiy everything
                 newGameModel.setOnGoingPropagation(Boolean.TRUE);
@@ -939,9 +938,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * Someone can ask GameModelController#LiveEdition/ to inform a given audience such an entity is being edited.
-     * Thus, others users may display the new entity before it is fully flushed in database. client may also prevent
-     * users to edit this entity (prevent co-edition)
+     * Someone can ask GameModelController#LiveEdition/ to inform a given audience such an entity is being edited. Thus,
+     * others users may display the new entity before it is fully flushed in database. client may also prevent users to
+     * edit this entity (prevent co-edition)
      */
     public void liveUpdate(String channel, AbstractEntity entity) {
         websocketFacade.sendLiveUpdate(channel, entity.getClass().getSimpleName() + "_" + entity.getId(), entity, requestManager.getSocketId());
