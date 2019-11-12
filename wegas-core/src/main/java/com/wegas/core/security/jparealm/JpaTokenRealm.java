@@ -47,7 +47,7 @@ public class JpaTokenRealm extends AuthorizingRealm {
         try {
             JpaAccount account = accountFacade.findJpaByEmail(token.getUsername());
 
-            String resetToken = account.getToken();
+            String resetToken = account.getShadow().getToken();
             if (resetToken != null) {
                 String[] tokenElemeents = resetToken.split(":");
                 Long expirationDate = Long.parseLong(tokenElemeents[0], 10);
@@ -57,7 +57,7 @@ public class JpaTokenRealm extends AuthorizingRealm {
 
                 if (now < expirationDate) {
                     SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), theToken, getName());
-                    info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
+                    info.setCredentialsSalt(new SimpleByteSource(account.getShadow().getSalt()));
                     return info;
                 }
             }

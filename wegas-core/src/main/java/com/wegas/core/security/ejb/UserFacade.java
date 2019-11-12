@@ -27,6 +27,7 @@ import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
+import com.wegas.core.security.persistence.Shadow;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.messaging.ejb.EMailFacade;
@@ -148,7 +149,7 @@ public class UserFacade extends BaseFacade<User> {
                 AbstractAccount mainAccount = user.getMainAccount();
                 if (mainAccount instanceof JpaAccount) {
                     JpaAccount jpaAccount = (JpaAccount) mainAccount;
-                    jpaAccount.setToken(null);
+                    jpaAccount.getShadow().setToken(null);
                     jpaAccount.setVerified(Boolean.TRUE);
                 }
                 return user;
@@ -190,6 +191,7 @@ public class UserFacade extends BaseFacade<User> {
             }
             return user;
         } catch (AuthenticationException aex) {
+            logger.error("AUTHFAIL: {}", aex);
             throw WegasErrorMessage.error("Email/password combination not found");
         }
     }
@@ -326,6 +328,12 @@ public class UserFacade extends BaseFacade<User> {
             // E-Mail not yet registered -> proceed
         }
          */
+        // setup shadow storage for each account
+        for (AbstractAccount account : user.getAccounts()){
+            if (account.getShadow() == null){
+                account.setShadow(new Shadow());
+            }
+        }
 
         getEntityManager().persist(user);
 
@@ -682,7 +690,7 @@ public class UserFacade extends BaseFacade<User> {
 
     private String hashToken(String token, JpaAccount account) {
         return new Sha256Hash(token,
-                (new SimpleByteSource(account.getSalt())).getBytes()).toHex();
+                (new SimpleByteSource(account.getShadow().getSalt())).getBytes()).toHex();
     }
 
     public void requestPasswordReset(String email, HttpServletRequest request) {
@@ -744,7 +752,7 @@ public class UserFacade extends BaseFacade<User> {
                     Long expirationDate = (new Date()).getTime() + tokenValidityDuration * 60 * 1000;
 
                     String hashToken = expirationDate + ":" + hashToken(token, account);
-                    account.setToken(hashToken);
+                    account.getShadow().setToken(hashToken);
 
                     String theLink = Helper.getPublicBaseUrl(request)
                             + "/#/" + path + "/" + account.getEmail() + "/" + token;

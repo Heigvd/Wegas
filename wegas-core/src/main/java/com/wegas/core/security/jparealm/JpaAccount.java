@@ -11,6 +11,7 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.Helper;
 import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.persistence.Shadow;
 import javax.persistence.*;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
@@ -36,30 +37,21 @@ public class JpaAccount extends AbstractAccount {
     @Transient
     @WegasEntityProperty(ignoreNull = true)
     private String password;
-    /**
-     *
-     */
-    @Basic(optional = false)
-    @Column(length = 255)
-    @JsonIgnore
-    private String passwordHex;
 
     @Column(columnDefinition = "boolean default false")
     private Boolean verified = false;
-
-    @JsonIgnore
-    private String token;
 
     /**
      *
      */
     @PrePersist
     public void prePersist() {
-        RandomNumberGenerator rng = new SecureRandomNumberGenerator();
-        if (this.getSalt() == null) {
-            this.setSalt(rng.nextBytes().toHex());
+
+        if (this.getShadow() == null) {
+            this.setShadow(new Shadow());
         }
         if (this.password == null || this.password.isEmpty()) {
+            RandomNumberGenerator rng = new SecureRandomNumberGenerator();
             this.password = rng.nextBytes().toString().substring(0, 7);
         }
         this.preUpdate();
@@ -71,9 +63,10 @@ public class JpaAccount extends AbstractAccount {
     @PreUpdate
     public void preUpdate() {
         if (this.password != null && !this.password.isEmpty()) {
-            this.passwordHex = new Sha256Hash(this.password,
-                    (new SimpleByteSource(this.getSalt())).getBytes()).toHex();
+            String hash = new Sha256Hash(this.password,
+                (new SimpleByteSource(this.getShadow().getSalt())).getBytes()).toHex();
             this.password = null;
+            this.getShadow().setPasswordHex(hash);
         }
     }
 
@@ -91,23 +84,9 @@ public class JpaAccount extends AbstractAccount {
      */
     public void setPassword(String password) {
         this.password = password;
-        if (!Helper.isNullOrEmpty(password)) {
-            this.setPasswordHex(null); //force JPA update (password is JPA transient)
+        if (!Helper.isNullOrEmpty(password) && this.getShadow() != null) {
+            this.getShadow().setPasswordHex(null); //force JPA update (password is JPA transient)
         }
-    }
-
-    /**
-     * @return the passwordHex
-     */
-    public String getPasswordHex() {
-        return passwordHex;
-    }
-
-    /**
-     * @param passwordHex the passwordHex to set
-     */
-    public void setPasswordHex(String passwordHex) {
-        this.passwordHex = passwordHex;
     }
 
     @Override
@@ -117,13 +96,5 @@ public class JpaAccount extends AbstractAccount {
 
     public void setVerified(Boolean verified) {
         this.verified = verified;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 }

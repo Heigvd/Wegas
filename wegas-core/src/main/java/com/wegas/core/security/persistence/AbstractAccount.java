@@ -26,8 +26,6 @@ import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.View.NumberView;
 import java.util.*;
 import javax.persistence.*;
-import org.apache.shiro.crypto.RandomNumberGenerator;
-import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -67,19 +65,28 @@ public abstract class AbstractAccount extends AbstractEntity {
     @Id
     @GeneratedValue
     private Long id;
-
-    /**
-     *
-     */
-    @JsonIgnore
-    private String salt;
-
     /**
      *
      */
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, optional = false)
     @JsonBackReference(value = "user-account")
     private User user;
+
+    @JsonIgnore
+    @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
+    private Shadow shadow;
+
+    public Shadow getShadow() {
+        return shadow;
+    }
+
+    public void setShadow(Shadow shadow) {
+        this.shadow = shadow;
+        if (shadow != null) {
+            this.shadow.setAccount(this);
+            this.shadow.setSaltOnPrePersist();
+        }
+    }
 
     /**
      *
@@ -106,7 +113,7 @@ public abstract class AbstractAccount extends AbstractEntity {
      *
      */
     @WegasEntityProperty(callback = CheckEmailChange.class, optional = false, nullable = false,
-            view = @View(label = "E-mail"))
+        view = @View(label = "E-mail"))
     private String email = "";
 
     /**
@@ -123,14 +130,14 @@ public abstract class AbstractAccount extends AbstractEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
     @WegasEntityProperty(ignoreNull = true, optional = false, nullable = false,
-            view = @View(label = "Agreed time", readOnly = true, value = NumberView.class))
+        view = @View(label = "Agreed time", readOnly = true, value = NumberView.class))
     private Date agreedTime = null;
 
     /**
      * Optional remarks only visible to admins
      */
     @WegasEntityProperty(ignoreNull = true, optional = false, nullable = false,
-            proposal = EmptyString.class, view = @View(label = "Comment"))
+        proposal = EmptyString.class, view = @View(label = "Comment"))
     private String comment = "";
 
     /**
@@ -139,17 +146,6 @@ public abstract class AbstractAccount extends AbstractEntity {
     @JsonView(Views.ExtendedI.class)
     @Transient
     private Collection<Role> roles = new HashSet<>();
-
-    /**
-     *
-     */
-    @PrePersist
-    public void setSaltOnPrePersist() {
-        if (salt == null) {
-            RandomNumberGenerator rng = new SecureRandomNumberGenerator();
-            this.setSalt(rng.nextBytes().toHex());
-        }
-    }
 
     /**
      * @return the id
@@ -349,20 +345,6 @@ public abstract class AbstractAccount extends AbstractEntity {
 
     public void setAgreedTime(Date agreedTime) {
         this.agreedTime = agreedTime != null ? new Date(agreedTime.getTime()) : null;
-    }
-
-    /**
-     * @return the salt
-     */
-    public String getSalt() {
-        return salt;
-    }
-
-    /**
-     * @param salt the salt to set
-     */
-    public void setSalt(String salt) {
-        this.salt = salt;
     }
 
     @Override
