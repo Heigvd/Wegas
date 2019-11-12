@@ -295,8 +295,10 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
         ]
       : [];
 
-  const salut = (types: { [id: number]: WegasScriptEditorReturnTypeName }) =>
-    types.reduce((o, t) => ({ ...o, [`'${t}'`]: true }), {});
+  type Salut = { [id: number]: WegasScriptEditorReturnTypeName };
+
+  const salut = <T extends Salut>(types: { [id: number]: T }): keyof T =>
+    Object.values(types).reduce((o, t) => ({ ...o, [`'${t}'`]: true }), {});
 
   salut(['ISAbstractAssignement', 'number']);
 
