@@ -161,28 +161,28 @@ YUI.add('wegas-dashboard', function(Y) {
             };
         },
         getDefaultTableStructure: function() {
-            if (this.logId) {
-                var struct = Y.mix({}, DEFAULT_TABLE_STRUCTURE);
-                struct.def.actions.items.stats = {
-                    "id": "stats",
-                    "order": -1,
-                    "icon": "fa fa-pie-chart",
-                    "itemType": "action",
-                    "label": "Download statistics (Excel file)",
-                    "hasGlobal": true,
-                    "globalOnly": "Not available per team. Please use global export",
-                    "do": function(owner, payload) {
-                        var logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties")
-                            .get("val").logID;
-                        var path = owner.name === "Game" || owner.name === "DebugGame" ? "Games" : "Teams";
-                        window.open("rest/Statistics/ExportXLSX/" + logId
-                            + "/" + path + "/" + owner.get("id"), "_blank");
-                    }
-                };
-                return struct;
-            } else {
+//            if (this.logId) {
+//                var struct = Y.mix({}, DEFAULT_TABLE_STRUCTURE);
+//                struct.def.actions.items.stats = {
+//                    "id": "stats",
+//                    "order": -1,
+//                    "icon": "fa fa-pie-chart",
+//                    "itemType": "action",
+//                    "label": "Download statistics (Excel file)",
+//                    "hasGlobal": true,
+//                    "globalOnly": "Not available per team. Please use global export",
+//                    "do": function(owner, payload) {
+//                        var logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties")
+//                            .get("val").logID;
+//                        var path = owner.name === "Game" || owner.name === "DebugGame" ? "Games" : "Teams";
+//                        window.open("rest/Statistics/ExportXLSX/" + logId
+//                            + "/" + path + "/" + owner.get("id"), "_blank");
+//                    }
+//                };
+//                return struct;
+//            } else {
                 return DEFAULT_TABLE_STRUCTURE;
-            }
+//            }
         },
         destructor: function() {
             var i;
@@ -213,6 +213,7 @@ YUI.add('wegas-dashboard', function(Y) {
             }
 
 
+/*
             if (this.logId) {
                 this.toolbar.add(new Y.Wegas.Text({
                     content: '<a title="Download statistics (Excel)" href="rest/Statistics/ExportXLSX/'
@@ -220,7 +221,7 @@ YUI.add('wegas-dashboard', function(Y) {
                         + 'target="_blank"><span class="fa fa-2x fa-pie-chart"></span></a>',
                     cssClass: 'download-stats global-button'
                 }));
-            }
+            }*/
 
             this.toolbar.add(new Y.Wegas.Text({
                 content: '<a title="Download overview (Excel)" href="rest/GameModel/Game/'

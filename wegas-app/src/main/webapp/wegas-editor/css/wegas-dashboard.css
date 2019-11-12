@@ -488,3 +488,11 @@
     background-color: #666666;
     border-radius: 0;
 }
+
+.yui3-skin-sam .wegas-statistics .no-questions .stats-question {
+    display: none !important; /* override inline style */
+}
+
+.yui3-skin-sam .wegas-statistics .footer a {
+    color: #878787;
+}

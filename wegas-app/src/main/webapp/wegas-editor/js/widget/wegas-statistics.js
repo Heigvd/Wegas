@@ -71,14 +71,17 @@ YUI.add("wegas-statistics", function(Y) {
 
         },
         Stats = Y.Base.create("wegas-statistics", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-            CONTENT_TEMPLATE: "<div><div class='stats-question' style='display: inline-block'>" +
+            CONTENT_TEMPLATE: "<div>"
+                + "<div class='stats-question' style='display: inline-block'>" +
                 "<select><option value='null' disabled>-Question-</option></select><button class='gen-button'>Generate all</button>" +
                 "<i class='loading fa fa-spinner fa-pulse fa-lg' style='display: none'></i>" +
                 "<div>Answer count: <span class='question-answer-count'></span></div>" +
                 "<div class='chart'></div><div class='tmpNode'></div></div>" +
                 "<div class='stats-number' style='display: none;vertical-align: top'>" +
                 "<select><option value='null' disabled>-Number-</option></select>" +
-                "<canvas class='chart' style='width:600px;height:400px'></canvas></div></div>",
+                "<canvas class='chart' style='width:600px;height:400px'></canvas></div>"
+                + "<div class='footer'></div>"
+                + "</div>",
             initializer: function() {
                 this.handlers = [];
                 this._gmPromise = Data.getCurrentGameModel();
@@ -88,6 +91,27 @@ YUI.add("wegas-statistics", function(Y) {
                         this.get("boundingBox").append("Statistics are not enabled for this game");
                     }
                 }, this));
+            },
+            addRawDownloadButton: function() {
+                var game = Y.Wegas.Facade.Game.cache.getCurrentGame();
+
+                var activityPattern;
+
+                var config = Y.namespace("Wegas.Config").Statistics;
+                var queryString = "";
+
+                if (config) {
+                    activityPattern = config.activityFilter;
+                    queryString = "?activityPattern=" + activityPattern;
+                }
+
+                this._rawButton = new Y.Wegas.Text({
+                    srcNode: this.get("contentBox").one(".footer"),
+                    content: '<a title="Download statistics (Excel)" href="rest/Statistics/ExportXLSX/'
+                        + this.logId + '/Games/' + +game.get('id') + queryString + '" '
+                        + 'target="_blank"><span class="fa fa-2x fa-file-excel-o">Download raw data(Excel)</span></a>',
+//                    cssClass: 'download-stats global-button'
+                }).render();
             },
             getQuestionList: function() {
                 return Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().flatten("QuestionDescriptor");
@@ -116,6 +140,11 @@ YUI.add("wegas-statistics", function(Y) {
                 //                Y.Array.each(numbers, function(i) {
                 //                    selectNNode.appendChild("<option value='" + i.get("name") + "'>" + i.get("label")
                 // + "</option>"); });
+
+                if (!questions.length) {
+                    this.get("contentBox").addClass("no-questions");
+                }
+                this.addRawDownloadButton();
             },
             bindUI: function() {
                 this.handlers.push(this.get("contentBox").one(".stats-question select")
@@ -211,6 +240,7 @@ YUI.add("wegas-statistics", function(Y) {
             destructor: function() {
                 this._gmPromise = null;
                 this._questionButton && this._questionButton.destroy();
+                this._rawButton && this._rawButton.destroy();
                 if (this.chart && this.chart.destroy) {
                     this.chart.destroy();
                 }
