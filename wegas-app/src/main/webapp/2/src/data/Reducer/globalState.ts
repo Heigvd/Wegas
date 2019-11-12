@@ -9,11 +9,7 @@ import { Reducer } from 'redux';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../../Editor/Components/FormView';
 import { FileAPI } from '../../API/files.api';
-import {
-  WegasScriptEditorReturnTypeName,
-  WegasScriptEditorReturnType,
-  WegasScriptEditorNameAndTypes,
-} from '../../Components/Hooks/types/scriptMethodGlobals';
+import { GlobalMethodReturnTypesName } from '../../Components/Hooks/types/scriptMethodGlobals';
 import { CustomSchemaFN } from '../../Components/Hooks/types/scriptSchemaGlobals';
 import { omit } from 'lodash';
 
@@ -87,8 +83,8 @@ export interface GlobalState extends EditingState {
   };
   methods: {
     [name: string]: {
-      returnType?: WegasScriptEditorReturnTypeName;
-      method: () => WegasScriptEditorReturnType;
+      returnType: GlobalMethodReturnTypesName;
+      method: () => unknown;
     };
   };
   schemas: {
@@ -577,10 +573,10 @@ export function searchUsage(
  * @param name - the name of the method
  * @param method - the method to add
  */
-export function setMethod<T extends WegasScriptEditorReturnTypeName>(
+export function setMethod<T extends GlobalMethodReturnTypesName>(
   name: string,
   returnType: T,
-  method: () => WegasScriptEditorNameAndTypes[T],
+  method: () => unknown,
 ) {
   return ActionCreator.EDITOR_SET_METHOD({ name, returnType, method });
 }

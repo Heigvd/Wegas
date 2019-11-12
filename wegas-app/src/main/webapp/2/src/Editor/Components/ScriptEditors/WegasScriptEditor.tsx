@@ -5,14 +5,20 @@ import SrcEditor, {
   arrayToText,
   MonacoEditor,
   MonacoCodeEditor,
+  SrcEditorAction,
+  MonacoEditorCursorEvent,
+  MonacoEditorSimpleRange,
 } from './SrcEditor';
-import { EditorProps } from './SrcEditor';
+import { SrcEditorProps } from './SrcEditor';
 import { useStore } from '../../../data/store';
 import { deepDifferent, refDifferent } from '../../../data/connectStore';
 import { State } from '../../../data/Reducer/reducers';
-import { KeyMod, KeyCode } from 'monaco-editor';
 import { GameModel } from '../../../data/selectors';
-import { WegasScriptEditorReturnTypeName } from '../../../Components/Hooks/types/scriptMethodGlobals';
+import {
+  WegasScriptEditorReturnTypeName,
+  GlobalMethodReturnTypesName,
+  WegasScriptEditorReturnType,
+} from '../../../Components/Hooks/types/scriptMethodGlobals';
 
 // using raw-loader works but you need to put the whole file name and ts doesn't like it
 // @ts-ignore
@@ -23,11 +29,10 @@ import editorGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/script
 import methodGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/scriptMethodGlobals.ts';
 // @ts-ignore
 import schemaGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/scriptSchemaGlobals.ts';
+import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
+import { oneOf } from 'prop-types';
 
-type MonacoEditorCursorEvent = import('monaco-editor').editor.ICursorSelectionChangedEvent;
-type MonacoEditorRange = import('monaco-editor').IRange;
-
-export interface WegasScriptEditorProps extends EditorProps {
+export interface WegasScriptEditorProps extends SrcEditorProps {
   clientScript?: boolean;
   returnType?: WegasScriptEditorReturnTypeName;
 }
@@ -77,7 +82,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   const { defaultValue, value, returnType, clientScript } = props;
   let editorLock: ((editor: MonacoSCodeEditor) => void) | undefined = undefined;
   const editorRef = React.useRef<MonacoSCodeEditor>();
-  const selectionRef = React.useRef<MonacoEditorRange>({
+  const selectionRef = React.useRef<MonacoEditorSimpleRange>({
     startColumn: 1,
     endColumn: 1,
     startLineNumber: headerSize,
@@ -91,6 +96,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   const toggleRefresh = React.useCallback(() => setRefresh(old => !old), [
     setRefresh,
   ]);
+  const monaco = useMonacoEditor();
 
   React.useEffect(
     () =>
@@ -194,48 +200,53 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       GameModel.selectCurrent().languages,
     ).reduce((lt, l) => `${lt} | '${l.code}'`, '');
 
-    return `declare const gameModel : ISGameModel;
-            declare const self : ISPlayer;
+    return `
+    declare const gameModel : ISGameModel;
+    declare const self : ISPlayer;
+    declare const typeFactory: (types: WegasScriptEditorReturnTypeName[]) => GlobalMethodReturnTypesName;
+  
+    interface VariableClasses {${Object.keys(variableClasses).reduce(
+      (s, k) => s + k + ':IS' + variableClasses[k] + ';\n',
+      '',
+    )}}
+    class Variable {
+      static find: <T extends keyof VariableClasses>(
+        gameModel: ISGameModel,
+        name: T
+      ) => VariableClasses[T];
+    }
 
-            interface VariableClasses {${Object.keys(variableClasses).reduce(
-              (s, k) => s + k + ':IS' + variableClasses[k] + ';\n',
-              '',
-            )}}
-            class Variable {
-              static find: <T extends keyof VariableClasses>(
-                gameModel: ISGameModel,
-                name: T
-              ) => VariableClasses[T];
-            }
+    type CurrentLanguages = ${currentLanguages};
+    interface EditorClass extends GlobalEditorClass {
+      setLanguage: (lang: { code: ISGameModelLanguage['code'] } | CurrentLanguages) => void;
+    }
+    declare const Editor: EditorClass;
 
-            type CurrentLanguages = ${currentLanguages};
-            interface EditorClass extends GlobalEditorClass {
-              setLanguage: (lang: { code: ISGameModelLanguage['code'] } | CurrentLanguages) => void;
-            }
-            declare const Editor: EditorClass;
+    interface GlobalMethods {\n${Object.keys(globalMethods).reduce(
+      (s, k) =>
+        s +
+        `'${k}' : () =>${Object.keys(globalMethods[k].returnType).reduce(
+          (t, rt) => t + ' | ' + rt,
+          '',
+        )} ;\n`,
+      '',
+    )}}
+    interface MethodClass ${clientScript ? 'extends GlobalMethodClass ' : ''}{
+      getMethod: <T extends keyof GlobalMethods>(name : T) => GlobalMethods[T];
+    }
+    declare const Methods : MethodClass
 
-            interface GlobalMethods {${Object.keys(globalMethods).reduce(
-              (s, k) => s + `'${k}' :() => ${globalMethods[k].returnType};\n`,
-              '',
-            )}}
-            interface MethodClass ${
-              clientScript ? 'extends GlobalMethodClass ' : ''
-            }{
-              getMethod: <T extends keyof GlobalMethods>(name : T) => WegasScriptEditorNameAndTypes[T];
-            }
-            declare const Methods : MethodClass
-
-            type GlobalSchemas = ${Object.keys(globalSchemas).reduce(
-              (s, k) => s + `\n  | '${k}'`,
-              '',
-            )}}
-            interface SchemaClass ${
-              clientScript ? 'extends GlobalSchemaClass ' : ''
-            }{
-              removeSchema: (name: GlobalSchemas) => void;
-            }
-            declare const Schemas : SchemaClass`;
+    type GlobalSchemas = ${Object.keys(globalSchemas).reduce(
+      (s, k) => s + `\n  | '${k}'`,
+      '',
+    )}}
+    interface SchemaClass ${clientScript ? 'extends GlobalSchemaClass ' : ''}{
+      removeSchema: (name: GlobalSchemas) => void;
+    }
+    declare const Schemas : SchemaClass`;
   }, refDifferent);
+
+  // wlog(libContent);
 
   if (returnType !== undefined) {
     editorLock = (editor: MonacoSCodeEditor) => {
@@ -261,33 +272,46 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     };
   }
 
-  const actions = returnType
-    ? [
-        {
-          id: 'SelectAllWithScriptFunction',
-          label: 'Ctrl + A avoiding header and footer',
-          keybindings: [KeyMod.CtrlCmd | KeyCode.KEY_A],
-          run: (_monaco: MonacoEditor, editor: MonacoCodeEditor) => {
-            const editorLines = textToArray(editor.getValue());
-            const lastEditableLine =
-              textToArray(editor.getValue()).length - footerSize;
-            const range = {
-              startColumn: 1,
-              endColumn: editorLines[lastEditableLine - 1].length,
-              startLineNumber: headerSize,
-              endLineNumber: lastEditableLine,
-            };
-            editor.setSelection(range);
+  const actions: SrcEditorAction[] =
+    returnType && monaco
+      ? [
+          {
+            id: 'SelectAllWithScriptFunction',
+            label: 'Ctrl + A avoiding header and footer',
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_A],
+            run: (_monaco: MonacoEditor, editor: MonacoCodeEditor) => {
+              const editorLines = textToArray(editor.getValue());
+              const lastEditableLine =
+                textToArray(editor.getValue()).length - footerSize;
+              const range = {
+                startColumn: 1,
+                endColumn: editorLines[lastEditableLine - 1].length,
+                startLineNumber: headerSize,
+                endLineNumber: lastEditableLine,
+              };
+              editor.setSelection(range);
+            },
           },
-        },
-      ]
-    : [];
+        ]
+      : [];
+
+  const salut = (types: { [id: number]: WegasScriptEditorReturnTypeName }) =>
+    types.reduce((o, t) => ({ ...o, [`'${t}'`]: true }), {});
+
+  salut(['ISAbstractAssignement', 'number']);
+
+  // const typeFactory = <T extends WegasScriptEditorReturnTypeName[]>(
+  //   types: T,
+  // ): Pick<GlobalMethodReturnTypesName, keyof T> =>
+  //   types.reduce((o, t) => ({ ...o, [`'${t}'`]: true }), {});
+
+  // const test = typeFactory(['ISAbstractState', 'ISAbstractState']);
 
   return (
     <SrcEditor
       key={Number(refresh)}
       {...props}
-      language={'typescript'}
+      defaultLanguage={'typescript'}
       extraLibs={[
         {
           content: `${entitiesSrc}\n

@@ -4,11 +4,16 @@
  * Inspired from from https://gist.github.com/sqren/780ae8ca1e2cf59050b0695c901b5aa3
  */
 import * as React from 'react';
+import { omit } from 'lodash-es';
 
+const defaultPropsCheckerProps = {
+  children: (_props: {}) => {},
+  compType: 'SIMPLE',
+  verbose: false,
+};
 // TYPES
 interface PropsCheckerProps<T> {
   children: (props: T) => React.ReactElement | null;
-  childrenProps: T;
   compType?: ComparaisonTypes;
   verbose?: boolean;
 }
@@ -74,10 +79,14 @@ function compFNSelection(compType: ComparaisonTypes) {
  * @param WrappedComponent The component to analyse
  * @param compType The possible comparaison type (Be carefull with "DEEP". It may get errors in case of circular references)
  */
-export function ReactFnCompPropsChecker<T extends Props>(
-  props: PropsCheckerProps<T>,
+export function ReactFnCompPropsChecker<T extends { [id: string]: unknown }>(
+  props: PropsCheckerProps<T> & T,
 ) {
-  const { children, childrenProps, compType = 'SIMPLE', verbose } = props;
+  const { children, compType = 'SIMPLE', verbose } = props;
+  const childrenProps = (omit(
+    props,
+    Object.keys(defaultPropsCheckerProps),
+  ) as unknown) as T;
   const oldPropsRef = React.useRef<T>();
   React.useEffect(() => {
     const oldProps = oldPropsRef.current;

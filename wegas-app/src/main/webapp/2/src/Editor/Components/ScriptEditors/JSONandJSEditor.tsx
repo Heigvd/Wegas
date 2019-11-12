@@ -2,15 +2,17 @@ import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
 import { css } from 'emotion';
 import { Modal } from '../../../Components/Modal';
-import SrcEditor, { MonacoEditor, MonacoCodeEditor } from './SrcEditor';
-import { KeyMod, KeyCode } from 'monaco-editor';
+import SrcEditor, {
+  MonacoEditor,
+  MonacoSCodeEditor,
+  MonacoEditorToken,
+} from './SrcEditor';
 import {
   StyledLabel,
   LabelStyle,
 } from '../../../Components/AutoImport/String/Label';
 import { WegasScriptEditor } from './WegasScriptEditor';
-
-type MonacoEditorToken = import('monaco-editor').Token;
+import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
 
 const infoDuration = 5000;
 
@@ -36,6 +38,7 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
   const jsContent = React.useRef('');
   const jsCodeInit = React.useRef(0);
   const jsCodeEnd = React.useRef(0);
+  const monaco = useMonacoEditor();
 
   React.useEffect(() => {
     setEditorContent(content);
@@ -45,7 +48,7 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
     setError(onSave(content));
   };
 
-  const editJS = (monaco: MonacoEditor, editor: MonacoCodeEditor) => {
+  const editJS = (monaco: MonacoEditor, editor: MonacoSCodeEditor) => {
     try {
       setError({});
       const cursorPosition = editor.getPosition();
@@ -179,25 +182,29 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
         <SrcEditor
           value={editorContent}
           defaultUri="internal://page.json"
-          language="json"
+          defaultLanguage="json"
           onChange={val => setEditorContent(val)}
           onSave={trySave}
           cursorOffset={cursorOffset.current}
           defaultFocus={true}
-          defaultActions={[
-            {
-              id: 'embeddedJSEditor',
-              label: 'Open embedded JS editor',
-              keybindings: [
-                KeyMod.Alt | KeyCode.RightArrow,
-                KeyMod.chord(
-                  KeyMod.CtrlCmd | KeyCode.KEY_J,
-                  KeyMod.CtrlCmd | KeyCode.KEY_S,
-                ),
-              ],
-              run: editJS,
-            },
-          ]}
+          defaultActions={
+            monaco
+              ? [
+                  {
+                    id: 'embeddedJSEditor',
+                    label: 'Open embedded JS editor',
+                    keybindings: [
+                      monaco.KeyMod.Alt | monaco.KeyCode.RightArrow,
+                      monaco.KeyMod.chord(
+                        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_J,
+                        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
+                      ),
+                    ],
+                    run: editJS,
+                  },
+                ]
+              : []
+          }
         />
       </Toolbar.Content>
     </Toolbar>

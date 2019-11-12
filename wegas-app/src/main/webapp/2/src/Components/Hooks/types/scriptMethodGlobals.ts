@@ -13,10 +13,20 @@ export type WegasScriptEditorReturnTypeName = keyof WegasScriptEditorNameAndType
 
 export type WegasScriptEditorReturnType = WegasScriptEditorNameAndTypes[WegasScriptEditorReturnTypeName];
 
-export type GlobalMethodAdd = <T extends WegasScriptEditorReturnTypeName>(
+export interface GlobalMethodReturnTypesName {
+  // @ts-ignore
+  [type: WegasScriptEditorReturnTypeName]: true;
+}
+
+export type GlobalMethodReturn<
+  T extends GlobalMethodReturnTypesName
+  // @ts-ignore
+> = WegasScriptEditorNameAndTypes[keyof T];
+
+export type GlobalMethodAdd = <T extends GlobalMethodReturnTypesName>(
   name: string,
   returnType: T,
-  method: () => WegasScriptEditorNameAndTypes[T],
+  method: () => GlobalMethodReturn<T>,
 ) => void;
 
 export interface GlobalMethodClass {

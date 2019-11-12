@@ -53,19 +53,21 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.21",
     "@fortawesome/free-solid-svg-icons": "^5.10.1",
     "@fortawesome/react-fontawesome": "0.1.4",
+    "@monaco-editor/react": "^2.3.0",
     "@tinymce/tinymce-react": "^3.2.0",
     "color": "^3.1.1",
+    "cross-env": "^5.2.0",
     "downshift": "^3.2.12",
     "emotion": "^10.0.14",
     "fast-json-patch": "^2.2.1",
     "file-loader": "^4.0.0",
+    "handlebars": "^4.0.11",
     "immer": "3.2.0",
     "immutable": "^3.8.2",
     "jsoninput": "github:cigit/jsoninput",
     "jsplumb": "^2.11.2",
     "lodash-es": "^4.17.11",
     "match-sorter": "^4.0.1",
-    "monaco-editor": "^0.18.1",
     "pako": "^1.0.10",
     "pusher-js": "^4.3.1",
     "react": "^16.9.0",
@@ -108,7 +110,6 @@
     "fork-ts-checker-webpack-plugin": "^0.5.2",
     "globby": "^9.1.0",
     "jest": "^23.6.0",
-    "monaco-editor-webpack-plugin": "^1.7.0",
     "react-testing-library": "^6.0.0",
     "rimraf": "^3.0.0",
     "source-map-loader": "^0.2.4",
@@ -122,5 +123,8 @@
     "webpack-bundle-analyzer": "^3.4.1",
     "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.8.0"
+  },
+  "peerDependencies": {
+    "monaco-editor": "^0.18.1"
   }
 }

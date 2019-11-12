@@ -1,15 +1,47 @@
 import { css } from 'emotion';
 import * as React from 'react';
 import { SizedDiv } from '../../../Components/SizedDiv';
-import { deepDifferent } from '../../../data/connectStore';
+import { wlog } from '../../../Helper/wegaslog';
+import Editor, {
+  Monaco,
+  monaco,
+  EditorProps,
+  DiffEditorDidMount,
+  EditorDidMount,
+} from '@monaco-editor/react';
 
-export type MonacoEditor = typeof import('monaco-editor');
-export type MonacoEditorProperties = import('monaco-editor').editor.IEditorConstructionOptions;
-export type MonacoLangaugesServices = typeof import('monaco-editor').languages.typescript.typescriptDefaults;
-export type MonacoCodeEditor = import('monaco-editor').editor.ICodeEditor;
-export type MonacoSCodeEditor = import('monaco-editor').editor.IStandaloneCodeEditor;
+export type MonacoEditor = Monaco;
+export type MonacoEditorProperties = EditorProps['options'];
+export type MonacoLangaugesServices = MonacoEditor['languages']['typescript']['typescriptDefaults'];
+export type MonacoSCodeEditor = Parameters<EditorDidMount>[1];
+export type MonacoSDiffEditor = Parameters<DiffEditorDidMount>[2];
+export type MonacoCodeEditor = Parameters<
+  Parameters<MonacoSCodeEditor['addAction']>[0]['run']
+>[0];
+export type MonacoEditorToken = Monaco['Token'];
+export type MonacoEditorCursorEvent = Parameters<
+  Parameters<MonacoCodeEditor['onDidChangeCursorSelection']>[0]
+>[0];
+export interface MonacoEditorSimpleRange {
+  /**
+   * Line number on which the range starts (starts at 1).
+   */
+  startLineNumber: number;
+  /**
+   * Column on which the range starts in line `startLineNumber` (starts at 1).
+   */
+  startColumn: number;
+  /**
+   * Line number on which the range ends.
+   */
+  endLineNumber: number;
+  /**
+   * Column on which the range ends in line `endLineNumber`.
+   */
+  endColumn: number;
+}
 
-interface EditorAction {
+export interface SrcEditorAction {
   /**
    * id - An unique identifier of the contributed action.
    */
@@ -28,7 +60,7 @@ interface EditorAction {
   run: (monaco: MonacoEditor, editor: MonacoCodeEditor) => void;
 }
 
-export interface EditorProps {
+export interface SrcEditorProps {
   /**
    * defaultValue - the initial content of the editor.
    * This value is used only once at component first mount.
@@ -49,11 +81,11 @@ export interface EditorProps {
   /**
    * readonly - the editor is not listening to keys
    */
-  readonly?: boolean;
+  readOnly?: boolean;
   /**
-   * langauge - the editor language
+   * defaultLanguage - the editor language
    */
-  language?: 'javascript' | 'plaintext' | 'css' | 'json' | 'typescript';
+  defaultLanguage?: 'javascript' | 'plaintext' | 'css' | 'json' | 'typescript';
   /**
    * cursorOffset - the position of the cursor in the text
    */
@@ -79,7 +111,7 @@ export interface EditorProps {
   /**
    * defaultKeyEvents - a list of key event to be caught in the editor
    */
-  defaultActions?: EditorAction[];
+  defaultActions?: SrcEditorAction[];
   /**
    * defaultFocus - force editor to focus on first render
    */
@@ -121,7 +153,7 @@ export const arrayToText = (lines: string[]): string =>
 
 const addExtraLib = (
   service: MonacoLangaugesServices,
-  extraLibs?: EditorProps['extraLibs'],
+  extraLibs?: SrcEditorProps['extraLibs'],
 ) => {
   if (extraLibs) {
     for (const lib of extraLibs) {
@@ -133,91 +165,61 @@ const addExtraLib = (
 /**
  * SrcEditor is a component uses monaco-editor to create a code edition panel
  */
-class SrcEditor extends React.Component<EditorProps> {
-  private editor: MonacoSCodeEditor | null = null;
-  private lastValue?: string = '';
-  private outsideChange: boolean = false;
-  private container: HTMLDivElement | null = null;
+function SrcEditor({
+  value,
+  defaultFocus,
+  defaultLanguage,
+  readOnly,
+  minimap,
+  cursorOffset,
+  extraLibs,
+  defaultValue,
+  defaultUri,
+  noGutter,
+  defaultProperties,
+  onEditorReady,
+  onBlur,
+  onChange,
+  onSave,
+  defaultActions,
+}: SrcEditorProps) {
+  const [editor, setEditor] = React.useState<MonacoSCodeEditor>();
+  const [reactMonaco, setReactMonaco] = React.useState<MonacoEditor>();
+  const getValue = React.useRef<() => string>();
 
-  shouldComponentUpdate(nextProps: EditorProps) {
-    return (
-      nextProps.value !== this.lastValue ||
-      nextProps.language !== this.props.language ||
-      nextProps.readonly !== this.props.readonly ||
-      nextProps.minimap !== this.props.minimap ||
-      nextProps.cursorOffset !== this.props.cursorOffset ||
-      nextProps.cursorOffset !== this.props.cursorOffset ||
-      deepDifferent(nextProps.extraLibs, this.props.extraLibs)
-    );
-  }
-
-  componentDidUpdate(prevProps: EditorProps) {
-    if (this.editor !== null) {
-      if (this.lastValue !== this.props.value) {
-        this.lastValue = this.props.value;
-        this.outsideChange = true;
-        if ('string' === typeof this.props.value) {
-          this.editor.setValue(this.props.value);
-        } else {
-          this.editor.setValue('');
-        }
-        this.outsideChange = false;
-        if (this.props.defaultFocus) {
-          this.editor.focus();
-        }
-      }
-      if (this.props.language !== prevProps.language) {
-        import('monaco-editor').then(monaco => {
-          if (this.editor) {
-            monaco.editor.setModelLanguage(
-              this.editor.getModel()!,
-              this.props.language ? this.props.language : 'javascript',
-            );
-          }
+  React.useEffect(() => {
+    if (!reactMonaco) {
+      monaco.init().then(setReactMonaco);
+    } else {
+      if (defaultLanguage === 'javascript') {
+        reactMonaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+          target: reactMonaco.languages.typescript.ScriptTarget.ES5,
+          noLib: true,
+          allowNonTsExtensions: true,
         });
-      }
-      if (this.props.readonly !== prevProps.readonly) {
-        this.editor.updateOptions({ readOnly: this.props.readonly });
-      }
-      if (this.props.minimap !== prevProps.minimap) {
-        this.editor.updateOptions({ minimap: { enabled: this.props.minimap } });
-      }
-      if (this.props.cursorOffset !== prevProps.cursorOffset) {
-        const model = this.editor.getModel();
-        if (model && this.props.cursorOffset) {
-          this.editor.setPosition(model.getPositionAt(this.props.cursorOffset));
-        }
-      }
-      if (deepDifferent(prevProps.extraLibs, this.props.extraLibs)) {
-        import('monaco-editor').then(monaco => {
-          if (this.props.language === 'javascript') {
-            addExtraLib(
-              monaco.languages.typescript.javascriptDefaults,
-              this.props.extraLibs,
-            );
-          } else if (this.props.language === 'typescript') {
-            addExtraLib(
-              monaco.languages.typescript.typescriptDefaults,
-              this.props.extraLibs,
-            );
-          }
+        addExtraLib(
+          reactMonaco.languages.typescript.javascriptDefaults,
+          extraLibs,
+        );
+      } else if (defaultLanguage === 'typescript') {
+        reactMonaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+          target: reactMonaco.languages.typescript.ScriptTarget.ES5,
+          noLib: true,
+          allowNonTsExtensions: true,
+          //allowJs: true, /* Has been disabled since it forbid to use types */
+          checkJs: true,
         });
-      }
-      this.editor.layout();
-    }
-  }
-
-  componentDidMount() {
-    this.lastValue = this.props.value;
-    Promise.all([
-      import('monaco-editor'),
-      import('../../../page-schema.build'),
-    ]).then(([monaco, t]) => {
-      if (this.container != null) {
-        this.lastValue = this.props.value;
-
-        if (this.props.language === 'json') {
-          monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+        addExtraLib(
+          reactMonaco.languages.typescript.typescriptDefaults,
+          extraLibs,
+        );
+        wlog(
+          'monaco editor ts version : ' +
+            reactMonaco.languages.typescript.typescriptVersion,
+        );
+      } else if (defaultLanguage === 'json') {
+        Promise.resolve('../../../page-schema.build').then(t =>
+          reactMonaco.languages.json.jsonDefaults.setDiagnosticsOptions({
             validate: true,
             schemas: [
               {
@@ -226,133 +228,154 @@ class SrcEditor extends React.Component<EditorProps> {
                 schema: (t as any).schema,
               },
             ],
-          });
-        }
-
-        if (this.props.language === 'javascript') {
-          monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-            noLib: true,
-            allowNonTsExtensions: true,
-          });
-          addExtraLib(
-            monaco.languages.typescript.javascriptDefaults,
-            this.props.extraLibs,
-          );
-        }
-
-        if (this.props.language === 'typescript') {
-          monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-            noLib: true,
-            allowNonTsExtensions: true,
-            //allowJs: true, /* Has been disabled since it forbid to use types */
-            checkJs: true,
-          });
-          addExtraLib(
-            monaco.languages.typescript.typescriptDefaults,
-            this.props.extraLibs,
-          );
-        }
-
-        const model = monaco.editor.createModel(
-          this.props.defaultValue || this.props.value || '',
-          this.props.language,
-          this.props.defaultUri
-            ? monaco.Uri.parse(this.props.defaultUri)
-            : undefined,
+          }),
         );
-        let gutter = {};
-        if (this.props.noGutter) {
-          gutter = {
-            lineNumbers: 'off',
-            glyphMargin: false,
-            folding: false,
-          };
-        }
-        this.editor = monaco.editor.create(this.container, {
-          theme: 'vs-dark',
-          model: model,
-          readOnly: this.props.readonly,
-          minimap: { enabled: this.props.minimap },
-          ...gutter,
-          ...this.props.defaultProperties,
-        });
-        if (this.props.onEditorReady) {
-          this.props.onEditorReady(this.editor);
-        }
-        this.editor.onDidBlurEditorText(() => {
-          if (this.editor && this.props.onBlur) {
-            this.lastValue = this.editor.getValue();
-            this.props.onBlur(this.lastValue);
-          }
-        });
-        this.editor.onDidChangeModelContent(() => {
-          if (!this.outsideChange && this.editor && this.props.onChange) {
-            this.lastValue = this.editor.getValue();
-            this.props.onChange(this.lastValue);
-          }
-        });
+      }
+    }
+    wlog('react monaco');
+  }, [extraLibs, defaultLanguage, reactMonaco]);
 
-        this.editor.addAction({
+  React.useEffect(() => {
+    if (reactMonaco) {
+      if (editor) {
+        if (defaultFocus) {
+          editor.focus();
+        }
+      }
+    }
+  }, [defaultFocus, editor, reactMonaco]);
+
+  React.useEffect(() => {
+    if (reactMonaco) {
+      if (editor) {
+        if (defaultFocus) {
+          editor.focus();
+        }
+        if (cursorOffset) {
+          const model = editor.getModel();
+          if (model) {
+            editor.setPosition(model.getPositionAt(cursorOffset));
+          }
+        }
+        if (onEditorReady) {
+          onEditorReady(editor);
+        }
+
+        editor.onDidBlurEditorText(() => {
+          if (onBlur && getValue.current) {
+            onBlur(getValue.current());
+          }
+        });
+        editor.onDidChangeModelContent(() => {
+          if (onChange && getValue.current) {
+            onChange(getValue.current());
+          }
+        });
+      }
+    }
+  }, [
+    cursorOffset,
+    defaultFocus,
+    editor,
+    onBlur,
+    onChange,
+    onEditorReady,
+    reactMonaco,
+  ]);
+
+  React.useEffect(() => {
+    if (reactMonaco) {
+      if (editor) {
+        editor.addAction({
           id: 'onSave',
           label: 'Save code',
-          keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S],
+          keybindings: [reactMonaco.KeyMod.CtrlCmd | reactMonaco.KeyCode.KEY_S],
           run: () => {
-            if (this.editor && this.props.onSave) {
-              this.props.onSave(this.editor.getValue());
+            if (onSave && getValue.current) {
+              onSave(getValue.current());
             }
           },
         });
-
-        if (this.props.defaultActions) {
-          this.props.defaultActions.forEach(action => {
-            if (this.editor) {
-              this.editor.addAction({
-                ...action,
-                run: editor => action.run(monaco, editor),
-              });
-            }
+        if (defaultActions) {
+          defaultActions.forEach(action => {
+            editor.addAction({
+              ...action,
+              run: editor => action.run(reactMonaco, editor),
+            });
           });
         }
-        if (this.props.defaultFocus) {
-          this.editor.focus();
+      }
+    }
+  }, [defaultActions, editor, onSave, reactMonaco]);
+
+  React.useEffect(() => {
+    if (reactMonaco) {
+      if (editor) {
+        editor.setModel(
+          reactMonaco.editor.createModel(
+            defaultValue || value || '',
+            defaultLanguage,
+            defaultUri ? reactMonaco.Uri.parse(defaultUri) : undefined,
+          ),
+        );
+        if (defaultFocus) {
+          editor.focus();
         }
       }
-    });
-  }
-  private layout = (size: { width: number; height: number }) => {
-    if (this.editor != null) {
-      this.editor.layout(size);
     }
-  };
-  getValue() {
-    if (this.editor != null) {
-      return this.editor.getValue();
-    }
-    return this.lastValue;
+    wlog('react monaco editor');
+  } /* eslint-disable react-hooks/exhaustive-deps */ /* Linter disabled for the following lines to avoid reloading editor and loosing focus */, [
+    editor,
+    reactMonaco,
+    // defaultFocus,
+    // defaultUri,
+    // defaultValue,
+    // language,
+    // value,
+  ]);
+  /* eslint-enable */
+
+  function handleEditorDidMount(
+    getEditorValue: () => string,
+    editor: MonacoSCodeEditor,
+  ) {
+    getValue.current = getEditorValue;
+    setEditor(editor);
   }
-  getEditor() {
-    return this.editor;
+
+  let gutter = {};
+  if (noGutter) {
+    gutter = {
+      lineNumbers: 'off',
+      glyphMargin: false,
+      folding: false,
+    };
   }
-  componentWillUnmount() {
-    if (this.editor != null && this.editor.getModel() !== null) {
-      this.editor.getModel()!.dispose();
-      this.editor.dispose();
-    }
-  }
-  refContainer = (n: HTMLDivElement | null) => {
-    this.container = n;
-  };
-  render() {
-    return (
-      <SizedDiv className={overflowHide}>
-        {size => {
-          if (size !== undefined) {
-            this.layout(size);
-          }
-          return <div className={overflowHide} ref={this.refContainer} />;
-        }}
-      </SizedDiv>
-    );
-  }
+
+  wlog('RERENDER');
+
+  return (
+    <SizedDiv className={overflowHide}>
+      {size => {
+        return (
+          <Editor
+            height={size ? size.height : undefined} // By default, it fully fits with its parent
+            width={size ? size.width : undefined} // By default, it fully fits with its parent
+            theme={'dark'}
+            language={defaultLanguage}
+            value={defaultValue}
+            editorDidMount={handleEditorDidMount}
+            loading={'Loading...'}
+            options={{
+              readOnly,
+              minimap: { enabled: minimap },
+              ...gutter,
+              ...defaultProperties,
+            }}
+          />
+        );
+      }}
+    </SizedDiv>
+  );
 }
 export default SrcEditor;

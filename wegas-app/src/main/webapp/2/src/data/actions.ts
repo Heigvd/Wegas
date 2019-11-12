@@ -9,10 +9,7 @@ import { EditingState, closeEditor, Edition } from './Reducer/globalState';
 import { shallowDifferent } from './connectStore';
 import { getEntityActions } from '../Editor/editionConfig';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
-import {
-  WegasScriptEditorReturnTypeName,
-  WegasScriptEditorNameAndTypes,
-} from '../Components/Hooks/types/scriptMethodGlobals';
+import { GlobalMethodReturnTypesName } from '../Components/Hooks/types/scriptMethodGlobals';
 import { CustomSchemaFN } from '../Components/Hooks/types/scriptSchemaGlobals';
 
 export { ActionType };
@@ -51,10 +48,10 @@ export const ActionCreator = {
   EDITOR_ERROR_REMOVE: () => createAction(ActionType.EDITOR_ERROR_REMOVE, {}),
   EDITOR_ERROR: (data: { error: string }) =>
     createAction(ActionType.EDITOR_ERROR, data),
-  EDITOR_SET_METHOD: <T extends WegasScriptEditorReturnTypeName>(data: {
+  EDITOR_SET_METHOD: <T extends GlobalMethodReturnTypesName>(data: {
     name: string;
     returnType: T;
-    method: () => WegasScriptEditorNameAndTypes[T];
+    method: () => unknown;
   }) => createAction(ActionType.EDITOR_SET_METHOD, data),
   EDITOR_SET_SCHEMA: (data: {
     name: string;

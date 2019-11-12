@@ -12,7 +12,7 @@ import { GameModel } from '../../../data/selectors';
 import { omit } from 'lodash-es';
 import u from 'immer';
 import { WebSocketEvent, useWebsocket } from '../../../API/websocket';
-import SrcEditor, { EditorProps } from './SrcEditor';
+import SrcEditor, { SrcEditorProps } from './SrcEditor';
 import MergeEditor from './MergeEditor';
 import { StyledLabel } from '../../../Components/AutoImport/String/Label';
 import { TextPrompt } from '../TextPrompt';
@@ -21,7 +21,6 @@ import { WegasScriptEditor } from './WegasScriptEditor';
 import { scriptEval, useGlobals } from '../../../Components/Hooks/useScript';
 import * as ts from 'typescript';
 import { Menu } from '../../../Components/Menu';
-import { wlog } from '../../../Helper/wegaslog';
 
 type IVisibility = IAbstractContentDescriptor['visibility'];
 const visibilities: IVisibility[] = [
@@ -537,7 +536,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
   }, [scriptType]);
 
   const CurrentEditor = React.useCallback(
-    (props: EditorProps) =>
+    (props: SrcEditorProps) =>
       getScriptLanguage(scriptType) === 'typescript' ? (
         <WegasScriptEditor {...props} clientScript />
       ) : (
@@ -681,8 +680,8 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
                 content: content,
               })
             }
-            language={getScriptLanguage(scriptType)}
-            readonly={!isEditAllowed(librariesState)}
+            defaultLanguage={getScriptLanguage(scriptType)}
+            readOnly={!isEditAllowed(librariesState)}
             onSave={onSaveLibrary}
           />
         ) : (
