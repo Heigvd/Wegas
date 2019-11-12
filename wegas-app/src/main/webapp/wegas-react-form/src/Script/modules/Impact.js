@@ -28,7 +28,6 @@ import {
 } from './globalMethod';
 import JSEditor from '../Views/asyncJSEditor';
 import { containerStyle } from '../Views/conditionImpactStyle';
-import { ErrorCatch } from '../Views/ErrorCatch';
 
 const errorStyle = css({
     color: '#999',
