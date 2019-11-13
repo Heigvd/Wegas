@@ -18,10 +18,14 @@ export type MonacoSDiffEditor = Parameters<DiffEditorDidMount>[2];
 export type MonacoCodeEditor = Parameters<
   Parameters<MonacoSCodeEditor['addAction']>[0]['run']
 >[0];
-export type MonacoEditorToken = Monaco['Token'];
 export type MonacoEditorCursorEvent = Parameters<
   Parameters<MonacoCodeEditor['onDidChangeCursorSelection']>[0]
 >[0];
+export interface MonacoEditorSimpleToken {
+  offset: number;
+  type: string;
+  language: string;
+}
 export interface MonacoEditorSimpleRange {
   /**
    * Line number on which the range starts (starts at 1).

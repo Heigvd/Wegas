@@ -199,9 +199,10 @@ function CTree(
       match: isMatch(props.variableId, props.search),
       editing: isEditing(props.variableId, props.subPath, state.global.editing),
       searching:
-        variable &&
-        state.global.search.type === 'GLOBAL' &&
-        state.global.search.value.includes(editorLabel(variable)),
+        (variable &&
+          state.global.search.type === 'GLOBAL' &&
+          state.global.search.value.includes(editorLabel(variable))) ||
+        false,
     };
   }, shallowDifferent);
 
