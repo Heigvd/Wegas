@@ -13,10 +13,8 @@ import { LangContext } from '../LangContext';
 import { useGameModel } from './useGameModel';
 import {
   GlobalMethodClass,
-  GlobalMethodReturnTypesName,
   WegasScriptEditorReturnType,
-  GlobalMethodReturn,
-  WegasScriptEditorReturnTypeName,
+  GlobalMethodAdd,
 } from './types/scriptMethodGlobals';
 import { Actions } from '../../data';
 import { GlobalSchemaClass, CustomSchemaFN } from './types/scriptSchemaGlobals';
@@ -31,9 +29,6 @@ interface GlobalVariableClass {
 interface GlobalClasses {
   gameModel?: Readonly<Readonly<IGameModel>>;
   self?: Readonly<Readonly<IPlayer>>;
-  typeFactory: <T extends WegasScriptEditorReturnTypeName>(
-    types: T[],
-  ) => GlobalMethodReturnTypesName;
   Variable: GlobalVariableClass;
   Editor: GlobalEditorClass;
   Methods: GlobalMethodClass;
@@ -65,10 +60,6 @@ export function useGlobals() {
   // Global variables
   globals.gameModel = proxyfy(gameModel);
   globals.self = proxyfy(player);
-  globals.typeFactory = (types: WegasScriptEditorReturnTypeName[]) =>
-    Object.values(types).reduce((o, t) => ({ ...o, [t]: true }), {});
-
-  const test = globals.typeFactory(['ISAaiAccount', 'number']);
 
   // Variable class
   globals.Variable = {
@@ -96,15 +87,15 @@ export function useGlobals() {
       selectLang(typeof lang === 'string' ? lang : lang.code),
   };
 
+  const addMethod: GlobalMethodAdd = (name, returnType, method) => {
+    store.dispatch(Actions.EditorActions.setMethod(name, returnType, method));
+  };
+
+  // addMethod('iuiui', ['number'], () => "1234");
+
   // Methods class
   globals.Methods = {
-    addMethod: <T extends GlobalMethodReturnTypesName>(
-      name: string,
-      returnType: T,
-      method: () => GlobalMethodReturn<T>,
-    ) => {
-      store.dispatch(Actions.EditorActions.setMethod(name, returnType, method));
-    },
+    addMethod: addMethod,
     getMethod: (name: string) =>
       store.getState().global.methods[name]
         .method as () => WegasScriptEditorReturnType,

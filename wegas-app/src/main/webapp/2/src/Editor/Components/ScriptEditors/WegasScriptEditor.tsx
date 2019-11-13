@@ -14,12 +14,8 @@ import { useStore } from '../../../data/store';
 import { deepDifferent, refDifferent } from '../../../data/connectStore';
 import { State } from '../../../data/Reducer/reducers';
 import { GameModel } from '../../../data/selectors';
-import {
-  WegasScriptEditorReturnTypeName,
-  GlobalMethodReturnTypesName,
-  WegasScriptEditorReturnType,
-} from '../../../Components/Hooks/types/scriptMethodGlobals';
-
+import { WegasScriptEditorReturnTypeName } from '../../../Components/Hooks/types/scriptMethodGlobals';
+import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
 // using raw-loader works but you need to put the whole file name and ts doesn't like it
 // @ts-ignore
 import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasScriptableEntities.d.ts';
@@ -29,8 +25,6 @@ import editorGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/script
 import methodGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/scriptMethodGlobals.ts';
 // @ts-ignore
 import schemaGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/scriptSchemaGlobals.ts';
-import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
-import { oneOf } from 'prop-types';
 
 export interface WegasScriptEditorProps extends SrcEditorProps {
   clientScript?: boolean;
@@ -91,7 +85,6 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   const [currentValue, setCurrentValue] = React.useState<string>(
     defaultValue || value || '',
   );
-  // const debouncedValue = useDebounce(currentValue, 300);
   const [refresh, setRefresh] = React.useState<boolean>(false);
   const toggleRefresh = React.useCallback(() => setRefresh(old => !old), [
     setRefresh,
@@ -294,20 +287,6 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
           },
         ]
       : [];
-
-  type Salut = { [id: number]: WegasScriptEditorReturnTypeName };
-
-  const salut = <T extends Salut>(types: { [id: number]: T }): keyof T =>
-    Object.values(types).reduce((o, t) => ({ ...o, [`'${t}'`]: true }), {});
-
-  salut(['ISAbstractAssignement', 'number']);
-
-  // const typeFactory = <T extends WegasScriptEditorReturnTypeName[]>(
-  //   types: T,
-  // ): Pick<GlobalMethodReturnTypesName, keyof T> =>
-  //   types.reduce((o, t) => ({ ...o, [`'${t}'`]: true }), {});
-
-  // const test = typeFactory(['ISAbstractState', 'ISAbstractState']);
 
   return (
     <SrcEditor

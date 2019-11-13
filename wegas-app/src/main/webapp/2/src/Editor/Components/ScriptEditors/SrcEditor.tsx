@@ -203,10 +203,8 @@ function SrcEditor({
         );
       } else if (defaultLanguage === 'typescript') {
         reactMonaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-          target: reactMonaco.languages.typescript.ScriptTarget.ES5,
-          noLib: true,
+          // noLib: true, //TODO: wait for the issue / stackoverflow solution :P
           allowNonTsExtensions: true,
-          //allowJs: true, /* Has been disabled since it forbid to use types */
           checkJs: true,
         });
         addExtraLib(
@@ -308,31 +306,34 @@ function SrcEditor({
     }
   }, [defaultActions, editor, onSave, reactMonaco]);
 
-  React.useEffect(() => {
-    if (reactMonaco) {
-      if (editor) {
-        editor.setModel(
-          reactMonaco.editor.createModel(
-            defaultValue || value || '',
-            defaultLanguage,
-            defaultUri ? reactMonaco.Uri.parse(defaultUri) : undefined,
-          ),
-        );
-        if (defaultFocus) {
-          editor.focus();
+  React.useEffect(
+    () => {
+      if (reactMonaco) {
+        if (editor) {
+          editor.setModel(
+            reactMonaco.editor.createModel(
+              defaultValue || value || '',
+              defaultLanguage,
+              defaultUri ? reactMonaco.Uri.parse(defaultUri) : undefined,
+            ),
+          );
+          if (defaultFocus) {
+            editor.focus();
+          }
         }
       }
-    }
-    wlog('react monaco editor');
-  } /* eslint-disable react-hooks/exhaustive-deps */ /* Linter disabled for the following lines to avoid reloading editor and loosing focus */, [
-    editor,
-    reactMonaco,
-    // defaultFocus,
-    // defaultUri,
-    // defaultValue,
-    // language,
-    // value,
-  ]);
+      wlog('react monaco editor');
+    } /* eslint-disable react-hooks/exhaustive-deps */ /* Linter disabled for the following lines to avoid reloading editor and loosing focus */,
+    [
+      editor,
+      reactMonaco,
+      // defaultFocus,
+      // defaultUri,
+      // defaultValue,
+      // language,
+      // value,
+    ],
+  );
   /* eslint-enable */
 
   function handleEditorDidMount(
