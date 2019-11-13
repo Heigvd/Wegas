@@ -5,7 +5,7 @@ import { Modal } from '../../../Components/Modal';
 import SrcEditor, {
   MonacoEditor,
   MonacoSCodeEditor,
-  MonacoEditorToken,
+  MonacoEditorSimpleToken,
 } from './SrcEditor';
 import {
   StyledLabel,
@@ -58,10 +58,10 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
         let totalOffset = 0;
         const tokens = monaco.editor
           .tokenize(editorValue, 'json')
-          .reduce<{ token: MonacoEditorToken; line: number }[]>(
+          .reduce<{ token: MonacoEditorSimpleToken; line: number }[]>(
             (newTokens, tokens, line) => {
               const newT = newTokens.concat(
-                tokens.reduce<{ token: MonacoEditorToken; line: number }[]>(
+                tokens.reduce<{ token: MonacoEditorSimpleToken; line: number }[]>(
                   (nt, t) =>
                     nt.concat({
                       token: {
