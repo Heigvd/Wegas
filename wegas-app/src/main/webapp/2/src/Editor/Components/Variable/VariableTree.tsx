@@ -28,6 +28,7 @@ import {
   themeVar,
   globalSelection,
   localSelection,
+  searchSelection,
 } from '../../../Components/Theme';
 import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
@@ -153,7 +154,7 @@ function isMatch(variableId: number, search: string): boolean {
 }
 function isEditing(
   variableId: number,
-  subPath?: (string)[],
+  subPath?: string[],
   editing?: Readonly<Edition>,
 ) {
   return (
@@ -179,7 +180,7 @@ const nodeContentStyle = css({
 });
 interface CTreeProps {
   variableId: number;
-  subPath?: (string)[];
+  subPath?: string[];
   search: string;
   nodeProps: () => {};
 }
@@ -188,7 +189,7 @@ function CTree(
   props: Omit<CTreeProps & TreeProps, 'variables'>,
 ): JSX.Element | null {
   const focusTab = React.useContext(focusTabContext);
-  const globalState = useStore(state => {
+  const { searching, editing, variable, match } = useStore(state => {
     let variable = VariableDescriptor.select(props.variableId);
     if (Array.isArray(props.subPath) && props.subPath.length > 0) {
       variable = get(variable, props.subPath) as IVariableDescriptor;
@@ -197,9 +198,12 @@ function CTree(
       variable: variable,
       match: isMatch(props.variableId, props.search),
       editing: isEditing(props.variableId, props.subPath, state.global.editing),
+      searching:
+        variable &&
+        state.global.search.type === 'GLOBAL' &&
+        state.global.search.value.includes(editorLabel(variable)),
     };
   }, shallowDifferent);
-  const { editing, variable, match } = globalState;
 
   const localEditing = isEditing(
     props.variableId,
@@ -222,6 +226,7 @@ function CTree(
             className={cx(headerStyle, {
               [globalSelection]: editing,
               [localSelection]: localEditing,
+              [searchSelection]: searching,
             })}
             onClick={(e: ModifierKeysEvent) => {
               let dispatch = store.dispatch;
