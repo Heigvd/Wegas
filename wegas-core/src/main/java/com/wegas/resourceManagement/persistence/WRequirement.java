@@ -27,6 +27,7 @@ import com.wegas.editor.View.SelectView;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -231,7 +232,19 @@ public class WRequirement extends AbstractEntity implements NamedEntity {
      * @param quantity the quantity to set
      */
     public void setQuantity(long quantity) {
-        this.quantity = quantity;
+        Long pVal = this.quantity;
+
+        if (!Objects.equals(pVal, quantity)) {
+            // change detected
+            this.quantity = quantity;
+
+            /*
+            TODO: fire req quantity change
+            if (beans != null) {
+                beans.getVariableInstanceFacade().fireNumberChange(this, pVal);
+            }
+            */
+        }
     }
 
     /**

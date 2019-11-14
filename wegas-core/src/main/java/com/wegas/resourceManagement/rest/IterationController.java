@@ -14,6 +14,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -56,5 +57,14 @@ public class IterationController {
     public Iteration getIteration(@PathParam("brnDwnId") Long burndownInstanceId,
             @PathParam("iterationId") Long iterationId) {
         return iterationFacade.find(iterationId);
+    }
+
+    @PUT
+    @Path("{iterationId: [1-9][0-9]*}/Plan/{period: [1-9][0-9]*}/{workload}")
+    public Iteration plan(@PathParam("brnDwnId") Long burndownInstanceId,
+            @PathParam("iterationId") Long iterationId,
+            @PathParam("period") Long periodNumber,
+            @PathParam("workload") String strWorkload){
+        return iterationFacade.plan(iterationId, periodNumber, Double.parseDouble(strWorkload));
     }
 }

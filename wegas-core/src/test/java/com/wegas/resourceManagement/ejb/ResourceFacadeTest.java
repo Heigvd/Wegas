@@ -348,8 +348,8 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         iterationFacade.addIteration(bdi1.getId(), it1);
         bdi1 = (BurndownInstance) variableInstanceFacade.find(bdi1.getId()); // reload player instance
 
-        iterationFacade.addTaskToIteration(task1Ip.getId(), bdi1.getIterations().get(0).getId());
-        iterationFacade.addTaskToIteration(task2Ip.getId(), bdi1.getIterations().get(0).getId());
+        iterationFacade.addTaskToIteration(task1Ip.getId(), bdi1.getIterations().get(0).getId(), 10, 0, 1000, 1000);
+        iterationFacade.addTaskToIteration(task2Ip.getId(), bdi1.getIterations().get(0).getId(), 10, 0, 1000, 1000);
 
         /*
          * Assign paul to tasks
@@ -491,7 +491,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         /*
          * add task1 to iteration1
          */
-        iterationFacade.addTaskToIteration(task1.getDefaultInstance().getId(), bdiDef.getIterations().get(0).getId());
+        iterationFacade.addTaskToIteration(task1.getDefaultInstance().getId(), bdiDef.getIterations().get(0).getId(), 10, 0, 1000, 1000);
 
         // reload
         bdiDef = (BurndownInstance) variableInstanceFacade.find(bdiDef.getId()); //reload defaultInstance
@@ -523,7 +523,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         /*
          * Player update his own iteration
          */
-        iterationFacade.addTaskToIteration(task2.getInstance(player).getId(), bdi1.getIterations().get(0).getId());
+        iterationFacade.addTaskToIteration(task2.getInstance(player).getId(), bdi1.getIterations().get(0).getId(), 10, 0, 1000, 1000);
 
         // reload
         bdiDef = (BurndownInstance) variableInstanceFacade.find(bdiDef.getId()); //reload defaultInstance
@@ -556,7 +556,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         /**
          * remove all tasks
          */
-        iterationFacade.removeTaskFromIteration(task1.getDefaultInstance().getId(), bdiDef.getIterations().get(0).getId());
+        iterationFacade.removeTaskFromIteration(task1.getDefaultInstance().getId(), bdiDef.getIterations().get(0).getId(), 10, 0, 1000, 1000);
 
         // reload
         bdiDef = (BurndownInstance) variableInstanceFacade.find(bdiDef.getId()); //reload defaultInstance
