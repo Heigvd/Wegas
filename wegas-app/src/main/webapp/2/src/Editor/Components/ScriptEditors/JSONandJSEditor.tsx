@@ -61,7 +61,9 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
           .reduce<{ token: MonacoEditorSimpleToken; line: number }[]>(
             (newTokens, tokens, line) => {
               const newT = newTokens.concat(
-                tokens.reduce<{ token: MonacoEditorSimpleToken; line: number }[]>(
+                tokens.reduce<
+                  { token: MonacoEditorSimpleToken; line: number }[]
+                >(
                   (nt, t) =>
                     nt.concat({
                       token: {

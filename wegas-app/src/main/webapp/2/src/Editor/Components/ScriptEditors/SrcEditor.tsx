@@ -9,6 +9,7 @@ import Editor, {
   DiffEditorDidMount,
   EditorDidMount,
 } from '@monaco-editor/react';
+import schemas from '../../../page-schema.build';
 
 export type MonacoEditor = Monaco;
 export type MonacoEditorProperties = EditorProps['options'];
@@ -173,12 +174,12 @@ function SrcEditor({
   value,
   defaultFocus,
   defaultLanguage,
+  defaultUri,
   readOnly,
   minimap,
   cursorOffset,
   extraLibs,
   defaultValue,
-  defaultUri,
   noGutter,
   defaultProperties,
   onEditorReady,
@@ -191,9 +192,57 @@ function SrcEditor({
   const [reactMonaco, setReactMonaco] = React.useState<MonacoEditor>();
   const getValue = React.useRef<() => string>();
 
+  React.useEffect(
+    () => {
+      if (reactMonaco) {
+        if (editor) {
+          // const prevModel = editor.getModel();
+          // if (prevModel) {
+          //   prevModel.setValue(defaultValue || value || '');
+          //   reactMonaco.editor.setModelLanguage(
+          //     prevModel,
+          //     defaultLanguage || 'plaintext',
+          //   );
+          // } else {
+          editor.setModel(
+            reactMonaco.editor.createModel(
+              defaultValue || value || '',
+              defaultLanguage || 'plaintext',
+              defaultUri ? reactMonaco.Uri.parse(defaultUri) : undefined,
+              // defaultLanguage === 'json'
+              //   ? reactMonaco.Uri.parse('internal://page.json')
+              //   : undefined,
+            ),
+          );
+          //   }
+        }
+        return () => {
+          if (editor) {
+            const prevModel = editor.getModel();
+            if (prevModel) {
+              prevModel.dispose();
+            }
+          }
+        };
+      }
+    } /* eslint-disable react-hooks/exhaustive-deps */ /* Linter disabled for the following lines to avoid reloading editor and loosing focus */,
+    [
+      editor,
+      reactMonaco,
+      // defaultValue,
+      // language,
+      // value,
+    ],
+  );
+  /* eslint-enable */
+
   React.useEffect(() => {
     if (!reactMonaco) {
-      monaco.init().then(setReactMonaco);
+      try {
+        monaco.init().then(setReactMonaco);
+      } catch (e) {
+        debugger;
+      }
     } else {
       if (defaultLanguage === 'javascript') {
         reactMonaco.languages.typescript.javascriptDefaults.setCompilerOptions({
@@ -211,27 +260,25 @@ function SrcEditor({
           allowNonTsExtensions: true,
           checkJs: true,
         });
-        addExtraLib(
-          reactMonaco.languages.typescript.typescriptDefaults,
-          extraLibs,
-        );
+        extraLibs &&
+          addExtraLib(reactMonaco.languages.typescript.typescriptDefaults, [
+            ...extraLibs,
+          ]);
         wlog(
           'monaco editor ts version : ' +
             reactMonaco.languages.typescript.typescriptVersion,
         );
       } else if (defaultLanguage === 'json') {
-        Promise.resolve('../../../page-schema.build').then(t =>
-          reactMonaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-            validate: true,
-            schemas: [
-              {
-                fileMatch: ['page.json'],
-                uri: 'internal://page-schema.json',
-                schema: (t as any).schema,
-              },
-            ],
-          }),
-        );
+        reactMonaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+          validate: true,
+          schemas: [
+            {
+              fileMatch: ['page.json'],
+              uri: 'internal://page-schema.json',
+              schema: (schemas as any).schema,
+            },
+          ],
+        });
       }
     }
     wlog('react monaco');
@@ -309,36 +356,6 @@ function SrcEditor({
       }
     }
   }, [defaultActions, editor, onSave, reactMonaco]);
-
-  React.useEffect(
-    () => {
-      if (reactMonaco) {
-        if (editor) {
-          editor.setModel(
-            reactMonaco.editor.createModel(
-              defaultValue || value || '',
-              defaultLanguage,
-              defaultUri ? reactMonaco.Uri.parse(defaultUri) : undefined,
-            ),
-          );
-          if (defaultFocus) {
-            editor.focus();
-          }
-        }
-      }
-      wlog('react monaco editor');
-    } /* eslint-disable react-hooks/exhaustive-deps */ /* Linter disabled for the following lines to avoid reloading editor and loosing focus */,
-    [
-      editor,
-      reactMonaco,
-      // defaultFocus,
-      // defaultUri,
-      // defaultValue,
-      // language,
-      // value,
-    ],
-  );
-  /* eslint-enable */
 
   function handleEditorDidMount(
     getEditorValue: () => string,

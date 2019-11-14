@@ -9,9 +9,9 @@ import { Reducer } from 'redux';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../../Editor/Components/FormView';
 import { FileAPI } from '../../API/files.api';
-import { GlobalMethodReturnTypesName } from '../../Components/Hooks/types/scriptMethodGlobals';
 import { CustomSchemaFN } from '../../Components/Hooks/types/scriptSchemaGlobals';
 import { omit } from 'lodash';
+import { GlobalMethodPayload } from '../../Components/Hooks/types/scriptMethodGlobals';
 
 type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IAbstractEntity> {
@@ -82,10 +82,7 @@ export interface GlobalState extends EditingState {
     socket_id?: string;
   };
   methods: {
-    [name: string]: {
-      returnType: GlobalMethodReturnTypesName;
-      method: () => unknown;
-    };
+    [name: string]: Omit<GlobalMethodPayload, 'name'>;
   };
   schemas: {
     filtered: {
@@ -246,7 +243,8 @@ const global: Reducer<Readonly<GlobalState>> = u(
         state.methods = {
           ...state.methods,
           [action.payload.name]: {
-            returnType: action.payload.returnType,
+            types: action.payload.types,
+            array: action.payload.array,
             method: action.payload.method,
           },
         };
@@ -573,13 +571,12 @@ export function searchUsage(
  * @param name - the name of the method
  * @param method - the method to add
  */
-export function setMethod<T extends GlobalMethodReturnTypesName>(
-  name: string,
-  returnType: T,
-  method: () => unknown,
-) {
-  return ActionCreator.EDITOR_SET_METHOD({ name, returnType, method });
-}
+export const setMethod = (
+  name: GlobalMethodPayload['name'],
+  types: GlobalMethodPayload['types'],
+  array: GlobalMethodPayload['array'],
+  method: GlobalMethodPayload['method'],
+) => ActionCreator.EDITOR_SET_METHOD({ name, types, array, method });
 
 /**
  * setSchema - Sets a custom view for WegasEntities in form components

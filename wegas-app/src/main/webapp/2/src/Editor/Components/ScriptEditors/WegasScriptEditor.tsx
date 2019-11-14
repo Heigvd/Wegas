@@ -215,15 +215,26 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     }
     declare const Editor: EditorClass;
 
-    interface GlobalMethods {\n${Object.keys(globalMethods).reduce(
-      (s, k) =>
+    interface GlobalMethods {\n${Object.keys(globalMethods).reduce((s, k) => {
+      const method = globalMethods[k];
+      const isArray = method.array === 'array';
+      {
+        isArray ? ' (' : ' ';
+      }
+      {
+        method.types.reduce((s, t, i) => s + (i > 0 ? ' | ' : '') + t, '');
+      }
+      {
+        isArray ? ')[]' : '';
+      }
+      return (
         s +
-        `'${k}' : () =>${Object.keys(globalMethods[k].returnType).reduce(
-          (t, rt) => t + ' | ' + rt,
+        `'${k}' : () => ${isArray ? ' (' : ' '} ${method.types.reduce(
+          (s, t, i) => s + (i > 0 ? ' | ' : '') + t,
           '',
-        )} ;\n`,
-      '',
-    )}}
+        )} ${isArray ? ')[]' : ''};\n`
+      );
+    }, '')}}
     interface MethodClass ${clientScript ? 'extends GlobalMethodClass ' : ''}{
       getMethod: <T extends keyof GlobalMethods>(name : T) => GlobalMethods[T];
     }

@@ -15,6 +15,7 @@ import {
   GlobalMethodClass,
   WegasScriptEditorReturnType,
   GlobalMethodAdd,
+  ArrayedTypeMap,
 } from './types/scriptMethodGlobals';
 import { Actions } from '../../data';
 import { GlobalSchemaClass, CustomSchemaFN } from './types/scriptSchemaGlobals';
@@ -87,11 +88,31 @@ export function useGlobals() {
       selectLang(typeof lang === 'string' ? lang : lang.code),
   };
 
-  const addMethod: GlobalMethodAdd = (name, returnType, method) => {
-    store.dispatch(Actions.EditorActions.setMethod(name, returnType, method));
+  const addMethod: GlobalMethodAdd = (name, types, array, method) => {
+    store.dispatch(
+      Actions.EditorActions.setMethod(
+        name,
+        types,
+        array as keyof ArrayedTypeMap,
+        method,
+      ),
+    );
   };
 
-  // addMethod('iuiui', ['number'], () => "1234");
+  // // Test for addMethod
+  // addMethod(
+  //   "Taddaaa",
+  //   ["number","string[]"],
+  //   "array",
+  //   ()=>[
+  //       // Respecting the type
+  //       ["yeah"],
+  //       1234,
+  //       // No respecting the type
+  //       true,
+  //       "nooo",
+  //       [6666]
+  //   ]);
 
   // Methods class
   globals.Methods = {

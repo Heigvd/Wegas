@@ -9,7 +9,7 @@ import { EditingState, closeEditor, Edition } from './Reducer/globalState';
 import { shallowDifferent } from './connectStore';
 import { getEntityActions } from '../Editor/editionConfig';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
-import { GlobalMethodReturnTypesName } from '../Components/Hooks/types/scriptMethodGlobals';
+import { GlobalMethodPayload } from '../Components/Hooks/types/scriptMethodGlobals';
 import { CustomSchemaFN } from '../Components/Hooks/types/scriptSchemaGlobals';
 
 export { ActionType };
@@ -27,7 +27,7 @@ const variableEditAction = <TA extends ActionTypeValues>(type: TA) => <
   entity: TE;
   config?: Schema<AvailableViews>;
   path?: TA extends ValueOf<typeof ActionType.FSM_EDIT>
-    ? (string)[]
+    ? string[]
     : (string | number)[];
   actions: {
     save?: (entity: TE) => void;
@@ -39,6 +39,7 @@ const variableEditAction = <TA extends ActionTypeValues>(type: TA) => <
     };
   };
 }) => createAction(type, data);
+
 /**
  * Simple action creators.
  */
@@ -48,11 +49,8 @@ export const ActionCreator = {
   EDITOR_ERROR_REMOVE: () => createAction(ActionType.EDITOR_ERROR_REMOVE, {}),
   EDITOR_ERROR: (data: { error: string }) =>
     createAction(ActionType.EDITOR_ERROR, data),
-  EDITOR_SET_METHOD: <T extends GlobalMethodReturnTypesName>(data: {
-    name: string;
-    returnType: T;
-    method: () => unknown;
-  }) => createAction(ActionType.EDITOR_SET_METHOD, data),
+  EDITOR_SET_METHOD: (data: GlobalMethodPayload) =>
+    createAction(ActionType.EDITOR_SET_METHOD, data),
   EDITOR_SET_SCHEMA: (data: {
     name: string;
     schemaFN?: CustomSchemaFN;

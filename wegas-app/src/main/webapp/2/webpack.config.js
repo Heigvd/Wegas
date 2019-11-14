@@ -29,6 +29,11 @@ if (!isCI) {
 }
 
 const modules = {
+  // Avoid stupid warnings that occures when webpack cannot manage modules
+  node: {
+    fs: 'empty',
+    module: 'empty',
+  },
   // stats: 'verbose',
   devtool: PROD ? 'source-map' : 'inline-source-map',
   entry: {
