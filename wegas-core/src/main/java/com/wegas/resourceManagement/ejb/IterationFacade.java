@@ -75,6 +75,9 @@ public class IterationFacade extends BaseFacade<Iteration> implements IterationF
         // Check iteration integrity
         burndownInstance.addIteration(iteration);
         iteration.getOrCreatePeriod(0l);
+        if (iteration.getBeginAt() == null) {
+            iteration.setBeginAt(1l);
+        }
         return iteration;
     }
 
@@ -228,7 +231,16 @@ public class IterationFacade extends BaseFacade<Iteration> implements IterationF
                 iteration.setTasks(tasks);
 
                 for (IterationPeriod period : iteration.getPeriods()) {
-                    // TODO revive Events
+                    for (IterationEvent event : period.getIterationEvents()) {
+                        String taskName = event.getDeserialisedTaskName();
+                        try {
+                            TaskDescriptor theTask = (TaskDescriptor) variableDescriptorFacade.find(gameModel, taskName);
+                            TaskInstance taskInstance = theTask.findInstance(burndownInstance, requestManager.getCurrentUser());
+                            event.setTaskInstance(taskInstance);
+                        } catch (WegasNoResultException ex) {
+                            throw WegasErrorMessage.error("Task " + taskName + " not found");
+                        }
+                    }
                 }
             }
         }

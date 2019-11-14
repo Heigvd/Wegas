@@ -10,7 +10,6 @@ package com.wegas.resourceManagement.persistence;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
@@ -19,6 +18,7 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.persistence.*;
@@ -52,7 +52,7 @@ public class IterationPeriod extends AbstractEntity implements Serializable {
         optional = false, nullable = false, proposal = EmptyArray.class,
         view = @View(label = "Events"))
     @OneToMany(mappedBy = "iterationPeriod", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    private List<IterationEvent> iterationEvents;
+    private List<IterationEvent> iterationEvents = new ArrayList<>();
 
     /**
      * delta period number
@@ -148,6 +148,11 @@ public class IterationPeriod extends AbstractEntity implements Serializable {
 
     public void setIterationEvents(List<IterationEvent> iterationEvents) {
         this.iterationEvents = iterationEvents;
+        if (this.iterationEvents != null) {
+            for (IterationEvent event : this.iterationEvents) {
+                event.setIterationPeriod(this);
+            }
+        }
     }
 
     public Long getPeriodNumber() {

@@ -334,7 +334,6 @@ public class TaskInstance extends VariableInstance implements Propertable {
      * @param event
      */
     public void addIterationEvent(IterationEvent event) {
-        event.setTaskInstance(this);
         this.setIterationEvents(ListUtils.cloneAdd(this.getIterationEvents(), event));
     }
 

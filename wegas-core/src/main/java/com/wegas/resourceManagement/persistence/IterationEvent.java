@@ -125,6 +125,9 @@ public class IterationEvent extends AbstractEntity implements Serializable {
 
     public void setTaskInstance(TaskInstance taskInstance) {
         this.taskInstance = taskInstance;
+        if (this.taskInstance != null){
+            this.taskInstance.addIterationEvent(this);
+        }
     }
 
     public EventType getEventType() {
