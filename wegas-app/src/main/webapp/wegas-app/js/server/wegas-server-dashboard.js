@@ -103,7 +103,7 @@ var WegasDashboard = (function() {
         var fn = function(owner, payload) {
             var logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val").logID;
             var path = owner.name === "Game" || owner.name === "DebugGame" ? "Games" : "Teams";
-            window.open("rest/Statistics/Export/" + logId
+            window.open("rest/Statistics/ExportXLSX/" + logId
                 + "/" + path + "/" + owner.get("id") + "QUERYSTRING", "_blank");
         };
 
@@ -123,8 +123,18 @@ var WegasDashboard = (function() {
         });
     }
 
+    function getAllOverviews() {
+        var overviews = [];
+        for (var name in dashConfigs) {
+            overviews.push({
+                name: name,
+                overview: overview(name, true)
+            });
+        }
+        return overviews;
+    }
 
-    function overview(name) {
+    function overview(name, doNotStringify) {
         name = name || "overview";
         overview = {};
 
@@ -284,8 +294,12 @@ var WegasDashboard = (function() {
             });
         }
 
-        // Return stringified object
-        return JSON.stringify(overview);
+        if (doNotStringify) {
+            return overview;
+        } else {
+            // Return stringified object
+            return JSON.stringify(overview);
+        }
     }
 
     return {
@@ -312,6 +326,9 @@ var WegasDashboard = (function() {
         },
         getOverview: function(name) {
             return overview(name);
+        },
+        getAllOverviews: function() {
+            return getAllOverviews();
         },
         setSectionLabel: function(label, sectionName, dashboardName) {
             getOrCreateSection(dashboardName, sectionName).title = label;

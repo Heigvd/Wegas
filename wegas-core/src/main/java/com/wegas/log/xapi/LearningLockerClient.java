@@ -54,8 +54,8 @@ public class LearningLockerClient {
 
     /**
      *
-     * @param host           XAPI-UI endpoint (e.g. "host.tld:3000")
-     * @param auth           Authorization header token
+     * @param host XAPI-UI endpoint (e.g. "host.tld:3000")
+     * @param auth Authorization header token
      * @param sourceHomePage
      */
     public LearningLockerClient(String host, String auth, String sourceHomePage) {
@@ -99,7 +99,7 @@ public class LearningLockerClient {
 
     /**
      *
-     * @param kvs l of key, value, key2, value2, ..., keyN, valueN
+     * @param kvs list of key, value, key2, value2, ..., keyN, valueN
      *
      * @return a m which m keys and values from kvs
      */
@@ -131,8 +131,9 @@ public class LearningLockerClient {
 
         // make sure to fetch statement for correct source
         newPipeLine.add(m("$match", m("statement.actor.account.homePage", homePage)));
+        newPipeLine.addAll(l((Object[]) pipeline));
 
-        params.add(new BasicNameValuePair("pipeline", mapper.writeValueAsString(pipeline)));
+        params.add(new BasicNameValuePair("pipeline", mapper.writeValueAsString(newPipeLine)));
 
         return "?" + URLEncodedUtils.format(params, StandardCharsets.US_ASCII);
     }
@@ -174,7 +175,7 @@ public class LearningLockerClient {
     }
 
     public static Map matchAll(Map... ands) {
-        return matchAll(l(ands));
+        return matchAll(l((Object[]) ands));
     }
 
     public static Map matchAll(List<Map> ands) {
@@ -190,7 +191,7 @@ public class LearningLockerClient {
     }
 
     public static Map and(Map... ands) {
-        return and(l(ands));
+        return and(l((Object[]) ands));
     }
 
     public static Map and(List<Map> ands) {
@@ -198,7 +199,7 @@ public class LearningLockerClient {
     }
 
     public static Map or(Map... ors) {
-        return or(l(ors));
+        return or(l((Object[]) ors));
     }
 
     public static Map or(List<Map> or) {
@@ -304,6 +305,7 @@ public class LearningLockerClient {
      *
      * @param logId
      * @param gameIds
+     * @param activityPattern
      *
      * @return
      *
@@ -389,7 +391,6 @@ public class LearningLockerClient {
         }
     }
 
-
     public Map countResultsByTeamAndActivity() {
         // {   "$group"   : {   _id:{"group" : "$statement.context.contextActivities.grouping", "object": "$statement.object.id"}, "results": {"$push": "$statement.result"}      }  } ]   )
         return m("$group",
@@ -402,8 +403,6 @@ public class LearningLockerClient {
                 )
         );
     }
-
-
 
     public Map groupResultsByTeamAndActivity() {
         // {   "$group"   : {   _id:{"group" : "$statement.context.contextActivities.grouping", "object": "$statement.object.id"}, "results": {"$push": "$statement.result"}      }  } ]   )

@@ -7,10 +7,12 @@
  */
 package com.wegas.log.xapi.model;
 
+import com.wegas.core.XlsxSpreadsheet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.poi.ss.usermodel.CellStyle;
 
 /**
  *
@@ -151,6 +153,7 @@ public class ProjectedStatement {
         this.game = game;
     }
 
+    @Deprecated
     public static void writeCSVHeaders(StringBuilder sb, String sep) {
         sb.append("timestamp").append(sep)
                 .append("actor").append(sep)
@@ -173,6 +176,7 @@ public class ProjectedStatement {
         }
     }
 
+    @Deprecated
     public void writeCSVRecord(StringBuilder sb, String sep) {
         sb.append(escape(timestamp)).append(sep)
                 .append(escape(actor)).append(sep)
@@ -185,5 +189,35 @@ public class ProjectedStatement {
                 .append(escape(success)).append(sep)
                 .append(escape(completion)).append(sep)
                 .append(escape(result)).append(System.lineSeparator());
+    }
+
+    public static void writeXSLXHeaders(XlsxSpreadsheet xlsx, CellStyle style) {
+        //xlsx.newRow();
+        xlsx.addValue("timestamp", style);
+        xlsx.addValue("actor", style);
+        xlsx.addValue("team", style);
+        xlsx.addValue("game", style);
+        xlsx.addValue("verb", style);
+        xlsx.addValue("object id", style);
+        xlsx.addValue("object type", style);
+        xlsx.addValue("object description", style);
+        xlsx.addValue("success", style);
+        xlsx.addValue("completion", style);
+        xlsx.addValue("result", style);
+    }
+
+    public void writeXLSXRecord(XlsxSpreadsheet xlsx, CellStyle style) {
+        xlsx.newRow();
+        xlsx.addValue(escape(timestamp), style);
+        xlsx.addValue(escape(actor), style);
+        xlsx.addValue(escape(team), style);
+        xlsx.addValue(escape(game), style);
+        xlsx.addValue(escape(verb), style);
+        xlsx.addValue(escape(objectId), style);
+        xlsx.addValue(escape(objectType), style);
+        xlsx.addValue(escape(objectDesc), style);
+        xlsx.addValue(escape(success), style);
+        xlsx.addValue(escape(completion), style);
+        xlsx.addValue(escape(result), style);;
     }
 }

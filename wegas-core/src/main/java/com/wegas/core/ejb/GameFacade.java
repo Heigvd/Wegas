@@ -2,12 +2,13 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.XlsxSpreadsheet;
 import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
@@ -35,6 +36,13 @@ import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -89,6 +97,9 @@ public class GameFacade extends BaseFacade<Game> {
     @Inject
     private StateMachineFacade stateMachineFacade;
 
+    @Inject
+    private ScriptFacade scriptFacade;
+
     /**
      *
      */
@@ -107,15 +118,14 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Create (persist) a new game base on a gameModel identified by gameModelId.
-     * This gameModel will first been duplicated (to freeze it against original gameModel update)
-     * Then, the game will be attached to this duplicate.
+     * Create (persist) a new game base on a gameModel identified by gameModelId. This gameModel will first been
+     * duplicated (to freeze it against original gameModel update) Then, the game will be attached to this duplicate.
      * <p>
-     * The game will contains a DebugTeam, which contains itself a test player.
-     * This team/testPlayer will be immediately usable since theirs variableInstance are create synchronously.
+     * The game will contains a DebugTeam, which contains itself a test player. This team/testPlayer will be immediately
+     * usable since theirs variableInstance are create synchronously.
      *
      * @param gameModelId id of the gameModel to create a new game for
-     * @param game        the game to persist
+     * @param game the game to persist
      *
      * @throws java.lang.CloneNotSupportedException
      *
@@ -147,11 +157,11 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      * Persist a new game within the given gameModel
      * <p>
-     * The game will contains a DebugTeam, which contains itself a test player.
-     * This team/testPlayer will be immediately usable since theirs variableInstance are create synchronously.
+     * The game will contains a DebugTeam, which contains itself a test player. This team/testPlayer will be immediately
+     * usable since theirs variableInstance are create synchronously.
      *
      * @param gameModel the gameModel to add the game in
-     * @param game      the game to persist within the gameModel
+     * @param game the game to persist within the gameModel
      */
     private void create(final GameModel gameModel, final Game game) {
         requestManager.assertCanInstantiateGameModel(gameModel);
@@ -332,10 +342,9 @@ public class GameFacade extends BaseFacade<Game> {
 
     /**
      * @param gameModelId
-     * @param orderBy     not used...
+     * @param orderBy not used...
      *
-     * @return all games belonging to the gameModel identified by gameModelId
-     *         but DebugGames, ordered by creation time
+     * @return all games belonging to the gameModel identified by gameModelId but DebugGames, ordered by creation time
      */
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
         return getEntityManager().createQuery("SELECT g FROM Game g "
@@ -430,8 +439,8 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      * Create a new player within a team for the user identified by userId
      *
-     * @param teamId     id of the team to join
-     * @param userId     id of the user to create a player for, may be null to create an anonymous player
+     * @param teamId id of the team to join
+     * @param userId id of the user to create a player for, may be null to create an anonymous player
      * @param playerName common name of the player
      * @param languages
      *
@@ -449,10 +458,10 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Same as {@link #joinTeam(java.lang.Long, java.lang.Long, java.lang.String)} but anonymously.
-     * (for testing purpose)
+     * Same as {@link #joinTeam(java.lang.Long, java.lang.Long, java.lang.String)} but anonymously. (for testing
+     * purpose)
      *
-     * @param teamId     id of the team to join
+     * @param teamId id of the team to join
      * @param playerName common name of the player
      *
      * @return a new player anonymous player who just joined the team
@@ -525,8 +534,7 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Since the team create is done in two step, we have to ensure the team is
-     * scheduled
+     * Since the team create is done in two step, we have to ensure the team is scheduled
      *
      * @param gameId
      * @param t
@@ -550,5 +558,162 @@ public class GameFacade extends BaseFacade<Game> {
         getEntityManager().persist(t);
 
         return t.getId();
+    }
+
+    public XlsxSpreadsheet getXlsxOverview(Long gameId) {
+        Game game = this.find(gameId);
+        boolean includeTestPlayer = !game.getGameModel().isPlay();
+
+        XlsxSpreadsheet xlsx = new XlsxSpreadsheet();
+        xlsx.addSheet("players details");
+
+        CellStyle headerStyle = xlsx.createHeaderStyle();
+        xlsx.addValue("Team Name", headerStyle);
+        xlsx.addValue("Team Notes", headerStyle);
+        xlsx.addValue("Team Creation Date", headerStyle);
+        xlsx.addValue("Team Status", headerStyle);
+        xlsx.addValue("Player Name", headerStyle);
+        xlsx.addValue("Player E-Mail", headerStyle);
+        xlsx.addValue("Email verified", headerStyle);
+        xlsx.addValue("Player Join Time", headerStyle);
+        xlsx.addValue("Player Language", headerStyle);
+        xlsx.addValue("Player Status", headerStyle);
+
+        for (Team t : game.getTeams()) {
+            if (t instanceof DebugTeam == false || includeTestPlayer) {
+                for (Player p : t.getPlayers()) {
+                    xlsx.newRow();
+                    xlsx.addValue(t.getName());
+                    xlsx.addValue(t.getNotes());
+
+                    xlsx.addValue(t.getCreatedTime());
+                    xlsx.addValue(t.getStatus().name());
+
+                    xlsx.addValue(p.getName());
+                    if (p.getUser() != null) {
+                        xlsx.addValue(p.getUser().getMainAccount().getEmail());
+                        xlsx.addValue(Boolean.TRUE.equals(p.getUser().getMainAccount().isVerified()) ? "yes" : "no");
+                    } else {
+                        xlsx.skipCell();
+                        xlsx.skipCell();
+                    }
+                    xlsx.addValue(p.getJoinTime());
+                    xlsx.addValue(game.getGameModel().getLanguageByCode(p.getLang()).getLang());
+                    xlsx.addValue(p.getStatus().name());
+                }
+            }
+        }
+
+        xlsx.autoWidth();
+        loadOverviews(xlsx, game, includeTestPlayer);
+
+        return xlsx;
+    }
+
+    private void loadOverviews(XlsxSpreadsheet xlsx, Game game, boolean includeTestPlayer) {
+        Player p = game.getTestPlayer();
+        String script = ""
+                + "var result= [];"
+                + "if (WegasDashboard){"
+                + "  result = WegasDashboard.getAllOverviews(true);"
+                + "}"
+                + "result;";
+
+        CellStyle titleStyle = xlsx.createHeaderStyle();
+        titleStyle.setAlignment(HorizontalAlignment.CENTER);
+
+        CellStyle subtitleStyle = xlsx.createSmallerHeaderStyle();
+
+        ScriptObjectMirror overviews = (ScriptObjectMirror) scriptFacade.eval(p, new Script(script), null);
+
+        for (Object oSheet : overviews.values()) {
+            ScriptObjectMirror sheetData = (ScriptObjectMirror) oSheet;
+
+            String name = (String) sheetData.get("name"); // aka sheetName
+            Sheet sheet = xlsx.addSheet(name);
+
+            ScriptObjectMirror overview = (ScriptObjectMirror) sheetData.get("overview");
+
+            ScriptObjectMirror structure = (ScriptObjectMirror) overview.get("structure");
+
+            Collection<Object> groups = structure.values();
+            // create first row : groups'
+
+            Map<String, Integer> index = new HashMap<>(); // item name to col number
+            Map<String, String> kinds = new HashMap<>(); // item name to item kind
+
+            Row firstRow = xlsx.getCurrentRow();
+            Row secondRow = xlsx.newRow();
+
+            Cell teamName = secondRow.createCell(0);
+            teamName.setCellValue("Team Name");
+            teamName.setCellStyle(subtitleStyle);
+
+            int currentCol = 1;
+
+            for (Object oGroup : groups) {
+                ScriptObjectMirror group = (ScriptObjectMirror) oGroup;
+                String title = (String) group.get("title");
+
+                int startGroupCol = currentCol;
+
+                Collection<Object> items = (Collection<Object>) (((ScriptObjectMirror) group.get("items")).values());
+                for (Object oItem : items) {
+                    ScriptObjectMirror item = (ScriptObjectMirror) oItem;
+                    if (item.hasMember("kind")) {
+                        // skip action/method
+                        String itemLabel = (String) item.get("label");
+                        String itemId = (String) item.get("id");
+
+                        Cell itemTitle = secondRow.createCell(currentCol);
+                        itemTitle.setCellStyle(subtitleStyle);
+                        itemTitle.setCellValue(itemLabel);
+
+                        index.put(itemId, currentCol);
+                        kinds.put(itemId, (String) item.get("kind"));
+
+                        currentCol++;
+                    }
+                }
+                if (currentCol > startGroupCol) {
+                    Cell groupName = firstRow.createCell(startGroupCol);
+                    groupName.setCellValue(title);
+                    groupName.setCellStyle(titleStyle);
+
+                    sheet.addMergedRegion(new CellRangeAddress(0, 0, startGroupCol, currentCol - 1));
+                }
+            }
+            xlsx.setCurrentRowNumber(1); // focus second row
+
+            ScriptObjectMirror data = (ScriptObjectMirror) overview.get("data");
+            for (String teamId : data.keySet()) {
+                Team team = teamFacade.find(Long.parseLong(teamId));
+                if (team instanceof DebugTeam == false || includeTestPlayer) {
+                    xlsx.newRow();
+                    String tName = team.getName();
+                    xlsx.addValue(tName);
+
+                    ScriptObjectMirror teamData = (ScriptObjectMirror) data.get(teamId);
+                    for (String itemId : teamData.keySet()) {
+                        Integer itemCol = index.get(itemId);
+                        if (itemCol != null) {
+                            String kind = kinds.get(itemId);
+
+                            Object value = teamData.get(itemId);
+
+                            if (kind.equals("inbox") || kind.equals("text")){
+                                value = ((ScriptObjectMirror) value).getMember("body");
+                            }
+
+                            xlsx.setCurrentColumnNumber(itemCol);
+                            xlsx.addValue(value);
+                        }
+                    }
+                }
+            }
+
+            xlsx.autoWidth();
+
+        }
     }
 }

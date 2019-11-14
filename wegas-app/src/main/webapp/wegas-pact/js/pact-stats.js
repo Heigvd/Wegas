@@ -58,11 +58,11 @@ YUI.add('pact-stats', function (Y) {
                     var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ')
                     // Escape double-quote with double-double-quote (see https://stackoverflow.com/questions/17808511/properly-escape-a-double-quote-in-csv)
                     data = data.replace(/"/g, '""');
-                    // JH: Localize floating-point numbers (dots vs commas) to enable direct loading into Excel
+                    // Localize floating-point numbers (dots vs commas) to enable direct loading into Excel
                     if (data !== '' && !isNaN(data)) {
                         data = numberFormatter.format(data);
                     }
-                    // JH: duplicate cells as many times as required by colspan:
+                    // Duplicate cells as many times as required by colspan:
                     if (cols[j].colSpan > 1) {
                         for (var rs = 1; rs <= cols[j].colSpan; rs++) {
                             row.push('"' + data + '"');
@@ -287,7 +287,10 @@ YUI.add('pact-stats', function (Y) {
 
             for (var i = fromPos; i <= toPos; i++) {
                 var currStmt = team[i];
-                if (!currStmt.levelInfo.completed && this.excludeUnfinishedLevels) {
+                // Abort here if this is a statement not belonging to a real level (i.e. other than 999).
+                // Also abort if not a completed level when incomplete ones are to be ignored. 
+                if (!currStmt.levelInfo ||
+                    (!currStmt.levelInfo.completed && this.excludeUnfinishedLevels)) {
                     break;
                 }
                 if (currStmt.shortVerb === "submit") {
@@ -301,9 +304,11 @@ YUI.add('pact-stats', function (Y) {
                     if (currStmt.completion === "false") {
                         if (currStmt.success === "false") {
                             syntaxErrors++;
+                            currStmt.submitOutcome = "Syntax error";
                             sequence += '<span class="syntax-error" title="Syntax error (' + currStmt.timestamp.toTimeString().substr(0,8) + ')">SYN</span>';
                         } else {
                             semanticErrors++;
+                            currStmt.submitOutcome = "Semantic error";
                             sequence += '<span class="semantic-error" title="Semantic error (' + currStmt.timestamp.toTimeString().substr(0,8) + ')">SEM</span>';
                         }
                     } else {
@@ -311,6 +316,7 @@ YUI.add('pact-stats', function (Y) {
                             alert("combinaison impossible");
                         } else {
                             successes++;
+                            currStmt.submitOutcome = "OK";
                             sequence += '<span class="success" title="Success ('+ currStmt.timestamp.toTimeString().substr(0,8) + ')">OK</span>';
                         }
                     }
@@ -378,10 +384,14 @@ YUI.add('pact-stats', function (Y) {
                 Y.log("dumpLevel impossible");
             }
             for (var i = interval.start; i <= interval.end; i++) {
-                var curr = team[i];
-                lines.push(curr.timestamp.toTimeString().substr(0,8) + ' &nbsp; ' + 
-                        curr.shortVerb + ' &nbsp; ' + curr.shortObject + ' &nbsp; ' + 
-                        (curr.objectParam ? curr.objectParam : ''));
+                var curr = team[i],
+                    line = curr.timestamp.toTimeString().substr(0,8) + ' &nbsp; ' + 
+                            curr.shortVerb + ' &nbsp; ' + curr.shortObject + ' &nbsp; ' + 
+                            (curr.objectParam ? curr.objectParam : '');
+                if (curr.shortVerb === "submit"){
+                    line += ' &nbsp; ' + curr.submitOutcome;
+                }
+                lines.push(line);
             }
             var panel = this.getPanel({
                 content:

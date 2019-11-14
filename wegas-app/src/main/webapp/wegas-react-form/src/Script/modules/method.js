@@ -138,6 +138,19 @@ const extractMethod = node => {
                 ret.member = nod.callee.object.name;
                 return false;
             }
+
+            let lastToken = nod.loc.tokens.pop();
+            if (ret.variable !== undefined && ret.method === undefined) {
+                while (lastToken && (lastToken.value === ';' || lastToken.value === ')')) {
+                    lastToken = nod.loc.tokens.pop();
+                }
+                if (lastToken && lastToken.value.replace(/"/mg, '').replace(/'/mg, '') === ret.variable) {
+                    ret.method = false;
+                } else {
+                    ret.method = null;
+                }
+            }
+
             return false;
         },
         visitNode: function visitNode(path) {

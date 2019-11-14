@@ -97,7 +97,7 @@ public class ScriptController {
      */
     @POST
     @Path("Run/{playerId : [1-9][0-9]*}{sep: /?}{variableDescriptorId : ([1-9][0-9]*)?}")
-    public Object run(@PathParam("gameModelId") Long gameModelId,
+public Object run(@PathParam("gameModelId") Long gameModelId,
             @PathParam("playerId") Long playerId,
             @PathParam("variableDescriptorId") Long variableDescritptorId,
             Script script) {

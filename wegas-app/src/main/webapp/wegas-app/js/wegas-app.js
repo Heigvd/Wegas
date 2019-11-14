@@ -198,14 +198,12 @@ YUI.add('wegas-app', function(Y) {
 
                 if (extraTabs) {
                     if (gm.get("properties").get("val").logID) {
-                        if (Y.Wegas.Facade.Variable.cache.find("@class", "QuestionDescriptor")) {
-                            extraTabs._addTab({
-                                label: I18n.t("global.statistics"),
-                                children: [{
-                                        type: "Statistics"
-                                    }]
-                            });
-                        }
+                        extraTabs._addTab({
+                            label: I18n.t("global.statistics"),
+                            children: [{
+                                    type: "Statistics"
+                                }]
+                        });
                     }
 
                     Y.Array.each(Y.Wegas.Facade.Variable.cache.findAll("@class", "PeerReviewDescriptor"),
