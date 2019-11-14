@@ -60,7 +60,7 @@ public class IterationController {
     }
 
     @PUT
-    @Path("{iterationId: [1-9][0-9]*}/Plan/{period: [1-9][0-9]*}/{workload}")
+    @Path("{iterationId: [1-9][0-9]*}/Plan/{period: [0-9]+}/{workload}")
     public Iteration plan(@PathParam("brnDwnId") Long burndownInstanceId,
             @PathParam("iterationId") Long iterationId,
             @PathParam("period") Long periodNumber,
