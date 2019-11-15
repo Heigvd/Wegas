@@ -37,6 +37,11 @@
             <column name="deltaev" type="FLOAT8"/>
         </addColumn>
     </changeSet>
+    <changeSet author="maxence" id="1573629782777-11-ter">
+        <addColumn tableName="iterationperiod">
+            <column name="aw" type="FLOAT8"/>
+        </addColumn>
+    </changeSet>
     <changeSet author="maxence" id="1573629782777-12">
         <createIndex indexName="index_iterationevent_iterationperiod_id" tableName="iterationevent">
             <column name="iterationperiod_id"/>

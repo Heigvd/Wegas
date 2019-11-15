@@ -1172,16 +1172,22 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     "label": "Earned Value (EV)"
                 }
             },
+            aw: {
+                "type": "number",
+                "view": {
+                    "label": "Actual Workload Spent during the period(AW)"
+                }
+            },
             ew: {
                 "type": "number",
                 "view": {
-                    "label": "Earned Workload (EW)"
+                    "label": "Earned Workload (EW) from iteration start"
                 }
             },
             pw: {
                 "type": "number",
                 "view": {
-                    "label": "Planned Workload (PW)"
+                    "label": "Planned Workload (PW) from iteration start"
                 }
             },
             lastWorkedStep: {

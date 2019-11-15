@@ -118,6 +118,14 @@ public class IterationPeriod extends AbstractEntity implements Serializable {
         view = @View(label = "Earned Workload (EW)"))
     private Double ew;
 
+    /*
+     *
+     */
+    @WegasEntityProperty(
+        nullable = false, optional = false,
+        view = @View(label = "Actual Workload (AW)"))
+    private Double aw;
+
     /**
      * actual cost
      */
@@ -233,6 +241,14 @@ public class IterationPeriod extends AbstractEntity implements Serializable {
 
     public void setEw(Double ew) {
         this.ew = ew;
+    }
+
+    public Double getAw() {
+        return aw;
+    }
+
+    public void setAw(Double aw) {
+        this.aw = aw;
     }
 
     public Double getAc() {
