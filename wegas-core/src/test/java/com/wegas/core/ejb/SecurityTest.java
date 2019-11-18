@@ -12,6 +12,7 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.security.persistence.User;
 import com.wegas.test.arquillian.AbstractArquillianTest;
+import java.io.InputStream;
 import javax.ejb.EJBException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.junit.Assert;
@@ -43,6 +44,19 @@ public class SecurityTest extends AbstractArquillianTest {
     public void testQuit() {
         String script = "quit();";
         scriptFacade.eval(player, new Script("JavaScript", script), null);
+    }
+
+    @Test(expected = WegasScriptException.class)
+    public void testEntityManagerIsNotAccessible() {
+        String password = "SuperSecure";
+
+        WegasUser hacker = signup("hacker@local", password);
+        login(hacker);
+
+        String script = "RequestManager.getEntityManager();";
+
+        Object eval = scriptFacade.eval(player, new Script("JavaScript", script), null);
+        logger.error("Eval: {}", eval);
     }
 
     @Test(expected = AuthenticationException.class)
@@ -93,6 +107,16 @@ public class SecurityTest extends AbstractArquillianTest {
 
         logger.error("CURRENT: {}", requestFacade.getCurrentUser().getId());
         Assert.assertEquals(user.getUser(), requestFacade.getCurrentUser()); // assert su has failed
+    }
+
+    @Test(expected = WegasScriptException.class)
+    public void testReadRessources() {
+        login(user);
+        String script = "new java.io.BufferedReader(new java.io.InputStreamReader(Variable.getClass().getClassLoader().getResourceAsStream(\"wegas.properties\")))\n"
+            + "            .lines().collect(java.util.stream.Collectors.joining(\"\\n\"));";
+
+        Object eval = scriptFacade.eval(player, new Script("JavaScript", script), null);
+        logger.error("Eval: {}", eval);
     }
 
     @Test(expected = WegasScriptException.class)
