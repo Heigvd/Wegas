@@ -1595,7 +1595,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
 
             this.majorMenu.add([{
                     type: "Button",
-                    label: "Save and outdate other languages",
+                    label: "Please confirm you want to outdate other langauges",
                     data: {
                         event: e
                     }
@@ -1646,21 +1646,21 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     },
                     on: {
                         success: Y.bind(function() {
-                            Y.Wegas.Alerts.showNotification("Batch Success", {
+                            /*Y.Wegas.Alerts.showNotification("Batch Success", {
                                 timeout: 500
-                            });
+                            });*/
                         }, this),
                         failure: Y.bind(function() {
-                            Y.Wegas.Alerts.showNotification("Batch Failure", {
+                            /*Y.Wegas.Alerts.showNotification("Batch Failure", {
                                 cssIcon: "fa fa-error"
-                            });
+                            });*/
                         }, this)
                     }
                 });
             } else {
-                Y.Wegas.Alerts.showNotification("Nothing to save", {
+                /*Y.Wegas.Alerts.showNotification("Nothing to save", {
                     timeout: 500
-                });
+                });*/
             }
         },
         getInScriptPayload: function(cfg, translation) {

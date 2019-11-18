@@ -692,13 +692,13 @@ YUI.add("wegas-i18n", function(Y) {
             getEditorTools: function() {
                 return "<span class='tools'>" +
                     "<span title='Auto translate from...' class='inline-editor-i18n fa fa-download'></span>" +
-                    "<span title='Save and outdate other languages' class='inline-editor-major-validate fa fa-stack fa-1g'>" +
+                    "<span title='Outdate other languages' class='inline-editor-major-validate fa fa-stack fa-1g'>" +
                     "  <i class='fa fa-toggle-on fa-stack-1x'></i>" +
                     "  <i class='fa fa-expand fa-stack-1x'></i>" +
                     "</span>" +
                     "<span class='inline-editor-separator'></span>" +
-                    "<span title='Save and mark as up-to-date' class='inline-editor-catch_up-validate fa fa-toggle-on fa-flip-horizontal'></span>" +
-                    "<span title='Save and mark as outdated' class='inline-editor-outdate-validate fa fa-toggle-on'></span>" +
+                    "<span title='Mark as up-to-date' class='inline-editor-catch_up-validate fa fa-toggle-on fa-flip-horizontal'></span>" +
+                    "<span title='Mark as outdated' class='inline-editor-outdate-validate fa fa-toggle-on'></span>" +
                     "<span title='Undo' class='inline-editor-cancel fa fa-undo'></span>" +
                     "<span title='Save' class='inline-editor-validate fa fa-save'></span>" +
                     "</span>";

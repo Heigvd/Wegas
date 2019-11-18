@@ -846,10 +846,14 @@
     color: #4e525e;
 }
 
+.wegas-i18n-manager .wegas-translation:hover .tools .inline-editor-major-validate:hover .fa-toggle-on {
+    color: #E65100;
+}
+
 .wegas-i18n-manager .wegas-translation:hover .tools .inline-editor-major-validate .fa-toggle-on,
 .wegas-translation.unsaved .tools .inline-editor-major-validate .fa-toggle-on,
 .wegas-translation.has-focus .tools .inline-editor-major-validate .fa-toggle-on{
-    color: #E65100;
+    color: #4e525e;
 }
 
 
