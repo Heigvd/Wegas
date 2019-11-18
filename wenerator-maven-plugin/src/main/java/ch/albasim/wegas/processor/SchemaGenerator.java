@@ -608,9 +608,10 @@ public class SchemaGenerator extends AbstractMojo {
          */
         sb.append("interface WegasEntitesNamesAndClasses {");
         intKeys.forEach(key -> {
-            sb.append(System.lineSeparator())
-                .append("  " + key + " : ")
-                .append(key + ";");
+            sb  .append(System.lineSeparator())
+                .append("  " + key + " : " + key + ";")
+                .append(System.lineSeparator())
+                .append("  '" + key + "[]' : " + key + "[];");
         });
         sb.append(System.lineSeparator())
             .append("}")
