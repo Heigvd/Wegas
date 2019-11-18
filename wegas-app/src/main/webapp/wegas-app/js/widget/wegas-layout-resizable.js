@@ -412,6 +412,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                         });
                     }
                 }
+                Y.log("CenterTabWidth: " + centerWidth);
                 // if (rightWidth === '0px' || rightWidthStyle === '0px') {  }
                 this.savePosition(leftNode.getStyle("width"), centerNode.getComputedStyle("width"), rightWidth);
                 Y.Wegas.app.fire("layout:resize");

@@ -242,8 +242,6 @@ public abstract class AbstractArquillianTestMinimal {
                     + "CREATE INDEX IF NOT EXISTS index_taskinstance_properties_taskinstance_id ON taskinstance_properties (taskinstance_id);"
                     + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_properties_taskdescriptor_id ON taskdescriptor_properties (taskdescriptor_id);"
                     + "CREATE INDEX IF NOT EXISTS index_transitionhistory_statemachineinstance_id ON transitionhistory (statemachineinstance_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_iteration_plannedworkloads_iteration_id on iteration_plannedworkloads (iteration_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_iteration_replannedworkloads_iteration on iteration_replannedworkloads (iteration_id);"
                     + "CREATE INDEX IF NOT EXISTS index_iteration_taskinstance_iteration_id on iteration_taskinstance (iteration_id);"
                     + "CREATE INDEX IF NOT EXISTS index_iteration_taskinstance_id on iteration_taskinstance (taskinstance_id);"
 
