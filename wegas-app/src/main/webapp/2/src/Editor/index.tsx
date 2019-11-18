@@ -6,16 +6,22 @@ import '../css/global.css';
 import Layout from './Components/Layout';
 import { Theme } from '../Components/Theme';
 import { LibrariesLoader } from './Components/LibrariesLoader';
+import { ClassesProvider } from '../Components/ClassesContext';
+import { FeatureProvider } from '../Components/FeatureProvider';
 
 function mount() {
   render(
-    <LangProvider>
-      <LibrariesLoader>
-        <Theme>
-          <Layout />
-        </Theme>
-      </LibrariesLoader>
-    </LangProvider>,
+    <FeatureProvider>
+      <LangProvider>
+        <ClassesProvider>
+          <LibrariesLoader>
+            <Theme>
+              <Layout />
+            </Theme>
+          </LibrariesLoader>
+        </ClassesProvider>
+      </LangProvider>
+    </FeatureProvider>,
     document.getElementById('root'),
   );
 }

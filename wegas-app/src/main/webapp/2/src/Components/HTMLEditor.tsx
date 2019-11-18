@@ -30,6 +30,7 @@ import { LabeledView, Labeled } from '../Editor/Components/FormView/labeled';
 import { primary, primaryLight, primaryDark } from './Theme';
 import { FileBrowser } from '../Editor/Components/FileBrowser/FileBrowser';
 import { css } from 'emotion';
+import { classesCtx } from './ClassesContext';
 
 const toolbar = css({
   width: '300px',
@@ -77,6 +78,7 @@ export default function HTMLEditor({
   const [editorFocus, setEditorFocus] = React.useState<boolean>(false);
   const HTMLContent = React.useRef('');
   const HTMLEditor = React.useRef<{ focus: () => void }>();
+  const { classes } = React.useContext(classesCtx);
 
   const config = (
     toolBarContainerId: string,
@@ -128,11 +130,12 @@ export default function HTMLEditor({
         // },
         {
           title: 'Wegas styles',
-          items: [
-            { title: 'primary', block: 'div', classes: primary },
-            { title: 'primaryDark', block: 'div', classes: primaryDark },
-            { title: 'primaryLight', block: 'div', classes: primaryLight },
-          ],
+          items: classes.map(c => ({ title: c, block: 'div', classes: c })),
+          // [
+          //   { title: 'primary', block: 'div', classes: primary },
+          //   { title: 'primaryDark', block: 'div', classes: primaryDark },
+          //   { title: 'primaryLight', block: 'div', classes: primaryLight },
+          // ],
         },
         {
           title: 'User styles',
@@ -211,7 +214,6 @@ export default function HTMLEditor({
             />
           )}
         </div>
-
         <TinyEditor
           initialValue={value}
           init={config(toolBarId, {

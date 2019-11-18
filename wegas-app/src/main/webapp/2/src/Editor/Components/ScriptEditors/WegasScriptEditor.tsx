@@ -16,6 +16,8 @@ import { State } from '../../../data/Reducer/reducers';
 import { GameModel } from '../../../data/selectors';
 import { WegasScriptEditorReturnTypeName } from '../../../Components/Hooks/types/scriptMethodGlobals';
 import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
+import { classesCtx } from '../../../Components/ClassesContext';
+
 // using raw-loader works but you need to put the whole file name and ts doesn't like it
 // @ts-ignore
 import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasScriptableEntities.d.ts';
@@ -25,6 +27,8 @@ import editorGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/script
 import methodGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/scriptMethodGlobals.ts';
 // @ts-ignore
 import schemaGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/scriptSchemaGlobals.ts';
+// @ts-ignore
+import classesGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/scriptClassesGlobals.ts';
 
 export interface WegasScriptEditorProps extends SrcEditorProps {
   clientScript?: boolean;
@@ -89,6 +93,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   const toggleRefresh = React.useCallback(() => setRefresh(old => !old), [
     setRefresh,
   ]);
+  const { classes } = React.useContext(classesCtx);
   const monaco = useMonacoEditor();
 
   React.useEffect(
@@ -247,7 +252,19 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     interface SchemaClass ${clientScript ? 'extends GlobalSchemaClass ' : ''}{
       removeSchema: (name: GlobalSchemas) => void;
     }
-    declare const Schemas : SchemaClass`;
+    declare const Schemas : SchemaClass
+    
+    type GlobalClasses = ${
+      classes.length === 0
+        ? 'never'
+        : classes.reduce((oc, c) => oc + `\n  | '${c}'`, '')
+    }}
+    interface ClassesClass extends GlobalClassesClass{
+      removeClass: (className: GlobalClasses) => void;
+    }
+    declare const Classes : ClassesClass
+
+    `;
   }, refDifferent);
 
   // wlog(libContent);
@@ -310,6 +327,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
           ${cleanLib(editorGlobalSrc)}\n
           ${cleanLib(methodGlobalSrc)}\n
           ${cleanLib(schemaGlobalSrc)}\n
+          ${cleanLib(classesGlobalSrc)}\n
           ${libContent}\n`,
           name: 'VariablesTypes.d.ts',
         },

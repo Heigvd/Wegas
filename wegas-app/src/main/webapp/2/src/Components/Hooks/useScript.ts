@@ -20,6 +20,8 @@ import {
 import { Actions } from '../../data';
 import { GlobalSchemaClass, CustomSchemaFN } from './types/scriptSchemaGlobals';
 import * as ts from 'typescript';
+import { GlobalClassesClass } from './types/scriptClassesGlobals';
+import { classesCtx } from '../ClassesContext';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -34,6 +36,7 @@ interface GlobalClasses {
   Editor: GlobalEditorClass;
   Methods: GlobalMethodClass;
   Schemas: GlobalSchemaClass;
+  Classes: GlobalClassesClass;
 }
 
 const sandbox = document.createElement('iframe');
@@ -136,6 +139,13 @@ export function useGlobals() {
     removeSchema: (name: string) => {
       store.dispatch(Actions.EditorActions.setSchema(name));
     },
+  };
+
+  // Classes class
+  const { addClass, removeClass } = React.useContext(classesCtx);
+  globals.Classes = {
+    addClass,
+    removeClass,
   };
 }
 
