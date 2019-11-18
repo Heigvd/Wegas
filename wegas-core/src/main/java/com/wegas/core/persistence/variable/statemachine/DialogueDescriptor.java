@@ -9,7 +9,6 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import ch.albasim.wegas.annotations.View;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.editor.JSONSchema.JSONObject;
@@ -25,7 +24,6 @@ import javax.persistence.Entity;
  */
 @Entity
 @JsonIgnoreProperties(value = {"content"})
-@JsonTypeName("DialogueDescriptor")
 @Schema(property = "states", value = DialogueDescriptor.StateProp.class, view = @View(label = "", value = Hidden.class))
 public class DialogueDescriptor extends AbstractStateMachineDescriptor<DialogueState, DialogueTransition> {
 

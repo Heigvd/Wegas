@@ -12,7 +12,6 @@ import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasCallback;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.annotations.WegasEntity;
 import com.wegas.core.persistence.game.Script;
@@ -37,7 +36,6 @@ import javax.persistence.Transient;
         callback = TriggerDescriptor.MergeTriggerHack.class // but ensure they exist one all transient fields have been set
 )
 @JsonIgnoreProperties(value = {"states"})
-@JsonTypeName(value = "TriggerDescriptor")
 public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerState, Transition> {
 
     private static final long serialVersionUID = 1L;
