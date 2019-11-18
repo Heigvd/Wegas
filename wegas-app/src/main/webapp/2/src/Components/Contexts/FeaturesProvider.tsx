@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Menu } from './Menu';
-import { FeatureLevel } from './Hooks/types/scriptEditorGlobals';
+import { Menu } from '../Menu';
 
 const availableFeatures: FeatureLevel[] = ['ADVANCED', 'INTERNAL'];
 export const featuresCTX = React.createContext<{
@@ -9,7 +8,7 @@ export const featuresCTX = React.createContext<{
   removeFeature: (feature: FeatureLevel) => void;
 }>({ currentFeatures: [], setFeature: () => {}, removeFeature: () => {} });
 
-function FeatureContext({ children }: React.PropsWithChildren<{}>) {
+function FeaturesContext({ children }: React.PropsWithChildren<{}>) {
   const [features, setFeature] = React.useState<FeatureLevel[]>(['DEFAULT']);
   return (
     <featuresCTX.Provider
@@ -30,7 +29,7 @@ function FeatureContext({ children }: React.PropsWithChildren<{}>) {
 /**
  * Provider for FeatureContext Handles display features
  */
-export const FeatureProvider = React.memo(FeatureContext);
+export const FeaturesProvider = React.memo(FeaturesContext);
 
 /**
  * Features selector allows to select features inside the feature context given by the FeatureProvider

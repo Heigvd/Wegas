@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
-import { DefaultDndProvider } from '../../../Components/DefaultDndProvider';
+import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
 import { omit } from 'lodash';
 import u from 'immer';
 import { ReparentableRoot } from '../Reparentable';

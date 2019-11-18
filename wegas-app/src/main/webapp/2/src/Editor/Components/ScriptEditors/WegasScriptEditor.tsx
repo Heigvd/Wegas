@@ -14,21 +14,20 @@ import { useStore } from '../../../data/store';
 import { deepDifferent, refDifferent } from '../../../data/connectStore';
 import { State } from '../../../data/Reducer/reducers';
 import { GameModel } from '../../../data/selectors';
-import { WegasScriptEditorReturnTypeName } from '../../../Components/Hooks/types/scriptMethodGlobals';
+import { classesCTX } from '../../../Components/Contexts/ClassesProvider';
 import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
-import { classesCtx } from '../../../Components/ClassesContext';
 
 // using raw-loader works but you need to put the whole file name and ts doesn't like it
 // @ts-ignore
 import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasScriptableEntities.d.ts';
 // @ts-ignore
-import editorGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/scriptEditorGlobals.ts';
+import editorGlobalSrc from '!!raw-loader!../../../../types/scripts/EditorGlobals.d.ts';
 // @ts-ignore
-import methodGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/scriptMethodGlobals.ts';
+import methodGlobalSrc from '!!raw-loader!../../../../types/scripts/MethodGlobals.d.ts';
 // @ts-ignore
-import schemaGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/scriptSchemaGlobals.ts';
+import schemaGlobalSrc from '!!raw-loader!../../../../types/scripts/SchemaGlobals.d.ts';
 // @ts-ignore
-import classesGlobalSrc from '!!raw-loader!../../../Components/Hooks/types/scriptClassesGlobals.ts';
+import classesGlobalSrc from '!!raw-loader!../../../../types/scripts/ClassesGlobals.d.ts';
 
 export interface WegasScriptEditorProps extends SrcEditorProps {
   clientScript?: boolean;
@@ -74,7 +73,8 @@ const formatScriptToFunction = (
   return val;
 };
 
-const cleanLib = (libSrc: string) => libSrc.replace(/^(export )/gm, '');
+// We'll keep it for later uses
+// const cleanLib = (libSrc: string) => libSrc.replace(/^(export )/gm, '');
 
 export function WegasScriptEditor(props: WegasScriptEditorProps) {
   const { defaultValue, value, returnType, clientScript } = props;
@@ -93,7 +93,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   const toggleRefresh = React.useCallback(() => setRefresh(old => !old), [
     setRefresh,
   ]);
-  const { classes } = React.useContext(classesCtx);
+  const { classes } = React.useContext(classesCTX);
   const monaco = useMonacoEditor();
 
   React.useEffect(
@@ -323,12 +323,14 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       defaultLanguage={'typescript'}
       extraLibs={[
         {
-          content: `${entitiesSrc}\n
-          ${cleanLib(editorGlobalSrc)}\n
-          ${cleanLib(methodGlobalSrc)}\n
-          ${cleanLib(schemaGlobalSrc)}\n
-          ${cleanLib(classesGlobalSrc)}\n
-          ${libContent}\n`,
+          content: `
+          ${entitiesSrc}\n
+          ${editorGlobalSrc}\n
+          ${methodGlobalSrc}\n
+          ${schemaGlobalSrc}\n
+          ${classesGlobalSrc}\n
+          ${libContent}\n
+          `,
           name: 'VariablesTypes.d.ts',
         },
       ]}

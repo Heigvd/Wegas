@@ -27,10 +27,9 @@ import {
   CommonViewContainer,
 } from '../Editor/Components/FormView/commonView';
 import { LabeledView, Labeled } from '../Editor/Components/FormView/labeled';
-import { primary, primaryLight, primaryDark } from './Theme';
 import { FileBrowser } from '../Editor/Components/FileBrowser/FileBrowser';
 import { css } from 'emotion';
-import { classesCtx } from './ClassesContext';
+import { classesCTX } from './Contexts/ClassesProvider';
 
 const toolbar = css({
   width: '300px',
@@ -78,7 +77,7 @@ export default function HTMLEditor({
   const [editorFocus, setEditorFocus] = React.useState<boolean>(false);
   const HTMLContent = React.useRef('');
   const HTMLEditor = React.useRef<{ focus: () => void }>();
-  const { classes } = React.useContext(classesCtx);
+  const { classes } = React.useContext(classesCTX);
 
   const config = (
     toolBarContainerId: string,

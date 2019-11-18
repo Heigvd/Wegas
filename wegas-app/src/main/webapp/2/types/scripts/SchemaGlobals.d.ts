@@ -1,4 +1,4 @@
-export type SimpleSchema =
+type SimpleSchema =
   | {}
   | {
       properties?: {
@@ -8,17 +8,17 @@ export type SimpleSchema =
     }
   | { items?: SimpleSchema[] | SimpleSchema };
 
-export interface TypedEntity extends ISMergeable {
+interface TypedEntity extends ISMergeable {
   '@class': WegasClassNames;
 }
 
-export type CustomSchemaFN = <T extends TypedEntity>(
+type CustomSchemaFN = <T extends TypedEntity>(
   entity: T,
   // eslint-disable-next-line
   baseSchema: any,
 ) => SimpleSchema | void;
 
-export interface GlobalSchemaClass {
+interface GlobalSchemaClass {
   /**
    * setSchema - Creates custom views for WegasEntities in form components
    * @param name - The name of the custom schema. Allows to override a previous custom schema.

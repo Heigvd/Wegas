@@ -5,8 +5,8 @@ import { StoreConsumer } from '../../data/store';
 import { IconButton } from '../../Components/Button/IconButton';
 import { Actions } from '../../data';
 import { FontAwesome } from './Views/FontAwesome';
-import { FeatureToggler } from '../../Components/FeatureProvider';
-import { LangToggler } from '../../Components/LangContext';
+import { FeatureToggler } from '../../Components/Contexts/FeaturesProvider';
+import { LangToggler } from '../../Components/Contexts/LanguagesProvider';
 import { flex, itemCenter, grow, foregroundContent } from '../../css/classes';
 
 export default function Header() {

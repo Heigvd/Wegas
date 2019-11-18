@@ -1,4 +1,4 @@
-export interface WegasScriptEditorNameAndTypes
+interface WegasScriptEditorNameAndTypes
   extends WegasEntitesNamesAndClasses {
   boolean: boolean;
   'boolean[]': boolean[];
@@ -16,20 +16,20 @@ export interface WegasScriptEditorNameAndTypes
   'undefined[]': undefined[];
 }
 
-export interface ArrayedTypeMap<T = {}> {
+interface ArrayedTypeMap<T = {}> {
   undefined: T[keyof T];
   array: T[keyof T][];
 }
 
-export type WegasScriptEditorReturnTypeName = keyof WegasScriptEditorNameAndTypes;
+type WegasScriptEditorReturnTypeName = keyof WegasScriptEditorNameAndTypes;
 
-export type WegasScriptEditorReturnType = WegasScriptEditorNameAndTypes[WegasScriptEditorReturnTypeName];
+type WegasScriptEditorReturnType = WegasScriptEditorNameAndTypes[WegasScriptEditorReturnTypeName];
 
-export type ArrayedAndNot<T extends {}> = ArrayedTypeMap<
+type ArrayedAndNot<T extends {}> = ArrayedTypeMap<
   T
 >[keyof ArrayedTypeMap];
 
-export type GlobalMethodAdd = <
+type GlobalMethodAdd = <
   T extends keyof WegasScriptEditorNameAndTypes,
   AT extends ArrayedTypeMap<Pick<WegasScriptEditorNameAndTypes, T>>,
   A extends keyof AT
@@ -40,14 +40,14 @@ export type GlobalMethodAdd = <
   method: () => AT[A],
 ) => void;
 
-export interface GlobalMethodPayload {
+interface GlobalMethodPayload {
   name: string;
   types: WegasScriptEditorReturnTypeName[];
   array: keyof ArrayedTypeMap;
   method: () => unknown;
 }
 
-export interface GlobalMethodClass {
+interface GlobalMethodClass {
   addMethod: GlobalMethodAdd;
   getMethod: (
     name: string,

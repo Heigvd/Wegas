@@ -2,26 +2,13 @@ import { useCallback } from 'react';
 import { proxyfy } from '../../data/proxyfy';
 import { Player, VariableDescriptor as VDSelect } from '../../data/selectors';
 import { useStore, store } from '../../data/store';
-import { featuresCTX } from '../FeatureProvider';
+import { featuresCTX } from '../Contexts/FeaturesProvider';
 import * as React from 'react';
-import {
-  GlobalEditorClass,
-  FeaturesSelecta,
-  FeatureLevel,
-} from './types/scriptEditorGlobals';
-import { LangContext } from '../LangContext';
+import { languagesCTX } from '../Contexts/LanguagesProvider';
 import { useGameModel } from './useGameModel';
-import {
-  GlobalMethodClass,
-  WegasScriptEditorReturnType,
-  GlobalMethodAdd,
-  ArrayedTypeMap,
-} from './types/scriptMethodGlobals';
 import { Actions } from '../../data';
-import { GlobalSchemaClass, CustomSchemaFN } from './types/scriptSchemaGlobals';
 import * as ts from 'typescript';
-import { GlobalClassesClass } from './types/scriptClassesGlobals';
-import { classesCtx } from '../ClassesContext';
+import { classesCTX } from '../Contexts/ClassesProvider';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -59,7 +46,7 @@ export function useGlobals() {
   const { currentFeatures, setFeature, removeFeature } = React.useContext(
     featuresCTX,
   );
-  const { lang, selectLang } = React.useContext(LangContext);
+  const { lang, selectLang } = React.useContext(languagesCTX);
 
   // Global variables
   globals.gameModel = proxyfy(gameModel);
@@ -142,7 +129,7 @@ export function useGlobals() {
   };
 
   // Classes class
-  const { addClass, removeClass } = React.useContext(classesCtx);
+  const { addClass, removeClass } = React.useContext(classesCTX);
   globals.Classes = {
     addClass,
     removeClass,

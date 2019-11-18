@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { omit } from 'lodash';
-import { GlobalClassesClass } from './Hooks/types/scriptClassesGlobals';
 
-interface ClassesContextProps extends GlobalClassesClass {
+interface ClassesContext extends GlobalClassesClass {
   classes: string[];
 }
-export const classesCtx = React.createContext<ClassesContextProps>({
+export const classesCTX = React.createContext<ClassesContext>({
   addClass: () => {},
   removeClass: () => {},
   classes: [],
@@ -21,7 +20,7 @@ function ClassesHandler({ children }: React.PropsWithChildren<{}>) {
     setClasses(oc => omit(oc, className));
   }
   return (
-    <classesCtx.Provider
+    <classesCTX.Provider
       value={{
         addClass,
         removeClass,
@@ -29,7 +28,7 @@ function ClassesHandler({ children }: React.PropsWithChildren<{}>) {
       }}
     >
       {children}
-    </classesCtx.Provider>
+    </classesCTX.Provider>
   );
 }
 

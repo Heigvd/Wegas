@@ -14,10 +14,6 @@ import { flex, grow, flexColumn } from '../../css/classes';
 import { StyledLabel } from '../../Components/AutoImport/String/Label';
 import { shallowDifferent } from '../../data/connectStore';
 import { Edition } from '../../data/Reducer/globalState';
-import {
-  SimpleSchema,
-  TypedEntity,
-} from '../../Components/Hooks/types/scriptSchemaGlobals';
 
 export interface EditorProps<T> {
   entity?: T;

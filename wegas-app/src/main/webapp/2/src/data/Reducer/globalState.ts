@@ -9,9 +9,7 @@ import { Reducer } from 'redux';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../../Editor/Components/FormView';
 import { FileAPI } from '../../API/files.api';
-import { CustomSchemaFN } from '../../Components/Hooks/types/scriptSchemaGlobals';
 import { omit } from 'lodash';
-import { GlobalMethodPayload } from '../../Components/Hooks/types/scriptMethodGlobals';
 
 type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IAbstractEntity> {

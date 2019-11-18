@@ -9,8 +9,6 @@ import { EditingState, closeEditor, Edition } from './Reducer/globalState';
 import { shallowDifferent } from './connectStore';
 import { getEntityActions } from '../Editor/editionConfig';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
-import { GlobalMethodPayload } from '../Components/Hooks/types/scriptMethodGlobals';
-import { CustomSchemaFN } from '../Components/Hooks/types/scriptSchemaGlobals';
 
 export { ActionType };
 export type ActionTypeValues = ValueOf<typeof ActionType>;

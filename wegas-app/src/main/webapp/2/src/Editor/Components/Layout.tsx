@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { css } from 'emotion';
 import Header from './Header';
-import { FeatureProvider } from '../../Components/FeatureProvider';
 import { Item, Layout, DndLinearLayout } from './LinearTabLayout/LinearLayout';
-import { ClassesProvider } from '../../Components/ClassesContext';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
 const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
