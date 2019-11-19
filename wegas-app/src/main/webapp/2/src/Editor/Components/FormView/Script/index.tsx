@@ -26,9 +26,6 @@ import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
 import { css } from 'emotion';
 import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../../data/selectors';
-import { getDispatch, store } from '../../../../data/store';
-import { shallowDifferent, deepDifferent } from '../../../../data/connectStore';
-import { useComparator } from '../../../../Helper/react.debug';
 
 const scriptEdit = css({ height: '5em', marginTop: '0.8em', width: '500px' });
 
