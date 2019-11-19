@@ -184,7 +184,7 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
         <SrcEditor
           value={editorContent}
           defaultUri="internal://page.json"
-          defaultLanguage="json"
+          language="json"
           onChange={val => setEditorContent(val)}
           onSave={trySave}
           cursorOffset={cursorOffset.current}

@@ -3,10 +3,10 @@ import * as React from 'react';
 import { themeVar } from '../../../Components/Theme';
 import { Toolbar } from '../../../Components/Toolbar';
 import { IconButton } from '../../../Components/Button/IconButton';
-import DiffEditor, {
+import WegasDiffEditor, {
   ExtendedDiffNavigator,
   DiffEditorLineChanges,
-} from './DiffEditor';
+} from './WegasDiffEditor';
 import { StyledLabel } from '../../../Components/AutoImport/String/Label';
 import { arrayToText, textToArray } from './SrcEditor';
 
@@ -351,7 +351,7 @@ function MergeEditor({
         )}
       </Toolbar.Header>
       <Toolbar.Content>
-        <DiffEditor
+        <WegasDiffEditor
           originalValue={finalValue}
           modifiedValue={modifiedValue}
           minimap={minimap}

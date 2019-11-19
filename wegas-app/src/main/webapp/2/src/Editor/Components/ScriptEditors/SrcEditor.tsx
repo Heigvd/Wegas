@@ -12,7 +12,7 @@ import Editor, {
 import schemas from '../../../page-schema.build';
 
 export type MonacoEditor = Monaco;
-export type MonacoEditorProperties = EditorProps['options'];
+export type MonacoEditorProperties = Exclude<EditorProps['options'], undefined>;
 export type MonacoLangaugesServices = MonacoEditor['languages']['typescript']['typescriptDefaults'];
 export type MonacoSCodeEditor = Parameters<EditorDidMount>[1];
 export type MonacoSDiffEditor = Parameters<DiffEditorDidMount>[2];
@@ -67,11 +67,6 @@ export interface SrcEditorAction {
 
 export interface SrcEditorProps {
   /**
-   * defaultValue - the initial content of the editor.
-   * This value is used only once at component first mount.
-   */
-  defaultValue?: string;
-  /**
    * value - the content of the editor
    */
   value?: string;
@@ -88,9 +83,9 @@ export interface SrcEditorProps {
    */
   readOnly?: boolean;
   /**
-   * defaultLanguage - the editor language
+   * language - the editor language
    */
-  defaultLanguage?: 'javascript' | 'plaintext' | 'css' | 'json' | 'typescript';
+  language?: 'javascript' | 'plaintext' | 'css' | 'json' | 'typescript';
   /**
    * cursorOffset - the position of the cursor in the text
    */
@@ -122,7 +117,7 @@ export interface SrcEditorProps {
    */
   defaultFocus?: boolean;
   /**
-   * defaultExtraLibs - libraries to add to the editor intellisense
+   * extraLibs - libraries to add to the editor intellisense
    */
   extraLibs?: { content: string; name?: string }[];
   /**
@@ -156,7 +151,7 @@ export const textToArray = (text: string): string[] => text.split(/\r?\n/);
 export const arrayToText = (lines: string[]): string =>
   lines.reduce((newString, line) => newString + line + '\n', '').slice(0, -1);
 
-const addExtraLib = (
+export const addExtraLib = (
   service: MonacoLangaugesServices,
   extraLibs?: SrcEditorProps['extraLibs'],
 ) => {
@@ -167,19 +162,33 @@ const addExtraLib = (
   }
 };
 
+export const gutter: (
+  noGutter?: boolean,
+) => Pick<MonacoEditorProperties, 'lineNumbers' | 'glyphMargin' | 'folding'> = (
+  noGutter?: boolean,
+) => {
+  if (noGutter) {
+    return {
+      lineNumbers: 'off',
+      glyphMargin: false,
+      folding: false,
+    };
+  }
+  return {};
+};
+
 /**
  * SrcEditor is a component uses monaco-editor to create a code edition panel
  */
 function SrcEditor({
   value,
   defaultFocus,
-  defaultLanguage,
+  language,
   defaultUri,
   readOnly,
   minimap,
   cursorOffset,
   extraLibs,
-  defaultValue,
   noGutter,
   defaultProperties,
   onEditorReady,
@@ -192,29 +201,19 @@ function SrcEditor({
   const [reactMonaco, setReactMonaco] = React.useState<MonacoEditor>();
   const getValue = React.useRef<() => string>();
 
+  monaco.init().then(setReactMonaco);
+
   React.useEffect(
     () => {
       if (reactMonaco) {
         if (editor) {
-          // const prevModel = editor.getModel();
-          // if (prevModel) {
-          //   prevModel.setValue(defaultValue || value || '');
-          //   reactMonaco.editor.setModelLanguage(
-          //     prevModel,
-          //     defaultLanguage || 'plaintext',
-          //   );
-          // } else {
           editor.setModel(
             reactMonaco.editor.createModel(
-              defaultValue || value || '',
-              defaultLanguage || 'plaintext',
+              value || '',
+              language || 'plaintext',
               defaultUri ? reactMonaco.Uri.parse(defaultUri) : undefined,
-              // defaultLanguage === 'json'
-              //   ? reactMonaco.Uri.parse('internal://page.json')
-              //   : undefined,
             ),
           );
-          //   }
         }
         return () => {
           if (editor) {
@@ -222,6 +221,7 @@ function SrcEditor({
             if (prevModel) {
               prevModel.dispose();
             }
+            editor.dispose();
           }
         };
       }
@@ -231,20 +231,15 @@ function SrcEditor({
       reactMonaco,
       // defaultValue,
       // language,
+      // defaultUri
       // value,
     ],
   );
   /* eslint-enable */
 
   React.useEffect(() => {
-    if (!reactMonaco) {
-      try {
-        monaco.init().then(setReactMonaco);
-      } catch (e) {
-        debugger;
-      }
-    } else {
-      if (defaultLanguage === 'javascript') {
+    if (reactMonaco) {
+      if (language === 'javascript') {
         reactMonaco.languages.typescript.javascriptDefaults.setCompilerOptions({
           target: reactMonaco.languages.typescript.ScriptTarget.ES5,
           noLib: true,
@@ -254,7 +249,7 @@ function SrcEditor({
           reactMonaco.languages.typescript.javascriptDefaults,
           extraLibs,
         );
-      } else if (defaultLanguage === 'typescript') {
+      } else if (language === 'typescript') {
         reactMonaco.languages.typescript.typescriptDefaults.setCompilerOptions({
           // noLib: true, //TODO: wait for the issue / stackoverflow solution :P
           allowNonTsExtensions: true,
@@ -268,7 +263,7 @@ function SrcEditor({
           'monaco editor ts version : ' +
             reactMonaco.languages.typescript.typescriptVersion,
         );
-      } else if (defaultLanguage === 'json') {
+      } else if (language === 'json') {
         reactMonaco.languages.json.jsonDefaults.setDiagnosticsOptions({
           validate: true,
           schemas: [
@@ -281,8 +276,7 @@ function SrcEditor({
         });
       }
     }
-    wlog('react monaco');
-  }, [extraLibs, defaultLanguage, reactMonaco]);
+  }, [extraLibs, language, reactMonaco]);
 
   React.useEffect(() => {
     if (reactMonaco) {
@@ -365,17 +359,6 @@ function SrcEditor({
     setEditor(editor);
   }
 
-  let gutter = {};
-  if (noGutter) {
-    gutter = {
-      lineNumbers: 'off',
-      glyphMargin: false,
-      folding: false,
-    };
-  }
-
-  wlog('RERENDER');
-
   return (
     <SizedDiv className={overflowHide}>
       {size => {
@@ -384,14 +367,14 @@ function SrcEditor({
             height={size ? size.height : undefined} // By default, it fully fits with its parent
             width={size ? size.width : undefined} // By default, it fully fits with its parent
             theme={'dark'}
-            language={defaultLanguage}
-            value={defaultValue}
+            language={language}
+            value={value}
             editorDidMount={handleEditorDidMount}
             loading={'Loading...'}
             options={{
               readOnly,
               minimap: { enabled: minimap },
-              ...gutter,
+              ...gutter(noGutter),
               ...defaultProperties,
             }}
           />

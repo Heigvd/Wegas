@@ -319,8 +319,8 @@ const isEditAllowed = (librariesState: ILibrariesState): boolean => {
   return (
     librariesState.selected !== '' &&
     (GameModel.selectCurrent().type !== 'SCENARIO' ||
-      (libEntry.library.visibility === 'PRIVATE' ||
-        libEntry.library.visibility === 'INHERITED'))
+      libEntry.library.visibility === 'PRIVATE' ||
+        libEntry.library.visibility === 'INHERITED')
   );
 };
 
@@ -680,7 +680,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
                 content: content,
               })
             }
-            defaultLanguage={getScriptLanguage(scriptType)}
+            language={getScriptLanguage(scriptType)}
             readOnly={!isEditAllowed(librariesState)}
             onSave={onSaveLibrary}
           />

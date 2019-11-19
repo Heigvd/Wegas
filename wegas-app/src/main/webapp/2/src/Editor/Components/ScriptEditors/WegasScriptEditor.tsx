@@ -77,7 +77,7 @@ const formatScriptToFunction = (
 // const cleanLib = (libSrc: string) => libSrc.replace(/^(export )/gm, '');
 
 export function WegasScriptEditor(props: WegasScriptEditorProps) {
-  const { defaultValue, value, returnType, clientScript } = props;
+  const { value, returnType, clientScript } = props;
   let editorLock: ((editor: MonacoSCodeEditor) => void) | undefined = undefined;
   const editorRef = React.useRef<MonacoSCodeEditor>();
   const selectionRef = React.useRef<MonacoEditorSimpleRange>({
@@ -86,9 +86,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     startLineNumber: headerSize,
     endLineNumber: headerSize,
   });
-  const [currentValue, setCurrentValue] = React.useState<string>(
-    defaultValue || value || '',
-  );
+  const [currentValue, setCurrentValue] = React.useState<string>(value || '');
   const [refresh, setRefresh] = React.useState<boolean>(false);
   const toggleRefresh = React.useCallback(() => setRefresh(old => !old), [
     setRefresh,
@@ -223,15 +221,6 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     interface GlobalMethods {\n${Object.keys(globalMethods).reduce((s, k) => {
       const method = globalMethods[k];
       const isArray = method.array === 'array';
-      {
-        isArray ? ' (' : ' ';
-      }
-      {
-        method.types.reduce((s, t, i) => s + (i > 0 ? ' | ' : '') + t, '');
-      }
-      {
-        isArray ? ')[]' : '';
-      }
       return (
         s +
         `'${k}' : () => ${isArray ? ' (' : ' '} ${method.types.reduce(
@@ -320,7 +309,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     <SrcEditor
       key={Number(refresh)}
       {...props}
-      defaultLanguage={'typescript'}
+      language={'typescript'}
       extraLibs={[
         {
           content: `
