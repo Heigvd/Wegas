@@ -161,23 +161,23 @@ function WegasDiffEditor({
             }) as ExtendedDiffNavigator,
           );
 
-          return () => {
-            if (editor) {
-              const originalEditor = editor.getOriginalEditor();
-              const modifiedEditor = editor.getModifiedEditor();
-              const originalModel = originalEditor.getModel();
-              const modifiedModel = modifiedEditor.getModel();
-              if (originalModel) {
-                originalModel.dispose();
-              }
-              if (modifiedModel) {
-                modifiedModel.dispose();
-              }
-              originalEditor.dispose();
-              modifiedEditor.dispose();
-              editor.dispose();
-            }
-          };
+          // return () => {
+          //   if (editor) {
+          //     const originalEditor = editor.getOriginalEditor();
+          //     const modifiedEditor = editor.getModifiedEditor();
+          //     const originalModel = originalEditor.getModel();
+          //     const modifiedModel = modifiedEditor.getModel();
+          //     if (originalModel) {
+          //       originalModel.dispose();
+          //     }
+          //     if (modifiedModel) {
+          //       modifiedModel.dispose();
+          //     }
+          //     originalEditor.dispose();
+          //     modifiedEditor.dispose();
+          //     editor.dispose();
+          //   }
+          // };
         }
       }
     } /* eslint-disable react-hooks/exhaustive-deps */ /* Linter disabled for the following lines to avoid reloading editor and loosing focus */,

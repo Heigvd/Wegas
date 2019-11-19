@@ -107,9 +107,10 @@ export function useGlobals() {
   // Methods class
   globals.Methods = {
     addMethod: addMethod,
-    getMethod: (name: string) =>
-      store.getState().global.methods[name]
-        .method as () => WegasScriptEditorReturnType,
+    getMethod: (name: string) => {
+      return store.getState().global.methods[name]
+        .method as () => WegasScriptEditorReturnType;
+    },
   };
 
   // Schemas class
@@ -136,7 +137,7 @@ export function useGlobals() {
   };
 }
 
-export function scriptEval<ReturnValue>(script: string) {
+export function clientScriptEval<ReturnValue>(script: string) {
   return (
     ((sandbox.contentWindow as unknown) as {
       eval: (code: string) => ReturnValue;
@@ -146,6 +147,32 @@ export function scriptEval<ReturnValue>(script: string) {
   );
 }
 
+// export function serverScriptEval(
+//   script: string,
+//   context?: IVariableDescriptor<IVariableInstance>,
+//   gameModelId?: number,
+//   playerId?: number,
+//   cb?: (error?: string) => void,
+// ) {
+//   const state = store.getState();
+//   VariableDescriptorAPI.runScript(
+//     gameModelId || state.global.currentGameModelId,
+//     playerId || state.global.currentPlayerId,
+//     {
+//       '@class': 'Script',
+//       language: 'JavaScript',
+//       content: script,
+//     },
+//     context,
+//   ).then(res => {
+//     wlog(res);
+//     if (cb) {
+//       cb('TODO : Parse managed request');
+//     }
+//     debugger;
+//   });
+// }
+
 /**
  * Hook, execute a script locally.
  * @param script code to execute
@@ -154,7 +181,7 @@ export function scriptEval<ReturnValue>(script: string) {
 export function useScript<ReturnValue>(script: string) {
   useGlobals();
   const fn = useCallback(
-    () => scriptEval<ReturnValue>(ts.transpile(script)), // 'undefined' so that an empty script don't return '"use strict"'
+    () => clientScriptEval<ReturnValue>(ts.transpile(script)), // 'undefined' so that an empty script don't return '"use strict"'
     [script],
   );
   return useStore(fn);

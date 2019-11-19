@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { LibraryAPI, ILibraries } from '../../API/library.api';
 import { wlog } from '../../Helper/wegaslog';
-import { scriptEval, useGlobals } from '../../Components/Hooks/useScript';
+import { clientScriptEval, useGlobals } from '../../Components/Hooks/useScript';
 
 interface WegasLibraries {
   CSS: ILibraries;
@@ -42,7 +42,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
     () =>
       Object.keys(libraries.JS).forEach(libKey => {
         try {
-          scriptEval(libraries.JS[libKey].content);
+          clientScriptEval(libraries.JS[libKey].content);
         } catch (e) {
           wlog(libraries.JS[libKey].content);
           wlog(e);

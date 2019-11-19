@@ -18,7 +18,7 @@ import { StyledLabel } from '../../../Components/AutoImport/String/Label';
 import { TextPrompt } from '../TextPrompt';
 import { ConfirmButton } from '../../../Components/Button/ConfirmButton';
 import { WegasScriptEditor } from './WegasScriptEditor';
-import { scriptEval, useGlobals } from '../../../Components/Hooks/useScript';
+import { clientScriptEval, useGlobals } from '../../../Components/Hooks/useScript';
 import * as ts from 'typescript';
 import { Menu } from '../../../Components/Menu';
 
@@ -479,7 +479,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           });
           if (scriptType === 'ClientScript') {
             try {
-              scriptEval(ts.transpile(libEntry.library.content));
+              clientScriptEval(ts.transpile(libEntry.library.content));
             } catch (e) {
               setModalState({
                 type: 'warning',

@@ -10,24 +10,9 @@ import SrcEditor, {
   MonacoEditorSimpleRange,
 } from './SrcEditor';
 import { SrcEditorProps } from './SrcEditor';
-import { useStore } from '../../../data/store';
-import { deepDifferent, refDifferent } from '../../../data/connectStore';
-import { State } from '../../../data/Reducer/reducers';
-import { GameModel } from '../../../data/selectors';
-import { classesCTX } from '../../../Components/Contexts/ClassesProvider';
+import { deepDifferent } from '../../../data/connectStore';
 import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
-
-// using raw-loader works but you need to put the whole file name and ts doesn't like it
-// @ts-ignore
-import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasScriptableEntities.d.ts';
-// @ts-ignore
-import editorGlobalSrc from '!!raw-loader!../../../../types/scripts/EditorGlobals.d.ts';
-// @ts-ignore
-import methodGlobalSrc from '!!raw-loader!../../../../types/scripts/MethodGlobals.d.ts';
-// @ts-ignore
-import schemaGlobalSrc from '!!raw-loader!../../../../types/scripts/SchemaGlobals.d.ts';
-// @ts-ignore
-import classesGlobalSrc from '!!raw-loader!../../../../types/scripts/ClassesGlobals.d.ts';
+import { useGlobalLibs } from '../../../Components/Hooks/useGlobalLibs';
 
 export interface WegasScriptEditorProps extends SrcEditorProps {
   clientScript?: boolean;
@@ -73,11 +58,9 @@ const formatScriptToFunction = (
   return val;
 };
 
-// We'll keep it for later uses
-// const cleanLib = (libSrc: string) => libSrc.replace(/^(export )/gm, '');
-
 export function WegasScriptEditor(props: WegasScriptEditorProps) {
-  const { value, returnType, clientScript } = props;
+  const { value, returnType, clientScript, onChange, onBlur, onSave } = props;
+  const language = props.language ? props.language : 'typescript';
   let editorLock: ((editor: MonacoSCodeEditor) => void) | undefined = undefined;
   const editorRef = React.useRef<MonacoSCodeEditor>();
   const selectionRef = React.useRef<MonacoEditorSimpleRange>({
@@ -86,25 +69,12 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     startLineNumber: headerSize,
     endLineNumber: headerSize,
   });
-  const [currentValue, setCurrentValue] = React.useState<string>(value || '');
+  // const [currentValue, setCurrentValue] = React.useState<string>(value || '');
   const [refresh, setRefresh] = React.useState<boolean>(false);
   const toggleRefresh = React.useCallback(() => setRefresh(old => !old), [
     setRefresh,
   ]);
-  const { classes } = React.useContext(classesCTX);
   const monaco = useMonacoEditor();
-
-  React.useEffect(
-    () =>
-      setCurrentValue(oldVal => {
-        const newValue = value ? value : '';
-        if (deepDifferent(oldVal, newValue)) {
-          return newValue;
-        }
-        return oldVal;
-      }),
-    [value, returnType],
-  );
 
   /**
    * acceptFunctionStyle - Returning false if return type needed and function is not parsable
@@ -166,97 +136,20 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
             );
           }
           newValue = arrayToText(newLines);
-          setCurrentValue(newValue);
+          // setCurrentValue(newValue);
           return fn && fn(newValue);
         }
         // If the user deleted the function's header, footer or return statement, the value is rolled back
         toggleRefresh();
         return;
       }
-      setCurrentValue(newValue);
+      // setCurrentValue(newValue);
       return fn && fn(newValue);
     },
     [returnType, toggleRefresh],
   );
 
-  const libContent = useStore((s: State) => {
-    const variableClasses = Object.values(s.variableDescriptors).reduce<{
-      [variable: string]: string;
-    }>((newObject, variable) => {
-      if (variable !== undefined && variable.name !== undefined) {
-        newObject[variable.name] = variable['@class'];
-      }
-      return newObject;
-    }, {});
-
-    const globalMethods = s.global.methods;
-    const globalSchemas = s.global.schemas.views;
-
-    const currentLanguages = Object.values(
-      GameModel.selectCurrent().languages,
-    ).reduce((lt, l) => `${lt} | '${l.code}'`, '');
-
-    return `
-    declare const gameModel : ISGameModel;
-    declare const self : ISPlayer;
-    declare const typeFactory: (types: WegasScriptEditorReturnTypeName[]) => GlobalMethodReturnTypesName;
-  
-    interface VariableClasses {${Object.keys(variableClasses).reduce(
-      (s, k) => s + k + ':IS' + variableClasses[k] + ';\n',
-      '',
-    )}}
-    class Variable {
-      static find: <T extends keyof VariableClasses>(
-        gameModel: ISGameModel,
-        name: T
-      ) => VariableClasses[T];
-    }
-
-    type CurrentLanguages = ${currentLanguages};
-    interface EditorClass extends GlobalEditorClass {
-      setLanguage: (lang: { code: ISGameModelLanguage['code'] } | CurrentLanguages) => void;
-    }
-    declare const Editor: EditorClass;
-
-    interface GlobalMethods {\n${Object.keys(globalMethods).reduce((s, k) => {
-      const method = globalMethods[k];
-      const isArray = method.array === 'array';
-      return (
-        s +
-        `'${k}' : () => ${isArray ? ' (' : ' '} ${method.types.reduce(
-          (s, t, i) => s + (i > 0 ? ' | ' : '') + t,
-          '',
-        )} ${isArray ? ')[]' : ''};\n`
-      );
-    }, '')}}
-    interface MethodClass ${clientScript ? 'extends GlobalMethodClass ' : ''}{
-      getMethod: <T extends keyof GlobalMethods>(name : T) => GlobalMethods[T];
-    }
-    declare const Methods : MethodClass
-
-    type GlobalSchemas = ${Object.keys(globalSchemas).reduce(
-      (s, k) => s + `\n  | '${k}'`,
-      '',
-    )}}
-    interface SchemaClass ${clientScript ? 'extends GlobalSchemaClass ' : ''}{
-      removeSchema: (name: GlobalSchemas) => void;
-    }
-    declare const Schemas : SchemaClass
-    
-    type GlobalClasses = ${
-      classes.length === 0
-        ? 'never'
-        : classes.reduce((oc, c) => oc + `\n  | '${c}'`, '')
-    }}
-    interface ClassesClass extends GlobalClassesClass{
-      removeClass: (className: GlobalClasses) => void;
-    }
-    declare const Classes : ClassesClass
-
-    `;
-  }, refDifferent);
-
-  // wlog(libContent);
+  const extraLibs = useGlobalLibs(clientScript);
 
   if (returnType !== undefined) {
     editorLock = (editor: MonacoSCodeEditor) => {
@@ -305,29 +198,30 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
         ]
       : [];
 
+  const handleChange = React.useCallback(
+    val => trimFunctionToScript(val, onChange),
+    [onChange, trimFunctionToScript],
+  );
+  const handleBlur = React.useCallback(
+    val => trimFunctionToScript(val, onBlur),
+    [onBlur, trimFunctionToScript],
+  );
+  const handleSave = React.useCallback(
+    val => trimFunctionToScript(val, onSave),
+    [onSave, trimFunctionToScript],
+  );
+
   return (
     <SrcEditor
       key={Number(refresh)}
       {...props}
-      language={'typescript'}
-      extraLibs={[
-        {
-          content: `
-          ${entitiesSrc}\n
-          ${editorGlobalSrc}\n
-          ${methodGlobalSrc}\n
-          ${schemaGlobalSrc}\n
-          ${classesGlobalSrc}\n
-          ${libContent}\n
-          `,
-          name: 'VariablesTypes.d.ts',
-        },
-      ]}
-      value={formatScriptToFunction(currentValue, returnType)}
+      language={language}
+      extraLibs={extraLibs}
+      value={formatScriptToFunction(value || '', returnType)}
       onEditorReady={editorLock}
-      onChange={val => trimFunctionToScript(val, props.onChange)}
-      onBlur={val => trimFunctionToScript(val, props.onBlur)}
-      onSave={val => trimFunctionToScript(val, props.onSave)}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      onSave={handleSave}
       defaultActions={actions}
     />
   );

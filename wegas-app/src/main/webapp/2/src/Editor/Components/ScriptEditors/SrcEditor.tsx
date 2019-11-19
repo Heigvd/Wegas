@@ -1,7 +1,6 @@
 import { css } from 'emotion';
 import * as React from 'react';
 import { SizedDiv } from '../../../Components/SizedDiv';
-import { wlog } from '../../../Helper/wegaslog';
 import Editor, {
   Monaco,
   monaco,
@@ -10,6 +9,7 @@ import Editor, {
   EditorDidMount,
 } from '@monaco-editor/react';
 import schemas from '../../../page-schema.build';
+import { wlog } from '../../../Helper/wegaslog';
 
 export type MonacoEditor = Monaco;
 export type MonacoEditorProperties = Exclude<EditorProps['options'], undefined>;
@@ -26,6 +26,10 @@ export interface MonacoEditorSimpleToken {
   offset: number;
   type: string;
   language: string;
+}
+export interface MonacoDefinitionsLibraries {
+  content: string;
+  name?: string;
 }
 export interface MonacoEditorSimpleRange {
   /**
@@ -119,7 +123,7 @@ export interface SrcEditorProps {
   /**
    * extraLibs - libraries to add to the editor intellisense
    */
-  extraLibs?: { content: string; name?: string }[];
+  extraLibs?: MonacoDefinitionsLibraries[];
   /**
    * onEditorReady - Callback to give the editor the a higher component
    */
@@ -128,6 +132,11 @@ export interface SrcEditorProps {
    * defaultProperties - Add specific properties for monaco-editor
    */
   defaultProperties?: MonacoEditorProperties;
+  /**
+   * forceJS - If true, force the user to code in javascript, event if typescript language is defined.
+   * It allows to keep offering typescript intellisense while coding in javascript
+   */
+  forceJS?: boolean;
 }
 
 const overflowHide = css({
@@ -196,12 +205,18 @@ function SrcEditor({
   onChange,
   onSave,
   defaultActions,
+  forceJS,
 }: SrcEditorProps) {
   const [editor, setEditor] = React.useState<MonacoSCodeEditor>();
   const [reactMonaco, setReactMonaco] = React.useState<MonacoEditor>();
   const getValue = React.useRef<() => string>();
+  const editorValue = React.useRef(value || '');
 
-  monaco.init().then(setReactMonaco);
+  React.useEffect(() => {
+    if (!reactMonaco) {
+      monaco.init().then(setReactMonaco);
+    }
+  }, [reactMonaco]);
 
   React.useEffect(
     () => {
@@ -215,15 +230,6 @@ function SrcEditor({
             ),
           );
         }
-        return () => {
-          if (editor) {
-            const prevModel = editor.getModel();
-            if (prevModel) {
-              prevModel.dispose();
-            }
-            editor.dispose();
-          }
-        };
       }
     } /* eslint-disable react-hooks/exhaustive-deps */ /* Linter disabled for the following lines to avoid reloading editor and loosing focus */,
     [
@@ -254,11 +260,13 @@ function SrcEditor({
           // noLib: true, //TODO: wait for the issue / stackoverflow solution :P
           allowNonTsExtensions: true,
           checkJs: true,
+          allowJs: forceJS,
         });
         extraLibs &&
           addExtraLib(reactMonaco.languages.typescript.typescriptDefaults, [
             ...extraLibs,
           ]);
+
         wlog(
           'monaco editor ts version : ' +
             reactMonaco.languages.typescript.typescriptVersion,
@@ -276,7 +284,7 @@ function SrcEditor({
         });
       }
     }
-  }, [extraLibs, language, reactMonaco]);
+  }, [extraLibs, language, reactMonaco, forceJS]);
 
   React.useEffect(() => {
     if (reactMonaco) {
@@ -310,8 +318,14 @@ function SrcEditor({
           }
         });
         editor.onDidChangeModelContent(() => {
-          if (onChange && getValue.current) {
-            onChange(getValue.current());
+          if (getValue.current) {
+            const newVal = getValue.current();
+            if (newVal !== editorValue.current) {
+              editorValue.current = newVal;
+              if (onChange) {
+                onChange(newVal);
+              }
+            }
           }
         });
       }
@@ -358,7 +372,7 @@ function SrcEditor({
     getValue.current = getEditorValue;
     setEditor(editor);
   }
-
+  // useChronometer('SrcEditor');
   return (
     <SizedDiv className={overflowHide}>
       {size => {

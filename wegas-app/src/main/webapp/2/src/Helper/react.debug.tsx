@@ -5,6 +5,7 @@
  */
 import * as React from 'react';
 import { omit } from 'lodash-es';
+import { wlog } from './wegaslog';
 
 const defaultPropsCheckerProps = {
   children: (_props: {}) => {},
@@ -111,4 +112,69 @@ export function ReactFnCompPropsChecker<T extends { [id: string]: unknown }>(
     oldPropsRef.current = childrenProps;
   }, [childrenProps, compType, verbose]);
   return children(childrenProps);
+}
+
+export function useComparator(
+  object: any,
+  compType: ComparaisonTypes = 'SIMPLE',
+) {
+  const state = React.useRef(object);
+
+  wlog('\n====== COMPARATOR ======');
+  Object.keys(object).map(k => {
+    const oldValue = state.current[k];
+    const newValue = object[k];
+    if (!compFNSelection(compType)(oldValue, newValue)) {
+      wlog(
+        `Changes in ${k} : \n----------------\nOLD : ${oldValue}\nNEW : ${newValue}`,
+      );
+    }
+  });
+
+  state.current = object;
+}
+
+function timeDifference(start?: number, end?: number) {
+  if (start === undefined || end === undefined) {
+    return 'Start or end time undefined';
+  }
+
+  let difference = start - end;
+  let time = '';
+  const daysDifference = Math.floor(difference / 1000 / 60 / 60 / 24);
+  if (daysDifference > 0) {
+    time += daysDifference + ' day/s ';
+    difference -= daysDifference * 1000 * 60 * 60 * 24;
+  }
+
+  const hoursDifference = Math.floor(difference / 1000 / 60 / 60);
+  if (hoursDifference > 0) {
+    time += hoursDifference + ':';
+    difference -= hoursDifference * 1000 * 60 * 60;
+  }
+
+  const minutesDifference = Math.floor(difference / 1000 / 60);
+  if (minutesDifference > 0) {
+    time += minutesDifference + ':';
+    difference -= minutesDifference * 1000 * 60;
+  }
+
+  const secondsDifference = Math.floor(difference / 1000);
+  time += minutesDifference + ',';
+  difference -= secondsDifference * 1000;
+  time += difference + ' sec';
+
+  return time;
+}
+
+export function useChronometer(label: string) {
+  const checks = React.useRef<{ [id: string]: number }>({});
+  const start = Date.now();
+  const last = checks.current[label];
+  wlog(
+    `Chrono ${label} : ${
+      last === undefined ? 'Starting' : timeDifference(start, last)
+    }`,
+  );
+  checks.current[label] = start;
 }
