@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
-import { featuresCTX } from '../../../Components/FeatureProvider';
+import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
 
 const containerStyle = css({
   position: 'relative',
@@ -31,8 +31,6 @@ const LAYOUTS = {
     maxWidth: '5em',
   }),
 };
-
-export type FeatureLevel = 'ADVANCED' | 'INTERNAL' | 'DEFAULT';
 
 export interface CommonView {
   borderTop?: boolean;

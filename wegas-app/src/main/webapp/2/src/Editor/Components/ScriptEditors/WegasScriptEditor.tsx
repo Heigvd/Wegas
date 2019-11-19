@@ -3,40 +3,25 @@ import SrcEditor, {
   MonacoSCodeEditor,
   textToArray,
   arrayToText,
+  MonacoEditor,
+  MonacoCodeEditor,
+  SrcEditorAction,
+  MonacoEditorCursorEvent,
+  MonacoEditorSimpleRange,
 } from './SrcEditor';
-import { EditorProps } from './SrcEditor';
-import { useStore } from '../../../data/store';
-import { shallowDifferent, deepDifferent } from '../../../data/connectStore';
-import { State } from '../../../data/Reducer/reducers';
-import { KeyMod, KeyCode } from 'monaco-editor';
+import { SrcEditorProps } from './SrcEditor';
+import { deepDifferent } from '../../../data/connectStore';
+import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
+import { useGlobalLibs } from '../../../Components/Hooks/useGlobalLibs';
 
-// using raw-loader works but you need to put the whole file name and ts doesn't like it
-// @ts-ignore
-import entitiesSrc from '!!raw-loader!../../../../types/generated/WegasScriptableEntities.d.ts';
-
-type MonacoEditorCursorEvent = import('monaco-editor').editor.ICursorSelectionChangedEvent;
-type MonacoEditorRange = import('monaco-editor').IRange;
-
-type PrimitiveTypeName =
-  | 'boolean'
-  | 'number'
-  | 'string'
-  | 'object'
-  | 'unknown'
-  | 'never'
-  | 'void';
-
-export type WegasScriptEditorReturnType =
-  | ScriptableInterfaceName
-  | PrimitiveTypeName;
-
-interface WegasScriptEditorProps extends EditorProps {
-  returnType?: WegasScriptEditorReturnType;
+export interface WegasScriptEditorProps extends SrcEditorProps {
+  clientScript?: boolean;
+  returnType?: WegasScriptEditorReturnTypeName;
 }
 
 const header = (type?: string) => {
   const cleanType = type !== undefined ? type.replace(/\r?\n/, '') : '';
-  return `/*\n *\tPlease always respect the return type : ${cleanType}\n *\tPlease only write in JS even if the editor let you write in TS\n */\n() : ${cleanType} => {\n`;
+  return `/*\n *\tPlease always respect the return type : ${cleanType}\n *\tPlease only write in JS even if the editor let you write in TS\n */\n() : ${cleanType} => {\n\t`;
 };
 const headerSize = textToArray(header()).length;
 const footer = () => `\n};`;
@@ -49,17 +34,22 @@ const footerSize = textToArray(footer()).length - 1;
  */
 const formatScriptToFunction = (
   val: string,
-  returnType?: WegasScriptEditorReturnType,
+  returnType?: WegasScriptEditorReturnTypeName,
 ) => {
   if (returnType !== undefined) {
     let newValue = val;
+    // Removing first tab if exists
+    if (newValue.length > 0 && newValue[0] === '\t') {
+      newValue = newValue.substring(1);
+    }
     const lines = textToArray(newValue);
+    const tabber = lines.length > 1 ? '\t' : '';
     if (lines.length > 0 && !lines[lines.length - 1].includes('return')) {
-      lines[lines.length - 1] = '\treturn ' + lines[lines.length - 1];
+      lines[lines.length - 1] = tabber + 'return ' + lines[lines.length - 1];
     } else {
       lines[lines.length - 1] = lines[lines.length - 1].replace(
         /.*(return).* /,
-        '\treturn ',
+        tabber + 'return ',
       );
     }
     newValue = arrayToText(lines);
@@ -69,35 +59,22 @@ const formatScriptToFunction = (
 };
 
 export function WegasScriptEditor(props: WegasScriptEditorProps) {
-  const { defaultValue, value, returnType } = props;
+  const { value, returnType, clientScript, onChange, onBlur, onSave } = props;
+  const language = props.language ? props.language : 'typescript';
   let editorLock: ((editor: MonacoSCodeEditor) => void) | undefined = undefined;
   const editorRef = React.useRef<MonacoSCodeEditor>();
-  // const [currentSelection, setSelection] = React.useState<MonacoEditorRange>();
-  const selectionRef = React.useRef<MonacoEditorRange>({
+  const selectionRef = React.useRef<MonacoEditorSimpleRange>({
     startColumn: 1,
     endColumn: 1,
     startLineNumber: headerSize,
     endLineNumber: headerSize,
   });
-  const [currentValue, setCurrentValue] = React.useState<string>(
-    defaultValue || value || '',
-  );
+  // const [currentValue, setCurrentValue] = React.useState<string>(value || '');
   const [refresh, setRefresh] = React.useState<boolean>(false);
   const toggleRefresh = React.useCallback(() => setRefresh(old => !old), [
     setRefresh,
   ]);
-
-  React.useEffect(
-    () =>
-      setCurrentValue(oldVal => {
-        const newValue = value ? value : '';
-        if (deepDifferent(oldVal, newValue)) {
-          return newValue;
-        }
-        return oldVal;
-      }),
-    [value, returnType],
-  );
+  const monaco = useMonacoEditor();
 
   /**
    * acceptFunctionStyle - Returning false if return type needed and function is not parsable
@@ -107,7 +84,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
    */
   const acceptFunctionStyle = (
     val?: string,
-    returnType?: WegasScriptEditorReturnType,
+    returnType?: WegasScriptEditorReturnTypeName,
   ) => {
     const newVal = val ? val : '';
     if (returnType !== undefined) {
@@ -115,7 +92,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       if (
         // Header protection
         arrayToText(lines.slice(0, headerSize - 1)) !==
-          header(returnType).slice(0, -1) ||
+          header(returnType).slice(0, -2) ||
         // Footer protection
         (lines.length > 0 &&
           lines[lines.length - footerSize] !== footer().substr(1)) ||
@@ -131,7 +108,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   };
 
   /**
-   * trimFunctionToScript - If return type defined this function will trim the function and call back with only script value
+   * trimFunctionToScript - If return type defined this function will trim the header, footer and return statement of the function and call back with only script value
    * @param val - The content of the editor
    * @param fn - the callback function
    */
@@ -159,41 +136,20 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
             );
           }
           newValue = arrayToText(newLines);
-          setCurrentValue(newValue);
+          // setCurrentValue(newValue);
           return fn && fn(newValue);
         }
+        // If the user deleted the function's header, footer or return statement, the value is rolled back
         toggleRefresh();
         return;
       }
-      setCurrentValue(newValue);
+      // setCurrentValue(newValue);
       return fn && fn(newValue);
     },
     [returnType, toggleRefresh],
   );
 
-  const libContent = useStore((s: State) => {
-    const variableClasses = Object.values(s.variableDescriptors).reduce<{
-      [variable: string]: string;
-    }>((newObject, variable) => {
-      if (variable !== undefined && variable.name !== undefined) {
-        newObject[variable.name] = variable['@class'];
-      }
-      return newObject;
-    }, {});
-
-    return ` interface GameModel{}
-            declare const gameModel : GameModel;
-            interface VariableClasses {${Object.keys(variableClasses).reduce(
-              (s, k) => s + k + ':IS' + variableClasses[k] + ';\n',
-              '',
-            )}}
-            class Variable {
-              static find: <T extends keyof VariableClasses>(
-                gameModel: GameModel,
-                name: T
-              ) => VariableClasses[T];
-            }`;
-  }, shallowDifferent);
+  const extraLibs = useGlobalLibs(clientScript);
 
   if (returnType !== undefined) {
     editorLock = (editor: MonacoSCodeEditor) => {
@@ -219,41 +175,54 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     };
   }
 
+  const actions: SrcEditorAction[] =
+    returnType && monaco
+      ? [
+          {
+            id: 'SelectAllWithScriptFunction',
+            label: 'Ctrl + A avoiding header and footer',
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_A],
+            run: (_monaco: MonacoEditor, editor: MonacoCodeEditor) => {
+              const editorLines = textToArray(editor.getValue());
+              const lastEditableLine =
+                textToArray(editor.getValue()).length - footerSize;
+              const range = {
+                startColumn: 1,
+                endColumn: editorLines[lastEditableLine - 1].length,
+                startLineNumber: headerSize,
+                endLineNumber: lastEditableLine,
+              };
+              editor.setSelection(range);
+            },
+          },
+        ]
+      : [];
+
+  const handleChange = React.useCallback(
+    val => trimFunctionToScript(val, onChange),
+    [onChange, trimFunctionToScript],
+  );
+  const handleBlur = React.useCallback(
+    val => trimFunctionToScript(val, onBlur),
+    [onBlur, trimFunctionToScript],
+  );
+  const handleSave = React.useCallback(
+    val => trimFunctionToScript(val, onSave),
+    [onSave, trimFunctionToScript],
+  );
+
   return (
     <SrcEditor
       key={Number(refresh)}
       {...props}
-      language={'typescript'}
-      extraLibs={[
-        {
-          content: entitiesSrc + libContent,
-          name: 'VariablesTypes.d.ts',
-        },
-      ]}
-      value={formatScriptToFunction(currentValue, returnType)}
+      language={language}
+      extraLibs={extraLibs}
+      value={formatScriptToFunction(value || '', returnType)}
       onEditorReady={editorLock}
-      onChange={val => trimFunctionToScript(val, props.onChange)}
-      onBlur={val => trimFunctionToScript(val, props.onBlur)}
-      onSave={val => trimFunctionToScript(val, props.onSave)}
-      defaultActions={[
-        {
-          id: 'SelectAllWithScriptFunction',
-          label: 'Ctrl + A avoiding header and footer',
-          keybindings: [KeyMod.CtrlCmd | KeyCode.KEY_A],
-          run: (_monaco, editor) => {
-            const editorLines = textToArray(editor.getValue());
-            const lastEditableLine =
-              textToArray(editor.getValue()).length - footerSize;
-            const range = {
-              startColumn: 1,
-              endColumn: editorLines[lastEditableLine - 1].length,
-              startLineNumber: headerSize,
-              endLineNumber: lastEditableLine,
-            };
-            editor.setSelection(range);
-          },
-        },
-      ]}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      onSave={handleSave}
+      defaultActions={actions}
     />
   );
 }

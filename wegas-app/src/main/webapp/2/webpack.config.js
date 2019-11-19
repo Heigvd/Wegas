@@ -2,7 +2,7 @@
 /* eslint  @typescript-eslint/no-var-requires: "off" */
 const path = require('path');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+// const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 
 const smp = new SpeedMeasurePlugin();
@@ -17,9 +17,9 @@ const isCI =
     : false;
 
 const plugins = [
-  new MonacoWebpackPlugin({
-    languages: ['json', 'css', 'javascript', 'typescript'],
-  }),
+  // new MonacoWebpackPlugin({
+  //   languages: ['json', 'css', 'javascript', 'typescript'],
+  // }),
   new ForkTsCheckerWebpackPlugin({
     formatter: 'codeframe',
   }),
@@ -29,6 +29,11 @@ if (!isCI) {
 }
 
 const modules = {
+  // Avoid stupid warnings that occures when webpack cannot manage modules
+  node: {
+    fs: 'empty',
+    module: 'empty',
+  },
   // stats: 'verbose',
   devtool: PROD ? 'source-map' : 'inline-source-map',
   entry: {

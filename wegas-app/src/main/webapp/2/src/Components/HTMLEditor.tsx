@@ -18,7 +18,7 @@ import 'tinymce/plugins/advlist';
 // Skin must also be imported
 import 'tinymce/skins/ui/oxide/skin.min.css';
 
-import { Editor } from '@tinymce/tinymce-react';
+import { Editor as TinyEditor } from '@tinymce/tinymce-react';
 import { Modal } from './Modal';
 import { generateAbsolutePath, fileURL } from '../API/files.api';
 import { WidgetProps } from 'jsoninput/typings/types';
@@ -27,9 +27,9 @@ import {
   CommonViewContainer,
 } from '../Editor/Components/FormView/commonView';
 import { LabeledView, Labeled } from '../Editor/Components/FormView/labeled';
-import { primary, primaryLight, primaryDark } from './Theme';
 import { FileBrowser } from '../Editor/Components/FileBrowser/FileBrowser';
 import { css } from 'emotion';
+import { classesCTX } from './Contexts/ClassesProvider';
 
 const toolbar = css({
   width: '300px',
@@ -77,6 +77,7 @@ export default function HTMLEditor({
   const [editorFocus, setEditorFocus] = React.useState<boolean>(false);
   const HTMLContent = React.useRef('');
   const HTMLEditor = React.useRef<{ focus: () => void }>();
+  const { classes } = React.useContext(classesCTX);
 
   const config = (
     toolBarContainerId: string,
@@ -128,11 +129,12 @@ export default function HTMLEditor({
         // },
         {
           title: 'Wegas styles',
-          items: [
-            { title: 'primary', block: 'div', classes: primary },
-            { title: 'primaryDark', block: 'div', classes: primaryDark },
-            { title: 'primaryLight', block: 'div', classes: primaryLight },
-          ],
+          items: classes.map(c => ({ title: c, block: 'div', classes: c })),
+          // [
+          //   { title: 'primary', block: 'div', classes: primary },
+          //   { title: 'primaryDark', block: 'div', classes: primaryDark },
+          //   { title: 'primaryLight', block: 'div', classes: primaryLight },
+          // ],
         },
         {
           title: 'User styles',
@@ -211,8 +213,7 @@ export default function HTMLEditor({
             />
           )}
         </div>
-
-        <Editor
+        <TinyEditor
           initialValue={value}
           init={config(toolBarId, {
             testbutton: { text: 'test', className: 'testclass' },
