@@ -261,6 +261,7 @@ function SrcEditor({
           allowNonTsExtensions: true,
           checkJs: true,
           allowJs: forceJS,
+          target: reactMonaco.languages.typescript.ScriptTarget.ES5,
         });
         extraLibs &&
           addExtraLib(reactMonaco.languages.typescript.typescriptDefaults, [

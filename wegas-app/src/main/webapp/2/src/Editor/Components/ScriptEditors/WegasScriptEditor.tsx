@@ -8,11 +8,13 @@ import SrcEditor, {
   SrcEditorAction,
   MonacoEditorCursorEvent,
   MonacoEditorSimpleRange,
+  MonacoDefinitionsLibraries,
 } from './SrcEditor';
 import { SrcEditorProps } from './SrcEditor';
 import { deepDifferent } from '../../../data/connectStore';
 import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
 import { useGlobalLibs } from '../../../Components/Hooks/useGlobalLibs';
+import { libes5 } from '../../../../types/scripts/libs';
 
 export interface WegasScriptEditorProps extends SrcEditorProps {
   clientScript?: boolean;
@@ -149,7 +151,10 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     [returnType, toggleRefresh],
   );
 
-  const extraLibs = useGlobalLibs(clientScript);
+  const extraLibs: MonacoDefinitionsLibraries[] = [
+    ...useGlobalLibs(clientScript),
+    { name: 'defaultLib:lib.d.ts', content: libes5 },
+  ];
 
   if (returnType !== undefined) {
     editorLock = (editor: MonacoSCodeEditor) => {
