@@ -12,6 +12,9 @@ export function shallowDifferent<T>(a: T, b: T) {
   return !shallowIs(a, b);
 }
 export function deepDifferent<T>(a: T, b: T) {
+  if (a === undefined && b === undefined) {
+    return false;
+  }
   return !(JSON.stringify(a) === JSON.stringify(b));
 }
 export function createStoreConnector<S extends Store>(store: S) {

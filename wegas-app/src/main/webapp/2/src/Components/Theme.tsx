@@ -50,6 +50,9 @@ export const globalSelection = css({
   borderColor: themeVar.primaryDarkerColor,
   borderRadius: '6px',
 });
+export const searchSelection = css({
+  backgroundColor: themeVar.searchColor,
+});
 const { Consumer, Provider } = React.createContext<HTMLElement | null>(
   document.body,
 );

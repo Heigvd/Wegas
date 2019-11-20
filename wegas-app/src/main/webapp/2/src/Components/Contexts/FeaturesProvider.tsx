@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { FeatureLevel } from '../Editor/Components/FormView/commonView';
-import { Menu } from './Menu';
+import { Menu } from '../Menu';
 
 const availableFeatures: FeatureLevel[] = ['ADVANCED', 'INTERNAL'];
 export const featuresCTX = React.createContext<{
@@ -9,7 +8,7 @@ export const featuresCTX = React.createContext<{
   removeFeature: (feature: FeatureLevel) => void;
 }>({ currentFeatures: [], setFeature: () => {}, removeFeature: () => {} });
 
-function FeatureContext({ children }: React.PropsWithChildren<{}>) {
+function FeaturesContext({ children }: React.PropsWithChildren<{}>) {
   const [features, setFeature] = React.useState<FeatureLevel[]>(['DEFAULT']);
   return (
     <featuresCTX.Provider
@@ -30,15 +29,25 @@ function FeatureContext({ children }: React.PropsWithChildren<{}>) {
 /**
  * Provider for FeatureContext Handles display features
  */
-export const FeatureProvider = React.memo(FeatureContext);
+export const FeaturesProvider = React.memo(FeaturesContext);
 
 /**
  * Features selector allows to select features inside the feature context given by the FeatureProvider
  */
-
 export function FeatureToggler() {
   const { currentFeatures, setFeature, removeFeature } = React.useContext(
     featuresCTX,
+  );
+
+  const selectFeature = React.useCallback(
+    (feature: FeatureLevel) => {
+      if (currentFeatures.includes(feature)) {
+        removeFeature(feature);
+      } else {
+        setFeature(feature);
+      }
+    },
+    [currentFeatures, setFeature, removeFeature],
   );
 
   return React.useMemo(
@@ -52,22 +61,16 @@ export function FeatureToggler() {
               <input
                 type="checkbox"
                 defaultChecked={currentFeatures.includes(feature)}
-                onChange={e => {
-                  if (e.target.checked) {
-                    setFeature(feature);
-                  } else {
-                    removeFeature(feature);
-                  }
-                }}
+                onChange={() => selectFeature(feature)}
                 onClick={e => e.stopPropagation()}
               />
               {feature}
             </>
           ),
         }))}
-        onSelect={() => {}}
+        onSelect={({ id: feature }) => selectFeature(feature)}
       />
     ),
-    [currentFeatures, removeFeature, setFeature],
+    [currentFeatures, selectFeature],
   );
 }

@@ -9,6 +9,7 @@ import { Reducer } from 'redux';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../../Editor/Components/FormView';
 import { FileAPI } from '../../API/files.api';
+import { omit } from 'lodash';
 
 type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IAbstractEntity> {
@@ -77,6 +78,18 @@ export interface GlobalState extends EditingState {
   pusherStatus: {
     status: string;
     socket_id?: string;
+  };
+  methods: {
+    [name: string]: Omit<GlobalMethodPayload, 'name'>;
+  };
+  schemas: {
+    filtered: {
+      [classFilter: string]: keyof GlobalState['schemas']['views'];
+    };
+    unfiltered: (keyof GlobalState['schemas']['views'])[];
+    views: {
+      [name: string]: CustomSchemaFN;
+    };
   };
 }
 
@@ -224,6 +237,45 @@ const global: Reducer<Readonly<GlobalState>> = u(
       case ActionType.PUSHER_SOCKET:
         state.pusherStatus = action.payload;
         return;
+      case ActionType.EDITOR_SET_METHOD:
+        state.methods = {
+          ...state.methods,
+          [action.payload.name]: {
+            types: action.payload.types,
+            array: action.payload.array,
+            method: action.payload.method,
+          },
+        };
+        return;
+      case ActionType.EDITOR_SET_SCHEMA: {
+        const filters = state.schemas.filtered;
+        const views = state.schemas.views;
+
+        // Always remove previous schema with the same name
+        state.schemas.views = omit(views, action.payload.name);
+        const removedClassFilter = Object.keys(filters).find(
+          k => filters[k] === action.payload.name,
+        );
+        if (removedClassFilter !== undefined) {
+          state.schemas.filtered = omit(filters, removedClassFilter);
+        }
+        state.schemas.unfiltered = state.schemas.unfiltered.filter(
+          s => s !== action.payload.name,
+        );
+
+        // If function is defined, insert it into the views
+        if (action.payload.schemaFN !== undefined) {
+          state.schemas.views[action.payload.name] = action.payload.schemaFN;
+          // If a simple filter is set, map the schema name with the entity class name
+          if (action.payload.simpleFilter !== undefined) {
+            state.schemas.filtered[action.payload.simpleFilter] =
+              action.payload.name;
+          } else {
+            state.schemas.unfiltered.push(action.payload.name);
+          }
+        }
+        return;
+      }
       default:
         state.events = eventManagement(state, action);
         state.editing = editorManagement(state, action);
@@ -241,6 +293,12 @@ const global: Reducer<Readonly<GlobalState>> = u(
     pageEdit: false,
     pageSrc: false,
     events: [],
+    methods: {},
+    schemas: {
+      filtered: {},
+      unfiltered: [],
+      views: {},
+    },
   } as GlobalState,
 );
 export default global;
@@ -504,4 +562,34 @@ export function searchUsage(
       })
       .catch((res: Response) => dispatch(editorError(res.statusText)));
   };
+}
+
+/**
+ * Add a custom method to the gameModel's global state
+ * @param name - the name of the method
+ * @param method - the method to add
+ */
+export const setMethod = (
+  name: GlobalMethodPayload['name'],
+  types: GlobalMethodPayload['types'],
+  array: GlobalMethodPayload['array'],
+  method: GlobalMethodPayload['method'],
+) => ActionCreator.EDITOR_SET_METHOD({ name, types, array, method });
+
+/**
+ * setSchema - Sets a custom view for WegasEntities in form components
+ * @param name - The name of the custom schema. Allows to override a previous custom schema.
+ * @param schemaFN - The function that returns the customized schema. If no simplefilter is sat it should return something only when matches internal function filter (using the entity arg).
+ * @param simpleFilter - A simple filter over a WegasEntity. Always use this one first if you want your view to be used with all entity of a certain class. Don't use it if you want your schema to be used with more than one entity.
+ */
+export function setSchema(
+  name: string,
+  schemaFN?: CustomSchemaFN,
+  simpleFilter?: WegasClassNames,
+) {
+  return ActionCreator.EDITOR_SET_SCHEMA({
+    name,
+    schemaFN,
+    simpleFilter,
+  });
 }
