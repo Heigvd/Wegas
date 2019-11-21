@@ -1,28 +1,28 @@
 import * as React from 'react';
-import { Menu } from './Menu';
-import { useGameModel } from './Hooks/useGameModel';
+import { Menu } from '../Menu';
+import { useGameModel } from '../Hooks/useGameModel';
 
-interface LangProviderProps {
+interface LanguagesProviderProps {
   lang?: string;
   children?: React.ReactNode;
   availableLang?: IGameModelLanguage[];
 }
-interface Context extends LangProviderProps {
+interface LanguagesContext extends LanguagesProviderProps {
   lang: string;
-  toggleLang: (lang: string) => void;
+  selectLang: (lang: string) => void;
   availableLang: IGameModelLanguage[];
 }
-export const LangContext = React.createContext<Context>({
+export const languagesCTX = React.createContext<LanguagesContext>({
   lang: '',
-  toggleLang: () => {},
+  selectLang: () => {},
   availableLang: [],
 });
 
-function LangHandler({
+function LanguagesContext({
   availableLang,
   lang,
   children,
-}: Readonly<LangProviderProps>) {
+}: Readonly<LanguagesProviderProps>) {
   const gameModelLanguages = useGameModel().languages;
   const getAvailableLanguages = availableLang
     ? availableLang
@@ -43,32 +43,34 @@ function LangHandler({
     });
   }, [getAvailableLanguages, getCurrentLanguage]);
 
-  function toggleLang(lang: string) {
-    setCurrentLang(lang);
+  function selectLang(lang: string) {
+    if (gameModelLanguages.find(l => l.code === lang)) {
+      setCurrentLang(lang);
+    }
   }
   return (
-    <LangContext.Provider
+    <languagesCTX.Provider
       value={{
         availableLang: availableLang ? availableLang : gameModelLanguages,
         lang: currentLang,
-        toggleLang,
+        selectLang,
       }}
     >
       {children}
-    </LangContext.Provider>
+    </languagesCTX.Provider>
   );
 }
 
 /**
  * Provider for LangContext Handles stores language change
  */
-export const LangProvider = React.memo(LangHandler);
+export const LanguagesProvider = React.memo(LanguagesContext);
 
 /**
  * Language selector allows to select language inside the language context given by the LangProvider
  */
 export function LangToggler() {
-  const { lang, toggleLang, availableLang } = React.useContext(LangContext);
+  const { lang, selectLang, availableLang } = React.useContext(languagesCTX);
   return (
     <Menu
       label={lang}
@@ -76,7 +78,7 @@ export function LangToggler() {
         id: language.code,
         label: `${language.code} : ${language.lang}`,
       }))}
-      onSelect={item => toggleLang(item.id)}
+      onSelect={item => selectLang(item.id)}
     />
   );
 }

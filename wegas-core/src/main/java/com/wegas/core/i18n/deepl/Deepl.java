@@ -134,8 +134,7 @@ public class Deepl {
     }
 
     /**
-     * Internal method to post a request.
-     * Will parse the response as a valueType instance.
+     * Internal method to post a request. Will parse the response as a valueType instance.
      *
      * @param <T>       response type
      * @param body      content to post
@@ -176,6 +175,7 @@ public class Deepl {
      * @param texts      list of texts to translate
      *
      * @return
+     *
      * @throws java.io.UnsupportedEncodingException
      */
     public DeeplTranslations translate(Language sourceLang, Language targetLang, String... texts) throws UnsupportedEncodingException {
@@ -200,6 +200,17 @@ public class Deepl {
         } else {
             //TODO else : throw error
         }
-        return this.post(sb.toString(), "/translate", DeeplTranslations.class);
+
+        /* hack <p></p> => <p>&nbsp;</p> */
+        DeeplTranslations translations = this.post(sb.toString(), "/translate", DeeplTranslations.class);
+
+        for (DeeplTranslations.DeeplTranslation tr : translations.getTranslations()) {
+            String text = tr.getText();
+            if (text != null) {
+                tr.setText(text.replaceAll("<p></p>", "<p>&nbsp;</p>"));
+            }
+        }
+
+        return translations;
     }
 }

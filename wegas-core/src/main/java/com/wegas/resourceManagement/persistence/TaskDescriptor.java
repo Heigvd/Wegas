@@ -268,6 +268,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     public void setInstanceProperty(Player p,
             @Param(view = @View(label = "Key")) String key,
             @Param(view = @View(label = "Value")) String value) {
+        // TODO: fire property change
         this.getInstance(p).setProperty(key, value);
     }
 
@@ -285,6 +286,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
             TaskInstance instance = this.getInstance(p);
             double oldValue = instance.getPropertyD(key);
             double newValue = oldValue + Double.parseDouble(value);
+            // TODO: fire property change
             instance.setProperty(key, "" + newValue);
         } catch (NumberFormatException e) {
             // do nothing...

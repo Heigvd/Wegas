@@ -159,9 +159,7 @@ public class ModelFacade {
                 bi.setIterations(new ArrayList<>());
             } else if (target instanceof Iteration) {
                 Iteration i = (Iteration) target;
-                i.setWorkloads(new ArrayList<>());
-                i.setReplannedWorkloads(new HashMap<>());
-                i.setPlannedWorkloads(new HashMap<>());
+                i.setPeriods(new ArrayList<>());
             } else if (target instanceof InboxInstance) {
                 InboxInstance ii = (InboxInstance) target;
                 ii.setMessages(new ArrayList<>());

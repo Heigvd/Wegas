@@ -55,7 +55,7 @@ const searchHighlighted = css({
   backgroundColor: themeVar.searchColor + ' !important',
 });
 
-const searchWithState = (
+export const searchWithState = (
   search: RState['global']['search'],
   searched: string,
 ) => {

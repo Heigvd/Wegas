@@ -4,6 +4,7 @@ import { css, cx } from 'emotion';
 import { IconButton } from './Button/IconButton';
 import { Props } from '@fortawesome/react-fontawesome';
 import { withDefault } from '../Editor/Components/Views/FontAwesome';
+import { useKeyboard } from './Hooks/useKeyboard';
 
 interface Item<T> {
   label: React.ReactNode;
@@ -16,7 +17,7 @@ export interface MenuProps<T extends Item<T>> {
   items: T[];
   label?: React.ReactNode;
   icon?: Props['icon'];
-  direction: 'left' | 'down' | 'right' | 'top';
+  direction?: 'left' | 'down' | 'right' | 'top';
   buttonClassName?: string;
   listClassName?: string;
 }
@@ -59,120 +60,110 @@ const DIR = {
 function stopPropagation(ev: React.MouseEvent<HTMLElement>) {
   ev.stopPropagation();
 }
-export class Menu<T extends Item<T>> extends React.Component<MenuProps<T>> {
-  static defaultProps = {
-    direction: 'down',
-  };
-  keyEvent: ModifierKeysEvent = {
-    ctrlKey: false,
-    altKey: false,
-  };
-  onStateChange = (changes: StateChangeOptions<any>) => {
-    if (changes.isOpen != null && changes.isOpen) {
-      this.props.onOpen && this.props.onOpen();
-    }
-  };
 
-  render(): JSX.Element {
-    const {
-      onSelect,
-      direction,
-      label,
-      icon,
-      buttonClassName,
-      listClassName,
-    } = this.props;
-    return (
-      <span
-        onKeyDownCapture={e =>
-          (this.keyEvent = {
-            ctrlKey: e.ctrlKey,
-            altKey: e.altKey,
-          })
-        }
-      >
-        <Downshift
-          onStateChange={this.onStateChange}
-          onSelect={i => onSelect(i, this.keyEvent)}
-          itemToString={emtpyStr}
-        >
-          {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
-            <div className={String(container)}>
-              <div className={itemStyle} onClick={() => toggleMenu()}>
-                {label}
-                <IconButton
-                  icon={withDefault(
-                    icon,
-                    `caret-${direction}` as Props['icon'],
-                  )}
-                  onClick={ev => {
-                    ev.stopPropagation();
-                    toggleMenu();
-                  }}
-                  className={buttonClassName}
-                />
-              </div>
+export function Menu<T extends Item<T>>({
+  onOpen,
+  onSelect,
+  direction,
+  label,
+  items,
+  icon,
+  buttonClassName,
+  listClassName,
+}: MenuProps<T>) {
+  const realDirection = direction ? direction : 'down';
+  const keyboardEvents = useKeyboard();
 
-              {isOpen && (
-                <div
-                  className={cx(DIR[direction], listClassName)}
-                  ref={n => {
-                    if (
-                      n != null &&
-                      n.style.getPropertyValue('position') !== 'fixed'
-                    ) {
-                      const { left, top } = n.getBoundingClientRect();
-                      n.style.setProperty('left', `${left}px`);
-                      n.style.setProperty('top', `${top}px`);
-                      n.style.setProperty('position', 'fixed');
-                    }
-                  }}
-                >
-                  {this.props.items.map((item, index) => {
-                    if (Array.isArray(item.children)) {
-                      return (
-                        <div
-                          key={index}
-                          {...(!item.disabled
-                            ? getItemProps({
-                                item: item,
-                                onClick: stopPropagation,
-                              })
-                            : undefined)}
-                        >
-                          <Menu
-                            onSelect={(v, e) => {
-                              closeMenu();
-                              onSelect(v, e);
-                            }}
-                            items={item.children}
-                            direction="right"
-                            label={item.label}
-                          />
-                        </div>
-                      );
-                    }
-                    return (
-                      <div
-                        key={index}
-                        {...(!item.disabled
-                          ? getItemProps({
-                              className: itemStyle,
-                              item: item,
-                              onClick: stopPropagation,
-                            })
-                          : undefined)}
-                      >
-                        {item.label}
-                      </div>
-                    );
-                  })}
-                </div>
+  const onStateChange = React.useCallback(
+    (changes: StateChangeOptions<any>) => {
+      if (changes.isOpen != null && changes.isOpen) {
+        onOpen && onOpen();
+      }
+    },
+    [onOpen],
+  );
+
+  return (
+    <Downshift
+      onStateChange={onStateChange}
+      onSelect={i => onSelect(i, keyboardEvents)}
+      itemToString={emtpyStr}
+    >
+      {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
+        <div className={String(container)}>
+          <div className={itemStyle} onClick={() => toggleMenu()}>
+            {label}
+            <IconButton
+              icon={withDefault(
+                icon,
+                `caret-${realDirection}` as Props['icon'],
               )}
+              onClick={ev => {
+                ev.stopPropagation();
+                toggleMenu();
+              }}
+              className={buttonClassName}
+            />
+          </div>
+
+          {isOpen && (
+            <div
+              className={cx(DIR[realDirection], listClassName)}
+              ref={n => {
+                if (
+                  n != null &&
+                  n.style.getPropertyValue('position') !== 'fixed'
+                ) {
+                  const { left, top } = n.getBoundingClientRect();
+                  n.style.setProperty('left', `${left}px`);
+                  n.style.setProperty('top', `${top}px`);
+                  n.style.setProperty('position', 'fixed');
+                }
+              }}
+            >
+              {items.map((item, index) => {
+                if (Array.isArray(item.children)) {
+                  return (
+                    <div
+                      key={index}
+                      {...(!item.disabled
+                        ? getItemProps({
+                            item: item,
+                            onClick: stopPropagation,
+                          })
+                        : undefined)}
+                    >
+                      <Menu
+                        onSelect={(v, e) => {
+                          closeMenu();
+                          onSelect(v, e);
+                        }}
+                        items={item.children}
+                        direction="right"
+                        label={item.label}
+                      />
+                    </div>
+                  );
+                }
+                return (
+                  <div
+                    key={index}
+                    {...(!item.disabled
+                      ? getItemProps({
+                          className: itemStyle,
+                          item: item,
+                          onClick: stopPropagation,
+                        })
+                      : undefined)}
+                  >
+                    {item.label}
+                  </div>
+                );
+              })}
             </div>
           )}
-        </Downshift>
-      </span>
-    );
-  }
+        </div>
+      )}
+    </Downshift>
+  );
 }

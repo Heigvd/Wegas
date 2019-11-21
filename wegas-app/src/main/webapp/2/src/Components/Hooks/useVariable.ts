@@ -2,6 +2,7 @@ import * as React from 'react';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { Player, VariableDescriptor } from '../../data/selectors';
 import { useStore } from '../../data/store';
+import { shallowDifferent } from '../../data/connectStore';
 
 type instanceOf<D> = D extends IVariableDescriptor<infer U> ? U : never;
 /**
@@ -15,7 +16,7 @@ export function useVariableDescriptor<D extends IVariableDescriptor>(
     () => VariableDescriptor.findByName<D>(name),
     [name],
   );
-  return useStore(getDescriptor);
+  return useStore(getDescriptor, shallowDifferent);
 }
 /**
  * Hook, connect with a VariableInstance
@@ -32,5 +33,5 @@ export function useVariableInstance<D extends IVariableDescriptor>(
     }
     return;
   }, [descriptor, player]);
-  return useStore(getInstanceForDescriptor);
+  return useStore(getInstanceForDescriptor, shallowDifferent);
 }

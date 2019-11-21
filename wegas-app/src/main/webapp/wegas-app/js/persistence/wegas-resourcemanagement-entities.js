@@ -1018,12 +1018,18 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             }
             return taskDs;
         },
+        /**
+         * Get active tasks
+         * @returns {Array} Active tasks only
+         */
         getTaskInstances: function() {
-            var names = this.get("taskNames"), i, taskIs = [];
-            for (i = 0; i < names.length; i += 1) {
-                taskIs.push(Y.Wegas.Facade.Variable.cache.find("name", names[i]).getInstance());
-            }
-            return taskIs;
+            return this.getTaskDescriptors()
+                .map(function(taskD) {
+                    return taskD.getInstance();
+                })
+                .filter(function(taskI) {
+                    return taskI.get("active");
+                });
         },
         getRemainingWorkload: function() {
             var taskI, taskIs, i, workload = 0;
@@ -1038,47 +1044,79 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             }
             return workload;
         },
+        getDeltaSum: function() {
+            var period, periods, i, sum = 0;
+            periods = this.get("periods");
+            for (i = 0; i < periods.length; i += 1) {
+                period = periods[i];
+                sum += periods.get("deltaAtStart");
+            }
+            return sum;
+        },
         getTotalWorkload: function() {
             var taskI, taskIs, i, workload = 0;
-            if (this.hasBegun()) {
-                return this.get("totalWorkload");
-            } else {
-                taskIs = this.getTaskInstances();
-                for (i = 0; i < taskIs.length; i += 1) {
-                    taskI = taskIs[i];
-                    workload += taskI.get("properties.duration") * Y.Array.reduce(taskI.get("requirements"), 0, function(previous, current) {
-                        return previous + current.get("quantity");
-                    });
-                }
-                return workload;
+            taskIs = this.getTaskInstances();
+            for (i = 0; i < taskIs.length; i += 1) {
+                taskI = taskIs[i];
+                workload += taskI.get("properties.duration") * Y.Array.reduce(taskI.get("requirements"), 0, function(previous, current) {
+                    return previous + current.get("quantity");
+                });
             }
+            return workload;
+        },
+        getTotalAc: function() {
+            var taskI, taskIs, i,
+                total = 0;
+            taskIs = this.getTaskInstances();
+            for (i = 0; i < taskIs.length; i += 1) {
+                taskI = taskIs[i];
+                var completeness = taskI.get("properties.completeness");
+                if (completeness > 0) {
+                    total += +taskI.get("properties.wages") + +taskI.get("properties.fixedCosts") + +taskI.get("properties.unworkedHoursCosts");
+                }
+            }
+            return total;
+        },
+        getTotalEv: function() {
+            var taskI, taskIs, i,
+                total = 0;
+            taskIs = this.getTaskInstances();
+            for (i = 0; i < taskIs.length; i += 1) {
+                taskI = taskIs[i];
+                total += taskI.get("properties.completeness") / 100 * taskI.get("properties.bac");
+            }
+            return total;
         },
         getStatus: function() {
-            /*
-             var tasks = this.getTaskInstances(),
-             i, taskI, started = false, completed = tasks.length > 0,
-             completeness;
-             
-             //started = Y.Wegas.PMGHelper.getCurrentPhaseNumber() > 3 || (Y.Wegas.PMGHelper.getCurrentPhaseNumber() === 3 && Y.Wegas.PMGHelper.getCurrentPeriodNumber() > this.get("beginAt"));
-             
-             for (i = 0; i < tasks.length; i += 1) {
-             taskI = tasks[i];
-             completeness = taskI.get("properties.completeness");
-             if (completeness < 100) {
-             completed = false;
-             }
-             if (completeness > 0) {
-             started = true;
-             }
-             }
-             if (completed) {
-             return "COMPLETED";
-             } else if (started) {
-             return "STARTED";
-             } else {
-             return "NOT_STARTED";
-             }*/
-            return this.get("status");
+            var tasks = this.getTaskInstances(),
+                i, taskI, started = false, completed = tasks.length > 0,
+                completeness;
+
+            //started = Y.Wegas.PMGHelper.getCurrentPhaseNumber() > 3 || (Y.Wegas.PMGHelper.getCurrentPhaseNumber() === 3 && Y.Wegas.PMGHelper.getCurrentPeriodNumber() > this.get("beginAt"));
+
+            for (i = 0; i < tasks.length; i += 1) {
+                taskI = tasks[i];
+                completeness = taskI.get("properties.completeness");
+                if (completeness < 100) {
+                    completed = false;
+                }
+                if (completeness > 0) {
+                    started = true;
+                }
+            }
+            if (completed) {
+                return "COMPLETED";
+            } else if (started) {
+                return "STARTED";
+            } else {
+                if (this.get("periods").find(function(period) {
+                    return period.get("ew") > 0;
+                })) {
+                    // some work has already be done, but the related task has been removed from the iteration
+                    return "STARTED";
+                }
+                return "NOT_STARTED";
+            }
         },
         hasBegun: function() {
             return this.getStatus() !== "NOT_STARTED";
@@ -1091,87 +1129,167 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             name: {
                 type: STRING
             },
-            status: {
-                type: STRING
-            },
             beginAt: {
                 type: NUMBER
             },
-            wages: {
-                type: NUMBER
-            },
             cpi: {
-                type: NUMBER
-            },
-            cpi: {
-                type: NUMBER
-            },
-            wcpi: {
                 type: NUMBER
             },
             wspi: {
                 type: NUMBER
-            },
-            totalWorkload: {
-                type: NUMBER
-            },
-            plannedWorkloads: {
-                type: ARRAY
-            },
-            replannedWorkloads: {
-                type: ARRAY
-            },
-            workloads: {
-                type: ARRAY
             },
             taskNames: {
                 type: ARRAY
             },
             createdTime: {
                 transient: true
+            },
+            periods: {
+                type: ARRAY
             }
         }
     });
-
-    persistence.Workload = Y.Base.create("Workload", persistence.Entity, [], {
+    persistence.IterationPeriod = Y.Base.create("IterationPeriod", persistence.Entity, [], {
     }, {
         ATTRS: {
-            "ac": {
-                "type": "number",
-                "view": {
-                    "label": "Actual Cost (AC)"
-                }
-            },
-            "ev": {
-                "type": "number",
-                "view": {
-                    "label": "Earned Value (EV)"
-                }
-            },
-            "lastWorkedStep": {
-                "type": "number",
-                "view": {
-                    "label": "Last worked step",
-                    readOnly: true
-                }
-            },
-            "periodNumber": {
+            periodNumber: {
                 "type": "number",
                 "view": {
                     "label": "Period number",
                     readOnly: true
                 }
             },
-            "spentWorkload": {
+            deltaAtStart: {
                 "type": "number",
                 "view": {
-                    "label": "Spent (AW)"
+                    "label": "Delta workload"
                 }
             },
-            "workload": {
+            deltaAc: {
                 "type": "number",
                 "view": {
-                    "label": "Workload"
+                    "label": "Delta AC"
+                }
+            },
+            deltaEv: {
+                "type": "number",
+                "view": {
+                    "label": "Delta EV"
+                }
+            },
+            planned: {
+                "type": "number",
+                "view": {
+                    "label": "Initial Planned Team Size"
+                }
+            },
+            replanned: {
+                "type": "number",
+                "view": {
+                    "label": "Re-Planned Team Size"
+                }
+            },
+            ac: {
+                "type": "number",
+                "view": {
+                    "label": "Actual Cost (AC)"
+                }
+            },
+            ev: {
+                "type": "number",
+                "view": {
+                    "label": "Earned Value (EV)"
+                }
+            },
+            aw: {
+                "type": "number",
+                "view": {
+                    "label": "Actual Workload Spent during the period(AW)"
+                }
+            },
+            ew: {
+                "type": "number",
+                "view": {
+                    "label": "Earned Workload (EW) from iteration start"
+                }
+            },
+            pw: {
+                "type": "number",
+                "view": {
+                    "label": "Planned Workload (PW) from iteration start"
+                }
+            },
+            lastWorkedStep: {
+                "type": "number",
+                "view": {
+                    "label": "Last worked step",
+                    readOnly: true
+                }
+            },
+            iterationEvents: {
+                "type": "array",
+                "value": [],
+                "items": {
+                    type: "object",
+                    properties: {
+                        "data": {
+                            "view": {
+                                "label": "Data"
+                            }
+                        },
+                        "eventType": {
+                            "type": "string",
+                            "view": {
+                                "label": "Event Type"
+                            }
+
+                        },
+                        "step": {
+                            "type": "number",
+                            "view": {
+                                "label": "Step"
+                            }
+                        },
+                        "taskName": {
+                            "type": "string",
+                            "view": {
+                                "label": "Task name"
+                            }
+                        }
+                    }
+
+                },
+                "view": {
+                    "label": "Events"
+                }
+            }
+        }
+    });
+    persistence.IterationEvent = Y.Base.create("IterationEvent", persistence.Entity, [], {
+    }, {
+        ATTRS: {
+            "data": {
+                "view": {
+                    "label": "Data"
+                }
+            },
+            "eventType": {
+                "type": "string",
+                "view": {
+                    "label": "Event Type"
+                }
+
+            },
+            "step": {
+                "type": "number",
+                "view": {
+                    "label": "Step"
+                }
+            },
+            "taskName": {
+                "type": "string",
+                "view": {
+                    "label": "Task name"
                 }
             }
         }

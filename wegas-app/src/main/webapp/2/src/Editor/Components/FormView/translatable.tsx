@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Schema } from 'jsoninput';
-import { LangContext } from '../../../Components/LangContext';
+import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
 
 interface TranslatableProps {
   value?: ITranslatableContent;
@@ -23,7 +23,7 @@ export default function translatable<P extends EndProps>(
   function Translated(
     props: TranslatableProps & Omit<P, 'value' | 'onChange'>,
   ) {
-    const { lang, availableLang } = React.useContext(LangContext);
+    const { lang, availableLang } = React.useContext(languagesCTX);
 
     // Updade label
     const curCode = (

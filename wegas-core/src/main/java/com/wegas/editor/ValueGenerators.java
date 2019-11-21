@@ -141,14 +141,6 @@ public class ValueGenerators {
         }
     }
 
-    public static class IterationNotStarted implements ValueGenerator {
-
-        @Override
-        public Iteration.IterationStatus getValue() {
-            return Iteration.IterationStatus.NOT_STARTED;
-        }
-    }
-
     public static class ReviewingNotStarted implements ValueGenerator {
 
         @Override

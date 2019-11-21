@@ -12,6 +12,7 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
@@ -51,8 +52,8 @@ public class TaskInstance extends VariableInstance implements Propertable {
      *
      */
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = True.class,
-            view = @View(label = "Instance properties"))
+        optional = false, nullable = false, proposal = True.class,
+        view = @View(label = "Instance properties"))
     private boolean active = true;
     /**
      *
@@ -64,8 +65,8 @@ public class TaskInstance extends VariableInstance implements Propertable {
      */
     @ElementCollection
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label = "Planning", value = Hidden.class))
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(label = "Planning", value = Hidden.class))
     private Set<Integer> plannification = new HashSet<>();
 
     @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
@@ -81,14 +82,18 @@ public class TaskInstance extends VariableInstance implements Propertable {
     @JsonIgnore
     private List<Iteration> iterations;
 
+    @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonIgnore
+    private List<IterationEvent> iterationEvents;
+
     /**
      *
      */
     @ElementCollection
     @JsonIgnore
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyMap.class,
-            view = @View(label = "Instance properties"))
+        optional = false, nullable = false, proposal = EmptyMap.class,
+        view = @View(label = "Instance properties"))
     private List<VariableProperty> properties = new ArrayList<>();
     /**
      *
@@ -96,8 +101,8 @@ public class TaskInstance extends VariableInstance implements Propertable {
     @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     //@JoinColumn(referencedColumnName = "variableinstance_id")
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label = "Resource requirements",
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(label = "Resource requirements",
             value = ArrayView.Highlight.class))
     private List<WRequirement> requirements = new ArrayList<>();
 
@@ -124,8 +129,7 @@ public class TaskInstance extends VariableInstance implements Propertable {
     }
 
     /**
-     * @deprecated moved as instance property, setter kept for old JSON backward
-     * compatibility
+     * @deprecated moved as instance property, setter kept for old JSON backward compatibility
      * @param duration the duration to set
      */
     @JsonProperty
@@ -233,6 +237,14 @@ public class TaskInstance extends VariableInstance implements Propertable {
         this.iterations = iterations;
     }
 
+    public List<IterationEvent> getIterationEvents() {
+        return iterationEvents;
+    }
+
+    public void setIterationEvents(List<IterationEvent> iterationEvents) {
+        this.iterationEvents = iterationEvents;
+    }
+
     /**
      *
      * @param index
@@ -316,5 +328,16 @@ public class TaskInstance extends VariableInstance implements Propertable {
         this.setIterations(new ArrayList<>());
 
         super.updateCacheOnDelete(beans);
+    }
+
+    /**
+     * @param event
+     */
+    public void addIterationEvent(IterationEvent event) {
+        this.setIterationEvents(ListUtils.cloneAdd(this.getIterationEvents(), event));
+    }
+
+    public void removeEvent(IterationEvent event) {
+        this.iterationEvents.remove(event);
     }
 }

@@ -3,10 +3,10 @@ import * as React from 'react';
 import { themeVar } from '../../../Components/Theme';
 import { Toolbar } from '../../../Components/Toolbar';
 import { IconButton } from '../../../Components/Button/IconButton';
-import DiffEditor, {
+import WegasDiffEditor, {
   ExtendedDiffNavigator,
   DiffEditorLineChanges,
-} from './DiffEditor';
+} from './WegasDiffEditor';
 import { StyledLabel } from '../../../Components/AutoImport/String/Label';
 import { arrayToText, textToArray } from './SrcEditor';
 
@@ -122,7 +122,7 @@ interface MergeEditorProps {
   /**
    * langauge - the editor language
    */
-  language?: 'javascript' | 'css' | 'json';
+  language?: 'typescript' | 'css' | 'json';
   /**
    * onResolved - this function is fired each time the user resolved all diff and want to apply changes
    * Can be fire from the little floppy button or the Ctrl+S
@@ -351,7 +351,7 @@ function MergeEditor({
         )}
       </Toolbar.Header>
       <Toolbar.Content>
-        <DiffEditor
+        <WegasDiffEditor
           originalValue={finalValue}
           modifiedValue={modifiedValue}
           minimap={minimap}
