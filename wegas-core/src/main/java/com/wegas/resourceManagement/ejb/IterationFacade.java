@@ -233,12 +233,14 @@ public class IterationFacade extends BaseFacade<Iteration> implements IterationF
                 for (IterationPeriod period : iteration.getPeriods()) {
                     for (IterationEvent event : period.getIterationEvents()) {
                         String taskName = event.getDeserialisedTaskName();
-                        try {
-                            TaskDescriptor theTask = (TaskDescriptor) variableDescriptorFacade.find(gameModel, taskName);
-                            TaskInstance taskInstance = theTask.findInstance(burndownInstance, requestManager.getCurrentUser());
-                            event.setTaskInstance(taskInstance);
-                        } catch (WegasNoResultException ex) {
-                            throw WegasErrorMessage.error("Task " + taskName + " not found");
+                        if (taskName != null) {
+                            try {
+                                TaskDescriptor theTask = (TaskDescriptor) variableDescriptorFacade.find(gameModel, taskName);
+                                TaskInstance taskInstance = theTask.findInstance(burndownInstance, requestManager.getCurrentUser());
+                                event.setTaskInstance(taskInstance);
+                            } catch (WegasNoResultException ex) {
+                                throw WegasErrorMessage.error("Task " + taskName + " not found");
+                            }
                         }
                     }
                 }

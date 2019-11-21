@@ -306,18 +306,14 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     }
 
     @JsonIgnore
-    public Double getTotalEw() {
-
-        Double total = 0.0;
-
+    public Boolean hasAnyEw() {
         for (IterationPeriod p : getPeriods()) {
             Double ew = p.getEw();
-            if (ew != null) {
-                total += ew;
+            if (ew != null && ew > 0) {
+                return true;
             }
         }
-
-        return total;
+        return false;
     }
 
     @JsonIgnore
@@ -335,7 +331,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
 
             for (IterationPeriod p : getPeriods()) {
                 if (p.getPeriodNumber() < dUpTo) {
-                    Double pw = p.getPw();
+                    Double pw = p.getPlanned();
                     if (pw != null) {
                         total += pw;
                     }

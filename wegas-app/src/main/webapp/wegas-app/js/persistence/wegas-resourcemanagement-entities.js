@@ -1018,12 +1018,18 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             }
             return taskDs;
         },
+        /**
+         * Get active tasks
+         * @returns {Array} Active tasks only
+         */
         getTaskInstances: function() {
-            var names = this.get("taskNames"), i, taskIs = [];
-            for (i = 0; i < names.length; i += 1) {
-                taskIs.push(Y.Wegas.Facade.Variable.cache.find("name", names[i]).getInstance());
-            }
-            return taskIs;
+            return this.getTaskDescriptors()
+                .map(function(taskD) {
+                    return taskD.getInstance();
+                })
+                .filter(function(taskI) {
+                    return taskI.get("active");
+                });
         },
         getRemainingWorkload: function() {
             var taskI, taskIs, i, workload = 0;
@@ -1057,6 +1063,29 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 });
             }
             return workload;
+        },
+        getTotalAc: function() {
+            var taskI, taskIs, i,
+                total = 0;
+            taskIs = this.getTaskInstances();
+            for (i = 0; i < taskIs.length; i += 1) {
+                taskI = taskIs[i];
+                var completeness = taskI.get("properties.completeness");
+                if (completeness > 0) {
+                    total += +taskI.get("properties.wages") + +taskI.get("properties.fixedCosts") + +taskI.get("properties.unworkedHoursCosts");
+                }
+            }
+            return total;
+        },
+        getTotalEv: function() {
+            var taskI, taskIs, i,
+                total = 0;
+            taskIs = this.getTaskInstances();
+            for (i = 0; i < taskIs.length; i += 1) {
+                taskI = taskIs[i];
+                total += taskI.get("properties.completeness") / 100 * taskI.get("properties.bac");
+            }
+            return total;
         },
         getStatus: function() {
             var tasks = this.getTaskInstances(),

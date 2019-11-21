@@ -284,6 +284,24 @@ public class IterationPeriod extends AbstractEntity implements Serializable {
         this.iterationEvents.remove(event);
     }
 
+    public void addWorkloadAdjustmentEvent() {
+        IterationEvent event = new IterationEvent();
+        event.setEventType(IterationEvent.EventType.WORKLOAD_ADJUSTMENT);
+        this.addEvent(event);
+    }
+
+    public void addAcAdjustmentEvent() {
+        IterationEvent event = new IterationEvent();
+        event.setEventType(IterationEvent.EventType.SPENT_ADJUSTMENT);
+        this.addEvent(event);
+    }
+
+    public void addEvAdjustmentEvent() {
+        IterationEvent event = new IterationEvent();
+        event.setEventType(IterationEvent.EventType.BUDGETED_ADJUSTMENT);
+        this.addEvent(event);
+    }
+
     @Override
     public WithPermission getMergeableParent() {
         return this.getIteration();
