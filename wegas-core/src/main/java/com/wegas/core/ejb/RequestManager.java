@@ -57,7 +57,6 @@ import jdk.nashorn.internal.runtime.ScriptObject;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.UnavailableSecurityManagerException;
 import org.apache.shiro.mgt.DefaultSecurityManager;
-import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
@@ -1171,6 +1170,12 @@ public class RequestManager implements RequestManagerI {
         this.clearEffectivePermisssions();
     }
 
+    public void logout() {
+        this.currentUser = null;
+        this.currentPrincipal = null;
+        this.clearPermissions();
+    }
+
     /**
      * Used to clear permission when changing the currentUser
      */
@@ -1829,7 +1834,6 @@ public class RequestManager implements RequestManagerI {
                 //    throw WegasErrorMessage.error("Su is forbidden !");
                 //}
             } else {
-                logger.error("Not logged yet");
                 this.previousSubject = subject;
 
             }

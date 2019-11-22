@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
@@ -80,10 +81,10 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     @ManyToMany
     @JsonView(Views.ExtendedI.class)
     @JoinTable(name = "users_roles",
-            joinColumns = {
-                @JoinColumn(name = "user_id", referencedColumnName = "id")},
-            inverseJoinColumns = {
-                @JoinColumn(name = "role_id", referencedColumnName = "id")})
+        joinColumns = {
+            @JoinColumn(name = "user_id", referencedColumnName = "id")},
+        inverseJoinColumns = {
+            @JoinColumn(name = "role_id", referencedColumnName = "id")})
     private Collection<Role> roles = new ArrayList<>();
 
     /**
@@ -169,9 +170,9 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
      * @return main account name or unnamed if user doesn't have any account
      */
     @WegasExtraProperty(optional = false, nullable = true, view = @View(
-            label = "Name",
-            readOnly = true,
-            value = StringView.class
+        label = "Name",
+        readOnly = true,
+        value = StringView.class
     )
     )
     public String getName() {
@@ -258,11 +259,28 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     public WegasPermission getAssociatedWritePermission() {
         return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.USER);
     }
-    
+
+    public Collection<WegasPermission> getTeamsRelatedPermissions() {
+        Collection<WegasPermission> p = WegasPermission.getAsCollection(
+            this.getAssociatedWritePermission() // user itself
+        );
+        for (Player player : this.getPlayers()) {
+            Team team = player.getTeam();
+            if (team != null) {
+                p.add(team.getAssociatedWritePermission()); // team-mates
+                Game game = team.getGame();
+                if (game != null) {
+                    p.add(game.getAssociatedWritePermission()); //  trainers
+                }
+            }
+        }
+        return p;
+    }
+
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         Collection<WegasPermission> p = WegasPermission.getAsCollection(
-                new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.USER)
+            this.getAssociatedWritePermission()
         );
         p.addAll(WegasMembership.TRAINER); // why ? maybe to share game/gameModel
         return p;

@@ -234,10 +234,12 @@ public class UserFacade extends BaseFacade<User> {
      * logout current user
      */
     public void logout() {
+        requestManager.clearPermissions();
         Subject subject = SecurityUtils.getSubject();
         if (subject.isRunAs()) {
             subject.releaseRunAs();
         } else {
+            requestManager.logout();
             subject.logout();
         }
     }

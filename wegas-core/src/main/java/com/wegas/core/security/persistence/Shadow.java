@@ -110,7 +110,14 @@ public class Shadow extends AbstractEntity {
     }
 
     @Override
+    public Collection<WegasPermission> getRequieredCreatePermission() {
+        // no permission required to create a new account
+        return null;
+    }
+
+    @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
+        // Read/Write restriceted to the user
         return WegasPermission.getAsCollection(
             account.getUser().getAssociatedWritePermission()
         );
@@ -125,7 +132,6 @@ public class Shadow extends AbstractEntity {
             generateNewSalt();
         }
     }
-
 
     @Override
     public WithPermission getMergeableParent() {

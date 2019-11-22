@@ -53,7 +53,8 @@ import javax.persistence.*;
 })
 @JsonIgnoreProperties({"passwordConfirm"})
 @Table(indexes = {
-    @Index(columnList = "user_id")
+    @Index(columnList = "user_id"),
+    @Index(columnList = "shadow_id")
 })
 public abstract class AbstractAccount extends AbstractEntity {
 

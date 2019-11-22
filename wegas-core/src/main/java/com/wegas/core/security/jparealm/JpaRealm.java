@@ -71,9 +71,6 @@ public class JpaRealm extends AuthorizingRealm {
             try {
                 JpaAccount account = accountFacade.findJpaByUsername(token.getUsername());// try with the username
                 SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getShadow().getPasswordHex(), getName());
-                logger.error("ID: {}", account.getId());
-                logger.error("Hash: {}", account.getShadow().getPasswordHex());
-                logger.error("MySalt: {}", account.getShadow().getSalt());
                 info.setCredentialsSalt(new SimpleByteSource(account.getShadow().getSalt()));
                 return info;
 
