@@ -49,8 +49,8 @@ export class Modal extends React.Component<{
     const { children } = this.props;
     return (
       <ThemeRoot>
-        {root => {
-          return root !== null
+        {values => {
+          return values.themeRoot && values.themeRoot.current
             ? createPortal(
                 <div className={modalStyle} onClick={this.bgClick}>
                   <div
@@ -62,7 +62,7 @@ export class Modal extends React.Component<{
                     {children}
                   </div>
                 </div>,
-                root,
+                values.themeRoot.current,
               )
             : null;
         }}

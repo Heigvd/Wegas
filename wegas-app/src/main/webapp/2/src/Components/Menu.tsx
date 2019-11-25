@@ -5,6 +5,7 @@ import { IconButton } from './Button/IconButton';
 import { Props } from '@fortawesome/react-fontawesome';
 import { withDefault } from '../Editor/Components/Views/FontAwesome';
 import { useKeyboard } from './Hooks/useKeyboard';
+import { themeVar } from './Theme';
 
 interface Item<T> {
   label: React.ReactNode;
@@ -108,7 +109,11 @@ export function Menu<T extends Item<T>>({
 
           {isOpen && (
             <div
-              className={cx(DIR[realDirection], listClassName)}
+              className={cx(
+                DIR[realDirection],
+                listClassName,
+                css({ background: themeVar.backgroundColor }),
+              )}
               ref={n => {
                 if (
                   n != null &&
