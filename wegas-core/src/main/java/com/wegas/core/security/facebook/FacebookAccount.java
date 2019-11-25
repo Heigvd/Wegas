@@ -20,11 +20,6 @@ public class FacebookAccount extends AbstractAccount {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public String getEmail() {
-        return null;
-    }
-
-    @Override
     public Boolean isVerified() {
         return false;
     }

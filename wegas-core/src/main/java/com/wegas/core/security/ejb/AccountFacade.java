@@ -275,7 +275,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             if (!a.getFirstname().equals(userDetails.getFirstname())
                     || !a.getLastname().equals(userDetails.getLastname())
                     || !a.getHomeOrg().equals(userDetails.getHomeOrg())
-                    || !a.getEmail().equals(userDetails.getEmail())) {
+                    || !a.getDetails().getEmail().equals(userDetails.getEmail())) {
 
                 a.merge(new AaiAccount(userDetails)); //HAZARDOUS!!!!
                 update(a.getId(), a);
@@ -362,7 +362,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         List<AbstractAccount> returnValue = new ArrayList<>();
         for (AbstractAccount a : findByNameEmailOrUsername(value)) {
             if (userFacade.hasAnyRole(a.getUser(), roles)) {
-                returnValue.add(hideEmail(a));
+                returnValue.add(a);
             }
         }
         return returnValue;
@@ -403,17 +403,9 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             AbstractAccount ja = it.next();
             if (playerFacade.isInGame(gameId, ja.getUser().getId())) {
                 it.remove();
-            } else {
-                hideEmail(ja);
             }
         }
         return accounts;
-    }
-
-    private AbstractAccount hideEmail(AbstractAccount aa) {
-        this.getEntityManager().detach(aa);
-        aa.setEmail(Helper.anonymizeEmail(aa.getEmail()));
-        return aa;
     }
 
     /**

@@ -11,6 +11,7 @@ import ch.albasim.wegas.annotations.IMergeable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasCallback;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
@@ -20,9 +21,9 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
-import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.NumberView;
 import java.util.*;
 import javax.persistence.*;
@@ -42,7 +43,7 @@ import javax.persistence.*;
  @Index(columnList = "email", unique = true)
  })*/
 @NamedQuery(name = "AbstractAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND a.username = :username")
-@NamedQuery(name = "AbstractAccount.findByEmail", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.email) LIKE LOWER(:email)")
+@NamedQuery(name = "AbstractAccount.findByEmail", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.details.email) LIKE LOWER(:email)")
 @NamedQuery(name = "AbstractAccount.findByFullName", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.firstname) LIKE LOWER(:firstname) AND LOWER(a.lastname) LIKE LOWER(:lastname)")
 @NamedQuery(name = "AbstractAccount.findAllNonGuests", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount")
 @JsonSubTypes(value = {
@@ -54,7 +55,8 @@ import javax.persistence.*;
 @JsonIgnoreProperties({"passwordConfirm"})
 @Table(indexes = {
     @Index(columnList = "user_id"),
-    @Index(columnList = "shadow_id")
+    @Index(columnList = "shadow_id"),
+    @Index(columnList = "details_id")
 })
 public abstract class AbstractAccount extends AbstractEntity {
 
@@ -77,17 +79,12 @@ public abstract class AbstractAccount extends AbstractEntity {
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
     private Shadow shadow;
 
-    public Shadow getShadow() {
-        return shadow;
-    }
-
-    public void setShadow(Shadow shadow) {
-        this.shadow = shadow;
-        if (shadow != null) {
-            this.shadow.setAccount(this);
-            this.shadow.setSaltOnPrePersist();
-        }
-    }
+    @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
+    @WegasEntityProperty(callback = CensorEmail.class, optional = false, nullable = false,
+        view = @View(label = ""))
+    @JsonManagedReference
+    @JsonView(Views.Extended.class)
+    private AccountDetails details;
 
     /**
      *
@@ -110,12 +107,7 @@ public abstract class AbstractAccount extends AbstractEntity {
     @WegasEntityProperty(view = @View(label = "Lastname"), optional = false, nullable = false)
     private String lastname;
 
-    /**
-     *
-     */
-    @WegasEntityProperty(callback = CheckEmailChange.class, optional = false, nullable = false,
-        view = @View(label = "E-mail"))
-    private String email = "";
+    private String censoredEmail;
 
     /**
      *
@@ -177,6 +169,29 @@ public abstract class AbstractAccount extends AbstractEntity {
     @JsonIgnore
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Shadow getShadow() {
+        return shadow;
+    }
+
+    public void setShadow(Shadow shadow) {
+        this.shadow = shadow;
+        if (shadow != null) {
+            this.shadow.setAccount(this);
+            this.shadow.setSaltOnPrePersist();
+        }
+    }
+
+    public AccountDetails getDetails() {
+        return details;
+    }
+
+    public void setDetails(AccountDetails details) {
+        this.details = details;
+        if (this.details != null) {
+            this.details.setAccount(this);
+        }
     }
 
     /**
@@ -310,16 +325,22 @@ public abstract class AbstractAccount extends AbstractEntity {
         this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 
-    /**
-     *
-     * @return the email
-     */
-    public String getEmail() {
-        return email;
+    @WegasExtraProperty(view = @View(value = Hidden.class, label = ""))
+    public String getCensoredEmail() {
+        return censoredEmail;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setCensoredEmail(String censoredEmail) {
+        this.censoredEmail = censoredEmail;
+    }
+
+    public void censorEmail() {
+        String email = this.getDetails().getEmail();
+        if (Helper.isNullOrEmpty(email)) {
+            this.censoredEmail = Helper.anonymizeEmail(details.getEmail());
+        } else {
+            this.censoredEmail = "•••••@•••••";
+        }
     }
 
     public abstract Boolean isVerified();
@@ -328,8 +349,8 @@ public abstract class AbstractAccount extends AbstractEntity {
      * @return md5 address hash
      */
     public String getHash() {
-        if (email != null) {
-            return Helper.md5Hex(email);
+        if (getDetails() != null && getDetails().getEmail() != null) {
+            return Helper.md5Hex(getDetails().getEmail());
 
         } else {
             return Helper.md5Hex("default");
@@ -378,15 +399,14 @@ public abstract class AbstractAccount extends AbstractEntity {
         return Visibility.INHERITED;
     }
 
-    public static class CheckEmailChange implements WegasCallback {
+    public static class CensorEmail implements WegasCallback {
 
         @Override
-        public void preUpdate(IMergeable entity, Object ref, Object identifier) {
-            if (entity instanceof JpaAccount && "email".equals(identifier)) {
-                JpaAccount account = (JpaAccount) entity;
-                if (!account.getEmail().equals(ref)) {
-                    // email update detected
-                    account.setVerified(false);
+        public void postUpdate(IMergeable entity, Object ref, Object identifier) {
+            if (entity instanceof AbstractAccount) {
+                AbstractAccount account = (AbstractAccount) entity;
+                if (account.getDetails().isEmailJustChanged()) {
+                    account.censorEmail();
                 }
             }
         }

@@ -116,4 +116,20 @@ public class SecurityTest extends AbstractArquillianTest {
         String script = "java.lang.Thread.currentThread().interrupt();";
         scriptFacade.eval(player, new Script("JavaScript", script), null);
     }
+
+    @Test
+    public void testReadShadow() {
+        login(user);
+        String script = "try{";
+        script += "users = Java.from(RequestManager.getCurrentUser().getRoles().get(0).getUsers());\n"
+            + "users.map(function(user){\n"
+            + "    return user.getMainAccount().getShadow()\n"
+            + "});";
+        script += "} catch (e) {print(e);}";
+
+        scriptFacade.eval(player, new Script("JavaScript", script), null);
+
+        logger.error("CURRENT: {}", requestFacade.getCurrentUser().getId());
+        Assert.assertEquals(user.getUser(), requestFacade.getCurrentUser()); // assert su has failed
+    }
 }

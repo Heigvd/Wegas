@@ -57,8 +57,8 @@ public class TeamFacade extends BaseFacade<Team> {
     private StateMachineFacade stateMachineFacade;
 
     /**
-     * Get all account linked to team's players Account email addresses will be
-     * altered (by hiding some parts) so they can be publicly displayed
+     * Get all account linked to team's players Account email addresses will be altered (by hiding some parts) so they
+     * can be publicly displayed
      *
      * @param teamId
      *
@@ -68,11 +68,7 @@ public class TeamFacade extends BaseFacade<Team> {
         Team entity = this.find(teamId);
         ArrayList<AbstractAccount> accounts = accountFacade.findByTeam(entity);
         for (AbstractAccount account : accounts) {
-            if (account instanceof JpaAccount) {
-                JpaAccount ja = (JpaAccount) account;
-                getEntityManager().detach(ja);
-                ja.setEmail(ja.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
-            }
+            getEntityManager().detach(account);
         }
         return accounts;
     }

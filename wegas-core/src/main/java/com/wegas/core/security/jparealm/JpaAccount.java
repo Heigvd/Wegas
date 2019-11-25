@@ -8,7 +8,6 @@
 package com.wegas.core.security.jparealm;
 
 import ch.albasim.wegas.annotations.WegasEntityProperty;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.Helper;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Shadow;
@@ -25,7 +24,7 @@ import org.apache.shiro.util.SimpleByteSource;
  */
 @Entity
 @NamedQuery(name = "JpaAccount.findExactClass", query = "SELECT a FROM JpaAccount a WHERE TYPE(a) = JpaAccount")
-@NamedQuery(name = "JpaAccount.findByEmail", query = "SELECT a FROM JpaAccount a WHERE TYPE(a) = JpaAccount AND LOWER(a.email) LIKE LOWER(:email)")
+@NamedQuery(name = "JpaAccount.findByEmail", query = "SELECT a FROM JpaAccount a WHERE TYPE(a) = JpaAccount AND LOWER(a.details.email) LIKE LOWER(:email)")
 @NamedQuery(name = "JpaAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) = JpaAccount AND a.username = :username")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class JpaAccount extends AbstractAccount {

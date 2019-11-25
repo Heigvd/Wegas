@@ -31,7 +31,7 @@ public class OnlineUser implements Serializable {
     public OnlineUser(User user, long highestRole) {
         this.fullname = user.getName();
         this.username = user.getMainAccount().getUsername();
-        this.email = user.getMainAccount().getEmail();
+        this.email = user.getMainAccount().getDetails().getEmail();
         this.connectionDate = new Date();
         this.lastActivityDate = new Date();
         this.userId = user.getId();

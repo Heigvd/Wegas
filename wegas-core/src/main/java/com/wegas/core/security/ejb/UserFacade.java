@@ -25,6 +25,7 @@ import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.guest.GuestToken;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.persistence.AccountDetails;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.Shadow;
@@ -197,7 +198,7 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     public User signup(JpaAccount account) throws AddressException, WegasConflictException {
-        Helper.assertEmailPattern(account.getEmail());
+        Helper.assertEmailPattern(account.getDetails().getEmail());
 
         if (account.getUsername().equals("") || !this.checkExistingUsername(account.getUsername())) {
             User user;
@@ -215,7 +216,7 @@ public class UserFacade extends BaseFacade<User> {
             } else {
                 // Check if e-mail is already taken and if yes return a localized error message:
                 try {
-                    accountFacade.findByEmail(account.getEmail());
+                    accountFacade.findByEmail(account.getDetails().getEmail());
                     throw new WegasConflictException("email");
                 } catch (WegasNoResultException e) {
                     // GOTCHA
@@ -334,6 +335,9 @@ public class UserFacade extends BaseFacade<User> {
         for (AbstractAccount account : user.getAccounts()){
             if (account.getShadow() == null){
                 account.setShadow(new Shadow());
+            }
+            if (account.getDetails() == null){
+                account.setDetails(new AccountDetails());
             }
         }
 
@@ -757,7 +761,7 @@ public class UserFacade extends BaseFacade<User> {
                     account.getShadow().setToken(hashToken);
 
                     String theLink = Helper.getPublicBaseUrl(request)
-                            + "/#/" + path + "/" + account.getEmail() + "/" + token;
+                            + "/#/" + path + "/" + account.getDetails().getEmail() + "/" + token;
 
                     if (text.contains("{{link}}")) {
                         text = text.replace("{{link}}", theLink);
@@ -771,12 +775,12 @@ public class UserFacade extends BaseFacade<User> {
                             + text;
 
                     String from = "noreply@" + Helper.getWegasProperty("mail.default_domain");
-                    emailFacade.send(account.getEmail(), from, null, subject,
+                    emailFacade.send(account.getDetails().getEmail(), from, null, subject,
                             body,
                             Message.RecipientType.TO,
                             "text/html; charset=utf-8", true);
                 } catch (MessagingException ex) {
-                    logger.error("Error while sending validation email to {}", account.getEmail());
+                    logger.error("Error while sending validation email to {}", account.getDetails().getEmail());
                 }
             }
         }
@@ -795,7 +799,7 @@ public class UserFacade extends BaseFacade<User> {
             AbstractAccount mainAccount = rP.getUser().getMainAccount();
             if (mainAccount instanceof JpaAccount || mainAccount instanceof AaiAccount) {
                 try {
-                    emailFacade.send(mainAccount.getEmail(),
+                    emailFacade.send(mainAccount.getDetails().getEmail(),
                             email.getFrom(), email.getReplyTo(),
                             email.getSubject(),
                             email.getBody(),

@@ -1119,6 +1119,6 @@ public class Helper {
     }
 
     public static String anonymizeEmail(String email) {
-        return email.replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2");
+        return email.replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1••••$2");
     }
 }

@@ -13,6 +13,7 @@ import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.persistence.AccountDetails;
 import com.wegas.editor.View.StringView;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -62,10 +63,13 @@ public class AaiAccount extends AbstractAccount {
         this.setPersistentId(userDetails.getPersistentId());
         // This information is very useful, e.g. for filtering, but should maybe not be stored as a username ...
         this.setUsername("AAI: " + userDetails.getFirstname() + " " + userDetails.getLastname());
-        this.setEmail(userDetails.getEmail());
         this.setFirstname(userDetails.getFirstname());
         this.setLastname(userDetails.getLastname());
         this.setHomeOrg(userDetails.getHomeOrg());
+
+        this.setDetails(new AccountDetails());
+        this.getDetails().setEmail(userDetails.getEmail());
+        this.censorEmail();
     }
 
     // This attribute should not be sent to the client side, hence the JsonIgnore:

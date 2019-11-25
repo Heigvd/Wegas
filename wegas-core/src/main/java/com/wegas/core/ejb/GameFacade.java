@@ -591,7 +591,7 @@ public class GameFacade extends BaseFacade<Game> {
 
                     xlsx.addValue(p.getName());
                     if (p.getUser() != null) {
-                        xlsx.addValue(p.getUser().getMainAccount().getEmail());
+                        xlsx.addValue(p.getUser().getMainAccount().getDetails().getEmail());
                         xlsx.addValue(Boolean.TRUE.equals(p.getUser().getMainAccount().isVerified()) ? "yes" : "no");
                     } else {
                         xlsx.skipCell();

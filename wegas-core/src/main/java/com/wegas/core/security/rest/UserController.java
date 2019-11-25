@@ -218,7 +218,7 @@ public class UserController {
                 Long userId = p.getUserId();
                 AbstractAccount mainAccount = userFacade.find(userId).getMainAccount();
                 if (mainAccount instanceof JpaAccount || mainAccount instanceof AaiAccount) { // Skip guest accounts and other specialties.
-                    emails.add(mainAccount.getEmail());
+                    emails.add(mainAccount.getDetails().getEmail());
                 }
             }
         }
@@ -609,8 +609,9 @@ public class UserController {
     @POST
     @Path("SendMail")
     public void sendMail(Email email) {
-        // TODO Check persmissions !!!
+        // TODO Check persmissions !!! 
         // Current User should have each recipients registered in a game he leads or be such a superuser
+        // well, such check is done by restricing access to account details
 
         AbstractAccount mainAccount = userFacade.getCurrentUser().getMainAccount();
         String name = mainAccount.getName();
@@ -619,7 +620,7 @@ public class UserController {
         }
 
         if (mainAccount instanceof JpaAccount || mainAccount instanceof AaiAccount) {
-            email.setReplyTo(mainAccount.getEmail());
+            email.setReplyTo(mainAccount.getDetails().getEmail());
         }
 
         String body = "<!DOCTYPE html><html><head></head><body>"

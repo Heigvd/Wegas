@@ -252,14 +252,17 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
         return this.getName().toLowerCase(Locale.ENGLISH).compareTo(o.getName().toLowerCase(Locale.ENGLISH));
     }
 
+    @JsonIgnore
     public WegasPermission getAssociatedReadPermission() {
         return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.USER);
     }
 
+    @JsonIgnore
     public WegasPermission getAssociatedWritePermission() {
         return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.USER);
     }
 
+    @JsonIgnore
     public Collection<WegasPermission> getTeamsRelatedPermissions() {
         Collection<WegasPermission> p = WegasPermission.getAsCollection(
             this.getAssociatedWritePermission() // user itself

@@ -159,7 +159,7 @@ public class RequestController implements Serializable {
      */
     public String getCurrentUserMail() {
         try {
-            return ((JpaAccount) this.getCurrentUser().getMainAccount()).getEmail();
+            return ((JpaAccount) this.getCurrentUser().getMainAccount()).getDetails().getEmail();
         } catch (ClassCastException | WegasNotFoundException e) {
             return "";
         }

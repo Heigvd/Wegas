@@ -25,9 +25,9 @@ import com.wegas.core.jcr.SessionManager;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.guest.GuestToken;
 import com.wegas.core.security.jparealm.JpaAccount;
+import com.wegas.core.security.persistence.AccountDetails;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
@@ -48,8 +48,6 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.config.Ini;
 import org.apache.shiro.config.IniSecurityManagerFactory;
-import org.apache.shiro.env.Environment;
-import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.env.IniWebEnvironment;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -224,11 +222,12 @@ public abstract class AbstractArquillianTestMinimal {
                     + "INSERT INTO permission (id, permissions, role_id) VALUES (2, 'Game:*:*', 1);"
                     + "INSERT INTO permission (id, permissions, role_id) VALUES (3, 'User:*:*', 1);"
                     + "INSERT INTO users (id) VALUES (1);"
+                    + "INSERT INTO accountdetails (id, email) VALUES (1, 'root@local');"
                     + "INSERT INTO shadow (id, passwordhex, salt) VALUES (1, 'eb86410aa029d4f7b85c1b4c3c0a25736f9ae4806bd75d456a333d83b648f2ee', '69066d73c2d03f85c5a8d3e39a2f184f');"
-                    + "INSERT INTO abstractaccount (id, username, email, dtype, user_id, shadow_id) VALUES (1, 'root', 'root@local', 'JpaAccount', 1, 1);"
+                    + "INSERT INTO abstractaccount (id, username, censoredemail, dtype, user_id, shadow_id, details_id) VALUES (1, 'root', 'ro***@local', 'JpaAccount', 1, 1, 1);"
                     + "INSERT INTO users_roles (user_id, role_id) VALUES (1, 1);"
                     + "UPDATE sequence SET seq_count=seq_count+50 WHERE seq_name = 'SEQ_GEN';"
-                    + "CREATE INDEX IF NOT EXISTS index_abstractaccount_email ON abstractaccount (email) WHERE (dtype = 'JpaAccount' AND email IS NOT NULL AND email NOT LIKE '');"
+                    + "CREATE INDEX IF NOT EXISTS index_accountdetails_email ON accountdetails (email) WHERE (checkUniqueness AND email IS NOT NULL AND email NOT LIKE '');"
                     + "CREATE INDEX IF NOT EXISTS index_abstractaccount_username ON abstractaccount (username) WHERE (dtype = 'JpaAccount' AND username IS NOT NULL AND username NOT LIKE '');"
                     + "CREATE INDEX IF NOT EXISTS index_abstractaccount_persistentid ON abstractaccount (persistentid) WHERE (dtype = 'AaiAccount');"
                     + "CREATE INDEX IF NOT EXISTS index_listDesc_allowedType ON listdescriptor_allowedtypes (listdescriptor_id);"
@@ -333,7 +332,8 @@ public abstract class AbstractArquillianTestMinimal {
     public WegasUser signup(String email, String password) {
         logout();
         JpaAccount ja = new JpaAccount();
-        ja.setEmail(email);
+        ja.setDetails(new AccountDetails());
+        ja.getDetails().setEmail(email);
         ja.setPassword(password);
         try {
             User signup = userFacade.signup(ja);
