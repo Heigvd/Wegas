@@ -16,7 +16,6 @@
 YUI.add('wegas-gamemodel-i18n', function(Y) {
     "use strict";
     var LanguagesManager,
-        EditorWidget,
         TranslationEditor,
         GameModelScriptUpgrader,
         GameModelGhostCleaner,
@@ -1595,7 +1594,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
 
             this.majorMenu.add([{
                     type: "Button",
-                    label: "Save and outdate other languages",
+                    label: "Please confirm you want to outdate other langauges",
                     data: {
                         event: e
                     }
@@ -1646,21 +1645,21 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     },
                     on: {
                         success: Y.bind(function() {
-                            Y.Wegas.Alerts.showNotification("Batch Success", {
-                                timeout: 500
-                            });
+                            /*Y.Wegas.Alerts.showNotification("Batch Success", {
+                             timeout: 500
+                             });*/
                         }, this),
                         failure: Y.bind(function() {
-                            Y.Wegas.Alerts.showNotification("Batch Failure", {
-                                cssIcon: "fa fa-error"
-                            });
+                            /*Y.Wegas.Alerts.showNotification("Batch Failure", {
+                             cssIcon: "fa fa-error"
+                             });*/
                         }, this)
                     }
                 });
             } else {
-                Y.Wegas.Alerts.showNotification("Nothing to save", {
-                    timeout: 500
-                });
+                /*Y.Wegas.Alerts.showNotification("Nothing to save", {
+                 timeout: 500
+                 });*/
             }
         },
         getInScriptPayload: function(cfg, translation) {
@@ -2319,9 +2318,27 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 label: "<i class=\"fa fa-3x fa-eraser\"></i>"
             });
             this.add(this.cleanBtn);
+            this.findBtn = new Y.Button({
+                label: "<i class=\"fa fa-3x fa-search\"></i>"
+            });
+            this.add(this.findBtn);
         },
         bindUI: function() {
             this.handlers.onUpgrade = this.cleanBtn.on("click", this.execute, this);
+            this.handlers.onFind = this.findBtn.on("click", this.scrollNext, this);
+        },
+        scrollNext: function(e) {
+            var ghosts = this.get("parent").get("contentBox").all(".ghost-translation");
+
+            if (ghosts.size()) {
+                var index = ghosts.indexOf(this.current) + 1
+                this.current = ghosts.item(index % ghosts.size());
+            } else {
+                this.current =null;
+            }
+            if (this.current){
+                this.current.scrollIntoView();
+            }
         },
         processScript: function(entity, attrName, attr, globals) {
             var toUpgrade = [],
