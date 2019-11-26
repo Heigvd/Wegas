@@ -5,11 +5,11 @@ import PageEditorHeader from './PageEditorHeader';
 import { Toolbar } from '../../../Components/Toolbar';
 import { Actions } from '../../../data';
 import { StoreDispatch, StoreConsumer } from '../../../data/store';
-import { Theme } from '../../../Components/Theme';
 import {
   JSONandJSEditor,
   OnSaveStatus,
 } from '../ScriptEditors/JSONandJSEditor';
+import { ThemeProvider } from '../../../Components/Theme';
 
 interface PageDisplayProps {
   srcMode: boolean;
@@ -81,11 +81,12 @@ class PageDisplay extends React.Component<PageDisplayProps> {
               }}
             </StoreConsumer>
           ) : (
-            <Theme
-            // @TODO Load user theme!
+            <ThemeProvider
+              contextName="player"
+              // @TODO Load user theme!
             >
               <PageLoader id={this.props.pageId} key="pageloader" />
-            </Theme>
+            </ThemeProvider>
           )}
         </Toolbar.Content>
       </Toolbar>
