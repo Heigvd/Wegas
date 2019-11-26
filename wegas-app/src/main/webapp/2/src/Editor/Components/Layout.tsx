@@ -15,6 +15,7 @@ const LanguageEditor = React.lazy(() => import('./LanguageEditor'));
 const PlayLocal = React.lazy(() => import('./PlayLocal'));
 const InstancesEditor = React.lazy(() => import('./Variable/InstancesEditor'));
 const HTMLEditor = React.lazy(() => import('../../Components/HTMLEditor'));
+const ThemeEditor = React.lazy(() => import('../../Components/ThemeEditor'));
 
 const layout = css({
   display: 'flex',
@@ -69,6 +70,9 @@ export default class AppLayout extends React.Component<
               <HTMLEditor
                 value={'<div class="testClass">Testing testClass</div>'}
               />
+            </Item>,
+            <Item key="ThemeEditor" label="ThemeEditor">
+              <ThemeEditor />
             </Item>,
           ]}
         >

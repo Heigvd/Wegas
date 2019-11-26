@@ -4,10 +4,10 @@ import { render } from 'react-dom';
 import { LanguagesProvider } from '../Components/Contexts/LanguagesProvider';
 import '../css/global.css';
 import Layout from './Components/Layout';
-import { Theme } from '../Components/Theme';
 import { LibrariesLoader } from './Components/LibrariesLoader';
 import { ClassesProvider } from '../Components/Contexts/ClassesProvider';
 import { FeaturesProvider } from '../Components/Contexts/FeaturesProvider';
+import { ThemeProvider } from '../Components/Theme';
 
 function mount() {
   render(
@@ -15,9 +15,9 @@ function mount() {
       <LanguagesProvider>
         <ClassesProvider>
           <LibrariesLoader>
-            <Theme>
+            <ThemeProvider contextName="editor">
               <Layout />
-            </Theme>
+            </ThemeProvider>
           </LibrariesLoader>
         </ClassesProvider>
       </LanguagesProvider>
