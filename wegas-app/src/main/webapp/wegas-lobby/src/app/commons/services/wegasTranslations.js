@@ -502,8 +502,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Erreur durant la création de l'" + keywords.team.singular.fr
                         },
                         'COMMONS-TEAMS-GUEST-JOINING': {
-                            'en': "Preparation of guest account ...",
-                            'fr': "Préparation du compte invité ..."
+                            'en': "Preparation of anonymous guest account ...",
+                            'fr': "Préparation d'un compte invité anonyme ..."
                         },
 
                         // Commons Sessions Model
