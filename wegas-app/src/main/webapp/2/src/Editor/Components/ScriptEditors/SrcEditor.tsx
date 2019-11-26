@@ -22,6 +22,10 @@ export type MonacoCodeEditor = Parameters<
 export type MonacoEditorCursorEvent = Parameters<
   Parameters<MonacoCodeEditor['onDidChangeCursorSelection']>[0]
 >[0];
+export type MonacoEditorModel = Exclude<
+  ReturnType<MonacoSCodeEditor['getModel']>,
+  null
+>;
 export interface MonacoEditorSimpleToken {
   offset: number;
   type: string;
@@ -229,6 +233,17 @@ function SrcEditor({
               defaultUri ? reactMonaco.Uri.parse(defaultUri) : undefined,
             ),
           );
+
+          // Unmount effect to dispose editor and model
+          return () => {
+            if (editor) {
+              const model = editor.getModel();
+              if (model) {
+                model.dispose();
+              }
+              editor.dispose();
+            }
+          };
         }
       }
     } /* eslint-disable react-hooks/exhaustive-deps */ /* Linter disabled for the following lines to avoid reloading editor and loosing focus */,
