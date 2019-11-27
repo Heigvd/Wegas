@@ -1037,20 +1037,23 @@ public class RequestManager implements RequestManagerI {
             currentTeam = currentPlayer.getTeam();
         }
 
-        String info = "[" + (currentUser != null ? currentUser.getId() : "anonymous") + "::"
-            + (currentPlayer != null ? currentPlayer.getId() : "n/a") + "::"
+        String info = "[u:" + (currentUser != null ? currentUser.getId() : "anonymous") + "::p:"
+            + (currentPlayer != null ? currentPlayer.getId() : "n/a") + "::t:"
             + (currentTeam != null ? currentTeam.getId() : "n/a") + "]";
 
         Level level = Level.INFO;
         if (this.status != null && this.status.getStatusCode() >= 400) {
             level = Level.ERROR;
         }
-
-        Helper.log(logger, level,
-            "Request [{}] \"{} {}\" for {} processed in {} ms ( processing: {}; management: {}, propagation: {}, serialisation: {}) => {}",
-            this.requestId, this.getMethod(), this.getPath(), info,
-            totalDuration, processingDuration, managementDuration, propagationDuration, serialisationDuration,
-            this.status);
+        if (requestId == null) {
+            Helper.log(logger, level, "Internal Request for {} processed in {} ms ", info, totalDuration);
+        } else {
+            Helper.log(logger, level,
+                "Request [{}] \"{} {}\" for {} processed in {} ms ( processing: {}; management: {}, propagation: {}, serialisation: {}) => {}",
+                this.requestId, this.getMethod(), this.getPath(), info,
+                totalDuration, processingDuration, managementDuration, propagationDuration, serialisationDuration,
+                this.status);
+        }
     }
 
     /**

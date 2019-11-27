@@ -6,8 +6,8 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 
 const smp = new SpeedMeasurePlugin();
-// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-//   .BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin;
 
 const PROD = process.env.NODE_ENV === 'production';
 const STATS = process.env.NODE_ENV === 'stats';
@@ -24,8 +24,8 @@ const plugins = [
     formatter: 'codeframe',
   }),
 ];
-if (!isCI) {
-  // plugins.push(new BundleAnalyzerPlugin());
+if (!isCI && !PROD) {
+  plugins.push(new BundleAnalyzerPlugin());
 }
 
 const modules = {
@@ -118,7 +118,7 @@ const modules = {
     ],
   },
   devServer: {
-    port: 3003,
+    port: PROD ? 4004 : 3003,
     overlay: true,
     publicPath: '/Wegas/2/dist/',
     proxy: {

@@ -232,13 +232,11 @@ public class Iteration extends AbstractEntity implements DatedEntity {
         Long max = 0l;
         List<IterationPeriod> periods = getPeriods();
         for (IterationPeriod ip : periods) {
-            if (ip.getPw() != null && ip.getPw() > 0) {
-                if (ip.getPeriodNumber() > max) {
-                    max = ip.getPeriodNumber();
-                }
+            if (ip.getPlanned() != null && ip.getPlanned() > 0 && ip.getPeriodNumber() > max) {
+                max = ip.getPeriodNumber();
             }
         }
-        return max + beginAt;
+        return max;
     }
 
     /**
@@ -279,6 +277,33 @@ public class Iteration extends AbstractEntity implements DatedEntity {
                     sumQuantity += req.getQuantity();
                 }
                 total += duration * sumQuantity;
+            }
+        }
+
+        return total;
+    }
+
+    /**
+     * Get current workload, based on effective tasks
+     *
+     * @return
+     */
+    @JsonIgnore
+    public Double getCurrentWorkload() {
+
+        Double total = 0.0;
+
+        for (TaskInstance taskInstance : getTasks()) {
+            if (taskInstance.getActive()) {
+                Double completeness = taskInstance.getPropertyD("completeness");
+                if (completeness != null && completeness > 0.1) {
+                    Double duration = taskInstance.getPropertyD("duration");
+                    Double sumQuantity = 0.0;
+                    for (WRequirement req : taskInstance.getRequirements()) {
+                        sumQuantity += req.getQuantity();
+                    }
+                    total += duration * sumQuantity;
+                }
             }
         }
 
@@ -327,10 +352,9 @@ public class Iteration extends AbstractEntity implements DatedEntity {
             return prevPv + delta * (nextPv - prevPv);
         } else {
             Double total = 0.0;
-            double dUpTo = upToPeriod - this.beginAt;
 
             for (IterationPeriod p : getPeriods()) {
-                if (p.getPeriodNumber() < dUpTo) {
+                if (p.getPeriodNumber() < upToPeriod) {
                     Double pw = p.getPlanned();
                     if (pw != null) {
                         total += pw;
@@ -341,8 +365,8 @@ public class Iteration extends AbstractEntity implements DatedEntity {
             double totalWl = this.getTotalWorkload();
             if (total >= totalWl) {
                 Long lastPlannedPeriod = getLastPlannedPeriod();
-                if (upToPeriod > lastPlannedPeriod + 1) {
-                    total += (upToPeriod - lastPlannedPeriod - 1) * total / (lastPlannedPeriod - beginAt + 1);
+                if (upToPeriod > lastPlannedPeriod + 0.1) {
+                    total += (upToPeriod - lastPlannedPeriod - 1) * total / (lastPlannedPeriod + 1);
                 }
             }
             return total;
@@ -449,6 +473,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     public void plan(Long periodNumber, Double workload) {
         IterationPeriod period = getOrCreatePeriod(periodNumber);
         period.setPlanned(workload);
+        period.setReplanned(workload);
     }
 
     public void replan(Long periodNumber, Double workload) {

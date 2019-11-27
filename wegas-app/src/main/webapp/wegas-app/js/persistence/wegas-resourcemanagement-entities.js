@@ -1032,17 +1032,20 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 });
         },
         getRemainingWorkload: function() {
-            var taskI, taskIs, i, workload = 0;
+            var taskI, taskIs, i,
+                sum = 0,
+                workload;
             taskIs = this.getTaskInstances();
             for (i = 0; i < taskIs.length; i += 1) {
                 taskI = taskIs[i];
-                if (taskI.get("properties.completeness") < 100) {
-                    workload += taskI.get("properties.duration") * Y.Array.reduce(taskI.get("requirements"), 0, function(previous, current) {
-                        return previous + current.get("quantity") * (100 - current.get("completeness")) / 100;
-                    });
-                }
+
+                workload = taskI.get("properties.duration") * taskI.get("requirements").reduce(function(acc, current) {
+                    return acc + current.get("quantity");
+                }, 0);
+
+                sum += (workload * (100 - taskI.get("properties.completeness")) / 100);
             }
-            return workload;
+            return sum;
         },
         getDeltaSum: function() {
             var period, periods, i, sum = 0;
@@ -1058,9 +1061,10 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             taskIs = this.getTaskInstances();
             for (i = 0; i < taskIs.length; i += 1) {
                 taskI = taskIs[i];
-                workload += taskI.get("properties.duration") * Y.Array.reduce(taskI.get("requirements"), 0, function(previous, current) {
-                    return previous + current.get("quantity");
-                });
+
+                workload = taskI.get("properties.duration") * taskI.get("requirements").reduce(function(acc, current) {
+                    return acc + current.get("quantity");
+                }, 0);
             }
             return workload;
         },
@@ -1087,7 +1091,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             }
             return total;
         },
-        getStatus: function() {
+        getStatus: function(currentPeriod) {
             var tasks = this.getTaskInstances(),
                 i, taskI, started = false, completed = tasks.length > 0,
                 completeness;
@@ -1109,7 +1113,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             } else if (started) {
                 return "STARTED";
             } else {
-                if (this.get("periods").find(function(period) {
+
+                if (currentPeriod > this.get("beginAt") || this.get("periods").find(function(period) {
                     return period.get("ew") > 0;
                 })) {
                     // some work has already be done, but the related task has been removed from the iteration

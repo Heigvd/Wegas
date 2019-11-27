@@ -36,8 +36,8 @@ public class IterationController {
     /**
      * Fetch all iteration to the burndown instance
      *
-     * @param burndownInstanceId id of the burndown instance we look iterations
-     *                           for
+     * @param burndownInstanceId id of the burndown instance we look iterations for
+     *
      * @return all iterations contained within the given burndown instance
      */
     @GET
@@ -50,21 +50,31 @@ public class IterationController {
      *
      * @param burndownInstanceId burndown owning the iteration to update
      * @param iterationId        id of iteration we look for
+     *
      * @return iteration
      */
     @GET
     @Path("{iterationId: [1-9][0-9]*}")
     public Iteration getIteration(@PathParam("brnDwnId") Long burndownInstanceId,
-            @PathParam("iterationId") Long iterationId) {
+        @PathParam("iterationId") Long iterationId) {
         return iterationFacade.find(iterationId);
     }
 
     @PUT
     @Path("{iterationId: [1-9][0-9]*}/Plan/{period: [0-9]+}/{workload}")
     public Iteration plan(@PathParam("brnDwnId") Long burndownInstanceId,
-            @PathParam("iterationId") Long iterationId,
-            @PathParam("period") Long periodNumber,
-            @PathParam("workload") String strWorkload){
+        @PathParam("iterationId") Long iterationId,
+        @PathParam("period") Long periodNumber,
+        @PathParam("workload") String strWorkload) {
         return iterationFacade.plan(iterationId, periodNumber, Double.parseDouble(strWorkload));
+    }
+
+    @PUT
+    @Path("{iterationId: [1-9][0-9]*}/Replan/{period: [0-9]+}/{workload}")
+    public Iteration replan(@PathParam("brnDwnId") Long burndownInstanceId,
+        @PathParam("iterationId") Long iterationId,
+        @PathParam("period") Long periodNumber,
+        @PathParam("workload") String strWorkload) {
+        return iterationFacade.replan(iterationId, periodNumber, Double.parseDouble(strWorkload));
     }
 }

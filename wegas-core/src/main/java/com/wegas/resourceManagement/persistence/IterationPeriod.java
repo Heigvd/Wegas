@@ -63,7 +63,7 @@ public class IterationPeriod extends AbstractEntity implements Serializable {
     private Long periodNumber;
 
     /**
-     * workload adjustment
+     * workload to do adjustment
      */
     @WegasEntityProperty(
         nullable = false, optional = false,
@@ -71,7 +71,7 @@ public class IterationPeriod extends AbstractEntity implements Serializable {
     private Double deltaAtStart;
 
     /**
-     * AC delta
+     * AC adjustment at start
      */
     @WegasEntityProperty(
         nullable = false, optional = false,
@@ -79,7 +79,7 @@ public class IterationPeriod extends AbstractEntity implements Serializable {
     private Double deltaAc;
 
     /**
-     * Ev delta
+     * Ev adjustment at start
      */
     @WegasEntityProperty(
         nullable = false, optional = false,
@@ -87,7 +87,7 @@ public class IterationPeriod extends AbstractEntity implements Serializable {
     private Double deltaEv;
 
     /**
-     *
+     * pw "done" during this period
      */
     @WegasEntityProperty(
         nullable = false, optional = false,
@@ -95,7 +95,7 @@ public class IterationPeriod extends AbstractEntity implements Serializable {
     private Double pw;
 
     /**
-     *
+     * Planned workload
      */
     @WegasEntityProperty(
         nullable = false, optional = false,
@@ -103,7 +103,7 @@ public class IterationPeriod extends AbstractEntity implements Serializable {
     private Double planned;
 
     /**
-     *
+     * Replanned workload
      */
     @WegasEntityProperty(
         nullable = false, optional = false,
@@ -111,7 +111,7 @@ public class IterationPeriod extends AbstractEntity implements Serializable {
     private Double replanned;
 
     /**
-     *
+     * earned workload "done" during this period
      */
     @WegasEntityProperty(
         nullable = false, optional = false,
@@ -119,7 +119,7 @@ public class IterationPeriod extends AbstractEntity implements Serializable {
     private Double ew;
 
     /*
-     *
+     * actual workload spent during this period.
      */
     @WegasEntityProperty(
         nullable = false, optional = false,
@@ -282,6 +282,22 @@ public class IterationPeriod extends AbstractEntity implements Serializable {
 
     public void removeEvent(IterationEvent event) {
         this.iterationEvents.remove(event);
+    }
+
+    public void addStartTaskEvent(TaskInstance taskInstante, int step) {
+        IterationEvent event = new IterationEvent();
+        event.setEventType(IterationEvent.EventType.START_TASK);
+        event.setStep(step);
+        event.setTaskInstance(taskInstante);
+        this.addEvent(event);
+    }
+
+    public void addEndOfTaskEvent(TaskInstance taskInstante, int step) {
+        IterationEvent event = new IterationEvent();
+        event.setEventType(IterationEvent.EventType.COMPLETE_TASK);
+        event.setStep(step);
+        event.setTaskInstance(taskInstante);
+        this.addEvent(event);
     }
 
     public void addWorkloadAdjustmentEvent() {

@@ -248,6 +248,14 @@ public class IterationFacade extends BaseFacade<Iteration> implements IterationF
         }
     }
 
+    public Iteration replan(Long iterationId, Long periodNumber, double workload) {
+        Iteration iteration = this.find(iterationId);
+        IterationPeriod period = iteration.getOrCreatePeriod(periodNumber);
+
+        period.setReplanned(workload);
+        return iteration;
+    }
+
     public Iteration plan(Long iterationId, Long periodNumber, double workload) {
         Iteration iteration = this.find(iterationId);
         IterationPeriod period = iteration.getOrCreatePeriod(periodNumber);
@@ -256,6 +264,7 @@ public class IterationFacade extends BaseFacade<Iteration> implements IterationF
             period.setReplanned(workload);
         } else {
             period.setPlanned(workload);
+            period.setReplanned(workload);
         }
         return iteration;
     }

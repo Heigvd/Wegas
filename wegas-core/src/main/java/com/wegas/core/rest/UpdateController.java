@@ -123,7 +123,7 @@ public class UpdateController {
         //    ret.append("<a href=\"UpdateScript/").append(gm.getId()).append("\">Update script ").append(gm.getId()).append("</a><br />");
         //}
         return "<a href=\"RtsUpdateScope/10901\">RTS Update Scopes</a> <br />"
-                + "<a href=\"RtsNewScope/10901\">RTS New Scopes</a> <br />";
+            + "<a href=\"RtsNewScope/10901\">RTS New Scopes</a> <br />";
     }
 
     /**
@@ -206,15 +206,15 @@ public class UpdateController {
 
         if (scenarioOnly) {
             where = criteriaBuilder.and(
-                    criteriaBuilder.equal(e.get("type"), GameModel.GmType.SCENARIO),
-                    criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-private/wegas-pmg/js/wegas-pmg-loader.js;wegas-private/wegas-pmg/scripts/wegas-pmg-client.js")
+                criteriaBuilder.equal(e.get("type"), GameModel.GmType.SCENARIO),
+                criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-private/wegas-pmg/js/wegas-pmg-loader.js;wegas-private/wegas-pmg/scripts/wegas-pmg-client.js")
             );
         } else {
             where = criteriaBuilder.like(e.get("properties").get("clientScriptUri"), "wegas-private/wegas-pmg/js/wegas-pmg-loader.js;wegas-private/wegas-pmg/scripts/wegas-pmg-client.js");
         }
 
         query.select(e)
-                .where(where);
+            .where(where);
 
         return em.createQuery(query).getResultList();
     }
@@ -465,8 +465,7 @@ public class UpdateController {
     }
 
     /**
-     * Make sure all PMGshare the same structure.
-     * Make extractModel smarter
+     * Make sure all PMGshare the same structure. Make extractModel smarter
      *
      * @return some output
      */
@@ -483,8 +482,7 @@ public class UpdateController {
     }
 
     /**
-     * Make sure all PMGshare the same structure.
-     * Make extractModel smarter
+     * Make sure all PMGshare the same structure. Make extractModel smarter
      *
      * @return some output
      */
@@ -503,9 +501,21 @@ public class UpdateController {
         return ret.toString();
     }
 
+    @GET
+    @Path("NORMALISE_PMG/{id: [1-9][0-9]*}")
+    public String pmg_normalise_one(@PathParam("id") Long id) {
+        GameModel pmg = gameModelFacade.find(id);
+        StringBuilder ret = new StringBuilder();
+
+        ret.append("<ul>");
+        ret.append("<li>").append(pmg.getName()).append("</li>");
+        ret.append(this.normalisePmg(pmg));
+        ret.append("</ul>");
+        return ret.toString();
+    }
+
     /**
-     * Make sure all PMGshare the same structure.
-     * Make extractModel smarter
+     * Make sure all PMGshare the same structure. Make extractModel smarter
      *
      * @return some output
      */
@@ -513,9 +523,9 @@ public class UpdateController {
     @Path("PRETEND_FIX_LANGS/{from}/{to}/{ids}")
     public String pretendFixLang(@PathParam("from") String fromCode, @PathParam("to") String toCode, @PathParam("ids") String strIds) {
         List<GameModel> gameModels = Arrays.stream(strIds.split(","))
-                .map(id -> Long.parseLong(id, 10))
-                .map(id -> gameModelFacade.find(id))
-                .collect(Collectors.toList());
+            .map(id -> Long.parseLong(id, 10))
+            .map(id -> gameModelFacade.find(id))
+            .collect(Collectors.toList());
 
         StringBuilder sb = new StringBuilder();
 
@@ -534,14 +544,13 @@ public class UpdateController {
         return sb.toString();
     }
 
-
     @GET
     @Path("FIX_LANGS/{from}/{to}/{ids}")
     public String fixLang(@PathParam("from") String fromCode, @PathParam("to") String toCode, @PathParam("ids") String strIds) {
         List<GameModel> gameModels = Arrays.stream(strIds.split(","))
-                .map(id -> Long.parseLong(id, 10))
-                .map(id -> gameModelFacade.find(id))
-                .collect(Collectors.toList());
+            .map(id -> Long.parseLong(id, 10))
+            .map(id -> gameModelFacade.find(id))
+            .collect(Collectors.toList());
 
         StringBuilder sb = new StringBuilder();
 
@@ -560,8 +569,7 @@ public class UpdateController {
     }
 
     /**
-     * Make sure all PMGshare the same structure.
-     * Make extractModel smarter
+     * Make sure all PMGshare the same structure. Make extractModel smarter
      *
      * @return some output
      */
@@ -569,9 +577,9 @@ public class UpdateController {
     @Path("COMPARE_LANGS/{ids}")
     public String compareLangs(@PathParam("ids") String strIds) {
         List<GameModel> gameModels = Arrays.stream(strIds.split(","))
-                .map(id -> Long.parseLong(id, 10))
-                .map(id -> gameModelFacade.find(id))
-                .collect(Collectors.toList());
+            .map(id -> Long.parseLong(id, 10))
+            .map(id -> gameModelFacade.find(id))
+            .collect(Collectors.toList());
 
         Map<String, List<Long>> codeToIds = new HashMap<>();
         Map<String, List<Long>> badCodeToIds = new HashMap<>();
@@ -745,8 +753,6 @@ public class UpdateController {
             project.setName("project");
         } catch (WegasNoResultException ex) {
         }
-
-
 
         sb.append(this.processChildren(pmg, "questions", "questionsPhase", 4));
         sb.append(this.processChildren(pmg, "questionsPhase1", "questionsPeriod1_", 1));
