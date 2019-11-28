@@ -2,7 +2,7 @@ import * as React from 'react';
 import { generateAbsolutePath, FileAPI } from '../../../API/files.api';
 import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
 import { FileBrowserNode, FileBrowserNodeProps } from './FileBrowserNode';
-import { StyledLabel } from '../../../Components/AutoImport/String/Label';
+import { StyledLabel } from '../../../Components/AutoImport/String/String';
 import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { StoreDispatch, useStore } from '../../../data/store';
 import { grow } from '../../../css/classes';

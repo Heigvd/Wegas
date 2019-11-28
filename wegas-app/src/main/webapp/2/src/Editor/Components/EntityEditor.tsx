@@ -11,7 +11,7 @@ import { StoreConsumer, StoreDispatch, store } from '../../data/store';
 import { AvailableViews } from './FormView';
 import { cx } from 'emotion';
 import { flex, grow, flexColumn } from '../../css/classes';
-import { StyledLabel } from '../../Components/AutoImport/String/Label';
+import { StyledLabel } from '../../Components/AutoImport/String/String';
 import { shallowDifferent } from '../../data/connectStore';
 import { Edition } from '../../data/Reducer/globalState';
 

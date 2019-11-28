@@ -97,7 +97,7 @@ interface LabelProps {
   type?: 'normal' | 'warning' | 'error' | 'succes';
 }
 
-export default function Label(props: LabelProps) {
+export default function String(props: LabelProps) {
   const descriptor = useVariableDescriptor<IStringDescriptor>(props.variable);
   const instance = useVariableInstance(descriptor);
   if (descriptor === undefined || instance === undefined) {

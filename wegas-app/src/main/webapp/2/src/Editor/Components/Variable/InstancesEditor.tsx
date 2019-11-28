@@ -16,7 +16,7 @@ import {
 } from '../../../data/Reducer/VariableInstanceReducer';
 import { State } from '../../../data/Reducer/reducers';
 import { VariableInstanceAPI } from '../../../API/variableInstance.api';
-import { StyledLabel } from '../../../Components/AutoImport/String/Label';
+import { StyledLabel } from '../../../Components/AutoImport/String/String';
 import { flex, flexColumn, grow } from '../../../css/classes';
 
 const listBox = css({

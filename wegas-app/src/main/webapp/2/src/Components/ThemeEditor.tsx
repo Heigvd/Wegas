@@ -10,7 +10,7 @@ import { useOnClickOutside } from './Hooks/useOnClickOutside';
 import { IconButton } from './Button/IconButton';
 import { Menu } from './Menu';
 import { TextPrompt } from '../Editor/Components/TextPrompt';
-import { StyledLabel } from './AutoImport/String/Label';
+import { StyledLabel } from './AutoImport/String/String';
 import { ConfirmButton } from './Button/ConfirmButton';
 import { NumberSlider } from './NumberSlider';
 import { wlog } from '../Helper/wegaslog';

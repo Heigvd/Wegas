@@ -14,11 +14,14 @@ import u from 'immer';
 import { WebSocketEvent, useWebsocket } from '../../../API/websocket';
 import SrcEditor, { SrcEditorProps } from './SrcEditor';
 import MergeEditor from './MergeEditor';
-import { StyledLabel } from '../../../Components/AutoImport/String/Label';
+import { StyledLabel } from '../../../Components/AutoImport/String/String';
 import { TextPrompt } from '../TextPrompt';
 import { ConfirmButton } from '../../../Components/Button/ConfirmButton';
 import { WegasScriptEditor } from './WegasScriptEditor';
-import { clientScriptEval, useGlobals } from '../../../Components/Hooks/useScript';
+import {
+  clientScriptEval,
+  useGlobals,
+} from '../../../Components/Hooks/useScript';
 import * as ts from 'typescript';
 import { Menu } from '../../../Components/Menu';
 
@@ -320,7 +323,7 @@ const isEditAllowed = (librariesState: ILibrariesState): boolean => {
     librariesState.selected !== '' &&
     (GameModel.selectCurrent().type !== 'SCENARIO' ||
       libEntry.library.visibility === 'PRIVATE' ||
-        libEntry.library.visibility === 'INHERITED')
+      libEntry.library.visibility === 'INHERITED')
   );
 };
 

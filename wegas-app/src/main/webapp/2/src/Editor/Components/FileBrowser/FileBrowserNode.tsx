@@ -14,7 +14,7 @@ import { ConfirmButton } from '../../../Components/Button/ConfirmButton';
 import { GameModel } from '../../../data/selectors';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { file } from '@babel/types';
-import { StyledLabel } from '../../../Components/AutoImport/String/Label';
+import { StyledLabel } from '../../../Components/AutoImport/String/String';
 import { store, StoreDispatch } from '../../../data/store';
 import { editFile } from '../../../data/Reducer/globalState';
 import { flex, grow, hidden, block } from '../../../css/classes';

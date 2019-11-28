@@ -3,6 +3,7 @@ This files runs on node.
 */
 import * as ts from 'typescript';
 import * as globby from 'globby';
+import { PageComponent } from './Components/PageComponents/Simple';
 
 const DEBUG = false;
 function log(...t: unknown[]) {
@@ -67,10 +68,10 @@ interface Definition {
  * Special case WegasComponent, to be replaced by our Components.
  */
 const OUR_ELEMENT_TYPE_NAME = 'WegasComponent';
+
 export default function() {
   const files: string[] = globby.sync('src/Components/AutoImport/**/*.tsx');
-
-  log(files);
+  // log(files);
   const lib = globby.sync('types/**/*.d.ts');
   const program = ts.createProgram(files.concat(lib), compilerOptions);
   const checker = program.getTypeChecker();
@@ -78,7 +79,9 @@ export default function() {
   // const t_cache = new WeakSet();
 
   const types: { type: ts.Type | null; fileName: string }[] = [];
+  // log(files.concat(lib));
   for (const sourceFile of program.getSourceFiles()) {
+    sourceFile.getSourceFile().fileName;
     if (
       !sourceFile.isDeclarationFile &&
       files.some(f => sourceFile.fileName.indexOf(f) > -1)
@@ -87,18 +90,19 @@ export default function() {
     }
   }
   const schema = oneOf(types);
-  log(JSON.stringify(schema, undefined, 2));
+  // log(JSON.stringify(schema, undefined, 2));
   return {
     code: `module.exports = {schema:${JSON.stringify(schema)}}`,
     contextDependencies: files,
     cacheable: true,
   };
-  // console.log(JSON.stringify(oneOf(types), undefined, 2));
+  // log(JSON.stringify(oneOf(types), undefined, 2));
 
   function extractProps(node: ts.Node) {
     const typeName = node
       .getSourceFile()
       .fileName.replace(/src\/Components\/AutoImport\/(.*).tsx?/, '$1');
+
     const t = checker.getTypeAtLocation(node);
     if (t.isClassOrInterface()) {
       const props = checker.getTypeAtLocation(node).getProperty('props');
@@ -123,6 +127,7 @@ export default function() {
     });
   }
   function visit(node: ts.Node) {
+    // log(node.getSourceFile().fileName);
     if (isNodeDefaultExported(node)) {
       extractProps(node);
       return;
@@ -148,8 +153,14 @@ export default function() {
     types: { type: ts.Type | null; fileName: string }[],
   ): Definition {
     const defs: { [k: string]: Definition } = {};
+    log(types[0].type);
     defs.components = {
       oneOf: types.map(t => {
+        log(
+          t.type !== null
+            ? serializeType(t.type)
+            : { type: 'object', additionalProperties: false },
+        );
         return {
           type: 'object',
           required: ['type', 'props'],
@@ -235,7 +246,7 @@ export default function() {
       };
     }
     const name = symbolUniqueName(symbol);
-    log(name);
+    // log(name);
     if (symbol_cache.has(symbol)) {
       return { $ref: `#/definitions/${name}` };
     }
@@ -252,7 +263,7 @@ export default function() {
   }
 
   function serializeType(typ: ts.Type, skipSymbol?: true): Definition {
-    log('Type', checker.typeToString(typ), ts.TypeFlags[typ.getFlags()]);
+    // log('Type', checker.typeToString(typ), ts.TypeFlags[typ.getFlags()]);
 
     if (
       typ.getFlags() &
@@ -332,20 +343,17 @@ export default function() {
         type: 'object',
         required,
         additionalProperties: false,
-        properties: props.reduce(
-          (all, p) => {
-            if (!(p.getFlags() & ts.SymbolFlags.Optional)) {
-              required.push(p.getName());
-            }
-            const decl = p.declarations ? p.declarations[0] : undefined;
-            all[p.getName()] = {
-              ...doc(p),
-              ...serializeType(checker.getTypeOfSymbolAtLocation(p, decl!)),
-            };
-            return all;
-          },
-          {} as { [p: string]: any },
-        ),
+        properties: props.reduce((all, p) => {
+          if (!(p.getFlags() & ts.SymbolFlags.Optional)) {
+            required.push(p.getName());
+          }
+          const decl = p.declarations ? p.declarations[0] : undefined;
+          all[p.getName()] = {
+            ...doc(p),
+            ...serializeType(checker.getTypeOfSymbolAtLocation(p, decl!)),
+          };
+          return all;
+        }, {} as { [p: string]: any }),
       };
     }
 

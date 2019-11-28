@@ -7,7 +7,7 @@ import WegasDiffEditor, {
   ExtendedDiffNavigator,
   DiffEditorLineChanges,
 } from './WegasDiffEditor';
-import { StyledLabel } from '../../../Components/AutoImport/String/Label';
+import { StyledLabel } from '../../../Components/AutoImport/String/String';
 import { arrayToText, textToArray } from './SrcEditor';
 
 const diffLabel = css({

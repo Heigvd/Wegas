@@ -10,7 +10,7 @@ import SrcEditor, {
 import {
   StyledLabel,
   LabelStyle,
-} from '../../../Components/AutoImport/String/Label';
+} from '../../../Components/AutoImport/String/String';
 import { WegasScriptEditor } from './WegasScriptEditor';
 import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
 

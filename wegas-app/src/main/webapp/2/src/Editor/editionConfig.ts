@@ -151,6 +151,7 @@ export default async function getEditionConfig<T extends IAbstractEntity>(
   entity: T,
 ): Promise<Schema> {
   return fetchConfig(entity['@class'] + '.json').then(res => {
+    console.log(res.schema);
     return schemaUpdater(
       res.schema,
       injectRef,

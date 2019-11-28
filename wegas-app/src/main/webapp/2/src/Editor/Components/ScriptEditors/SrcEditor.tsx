@@ -216,6 +216,8 @@ function SrcEditor({
   const getValue = React.useRef<() => string>();
   const editorValue = React.useRef(value || '');
 
+  wlog(schemas);
+
   React.useEffect(() => {
     if (!reactMonaco) {
       monaco.init().then(setReactMonaco);
