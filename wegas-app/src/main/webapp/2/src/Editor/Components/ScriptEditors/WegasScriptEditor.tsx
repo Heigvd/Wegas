@@ -11,10 +11,10 @@ import SrcEditor, {
   MonacoDefinitionsLibraries,
 } from './SrcEditor';
 import { SrcEditorProps } from './SrcEditor';
-import { deepDifferent } from '../../../data/connectStore';
 import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
 import { useGlobalLibs } from '../../../Components/Hooks/useGlobalLibs';
 import { libes5 } from '../../../../types/scripts/libs';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 
 export interface WegasScriptEditorProps extends SrcEditorProps {
   clientScript?: boolean;

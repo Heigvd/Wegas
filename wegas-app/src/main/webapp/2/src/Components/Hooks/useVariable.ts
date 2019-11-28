@@ -2,7 +2,7 @@ import * as React from 'react';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { Player, VariableDescriptor } from '../../data/selectors';
 import { useStore } from '../../data/store';
-import { shallowDifferent } from '../../data/connectStore';
+import { shallowDifferent } from './storeHookFactory';
 
 type instanceOf<D> = D extends IVariableDescriptor<infer U> ? U : never;
 /**

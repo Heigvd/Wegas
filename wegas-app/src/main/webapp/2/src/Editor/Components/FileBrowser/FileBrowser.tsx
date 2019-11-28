@@ -6,7 +6,7 @@ import { StyledLabel } from '../../../Components/AutoImport/String/String';
 import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { StoreDispatch, useStore } from '../../../data/store';
 import { grow } from '../../../css/classes';
-import { shallowDifferent } from '../../../data/connectStore';
+import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 
 interface FileBrowserProps {
   onFileClick?: FileBrowserNodeProps['onFileClick'];

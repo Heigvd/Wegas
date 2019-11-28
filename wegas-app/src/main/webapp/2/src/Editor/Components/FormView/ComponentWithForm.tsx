@@ -10,14 +10,12 @@ import {
 import { css, cx } from 'emotion';
 import { Edition, closeEditor } from '../../../data/Reducer/globalState';
 import { StoreDispatch } from '../../../data/store';
-import {
-  createStoreConnector,
-  shallowDifferent,
-} from '../../../data/connectStore';
+import { createStoreConnector } from '../../../data/connectStore';
 import { flex, grow, autoScroll } from '../../../css/classes';
 import { InstancesEditorProps } from '../Variable/InstancesEditor';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { Toolbar } from '../../../Components/Toolbar';
+import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 
 const growBig = css({
   flex: '30 1 auto',

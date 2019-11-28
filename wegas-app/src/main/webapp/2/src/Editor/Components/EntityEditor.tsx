@@ -12,8 +12,8 @@ import { AvailableViews } from './FormView';
 import { cx } from 'emotion';
 import { flex, grow, flexColumn } from '../../css/classes';
 import { StyledLabel } from '../../Components/AutoImport/String/String';
-import { shallowDifferent } from '../../data/connectStore';
 import { Edition } from '../../data/Reducer/globalState';
+import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 
 export interface EditorProps<T> {
   entity?: T;

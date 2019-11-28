@@ -33,7 +33,7 @@ import {
 import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { Edition } from '../../../data/Reducer/globalState';
-import { shallowDifferent } from '../../../data/connectStore';
+import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>

@@ -33,8 +33,18 @@ export const PageAPI = {
    * @param gameModelId gameModelId to fetch pages from
    * @param pageId optional pageId, will return all page if omited
    */
-  get(gameModelId: number, pageId: string = ''): Promise<Pages> {
-    return rest(PAGE_BASE(gameModelId) + pageId).then(extractPage);
+  get(
+    gameModelId: number,
+    pageId: string = '',
+    extract: boolean = false,
+  ): Promise<Pages> {
+    return rest(PAGE_BASE(gameModelId) + pageId).then(res => {
+      if (extract) {
+        return extractPage(res);
+      } else {
+        return res.json();
+      }
+    });
   },
 
   /**

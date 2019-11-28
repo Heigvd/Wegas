@@ -2,6 +2,7 @@ import * as React from 'react';
 import { css } from 'emotion';
 import Header from './Header';
 import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
+import PageEditor from './Page/PageEditor';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
 const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
@@ -49,6 +50,7 @@ export const availableLayoutTabs = {
     <HTMLEditor value={'<div class="testClass">Testing testClass</div>'} />
   ),
   ThemeEditor: <ThemeEditor />,
+  PageEditor2: <PageEditor />,
 };
 
 export default class AppLayout extends React.Component<

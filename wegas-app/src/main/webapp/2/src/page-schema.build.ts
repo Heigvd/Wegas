@@ -3,7 +3,6 @@ This files runs on node.
 */
 import * as ts from 'typescript';
 import * as globby from 'globby';
-import { PageComponent } from './Components/PageComponents/Simple';
 
 const DEBUG = false;
 function log(...t: unknown[]) {

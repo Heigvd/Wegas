@@ -37,8 +37,8 @@ const activeButton = css({
 });
 
 const listStyle = css({
-  color: themeVar.primaryDarkerTextColor,
-  backgroundColor: themeVar.primaryDarkerColor,
+  color: themeVar.primaryColor,
+  backgroundColor: themeVar.backgroundColor,
 });
 
 const dropZoneFocus = css({

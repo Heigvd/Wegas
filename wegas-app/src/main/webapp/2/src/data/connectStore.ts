@@ -1,22 +1,14 @@
 import * as React from 'react';
 import { Store } from 'redux';
-import { shallowIs } from '../Helper/shallowIs';
+import {
+  useAnyStore,
+  shallowDifferent,
+} from '../Components/Hooks/storeHookFactory';
 
 function id<T>(x: T) {
   return x;
 }
-export function refDifferent(a: unknown, b: unknown) {
-  return a !== b;
-}
-export function shallowDifferent<T>(a: T, b: T) {
-  return !shallowIs(a, b);
-}
-export function deepDifferent<T>(a: T, b: T) {
-  if (a === undefined && b === undefined) {
-    return false;
-  }
-  return !(JSON.stringify(a) === JSON.stringify(b));
-}
+
 export function createStoreConnector<S extends Store>(store: S) {
   type State = ReturnType<S['getState']>;
   type Dispatch = S['dispatch'];
@@ -27,35 +19,11 @@ export function createStoreConnector<S extends Store>(store: S) {
    * @param shouldUpdate Will update the component if this function returns true.
    * Default to ref comparing values returned from selector
    */
-  function useStore<R>(
+
+  const useStore = <R>(
     selector: (state: State) => R,
-    shouldUpdate: (oldValue: R, newValue: R) => boolean = refDifferent,
-  ) {
-    const [selected, setSelected] = React.useState(() =>
-      selector(store.getState()),
-    );
-    const isFirstRun = React.useRef(true);
-    const stateUpdater = React.useCallback(() => {
-      const value = selector(store.getState());
-      setSelected(v => {
-        if (shouldUpdate(v, value)) {
-          return value;
-        }
-        return v;
-      });
-    }, [selector, shouldUpdate]);
-    React.useEffect(() => {
-      // if the stateUpdater changed, run it.
-      if (isFirstRun.current) {
-        // Not first time since it runs in store initializer
-        isFirstRun.current = false;
-        return;
-      }
-      stateUpdater();
-    }, [stateUpdater]);
-    React.useEffect(() => store.subscribe(stateUpdater), [stateUpdater]);
-    return selected;
-  }
+    shouldUpdate?: (oldValue: R, newValue: R) => boolean,
+  ) => useAnyStore(selector, shouldUpdate, store);
 
   function getDispatch() {
     return store.dispatch;
