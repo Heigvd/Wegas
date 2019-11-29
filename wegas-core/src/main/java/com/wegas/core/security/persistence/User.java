@@ -20,6 +20,8 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasEntityPermission;
+import com.wegas.core.security.util.WegasIsTeamMate;
+import com.wegas.core.security.util.WegasIsTrainerForUser;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.View.StringView;
@@ -217,6 +219,15 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
         return false;
     }
 
+    public boolean isMemberOf(String roleName) {
+        for (Role r : roles) {
+            if (r.getName().equals(roleName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * @return the roles
      */
@@ -262,22 +273,28 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
         return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.USER);
     }
 
+    /**
+     * Return all Team write permission which the use is member of (i.e user team-mate)
+     *
+     * @return
+     */
     @JsonIgnore
-    public Collection<WegasPermission> getTeamsRelatedPermissions() {
-        Collection<WegasPermission> p = WegasPermission.getAsCollection(
-            this.getAssociatedWritePermission() // user itself
+    public Collection<WegasPermission> getPlayersTeamsRelatedPermissions() {
+        return WegasPermission.getAsCollection(
+            new WegasIsTeamMate(id)
         );
-        for (Player player : this.getPlayers()) {
-            Team team = player.getTeam();
-            if (team != null) {
-                p.add(team.getAssociatedWritePermission()); // team-mates
-                Game game = team.getGame();
-                if (game != null) {
-                    p.add(game.getAssociatedWritePermission()); //  trainers
-                }
-            }
-        }
-        return p;
+    }
+
+    /**
+     * Return all game write permission which the use is member of (as player)
+     *
+     * @return
+     */
+    @JsonIgnore
+    public Collection<WegasPermission> getPlayerGameRelatedPermissions() {
+        return WegasPermission.getAsCollection(
+            new WegasIsTrainerForUser(id)
+        );
     }
 
     @Override
@@ -285,7 +302,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
         Collection<WegasPermission> p = WegasPermission.getAsCollection(
             this.getAssociatedWritePermission()
         );
-        p.addAll(WegasMembership.TRAINER); // why ? maybe to share game/gameModel
+        p.addAll(WegasMembership.TRAINER); // why ? maybe to share game/gameModel (ie add permission)
         return p;
     }
 

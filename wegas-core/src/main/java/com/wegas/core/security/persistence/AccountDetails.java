@@ -43,16 +43,12 @@ public class AccountDetails extends AbstractEntity {
     private AbstractAccount account;
 
     /**
-     * required to build an unique index on email as only email linked to local account
-     * must be unique (ie. AaiAccount and JPAAccount can use the same address, two Jpa account can not)
+     * required to build an unique index on email as only email linked to local account must be unique (ie. AaiAccount
+     * and JPAAccount can use the same address, two Jpa account can not)
      */
     private boolean checkUniqueness;
 
-    @WegasEntityProperty(callback = CheckEmailChange.class, optional = false, nullable = false, view = @View(label = "E-mail"))
     private String email;
-
-    @Transient
-    private boolean emailJustChanged = false;
 
     @Override
     public Long getId() {
@@ -84,14 +80,6 @@ public class AccountDetails extends AbstractEntity {
         this.email = email;
     }
 
-    public boolean isEmailJustChanged() {
-        return emailJustChanged;
-    }
-
-    public void setEmailJustChanged(boolean emailJustChanged) {
-        this.emailJustChanged = emailJustChanged;
-    }
-
     @Override
     public Collection<WegasPermission> getRequieredCreatePermission() {
         // no permission required to create a new account
@@ -100,7 +88,7 @@ public class AccountDetails extends AbstractEntity {
 
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
-        // Read/Write restriceted to the user
+        // Read/Write restricted to the user
         return WegasPermission.getAsCollection(
             account.getUser().getAssociatedWritePermission()
         );
@@ -108,7 +96,14 @@ public class AccountDetails extends AbstractEntity {
 
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
-        return account.getUser().getTeamsRelatedPermissions();
+        Collection<WegasPermission> p = getRequieredUpdatePermission(); // the user itselft
+
+        /*
+         * Trainers of game in which the user plays can read details (email address)
+         */
+        p.addAll(account.getUser().getPlayerGameRelatedPermissions());
+
+        return p;
     }
 
     @Override
@@ -125,19 +120,4 @@ public class AccountDetails extends AbstractEntity {
     public Visibility getInheritedVisibility() {
         return Visibility.INHERITED;
     }
-
-    public static class CheckEmailChange implements WegasCallback {
-
-        @Override
-        public void preUpdate(IMergeable entity, Object ref, Object identifier) {
-            if (entity instanceof AccountDetails && "email".equals(identifier)) {
-                AccountDetails details = (AccountDetails) entity;
-                if (!details.getEmail().equals(ref)) {
-                    // email update detected
-                    details.setEmailJustChanged(true);
-                }
-            }
-        }
-    }
-
 }

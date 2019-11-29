@@ -198,17 +198,16 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     public User signup(JpaAccount account) throws AddressException, WegasConflictException {
-        Helper.assertEmailPattern(account.getDetails().getEmail());
+        Helper.assertEmailPattern(account.getDeserialisedEmail());
 
         if (account.getUsername().equals("") || !this.checkExistingUsername(account.getUsername())) {
             User user;
             Subject subject = SecurityUtils.getSubject();
 
             if (subject.isAuthenticated()
-                    && accountFacade.find((Long) subject.getPrincipal()) instanceof GuestJpaAccount) {
+                && accountFacade.find((Long) subject.getPrincipal()) instanceof GuestJpaAccount) {
                 /**
-                 * Subject is authenticated as guest but try to signup with a
-                 * full account -> let's upgrade
+                 * Subject is authenticated as guest but try to signup with a full account -> let's upgrade
                  */
                 GuestJpaAccount from = (GuestJpaAccount) accountFacade.find((Long) subject.getPrincipal());
                 subject.logout();
@@ -216,7 +215,7 @@ public class UserFacade extends BaseFacade<User> {
             } else {
                 // Check if e-mail is already taken and if yes return a localized error message:
                 try {
-                    accountFacade.findByEmail(account.getDetails().getEmail());
+                    accountFacade.findByEmail(account.getDeserialisedEmail());
                     throw new WegasConflictException("email");
                 } catch (WegasNoResultException e) {
                     // GOTCHA
@@ -332,8 +331,8 @@ public class UserFacade extends BaseFacade<User> {
         }
          */
         // setup shadow storage for each account
-        for (AbstractAccount account : user.getAccounts()){
-            if (account.getShadow() == null){
+        for (AbstractAccount account : user.getAccounts()) {
+            if (account.getShadow() == null) {
                 account.setShadow(new Shadow());
             }
             if (account.getDetails() == null){
@@ -342,6 +341,14 @@ public class UserFacade extends BaseFacade<User> {
         }
 
         getEntityManager().persist(user);
+
+        for (AbstractAccount account : user.getAccounts()) {
+            if (account instanceof JpaAccount) {
+                ((JpaAccount) account).shadowPasword();
+            }
+
+            account.shadowEmail();
+        }
 
         /*
          * Very strange behaviour: without this flush, RequestManages faild to be injected within others beans...
@@ -387,8 +394,7 @@ public class UserFacade extends BaseFacade<User> {
     /**
      * Get all roles which have some permissions on the given instance..
      * <p>
-     * Map is { id : role id, name: role name, permissions: list of permissions
-     * related to instance}
+     * Map is { id : role id, name: role name, permissions: list of permissions related to instance}
      *
      * @param instance
      *
@@ -396,11 +402,11 @@ public class UserFacade extends BaseFacade<User> {
      */
     public List<Map> findRolePermissionByInstance(String instance) {
         TypedQuery<Role> findByToken = getEntityManager()
-                //@fixme Unable to select role with a like w/ embeddebale
-                .createQuery("SELECT DISTINCT roles "
-                        + "FROM Role roles "
-                        + "JOIN roles.permissions p "
-                        + "WHERE p.value LIKE :instance", Role.class);
+            //@fixme Unable to select role with a like w/ embeddebale
+            .createQuery("SELECT DISTINCT roles "
+                + "FROM Role roles "
+                + "JOIN roles.permissions p "
+                + "WHERE p.value LIKE :instance", Role.class);
         // Query findByToken = getEntityManager()
         //.createQuery("SELECT DISTINCT roles FROM Role roles WHERE roles.permissions.value = 'mm'");
         // SELECT DISTINCT roles FROM Role roles WHERE roles.permissions LIKE :gameId
@@ -483,7 +489,7 @@ public class UserFacade extends BaseFacade<User> {
      */
     public List<User> findUserByPermissionInstance(String instance) {
         final TypedQuery<User> findByToken = getEntityManager()
-                .createNamedQuery("User.findUserPermissions", User.class);
+            .createNamedQuery("User.findUserPermissions", User.class);
         findByToken.setParameter("instance", "%:" + instance);
         return findByToken.getResultList();
     }
@@ -502,7 +508,7 @@ public class UserFacade extends BaseFacade<User> {
         }
 
         final TypedQuery<User> findByToken = getEntityManager()
-                .createNamedQuery("User.findUserPermissions", User.class);
+            .createNamedQuery("User.findUserPermissions", User.class);
         findByToken.setParameter("instance", permission + instance);
         return findByToken.getResultList();
     }
@@ -519,7 +525,7 @@ public class UserFacade extends BaseFacade<User> {
         return roleFacade.find(role_id).getUsers(); ??????
          */
         final TypedQuery<User> findWithRole = getEntityManager()
-                .createNamedQuery("User.findUsersWithRole", User.class);
+            .createNamedQuery("User.findUsersWithRole", User.class);
         findWithRole.setParameter("role_id", role_id);
         return findWithRole.getResultList();
     }
@@ -587,13 +593,13 @@ public class UserFacade extends BaseFacade<User> {
 
         for (Role role : this.findRoles(user)) {
             TypedQuery<Permission> queryRolePermission = getEntityManager()
-                    .createNamedQuery("Permission.findByRole", Permission.class);
+                .createNamedQuery("Permission.findByRole", Permission.class);
             queryRolePermission.setParameter("roleId", role.getId());
             perms.addAll(queryRolePermission.getResultList());
         }
 
         TypedQuery<Permission> queryUserPermissions = getEntityManager()
-                .createNamedQuery("Permission.findByUser", Permission.class);
+            .createNamedQuery("Permission.findByUser", Permission.class);
         queryUserPermissions.setParameter("userId", user.getId());
         perms.addAll(queryUserPermissions.getResultList());
 
@@ -602,7 +608,7 @@ public class UserFacade extends BaseFacade<User> {
 
     private List<Permission> findUserPermissions(String permission, User user) {
         TypedQuery<Permission> query = getEntityManager()
-                .createNamedQuery("Permission.findByPermissionAndUser", Permission.class);
+            .createNamedQuery("Permission.findByPermissionAndUser", Permission.class);
         query.setParameter("userId", user.getId());
         query.setParameter("permission", permission);
 
@@ -625,7 +631,7 @@ public class UserFacade extends BaseFacade<User> {
 
     private void deletePermissions(String permission) {
         TypedQuery<Permission> query = getEntityManager()
-                .createNamedQuery("Permission.findByPermission", Permission.class);
+            .createNamedQuery("Permission.findByPermission", Permission.class);
         query.setParameter("permission", permission);
 
         for (Permission p : query.getResultList()) {
@@ -696,7 +702,7 @@ public class UserFacade extends BaseFacade<User> {
 
     private String hashToken(String token, JpaAccount account) {
         return new Sha256Hash(token,
-                (new SimpleByteSource(account.getShadow().getSalt())).getBytes()).toHex();
+            (new SimpleByteSource(account.getShadow().getSalt())).getBytes()).toHex();
     }
 
     public void requestPasswordReset(String email, HttpServletRequest request) {
@@ -705,10 +711,10 @@ public class UserFacade extends BaseFacade<User> {
             JpaAccount account = accountFacade.findJpaByEmail(email);
             if (account != null) {
                 this.sendEmailWithDisposableToken(request, account,
-                        "[Albasim Wegas] Reset Password Request",
-                        "Click <a href='{{link}}'>here</a> to reset your password.<br /><br />"
-                        + "If you did't request this email, then simply ignore this message",
-                        "reset", 60);
+                    "[Albasim Wegas] Reset Password Request",
+                    "Click <a href='{{link}}'>here</a> to reset your password.<br /><br />"
+                    + "If you did't request this email, then simply ignore this message",
+                    "reset", 60);
             }
             this.flush();
         } catch (WegasNoResultException ex) {
@@ -725,17 +731,16 @@ public class UserFacade extends BaseFacade<User> {
 
             if (account != null && account instanceof JpaAccount) {
                 this.sendEmailWithDisposableToken(request, (JpaAccount) account,
-                        "[AlbaSim Wegas] Please validate your account",
-                        "Click <a href='{{link}}'>here</a> to confirm your email address.<br /><br />"
-                        + "If you did't request this verification, you can ignore this message",
-                        "verify", 60);
+                    "[AlbaSim Wegas] Please validate your account",
+                    "Click <a href='{{link}}'>here</a> to confirm your email address.<br /><br />"
+                    + "If you did't request this verification, you can ignore this message",
+                    "verify", 60);
             }
         }
     }
 
     /**
-     * Send a e mail to a user.
-     * Generates a disposable token with
+     * Send a e mail to a user. Generates a disposable token with
      *
      * @param request               current http request is used to guess the public hostname to generate the link to
      *                              send
@@ -746,7 +751,7 @@ public class UserFacade extends BaseFacade<User> {
      * @param tokenValidityDuration how long the token will be valid, in minutes
      */
     private void sendEmailWithDisposableToken(HttpServletRequest request, JpaAccount account,
-            String subject, String text, String path, long tokenValidityDuration) {
+        String subject, String text, String path, long tokenValidityDuration) {
         User currentUser = requestManager.getCurrentUser();
         if (currentUser != null) {
 
@@ -763,16 +768,16 @@ public class UserFacade extends BaseFacade<User> {
                     String theLink = Helper.getPublicBaseUrl(request)
                             + "/#/" + path + "/" + account.getDetails().getEmail() + "/" + token;
 
-                    if (text.contains("{{link}}")) {
+                if (text.contains("{{link}}")) {
                         text = text.replace("{{link}}", theLink);
                     } else {
                         text = text + "<br /><a href='" + theLink + "'>" + path.toUpperCase() + "</a>";
                     }
 
                     String body = "Hi " + account.getFirstname() + " " + account.getLastname() + ", "
-                            + "<br />"
-                            + "<br />"
-                            + text;
+                        + "<br />"
+                        + "<br />"
+                        + text;
 
                     String from = "noreply@" + Helper.getWegasProperty("mail.default_domain");
                     emailFacade.send(account.getDetails().getEmail(), from, null, subject,
@@ -787,9 +792,9 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     * Sends the given email as one separate message per addressee (as a measure against spam filters)
-     * and an additional one to the sender to provide him a copy of the message.
-     * If an address is invalid (but syntactically correct), it should not prevent from sending to the other addressees.
+     * Sends the given email as one separate message per addressee (as a measure against spam filters) and an additional
+     * one to the sender to provide him a copy of the message. If an address is invalid (but syntactically correct), it
+     * should not prevent from sending to the other addressees.
      */
     public void sendEmail(Email email) /* throws MessagingException */ {
         List<Exception> exceptions = new ArrayList<>();
@@ -812,14 +817,14 @@ public class UserFacade extends BaseFacade<User> {
         try {
             // Send a last message directly to the sender as a confirmation copy
             emailFacade.send(email.getReplyTo(),
-                    email.getFrom(), email.getReplyTo(),
-                    email.getSubject(),
-                    email.getBody(), Message.RecipientType.TO, "text/html; charset=utf-8", true);
+                email.getFrom(), email.getReplyTo(),
+                email.getSubject(),
+                email.getBody(), Message.RecipientType.TO, "text/html; charset=utf-8", true);
         } catch (MessagingException e) {
             exceptions.add(e);
         }
         if (!exceptions.isEmpty()) {
-            for (Exception e :exceptions){
+            for (Exception e : exceptions) {
                 logger.error("saendMail {}", e);
             }
             throw WegasErrorMessage.error(exceptions.size() + " error(s) while sending email");
@@ -827,8 +832,7 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     * Is the given playerId identify a player owned by the current user players
-     * ?
+     * Is the given playerId identify a player owned by the current user players ?
      *
      * @param playerId
      *

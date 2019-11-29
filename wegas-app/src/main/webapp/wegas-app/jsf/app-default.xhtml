@@ -37,7 +37,7 @@
 
 
                 <!-- YUI3 -->
-                <ui:fragment rendered="#{wegasConfig.useYUICDN}">
+                <ui:fragment rendered="#{requestController.useYUICDN()}">
                     <!-- CDN -->
                     <ui:fragment rendered="#{request.scheme == 'http'}">
                         <script type="text/javascript" src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
@@ -46,7 +46,7 @@
                         <script type="text/javascript" src="https://yui-s.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
                     </ui:fragment>
                 </ui:fragment>
-                <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
+                <ui:fragment rendered="#{!requestController.useYUICDN()}">
                     <!-- Self hosted -->
                     <script type="text/javascript" src="#{request.contextPath}/lib/yui3/build/yui/yui-min.js"></script>
                 </ui:fragment>
@@ -84,7 +84,7 @@
                     };
                 </script>
 
-                <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
+                <ui:fragment rendered="#{!requestController.useYUICDN()}">
                     <script type="text/javascript">
                         YUI_config.filter = "min";
                         YUI_config.filter = "raw";

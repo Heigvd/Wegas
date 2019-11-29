@@ -11,7 +11,7 @@
         </createTable>
 
         <addColumn tableName="abstractaccount">
-            <column name="censoredemail" type="varchar(255)"/>
+            <column name="emaildomain" type="varchar(255)"/>
         </addColumn>
         <addColumn tableName="abstractaccount">
             <column name="details_id" type="int8"/>
@@ -50,7 +50,7 @@
         <sql>
             -- Link abstract accounts to details
             UPDATE abstractaccount 
-            SET censoredemail = substring(regexp_replace(email, '(.*)@(.*)', '\1'), 0, 5) || '••••@' || regexp_replace(email, '(.*)@(.*)', '\2')
+            SET emaildomain  = regexp_replace(email, '(.*)@(.*)', '\2')
             WHERE email != ''
         </sql>
     </changeSet>

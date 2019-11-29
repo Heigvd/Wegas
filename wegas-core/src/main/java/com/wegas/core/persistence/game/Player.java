@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -53,6 +53,10 @@ import org.slf4j.LoggerFactory;
         query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.id = :teamId")
 @NamedQuery(name = "Player.findToPopulate",
         query = "SELECT a FROM Player a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
+@NamedNativeQuery(name = "Player.AreUsersTeamMate",
+        query = "SELECT true FROM player as self JOIN player AS mate on mate.team_id = self.team_id WHERE self.user_id =?1 AND mate.user_id = ?2")
+@NamedQuery(name = "Player.findGameIds",
+        query = "SELECT p.team.gameTeams.game.id FROM Player p where p.user.id = :userId")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(indexes = {
     @Index(columnList = "user_id"),
@@ -361,7 +365,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
             if (account instanceof AaiAccount) {
                 return "AAI " + ((AaiAccount) account).getHomeOrg();
             } else if (account != null && Boolean.TRUE == account.isVerified()) { // avoid NPE : isVerified() means isVerified().getValue() !!
-                return account.getCensoredEmail();
+                return account.getEmailDomain();
             }
         }
         return "";

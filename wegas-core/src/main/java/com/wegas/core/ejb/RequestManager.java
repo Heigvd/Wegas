@@ -34,6 +34,8 @@ import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
+import com.wegas.core.security.util.WegasIsTeamMate;
+import com.wegas.core.security.util.WegasIsTrainerForUser;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.*;
@@ -49,6 +51,7 @@ import javax.inject.Named;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.script.ScriptContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
@@ -1460,6 +1463,42 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
+     *
+     * @param wegasIsTeamMate
+     *
+     * @return
+     */
+    private boolean isTeamMate(WegasIsTeamMate wegasIsTeamMate) {
+        User self = this.getCurrentUser();
+        Long mateId = wegasIsTeamMate.getUserId();
+
+        Query query = getEntityManager().createNamedQuery("Player.AreUsersTeamMate");
+
+        query.setParameter(1, self.getId());
+        query.setParameter(2, mateId);
+
+        List results = query.getResultList();
+
+        return !results.isEmpty();
+    }
+
+    private boolean isTrainerForUser(WegasIsTrainerForUser perm) {
+        Long userId = perm.getUserId();
+
+        Query query = getEntityManager().createNamedQuery("Player.findGameIds");
+        query.setParameter("userId", userId);
+        List<Long> gameIds = query.getResultList();
+
+        for (Long gameId : gameIds) {
+            if (hasPermission(new WegasEntityPermission(gameId, WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAME))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Returns {@code true} if the currentUser owns the permission
      *
      * @param permission permission to check
@@ -1475,7 +1514,10 @@ public class RequestManager implements RequestManagerI {
             } else {
 
                 this.getCurrentUser();
-                if (hasRole("Administrator") || permission instanceof WegasMembership && this.isMemberOf((WegasMembership) permission)
+                if (hasRole("Administrator")
+                    || permission instanceof WegasMembership && this.isMemberOf((WegasMembership) permission)
+                    || permission instanceof WegasIsTeamMate && this.isTeamMate((WegasIsTeamMate) permission)
+                    || permission instanceof WegasIsTrainerForUser && this.isTrainerForUser((WegasIsTrainerForUser) permission)
                     || permission instanceof WegasEntityPermission && this.hasEntityPermission((WegasEntityPermission) permission)) {
                     log(" >>> GRANT: {}", permission);
                     this.grant(permission);

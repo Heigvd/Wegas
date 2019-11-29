@@ -132,7 +132,7 @@ public class AccountController {
     @GET
     @Path("FindByTeamId/{teamId: [1-9][0-9]*}")
     public List<AbstractAccount> findByTeamId(@PathParam("teamId") Long teamId) {
-        return teamFacade.getDetachedAccounts(teamId);
+        return teamFacade.getInTeamAccounts(teamId);
     }
 
     /**

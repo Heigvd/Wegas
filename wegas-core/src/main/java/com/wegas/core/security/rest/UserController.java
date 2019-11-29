@@ -556,7 +556,7 @@ public class UserController {
             return new AaiLoginResponse("Login successful", true, false);
         } catch (AuthenticationException aex) {
             logger.error("User not found, creating new account.");
-            AaiAccount account = new AaiAccount(userDetails);
+            AaiAccount account = AaiAccount.build(userDetails);
             this.create(account, request);
             // Try to log in the new user:
             try {

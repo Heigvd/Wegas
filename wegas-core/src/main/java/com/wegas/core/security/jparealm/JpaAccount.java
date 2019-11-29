@@ -53,14 +53,12 @@ public class JpaAccount extends AbstractAccount {
             RandomNumberGenerator rng = new SecureRandomNumberGenerator();
             this.password = rng.nextBytes().toString().substring(0, 7);
         }
-        this.preUpdate();
     }
 
     /**
      *
      */
-    @PreUpdate
-    public void preUpdate() {
+    public void shadowPasword() {
         if (this.password != null && !this.password.isEmpty()) {
             String hash = new Sha256Hash(this.password,
                 (new SimpleByteSource(this.getShadow().getSalt())).getBytes()).toHex();
@@ -84,7 +82,7 @@ public class JpaAccount extends AbstractAccount {
     public void setPassword(String password) {
         this.password = password;
         if (!Helper.isNullOrEmpty(password) && this.getShadow() != null) {
-            this.getShadow().setPasswordHex(null); //force JPA update (password is JPA transient)
+            this.shadowPasword();
         }
     }
 

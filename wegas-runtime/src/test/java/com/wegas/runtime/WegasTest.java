@@ -99,32 +99,27 @@ public class WegasTest {
         warPath = "../wegas-app/target/Wegas";
 
         WebArchive war = ShrinkWrap.create(ExplodedImporter.class)
-                .importDirectory(new File(warPath))
-                .as(WebArchive.class);
+            .importDirectory(new File(warPath))
+            .as(WebArchive.class);
 
         return war;
     }
 
     @BeforeClass
-    public static void setUpClass() {
-        try {
-            client = new WegasRESTClient("http://localhost:28080/Wegas");
-            client2 = new WegasRESTClient("http://localhost:28081/Wegas");
+    public static void setUpClass() throws IOException {
+        client = new WegasRESTClient("http://localhost:28080/Wegas");
+        client2 = new WegasRESTClient("http://localhost:28081/Wegas");
 
-            scenarist = client.signup("scenarist@local", "1234");
-            trainer = client.signup("trainer@local", "1234");
-            user = client.signup("user@local", "1234");
+        scenarist = client.signup("scenarist@local", "1234");
+        trainer = client.signup("trainer@local", "1234");
+        user = client.signup("user@local", "1234");
 
-            root = client.getAuthInfo("root@root.com", "1234");
-            root.setUserId(1l);
+        root = client.getAuthInfo("root@root.com", "1234");
+        root.setUserId(1l);
 
-            client.login(root);
-            grantRights();
-            logger.info("SETUP COMPLETED");
-        } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(WegasTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
+        client.login(root);
+        grantRights();
+        logger.info("SETUP COMPLETED");
     }
 
     @Before
@@ -174,9 +169,9 @@ public class WegasTest {
         final String DB_CON = "jdbc:postgresql://localhost:5432/wegas_test";
         final String USER = "user";
         final String PASSWORD = "1234";
-        try ( Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD);  Statement st = connection.createStatement()) {
+        try (Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD); Statement st = connection.createStatement()) {
             Assert.assertEquals("Some indexes are missing. Please create liquibase changesets. See log for details",
-                    0, TestHelper.getMissingIndexesCount(st));
+                0, TestHelper.getMissingIndexesCount(st));
         } catch (SQLException ex) {
         }
     }
@@ -212,7 +207,7 @@ public class WegasTest {
         final String DB_CON = "jdbc:postgresql://localhost:5432/wegas_test";
         final String USER = "user";
         final String PASSWORD = "1234";
-        try ( Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD);  Statement st = connection.createStatement()) {
+        try (Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD); Statement st = connection.createStatement()) {
             st.executeUpdate("UPDATE numberdescriptor SET minvalue = -9999 WHERE id = " + var1.getId());
         } catch (SQLException ex) {
         }
@@ -247,10 +242,10 @@ public class WegasTest {
         client.login(root);
         client2.login(root);
 
-        /**
+        /*
          * DELETE	/Assign/{assignmentId}
-         * POST	/Assign/{resourceId}/{taskInstanceId}
-         * PUT	/MoveAssignment/{assignmentId}/{index}
+         * POST	/Assign/{resourceId}/{taskInstanceId} 
+         * PUT * /MoveAssignment/{assignmentId}/{index}
          */
         // Load resource and task from botch instance
         Script fetchTask1 = new Script("JavaScript", "Variable.find(gameModel, 'ChoixEnvironnementDéveloppement').getInstance(self);");
@@ -360,7 +355,7 @@ public class WegasTest {
 
         // create model
         GameModel model = client.postJSON_asString("/rest/GameModel/extractModel/" + gm1.getId() + "," + gm2.getId(),
-                "{\"@class\":\"GameModel\",\"name\":\"ModelFSM\"}", GameModel.class);
+            "{\"@class\":\"GameModel\",\"name\":\"ModelFSM\"}", GameModel.class);
 
         GameModel gm = client.put("/rest/GameModel/" + model.getId() + "/Propagate", null, GameModel.class);
     }

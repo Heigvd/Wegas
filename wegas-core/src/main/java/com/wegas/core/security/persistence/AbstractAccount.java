@@ -7,11 +7,8 @@
  */
 package com.wegas.core.security.persistence;
 
-import ch.albasim.wegas.annotations.IMergeable;
 import ch.albasim.wegas.annotations.View;
-import ch.albasim.wegas.annotations.WegasCallback;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
-import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
@@ -21,10 +18,12 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.jparealm.JpaAccount;
+import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.NumberView;
+import com.wegas.editor.View.StringView;
 import java.util.*;
 import javax.persistence.*;
 
@@ -79,11 +78,8 @@ public abstract class AbstractAccount extends AbstractEntity {
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
     private Shadow shadow;
 
+    @JsonIgnore
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
-    @WegasEntityProperty(callback = CensorEmail.class, optional = false, nullable = false,
-        view = @View(label = ""))
-    @JsonManagedReference
-    @JsonView(Views.Extended.class)
     private AccountDetails details;
 
     /**
@@ -107,7 +103,13 @@ public abstract class AbstractAccount extends AbstractEntity {
     @WegasEntityProperty(view = @View(label = "Lastname"), optional = false, nullable = false)
     private String lastname;
 
-    private String censoredEmail;
+    /**
+     *
+     */
+    @Transient
+    @WegasEntityProperty(optional = false, nullable = false,
+        view = @View(label = "E-mail"))
+    private String email;
 
     /**
      *
@@ -132,6 +134,10 @@ public abstract class AbstractAccount extends AbstractEntity {
     @WegasEntityProperty(ignoreNull = true, optional = false, nullable = false,
         proposal = EmptyString.class, view = @View(label = "Comment"))
     private String comment = "";
+
+    @WegasEntityProperty(view = @View(label = "Domain", readOnly = true, value = StringView.class),
+        optional = false, nullable = false)
+    private String emailDomain;
 
     /**
      *
@@ -325,22 +331,50 @@ public abstract class AbstractAccount extends AbstractEntity {
         this.createdTime = createdTime != null ? new Date(createdTime.getTime()) : null;
     }
 
-    @WegasExtraProperty(view = @View(value = Hidden.class, label = ""))
-    public String getCensoredEmail() {
-        return censoredEmail;
-    }
-
-    public void setCensoredEmail(String censoredEmail) {
-        this.censoredEmail = censoredEmail;
-    }
-
-    public void censorEmail() {
-        String email = this.getDetails().getEmail();
-        if (Helper.isNullOrEmpty(email)) {
-            this.censoredEmail = Helper.anonymizeEmail(details.getEmail());
-        } else {
-            this.censoredEmail = "•••••@•••••";
+    public void shadowEmail() {
+        if (this.email != null && !this.email.isEmpty()) {
+            if (!this.email.equals(this.getDetails().getEmail())) {
+                this.getDetails().setEmail(this.email);
+                this.setEmailDomain(Helper.getDomainFromEmailAddress(email));
+                if (this instanceof JpaAccount) {
+                    ((JpaAccount) this).setVerified(false);
+                }
+            }
         }
+        this.email = null;
+    }
+
+    @JsonView(Views.Admin.class)
+    public String getEmail() {
+        if (this.email != null) {
+            return this.email;
+        } else if (this.getDetails() != null) {
+            return getDetails().getEmail();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     *
+     * @return the email
+     */
+    @JsonIgnore
+    public String getDeserialisedEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public String getEmailDomain() {
+        return emailDomain;
+    }
+
+    public void setEmailDomain(String emailDomain) {
+        this.emailDomain = emailDomain;
     }
 
     public abstract Boolean isVerified();
@@ -376,12 +410,37 @@ public abstract class AbstractAccount extends AbstractEntity {
 
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getUser().getRequieredUpdatePermission();
+        // nobody but the user itset can edit its account
+        Collection<WegasPermission> p = WegasPermission.getAsCollection(
+            this.getUser().getAssociatedWritePermission()
+        );
+        return p;
     }
 
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getUser().getRequieredReadPermission();
+        Collection<WegasPermission> p = this.getRequieredUpdatePermission();
+
+        /**
+         * Members of the same team known each other
+         */
+        p.addAll(this.getUser().getPlayersTeamsRelatedPermissions());
+
+        /**
+         * Trainers of game in which the user plays known the players
+         */
+        p.addAll(this.getUser().getPlayerGameRelatedPermissions());
+
+        /**
+         * In order to share gameModels and games with others trainer/scenarist a trainer/scenario must be able to read
+         * basic info about others trainer/scenarist
+         */
+        if (this.getUser().isMemberOf("Trainer")
+            || this.getUser().isMemberOf("Scenarist")) {
+            p.addAll(WegasMembership.TRAINER);
+        }
+
+        return p;
     }
 
     @Override
@@ -397,18 +456,5 @@ public abstract class AbstractAccount extends AbstractEntity {
     @Override
     public Visibility getInheritedVisibility() {
         return Visibility.INHERITED;
-    }
-
-    public static class CensorEmail implements WegasCallback {
-
-        @Override
-        public void postUpdate(IMergeable entity, Object ref, Object identifier) {
-            if (entity instanceof AbstractAccount) {
-                AbstractAccount account = (AbstractAccount) entity;
-                if (account.getDetails().isEmailJustChanged()) {
-                    account.censorEmail();
-                }
-            }
-        }
     }
 }

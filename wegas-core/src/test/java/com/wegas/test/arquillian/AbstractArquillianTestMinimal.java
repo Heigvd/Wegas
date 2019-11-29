@@ -222,12 +222,12 @@ public abstract class AbstractArquillianTestMinimal {
                     + "INSERT INTO permission (id, permissions, role_id) VALUES (2, 'Game:*:*', 1);"
                     + "INSERT INTO permission (id, permissions, role_id) VALUES (3, 'User:*:*', 1);"
                     + "INSERT INTO users (id) VALUES (1);"
-                    + "INSERT INTO accountdetails (id, email) VALUES (1, 'root@local');"
+                    + "INSERT INTO accountdetails (id, email, checkuniqueness) VALUES (1, 'root@localhost', true);"
                     + "INSERT INTO shadow (id, passwordhex, salt) VALUES (1, 'eb86410aa029d4f7b85c1b4c3c0a25736f9ae4806bd75d456a333d83b648f2ee', '69066d73c2d03f85c5a8d3e39a2f184f');"
-                    + "INSERT INTO abstractaccount (id, username, censoredemail, dtype, user_id, shadow_id, details_id) VALUES (1, 'root', 'ro***@local', 'JpaAccount', 1, 1, 1);"
+                    + "INSERT INTO abstractaccount (id, username, emaildomain, dtype, user_id, shadow_id, details_id) VALUES (1, 'root', 'localhost', 'JpaAccount', 1, 1, 1);"
                     + "INSERT INTO users_roles (user_id, role_id) VALUES (1, 1);"
                     + "UPDATE sequence SET seq_count=seq_count+50 WHERE seq_name = 'SEQ_GEN';"
-                    + "CREATE INDEX IF NOT EXISTS index_accountdetails_email ON accountdetails (email) WHERE (checkUniqueness AND email IS NOT NULL AND email NOT LIKE '');"
+                    + "CREATE INDEX IF NOT EXISTS index_accountdetails_email ON accountdetails (email) WHERE (checkuniqueness AND email IS NOT NULL AND email NOT LIKE '');"
                     + "CREATE INDEX IF NOT EXISTS index_abstractaccount_username ON abstractaccount (username) WHERE (dtype = 'JpaAccount' AND username IS NOT NULL AND username NOT LIKE '');"
                     + "CREATE INDEX IF NOT EXISTS index_abstractaccount_persistentid ON abstractaccount (persistentid) WHERE (dtype = 'AaiAccount');"
                     + "CREATE INDEX IF NOT EXISTS index_listDesc_allowedType ON listdescriptor_allowedtypes (listdescriptor_id);"
@@ -332,8 +332,7 @@ public abstract class AbstractArquillianTestMinimal {
     public WegasUser signup(String email, String password) {
         logout();
         JpaAccount ja = new JpaAccount();
-        ja.setDetails(new AccountDetails());
-        ja.getDetails().setEmail(email);
+        ja.setEmail(email);
         ja.setPassword(password);
         try {
             User signup = userFacade.signup(ja);

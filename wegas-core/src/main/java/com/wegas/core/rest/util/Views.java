@@ -35,6 +35,9 @@ public class Views {
             case "Editor":
                 return Editor.class;
 
+            case "Admin":
+                return Admin.class;
+
             case "Public":
             default:
                 return Public.class;
@@ -87,6 +90,12 @@ public class Views {
      * View with IDs and blobs
      */
     public static class Extended extends Views implements ExtendedI, IndexI {
+    }
+
+    /**
+     * contains protected contents (like shadowed email)
+     */
+    public static class Admin extends Views implements ExtendedI, IndexI {
     }
 
     /**

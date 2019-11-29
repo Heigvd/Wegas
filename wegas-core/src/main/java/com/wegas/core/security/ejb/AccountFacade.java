@@ -88,11 +88,20 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         }
 
         // Silently discard any modification attempts made by non-admins to the comment field:
-        if (!requestManager.isAdmin()){
+        if (!requestManager.isAdmin()) {
             account.setComment(super.find(entityId).getComment());
         }
 
         AbstractAccount oAccount = super.update(entityId, account);
+
+        if (oAccount instanceof JpaAccount) {
+            JpaAccount jpaAccount = (JpaAccount) oAccount;
+            if (!Helper.isNullOrEmpty(jpaAccount.getPassword())) {
+                jpaAccount.shadowPasword();
+            }
+        }
+
+        oAccount.shadowEmail();
 
         /*
          * Only an administrator can modify memberships
@@ -127,7 +136,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         user.getAccounts().remove(entity);
         getEntityManager().remove(entity);
 
-        if (user.getAccounts().isEmpty()){
+        if (user.getAccounts().isEmpty()) {
             userFacade.remove(user);
         }
     }
@@ -277,7 +286,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                     || !a.getHomeOrg().equals(userDetails.getHomeOrg())
                     || !a.getDetails().getEmail().equals(userDetails.getEmail())) {
 
-                a.merge(new AaiAccount(userDetails)); //HAZARDOUS!!!!
+                a.merge(AaiAccount.build(userDetails)); //HAZARDOUS!!!!
                 update(a.getId(), a);
             }
         } catch (WegasNoResultException ex) {
@@ -301,9 +310,9 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                 token = "%" + token.toLowerCase() + "%";
 
                 andPreds.add(cb.or(cb.like(cb.lower(account.get("firstname")), token),
-                        cb.like(cb.lower(account.get("lastname")), token),
-                        cb.like(cb.lower(account.get("email")), token),
-                        cb.like(cb.lower(account.get("username")), token)
+                    cb.like(cb.lower(account.get("lastname")), token),
+                    cb.like(cb.lower(account.get("email")), token),
+                    cb.like(cb.lower(account.get("username")), token)
                 ));
             }
         }
@@ -345,18 +354,17 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
-     * Same as {@link #getAutoComplete(java.lang.String) getAutoComplete} but
-     * account must be member of (at least) one role in rolesList
+     * Same as {@link #getAutoComplete(java.lang.String) getAutoComplete} but account must be member of (at least) one
+     * role in rolesList
      *
      * @param value     account search token
-     * @param rolesList list of roles targeted account should be members (only
-     *                  one membership is sufficient)
+     * @param rolesList list of roles targeted account should be members (only one membership is sufficient)
      *
-     * @return list of AbstractAccounts (excluding guest accounts) matching the token that are a member of at least
-     *         one given role
+     * @return list of AbstractAccounts (excluding guest accounts) matching the token that are a member of at least one
+     *         given role
      */
     public List<AbstractAccount> getAutoCompleteByRoles(String value,
-            Map<String, List<String>> rolesList) {
+        Map<String, List<String>> rolesList) {
         List<String> roles = rolesList.get("rolesList");
 
         List<AbstractAccount> returnValue = new ArrayList<>();

@@ -57,20 +57,15 @@ public class TeamFacade extends BaseFacade<Team> {
     private StateMachineFacade stateMachineFacade;
 
     /**
-     * Get all account linked to team's players Account email addresses will be altered (by hiding some parts) so they
-     * can be publicly displayed
+     * Get all account linked to team's players
      *
      * @param teamId
      *
      * @return List of abstractAccount which are players of the team
      */
-    public List<AbstractAccount> getDetachedAccounts(Long teamId) {
+    public List<AbstractAccount> getInTeamAccounts(Long teamId) {
         Team entity = this.find(teamId);
-        ArrayList<AbstractAccount> accounts = accountFacade.findByTeam(entity);
-        for (AbstractAccount account : accounts) {
-            getEntityManager().detach(account);
-        }
-        return accounts;
+        return accountFacade.findByTeam(entity);
     }
 
     public String findUniqueNameForTeam(Game g, String baseName) {

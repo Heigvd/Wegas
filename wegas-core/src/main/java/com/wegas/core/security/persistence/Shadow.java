@@ -49,6 +49,15 @@ public class Shadow extends AbstractEntity {
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "shadow")
     private AbstractAccount account;
 
+    @JsonIgnore
+    private String email;
+
+    /**
+     * 
+     */
+    @JsonIgnore
+    private boolean assertEmailUniqueness;
+
     /**
      *
      */
@@ -93,6 +102,22 @@ public class Shadow extends AbstractEntity {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public boolean isAssertEmailUniqueness() {
+        return assertEmailUniqueness;
+    }
+
+    public void setAssertEmailUniqueness(boolean assertEmailUniqueness) {
+        this.assertEmailUniqueness = assertEmailUniqueness;
     }
 
     /**
