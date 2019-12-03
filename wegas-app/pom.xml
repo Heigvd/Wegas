@@ -31,9 +31,9 @@
                         <configuration>
                             <!--remove not min js-->
                             <!--<packagingExcludes>%regex[(?!.*min).*\.js]</packagingExcludes>-->
-                            <packagingExcludes>
+                            <!--<packagingExcludes>
                                 lib/yui3/**
-                            </packagingExcludes>
+                            </packagingExcludes>-->
                         </configuration>
                     </plugin>
                 </plugins>
