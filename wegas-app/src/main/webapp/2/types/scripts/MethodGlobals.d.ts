@@ -1,5 +1,4 @@
-interface WegasScriptEditorNameAndTypes
-  extends WegasEntitesNamesAndClasses {
+interface WegasScriptEditorNameAndTypes extends WegasEntitesNamesAndClasses {
   boolean: boolean;
   'boolean[]': boolean[];
   number: number;
@@ -25,9 +24,7 @@ type WegasScriptEditorReturnTypeName = keyof WegasScriptEditorNameAndTypes;
 
 type WegasScriptEditorReturnType = WegasScriptEditorNameAndTypes[WegasScriptEditorReturnTypeName];
 
-type ArrayedAndNot<T extends {}> = ArrayedTypeMap<
-  T
->[keyof ArrayedTypeMap];
+type ArrayedAndNot<T extends {}> = ArrayedTypeMap<T>[keyof ArrayedTypeMap];
 
 type GlobalMethodAdd = <
   T extends keyof WegasScriptEditorNameAndTypes,

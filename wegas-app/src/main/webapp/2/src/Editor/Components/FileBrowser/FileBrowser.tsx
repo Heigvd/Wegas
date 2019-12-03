@@ -25,19 +25,22 @@ export function FileBrowser({
 }: FileBrowserProps) {
   const [rootFile, setRootFile] = React.useState<IAbstractContentDescriptor>();
   const [error, setError] = React.useState<string>('');
+  const comp = React.useRef(); // Safeguard to avoid changing state when unmounted comp
 
   React.useEffect(() => {
     FileAPI.getFileMeta()
       .then(file => setRootFile(file))
       .catch(({ statusText }: Response) => {
-        setRootFile(undefined);
-        setError(statusText);
+        if (comp.current) {
+          setRootFile(undefined);
+          setError(statusText);
+        }
       });
   }, []);
 
   return rootFile ? (
     <DefaultDndProvider>
-      <div className={grow}>
+      <div className={grow} ref={comp.current}>
         <StyledLabel value={error} type={'error'} duration={3000} />
         <FileBrowserNode
           defaultFile={rootFile}

@@ -2,10 +2,10 @@ import * as React from 'react';
 import { css } from 'emotion';
 import Header from './Header';
 import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
-import PageEditor from './Page/PageEditor';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
-const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
+// const PageDisplay = React.lazy(() => import('./Page/PageDisplay.old'));
+const PageEditor = React.lazy(() => import('./Page/PageEditor'));
 const TreeView = React.lazy(() => import('./Variable/VariableTree'));
 const EntityEditor = React.lazy(() => import('./EntityEditor'));
 const FileBrowserWithMeta = React.lazy(() =>
@@ -38,7 +38,7 @@ const layout = css({
 
 export const availableLayoutTabs = {
   Variables: <TreeView />,
-  Page: <PageDisplay />,
+  // Page: <PageDisplay />,
   StateMachine: <StateMachineEditor />,
   Editor: <EntityEditor />,
   Files: <FileBrowserWithMeta />,
@@ -50,7 +50,7 @@ export const availableLayoutTabs = {
     <HTMLEditor value={'<div class="testClass">Testing testClass</div>'} />
   ),
   ThemeEditor: <ThemeEditor />,
-  PageEditor2: <PageEditor />,
+  PageEditor: <PageEditor />,
 };
 
 export default class AppLayout extends React.Component<
@@ -71,10 +71,7 @@ export default class AppLayout extends React.Component<
           tabs={availableLayoutTabs}
           layout={[
             ['Variables'],
-            [
-              ['PlayLocal', 'Page'],
-              [['StateMachine'], ['Files']],
-            ],
+            [['PlayLocal'], [['StateMachine'], ['Files']]],
             ['Editor'],
           ]}
         />

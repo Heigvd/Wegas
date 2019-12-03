@@ -3,35 +3,31 @@ import { TranslatableContent } from '../../data/i18n';
 import { useVariableInstance } from '../Hooks/useVariable';
 import { pageComponentFactory, registerComponent } from './componentFactory';
 
-interface SimpleProps {
+interface ExampleProps {
   variable: IStringDescriptor | ISNumberDescriptor;
-  label: string;
 }
 
-const Simple: React.FunctionComponent<SimpleProps> = ({
+const Example: React.FunctionComponent<ExampleProps> = ({
   variable,
-  label,
-}: SimpleProps) => {
+}: ExampleProps) => {
   const instance = useVariableInstance(variable);
   if (instance === undefined) {
     return <span>{`Instance of ${variable.name} not found`}</span>;
   }
   return (
     <div>
-      {label && <span>{label}</span>}
-      <div>
-        {'trValue' in instance
-          ? TranslatableContent.toString(instance.trValue)
-          : String(instance.value)}
-      </div>
+      {'trValue' in instance
+        ? TranslatableContent.toString(instance.trValue)
+        : String(instance.value)}
     </div>
   );
 };
 
 const SimpleComponent = pageComponentFactory(
-  Simple,
+  Example,
+  'ambulance',
   {
-    description: 'SimpleComponent',
+    description: 'Example',
     properties: {
       variable: {
         enum: ['INTERNAL', 'PROTECTED', 'INHERITED', 'PRIVATE'],
@@ -62,21 +58,13 @@ const SimpleComponent = pageComponentFactory(
           type: 'select',
         },
       },
-      label: {
-        required: false,
-        type: 'string',
-        view: {
-          featureLevel: 'DEFAULT',
-          index: 1,
-          label: 'Label',
-        },
-      },
     },
   },
   ['ISNumberDescriptor', 'ISStringDescriptor'],
   variable => ({
     variable: variable,
-    label: TranslatableContent.toString(variable.label),
+    label: 'salut',
+    hello: 'sadjkajw',
   }),
 );
 

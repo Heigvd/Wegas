@@ -1,4 +1,5 @@
 import { css } from 'emotion';
+import { themeVar } from '../Components/Theme';
 
 // Display
 export const flex = css({
@@ -49,6 +50,9 @@ export const flexColumn = css({
 export const flexRow = css({
   flexDirection: 'row',
 });
+export const flexWrap = css({
+  flexWrap: 'wrap',
+});
 
 // Position
 export const itemCenter = css({
@@ -59,4 +63,13 @@ export const centeredContent = css({
 });
 export const foregroundContent = css({
   zIndex: 1000,
+});
+
+// Components
+export const button = css({
+  color: themeVar.primaryLighterTextColor,
+  ':hover,:focus': {
+    color: themeVar.primaryHoverColor,
+    outline: 'none',
+  },
 });

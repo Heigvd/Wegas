@@ -18,7 +18,7 @@ const verticatStyle = css({
     width: '100%',
   },
 });
-interface Props {
+export interface ListProps {
   children: WegasComponent[];
   style?: React.CSSProperties;
   /**
@@ -29,7 +29,11 @@ interface Props {
 /**
  * Flex list.
  */
-export default function List({ children, horizontal = false, style }: Props) {
+export default function List({
+  children,
+  horizontal = false,
+  style,
+}: ListProps) {
   return (
     <div
       style={style}

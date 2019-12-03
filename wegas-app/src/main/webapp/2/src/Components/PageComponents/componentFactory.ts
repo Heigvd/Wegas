@@ -4,9 +4,11 @@ import u from 'immer';
 import { composeEnhancers } from '../../data/store';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { useAnyStore } from '../Hooks/storeHookFactory';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 
 export interface PageComponent {
   getComponent: () => React.FunctionComponent<{ [name: string]: unknown }>;
+  getIcon: () => IconProp;
   getSchema: () => SimpleSchema;
   getAllowedVariables: () => (keyof WegasScriptEditorNameAndTypes)[];
   getComputedPropsFromVariable: (
@@ -80,30 +82,39 @@ export const usePageComponentStore = <R>(
 ) => useAnyStore(selector, shouldUpdate, componentsStore);
 
 export const pageComponentFactory: <
-  P extends { [name: string]: unknown },
+  P extends {},
   T extends keyof WegasScriptEditorNameAndTypes,
   R extends WegasScriptEditorNameAndTypes[T]
 >(
   component: React.FunctionComponent<P>,
+  icon: IconProp,
   schema: SimpleSchema,
   allowedVariables: T[],
   getComputedPropsFromVariable: (variable: R) => P,
 ) => PageComponent = (
   component,
+  icon,
   schema,
   allowedVariables,
   getComputedPropsFromVariable,
 ) => {
   return {
     getComponent: () => component,
+    getIcon: () => icon,
     getSchema: () => schema,
     getAllowedVariables: () => allowedVariables,
     getComputedPropsFromVariable,
   };
 };
 
+/**
+ * Function that registers a component dynamically.
+ * @implNote This function must be placed on a file that contains ".component." in its name
+ * @param componentName
+ * @param component
+ */
 export const registerComponent: (
-  componentName: 'SimpleComponent',
+  componentName: string,
   component: PageComponent,
 ) => void = (componentName, component) => {
   componentsStore.dispatch(

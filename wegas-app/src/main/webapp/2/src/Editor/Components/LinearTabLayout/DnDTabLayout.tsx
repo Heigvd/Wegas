@@ -17,24 +17,15 @@ import {
   hidden,
   hideOverflow,
   autoScroll,
+  button,
 } from '../../../css/classes';
 
-const buttonStyle = {
-  ':hover,:focus': {
-    color: themeVar.primaryHoverColor,
-    outline: 'none',
-  },
-};
-
-const inactiveButton = css({
-  color: themeVar.primaryLighterTextColor,
-  ...buttonStyle,
-});
-
-const activeButton = css({
-  color: themeVar.primaryDarkerTextColor,
-  ...buttonStyle,
-});
+const activeButton = cx(
+  css({
+    color: themeVar.primaryDarkerTextColor,
+  }),
+  button,
+);
 
 const listStyle = css({
   color: themeVar.primaryColor,
@@ -230,7 +221,7 @@ export function DnDTabLayout({
                 tooltip="Remove tab"
                 onClick={() => onDeleteTab(label)}
                 className={
-                  label === defaultActiveLabel ? activeButton : inactiveButton
+                  label === defaultActiveLabel ? activeButton : button
                 }
               />
             </span>
@@ -281,7 +272,7 @@ export function DnDTabLayout({
                     onSelect && onSelect(i.value);
                     onNewTab(String(i.value));
                   }}
-                  buttonClassName={inactiveButton}
+                  buttonClassName={button}
                   listClassName={listStyle}
                 />
               </Tab>
