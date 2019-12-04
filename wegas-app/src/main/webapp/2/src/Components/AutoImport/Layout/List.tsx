@@ -18,6 +18,7 @@ const verticatStyle = css({
     width: '100%',
   },
 });
+
 export interface ListProps {
   children: WegasComponent[];
   style?: React.CSSProperties;

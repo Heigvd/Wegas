@@ -11,8 +11,11 @@ export interface PageComponent {
   getIcon: () => IconProp;
   getSchema: () => SimpleSchema;
   getAllowedVariables: () => (keyof WegasScriptEditorNameAndTypes)[];
+  /**
+   * gives a computed list of props from variable, if the variable is undefined, gives default props
+   */
   getComputedPropsFromVariable: (
-    variable: WegasScriptEditorReturnType,
+    variable?: WegasScriptEditorReturnType,
   ) => { [name: string]: unknown };
 }
 
@@ -90,7 +93,7 @@ export const pageComponentFactory: <
   icon: IconProp,
   schema: SimpleSchema,
   allowedVariables: T[],
-  getComputedPropsFromVariable: (variable: R) => P,
+  getComputedPropsFromVariable: (variable?: R) => P,
 ) => PageComponent = (
   component,
   icon,

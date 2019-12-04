@@ -5,6 +5,7 @@ import { usePageComponentStore } from '../../../Components/PageComponents/compon
 import { themeVar } from '../../../Components/Theme';
 import { IconButton } from '../../../Components/Button/IconButton';
 import { useDrag } from 'react-dnd';
+import { pageCTX } from './PageLoader';
 
 const componentStyle = css({
   padding: '10px',
@@ -21,24 +22,26 @@ const paletteStyle = css({
   height: 'fit-content',
 });
 
+export interface DnDComponent {
+  componentName: string;
+  type: typeof dndComponnent;
+}
+
 interface ComponentElementProps {
   componentName: string;
-  onDrag?: (componentName: string) => void;
 }
 
 export const dndComponnent: 'dndComponnent' = 'dndComponnent';
 
-function ComponentElement({ componentName, onDrag }: ComponentElementProps) {
-  const [, drag] = useDrag<
-    { componentName: string; type: typeof dndComponnent },
-    unknown,
-    unknown
-  >({
+function ComponentElement({ componentName }: ComponentElementProps) {
+  const { onDrag } = React.useContext(pageCTX);
+  const [, drag] = useDrag<DnDComponent, unknown, unknown>({
     item: {
       componentName: componentName,
       type: dndComponnent,
     },
-    begin: () => onDrag && onDrag(componentName),
+    begin: mon => onDrag(mon.getItem()),
+    end: () => onDrag(null),
   });
   const component = usePageComponentStore(s => s[componentName]);
   return (

@@ -4,7 +4,7 @@ import { ConfirmButton } from '../../../Components/Button/ConfirmButton';
 import { Menu } from '../../../Components/Menu';
 import { PageAPI } from '../../../API/pages.api';
 import { GameModel } from '../../../data/selectors';
-import { PageLoader } from './PageLoader';
+import { PageLoader, pageCTX } from './PageLoader';
 import {
   JSONandJSEditor,
   OnSaveStatus,
@@ -13,8 +13,10 @@ import { grow, flex } from '../../../css/classes';
 import { IconButton } from '../../../Components/Button/IconButton';
 import { TextPrompt } from '../TextPrompt';
 import { StyledLabel } from '../../../Components/AutoImport/String/String';
-import { compare } from 'fast-json-patch';
-import { ComponentPalette } from './ComponentPalette';
+import { compare, deepClone } from 'fast-json-patch';
+import { ComponentPalette, DnDComponent } from './ComponentPalette';
+import { wlog } from '../../../Helper/wegaslog';
+import { usePageComponentStore } from '../../../Components/PageComponents/componentFactory';
 
 const defaultPage = {
   type: 'Layout/List',
@@ -86,7 +88,8 @@ export default function PageEditor() {
     },
   });
   const [srcMode, setSrcMode] = React.useState<boolean>(false);
-  const [editMode, setEditMode] = React.useState<boolean>(false);
+  const { editMode, setEditMode } = React.useContext(pageCTX);
+  const components = usePageComponentStore(s => s);
 
   const selectedPage: Page | undefined =
     pagesState.pages[String(pagesState.selectedPage)];
@@ -143,6 +146,33 @@ export default function PageEditor() {
   React.useEffect(() => {
     loadIndex(gameModelId);
   }, [loadIndex, gameModelId]);
+
+  const onDrop = React.useCallback(
+    (dndComponent: DnDComponent, path: string[], index?: number) => {
+      wlog(index);
+      wlog(path);
+      wlog(dndComponent);
+      wlog(selectedPage);
+      const newPage = deepClone(selectedPage);
+      debugger;
+      if (newPage.props.children) {
+        const droppedComp: WegasComponent = {
+          type: dndComponent.componentName,
+          props: components[
+            dndComponent.componentName
+          ].getComputedPropsFromVariable(),
+        };
+        if (index) {
+          newPage.props.children.splice(index, 0, droppedComp);
+        } else {
+          newPage.props.children.push(droppedComp);
+        }
+        debugger;
+        patchPage(pagesState.selectedPage, newPage);
+      }
+    },
+    [components, pagesState.selectedPage, patchPage, selectedPage],
+  );
 
   return (
     <Toolbar>
@@ -244,7 +274,7 @@ export default function PageEditor() {
             }}
           />
           {!srcMode && (
-            <button onClick={() => setEditMode(edit => !edit)}>
+            <button onClick={() => setEditMode(!editMode)}>
               {editMode ? 'View mode' : 'Edit mode'}
             </button>
           )}
@@ -281,7 +311,7 @@ export default function PageEditor() {
                   }
                 />
               ) : (
-                <PageLoader selectedPage={selectedPage} />
+                <PageLoader selectedPage={selectedPage} onDrop={onDrop} />
               ))}
           </div>
         </div>
