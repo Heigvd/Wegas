@@ -175,8 +175,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
         label = "Name",
         readOnly = true,
         value = StringView.class
-    )
-    )
+    ))
     public String getName() {
         if (this.getMainAccount() != null) {
             return this.getMainAccount().getName();

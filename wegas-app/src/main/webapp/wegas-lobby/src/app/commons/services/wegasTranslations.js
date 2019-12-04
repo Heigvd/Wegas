@@ -1187,6 +1187,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Last name",
                             'fr': "Nom de famille"
                         },
+                        'PRIVATE-PROFILE-INPUT-LABEL-COMMENT': {
+                            'en': "Admin comments",
+                            'fr': "Remarques administrateur"
+                        },
                         'PRIVATE-PROFILE-INPUT-PLACEHOLDER-EMAIL': {
                             'en': "Please enter your email",
                             'fr': "Veuillez entrer votre email"

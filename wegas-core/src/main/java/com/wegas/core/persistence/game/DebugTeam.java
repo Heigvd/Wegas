@@ -23,7 +23,7 @@ public class DebugTeam extends Team {
      */
     public DebugTeam() {
         this.setName("Test team");
-        this.addPlayer(new Player("Test player"));
+        this.addPlayer(new Player());
     }
 
     /**
@@ -32,6 +32,6 @@ public class DebugTeam extends Team {
      */
     public DebugTeam(String name) {
         super(name);
-        this.addPlayer(new Player("Animator 1"));
+        this.addPlayer(new Player());
     }
 }

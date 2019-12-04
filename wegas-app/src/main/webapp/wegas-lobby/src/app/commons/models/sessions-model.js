@@ -292,7 +292,7 @@ angular.module('wegas.models.sessions', [])
             if (!token.match(/^([a-zA-Z0-9_-]|\.(?!\.))*$/)) {
                 token = "";
             }
-            $http.get(ServiceURL + "rest/Editor/GameModel/Game/FindByToken/" + token, {
+            $http.get(ServiceURL + "rest/Extended/GameModel/Game/FindByToken/" + token, {
                 ignoreLoadingBar: true
             }).success(function(data) {
                 if (data) {

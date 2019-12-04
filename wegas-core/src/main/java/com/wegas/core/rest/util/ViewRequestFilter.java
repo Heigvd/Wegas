@@ -100,6 +100,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
             case "Editor":
             case "Lobby":
             case "Instance":
+            case "Shadow":
                 //rmf.setView(this.stringToView(firstPathSeg));
                 view = Views.stringToView(firstPathSeg);
                 newUri = newUri.replace(firstPathSeg + "/", "");

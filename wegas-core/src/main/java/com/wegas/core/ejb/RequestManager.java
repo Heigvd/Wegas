@@ -1379,8 +1379,11 @@ public class RequestManager implements RequestManagerI {
              */
             for (Game game : gameModel.getGames()) {
                 // has permission to at least on game of the game model ?
-                if (this.hasGamePermission(game, thePerm.getLevel() == WegasEntityPermission.Level.READ ? false : true)) {
-                    return true;
+                if (game instanceof DebugGame == false) {
+                    // very old gamemodel owhn several game : in this case ignore debug one
+                    if (this.hasGamePermission(game, (thePerm.getLevel() != WegasEntityPermission.Level.READ))) {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -1490,8 +1493,11 @@ public class RequestManager implements RequestManagerI {
         List<Long> gameIds = query.getResultList();
 
         for (Long gameId : gameIds) {
-            if (hasPermission(new WegasEntityPermission(gameId, WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAME))) {
-                return true;
+            try {
+                if (hasPermission(new WegasEntityPermission(gameId, WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.GAME))) {
+                    return true;
+                }
+            } catch (WegasAccessDenied ex) {
             }
         }
 

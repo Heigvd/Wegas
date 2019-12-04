@@ -30,6 +30,17 @@
   margin-left: 0;
   margin-right: 3px;
 }
+
+
+.ac-container .ac-menu .ac-menu-item .flex-row {
+    display:flex;
+    flex-direction: row;
+}
+
+.ac-container .ac-menu .ac-menu-item .flex-row .flex-col-grow {
+    flex-grow: 1;
+}
+
 .ac-container .ac-menu .ac-menu-item:last-child {
   border-bottom: 0;
 }

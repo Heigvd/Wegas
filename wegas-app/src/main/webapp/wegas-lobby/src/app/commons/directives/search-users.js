@@ -50,13 +50,13 @@ angular.module('wegas.directives.search.users', [
                                     value: user.name + '(' + user.email + ')',
                                     obj: user,
                                     label:
-                                        '<div class="row">' +
-                                        ' <div class="col-xs-6">' +
+                                        '<div class="flex-row">' +
+                                        ' <div class="flex-col-grow">' +
                                         '  ' + highlight(user.name, term) + ' &nbsp;(' +
                                         highlight(user.username, term) + ')' +
                                         ' </div>' +
-                                        ' <div class="col-xs-6 text-right">' +
-                                        highlight(user.email, term) +
+                                        ' <div class="flex-col">••••@' +
+                                        highlight(user.emailDomain, term) +
                                         ' </div>' +
                                         '</div>'
 

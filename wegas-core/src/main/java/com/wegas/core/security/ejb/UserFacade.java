@@ -874,7 +874,7 @@ public class UserFacade extends BaseFacade<User> {
         }
         for (Player p : from.getPlayers()) {
             if (!gameIds.contains(p.getGame().getId())) { // User already has a player in p's game
-                p.setName(to.getName());
+                // p.setName(to.getName());
                 p.setUser(to);
             }
         }
@@ -892,9 +892,9 @@ public class UserFacade extends BaseFacade<User> {
         accountFacade.remove(guest.getId());
 
         this.refresh(user);
-        for (Player p : user.getPlayers()) {
+        /*for (Player p : user.getPlayers()) {
             p.setName(user.getName());
-        }
+        }*/
         return user;
     }
 

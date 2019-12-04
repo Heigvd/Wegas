@@ -232,6 +232,7 @@ public class UserController {
      */
     @GET
     @Path("AutoComplete/{value}")
+    @Deprecated
     public List<AbstractAccount> getAutoComplete(@PathParam("value") String value) {
         return accountFacade.getAutoComplete(value);
     }
@@ -253,6 +254,7 @@ public class UserController {
      */
     @GET
     @Path("AutoCompleteFull/{value}/{gameId : [1-9][0-9]*}")
+    @Deprecated
     public List<AbstractAccount> getAutoCompleteFull(@PathParam("value") String value, @PathParam("gameId") Long gameId) {
         return accountFacade.getAutoCompleteFull(value, gameId);
     }
@@ -274,7 +276,8 @@ public class UserController {
         if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
             throw new UnauthorizedException();
         }
-        return accountFacade.getAutoCompleteByRoles(value, rolesList);
+
+        return accountFacade.getAutoCompleteByRoles(value, rolesList.get("rolesList"));
     }
 
     /**

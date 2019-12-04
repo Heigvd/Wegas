@@ -223,9 +223,9 @@ public class SerializationTest {
         User guUser = new User(guAccount);
         User jpaUser = new User(jpaAccount);
 
-        Player fbPlayer = new Player("Facebook Player");
-        Player guPlayer = new Player("Guest Player");
-        Player jpaPlayer = new Player("JPA Player");
+        Player fbPlayer = new Player();
+        Player guPlayer = new Player();
+        Player jpaPlayer = new Player();
 
         team1.addPlayer(fbPlayer);
         team1.addPlayer(guPlayer);

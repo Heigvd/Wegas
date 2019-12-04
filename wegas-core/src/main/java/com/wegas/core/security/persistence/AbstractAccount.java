@@ -344,7 +344,7 @@ public abstract class AbstractAccount extends AbstractEntity {
         this.email = null;
     }
 
-    @JsonView(Views.Admin.class)
+    @JsonView(Views.ShadowI.class)
     public String getEmail() {
         if (this.email != null) {
             return this.email;
@@ -382,6 +382,7 @@ public abstract class AbstractAccount extends AbstractEntity {
     /**
      * @return md5 address hash
      */
+    @JsonView(Views.Extended.class)
     public String getHash() {
         if (getDetails() != null && getDetails().getEmail() != null) {
             return Helper.md5Hex(getDetails().getEmail());
@@ -422,6 +423,16 @@ public abstract class AbstractAccount extends AbstractEntity {
         Collection<WegasPermission> p = this.getRequieredUpdatePermission();
 
         /**
+         * In order to share gameModels and games with others trainer/scenarist a trainer/scenario must be able to read
+         * basic info about others trainer/scenarist
+         */
+        if (this.getUser().isMemberOf("Trainer")
+            || this.getUser().isMemberOf("Scenarist")
+            || this.getUser().isMemberOf("Administrator")) {
+            p.addAll(WegasMembership.TRAINER);
+        }
+
+        /**
          * Members of the same team known each other
          */
         p.addAll(this.getUser().getPlayersTeamsRelatedPermissions());
@@ -430,15 +441,6 @@ public abstract class AbstractAccount extends AbstractEntity {
          * Trainers of game in which the user plays known the players
          */
         p.addAll(this.getUser().getPlayerGameRelatedPermissions());
-
-        /**
-         * In order to share gameModels and games with others trainer/scenarist a trainer/scenario must be able to read
-         * basic info about others trainer/scenarist
-         */
-        if (this.getUser().isMemberOf("Trainer")
-            || this.getUser().isMemberOf("Scenarist")) {
-            p.addAll(WegasMembership.TRAINER);
-        }
 
         return p;
     }

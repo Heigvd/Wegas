@@ -426,28 +426,14 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      * Create a new player within a team for the user identified by userId
      *
-     * @param teamId
-     * @param userId
-     * @param languages
-     *
-     * @return a new player, linked to user, who just joined the team
-     */
-    public Player joinTeam(Long teamId, Long userId, List<Locale> languages) {
-        return this.joinTeam(teamId, userId, null, languages);
-    }
-
-    /**
-     * Create a new player within a team for the user identified by userId
-     *
      * @param teamId id of the team to join
      * @param userId id of the user to create a player for, may be null to create an anonymous player
-     * @param playerName common name of the player
      * @param languages
      *
      * @return a new player, linked to a user, who just joined the team
      */
-    public Player joinTeam(Long teamId, Long userId, String playerName, List<Locale> languages) {
-        Long playerId = playerFacade.joinTeamAndCommit(teamId, userId, playerName, languages);
+    public Player joinTeam(Long teamId, Long userId, List<Locale> languages) {
+        Long playerId = playerFacade.joinTeamAndCommit(teamId, userId, languages);
         Player player = playerFacade.find(playerId);
         populatorScheduler.scheduleCreation();
         playerFacade.detach(player);
@@ -462,14 +448,13 @@ public class GameFacade extends BaseFacade<Game> {
      * purpose)
      *
      * @param teamId id of the team to join
-     * @param playerName common name of the player
      *
      * @return a new player anonymous player who just joined the team
      */
-    public Player joinTeam(Long teamId, String playerName, List<Locale> languages) {
+    public Player joinTeam(Long teamId, List<Locale> languages) {
         Long id = requestManager.getCurrentUser().getId();
         logger.info("Adding user {} to team {}", id, teamId);
-        return this.joinTeam(teamId, id, playerName, languages);
+        return this.joinTeam(teamId, id, languages);
     }
 
     /**

@@ -964,6 +964,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * @return name of the user who created this or null if user no longer
      *         exists
      */
+    @JsonView(Views.EditorI.class)
     public String getCreatedByName() {
         if (this.getCreatedBy() != null) {
             return this.getCreatedBy().getName();

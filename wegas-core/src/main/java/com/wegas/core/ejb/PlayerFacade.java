@@ -100,13 +100,12 @@ public class PlayerFacade extends BaseFacade<Player> {
      *
      * @param teamId     id of the team to join
      * @param userId     id the user to create a player for, may be null
-     * @param playerName common name for the new player
      * @param languages
      *
      * @return brand new player id
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public Long joinTeamAndCommit(Long teamId, Long userId, String playerName, List<Locale> languages) {
+    public Long joinTeamAndCommit(Long teamId, Long userId, List<Locale> languages) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
         logger.info("Adding user {} to team {}", userId, teamId);
 
@@ -152,13 +151,6 @@ public class PlayerFacade extends BaseFacade<Player> {
             User user = userFacade.find(userId);
             user.getPlayers().add(player);
             player.setUser(user);
-            player.setName(user.getName());
-        } else {
-            if (playerName != null) {
-                player.setName(playerName);
-            } else {
-                player.setName("Some anonymous user");
-            }
         }
 
         team.addPlayer(player);

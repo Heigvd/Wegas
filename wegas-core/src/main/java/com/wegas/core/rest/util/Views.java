@@ -35,8 +35,8 @@ public class Views {
             case "Editor":
                 return Editor.class;
 
-            case "Admin":
-                return Admin.class;
+            case "Shadow":
+                return Shadow.class;
 
             case "Public":
             default:
@@ -81,6 +81,12 @@ public class Views {
     }
 
     /**
+     * Include private shadowed info
+     */
+    public interface ShadowI {
+    }
+
+    /**
      * Minimal view with IDs
      */
     public static class Public extends Views implements IndexI {
@@ -95,7 +101,7 @@ public class Views {
     /**
      * contains protected contents (like shadowed email)
      */
-    public static class Admin extends Views implements ExtendedI, IndexI {
+    public static class Shadow extends Views implements ExtendedI, IndexI, ShadowI {
     }
 
     /**
