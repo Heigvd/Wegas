@@ -4,19 +4,21 @@ import { ConfirmButton } from '../../../Components/Button/ConfirmButton';
 import { Menu } from '../../../Components/Menu';
 import { PageAPI } from '../../../API/pages.api';
 import { GameModel } from '../../../data/selectors';
-import { PageLoader, pageCTX } from './PageLoader';
+import { PageLoader, pageCTX, PageContextProvider } from './PageLoader';
 import {
   JSONandJSEditor,
   OnSaveStatus,
 } from '../ScriptEditors/JSONandJSEditor';
-import { grow, flex } from '../../../css/classes';
+import { grow } from '../../../css/classes';
 import { IconButton } from '../../../Components/Button/IconButton';
 import { TextPrompt } from '../TextPrompt';
 import { StyledLabel } from '../../../Components/AutoImport/String/String';
 import { compare, deepClone } from 'fast-json-patch';
 import { ComponentPalette, DnDComponent } from './ComponentPalette';
-import { wlog } from '../../../Helper/wegaslog';
 import { usePageComponentStore } from '../../../Components/PageComponents/componentFactory';
+import { wlog } from '../../../Helper/wegaslog';
+import { ReflexElement, ReflexContainer, ReflexSplitter } from 'react-reflex';
+import { splitter } from '../LinearTabLayout/LinearLayout';
 
 const defaultPage = {
   type: 'Layout/List',
@@ -72,7 +74,7 @@ interface PagesState {
   pages: Pages;
 }
 
-export default function PageEditor() {
+function PageEditor() {
   const gameModelId = GameModel.selectCurrent().id!;
   const [modalState, setModalState] = React.useState<ModalState>({
     type: 'close',
@@ -111,37 +113,40 @@ export default function PageEditor() {
     });
   }, []);
 
-  const patchPage = (
-    selectedPageId: string,
-    page: Omit<Page, '@index'>,
-    callback?: (res: Page) => void,
-  ) => {
-    if (selectedPage) {
-      setModalState({ type: 'save', label: savingProgressStatus });
-      const diff = compare(selectedPage, page);
-      PageAPI.patch(gameModelId, JSON.stringify(diff), selectedPageId, true)
-        .then(res => {
-          const resKey = Object.keys(res)[0];
-          setPagesState(s => ({
-            ...s,
-            pages: { ...s.pages, [resKey]: res[resKey] },
-          }));
-          setModalState({ type: 'save', label: savingDoneStatus });
-          if (callback) {
-            callback(res);
-          }
-        })
-        .catch(e =>
-          setModalState({
-            type: 'save',
-            label: {
-              ...savingErrorStatus,
-              text: savingErrorStatus.text + '(' + e + ')',
-            },
-          }),
-        );
-    }
-  };
+  const patchPage = React.useCallback(
+    (
+      selectedPageId: string,
+      page: Omit<Page, '@index'>,
+      callback?: (res: Page) => void,
+    ) => {
+      if (selectedPage) {
+        setModalState({ type: 'save', label: savingProgressStatus });
+        const diff = compare(selectedPage, page);
+        PageAPI.patch(gameModelId, JSON.stringify(diff), selectedPageId, true)
+          .then(res => {
+            const resKey = Object.keys(res)[0];
+            setPagesState(s => ({
+              ...s,
+              pages: { ...s.pages, [resKey]: res[resKey] },
+            }));
+            setModalState({ type: 'save', label: savingDoneStatus });
+            if (callback) {
+              callback(res);
+            }
+          })
+          .catch(e =>
+            setModalState({
+              type: 'save',
+              label: {
+                ...savingErrorStatus,
+                text: savingErrorStatus.text + '(' + e + ')',
+              },
+            }),
+          );
+      }
+    },
+    [gameModelId, selectedPage],
+  );
 
   React.useEffect(() => {
     loadIndex(gameModelId);
@@ -149,13 +154,18 @@ export default function PageEditor() {
 
   const onDrop = React.useCallback(
     (dndComponent: DnDComponent, path: string[], index?: number) => {
-      wlog(index);
-      wlog(path);
       wlog(dndComponent);
-      wlog(selectedPage);
+      wlog(path);
+      wlog(index);
       const newPage = deepClone(selectedPage);
-      debugger;
-      if (newPage.props.children) {
+      let children = newPage.props.children;
+      const browsePath = [...path];
+      while (browsePath.length > 0) {
+        children = children[browsePath[0]].props.children;
+        browsePath.splice(0, 1);
+      }
+
+      if (children) {
         const droppedComp: WegasComponent = {
           type: dndComponent.componentName,
           props: components[
@@ -163,16 +173,19 @@ export default function PageEditor() {
           ].getComputedPropsFromVariable(),
         };
         if (index) {
-          newPage.props.children.splice(index, 0, droppedComp);
+          children.splice(index, 0, droppedComp);
         } else {
-          newPage.props.children.push(droppedComp);
+          children.push(droppedComp);
         }
-        debugger;
         patchPage(pagesState.selectedPage, newPage);
       }
     },
     [components, pagesState.selectedPage, patchPage, selectedPage],
   );
+
+  const onDelete = React.useCallback((path: string[]) => {
+    wlog('DELETE : ' + JSON.stringify(path));
+  }, []);
 
   return (
     <Toolbar>
@@ -273,11 +286,6 @@ export default function PageEditor() {
               setPagesState(s => ({ ...s, selectedPage: id }));
             }}
           />
-          {!srcMode && (
-            <button onClick={() => setEditMode(!editMode)}>
-              {editMode ? 'View mode' : 'Edit mode'}
-            </button>
-          )}
           {modalState.type === 'error' && (
             <StyledLabel
               type={modalState.type}
@@ -286,19 +294,27 @@ export default function PageEditor() {
             />
           )}
         </div>
+        {!srcMode && (
+          <button onClick={() => setEditMode(!editMode)}>
+            {editMode ? 'View mode' : 'Edit mode'}
+          </button>
+        )}
         <button
           onClick={() => {
             setSrcMode(src => !src);
             setEditMode(false);
           }}
         >
-          {srcMode ? 'Preview' : 'Source code'}
+          {srcMode ? 'Preview mode' : 'Source code mode'}
         </button>
       </Toolbar.Header>
       <Toolbar.Content>
-        <div className={flex}>
-          <ComponentPalette />
-          <div className={grow}>
+        <ReflexContainer orientation="vertical" className={splitter}>
+          <ReflexElement flex={editMode ? 0.125 : 0}>
+            <ComponentPalette />
+          </ReflexElement>
+          {editMode && <ReflexSplitter />}
+          <ReflexElement>
             {selectedPage &&
               (srcMode ? (
                 <JSONandJSEditor
@@ -311,11 +327,23 @@ export default function PageEditor() {
                   }
                 />
               ) : (
-                <PageLoader selectedPage={selectedPage} onDrop={onDrop} />
+                <PageLoader
+                  selectedPage={selectedPage}
+                  onDrop={onDrop}
+                  onDelete={onDelete}
+                />
               ))}
-          </div>
-        </div>
+          </ReflexElement>
+        </ReflexContainer>
       </Toolbar.Content>
     </Toolbar>
+  );
+}
+
+export default function ContextedPageEditor() {
+  return (
+    <PageContextProvider>
+      <PageEditor />
+    </PageContextProvider>
   );
 }

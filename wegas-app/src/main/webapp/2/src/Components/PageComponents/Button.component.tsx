@@ -2,24 +2,30 @@ import * as React from 'react';
 import { Actions } from '../../data';
 import { store } from '../../data/store';
 import { pageComponentFactory, registerComponent } from './componentFactory';
+import {
+  EditableComponent,
+  EditableComponentCallbacks,
+} from './EditableComponent';
 
-interface ButtonProps {
+interface ButtonProps extends EditableComponentCallbacks {
   label: string;
   action: string;
 }
 
-const Button: React.FunctionComponent<ButtonProps> = ({
-  label,
-  action,
-}: ButtonProps) => {
+const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps) => {
+  const { label, action } = props;
   return (
-    <button
-      onClick={() => {
-        store.dispatch(Actions.VariableInstanceActions.runScript(action));
-      }}
-    >
-      {label}
-    </button>
+    <EditableComponent {...props} componentName="Button">
+      {() => (
+        <button
+          onClick={() => {
+            store.dispatch(Actions.VariableInstanceActions.runScript(action));
+          }}
+        >
+          {label}
+        </button>
+      )}
+    </EditableComponent>
   );
 };
 

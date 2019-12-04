@@ -91,7 +91,7 @@ export function Menu<T extends Item<T>>({
       itemToString={emtpyStr}
     >
       {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
-        <div className={String(container)}>
+        <div className={cx(container, css({ zIndex: 1000 }))}>
           <div className={itemStyle} onClick={() => toggleMenu()}>
             {label}
             <IconButton

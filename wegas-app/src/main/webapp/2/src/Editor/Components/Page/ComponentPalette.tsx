@@ -5,7 +5,6 @@ import { usePageComponentStore } from '../../../Components/PageComponents/compon
 import { themeVar } from '../../../Components/Theme';
 import { IconButton } from '../../../Components/Button/IconButton';
 import { useDrag } from 'react-dnd';
-import { pageCTX } from './PageLoader';
 
 const componentStyle = css({
   padding: '10px',
@@ -34,14 +33,11 @@ interface ComponentElementProps {
 export const dndComponnent: 'dndComponnent' = 'dndComponnent';
 
 function ComponentElement({ componentName }: ComponentElementProps) {
-  const { onDrag } = React.useContext(pageCTX);
   const [, drag] = useDrag<DnDComponent, unknown, unknown>({
     item: {
       componentName: componentName,
       type: dndComponnent,
     },
-    begin: mon => onDrag(mon.getItem()),
-    end: () => onDrag(null),
   });
   const component = usePageComponentStore(s => s[componentName]);
   return (
