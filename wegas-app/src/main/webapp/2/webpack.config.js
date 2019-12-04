@@ -2,6 +2,8 @@
 /* eslint  @typescript-eslint/no-var-requires: "off" */
 const path = require('path');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const webpack = require('webpack');
+
 // const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 
@@ -16,12 +18,30 @@ const isCI =
     ? process.env.CI.toLowerCase() === 'true'
     : false;
 
+const start = new Date().getTime();
+let prevTs = start;
+
 const plugins = [
   // new MonacoWebpackPlugin({
   //   languages: ['json', 'css', 'javascript', 'typescript'],
   // }),
   new ForkTsCheckerWebpackPlugin({
     formatter: 'codeframe',
+  }),
+  new webpack.ProgressPlugin({
+    entries: true,
+    modules: true,
+    modulesCount: 100,
+    profile: true,
+    handler: (percentage, message, ...args) => {
+      const now = new Date().getTime();
+      const duration = now - prevTs;
+      const totalDuration = now - start;
+
+      console.info((duration/1000), totalDuration / 1000, (percentage*100).toFixed(2) + "% : ", message, ...args);
+
+      prevTs = now;
+    },
   }),
 ];
 if (!isCI && !PROD) {
