@@ -94,6 +94,7 @@ YUI.add("wegas-statistics", function(Y) {
             },
             addRawDownloadButton: function() {
                 var game = Y.Wegas.Facade.Game.cache.getCurrentGame();
+                var gameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
 
                 var activityPattern;
 
@@ -108,7 +109,7 @@ YUI.add("wegas-statistics", function(Y) {
                 this._rawButton = new Y.Wegas.Text({
                     srcNode: this.get("contentBox").one(".footer"),
                     content: '<a title="Download statistics (Excel)" href="rest/Statistics/ExportXLSX/'
-                        + this.logId + '/Games/' + +game.get('id') + queryString + '" '
+                        + getLogID(gameModel) + '/Games/' + +game.get('id') + queryString + '" '
                         + 'target="_blank"><span class="fa fa-2x fa-file-excel-o">Download raw data(Excel)</span></a>',
 //                    cssClass: 'download-stats global-button'
                 }).render();
