@@ -226,12 +226,12 @@ YUI.add('wegas-app', function(Y) {
                     e.currentTarget.toggleClass("wegas-stdmode") // Toggle stdmode class on body (hides any wegas-advancedfeature)
                         .toggleClass("wegas-advancedmode");
                     Y.config.win.Y = Y; // Allow access to Y instance
-                }, "167", this);
+                }, "167+ctrl", this);
 
                 Y.one("body").on("key", function(e) { // Add shortcut to activate internal mode on key '°' pressed
                     e.currentTarget.toggleClass("wegas-internalmode");
                     Y.config.win.Y = Y; // Allow access to Y instance
-                }, "176", this);
+                }, "176+ctrl", this);
             });
         },
         resume: function() {
