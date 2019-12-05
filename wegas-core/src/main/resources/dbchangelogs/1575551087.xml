@@ -1,0 +1,21 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="maxence" id="1575551087-1">
+        <sql>
+            INSERT INTO taskinstance_properties (taskinstance_id, properties, properties_key)
+            SELECT 
+                taskinstance_id, 
+                properties, 
+                'displayedQuality' AS properties_key
+              FROM taskinstance_properties
+              WHERE properties_key = 'computedQuality'
+        </sql>
+    </changeSet>
+    <changeSet author="maxence" id="1575551087-2">
+        <sql>
+            UPDATE transition
+            SET content = replace(content, 'getNumberInstanceProperty(self, "computedQuality"',  'getNumberInstanceProperty(self, "displayedQuality"')
+            WHERE content like '%getNumberInstanceProperty(self, "computedQuality%';
+        </sql>
+    </changeSet>
+</databaseChangeLog>
