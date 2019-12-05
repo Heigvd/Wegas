@@ -39,7 +39,7 @@ angular.module('wegas.models.teams', [])
             cacheTeams = function() {
                 var deferred = $q.defer();
                 if (teams.cache !== null) {
-                    $http.get(ServiceURL + "rest/Extended/User/Current/Team").success(function(data) {
+                    $http.get(ServiceURL + "rest/Editor/User/Current/Team").success(function(data) {
                         teams.cache.data = data || [];
                         deferred.resolve(teams.cache.data);
                     }).error(function(data) {
