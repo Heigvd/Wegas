@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { usePageComponentStore } from './PageComponents/componentFactory';
 import { DnDComponent } from '../Editor/Components/Page/ComponentPalette';
-import { wlog } from '../Helper/wegaslog';
 
 export function deserialize(
   json: WegasComponent,
@@ -36,6 +35,7 @@ interface PageDeserializerProps {
   path?: string[];
   onDrop?: (dndComponent: DnDComponent, path: string[], index?: number) => void;
   onDelete?: (path: string[]) => void;
+  onEdit?: (path: string[]) => void;
 }
 
 export function PageDeserializer({
@@ -44,6 +44,7 @@ export function PageDeserializer({
   path,
   onDrop,
   onDelete,
+  onEdit,
 }: PageDeserializerProps): JSX.Element {
   const realPath = path ? path : [];
   const { children = [], ...restProps } = json.props || {};
@@ -57,11 +58,8 @@ export function PageDeserializer({
         ...restProps,
         onDrop: (dndComponent: DnDComponent, index?: number) =>
           onDrop && onDrop(dndComponent, realPath, index),
-        onDelete: () => {
-          wlog('ondelete => ' + JSON.stringify(realPath));
-          debugger;
-          onDelete && onDelete(realPath);
-        },
+        onDelete: () => onDelete && onDelete(realPath),
+        onEdit: () => onEdit && onEdit(realPath),
       },
       children.map((cjson, i) => (
         <PageDeserializer
@@ -71,6 +69,7 @@ export function PageDeserializer({
           path={realPath.concat([String(i)])}
           onDrop={onDrop}
           onDelete={onDelete}
+          onEdit={onEdit}
         />
       )),
     )

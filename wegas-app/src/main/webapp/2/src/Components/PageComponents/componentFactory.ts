@@ -87,7 +87,7 @@ export const usePageComponentStore = <R>(
 export const pageComponentFactory: <
   P extends {},
   T extends keyof WegasScriptEditorNameAndTypes,
-  R extends WegasScriptEditorNameAndTypes[T]
+  R extends Readonly<WegasScriptEditorNameAndTypes[T]>
 >(
   component: React.FunctionComponent<P>,
   icon: IconProp,

@@ -13,7 +13,6 @@ import { useDrop, DropTargetMonitor } from 'react-dnd';
 import { pageCTX } from '../../Editor/Components/Page/PageLoader';
 import { IconButton } from '../Button/IconButton';
 import { ConfirmButton } from '../Button/ConfirmButton';
-import { wlog } from '../../Helper/wegaslog';
 
 const editListStyle = css({
   ...dropZoneFocusCss,

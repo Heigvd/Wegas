@@ -19,6 +19,8 @@ import { usePageComponentStore } from '../../../Components/PageComponents/compon
 import { wlog } from '../../../Helper/wegaslog';
 import { ReflexElement, ReflexContainer, ReflexSplitter } from 'react-reflex';
 import { splitter } from '../LinearTabLayout/LinearLayout';
+import ComponentEditor from './ComponentEditor';
+import { css } from 'emotion';
 
 const defaultPage = {
   type: 'Layout/List',
@@ -90,6 +92,9 @@ function PageEditor() {
     },
   });
   const [srcMode, setSrcMode] = React.useState<boolean>(false);
+  const [editedComponent, setEditedComponent] = React.useState<
+    WegasComponent
+  >();
   const { editMode, setEditMode } = React.useContext(pageCTX);
   const components = usePageComponentStore(s => s);
 
@@ -147,7 +152,7 @@ function PageEditor() {
     },
     [gameModelId, selectedPage],
   );
-
+  editMode;
   React.useEffect(() => {
     loadIndex(gameModelId);
   }, [loadIndex, gameModelId]);
@@ -183,9 +188,44 @@ function PageEditor() {
     [components, pagesState.selectedPage, patchPage, selectedPage],
   );
 
-  const onDelete = React.useCallback((path: string[]) => {
-    wlog('DELETE : ' + JSON.stringify(path));
-  }, []);
+  const onDelete = React.useCallback(
+    (path: string[]) => {
+      wlog('DELETE : ' + JSON.stringify(path));
+      const newPage: Page = deepClone(selectedPage);
+      let parent: WegasComponent = newPage;
+      const browsePath = [...path];
+      while (browsePath.length > 0) {
+        if (parent.props.children) {
+          if (browsePath.length == 1) {
+            parent.props.children.splice(Number(browsePath[0]), 1);
+            patchPage(pagesState.selectedPage, newPage);
+            return;
+          }
+          parent = parent.props.children[Number(browsePath[0])];
+        }
+        browsePath.splice(0, 1);
+      }
+    },
+    [selectedPage, pagesState.selectedPage, patchPage],
+  );
+
+  const onEdit = React.useCallback(
+    (path: string[]) => {
+      wlog('EDIT : ' + JSON.stringify(path));
+      const browsePath = [...path];
+      let component: WegasComponent = selectedPage;
+      while (browsePath.length > 0) {
+        if (component.props.children) {
+          component = component.props.children[Number(browsePath[0])];
+          browsePath.splice(0, 1);
+        } else {
+          return;
+        }
+      }
+      setEditedComponent(component);
+    },
+    [selectedPage],
+  );
 
   return (
     <Toolbar>
@@ -309,32 +349,35 @@ function PageEditor() {
         </button>
       </Toolbar.Header>
       <Toolbar.Content>
-        <ReflexContainer orientation="vertical" className={splitter}>
-          <ReflexElement flex={editMode ? 0.125 : 0}>
-            <ComponentPalette />
-          </ReflexElement>
-          {editMode && <ReflexSplitter />}
-          <ReflexElement>
-            {selectedPage &&
-              (srcMode ? (
-                <JSONandJSEditor
-                  content={JSON.stringify(selectedPage, null, 2)}
-                  status={
-                    modalState.type === 'save' ? modalState.label : undefined
-                  }
-                  onSave={content =>
-                    patchPage(pagesState.selectedPage, JSON.parse(content))
-                  }
-                />
-              ) : (
-                <PageLoader
-                  selectedPage={selectedPage}
-                  onDrop={onDrop}
-                  onDelete={onDelete}
-                />
-              ))}
-          </ReflexElement>
-        </ReflexContainer>
+        {srcMode ? (
+          <JSONandJSEditor
+            content={JSON.stringify(selectedPage, null, 2)}
+            status={modalState.type === 'save' ? modalState.label : undefined}
+            onSave={content =>
+              patchPage(pagesState.selectedPage, JSON.parse(content))
+            }
+          />
+        ) : (
+          <ReflexContainer orientation="vertical" className={splitter}>
+            <ReflexElement
+              flex={editMode ? (editedComponent ? 0.3 : 0.125) : 0}
+            >
+              <div style={{ float: 'left' }}>
+                <ComponentPalette />
+              </div>
+              {editedComponent && <ComponentEditor entity={editedComponent} />}
+            </ReflexElement>
+            {editMode && <ReflexSplitter />}
+            <ReflexElement>
+              <PageLoader
+                selectedPage={selectedPage}
+                onDrop={onDrop}
+                onDelete={onDelete}
+                onEdit={onEdit}
+              />
+            </ReflexElement>
+          </ReflexContainer>
+        )}
       </Toolbar.Content>
     </Toolbar>
   );

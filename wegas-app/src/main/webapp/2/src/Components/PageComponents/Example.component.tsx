@@ -2,10 +2,39 @@ import * as React from 'react';
 import { TranslatableContent } from '../../data/i18n';
 import { useVariableInstance } from '../Hooks/useVariable';
 import { pageComponentFactory, registerComponent } from './componentFactory';
+import { proxyfy } from '../../data/proxyfy';
 
 interface ExampleProps {
-  variable: IStringDescriptor | ISNumberDescriptor;
+  variable: IStringDescriptor | INumberDescriptor;
 }
+
+const defaultExampleProps: ExampleProps = {
+  variable: proxyfy<INumberDescriptor>({
+    '@class': 'NumberDescriptor',
+    defaultValue: 42,
+    comments: '',
+    label: {
+      '@class': 'TranslatableContent',
+      version: 0,
+      translations: {
+        en: {
+          '@class': 'Translation',
+          translation: 'kjkj',
+          lang: 'en',
+          status: '',
+        },
+      },
+    },
+    version: 0,
+    editorTag: '',
+    defaultInstance: {
+      '@class': 'NumberInstance',
+      history: [],
+      version: 0,
+      value: 42,
+    },
+  })!,
+};
 
 const Example: React.FunctionComponent<ExampleProps> = ({
   variable,
@@ -61,11 +90,12 @@ const SimpleComponent = pageComponentFactory(
     },
   },
   ['ISNumberDescriptor', 'ISStringDescriptor'],
-  variable => ({
-    variable: variable,
-    label: 'salut',
-    hello: 'sadjkajw',
-  }),
+  variable =>
+    variable
+      ? {
+          variable: variable,
+        }
+      : defaultExampleProps,
 );
 
 registerComponent('SimpleComponent', SimpleComponent);

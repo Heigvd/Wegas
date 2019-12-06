@@ -9,6 +9,7 @@ interface PageLoaderProps {
   selectedPage: Page;
   onDrop?: (dndComponent: DnDComponent, path: string[], index?: number) => void;
   onDelete?: (path: string[]) => void;
+  onEdit?: (path: string[]) => void;
 }
 
 interface PageContext {
@@ -56,6 +57,7 @@ export function PageLoader({
   selectedPage,
   onDrop,
   onDelete,
+  onEdit,
 }: PageLoaderProps) {
   return (
     <DefaultDndProvider>
@@ -65,6 +67,7 @@ export function PageLoader({
             json={selectedPage}
             onDrop={onDrop}
             onDelete={onDelete}
+            onEdit={onEdit}
           />
         </React.Suspense>
       </ThemeProvider>
