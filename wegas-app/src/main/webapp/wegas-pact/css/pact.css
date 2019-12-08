@@ -698,36 +698,52 @@ API TOOLTIP
     padding: 5px;
 }
 
+.wegas-dashboard-datatable .sequence,
 .pact-stats .sequence {
     /*line-height: 1.3;*/
     cursor: default;
-    box-shadow: 1px 1px 3px grey;
+    max-width: 400px;
+    display: inline-block;
 }
 
-.pact-stats .sequence * {
+.pact-stats .sequence {
+    min-width: max-content;
+}
+
+.wegas-dashboard-datatable .sequence span,
+.pact-stats .sequence span {
+    display: inline-block;
+    box-shadow: 1px 1px 2px grey;
+    margin: 2px 0 2px 1px;
     padding: 0 2px;
 }
 
+.wegas-dashboard-datatable .sequence > .initialize-level,
 .pact-stats .sequence > .initialize-level {
     display: none;
 }
 
+.wegas-dashboard-datatable .sequence .initialize-level,
 .pact-stats .sequence .initialize-level {
     background: transparent;
 }
 
+.wegas-dashboard-datatable .sequence .success,
 .pact-stats .sequence .success {
     background: lightgreen;
 }
 
+.wegas-dashboard-datatable .sequence .syntax-error,
 .pact-stats .sequence .syntax-error {
     background: red;
 }
 
+.wegas-dashboard-datatable .sequence .semantic-error,
 .pact-stats .sequence .semantic-error {
     background: orange;
 }
 
+.wegas-dashboard-datatable .sequence .theory,
 .pact-stats .sequence .theory {
     background: lightblue;
 }
