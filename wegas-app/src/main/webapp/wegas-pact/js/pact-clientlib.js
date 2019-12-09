@@ -135,35 +135,37 @@
                 [],
                 {
                     initializer: function() {
-                        var message = this.getMessage();
-                        if (message.get('token')) {
+                        var message = this.getMessage(),
+                            topic = message.get('token') || I18n.t(message.get("subject")).replace(/\s/g,"") || "TheoryWithoutTitle";
+                        if (topic) {
                             Y.Wegas.Facade.Variable.script.remoteFnEval(
-                                function(unread, token) {
+                                function(unread, topic) {
                                     Log.post(
-                                        Log.statement( unread ? 'initialized' : 'resumed', 'theory', token)
+                                        Log.statement( unread ? 'initialized' : 'resumed', 'theory', topic)
                                     );
                                 },
                                 message.get('unread'),
-                                message.get('token')
+                                topic
                             );
                             Y.Wegas.ProgGameLevel.prototype.addToSequence({
                                 type: "THEORY-RESUMED",
-                                topic: message.get('token')
+                                topic: topic
                             });
                         }
                     },
                     destructor: function() {
-                        var message = this.getMessage();
-                        if (message.get('token')) {
+                        var message = this.getMessage(),
+                            topic = message.get('token') || I18n.t(message.get("subject")).replace(/\s/g,"") || "TheoryWithoutTitle";
+                        if (topic) {
                             Y.Wegas.Facade.Variable.script.remoteFnEval(
-                                function(token) {
-                                    Log.post( Log.statement( 'suspended', 'theory', token));
+                                function(topic) {
+                                    Log.post( Log.statement( 'suspended', 'theory', topic));
                                 },
-                                message.get('token')
+                                topic
                             );
                             Y.Wegas.ProgGameLevel.prototype.addToSequence({
                                 type: "THEORY-SUSPENDED",
-                                topic: message.get('token')
+                                topic: topic
                             });
                         }
                     },
