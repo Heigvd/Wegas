@@ -6,41 +6,16 @@ import { proxyfy } from '../../data/proxyfy';
 import { schemaProps } from './schemaProps';
 
 interface ExampleProps {
-  variable: IStringDescriptor | INumberDescriptor;
+  variable?: IStringDescriptor | INumberDescriptor;
 }
-
-const defaultExampleProps: ExampleProps = {
-  variable: proxyfy<INumberDescriptor>({
-    '@class': 'NumberDescriptor',
-    defaultValue: 42,
-    comments: '',
-    label: {
-      '@class': 'TranslatableContent',
-      version: 0,
-      translations: {
-        en: {
-          '@class': 'Translation',
-          translation: 'kjkj',
-          lang: 'en',
-          status: '',
-        },
-      },
-    },
-    version: 0,
-    editorTag: '',
-    defaultInstance: {
-      '@class': 'NumberInstance',
-      history: [],
-      version: 0,
-      value: 42,
-    },
-  })!,
-};
 
 const Example: React.FunctionComponent<ExampleProps> = ({
   variable,
 }: ExampleProps) => {
   const instance = useVariableInstance(variable);
+  if (variable === undefined) {
+    return <span>Variable undefined</span>;
+  }
   if (instance === undefined) {
     return <span>{`Instance of ${variable.name} not found`}</span>;
   }
@@ -53,24 +28,15 @@ const Example: React.FunctionComponent<ExampleProps> = ({
   );
 };
 
-const SimpleComponent = pageComponentFactory(
-  Example,
-  'ambulance',
-  {
-    description: 'Example',
-    properties: {
+registerComponent(
+  pageComponentFactory(
+    Example,
+    'Example',
+    'ambulance',
+    {
       variable: schemaProps.variable('Variable'),
     },
-  },
-  ['ISNumberDescriptor', 'ISStringDescriptor'],
-  variable =>
-    variable
-      ? {
-          variable: variable,
-        }
-      : defaultExampleProps,
+    ['ISNumberDescriptor', 'ISStringDescriptor'],
+    variable => ({ variable }),
+  ),
 );
-
-registerComponent('SimpleComponent', SimpleComponent);
-
-export default SimpleComponent;

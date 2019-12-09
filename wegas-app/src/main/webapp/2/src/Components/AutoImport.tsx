@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { usePageComponentStore } from './PageComponents/componentFactory';
-import { DnDComponent } from '../Editor/Components/Page/ComponentPalette';
 
 export function deserialize(
   json: WegasComponent,
@@ -33,18 +32,12 @@ interface PageDeserializerProps {
   json: WegasComponent;
   id?: number;
   path?: string[];
-  onDrop?: (dndComponent: DnDComponent, path: string[], index?: number) => void;
-  onDelete?: (path: string[]) => void;
-  onEdit?: (path: string[]) => void;
 }
 
 export function PageDeserializer({
   json,
   id,
   path,
-  onDrop,
-  onDelete,
-  onEdit,
 }: PageDeserializerProps): JSX.Element {
   const realPath = path ? path : [];
   const { children = [], ...restProps } = json.props || {};
@@ -56,10 +49,6 @@ export function PageDeserializer({
         id,
         __path: realPath,
         ...restProps,
-        onDrop: (dndComponent: DnDComponent, index?: number) =>
-          onDrop && onDrop(dndComponent, realPath, index),
-        onDelete: () => onDelete && onDelete(realPath),
-        onEdit: () => onEdit && onEdit(realPath),
       },
       children.map((cjson, i) => (
         <PageDeserializer
@@ -67,9 +56,6 @@ export function PageDeserializer({
           id={i}
           json={cjson}
           path={realPath.concat([String(i)])}
-          onDrop={onDrop}
-          onDelete={onDelete}
-          onEdit={onEdit}
         />
       )),
     )

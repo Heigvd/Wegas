@@ -2,13 +2,9 @@ import * as React from 'react';
 import { Actions } from '../../data';
 import { store } from '../../data/store';
 import { pageComponentFactory, registerComponent } from './componentFactory';
-import {
-  EditableComponent,
-  EditableComponentCallbacks,
-} from './EditableComponent';
 import { schemaProps } from './schemaProps';
 
-interface ButtonProps extends EditableComponentCallbacks {
+interface ButtonProps {
   label: string;
   action: IScript | string;
 }
@@ -16,40 +12,34 @@ interface ButtonProps extends EditableComponentCallbacks {
 const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps) => {
   const { label, action } = props;
   return (
-    <EditableComponent {...props} componentName="Button">
-      {() => (
-        <button
-          onClick={() => {
-            store.dispatch(
-              Actions.VariableInstanceActions.runScript(
-                typeof action === 'string' ? action : action.content,
-              ),
-            );
-          }}
-        >
-          {label}
-        </button>
-      )}
-    </EditableComponent>
+    <button
+      onClick={() => {
+        store.dispatch(
+          Actions.VariableInstanceActions.runScript(
+            typeof action === 'string' ? action : action.content,
+          ),
+        );
+      }}
+    >
+      {label}
+    </button>
   );
 };
 
-const ButtonComponent = pageComponentFactory(
-  Button,
-  'cube',
-  {
-    description: 'Button',
-    properties: {
+registerComponent(
+  pageComponentFactory(
+    Button,
+    'Button',
+    'cube',
+    {
       action: schemaProps.script('Action'),
       label: schemaProps.string('Label'),
     },
-  },
-  [],
-  () => ({
-    action:
-      "Variable.find(gameModel, 'zzzz').setValue(self, Math.random()*2000);",
-    label: 'Button',
-  }),
+    [],
+    () => ({
+      action:
+        "Variable.find(gameModel, 'zzzz').setValue(self, Math.random()*2000);",
+      label: 'Button',
+    }),
+  ),
 );
-
-registerComponent('Button', ButtonComponent);

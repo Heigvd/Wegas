@@ -1,27 +1,37 @@
 import { store } from '../../data/store';
-import { SrcEditorProps } from '../../Editor/Components/ScriptEditors/SrcEditor';
 import { CodeLanguage } from '../../Editor/Components/FormView/Script';
 
+type SchemaPrimitives =
+  | 'boolean'
+  | 'number'
+  | 'string'
+  | 'object'
+  | 'array'
+  | 'never'
+  | 'void'
+  | 'undefined'
+  | 'unknown';
+
+type SchemaLayouts = 'inline' | 'shortInline';
+
 export const schemaProps = {
-  string: (
-    label: string,
-    value: string = '',
-    featureLevel: FeatureLevel = 'DEFAULT',
+  hidden: (
+    isChildren: boolean = false,
+    type: SchemaPrimitives = 'array',
     required: boolean = true,
-    index: number = 0,
   ) => ({
     required,
-    type: 'string',
-    value,
+    isChildren,
+    type,
     view: {
-      featureLevel,
-      index,
-      label,
+      index: 0,
+      type: 'hidden',
     },
   }),
   boolean: (
     label: string,
     value: string = '',
+    readOnly: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
     required: boolean = true,
     index: number = 0,
@@ -30,6 +40,45 @@ export const schemaProps = {
     type: 'boolean',
     value,
     view: {
+      readOnly,
+      featureLevel,
+      index,
+      label,
+    },
+  }),
+  number: (
+    label: string,
+    readOnly: boolean = false,
+    featureLevel: FeatureLevel = 'DEFAULT',
+    required: boolean = true,
+    index: number = 0,
+    layout: SchemaLayouts = 'shortInline',
+  ) => ({
+    featureLevel,
+    required,
+    type: 'number',
+    view: {
+      featureLevel,
+      index,
+      label,
+      layout,
+      readOnly,
+      type: 'number',
+    },
+  }),
+  string: (
+    label: string,
+    value: string = '',
+    featureLevel: FeatureLevel = 'DEFAULT',
+    required: boolean = true,
+    index: number = 0,
+    layout: SchemaLayouts = 'shortInline',
+  ) => ({
+    required,
+    type: 'string',
+    value,
+    view: {
+      layout,
       featureLevel,
       index,
       label,

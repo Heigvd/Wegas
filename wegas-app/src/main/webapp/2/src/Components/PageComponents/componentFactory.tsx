@@ -5,9 +5,11 @@ import { composeEnhancers } from '../../data/store';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { useAnyStore } from '../Hooks/storeHookFactory';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { EditableComponent, PageComponentProps } from './EditableComponent';
 
 export interface PageComponent {
   getComponent: () => React.FunctionComponent<{ [name: string]: unknown }>;
+  getName: () => string;
   getIcon: () => IconProp;
   getSchema: () => SimpleSchema;
   getAllowedVariables: () => (keyof WegasScriptEditorNameAndTypes)[];
@@ -79,36 +81,46 @@ export const componentsStore = createStore(
  * @param shouldUpdate Will update the component if this function returns true.
  * Default to ref comparing values returned from selector
  */
-export const usePageComponentStore = <R>(
+export function usePageComponentStore<R>(
   selector: (state: PageComponentsState) => R,
   shouldUpdate?: (oldValue: R, newValue: R) => boolean,
-) => useAnyStore(selector, shouldUpdate, componentsStore);
+) {
+  return useAnyStore(selector, shouldUpdate, componentsStore);
+}
 
-export const pageComponentFactory: <
-  P extends {},
+export function pageComponentFactory<
+  P extends { [name: string]: unknown } & { children?: WegasComponent[] },
   T extends keyof WegasScriptEditorNameAndTypes,
   R extends Readonly<WegasScriptEditorNameAndTypes[T]>
 >(
   component: React.FunctionComponent<P>,
+  componentName: string,
   icon: IconProp,
   schema: SimpleSchema,
   allowedVariables: T[],
   getComputedPropsFromVariable: (variable?: R) => P,
-) => PageComponent = (
-  component,
-  icon,
-  schema,
-  allowedVariables,
-  getComputedPropsFromVariable,
-) => {
+) {
+  const Editable = (props: P & PageComponentProps) => (
+    <EditableComponent
+      {...props}
+      componentName={componentName}
+      wegasChildren={props.children}
+    >
+      {content => component({ ...props, children: content })}
+    </EditableComponent>
+  );
   return {
-    getComponent: () => component,
+    getComponent: () => Editable,
     getIcon: () => icon,
-    getSchema: () => schema,
+    getName: () => componentName,
+    getSchema: () => ({
+      description: componentName,
+      properties: schema,
+    }),
     getAllowedVariables: () => allowedVariables,
     getComputedPropsFromVariable,
-  };
-};
+  } as PageComponent;
+}
 
 /**
  * Function that registers a component dynamically.
@@ -117,10 +129,9 @@ export const pageComponentFactory: <
  * @param component
  */
 export const registerComponent: (
-  componentName: string,
   component: PageComponent,
-) => void = (componentName, component) => {
+) => void = component => {
   componentsStore.dispatch(
-    PageComponentActionCreator.ADD_COMPONENT(componentName, component),
+    PageComponentActionCreator.ADD_COMPONENT(component.getName(), component),
   );
 };

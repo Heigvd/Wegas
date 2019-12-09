@@ -4,7 +4,6 @@ import { ConfirmButton } from '../../../Components/Button/ConfirmButton';
 import { Menu } from '../../../Components/Menu';
 import { PageAPI } from '../../../API/pages.api';
 import { GameModel } from '../../../data/selectors';
-import { PageLoader, pageCTX, PageContextProvider } from './PageLoader';
 import {
   JSONandJSEditor,
   OnSaveStatus,
@@ -16,14 +15,25 @@ import { StyledLabel } from '../../../Components/AutoImport/String/String';
 import { compare, deepClone } from 'fast-json-patch';
 import { ComponentPalette, DnDComponent } from './ComponentPalette';
 import { usePageComponentStore } from '../../../Components/PageComponents/componentFactory';
-import { wlog } from '../../../Helper/wegaslog';
 import { ReflexElement, ReflexContainer, ReflexSplitter } from 'react-reflex';
 import { splitter } from '../LinearTabLayout/LinearLayout';
 import ComponentEditor from './ComponentEditor';
-import { patch } from '../../../data/Reducer/pageState';
+import { PageLoader } from './PageLoader';
+import pageState from '../../../data/Reducer/pageState';
+
+interface PageContext {
+  editMode: boolean;
+  onDrop?: (dndComponent: DnDComponent, path: string[], index?: number) => void;
+  onDelete?: (path: string[]) => void;
+  onEdit?: (path: string[]) => void;
+}
+
+export const pageCTX = React.createContext<PageContext>({
+  editMode: false,
+});
 
 const defaultPage = {
-  type: 'Layout/List',
+  type: 'List',
   props: {
     children: [],
     style: {
@@ -73,10 +83,11 @@ const savingErrorStatus: OnSaveStatus = {
 
 interface PagesState {
   selectedPage: string;
+  editedPath?: string[];
   pages: Pages;
 }
 
-function PageEditor() {
+export default function PageEditor() {
   const gameModelId = GameModel.selectCurrent().id!;
   const [modalState, setModalState] = React.useState<ModalState>({
     type: 'close',
@@ -92,14 +103,14 @@ function PageEditor() {
     },
   });
   const [srcMode, setSrcMode] = React.useState<boolean>(false);
-  const [editedComponent, setEditedComponent] = React.useState<
-    WegasComponent
-  >();
-  const { editMode, setEditMode } = React.useContext(pageCTX);
+  const [editMode, setEditMode] = React.useState(false);
+  // const [editedComponent, setEditedComponent] = React.useState<
+  //   WegasComponent & { path: string[] }
+  // >();
   const components = usePageComponentStore(s => s);
-
   const selectedPage: Page | undefined =
     pagesState.pages[String(pagesState.selectedPage)];
+
   const loadIndex = React.useCallback(gameModelId => {
     PageAPI.getIndex(gameModelId).then(res => {
       let pages: Pages = {};
@@ -108,6 +119,7 @@ function PageEditor() {
           pages = { ...pages, ...res };
           if (Object.keys(pages).length === indexes.length) {
             setPagesState(s => ({
+              ...s,
               pages: pages,
               selectedPage:
                 s.selectedPage !== '0' ? s.selectedPage : Object.keys(pages)[0],
@@ -157,40 +169,57 @@ function PageEditor() {
     loadIndex(gameModelId);
   }, [loadIndex, gameModelId]);
 
+  const findComponent = React.useCallback(
+    (path: string[]) => {
+      const browsePath = [...path];
+      const newPage = deepClone(selectedPage);
+      let parent: WegasComponent | undefined = undefined;
+      let component: WegasComponent = newPage;
+      while (browsePath.length > 0) {
+        if (component.props.children) {
+          parent = component;
+          component = component.props.children[Number(browsePath[0])];
+          browsePath.splice(0, 1);
+        } else {
+          return { newPage };
+        }
+      }
+      return { newPage, component, parent };
+    },
+    [selectedPage],
+  );
+
+  const onEdit = React.useCallback(
+    (path?: string[]) => setPagesState(o => ({ ...o, editedPath: path })),
+    [],
+  );
+
   const onDrop = React.useCallback(
     (dndComponent: DnDComponent, path: string[], index?: number) => {
-      wlog(dndComponent);
-      wlog(path);
-      wlog(index);
-      const newPage = deepClone(selectedPage);
-      let children = newPage.props.children;
-      const browsePath = [...path];
-      while (browsePath.length > 0) {
-        children = children[browsePath[0]].props.children;
-        browsePath.splice(0, 1);
-      }
-
-      if (children) {
+      const { newPage, component } = findComponent(path);
+      if (component && component.props.children) {
+        const children = component.props.children;
         const droppedComp: WegasComponent = {
           type: dndComponent.componentName,
           props: components[
             dndComponent.componentName
           ].getComputedPropsFromVariable(),
         };
-        if (index) {
+        if (index !== undefined) {
           children.splice(index, 0, droppedComp);
         } else {
           children.push(droppedComp);
         }
+        path.push(`${index ? index : 0}`);
+        onEdit(path);
         patchPage(pagesState.selectedPage, newPage);
       }
     },
-    [components, pagesState.selectedPage, patchPage, selectedPage],
+    [components, pagesState.selectedPage, patchPage, onEdit, findComponent],
   );
 
   const onDelete = React.useCallback(
     (path: string[]) => {
-      wlog('DELETE : ' + JSON.stringify(path));
       const newPage: Page = deepClone(selectedPage);
       let parent: WegasComponent = newPage;
       const browsePath = [...path];
@@ -209,29 +238,28 @@ function PageEditor() {
     [selectedPage, pagesState.selectedPage, patchPage],
   );
 
-  const onEdit = React.useCallback(
-    (path: string[]) => {
-      wlog('EDIT : ' + JSON.stringify(path));
-      const browsePath = [...path];
-      let component: WegasComponent = selectedPage;
-      while (browsePath.length > 0) {
-        if (component.props.children) {
-          component = component.props.children[Number(browsePath[0])];
-          browsePath.splice(0, 1);
+  const onUpdate = React.useCallback(
+    (value: WegasComponent) => {
+      if (pagesState.editedPath) {
+        const { newPage, parent } = findComponent(pagesState.editedPath);
+        if (parent) {
+          if (parent.props.children && pagesState.editedPath) {
+            parent.props.children.splice(
+              Number(pagesState.editedPath[pagesState.editedPath.length - 1]),
+              1,
+              value,
+            );
+            patchPage(pagesState.selectedPage, newPage);
+          }
         } else {
-          return;
+          patchPage(pagesState.selectedPage, {
+            ...newPage,
+            props: { ...value },
+          });
         }
       }
-      setEditedComponent(component);
     },
-    [selectedPage],
-  );
-
-  const onUpdate = React.useCallback(
-    (value: Page) => {
-      patchPage(pagesState.selectedPage, value);
-    },
-    [pagesState.selectedPage, patchPage],
+    [pagesState.selectedPage, patchPage, pagesState.editedPath, findComponent],
   );
 
   return (
@@ -367,35 +395,34 @@ function PageEditor() {
         ) : (
           <ReflexContainer orientation="vertical" className={splitter}>
             <ReflexElement
-              flex={editMode ? (editedComponent ? 0.3 : 0.125) : 0}
+              flex={editMode ? (pagesState.editedPath ? 0.3 : 0.125) : 0}
             >
               <div style={{ float: 'left' }}>
                 <ComponentPalette />
               </div>
-              {editedComponent && (
-                <ComponentEditor entity={editedComponent} update={onUpdate} />
+              {pagesState.editedPath && (
+                <ComponentEditor
+                  entity={findComponent(pagesState.editedPath).component}
+                  update={onUpdate}
+                />
               )}
             </ReflexElement>
             {editMode && <ReflexSplitter />}
             <ReflexElement>
-              <PageLoader
-                selectedPage={selectedPage}
-                onDrop={onDrop}
-                onDelete={onDelete}
-                onEdit={onEdit}
-              />
+              <pageCTX.Provider
+                value={{
+                  editMode: editMode,
+                  onDrop: onDrop,
+                  onDelete: onDelete,
+                  onEdit: onEdit,
+                }}
+              >
+                <PageLoader selectedPage={selectedPage} />
+              </pageCTX.Provider>
             </ReflexElement>
           </ReflexContainer>
         )}
       </Toolbar.Content>
     </Toolbar>
-  );
-}
-
-export default function ContextedPageEditor() {
-  return (
-    <PageContextProvider>
-      <PageEditor />
-    </PageContextProvider>
   );
 }

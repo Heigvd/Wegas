@@ -4,7 +4,7 @@ import { flex, flexColumn, grow } from '../../../css/classes';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { usePageComponentStore } from '../../../Components/PageComponents/componentFactory';
 import { cx } from 'emotion';
-import { wlog } from '../../../Helper/wegaslog';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 
 interface EditorProps {
   entity?: WegasComponent;
@@ -46,11 +46,8 @@ async function WindowedEditor({
         onLabelVanish={error && error.onVanish}
       />
       <Form
-        entity={Object.keys(entity.props).reduce(
-          (o, k) => k !== 'children' && { ...o, [k]: entity.props[k] },
-          {},
-        )}
-        update={update}
+        entity={entity.props}
+        update={value => update && update({ ...entity, props: value })}
         path={path}
         actions={actions}
         schema={schema}
@@ -77,8 +74,9 @@ export default function ComponentEditor({
   update,
   actions,
 }: ComponentEditorProps) {
-  const schema = usePageComponentStore(s =>
-    s[entity ? entity.type : 'List'].getSchema(),
+  const schema = usePageComponentStore(
+    s => s[entity ? entity.type : 'List'].getSchema(),
+    deepDifferent,
   );
   return (
     <AsyncComponentForm

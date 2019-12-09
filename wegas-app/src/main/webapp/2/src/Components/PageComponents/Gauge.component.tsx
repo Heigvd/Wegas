@@ -8,6 +8,7 @@ import {
 import { themeVar } from '../Theme';
 import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
 import { TranslatableContent } from '../../data/i18n';
+import { schemaProps } from './schemaProps';
 
 const containerStyle = css({
   minWidth: '8em',
@@ -130,25 +131,20 @@ const Gauge: React.FunctionComponent<GaugeProps> = (props: GaugeProps) => {
   );
 };
 
-const GaugeComponent = pageComponentFactory(
-  Gauge,
-  'tachometer-alt',
-  {
-    description: 'Gauge',
-    properties: {
-      variable: {
-        required: false,
-        type: 'string',
-        view: {
-          featureLevel: 'DEFAULT',
-          index: 1,
-          label: 'HTML',
-        },
-      },
+registerComponent(
+  pageComponentFactory(
+    Gauge,
+    'Gauge',
+    'tachometer-alt',
+    {
+      variable: schemaProps.variable('Variable'),
+      min: schemaProps.number('Min'),
+      max: schemaProps.number('Max'),
+      neutralValue: schemaProps.number('Neutral value'),
+      positiveColor: schemaProps.string('Positive color'),
+      negativeColor: schemaProps.string('Negative color'),
     },
-  },
-  [],
-  () => ({}),
+    [],
+    () => ({}),
+  ),
 );
-
-registerComponent('Gauge', GaugeComponent);

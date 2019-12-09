@@ -14,27 +14,28 @@ const HTML: React.FunctionComponent<{ text: string }> = ({
   );
 };
 
-const HTMLComponent = pageComponentFactory(
-  HTML,
-  'file-code',
-  {
-    description: 'HTML',
-    properties: {
-      text: {
-        required: false,
-        type: 'string',
-        view: {
-          featureLevel: 'DEFAULT',
-          index: 1,
-          label: 'HTML',
+registerComponent(
+  pageComponentFactory(
+    HTML,
+    'HTML',
+    'file-code',
+    {
+      description: 'HTML',
+      properties: {
+        text: {
+          required: false,
+          type: 'string',
+          view: {
+            featureLevel: 'DEFAULT',
+            index: 1,
+            label: 'HTML',
+          },
         },
       },
     },
-  },
-  [],
-  () => ({
-    text: '',
-  }),
+    [],
+    () => ({
+      text: '',
+    }),
+  ),
 );
-
-registerComponent('HTML', HTMLComponent);

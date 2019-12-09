@@ -10,9 +10,9 @@ import {
   dndComponnent,
 } from '../../Editor/Components/Page/ComponentPalette';
 import { useDrop, DropTargetMonitor } from 'react-dnd';
-import { pageCTX } from '../../Editor/Components/Page/PageLoader';
 import { IconButton } from '../Button/IconButton';
 import { ConfirmButton } from '../Button/ConfirmButton';
+import { pageCTX } from '../../Editor/Components/Page/PageEditor';
 
 const editListStyle = css({
   ...dropZoneFocusCss,
@@ -56,27 +56,25 @@ function ComponentDropZone({ onDrop }: ComponentDropZoneProps) {
   );
 }
 
-export interface EditableComponentCallbacks {
-  onDrop?: (dndComponent: DnDComponent, index?: number) => void;
-  onEdit?: () => void;
-  onDelete?: () => void;
+export interface PageComponentProps {
+  children?: WegasComponent[];
+  __path: string[];
 }
 
-interface EditableComponentProps extends EditableComponentCallbacks {
+interface EditableComponentProps {
   componentName: string;
   children: (children: WegasComponent[]) => React.ReactElement | null;
   wegasChildren?: WegasComponent[];
+  __path: string[];
 }
 
 export function EditableComponent({
   componentName,
   children,
   wegasChildren,
-  onDrop,
-  onEdit,
-  onDelete,
+  __path,
 }: EditableComponentProps) {
-  const { editMode } = React.useContext(pageCTX);
+  const { editMode, onDrop, onDelete, onEdit } = React.useContext(pageCTX);
   let content: WegasComponent[] = [];
   if (wegasChildren !== undefined) {
     content = editMode
@@ -88,13 +86,13 @@ export function EditableComponent({
             </div>,
             <ComponentDropZone
               key={i + 'AFTER'}
-              onDrop={c => onDrop && onDrop(c, i + 1)}
+              onDrop={c => onDrop && onDrop(c, __path, i + 1)}
             />,
           ],
           [
             <ComponentDropZone
               key={'FIRST'}
-              onDrop={c => onDrop && onDrop(c, 0)}
+              onDrop={c => onDrop && onDrop(c, __path, 0)}
             />,
           ],
         )
@@ -110,12 +108,12 @@ export function EditableComponent({
       {editMode && (
         <div>
           {componentName}
-          <IconButton icon="edit" onClick={() => onEdit && onEdit()} />
+          <IconButton icon="edit" onClick={() => onEdit && onEdit(__path)} />
           <ConfirmButton
             icon="trash"
             onAction={success => {
               if (success && onDelete) {
-                onDelete && onDelete();
+                onDelete && onDelete(__path);
               }
             }}
           />
