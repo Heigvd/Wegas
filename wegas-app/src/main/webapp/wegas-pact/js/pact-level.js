@@ -33,6 +33,7 @@ YUI.add('pact-level', function(Y) {
         SMALLSTOP_BUTTON_LABEL = "<span class='proggame-stop-small'></span>",
         HISTORY_INBOX = 'history',
         COUNTERS_OBJECT = 'counters',
+        SEQUENCE_OBJECT = 'sequence',
         CURRENT_LEVEL = 'currentLevel',
         MAX_LEVEL = 'maxLevel',
         LEVEL_LIMIT = 'levelLimit',
@@ -169,6 +170,45 @@ YUI.add('pact-level', function(Y) {
                 } else {
                     return v.getInstance();
                 }
+            },
+            
+            // Bufferize events to prevent concurrency when persisting logs to variable SEQUENCE_OBJECT:
+            _seqBuffer: '',
+            _wait: null,
+            _sequenceObject: Y.Wegas.Facade.Variable.cache.find('name', SEQUENCE_OBJECT),
+            addToSequence: function(event) {
+                // Small compatibility test for game sessions created before Dec. 2019:
+                if (!this._sequenceObject) return;
+                var now = new Date().getTime(),
+                    currentLevel = Y.Wegas.Facade.Variable.cache.find('name', CURRENT_LEVEL).getInstance().get("value");
+                event.time = now;
+                if (this._wait) {
+                    this._wait.cancel();
+                }
+                this._seqBuffer += 'Variable.find(gameModel, "' + SEQUENCE_OBJECT + 
+                        '").setProperty(self, "' + 
+                        (String(currentLevel) + "-" + now) +
+                        '", \'' + 
+                        JSON.stringify(event).replace(/'/g,"\\'").replace(/\n/g,"\\n") +
+                        '\');\n';
+                this._wait = Y.later(5000, this, function() {
+                    this._wait = null;
+                    var oldBuffer = this._seqBuffer;
+                    this._seqBuffer = '';
+                    Y.Wegas.Facade.Variable.script.remoteEval(oldBuffer,
+                        {
+                            on: {
+                                success: Y.bind(function() {
+                                    //oldBuffer = '';
+                                }, this),
+                                failure: Y.bind(function() {
+                                    // Reschedule persistence of failed events:
+                                   this._seqBuffer = oldBuffer + this._seqBuffer;
+                                }, this)
+                            }
+                        }
+                    );
+                });
             },
 
             // *** Lifecycle Methods *** //
@@ -600,17 +640,23 @@ YUI.add('pact-level', function(Y) {
                     return;
                 }
 
-                var currCounters = this.counters[currentLevel];
+                var currCounters = this.counters[currentLevel],
+                    event;
 
                 currCounters.submissions++;
                 if (this.isSuccessful) {
                     currCounters.successful++;
+                    event = { type: 'OK' };
                 } else if (this.isRuntimeException) {
                     currCounters.exceptions++;
+                    event = { type: 'SYN', message: this.feedback };
                 } else {
                     currCounters.incomplete++;
+                    event = { type: 'SEM', message: this.feedback };
                 }
-
+                // Don't pass on the current code until it's really used in the dashboard:
+                // event.code = Y.Wegas.Helper.htmlEntities(this.currentCode).replace(/'/g,"\\'").replace(/\n/g, "\\n");
+                                      
                 batchRemoteCall(
                     function(currentLevel, currCounters, COUNTERS_OBJECT) {
                         Variable.find(gameModel, COUNTERS_OBJECT).setProperty(
@@ -628,6 +674,7 @@ YUI.add('pact-level', function(Y) {
                             'Recharger la page dans le navigateur si ce problème se reproduit'
                     );
                 });
+                Y.Wegas.ProgGameLevel.prototype.addToSequence(event);
             },
             persistExecution: function() {
                 if (this.isModifiedCode) {
@@ -761,7 +808,7 @@ YUI.add('pact-level', function(Y) {
                         this.consumeCommand();
                         return;
                     case 'parseError':
-                        this.isRuntimeException = false;
+                        this.isRuntimeException = true;
                         this.isSuccessful = false;
                         this.feedback = result[1];
                         break;
