@@ -7,7 +7,7 @@ import Textarea from './Textarea';
 import BooleanView from './Boolean';
 import Select from './Select';
 import ArrayWidget from './Array';
-import { Script } from './Script';
+import { Script, Code } from './Script';
 import { TreeVariableSelect } from './TreeVariableSelect';
 import translatable from './translatable';
 import EntityArrayFieldSelect from './EntityArrayFieldSelect';
@@ -29,6 +29,7 @@ const DEFINED_VIEWS = {
   html: LabeledHTMLEditor,
   i18nhtml: translatable(LabeledHTMLEditor),
   script: Script,
+  code: Code,
   variableselect: TreeVariableSelect,
   entityarrayfieldselect: EntityArrayFieldSelect,
   flatvariableselect: FlatVariableSelect,
@@ -36,13 +37,13 @@ const DEFINED_VIEWS = {
 };
 setDefaultWidgets(DEFINED_VIEWS);
 
-type ViewTypes = keyof (typeof DEFINED_VIEWS);
+type ViewTypes = keyof typeof DEFINED_VIEWS;
 type PropsType<T> = T extends React.ComponentType<infer U>
   ? U
   : T extends (p: infer P) => unknown
   ? P
   : never;
-type View<P extends ViewTypes> = PropsType<(typeof DEFINED_VIEWS)[P]> extends {
+type View<P extends ViewTypes> = PropsType<typeof DEFINED_VIEWS[P]> extends {
   view: infer V;
 }
   ? V & { type?: P }

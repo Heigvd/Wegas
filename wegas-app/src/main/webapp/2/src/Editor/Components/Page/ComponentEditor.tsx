@@ -2,19 +2,9 @@ import * as React from 'react';
 import { StyledLabel } from '../../../Components/AutoImport/String/String';
 import { flex, flexColumn, grow } from '../../../css/classes';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
-import { deepClone } from 'fast-json-patch';
 import { usePageComponentStore } from '../../../Components/PageComponents/componentFactory';
 import { cx } from 'emotion';
-
-function overrideSchema(component: WegasComponent, schema: SimpleSchema) {
-  const newSchema = deepClone(schema);
-  if ('properties' in newSchema && newSchema.properties !== undefined) {
-    Object.keys(newSchema.properties).map(k => {
-      newSchema.properties[k].value = component.props[k];
-    });
-  }
-  return newSchema;
-}
+import { wlog } from '../../../Helper/wegaslog';
 
 interface EditorProps {
   entity?: WegasComponent;
@@ -56,11 +46,14 @@ async function WindowedEditor({
         onLabelVanish={error && error.onVanish}
       />
       <Form
-        entity={entity}
+        entity={Object.keys(entity.props).reduce(
+          (o, k) => k !== 'children' && { ...o, [k]: entity.props[k] },
+          {},
+        )}
         update={update}
         path={path}
         actions={actions}
-        schema={overrideSchema(entity, schema)}
+        schema={schema}
       />
     </div>
   );

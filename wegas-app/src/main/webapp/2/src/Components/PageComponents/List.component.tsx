@@ -5,6 +5,7 @@ import {
   EditableComponent,
   EditableComponentCallbacks,
 } from './EditableComponent';
+import { schemaProps } from './schemaProps';
 
 type PlayerListProps = ListProps & EditableComponentCallbacks;
 
@@ -29,49 +30,14 @@ const ListComponent = pageComponentFactory(
   {
     description: 'List',
     properties: {
-      variable: {
-        enum: ['INTERNAL', 'PROTECTED', 'INHERITED', 'PRIVATE'],
-        required: false,
-        type: 'string',
-        view: {
-          choices: [
-            {
-              label: 'Model',
-              value: 'INTERNAL',
-            },
-            {
-              label: 'Protected',
-              value: 'PROTECTED',
-            },
-            {
-              label: 'Inherited',
-              value: 'INHERITED',
-            },
-            {
-              label: 'Private',
-              value: 'PRIVATE',
-            },
-          ],
-          featureLevel: 'DEFAULT',
-          index: 0,
-          label: 'Variable',
-          type: 'select',
-        },
-      },
-      label: {
-        required: false,
-        type: 'string',
-        view: {
-          featureLevel: 'DEFAULT',
-          index: 1,
-          label: 'Label',
-        },
-      },
+      style: schemaProps.code('Style', 'JSON'),
+      horizontal: schemaProps.boolean('Horizontal'),
     },
   },
-  ['ISNumberDescriptor', 'ISStringDescriptor'],
-  () => ({
+  ['ISBooleanInstance'],
+  (val?: Readonly<ISBooleanInstance>) => ({
     children: [],
+    horizontal: val ? val.value : undefined,
   }),
 );
 

@@ -6,10 +6,11 @@ import {
   EditableComponent,
   EditableComponentCallbacks,
 } from './EditableComponent';
+import { schemaProps } from './schemaProps';
 
 interface ButtonProps extends EditableComponentCallbacks {
   label: string;
-  action: string;
+  action: IScript | string;
 }
 
 const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps) => {
@@ -19,7 +20,11 @@ const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps) => {
       {() => (
         <button
           onClick={() => {
-            store.dispatch(Actions.VariableInstanceActions.runScript(action));
+            store.dispatch(
+              Actions.VariableInstanceActions.runScript(
+                typeof action === 'string' ? action : action.content,
+              ),
+            );
           }}
         >
           {label}
@@ -35,49 +40,14 @@ const ButtonComponent = pageComponentFactory(
   {
     description: 'Button',
     properties: {
-      action: {
-        enum: ['INTERNAL', 'PROTECTED', 'INHERITED', 'PRIVATE'],
-        required: false,
-        type: 'string',
-        view: {
-          choices: [
-            {
-              label: 'Model',
-              value: 'INTERNAL',
-            },
-            {
-              label: 'Protected',
-              value: 'PROTECTED',
-            },
-            {
-              label: 'Inherited',
-              value: 'INHERITED',
-            },
-            {
-              label: 'Private',
-              value: 'PRIVATE',
-            },
-          ],
-          featureLevel: 'DEFAULT',
-          index: 0,
-          label: 'Variable',
-          type: 'select',
-        },
-      },
-      label: {
-        required: false,
-        type: 'string',
-        view: {
-          featureLevel: 'DEFAULT',
-          index: 1,
-          label: 'Label',
-        },
-      },
+      action: schemaProps.script('Action'),
+      label: schemaProps.string('Label'),
     },
   },
   [],
   () => ({
-    action: '',
+    action:
+      "Variable.find(gameModel, 'zzzz').setValue(self, Math.random()*2000);",
     label: 'Button',
   }),
 );

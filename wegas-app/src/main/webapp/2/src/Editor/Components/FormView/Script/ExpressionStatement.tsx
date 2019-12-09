@@ -64,8 +64,15 @@ function astToJSONValue(ast: Expression | SpreadElement) {
         return undefined;
       }
       return ast.name;
-    default:
-      return JSON.parse(generate(ast).code);
+    default: {
+      // return JSON.parse(generate(ast).code);
+      const generated = generate(ast).code;
+      try {
+        return JSON.parse(generated);
+      } catch {
+        return generated;
+      }
+    }
   }
 }
 function valueToAST(value: unknown, type: parameterType) {

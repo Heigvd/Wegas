@@ -3,6 +3,7 @@ import { TranslatableContent } from '../../data/i18n';
 import { useVariableInstance } from '../Hooks/useVariable';
 import { pageComponentFactory, registerComponent } from './componentFactory';
 import { proxyfy } from '../../data/proxyfy';
+import { schemaProps } from './schemaProps';
 
 interface ExampleProps {
   variable: IStringDescriptor | INumberDescriptor;
@@ -58,35 +59,7 @@ const SimpleComponent = pageComponentFactory(
   {
     description: 'Example',
     properties: {
-      variable: {
-        enum: ['INTERNAL', 'PROTECTED', 'INHERITED', 'PRIVATE'],
-        required: false,
-        type: 'string',
-        view: {
-          choices: [
-            {
-              label: 'Model',
-              value: 'INTERNAL',
-            },
-            {
-              label: 'Protected',
-              value: 'PROTECTED',
-            },
-            {
-              label: 'Inherited',
-              value: 'INHERITED',
-            },
-            {
-              label: 'Private',
-              value: 'PRIVATE',
-            },
-          ],
-          featureLevel: 'DEFAULT',
-          index: 0,
-          label: 'Variable',
-          type: 'select',
-        },
-      },
+      variable: schemaProps.variable('Variable'),
     },
   },
   ['ISNumberDescriptor', 'ISStringDescriptor'],

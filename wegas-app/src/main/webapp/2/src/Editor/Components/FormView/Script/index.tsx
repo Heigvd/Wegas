@@ -22,11 +22,15 @@ import { CommonView, CommonViewContainer } from '../commonView';
 import { Labeled, LabeledView } from '../labeled';
 import { Statements } from './Statements';
 import { wlog } from '../../../../Helper/wegaslog';
-import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
+import {
+  WegasScriptEditor,
+  WegasScriptEditorProps,
+} from '../../ScriptEditors/WegasScriptEditor';
 import { css } from 'emotion';
 import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../../data/selectors';
 import { store } from '../../../../data/store';
+import { toLower } from 'lodash-es';
 
 const scriptEdit = css({ height: '5em', marginTop: '0.8em', width: '500px' });
 
@@ -231,6 +235,54 @@ export function Script({
                   )}
                 </ScriptBody>
               )}
+            </>
+          );
+        }}
+      </Labeled>
+    </CommonViewContainer>
+  );
+}
+
+export type CodeLanguage =
+  | 'JavaScript'
+  | 'TypeScript'
+  | 'CSS'
+  | 'JSON'
+  | 'PlainText';
+
+interface CodeProps
+  extends WidgetProps.BaseProps<
+    LabeledView & CommonView & { language?: CodeLanguage }
+  > {
+  value?: {} | string;
+  onChange: (code: string) => void;
+}
+
+export function Code({ view, value, onChange }: CodeProps) {
+  return (
+    <CommonViewContainer view={view}>
+      <Labeled label={view.label} description={view.description} /*{...view}*/>
+        {({ labelNode }) => {
+          return (
+            <>
+              {labelNode}
+              <div className={scriptEdit}>
+                <WegasScriptEditor
+                  language={
+                    view.language
+                      ? (toLower(
+                          view.language,
+                        ) as WegasScriptEditorProps['language'])
+                      : view.language
+                  }
+                  value={
+                    typeof value === 'string' ? value : JSON.stringify(value)
+                  }
+                  onBlur={onChange}
+                  minimap={false}
+                  noGutter={true}
+                />
+              </div>
             </>
           );
         }}

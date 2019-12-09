@@ -20,7 +20,7 @@ import { wlog } from '../../../Helper/wegaslog';
 import { ReflexElement, ReflexContainer, ReflexSplitter } from 'react-reflex';
 import { splitter } from '../LinearTabLayout/LinearLayout';
 import ComponentEditor from './ComponentEditor';
-import { css } from 'emotion';
+import { patch } from '../../../data/Reducer/pageState';
 
 const defaultPage = {
   type: 'Layout/List',
@@ -227,6 +227,13 @@ function PageEditor() {
     [selectedPage],
   );
 
+  const onUpdate = React.useCallback(
+    (value: Page) => {
+      patchPage(pagesState.selectedPage, value);
+    },
+    [pagesState.selectedPage, patchPage],
+  );
+
   return (
     <Toolbar>
       <Toolbar.Header>
@@ -365,7 +372,9 @@ function PageEditor() {
               <div style={{ float: 'left' }}>
                 <ComponentPalette />
               </div>
-              {editedComponent && <ComponentEditor entity={editedComponent} />}
+              {editedComponent && (
+                <ComponentEditor entity={editedComponent} update={onUpdate} />
+              )}
             </ReflexElement>
             {editMode && <ReflexSplitter />}
             <ReflexElement>
