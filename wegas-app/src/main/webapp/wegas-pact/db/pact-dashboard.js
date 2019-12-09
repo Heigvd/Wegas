@@ -1,6 +1,14 @@
 /* global gameModel, self, Variable*/
 var PactDashboard = (function() {
 
+    // This variable only exists in games made from dec. 2019:
+    var sequenceVarExists = true;
+    try {
+        var test = Variable.find(gameModel, "sequence");
+    } catch(e) {
+        sequenceVarExists = false;
+    }
+
     // This is client-side code !
     var levelDisplay = function(value) {
         return (value/10).toFixed(1);
@@ -15,7 +23,8 @@ var PactDashboard = (function() {
     WegasDashboard.registerVariable("maxLevel", {
         transformer: levelDisplay,
         label: 'Max atteint',
-        sortable: true
+        sortable: true,
+        active: false
     });
 
     WegasDashboard.registerVariable("levelLimit", {
@@ -232,7 +241,76 @@ var PactDashboard = (function() {
         sortable: true,
         sortFn: countersSortCurrent,
         label: 'Facilité niv. actuel',
+        active: false,
     });
+
+
+    // This is self-contained client-side code !
+    var sequenceDisplayCurrent = function(obj) {
+       
+        var seqObj = obj.object,
+            level = obj.data ? obj.data.currentLevel : 99,
+            keys = Object.keys(seqObj),
+            seq = '';
+
+        // Keep only the current level:
+        function filterLevel(key) {
+            return (key.indexOf(level) === 0);
+        }
+
+        keys = keys.filter(filterLevel).sort();
+        
+        var event, time, start, duration;
+        
+        debugger;
+
+        for (var k in keys) {
+            event = seqObj[keys[k]];
+            time = new Date(event.time).toTimeString().substr(0,8);
+            switch(event.type) {
+                case "OK": seq += '<span class="success" title="Success">OK</span>'; break;
+                case "SEM": seq += '<span class="semantic-error" title="Semantic error' + (event.message ? ': ' + event.message : '') + '">SEM</span>'; break;
+                case "SYN": seq += '<span class="syntax-error" title="Syntax error' + (event.message ? ': ' + event.message : '') + '">SYN</span>'; break;
+                case "THEORY-RESUMED": start = event.time; break;
+                case "THEORY-SUSPENDED":
+                    duration = Math.round((event.time - start)/1000);
+                    if (duration > 0) {
+                        seq += '<span class="theory" title="Theory: ' + event.topic + '">TH:'+ duration + 's</span>';
+                    }
+                    break;
+                default: seq += '[INTERNAL ERROR: ' + event.type + ']';
+            }
+        }
+        
+
+        return  '<span class="sequence">' +
+                (seq ? seq : '<span style="background:white;font-style:italic;padding:0 4px;color:#666;">aucune activité à ce niveau</span>') +
+                '</span>';
+    };
+    
+    
+    // This is self-contained client-side code !
+    var sequenceSortCurrent = function(a, b, desc) {
+
+        // Return the most active player of a and b (the one with most events)
+        var seqA = Object.keys(a.get("sequence").object).length,
+            seqB = Object.keys(b.get("sequence").object).length,
+            res = seqA === seqB ? 0 : (seqA > seqB ? 1 : -1);
+
+        return desc ? -res : res;
+
+    };
+
+
+    if (sequenceVarExists) {
+        WegasDashboard.registerVariable("sequence", {
+            transformer: sequenceDisplayCurrent,
+            sortable: true,
+            sortFn: sequenceSortCurrent,
+            label: 'Séquence',
+            active: true
+        });
+    }
 
     // This is self-contained client-side code !
     // Hides all "history-error" elements following the first "history-success" element.
