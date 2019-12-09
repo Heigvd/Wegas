@@ -27,7 +27,6 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
@@ -289,7 +288,10 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     /**
      * @return the name
      */
-    @JsonView(Views.EditorI.class)
+    @JsonView({
+        Views.EditorI.class
+        /*Views.LobbyI.class*/
+    })
     @WegasExtraProperty
     public String getName() {
         if (this.getUser() != null) {
@@ -333,7 +335,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      * @return true if the user's main account is verified
      */
     @JsonProperty
-    @JsonView(Views.Editor.class)
+    @JsonView(Views.EditorI.class)
     public Boolean isVerifiedId() {
         if (this.user != null) {
             return user.getMainAccount().isVerified();
@@ -345,7 +347,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     /*
     * @return the user's verified homeOrg if it's an AaiAccount or equivalent, otherwise return the empty string
      */
-    @JsonView(Views.Editor.class)
+    @JsonView(Views.EditorI.class)
     public String getHomeOrg() {
         if (this.user != null) {
             AbstractAccount account = user.getMainAccount();

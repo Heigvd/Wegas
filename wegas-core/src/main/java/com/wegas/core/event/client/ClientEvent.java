@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.wegas.core.rest.util.JacksonMapperProvider;
-import com.wegas.core.rest.util.Views;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -34,11 +33,13 @@ abstract public class ClientEvent implements Serializable {
 
     /**
      *
+     * @param view view to serialize with
      * @return @throws IOException
      */
-    public final String toJson() throws IOException {
+    public final String toJson(Class<?> view) throws IOException {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();
-        ObjectWriter writerWithView = mapper.writerWithView(Views.Editor.class);
+        //ObjectWriter writerWithView = mapper.writerWithView(Views.Editor.class);
+        ObjectWriter writerWithView = mapper.writerWithView(view);
         return writerWithView.writeValueAsString(this);
     }
 }

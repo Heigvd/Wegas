@@ -72,7 +72,7 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
      *
      */
     @ElementCollection
-    @JsonView(Views.ExtendedI.class)
+    //@JsonView(Views.ExtendedI.class)
     //@OrderColumn
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyArray.class,

@@ -402,7 +402,7 @@ angular.module('wegas.models.sessions', [])
         /* Call the backend for new session values */
         model.refreshSession = function(status, sessionToRefresh) {
             var deferred = $q.defer(),
-                url = "rest/GameModel/Game/" + sessionToRefresh.id + "?view=Editor", // Editor view to include teams
+                url = "rest/Editor/GameModel/Game/" + sessionToRefresh.id, // Editor view to include teams
                 cachedSession = null;
             $http
                 .get(ServiceURL + url)

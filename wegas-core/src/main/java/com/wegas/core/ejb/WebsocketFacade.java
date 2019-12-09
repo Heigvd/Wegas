@@ -432,7 +432,7 @@ public class WebsocketFacade {
         try {
             String eventName = clientEvent.getClass().getSimpleName() + ".gz";
             //if (eventName.matches(".*\\.gz$")) {
-            GzContent gzip = gzip(audience, eventName, clientEvent.toJson(), socketId);
+            GzContent gzip = gzip(audience, eventName, clientEvent.toJson(requestManager.getView()), socketId);
             String content = gzip.getData();
 
             int computedLength = computeLength(gzip);
