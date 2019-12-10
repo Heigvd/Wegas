@@ -1,0 +1,35 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="maxence (generated)" id="1575980076212-1">
+        <dropColumn columnName="description" tableName="burndowndescriptor"/>
+        <dropColumn columnName="description" tableName="occupation"/>
+        <dropColumn columnName="name" tableName="player"/>
+    </changeSet>
+    <changeSet author="maxence (generated)" id="1575980076212-2">
+        <sql>
+            UPDATE mcqresult
+            SET content = regexp_replace(content, 'addOccupation\(self, ([^,]+), ([^,]+), ""\)', 'addOccupation(self, \1, \2)', 'g')
+            WHERE content ~ 'addOccupation\((self), ([^,]+), ([^,]+), ""\)'
+        </sql>
+        <sql>
+            UPDATE mcqresult
+            SET ignoration_content = regexp_replace(ignoration_content, 'addOccupation\(self, ([^,]+), ([^,]+), ""\)', 'addOccupation(self, \1, \2)', 'g')
+            WHERE ignoration_content ~ 'addOccupation\((self), ([^,]+), ([^,]+), ""\)'
+        </sql>
+        <sql>
+            UPDATE fsm_state
+            SET content = regexp_replace(content, 'addOccupation\(self, ([^,]+), ([^,]+), ""\)', 'addOccupation(self, \1, \2)', 'g')
+            WHERE content ~ 'addOccupation\((self), ([^,]+), ([^,]+), ""\)'
+        </sql>
+        <sql>
+            UPDATE transition
+            SET content = regexp_replace(content, 'addOccupation\(self, ([^,]+), ([^,]+), ""\)', 'addOccupation(self, \1, \2)', 'g')
+            WHERE content ~ 'addOccupation\((self), ([^,]+), ([^,]+), ""\)'
+        </sql>
+        <sql>
+            UPDATE transition
+            SET ontransition_content = regexp_replace(ontransition_content, 'addOccupation\(self, ([^,]+), ([^,]+), ""\)', 'addOccupation(self, \1, \2)', 'g')
+            WHERE ontransition_content ~ 'addOccupation\((self), ([^,]+), ([^,]+), ""\)'
+        </sql>
+    </changeSet>
+</databaseChangeLog>
