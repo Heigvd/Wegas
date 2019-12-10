@@ -57,16 +57,6 @@ public class Occupation extends AbstractEntity implements NamedEntity {
             optional = false, nullable = false, proposal = True.class,
             view = @View(label = "Editable (?!?)", layout = shortInline))
     private Boolean editable = true;
-    /**
-     *
-     */
-    @Lob
-    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(label = "Description (!?!)", value = Hidden.class))
-    private String description = "";
 
     /**
      *
@@ -169,20 +159,6 @@ public class Occupation extends AbstractEntity implements NamedEntity {
      */
     public void setEditable(boolean editable) {
         this.editable = editable;
-    }
-
-    /**
-     * @return the description
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     @Override

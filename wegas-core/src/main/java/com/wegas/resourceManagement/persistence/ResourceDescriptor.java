@@ -37,9 +37,9 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(
-        indexes = {
-            @Index(columnList = "description_id")
-        }
+    indexes = {
+        @Index(columnList = "description_id")
+    }
 )
 public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> implements Propertable {
 
@@ -49,8 +49,8 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(label = "Description", index = 1, value = I18nHtmlView.class))
+        optional = false, nullable = false, proposal = EmptyI18n.class,
+        view = @View(label = "Description", index = 1, value = I18nHtmlView.class))
     private TranslatableContent description;
     /**
      *
@@ -58,8 +58,8 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
     @ElementCollection
     @JsonIgnore
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyMap.class,
-            view = @View(label = "Descriptor properties", featureLevel = ADVANCED))
+        optional = false, nullable = false, proposal = EmptyMap.class,
+        view = @View(label = "Descriptor properties", featureLevel = ADVANCED))
     private List<VariableProperty> properties = new ArrayList<>();
 
     @JsonIgnore
@@ -155,8 +155,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      * @param p
      * @param key
      *
-     * @return value matching the key from given player's instance, cast to
-     *         double, or Double.NaN
+     * @return value matching the key from given player's instance, cast to double, or Double.NaN
      */
     @Scriptable(label = "get number property")
     public double getNumberInstanceProperty(Player p, String key) {
@@ -200,8 +199,8 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      */
     @Scriptable(label = "add to property")
     public void addNumberAtInstanceProperty(Player p,
-            @Param(view = @View(label = "Key")) String key,
-            @Param(view = @View(label = "Value")) String value) {
+        @Param(view = @View(label = "Key")) String key,
+        @Param(view = @View(label = "Value")) String value) {
         try {
             this.getInstance(p).setProperty(key, "" + (Float.parseFloat(this.getInstance(p).getProperty(key)) + Float.parseFloat(value)));
         } catch (NumberFormatException e) {
@@ -214,19 +213,29 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      * @param p
      * @param time
      * @param editable
-     * @param description
      */
     @Scriptable
     public void addOccupation(Player p,
-            @Param(view = @View(label = "period")) int time,
-            @Param(view = @View(label = "editable")) Boolean editable,
-            @Param(view = @View(label = "description")) String description) {
+        @Param(view = @View(label = "period")) int time,
+        @Param(view = @View(label = "editable")) Boolean editable) {
         ResourceInstance instance = this.getInstance(p);
         Occupation occupation = new Occupation();
-        occupation.setDescription(description);
         occupation.setEditable(editable);
         occupation.setTime(time);
         instance.addOccupation(occupation);
+    }
+
+    /**
+     * backward comp.
+     *
+     * @param p
+     * @param time
+     * @param editable
+     * @param description
+     */
+    @Deprecated
+    public void addOccupation(Player p, int time, Boolean editable, String description) {
+        this.addOccupation(p, time, editable);
     }
 
     /**

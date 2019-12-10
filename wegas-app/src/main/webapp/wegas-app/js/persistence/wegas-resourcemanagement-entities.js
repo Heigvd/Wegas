@@ -365,12 +365,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             label: "Editable",
                             type: HIDDEN
                         }
-                    }, {
-                        type: STRING,
-                        view: {
-                            label: "Description",
-                            type: HIDDEN
-                        }
                     }
                 ]
             },
@@ -949,15 +943,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         ATTRS: {
             "@class": {
                 value: "BurndownDescriptor"
-            },
-            description: {
-                type: STRING,
-                optional: true,
-                index: -1,
-                view: {
-                    label: "Description",
-                    type: HTML
-                }
             },
             defaultInstance: {
                 properties: {
