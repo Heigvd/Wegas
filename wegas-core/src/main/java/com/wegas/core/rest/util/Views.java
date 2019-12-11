@@ -51,7 +51,7 @@ public class Views {
     }
 
     /**
-     * FUCK
+     * Depict items which are required to display lists in lobby
      */
     public interface LobbyI {
     }
@@ -111,9 +111,9 @@ public class Views {
     }
 
     /**
-     * View relevant to Lobby without Editor items
+     * View relevant to Lobby without Editor nor Extended items
      */
-    public static class Lobby extends Views implements ExtendedI, IndexI, LobbyI {
+    public static class Lobby extends Views implements IndexI, LobbyI {
     }
 
     /**

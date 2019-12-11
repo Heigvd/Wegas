@@ -67,7 +67,7 @@ public class GameModelProperties implements Serializable, Mergeable {
     /**
      *
      */
-    @JsonView({Views.ExtendedI.class})
+    @JsonView({Views.ExtendedI.class, Views.LobbyI.class})
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyString.class,
             view = @View(label = "Pages URI"))
@@ -75,7 +75,7 @@ public class GameModelProperties implements Serializable, Mergeable {
     /**
      *
      */
-    @JsonView({Views.ExtendedI.class})
+    @JsonView({Views.ExtendedI.class, Views.LobbyI.class})
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyString.class,
             view = @View(label = "Stylesheets URI"))
@@ -83,7 +83,7 @@ public class GameModelProperties implements Serializable, Mergeable {
     /**
      *
      */
-    @JsonView({Views.ExtendedI.class})
+    @JsonView({Views.ExtendedI.class, Views.LobbyI.class})
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyString.class,
             view = @View(label = "Websockets", value = Hidden.class))
@@ -100,7 +100,7 @@ public class GameModelProperties implements Serializable, Mergeable {
     /**
      *
      */
-    @JsonView({Views.ExtendedI.class})
+    @JsonView({Views.ExtendedI.class, Views.LobbyI.class})
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyString.class,
             view = @View(label = "ServerSripts URI"))
@@ -109,7 +109,7 @@ public class GameModelProperties implements Serializable, Mergeable {
     /**
      *
      */
-    @JsonView({Views.ExtendedI.class})
+    @JsonView({Views.ExtendedI.class, Views.LobbyI.class})
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyString.class,
             view = @View(label = "ClientSripts URI"))

@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence;
 
+import ch.albasim.wegas.annotations.CommonView;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -71,6 +72,7 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
             label = "RefID",
             readOnly = true,
             value = StringView.class,
+            featureLevel = CommonView.FEATURE_LEVEL.INTERNAL,
             index = -800
         )
     )

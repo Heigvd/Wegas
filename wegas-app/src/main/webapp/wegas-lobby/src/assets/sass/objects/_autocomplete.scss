@@ -37,8 +37,15 @@
     flex-direction: row;
 }
 
+.ac-container .ac-menu .ac-menu-item .flex-col {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 .ac-container .ac-menu .ac-menu-item .flex-row .flex-col-grow {
     flex-grow: 1;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .ac-container .ac-menu .ac-menu-item:last-child {
@@ -67,5 +74,5 @@
   top: auto !important;
   bottom: 55px !important;
   left: 16px !important;
-  width: 100% !important;
+  width: 600px !important;
 }

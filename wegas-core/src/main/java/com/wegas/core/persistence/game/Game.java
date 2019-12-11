@@ -369,7 +369,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     /**
      * @return game creator name or null if the user doesn't exists anymore
      */
-    @JsonView(Views.EditorI.class)
+    @JsonView({Views.EditorI.class, Views.LobbyI.class})
     public String getCreatedByName() {
         if (this.getCreatedBy() != null) {
             return this.getCreatedBy().getName();
