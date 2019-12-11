@@ -7,6 +7,7 @@
  */
 package com.wegas.resourceManagement.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
 
@@ -15,6 +16,7 @@ import javax.persistence.Entity;
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 @Entity
+@JsonIgnoreProperties({"description"})
 public class BurndownDescriptor extends VariableDescriptor<BurndownInstance> {
 
     private static final long serialVersionUID = 1L;

@@ -52,9 +52,9 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "EvaluationInstance", value = EvaluationInstance.class)
 })
 /**
- * Default EclipseLink coodinationType (SEND_OBJECT_CHANGE) leads to buggy coordination for some object (eg
- * ChoiceDescriptor and result). INVALIDATE_CHANGED_OBJECTS must be set to fix this problem. 2018-04-05: revert to
- * default since it seems the buggy behaviour no longer occurs
+ * Default EclipseLink coodinationType (SEND_OBJECT_CHANGE) leads to buggy coordination for some
+ * object (eg ChoiceDescriptor and result). INVALIDATE_CHANGED_OBJECTS must be set to fix this
+ * problem. 2018-04-05: revert to default since it seems the buggy behaviour no longer occurs
  * <p>
  * INVALIDATE OBJECT FIX DirectCollectionMapping NPE -> fixed since eclipselink 2.7.1
  */
@@ -209,8 +209,8 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
     }
 
     /**
-     * Determine if the given entity equals this. To be equal, both objects must have the id and being instances of the
-     * same class
+     * Determine if the given entity equals this. To be equal, both objects must have the id and
+     * being instances of the same class
      *
      * @param object entity to compare to
      *
