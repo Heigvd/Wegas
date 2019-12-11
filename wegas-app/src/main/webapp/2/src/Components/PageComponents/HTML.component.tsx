@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { pageComponentFactory, registerComponent } from './componentFactory';
+import { schemaProps } from './schemaProps';
 
 const HTML: React.FunctionComponent<{ text: string }> = ({
   text,
@@ -20,18 +21,7 @@ registerComponent(
     'HTML',
     'file-code',
     {
-      description: 'HTML',
-      properties: {
-        text: {
-          required: false,
-          type: 'string',
-          view: {
-            featureLevel: 'DEFAULT',
-            index: 1,
-            label: 'HTML',
-          },
-        },
-      },
+      text: schemaProps.string('Value'),
     },
     [],
     () => ({

@@ -19,7 +19,6 @@ import { ReflexElement, ReflexContainer, ReflexSplitter } from 'react-reflex';
 import { splitter } from '../LinearTabLayout/LinearLayout';
 import ComponentEditor from './ComponentEditor';
 import { PageLoader } from './PageLoader';
-import pageState from '../../../data/Reducer/pageState';
 
 interface PageContext {
   editMode: boolean;
@@ -252,10 +251,7 @@ export default function PageEditor() {
             patchPage(pagesState.selectedPage, newPage);
           }
         } else {
-          patchPage(pagesState.selectedPage, {
-            ...newPage,
-            props: { ...value },
-          });
+          patchPage(pagesState.selectedPage, value as Page);
         }
       }
     },
@@ -404,6 +400,13 @@ export default function PageEditor() {
                 <ComponentEditor
                   entity={findComponent(pagesState.editedPath).component}
                   update={onUpdate}
+                  actions={[
+                    {
+                      label: 'Close',
+                      action: () =>
+                        setPagesState(o => ({ ...o, editedPath: undefined })),
+                    },
+                  ]}
                 />
               )}
             </ReflexElement>

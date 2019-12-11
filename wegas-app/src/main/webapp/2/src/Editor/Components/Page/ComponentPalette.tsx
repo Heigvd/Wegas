@@ -47,6 +47,7 @@ function ComponentElement({ componentName }: ComponentElementProps) {
           icon={component.getIcon()}
           className={cx(button, css({ width: '25px', height: '25px' }))}
           tooltip={componentName}
+          label={componentName}
         />
       ) : (
         <span>{`Unknown component "${componentName}"`}</span>

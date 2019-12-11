@@ -152,11 +152,7 @@ export function Script({
   const [error, setError] = React.useState();
   const [srcMode, setSrcMode] = React.useState(false);
   const [editorValue, setEditorValue] = React.useState(
-    value === undefined
-      ? ''
-      : typeof value === 'string'
-      ? value
-      : value.content,
+    value == null ? '' : typeof value === 'string' ? value : value.content,
   );
   const mode = view.mode || 'SET';
 
@@ -172,7 +168,6 @@ export function Script({
   const handleChanges = React.useCallback(
     (value: string) => {
       setEditorValue(() => {
-        wlog('TRIGGER ON CHANGE');
         onChange({
           '@class': 'Script',
           language: 'JavaScript',
@@ -187,11 +182,7 @@ export function Script({
   React.useEffect(() => {
     setEditorValue((oldVal: string) => {
       const newValue =
-        value === undefined
-          ? ''
-          : typeof value === 'string'
-          ? value
-          : value.content;
+        value == null ? '' : typeof value === 'string' ? value : value.content;
       if (newValue !== oldVal) {
         return newValue;
       }
@@ -255,10 +246,18 @@ interface CodeProps
     LabeledView & CommonView & { language?: CodeLanguage }
   > {
   value?: {} | string;
-  onChange: (code: string) => void;
+  onChange: (code: {} | string) => void;
 }
 
 export function Code({ view, value, onChange }: CodeProps) {
+  const onValueChange = React.useCallback(
+    (val: string) => {
+      onChange(
+        view.language !== 'JSON' ? val : val === '' ? {} : JSON.parse(val),
+      );
+    },
+    [onChange, view.language],
+  );
   return (
     <CommonViewContainer view={view}>
       <Labeled label={view.label} description={view.description} /*{...view}*/>
@@ -278,7 +277,8 @@ export function Code({ view, value, onChange }: CodeProps) {
                   value={
                     typeof value === 'string' ? value : JSON.stringify(value)
                   }
-                  onBlur={onChange}
+                  onBlur={onValueChange}
+                  onChange={onValueChange}
                   minimap={false}
                   noGutter={true}
                 />

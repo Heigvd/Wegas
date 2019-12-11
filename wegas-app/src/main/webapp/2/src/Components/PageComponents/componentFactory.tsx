@@ -7,8 +7,8 @@ import { useAnyStore } from '../Hooks/storeHookFactory';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { EditableComponent, PageComponentProps } from './EditableComponent';
 
-export interface PageComponent {
-  getComponent: () => React.FunctionComponent<{ [name: string]: unknown }>;
+export interface PageComponent<P = {}> {
+  getComponent: () => React.FunctionComponent<P>;
   getName: () => string;
   getIcon: () => IconProp;
   getSchema: () => SimpleSchema;
@@ -16,9 +16,7 @@ export interface PageComponent {
   /**
    * gives a computed list of props from variable, if the variable is undefined, gives default props
    */
-  getComputedPropsFromVariable: (
-    variable?: WegasScriptEditorReturnType,
-  ) => { [name: string]: unknown };
+  getComputedPropsFromVariable: (variable?: WegasScriptEditorReturnType) => P;
 }
 
 interface PageComponentsState {
@@ -91,14 +89,14 @@ export function usePageComponentStore<R>(
 export function pageComponentFactory<
   P extends { [name: string]: unknown } & { children?: WegasComponent[] },
   T extends keyof WegasScriptEditorNameAndTypes,
-  R extends Readonly<WegasScriptEditorNameAndTypes[T]>
+  V extends Readonly<WegasScriptEditorNameAndTypes[T]>
 >(
   component: React.FunctionComponent<P>,
   componentName: string,
   icon: IconProp,
   schema: SimpleSchema,
   allowedVariables: T[],
-  getComputedPropsFromVariable: (variable?: R) => P,
+  getComputedPropsFromVariable: (variable?: V) => P,
 ) {
   const Editable = (props: P & PageComponentProps) => (
     <EditableComponent
@@ -119,7 +117,7 @@ export function pageComponentFactory<
     }),
     getAllowedVariables: () => allowedVariables,
     getComputedPropsFromVariable,
-  } as PageComponent;
+  };
 }
 
 /**

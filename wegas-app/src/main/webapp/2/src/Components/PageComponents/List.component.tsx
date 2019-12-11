@@ -9,8 +9,8 @@ registerComponent(
     'bars',
     {
       children: schemaProps.hidden(true),
-      style: schemaProps.code('Style', 'JSON'),
-      horizontal: schemaProps.boolean('Horizontal'),
+      style: schemaProps.code('Style', false, 'JSON'),
+      horizontal: schemaProps.boolean('Horizontal', false),
     },
     ['ISBooleanInstance'],
     (val?: Readonly<ISBooleanInstance>) => ({

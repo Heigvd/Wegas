@@ -3,6 +3,7 @@ import { Actions } from '../../data';
 import { store } from '../../data/store';
 import { pageComponentFactory, registerComponent } from './componentFactory';
 import { schemaProps } from './schemaProps';
+import { wlog } from '../../Helper/wegaslog';
 
 interface ButtonProps {
   label: string;
@@ -11,6 +12,7 @@ interface ButtonProps {
 
 const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps) => {
   const { label, action } = props;
+  wlog(action);
   return (
     <button
       onClick={() => {
@@ -38,7 +40,7 @@ registerComponent(
     [],
     () => ({
       action:
-        "Variable.find(gameModel, 'zzzz').setValue(self, Math.random()*2000);",
+        "",
       label: 'Button',
     }),
   ),

@@ -39,6 +39,7 @@ const modules = {
   devtool: PROD || PREPROD ? 'source-map' : 'inline-source-map',
   entry: {
     editor: ['./src/Editor/index.tsx'],
+    player: ['./src/player.tsx'],
   },
   output: {
     path: path.join(__dirname, 'dist'),

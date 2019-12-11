@@ -3,6 +3,16 @@ import { css, cx } from 'emotion';
 import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
 import { Props } from '@fortawesome/react-fontawesome';
 import { themeVar } from '../Theme';
+import * as iconModules from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+
+export const icons = Object.values(iconModules).reduce(
+  (o: {}, v: IconDefinition) =>
+    typeof v === 'object' && 'iconName' in v && v.iconName !== undefined
+      ? { ...o, [v.iconName]: v }
+      : o,
+  {},
+);
 
 export interface IconButtonProps extends Props {
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
@@ -45,7 +55,9 @@ const disabledStyle = css({
   },
 });
 
-export function IconButton(props: IconButtonProps) {
+export const IconButton: React.FunctionComponent<IconButtonProps> = (
+  props: IconButtonProps,
+) => {
   const {
     onClick,
     onMouseDown,
@@ -86,4 +98,4 @@ export function IconButton(props: IconButtonProps) {
       {!prefixedLabel && label}
     </button>
   );
-}
+};

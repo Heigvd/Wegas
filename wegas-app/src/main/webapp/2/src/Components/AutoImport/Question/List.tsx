@@ -4,21 +4,45 @@ import { StoreConsumer, StoreDispatch } from '../../../data/store';
 import { VariableDescriptor } from '../../../data/selectors';
 import { EntityChooser } from '../../EntityChooser';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
 import { themeVar } from '../../Theme';
 import { IconButton } from '../../Button/IconButton';
-import { selectAndValidate } from '../../../data/Reducer/VariableInstanceReducer';
+import {
+  selectAndValidate,
+  toggleReply,
+  readChoice,
+  validateQuestion,
+} from '../../../data/Reducer/VariableInstanceReducer';
 import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
+import {
+  getChoices,
+  isUnread,
+} from '../../../data/proxyfy/methods/QuestionDescriptor';
+import { isSelected } from '../../../data/proxyfy/methods/ChoiceDescriptor';
+
+const unreadSignalStyle = css({ margin: '3px' });
+const choiceContainerStyle = css({
+  margin: '1em 2em',
+});
+const choiceTitleStyle = css({
+  borderBottom: '1px solid',
+  color: themeVar.primaryColor,
+});
+const rightFloatStyle = css({
+  textAlign: 'right',
+});
+const disabledQuestionStyle = css({
+  backgroundColor: themeVar.disabledColor,
+  cursor: 'not-allowed',
+});
 
 /**
  * Query subtree / instance about a QuestionDescriptor
  * @param question QuestionDescriptor to query
  */
 function questionInfo(question: IQuestionDescriptor) {
-  const choices = VariableDescriptor.select<IChoiceDescriptor>(
-    question.itemsIds,
-  ).filter(c => c != null) as Readonly<IChoiceDescriptor>[];
+  const choices = getChoices(question);
   const choicesInstances = choices.map(c => getInstance(c));
   return {
     descriptor: question,
@@ -35,21 +59,27 @@ function questionInfo(question: IQuestionDescriptor) {
       .sort((a, b) => a.createdTime - b.createdTime),
   };
 }
-/**
- * Count replies for a given question (current user)
- */
-function repliesCount(question: IQuestionDescriptor) {
-  const choices = VariableDescriptor.select<IChoiceDescriptor>(
-    question.itemsIds,
-  );
-  return choices.reduce<number>((p, c) => {
-    if (c == null) return p;
 
-    const cI = getInstance(c);
-    if (cI == null) return p;
-    return p + cI.replies.length;
-  }, 0);
+// /**
+//  * Count replies for a given question (current user)
+//  */
+// function repliesCount(question: IQuestionDescriptor) {
+//   const choices = VariableDescriptor.select<IChoiceDescriptor>(
+//     question.itemsIds,
+//   );
+//   return choices.reduce<number>((p, c) => {
+//     if (c == null) return p;
+
+//     const cI = getInstance(c);
+//     if (cI == null) return p;
+//     return p + cI.replies.length;
+//   }, 0);
+// }
+
+function UnreadSignal() {
+  return <FontAwesome className={unreadSignalStyle} icon="exclamation" />;
 }
+
 function ReplyDisplay({ reply }: { reply: IReply }) {
   return (
     <div className={choiceContainerStyle}>
@@ -116,39 +146,42 @@ class RepliesDisplay extends React.Component<
     );
   }
 }
-const choiceContainerStyle = css({
-  margin: '1em 2em',
-});
-const choiceTitleStyle = css({
-  borderBottom: '1px solid',
-  color: themeVar.primaryColor,
-});
-const rightFloatStyle = css({
-  textAlign: 'right',
-});
+
 function ChoiceDisplay({
   descriptor,
   instance,
+  questionDescriptor,
   onValidate,
+  onHover,
   replyAllowed,
 }: {
   descriptor: IChoiceDescriptor;
   instance: IChoiceInstance;
   questionDescriptor: IQuestionDescriptor;
   onValidate: (choice: IChoiceDescriptor) => void;
+  onHover?: (choice: IChoiceDescriptor) => void;
   replyAllowed: boolean;
 }) {
   const { maxReplies, description, label } = descriptor;
-  const { active, replies } = instance;
+  const { active, replies, unread } = instance;
   if (!active) {
     return null;
   }
   const canReply =
-    replyAllowed &&
-    (typeof maxReplies !== 'number' || replies.length < maxReplies);
+    (replyAllowed &&
+      (typeof maxReplies !== 'number' || replies.length < maxReplies)) ||
+    (questionDescriptor.cbx && isSelected(descriptor)());
+
   return (
-    <div className={choiceContainerStyle}>
+    <div
+      className={cx(
+        { [disabledQuestionStyle]: !canReply },
+        choiceContainerStyle,
+      )}
+      onMouseOver={() => onHover && onHover(descriptor)}
+    >
       <div className={choiceTitleStyle}>
+        {unread && <UnreadSignal />}
         {TranslatableContent.toString(label)}
       </div>
       <div
@@ -157,12 +190,22 @@ function ChoiceDisplay({
         }}
       />
       <div className={rightFloatStyle}>
-        <IconButton
-          icon="check"
-          onClick={() => onValidate(descriptor)}
-          disabled={!canReply}
-          label={replies.length ? replies.length : undefined}
-        />
+        {questionDescriptor.cbx ? (
+          <input
+            type="checkbox"
+            checked={
+              replies.find(r => r.choiceName === descriptor.name) !== undefined
+            }
+            onChange={() => onValidate(descriptor)}
+          />
+        ) : (
+          <IconButton
+            icon="check"
+            onClick={() => onValidate(descriptor)}
+            disabled={!canReply}
+            label={replies.length ? replies.length : undefined}
+          />
+        )}
       </div>
     </div>
   );
@@ -171,12 +214,16 @@ class QuestionDisplay extends React.Component<{
   dispatch: StoreDispatch;
   descriptor: IQuestionDescriptor;
   instance?: IQuestionInstance;
-  choices: (IChoiceDescriptor)[];
+  choices: IChoiceDescriptor[];
   replies: IReply[];
   choicesInstances: (IChoiceInstance | undefined)[];
 }> {
   onChoiceValidate = (choice: IChoiceDescriptor) => {
-    this.props.dispatch(selectAndValidate(choice));
+    if (this.props.descriptor.cbx) {
+      this.props.dispatch(toggleReply(choice));
+    } else {
+      this.props.dispatch(selectAndValidate(choice));
+    }
   };
   render() {
     const {
@@ -214,15 +261,33 @@ class QuestionDisplay extends React.Component<{
               descriptor={choice}
               instance={instance}
               replyAllowed={canReply}
+              onHover={() =>
+                instance.unread && this.props.dispatch(readChoice(choice))
+              }
             />
           );
         })}
+        {descriptor.cbx && (
+          <div className={cx(choiceContainerStyle, rightFloatStyle)}>
+            <button
+              onClick={() => this.props.dispatch(validateQuestion(descriptor))}
+              disabled={instance.validated}
+              className={cx({ [disabledQuestionStyle]: instance.validated })}
+            >
+              {instance.validated ? 'Validated' : 'Validate'}
+            </button>
+          </div>
+        )}
         <RepliesDisplay replies={replies} />
       </>
     );
   }
 }
-function ConnectedQuestionDisplay({ entity }: { entity: IQuestionDescriptor }) {
+export function ConnectedQuestionDisplay({
+  entity,
+}: {
+  entity: Readonly<IQuestionDescriptor>;
+}) {
   return (
     <StoreConsumer
       selector={() => {
@@ -275,9 +340,7 @@ export default function QuestionList(props: QuestionProps) {
                   <div className={labelTextStyle}>
                     {TranslatableContent.toString(e.label)}
                   </div>
-                  {repliesCount(e) === 0 && (
-                    <FontAwesome style={{ margin: '3px' }} icon="exclamation" />
-                  )}
+                  {isUnread(e)() && <UnreadSignal />}
                 </div>
               );
             }}

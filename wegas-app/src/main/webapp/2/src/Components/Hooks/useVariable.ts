@@ -10,7 +10,7 @@ type instanceOf<D> = D extends IVariableDescriptor<infer U> ? U : never;
  * @param name VariableDescriptor's name
  */
 export function useVariableDescriptor<D extends IVariableDescriptor>(
-  name: string,
+  name?: string,
 ) {
   const getDescriptor = React.useCallback(
     () => VariableDescriptor.findByName<D>(name),

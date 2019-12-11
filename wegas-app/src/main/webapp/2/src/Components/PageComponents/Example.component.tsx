@@ -2,7 +2,6 @@ import * as React from 'react';
 import { TranslatableContent } from '../../data/i18n';
 import { useVariableInstance } from '../Hooks/useVariable';
 import { pageComponentFactory, registerComponent } from './componentFactory';
-import { proxyfy } from '../../data/proxyfy';
 import { schemaProps } from './schemaProps';
 
 interface ExampleProps {

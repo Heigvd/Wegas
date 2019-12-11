@@ -1,4 +1,3 @@
-import { store } from '../../data/store';
 import { CodeLanguage } from '../../Editor/Components/FormView/Script';
 
 type SchemaPrimitives =
@@ -30,10 +29,10 @@ export const schemaProps = {
   }),
   boolean: (
     label: string,
-    value: string = '',
+    required: boolean = true,
+    value?: boolean,
     readOnly: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
-    required: boolean = true,
     index: number = 0,
   ) => ({
     required,
@@ -48,15 +47,17 @@ export const schemaProps = {
   }),
   number: (
     label: string,
+    required: boolean = true,
+    value?: number,
     readOnly: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
-    required: boolean = true,
     index: number = 0,
     layout: SchemaLayouts = 'shortInline',
   ) => ({
     featureLevel,
     required,
     type: 'number',
+    value,
     view: {
       featureLevel,
       index,
@@ -68,9 +69,9 @@ export const schemaProps = {
   }),
   string: (
     label: string,
-    value: string = '',
-    featureLevel: FeatureLevel = 'DEFAULT',
     required: boolean = true,
+    value?: string,
+    featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout: SchemaLayouts = 'shortInline',
   ) => ({
@@ -86,19 +87,22 @@ export const schemaProps = {
   }),
   script: (
     label: string,
-    language?: 'JavaScript' | 'JSON' | 'TypeScript' | 'CSS',
-    value: string = '',
-    featureLevel: FeatureLevel = 'DEFAULT',
     required: boolean = true,
+    language?: 'JavaScript' | 'JSON' | 'TypeScript' | 'CSS',
+    value?: string,
+    featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
   ) => ({
     required,
     type: 'object',
-    value: {
-      '@class': 'Script',
-      value,
-      language,
-    },
+    value:
+      value !== undefined
+        ? {
+            '@class': 'Script',
+            value,
+            language,
+          }
+        : value,
     view: {
       featureLevel,
       index,
@@ -109,10 +113,10 @@ export const schemaProps = {
   }),
   code: (
     label: string,
-    language: CodeLanguage = 'JavaScript',
-    value: string = '',
-    featureLevel: FeatureLevel = 'DEFAULT',
     required: boolean = true,
+    language: CodeLanguage = 'JavaScript',
+    value?: string,
+    featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
   ) => ({
     required,
@@ -126,24 +130,39 @@ export const schemaProps = {
       type: 'code',
     },
   }),
-  variable: (
+  select: (
     label: string,
-    variables = store.getState().variableDescriptors,
-    featureLevel: FeatureLevel = 'DEFAULT',
+    values: string[],
     required: boolean = true,
+    featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
   ) => ({
-    enum: Object.values(variables).map(v => v && v.name),
+    enum: values,
     required,
     type: 'string',
     view: {
-      choices: Object.values(variables).map(
-        v => v && { label: v.name, value: v.name },
-      ),
+      choices: values.map(v => v && { label: v, value: v }),
       featureLevel,
       index,
       label,
       type: 'select',
+    },
+  }),
+  variable: (
+    label: string,
+    classFilter: WegasClassNames[] = [],
+    featureLevel: FeatureLevel = 'DEFAULT',
+    required: boolean = true,
+    index: number = 0,
+  ) => ({
+    required,
+    type: 'string',
+    view: {
+      classFilter,
+      featureLevel,
+      index,
+      label,
+      type: 'flatvariableselect',
     },
   }),
 };
