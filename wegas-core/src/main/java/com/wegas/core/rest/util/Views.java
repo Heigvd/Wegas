@@ -45,6 +45,12 @@ public class Views {
     }
 
     /**
+     * PublicI
+     */
+    public interface PublicI {
+    }
+
+    /**
      * Index minimal (w/ ids)
      */
     public interface IndexI {
@@ -89,42 +95,42 @@ public class Views {
     /**
      * Minimal view with IDs
      */
-    public static class Public extends Views implements IndexI {
+    public static class Public extends Views implements PublicI, IndexI {
     }
 
     /**
      * View with IDs and blobs
      */
-    public static class Extended extends Views implements ExtendedI, IndexI {
+    public static class Extended extends Public implements ExtendedI {
     }
 
     /**
      * contains protected contents (like shadowed email)
      */
-    public static class Shadow extends Views implements ExtendedI, IndexI, ShadowI {
+    public static class Shadow extends Extended implements ShadowI {
     }
 
     /**
      * View relevant to Editors with blobs
      */
-    public static class Editor extends Views implements EditorI, ExtendedI, IndexI {
+    public static class Editor extends Extended implements EditorI {
     }
 
     /**
      * View relevant to Lobby without Editor nor Extended items
      */
-    public static class Lobby extends Views implements IndexI, LobbyI {
+    public static class Lobby extends Public implements LobbyI {
     }
 
     /**
      * Editor view with VariableInstance embed into VariableDescriptors'Scope
      */
-    public static class Instance extends Views implements InstanceI, EditorI, ExtendedI, IndexI {
+    public static class Instance extends Editor implements InstanceI {
     }
 
     /**
      * Do not include ids nor VariableInstances, Export usage
      */
-    public static class Export extends Views implements EditorI, ExtendedI, ExportI {
+    public static class Export extends Views implements PublicI, EditorI, ExtendedI, ExportI {
     }
 }

@@ -382,7 +382,7 @@ public abstract class AbstractAccount extends AbstractEntity {
     /**
      * @return md5 address hash
      */
-    @JsonView(Views.Extended.class)
+    @JsonView(Views.ExtendedI.class)
     public String getHash() {
         if (getDetails() != null && getDetails().getEmail() != null) {
             return Helper.md5Hex(getDetails().getEmail());

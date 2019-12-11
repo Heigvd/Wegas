@@ -789,10 +789,10 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         "label": "Maximum",
                         "layout": "shortInline"
                     },
-                    errored: function(val, formVal){
+                    errored: function(val, formVal) {
                         return val < 1;
                     },
-                    visible: function(val, formVal){
+                    visible: function(val, formVal) {
                         return formVal.allowedValues && formVal.allowedValues.length >= 1;
                     }
                 },
