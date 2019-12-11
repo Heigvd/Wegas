@@ -27,6 +27,7 @@ angular.module('private.player.team.directives', [])
                     } else {
                         if (!response.data.gameFreeForAll) {
                             ctrl.team = response.data;
+                            ctrl.refreshTeam();
                         } else {
                             $scope.close();
                         }
