@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Toolbar } from './Toolbar';
-import { ThemeModifiers, Theme, themeCTX, ThemeValues } from './Theme';
+import { ThemeColorModifiers, Theme, themeCTX, ThemeColors } from './Theme';
 import { cx, css } from 'emotion';
 import { flex, grow, flexColumn } from '../css/classes';
 import { ChromePicker } from 'react-color';
@@ -99,7 +99,7 @@ export default function ThemeEditor() {
     addNewTheme,
     deleteTheme,
     setSelectedTheme,
-    setThemeValue,
+    setThemeColor: setThemeValue,
     setThemeModifer,
   } = React.useContext(themeCTX);
   const [currentModifiedTheme, setModifiedTheme] = React.useState<string>(
@@ -114,7 +114,7 @@ export default function ThemeEditor() {
     ),
   );
 
-  const currentValues = themeState.themes[currentModifiedTheme].values;
+  const currentValues = themeState.themes[currentModifiedTheme].colors;
   const currentModifiers = themeState.themes[currentModifiedTheme].modifiers;
 
   return (
@@ -238,9 +238,9 @@ export default function ThemeEditor() {
         />
       </Toolbar.Header>
       <Toolbar.Content>
-        {selectedSection.values && (
+        {selectedSection.colors && (
           <div className={cx(flex, grow, flexColumn, themeAttrForm)}>
-            {Object.keys(currentValues).map((k: keyof ThemeValues) => (
+            {Object.keys(currentValues).map((k: keyof ThemeColors) => (
               <p key={k}>
                 <label
                   className={cx(
@@ -255,7 +255,7 @@ export default function ThemeEditor() {
                 <MyColorPicker
                   color={currentValues[k]}
                   bgColor={
-                    themeState.themes[themeState.selectedTheme.editor].values
+                    themeState.themes[themeState.selectedTheme.editor].colors
                       .backgroundColor
                   }
                   onChange={color => {
@@ -268,26 +268,28 @@ export default function ThemeEditor() {
         )}
         {selectedSection.modifiers && (
           <div className={cx(flex, grow, flexColumn, themeAttrForm)}>
-            {Object.keys(currentModifiers).map((k: keyof ThemeModifiers) => (
-              <p key={k}>
-                <label
-                  className={cx(
-                    // titleStyle,
-                    css({ display: 'flex', alignItems: 'center' }),
-                  )}
-                  htmlFor={k}
-                  title={k}
-                >
-                  {k} :
-                </label>
-                <NumberSlider
-                  max={1}
-                  min={0}
-                  value={currentModifiers[k]}
-                  onChange={v => setThemeModifer(currentModifiedTheme, k, v)}
-                />
-              </p>
-            ))}
+            {Object.keys(currentModifiers).map(
+              (k: keyof ThemeColorModifiers) => (
+                <p key={k}>
+                  <label
+                    className={cx(
+                      // titleStyle,
+                      css({ display: 'flex', alignItems: 'center' }),
+                    )}
+                    htmlFor={k}
+                    title={k}
+                  >
+                    {k} :
+                  </label>
+                  <NumberSlider
+                    max={1}
+                    min={0}
+                    value={currentModifiers[k]}
+                    onChange={v => setThemeModifer(currentModifiedTheme, k, v)}
+                  />
+                </p>
+              ),
+            )}
           </div>
         )}
       </Toolbar.Content>

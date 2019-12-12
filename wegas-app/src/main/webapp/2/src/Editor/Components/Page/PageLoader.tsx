@@ -2,7 +2,7 @@ import * as React from 'react';
 import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
 import { ThemeProvider } from '../../../Components/Theme';
 import { TextLoader } from '../../../Components/Loader';
-import { PageDeserializer } from '../../../Components/AutoImport';
+import { PageDeserializer } from '../../../Components/PageComponents/PageDeserializer';
 
 interface PageLoaderProps {
   selectedPage: Page;

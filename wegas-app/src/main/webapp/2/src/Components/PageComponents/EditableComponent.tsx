@@ -58,21 +58,21 @@ function ComponentDropZone({ onDrop }: ComponentDropZoneProps) {
 
 export interface PageComponentProps {
   children?: WegasComponent[];
-  __path: string[];
+  path: string[];
 }
 
 interface EditableComponentProps {
   componentName: string;
   children: (children: WegasComponent[]) => React.ReactElement | null;
   wegasChildren?: WegasComponent[];
-  __path: string[];
+  path: string[];
 }
 
 export function EditableComponent({
   componentName,
   children,
   wegasChildren,
-  __path,
+  path,
 }: EditableComponentProps) {
   const { editMode, onDrop, onDelete, onEdit } = React.useContext(pageCTX);
   let content: WegasComponent[] = [];
@@ -86,13 +86,13 @@ export function EditableComponent({
             </div>,
             <ComponentDropZone
               key={i + 'AFTER'}
-              onDrop={c => onDrop && onDrop(c, __path, i + 1)}
+              onDrop={c => onDrop && onDrop(c, path, i + 1)}
             />,
           ],
           [
             <ComponentDropZone
               key={'FIRST'}
-              onDrop={c => onDrop && onDrop(c, __path, 0)}
+              onDrop={c => onDrop && onDrop(c, path, 0)}
             />,
           ],
         )
@@ -108,12 +108,12 @@ export function EditableComponent({
       {editMode && (
         <div>
           {componentName}
-          <IconButton icon="edit" onClick={() => onEdit && onEdit(__path)} />
+          <IconButton icon="edit" onClick={() => onEdit && onEdit(path)} />
           <ConfirmButton
             icon="trash"
             onAction={success => {
               if (success && onDelete) {
-                onDelete && onDelete(__path);
+                onDelete && onDelete(path);
               }
             }}
           />

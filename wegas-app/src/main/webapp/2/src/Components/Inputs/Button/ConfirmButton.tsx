@@ -5,7 +5,6 @@ import { css } from 'emotion';
 import { Button, DisableBorders, disableBordersCSS } from './Button';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { themeVar } from '../../Theme';
-import { wlog } from '../../../Helper/wegaslog';
 
 const buttonZone = (disableBorders?: DisableBorders) =>
   css({
@@ -21,6 +20,7 @@ const buttonZone = (disableBorders?: DisableBorders) =>
 interface ConfirmButtonProps {
   label?: React.ReactNode;
   icon?: IconProp;
+  tooltip?: string;
   onAction?: (success: boolean) => void;
   onBlur?: () => void;
   defaultConfirm?: boolean;
@@ -56,9 +56,17 @@ export function ConfirmButton(props: ConfirmButtonProps /*& IconButtonProps*/) {
           label={props.label}
           onClick={onClick}
           disableBorders={props.disableBorders}
+          tooltip={props.tooltip}
         />
       )}
-      {props.icon && <IconButton icon={props.icon} onClick={onClick} />}
+      {props.icon && (
+        <IconButton
+          icon={props.icon}
+          onClick={onClick}
+          tooltip={props.tooltip}
+          fixedWidth
+        />
+      )}
     </>
   ) : (
     <div ref={confirmButton} className={buttonZone(props.disableBorders)}>

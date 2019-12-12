@@ -1,6 +1,7 @@
 import { pageComponentFactory, registerComponent } from './componentFactory';
 import { schemaProps } from './schemaProps';
 import { IconButton, icons } from '../Inputs/Button/IconButton';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 
 registerComponent(
   pageComponentFactory(
@@ -22,7 +23,7 @@ registerComponent(
     },
     [],
     () => ({
-      icon: 'cube',
+      icon: 'cube' as IconProp,
       label: 'IconButton',
     }),
   ),

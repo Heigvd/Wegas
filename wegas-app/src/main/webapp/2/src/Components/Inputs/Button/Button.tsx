@@ -76,6 +76,7 @@ export interface ButtonProps {
   style?: CSSProperties;
   disableBorders?: DisableBorders;
   tabIndex?: number;
+  tooltip?: string;
 }
 
 export function Button({
@@ -88,6 +89,7 @@ export function Button({
   style,
   children,
   tabIndex,
+  tooltip,
 }: React.PropsWithChildren<ButtonProps>) {
   return (
     <button
@@ -98,6 +100,7 @@ export function Button({
       onClick={onClick}
       disabled={disabled}
       tabIndex={tabIndex}
+      title={tooltip}
     >
       <>
         {label}

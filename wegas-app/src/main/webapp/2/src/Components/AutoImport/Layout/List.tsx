@@ -7,10 +7,12 @@ const listStyle = css({
   alignItems: 'flex-start',
 });
 const horizontalStyle = css({
-  flexDirection: 'row',
-  '&>div': {
-    height: '100%',
-  },
+  display: 'table',
+  width: '100%',
+});
+const horizontalChildren = css({
+  display: 'table-cell',
+  verticalAlign: 'middle',
 });
 const verticatStyle = css({
   flexDirection: 'column',
@@ -22,9 +24,7 @@ const verticatStyle = css({
 export interface ListProps {
   children: WegasComponent[];
   style?: React.CSSProperties;
-  /**
-   * List direction, default vertical
-   */
+  className?: string;
   horizontal?: boolean;
 }
 /**
@@ -33,17 +33,28 @@ export interface ListProps {
 export default function List({
   children,
   horizontal = false,
+  className,
   style,
 }: ListProps) {
   return (
     <div
       style={style}
-      className={cx(listStyle, {
-        [horizontalStyle]: horizontal,
-        [verticatStyle]: !horizontal,
-      })}
+      className={
+        className !== undefined
+          ? className
+          : cx(listStyle, {
+              [horizontalStyle]: horizontal,
+              [verticatStyle]: !horizontal,
+            })
+      }
     >
-      {children}
+      {horizontal && className === undefined
+        ? children.map((c, i) => (
+            <div key={i} className={horizontalChildren}>
+              {c}
+            </div>
+          ))
+        : children}
     </div>
   );
 }

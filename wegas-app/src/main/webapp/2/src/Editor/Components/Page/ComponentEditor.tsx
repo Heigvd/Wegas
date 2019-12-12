@@ -5,14 +5,15 @@ import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { usePageComponentStore } from '../../../Components/PageComponents/componentFactory';
 import { cx } from 'emotion';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { BaseView, Schema } from 'jsoninput/typings/types';
 
-interface EditorProps {
-  entity?: WegasComponent;
-  schema?: SimpleSchema;
-  update?: (variable: WegasComponent) => void;
+interface EditorProps<T = WegasComponent['props']> {
+  entity: T;
+  schema: Schema<BaseView>;
+  update?: (variable: T) => void;
   actions?: {
     label: React.ReactNode;
-    action: (entity: WegasComponent, path?: (string | number)[]) => void;
+    action: (entity: T, path?: (string | number)[]) => void;
   }[];
   path?: (string | number)[];
   error?: {
@@ -29,10 +30,6 @@ async function WindowedEditor({
   path,
   error,
 }: EditorProps) {
-  if (entity === undefined || schema === undefined) {
-    return null;
-  }
-
   const [Form] = await Promise.all<typeof import('../Form')['Form']>([
     import('../Form').then(m => m.Form),
   ]);
@@ -46,8 +43,8 @@ async function WindowedEditor({
         onLabelVanish={error && error.onVanish}
       />
       <Form
-        entity={entity.props}
-        update={value => update && update({ ...entity, props: value })}
+        entity={entity}
+        update={value => update && update(value)}
         path={path}
         actions={actions}
         schema={schema}
@@ -78,11 +75,14 @@ export default function ComponentEditor({
     s => s[entity ? entity.type : 'List'].getSchema(),
     deepDifferent,
   );
+  if (entity === undefined || schema === undefined) {
+    return null;
+  }
   return (
     <AsyncComponentForm
-      entity={entity}
+      entity={entity.props}
       schema={schema}
-      update={update}
+      update={value => update && update({ ...entity, props: value })}
       actions={actions}
     />
   );

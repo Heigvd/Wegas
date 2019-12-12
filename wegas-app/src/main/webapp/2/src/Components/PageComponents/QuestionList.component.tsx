@@ -5,8 +5,11 @@ import { FunctionComponent } from 'react';
 import QuestionList from '../AutoImport/Question/List';
 
 const QuestionListDisplay: FunctionComponent<{
-  questionList: string;
+  questionList?: string;
 }> = ({ questionList }) => {
+  if (questionList === undefined) {
+    return <pre>No selected list</pre>;
+  }
   return <QuestionList variable={questionList} />;
 };
 

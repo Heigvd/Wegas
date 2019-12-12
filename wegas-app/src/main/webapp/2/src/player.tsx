@@ -22,14 +22,16 @@ componentModules.keys().map(k => componentModules(k));
 
 function PlayerPageLoader() {
   const [selectedPage, setSelectedPage] = React.useState<Page>();
-  if(selectedPage === undefined){
+  if (selectedPage === undefined) {
     PageAPI.get(GameModel.selectCurrent().id!, '1', true).then(res => {
       setSelectedPage(Object.values(res)[0]);
-    });  
+    });
   }
-  useWebsocket("PageUpdate",()=>PageAPI.get(GameModel.selectCurrent().id!, '1', true).then(res => {
-    setSelectedPage(Object.values(res)[0]);
-  }))
+  useWebsocket('PageUpdate', () =>
+    PageAPI.get(GameModel.selectCurrent().id!, '1', true).then(res => {
+      setSelectedPage(Object.values(res)[0]);
+    }),
+  );
   return (
     <ThemeProvider contextName="player">
       {selectedPage && <PageLoader selectedPage={selectedPage} />}

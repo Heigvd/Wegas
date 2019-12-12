@@ -6,7 +6,11 @@ import { omit } from 'lodash';
 import { wlog } from '../Helper/wegaslog';
 import produce from 'immer';
 
-export interface ThemeValues {
+export interface ThemeEntries {
+  borderRadius: string;
+}
+
+export interface ThemeColors {
   backgroundColor: string;
   primaryColor: string;
   lightTextColor: string;
@@ -16,18 +20,18 @@ export interface ThemeValues {
   successColor: string;
   disabledColor: string;
   searchColor: string;
-  borderRadius: string;
 }
 
-export interface ThemeModifiers {
+export interface ThemeColorModifiers {
   darker: number;
   lighter: number;
   hover: number;
 }
 
 export interface Theme {
-  values: ThemeValues;
-  modifiers: ThemeModifiers;
+  entries: ThemeEntries;
+  colors: ThemeColors;
+  modifiers: ThemeColorModifiers;
 }
 
 interface Themes {
@@ -47,29 +51,35 @@ interface ThemesState {
 
 interface ThemeContextValues<T extends ThemesState> {
   themeState: T;
-  // currentSelectedTheme: string;
-  // currentValues: ThemeValues;
-  // currentModifiers: ThemeModifiers;
   addNewTheme: (themeName: string) => void;
   deleteTheme: (themeName: string) => void;
   setSelectedTheme: (
     themeName: keyof T['themes'],
     contextName: keyof SelectedTheme,
   ) => void;
-  setThemeValue: (
+  setThemeEntry: (
     themeName: keyof T['themes'],
-    valueName: keyof ThemeValues,
+    entryName: keyof ThemeEntries,
+    value: string,
+  ) => void;
+  setThemeColor: (
+    themeName: keyof T['themes'],
+    colorName: keyof ThemeColors,
     value: string,
   ) => void;
   setThemeModifer: (
     themeName: keyof T['themes'],
-    modifierName: keyof ThemeModifiers,
+    modifierName: keyof ThemeColorModifiers,
     value: number,
   ) => void;
   themeRoot?: React.RefObject<HTMLDivElement>;
 }
 
-const defaultVars: ThemeValues = {
+const defaultEntries: ThemeEntries = {
+  borderRadius: '5px',
+};
+
+const defaultVars: ThemeColors = {
   backgroundColor: 'white',
   primaryColor: '#1565C0',
   lightTextColor: 'white',
@@ -79,13 +89,18 @@ const defaultVars: ThemeValues = {
   successColor: '#25f325',
   disabledColor: 'lightgrey',
   searchColor: 'hotpink',
-  borderRadius: '5px',
 };
 
-const defaultModifiers: ThemeModifiers = {
+const defaultModifiers: ThemeColorModifiers = {
   darker: 0.3,
   lighter: 0.3,
   hover: 0.6,
+};
+
+const defaultTheme = {
+  entries: defaultEntries,
+  colors: defaultVars,
+  modifiers: defaultModifiers,
 };
 
 const defaultThemeState: ThemesState = {
@@ -95,10 +110,7 @@ const defaultThemeState: ThemesState = {
     player: 'default',
   },
   themes: {
-    default: {
-      values: defaultVars,
-      modifiers: defaultModifiers,
-    },
+    default: defaultTheme,
   },
 };
 
@@ -149,9 +161,6 @@ export const themeCTX = React.createContext<
   ThemeContextValues<typeof defaultThemeState>
 >({
   themeState: defaultThemeState,
-  // currentSelectedTheme: defaultThemeState.selectedTheme.default,
-  // currentValues: defaultThemeState.themes.default.values,
-  // currentModifiers: defaultThemeState.themes.default.modifiers,
   addNewTheme: () => {
     wlog('Not implemented yet');
   },
@@ -161,7 +170,10 @@ export const themeCTX = React.createContext<
   setSelectedTheme: () => {
     wlog('Not implemented yet');
   },
-  setThemeValue: () => {
+  setThemeEntry: () => {
+    wlog('Not implemented yet');
+  },
+  setThemeColor: () => {
     wlog('Not implemented yet');
   },
   setThemeModifer: () => {
@@ -187,17 +199,24 @@ interface ThemeStateActionSelectTheme<T extends ThemesState> {
   themeName: keyof T['themes'];
 }
 
-interface ThemeStateActionSetCurrentThemeValue<T extends ThemesState> {
-  type: 'setThemeValue';
+interface ThemeStateActionSetCurrentThemeEntry<T extends ThemesState> {
+  type: 'setThemeEntry';
   themeName: keyof T['themes'];
-  valueName: keyof ThemeValues;
+  entryName: keyof ThemeEntries;
+  value: string;
+}
+
+interface ThemeStateActionSetCurrentThemeColor<T extends ThemesState> {
+  type: 'setThemeColor';
+  themeName: keyof T['themes'];
+  colorName: keyof ThemeColors;
   value: string;
 }
 
 interface ThemeStateActionSetCurrentThemeModifier<T extends ThemesState> {
   type: 'setThemeModifer';
   themeName: keyof T['themes'];
-  modifierName: keyof ThemeModifiers;
+  modifierName: keyof ThemeColorModifiers;
   value: number;
 }
 
@@ -205,7 +224,8 @@ type ThemeStateAction<T extends ThemesState> =
   | ThemeStateActionNewTheme
   | ThemeStateActionDeleteTheme<T>
   | ThemeStateActionSelectTheme<T>
-  | ThemeStateActionSetCurrentThemeValue<T>
+  | ThemeStateActionSetCurrentThemeEntry<T>
+  | ThemeStateActionSetCurrentThemeColor<T>
   | ThemeStateActionSetCurrentThemeModifier<T>;
 
 const themeStateReducer = <T extends ThemesState>(
@@ -215,10 +235,7 @@ const themeStateReducer = <T extends ThemesState>(
   switch (action.type) {
     case 'addNewTheme':
       return produce(old, draft => {
-        draft.themes[action.themeName] = {
-          values: defaultVars,
-          modifiers: defaultModifiers,
-        };
+        draft.themes[action.themeName] = defaultTheme;
       });
     case 'deleteTheme':
       return produce(old, draft => {
@@ -230,10 +247,7 @@ const themeStateReducer = <T extends ThemesState>(
         // Verifies no more themes exist
         if (Object.keys(themes).length === 0) {
           themes = {
-            default: {
-              values: defaultVars,
-              modifiers: defaultModifiers,
-            },
+            default: defaultTheme,
           };
         }
         // Replace selected theme by new one if no more exists
@@ -251,9 +265,14 @@ const themeStateReducer = <T extends ThemesState>(
       return produce(old, draft => {
         draft.selectedTheme[action.contextName] = String(action.themeName);
       });
-    case 'setThemeValue':
+    case 'setThemeEntry':
       return produce(old, draft => {
-        draft.themes[String(action.themeName)].values[action.valueName] =
+        draft.themes[String(action.themeName)].entries[action.entryName] =
+          action.value;
+      });
+    case 'setThemeColor':
+      return produce(old, draft => {
+        draft.themes[String(action.themeName)].colors[action.colorName] =
           action.value;
       });
     case 'setThemeModifer':
@@ -271,9 +290,6 @@ export function ThemeProvider({
   contextName,
 }: React.PropsWithChildren<{ contextName: keyof SelectedTheme }>) {
   const themeRoot = React.useRef<HTMLDivElement>(null);
-  // const [themes, setGlobalTheme] = useGlobal<{ themesState: ThemesState }>(
-  //   'themesState',
-  // );
   const [themes, dispatcher] = useDispatch<{ themesState: ThemesState }>(
     themeStateReducer,
     'themesState',
@@ -282,7 +298,8 @@ export function ThemeProvider({
     args: ThemeStateAction<typeof themes>,
   ) => void = dispatcher;
   const currentSelectedTheme = String(themes.selectedTheme[contextName]);
-  const currentValues = themes.themes[currentSelectedTheme].values;
+  const currentEntries = themes.themes[currentSelectedTheme].entries;
+  const currentValues = themes.themes[currentSelectedTheme].colors;
   const currentModifiers = themes.themes[currentSelectedTheme].modifiers;
 
   const bgColor = Color(currentValues.backgroundColor);
@@ -323,14 +340,11 @@ export function ThemeProvider({
         '--disabled-color': currentValues.disabledColor,
         '--background-color': currentValues.backgroundColor,
         '--search-color': currentValues.searchColor,
-        '--border-radius': currentValues.borderRadius,
+        '--border-radius': currentEntries.borderRadius,
       })}
     >
       <Provider
         value={{
-          // currentValues,
-          // currentModifiers,
-          // currentSelectedTheme,
           themeState: themes,
           addNewTheme: themeName =>
             dispatchTheme({ type: 'addNewTheme', contextName, themeName }),
@@ -345,11 +359,18 @@ export function ThemeProvider({
               modifierName,
               value,
             }),
-          setThemeValue: (themeName, valueName, value) =>
+          setThemeEntry: (themeName, entryName, value) =>
             dispatchTheme({
-              type: 'setThemeValue',
+              type: 'setThemeEntry',
               themeName,
-              valueName,
+              entryName,
+              value,
+            }),
+          setThemeColor: (themeName, colorName, value) =>
+            dispatchTheme({
+              type: 'setThemeColor',
+              themeName,
+              colorName,
               value,
             }),
           themeRoot,

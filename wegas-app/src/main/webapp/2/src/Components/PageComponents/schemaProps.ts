@@ -151,8 +151,8 @@ export const schemaProps = {
   variable: (
     label: string,
     classFilter: WegasClassNames[] = [],
-    featureLevel: FeatureLevel = 'DEFAULT',
     required: boolean = true,
+    featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
   ) => ({
     required,

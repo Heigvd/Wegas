@@ -5,6 +5,7 @@ import { Props } from '@fortawesome/react-fontawesome';
 import { themeVar } from '../../Theme';
 import * as iconModules from '@fortawesome/free-solid-svg-icons';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 
 export const icons = Object.values(iconModules).reduce(
   (o: {}, v: IconDefinition) =>
@@ -15,6 +16,7 @@ export const icons = Object.values(iconModules).reduce(
 );
 
 export interface IconButtonProps extends Props {
+  icon: IconProp;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onMouseDown?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   label?: React.ReactNode;

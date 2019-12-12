@@ -491,7 +491,7 @@ export function FileBrowserNode({
                     setModalState({ type: 'close' });
                   }
                 }}
-                fixedWidth
+                // fixedWidth
                 defaultConfirm
               />
             )}
@@ -549,7 +549,6 @@ export function FileBrowserNode({
                     }
                   }
                 }}
-                fixedWidth
               />
             )}
             {modalState.type === 'delete' && (
@@ -564,7 +563,6 @@ export function FileBrowserNode({
                   }
                   setModalState({ type: 'close' });
                 }}
-                fixedWidth
               />
             )}
             {modalState.type === 'error' && (
@@ -612,7 +610,6 @@ export function FileBrowserNode({
                     removeFile();
                   }
                 }}
-                fixedWidth
                 defaultConfirm
               />
             )}

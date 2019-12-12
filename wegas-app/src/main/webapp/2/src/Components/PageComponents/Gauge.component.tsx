@@ -43,7 +43,7 @@ function ratio(value: number, min: number, max: number) {
 }
 
 interface GaugeProps {
-  variable: string;
+  variable?: string;
   /**
    * lower bound, defaults to descriptor.minValue
    */
@@ -70,7 +70,7 @@ const Gauge: React.FunctionComponent<GaugeProps> = (props: GaugeProps) => {
   const descriptor = useVariableDescriptor<INumberDescriptor>(props.variable);
   const instance = useVariableInstance(descriptor);
   if (descriptor === undefined || instance === undefined) {
-    return <span>Not found: {props.variable}</span>;
+    return <pre>Not found: {props.variable}</pre>;
   }
   const {
     min = descriptor.minValue,
@@ -137,7 +137,7 @@ registerComponent(
     'Gauge',
     'tachometer-alt',
     {
-      variable: schemaProps.variable('Variable', ['NumberDescriptor']),
+      variable: schemaProps.variable('Variable', ['NumberDescriptor'], false),
       min: schemaProps.number('Min', false),
       max: schemaProps.number('Max', false),
       neutralValue: schemaProps.number('Neutral value', false),

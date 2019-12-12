@@ -21,7 +21,6 @@ import { IconButton } from '../../../../Components/Inputs/Button/IconButton';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { Labeled, LabeledView } from '../labeled';
 import { Statements } from './Statements';
-import { wlog } from '../../../../Helper/wegaslog';
 import {
   WegasScriptEditor,
   WegasScriptEditorProps,

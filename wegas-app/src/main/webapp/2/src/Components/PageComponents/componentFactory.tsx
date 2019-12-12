@@ -7,8 +7,10 @@ import { useAnyStore } from '../Hooks/storeHookFactory';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { EditableComponent, PageComponentProps } from './EditableComponent';
 
-export interface PageComponent<P = {}> {
-  getComponent: () => React.FunctionComponent<P>;
+export interface PageComponent<
+  P = { [name: string]: unknown } & { children?: WegasComponent[] }
+> {
+  getComponent: () => React.FunctionComponent<P & PageComponentProps>;
   getName: () => string;
   getIcon: () => IconProp;
   getSchema: () => SimpleSchema;
@@ -87,18 +89,19 @@ export function usePageComponentStore<R>(
 }
 
 export function pageComponentFactory<
-  P extends { [name: string]: unknown } & { children?: WegasComponent[] },
+  P,
   T extends keyof WegasScriptEditorNameAndTypes,
-  V extends Readonly<WegasScriptEditorNameAndTypes[T]>
+  V extends Readonly<WegasScriptEditorNameAndTypes[T]>,
+  R extends P
 >(
   component: React.FunctionComponent<P>,
   componentName: string,
   icon: IconProp,
   schema: SimpleSchema,
   allowedVariables: T[],
-  getComputedPropsFromVariable: (variable?: V) => P,
+  getComputedPropsFromVariable: (variable?: V) => R,
 ) {
-  const Editable = (props: P & PageComponentProps) => (
+  const Editable: React.FunctionComponent<P & PageComponentProps> = props => (
     <EditableComponent
       {...props}
       componentName={componentName}
