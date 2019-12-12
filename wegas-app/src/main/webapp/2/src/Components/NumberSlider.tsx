@@ -1,9 +1,14 @@
 import * as React from 'react';
 // import Slider from 'react-input-slider';
-import { Interpolation } from 'emotion';
+import { Interpolation, css } from 'emotion';
 
 // @ts-ignore
 import Slider from 'react-input-slider';
+
+const valueDisplayStyle = css({
+  textAlign: 'center',
+  padding: '5px',
+});
 
 interface SliderProps {
   axis?: 'x' | 'y' | 'xy';
@@ -29,11 +34,6 @@ interface SliderProps {
 
 const TypedSlider = Slider as (props: SliderProps) => JSX.Element;
 
-// const Slider =
-//   // Using require in next line since no types are set yet for Slider
-//   // eslint-disable-next-line @typescript-eslint/no-var-requires
-//   require('react-input-slider');
-
 interface NumberSliderProps {
   /**
    * value - the current value of the slider
@@ -52,6 +52,15 @@ interface NumberSliderProps {
    * min - the minimum value to slide (0 by default)
    */
   min?: number;
+  /**
+   * steps - the number of steps between min and max value. 100 by default.
+   */
+  steps?: number;
+  /**
+   * displayValue - displays the value modified if set
+   * Can be a boolean or a formatting function that takes the value and return a string
+   */
+  displayValue?: boolean | ((value: number) => string);
   /**
    * disabled - set the component in disabled mode
    */
@@ -90,27 +99,41 @@ export function NumberSlider({
   onChange,
   max = 100,
   min = 0,
+  steps,
+  displayValue,
   disabled,
   trackStyle,
   activePartStyle,
   handleStyle,
   disabledStyle,
 }: NumberSliderProps) {
+  const [internalValue, setValue] = React.useState(value);
   return (
-    <TypedSlider
-      styles={{
-        track: desinterpolate(trackStyle),
-        active: desinterpolate(activePartStyle),
-        thumb: desinterpolate(handleStyle),
-        disabled: desinterpolate(disabledStyle),
-      }}
-      axis="x"
-      xmax={max}
-      xmin={min}
-      xstep={Math.abs(max - min) / 100}
-      x={value}
-      onChange={({ x }) => onChange && onChange(x)}
-      disabled={disabled}
-    />
+    <div>
+      <div className={valueDisplayStyle}>
+        {displayValue !== undefined &&
+          (typeof displayValue === 'boolean'
+            ? internalValue
+            : displayValue(internalValue))}
+      </div>
+      <TypedSlider
+        styles={{
+          track: desinterpolate(trackStyle),
+          active: desinterpolate(activePartStyle),
+          thumb: desinterpolate(handleStyle),
+          disabled: desinterpolate(disabledStyle),
+        }}
+        axis="x"
+        xmax={max}
+        xmin={min}
+        xstep={Math.abs(max - min) / (steps ? steps : 100)}
+        x={value}
+        onChange={({ x }) => {
+          setValue(x);
+          onChange && onChange(x);
+        }}
+        disabled={disabled}
+      />
+    </div>
   );
 }

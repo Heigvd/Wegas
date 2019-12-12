@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Actions } from '../../data';
-import { store } from '../../data/store';
-import { pageComponentFactory, registerComponent } from './componentFactory';
-import { schemaProps } from './schemaProps';
-import { Button } from '../Inputs/Button/Button';
+import { Actions } from '../../../data';
+import { store } from '../../../data/store';
+import { pageComponentFactory, registerComponent } from '../componentFactory';
+import { schemaProps } from '../schemaProps';
+import { Button } from '../../Inputs/Button/Button';
 
 interface PlayerButtonProps {
   label: string;

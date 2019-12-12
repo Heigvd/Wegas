@@ -1,6 +1,13 @@
 import * as React from 'react';
 import { Toolbar } from './Toolbar';
-import { ThemeColorModifiers, Theme, themeCTX, ThemeColors } from './Theme';
+import {
+  ThemeColorModifiers,
+  Theme,
+  themeCTX,
+  ThemeColors,
+  ThemeEntries,
+  themeVar,
+} from './Theme';
 import { cx, css } from 'emotion';
 import { flex, grow, flexColumn } from '../css/classes';
 import { ChromePicker } from 'react-color';
@@ -29,7 +36,7 @@ const colorButton = (color: string, bgColor?: string) =>
             : Color(bgColor).lighten(0.5)
           ).toString(),
     borderWidth: '5px',
-    borderRadius: '5px',
+    borderRadius: themeVar.borderRadius,
     cursor: 'pointer',
   });
 
@@ -99,7 +106,8 @@ export default function ThemeEditor() {
     addNewTheme,
     deleteTheme,
     setSelectedTheme,
-    setThemeColor: setThemeValue,
+    setThemeEntry,
+    setThemeColor,
     setThemeModifer,
   } = React.useContext(themeCTX);
   const [currentModifiedTheme, setModifiedTheme] = React.useState<string>(
@@ -114,6 +122,7 @@ export default function ThemeEditor() {
     ),
   );
 
+  const currentEntries = themeState.themes[currentModifiedTheme].entries;
   const currentValues = themeState.themes[currentModifiedTheme].colors;
   const currentModifiers = themeState.themes[currentModifiedTheme].modifiers;
 
@@ -259,7 +268,7 @@ export default function ThemeEditor() {
                       .backgroundColor
                   }
                   onChange={color => {
-                    setThemeValue(currentModifiedTheme, k, color.hex);
+                    setThemeColor(currentModifiedTheme, k, color.hex);
                   }}
                 />
               </p>
@@ -273,7 +282,6 @@ export default function ThemeEditor() {
                 <p key={k}>
                   <label
                     className={cx(
-                      // titleStyle,
                       css({ display: 'flex', alignItems: 'center' }),
                     )}
                     htmlFor={k}
@@ -290,6 +298,31 @@ export default function ThemeEditor() {
                 </p>
               ),
             )}
+          </div>
+        )}
+        {selectedSection.entries && (
+          <div className={cx(flex, grow, flexColumn, themeAttrForm)}>
+            {Object.keys(currentEntries).map((k: keyof ThemeEntries) => (
+              <p key={k}>
+                <label
+                  className={cx(css({ display: 'flex', alignItems: 'center' }))}
+                  htmlFor={k}
+                  title={k}
+                >
+                  {k} :
+                </label>
+                <NumberSlider
+                  max={15}
+                  min={0}
+                  steps={15}
+                  value={Number(currentEntries[k].replace('px', ''))}
+                  onChange={v =>
+                    setThemeEntry(currentModifiedTheme, k, v + 'px')
+                  }
+                  displayValue={val => val + 'px'}
+                />
+              </p>
+            ))}
           </div>
         )}
       </Toolbar.Content>
