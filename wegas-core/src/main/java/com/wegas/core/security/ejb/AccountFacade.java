@@ -350,7 +350,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         CriteriaQuery<AbstractAccount> cq = cb.createQuery(AbstractAccount.class);
 
         Root<AbstractAccount> account = cq.from(AbstractAccount.class);
-        
+
         String[] tokens = input.split(" ");
         List<Predicate> andPreds = new ArrayList<>(tokens.length);
 
@@ -372,7 +372,6 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         }
         andPreds.add(cb.notEqual(account.type(), GuestJpaAccount.class)); // Exclude guest accounts
 
-
         Predicate tokenPredicate = cb.and(andPreds.toArray(new Predicate[andPreds.size()]));
 
         List<Predicate> anyRoleFilter = new ArrayList<>();
@@ -389,6 +388,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         Predicate anyRolePredicate = cb.or(anyRoleFilter.toArray(new Predicate[anyRoleFilter.size()]));
 
         cq.where(cb.and(anyRolePredicate, tokenPredicate));
+        
+        cq.distinct(true);
 
         TypedQuery<AbstractAccount> q = getEntityManager().createQuery(cq);
 
@@ -396,14 +397,15 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
-     * Same as {@link #getAutoComplete(java.lang.String) getAutoComplete} but account must be member of (at least) one
-     * role in rolesList
+     * Same as {@link #getAutoComplete(java.lang.String) getAutoComplete} but account must be member
+     * of (at least) one role in rolesList
      *
      * @param value     account search token
-     * @param rolesList list of roles targeted account should be members (only one membership is sufficient)
+     * @param rolesList list of roles targeted account should be members (only one membership is
+     *                  sufficient)
      *
-     * @return list of AbstractAccounts (excluding guest accounts) matching the token that are a member of at least one
-     *         given role
+     * @return list of AbstractAccounts (excluding guest accounts) matching the token that are a
+     *         member of at least one given role
      */
     public List<AbstractAccount> getAutoCompleteByRoles(String value, List<String> rolesList) {
         return findByNameEmailDomainOrUsername_withRoles(value, rolesList);
@@ -428,7 +430,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         ArrayList<AbstractAccount> result = new ArrayList<>();
         for (Player player : team.getPlayers()) {
             if (player.getUser() != null) {
-                result.add(player.getUser().getMainAccount());                      // Test players dont have a user, we do not return anything since the target widget would not know what to do with it
+                // Test players dont have a user, we do not return anything since the target widget would not know what to do with it
+                result.add(player.getUser().getMainAccount());
             }
         }
         return result;
