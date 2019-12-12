@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Downshift, { StateChangeOptions } from 'downshift';
 import { css, cx } from 'emotion';
-import { IconButton } from './Button/IconButton';
+import { IconButton } from './Inputs/Button/IconButton';
 import { Props } from '@fortawesome/react-fontawesome';
 import { withDefault } from '../Editor/Components/Views/FontAwesome';
 import { useKeyboard } from './Hooks/useKeyboard';
@@ -91,7 +91,7 @@ export function Menu<T extends Item<T>>({
       itemToString={emtpyStr}
     >
       {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
-        <div className={cx(container, css({ zIndex: 1000 }))}>
+        <div className={container}>
           <div className={itemStyle} onClick={() => toggleMenu()}>
             {label}
             <IconButton

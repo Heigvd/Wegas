@@ -3,34 +3,30 @@ import { Actions } from '../../data';
 import { store } from '../../data/store';
 import { pageComponentFactory, registerComponent } from './componentFactory';
 import { schemaProps } from './schemaProps';
-import { wlog } from '../../Helper/wegaslog';
+import { Button } from '../Inputs/Button/Button';
 
-interface ButtonProps {
+interface PlayerButtonProps {
   label: string;
   action: IScript | string;
 }
 
-const Button: React.FunctionComponent<ButtonProps> = (props: ButtonProps) => {
+const PlayerButton: React.FunctionComponent<PlayerButtonProps> = (
+  props: PlayerButtonProps,
+) => {
   const { label, action } = props;
-  wlog(action);
   return (
-    <button
-      onClick={() => {
-        store.dispatch(
-          Actions.VariableInstanceActions.runScript(
-            typeof action === 'string' ? action : action.content,
-          ),
-        );
-      }}
-    >
-      {label}
-    </button>
+    <Button
+      label={label}
+      onClick={() =>
+        store.dispatch(Actions.VariableInstanceActions.runScript(action))
+      }
+    />
   );
 };
 
 registerComponent(
   pageComponentFactory(
-    Button,
+    PlayerButton,
     'Button',
     'cube',
     {
@@ -39,8 +35,7 @@ registerComponent(
     },
     [],
     () => ({
-      action:
-        "",
+      action: '',
       label: 'Button',
     }),
   ),

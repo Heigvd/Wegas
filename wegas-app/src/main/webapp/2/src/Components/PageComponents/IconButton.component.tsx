@@ -1,6 +1,6 @@
 import { pageComponentFactory, registerComponent } from './componentFactory';
 import { schemaProps } from './schemaProps';
-import { IconButton, icons } from '../Button/IconButton';
+import { IconButton, icons } from '../Inputs/Button/IconButton';
 
 registerComponent(
   pageComponentFactory(

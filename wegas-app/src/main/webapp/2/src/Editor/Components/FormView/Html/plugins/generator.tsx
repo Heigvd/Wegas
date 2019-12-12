@@ -8,7 +8,7 @@ import {
   ToolbarButtonProps,
   blockStack,
 } from './tools';
-import { IconButton } from '../../../../../Components/Button/IconButton';
+import { IconButton } from '../../../../../Components/Inputs/Button/IconButton';
 
 export function genMark({
   render,

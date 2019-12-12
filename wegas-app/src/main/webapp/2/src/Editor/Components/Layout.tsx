@@ -18,18 +18,6 @@ const InstancesEditor = React.lazy(() => import('./Variable/InstancesEditor'));
 const HTMLEditor = React.lazy(() => import('../../Components/HTMLEditor'));
 const ThemeEditor = React.lazy(() => import('../../Components/ThemeEditor'));
 
-// import StateMachineEditor from './StateMachineEditor';
-// import PageDisplay from './Page/PageDisplay';
-// import TreeView from './Variable/VariableTree';
-// import EntityEditor from './EntityEditor';
-// import FileBrowserWithMeta from './FileBrowser/FileBrowser';
-// import LibraryEditor from './ScriptEditors/LibraryEditor';
-// import LanguageEditor from './LanguageEditor';
-// import PlayLocal from './PlayLocal';
-// import InstancesEditor from './Variable/InstancesEditor';
-// import HTMLEditor from '../../Components/HTMLEditor';
-// import ThemeEditor from '../../Components/ThemeEditor';
-
 const layout = css({
   display: 'flex',
   flexDirection: 'column',

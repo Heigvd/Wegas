@@ -13,6 +13,7 @@ import {
 } from '../../../Components/AutoImport/String/String';
 import { WegasScriptEditor } from './WegasScriptEditor';
 import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
+import { Button } from '../../../Components/Inputs/Button/Button';
 
 const infoDuration = 5000;
 
@@ -159,7 +160,7 @@ export function JSONandJSEditor({
   return (
     <Toolbar className={fullHeight}>
       <Toolbar.Header>
-        <button onClick={() => trySave(editorContent)}>Save</button>
+        <Button label="Save" onClick={() => trySave(editorContent)} />
         {error !== undefined && (
           <StyledLabel
             type={error.status}
@@ -186,8 +187,16 @@ export function JSONandJSEditor({
                 onSave={onAcceptJS}
               />
             </div>
-            <button onClick={onAcceptJS}>Accept</button>
-            <button onClick={() => setEditing(false)}>Cancel</button>
+            <Button
+              label="Accept"
+              onClick={onAcceptJS}
+              disableBorders={{ right: true }}
+            />
+            <Button
+              label="Cancel"
+              onClick={() => setEditing(false)}
+              disableBorders={{ left: true }}
+            />
           </Modal>
         )}
         <SrcEditor

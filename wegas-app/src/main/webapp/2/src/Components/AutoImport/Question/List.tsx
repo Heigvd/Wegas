@@ -7,7 +7,7 @@ import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { css, cx } from 'emotion';
 import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
 import { themeVar } from '../../Theme';
-import { IconButton } from '../../Button/IconButton';
+import { IconButton } from '../../Inputs/Button/IconButton';
 import {
   selectAndValidate,
   toggleReply,
@@ -20,6 +20,7 @@ import {
   isUnread,
 } from '../../../data/proxyfy/methods/QuestionDescriptor';
 import { isSelected } from '../../../data/proxyfy/methods/ChoiceDescriptor';
+import { Button } from '../../Inputs/Button/Button';
 
 const unreadSignalStyle = css({ margin: '3px' });
 const choiceContainerStyle = css({
@@ -269,13 +270,11 @@ class QuestionDisplay extends React.Component<{
         })}
         {descriptor.cbx && (
           <div className={cx(choiceContainerStyle, rightFloatStyle)}>
-            <button
+            <Button
+              label={instance.validated ? 'Validated' : 'Validate'}
               onClick={() => this.props.dispatch(validateQuestion(descriptor))}
               disabled={instance.validated}
-              className={cx({ [disabledQuestionStyle]: instance.validated })}
-            >
-              {instance.validated ? 'Validated' : 'Validate'}
-            </button>
+            />
           </div>
         )}
         <RepliesDisplay replies={replies} />

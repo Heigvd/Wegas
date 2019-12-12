@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
-import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
+import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
 import { Props } from '@fortawesome/react-fontawesome';
-import { themeVar } from '../Theme';
+import { themeVar } from '../../Theme';
 import * as iconModules from '@fortawesome/free-solid-svg-icons';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 

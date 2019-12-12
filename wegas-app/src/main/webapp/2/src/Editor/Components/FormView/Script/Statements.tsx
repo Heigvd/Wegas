@@ -8,7 +8,7 @@ import {
 import generate from '@babel/generator';
 import * as React from 'react';
 import { SecureExpressionStatement } from './ExpressionStatement';
-import { IconButton } from '../../../../Components/Button/IconButton';
+import { IconButton } from '../../../../Components/Inputs/Button/IconButton';
 import { css } from 'emotion';
 import { isBinaryExpression } from '@babel/types';
 

@@ -2,7 +2,7 @@ import { css } from 'emotion';
 import * as React from 'react';
 import { themeVar } from '../../../Components/Theme';
 import { Toolbar } from '../../../Components/Toolbar';
-import { IconButton } from '../../../Components/Button/IconButton';
+import { IconButton } from '../../../Components/Inputs/Button/IconButton';
 import WegasDiffEditor, {
   ExtendedDiffNavigator,
   DiffEditorLineChanges,

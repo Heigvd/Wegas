@@ -14,13 +14,15 @@ import { themeVar } from '../../../Components/Theme';
 import { availableLayoutTabs } from '../Layout';
 
 export const splitter = css({
+  '&.reflex-container > .reflex-splitter': {
+    backgroundColor: themeVar.primaryLighterColor,
+    zIndex: 0,
+  },
   '&.reflex-container.vertical > .reflex-splitter': {
     width: '5px',
-    backgroundColor: themeVar.primaryLighterColor,
   },
   '&.reflex-container.horizontal > .reflex-splitter': {
     height: '5px',
-    backgroundColor: themeVar.primaryLighterColor,
   },
 });
 

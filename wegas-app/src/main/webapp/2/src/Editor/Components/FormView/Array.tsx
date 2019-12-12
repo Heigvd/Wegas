@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css } from 'emotion';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { IconButton } from '../../../Components/Button/IconButton';
+import { IconButton } from '../../../Components/Inputs/Button/IconButton';
 import { Menu } from '../../../Components/Menu';
 import { CommonViewContainer, CommonView } from './commonView';
 import { Labeled, LabeledView } from './labeled';
@@ -28,13 +28,13 @@ const listElementStyle = css({
 
 interface IArrayProps
   extends WidgetProps.ArrayProps<
-      {
-        choices?: { label: React.ReactNode; value: string }[];
-        tooltip?: string;
-        disabled?: boolean;
-      } & CommonView &
-        LabeledView
-    > {
+    {
+      choices?: { label: React.ReactNode; value: string }[];
+      tooltip?: string;
+      disabled?: boolean;
+    } & CommonView &
+      LabeledView
+  > {
   value?: {}[];
 }
 
@@ -67,7 +67,7 @@ function ArrayWidget(props: IArrayProps) {
     return (
       <div className={listElementContainerStyle}>
         <div className={listElementStyle}>{child}</div>
-        {minItems < valueLength && !disabled && ! readOnly? (
+        {minItems < valueLength && !disabled && !readOnly ? (
           <IconButton
             className={transparentStyle}
             icon="trash"
@@ -88,8 +88,9 @@ function ArrayWidget(props: IArrayProps) {
           return (
             <>
               {labelNode}
-              {maxItems > valueLength &&
-                !disabled && !readOnly && <Adder id={inputId} {...props} />}
+              {maxItems > valueLength && !disabled && !readOnly && (
+                <Adder id={inputId} {...props} />
+              )}
               {children}
             </>
           );

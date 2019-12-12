@@ -16,6 +16,7 @@ export interface ThemeValues {
   successColor: string;
   disabledColor: string;
   searchColor: string;
+  borderRadius: string;
 }
 
 export interface ThemeModifiers {
@@ -78,6 +79,7 @@ const defaultVars: ThemeValues = {
   successColor: '#25f325',
   disabledColor: 'lightgrey',
   searchColor: 'hotpink',
+  borderRadius: '5px',
 };
 
 const defaultModifiers: ThemeModifiers = {
@@ -116,6 +118,7 @@ export const themeVar = {
   disabledColor: 'var(--disabled-color)',
   backgroundColor: 'var(--background-color)',
   searchColor: 'var(--search-color)',
+  borderRadius: 'var(--border-radius)',
 };
 export const primary = css({
   backgroundColor: themeVar.primaryColor,
@@ -136,7 +139,7 @@ export const globalSelection = css({
   borderStyle: 'solid',
   borderWidth: '2px',
   borderColor: themeVar.primaryDarkerColor,
-  borderRadius: '6px',
+  borderRadius: themeVar.borderRadius,
 });
 export const searchSelection = css({
   backgroundColor: themeVar.searchColor,
@@ -320,6 +323,7 @@ export function ThemeProvider({
         '--disabled-color': currentValues.disabledColor,
         '--background-color': currentValues.backgroundColor,
         '--search-color': currentValues.searchColor,
+        '--border-radius': currentValues.borderRadius,
       })}
     >
       <Provider

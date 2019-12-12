@@ -16,6 +16,7 @@ import { InstancesEditorProps } from '../Variable/InstancesEditor';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { Toolbar } from '../../../Components/Toolbar';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { Button } from '../../../Components/Inputs/Button/Button';
 
 const growBig = css({
   flex: '30 1 auto',
@@ -97,9 +98,10 @@ export function ComponentWithForm({
         <div className={cx(flex, grow, autoScroll)}>
           <Toolbar>
             <Toolbar.Header>
-              <button onClick={() => setInstanceView(false)}>
-                Close instance editor
-              </button>
+              <Button
+                label="Close instance editor"
+                onClick={() => setInstanceView(false)}
+              />
             </Toolbar.Header>
             <Toolbar.Content>
               <AsyncInstancesEditor

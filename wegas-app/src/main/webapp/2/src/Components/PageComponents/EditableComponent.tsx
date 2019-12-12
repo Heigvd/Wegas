@@ -10,8 +10,8 @@ import {
   dndComponnent,
 } from '../../Editor/Components/Page/ComponentPalette';
 import { useDrop, DropTargetMonitor } from 'react-dnd';
-import { IconButton } from '../Button/IconButton';
-import { ConfirmButton } from '../Button/ConfirmButton';
+import { IconButton } from '../Inputs/Button/IconButton';
+import { ConfirmButton } from '../Inputs/Button/ConfirmButton';
 import { pageCTX } from '../../Editor/Components/Page/PageEditor';
 
 const editListStyle = css({

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
-import { ConfirmButton } from '../../../Components/Button/ConfirmButton';
+import { ConfirmButton } from '../../../Components/Inputs/Button/ConfirmButton';
 import { Menu } from '../../../Components/Menu';
 import { PageAPI } from '../../../API/pages.api';
 import { GameModel } from '../../../data/selectors';
@@ -9,7 +9,7 @@ import {
   OnSaveStatus,
 } from '../ScriptEditors/JSONandJSEditor';
 import { grow } from '../../../css/classes';
-import { IconButton } from '../../../Components/Button/IconButton';
+import { IconButton } from '../../../Components/Inputs/Button/IconButton';
 import { TextPrompt } from '../TextPrompt';
 import { StyledLabel } from '../../../Components/AutoImport/String/String';
 import { compare, deepClone } from 'fast-json-patch';
@@ -19,6 +19,7 @@ import { ReflexElement, ReflexContainer, ReflexSplitter } from 'react-reflex';
 import { splitter } from '../LinearTabLayout/LinearLayout';
 import ComponentEditor from './ComponentEditor';
 import { PageLoader } from './PageLoader';
+import { Button } from '../../../Components/Inputs/Button/Button';
 
 interface PageContext {
   editMode: boolean;
@@ -366,18 +367,20 @@ export default function PageEditor() {
           )}
         </div>
         {!srcMode && (
-          <button onClick={() => setEditMode(!editMode)}>
-            {editMode ? 'View mode' : 'Edit mode'}
-          </button>
+          <Button
+            label={editMode ? 'View mode' : 'Edit mode'}
+            onClick={() => setEditMode(!editMode)}
+            disableBorders={{ right: true }}
+          />
         )}
-        <button
+        <Button
+          label={srcMode ? 'Preview mode' : 'Source code mode'}
           onClick={() => {
             setSrcMode(src => !src);
             setEditMode(false);
           }}
-        >
-          {srcMode ? 'Preview mode' : 'Source code mode'}
-        </button>
+          disableBorders={{ left: !srcMode }}
+        />
       </Toolbar.Header>
       <Toolbar.Content>
         {srcMode ? (

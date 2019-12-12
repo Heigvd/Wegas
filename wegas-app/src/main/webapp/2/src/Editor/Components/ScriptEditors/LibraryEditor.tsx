@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TabLayout } from '../../../Components/Tabs';
 import { Toolbar } from '../../../Components/Toolbar';
-import { IconButton } from '../../../Components/Button/IconButton';
+import { IconButton } from '../../../Components/Inputs/Button/IconButton';
 import {
   LibraryAPI,
   NewLibErrors,
@@ -16,7 +16,7 @@ import SrcEditor, { SrcEditorProps } from './SrcEditor';
 import MergeEditor from './MergeEditor';
 import { StyledLabel } from '../../../Components/AutoImport/String/String';
 import { TextPrompt } from '../TextPrompt';
-import { ConfirmButton } from '../../../Components/Button/ConfirmButton';
+import { ConfirmButton } from '../../../Components/Inputs/Button/ConfirmButton';
 import { WegasScriptEditor } from './WegasScriptEditor';
 import {
   clientScriptEval,

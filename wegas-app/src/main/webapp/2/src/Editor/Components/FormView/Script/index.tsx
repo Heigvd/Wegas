@@ -17,7 +17,7 @@ import {
 } from '@babel/types';
 import { WidgetProps } from 'jsoninput/typings/types';
 import * as React from 'react';
-import { IconButton } from '../../../../Components/Button/IconButton';
+import { IconButton } from '../../../../Components/Inputs/Button/IconButton';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { Labeled, LabeledView } from '../labeled';
 import { Statements } from './Statements';

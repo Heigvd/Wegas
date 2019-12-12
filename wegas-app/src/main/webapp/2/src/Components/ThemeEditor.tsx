@@ -7,11 +7,11 @@ import { ChromePicker } from 'react-color';
 import { OnChangeHandler } from 'react-color/lib/components/common/ColorWrap';
 import * as Color from 'color';
 import { useOnClickOutside } from './Hooks/useOnClickOutside';
-import { IconButton } from './Button/IconButton';
+import { IconButton } from './Inputs/Button/IconButton';
 import { Menu } from './Menu';
 import { TextPrompt } from '../Editor/Components/TextPrompt';
 import { StyledLabel } from './AutoImport/String/String';
-import { ConfirmButton } from './Button/ConfirmButton';
+import { ConfirmButton } from './Inputs/Button/ConfirmButton';
 import { NumberSlider } from './NumberSlider';
 import { wlog } from '../Helper/wegaslog';
 
