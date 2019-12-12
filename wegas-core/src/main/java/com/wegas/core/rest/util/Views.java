@@ -105,7 +105,7 @@ public class Views {
     }
 
     /**
-     * contains protected contents (like shadowed email)
+     * contains protected contents (like shadowed email & password hash)
      */
     public static class Shadow extends Extended implements ShadowI {
     }

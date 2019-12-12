@@ -9,6 +9,7 @@ package com.wegas.core.security.persistence;
 
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
@@ -120,7 +121,8 @@ public abstract class AbstractAccount extends AbstractEntity {
     private Date createdTime = new Date();
 
     /**
-     * When the terms of use have been agreed to by the user (usually at signup, except for guests and long time users)
+     * When the terms of use have been agreed to by the user (usually at signup, except for guests
+     * and long time users)
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
@@ -135,8 +137,6 @@ public abstract class AbstractAccount extends AbstractEntity {
         proposal = EmptyString.class, view = @View(label = "Comment"))
     private String comment = "";
 
-    @WegasEntityProperty(view = @View(label = "Domain", readOnly = true, value = StringView.class),
-        optional = false, nullable = false)
     private String emailDomain;
 
     /**
@@ -344,7 +344,7 @@ public abstract class AbstractAccount extends AbstractEntity {
         this.email = null;
     }
 
-    @JsonView(Views.ShadowI.class)
+    @JsonView({Views.ShadowI.class, Views.EditorI.class})
     public String getEmail() {
         if (this.email != null) {
             return this.email;
@@ -368,6 +368,7 @@ public abstract class AbstractAccount extends AbstractEntity {
         this.email = email;
     }
 
+    @WegasExtraProperty(view = @View(label = "Domain"))
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public String getEmailDomain() {
         return emailDomain;
@@ -423,8 +424,8 @@ public abstract class AbstractAccount extends AbstractEntity {
         Collection<WegasPermission> p = this.getRequieredUpdatePermission();
 
         /**
-         * In order to share gameModels and games with others trainer/scenarist a trainer/scenario must be able to read
-         * basic info about others trainer/scenarist
+         * In order to share gameModels and games with others trainer/scenarist a trainer/scenario
+         * must be able to read basic info about others trainer/scenarist
          */
         if (this.getUser().isMemberOf("Trainer")
             || this.getUser().isMemberOf("Scenarist")
