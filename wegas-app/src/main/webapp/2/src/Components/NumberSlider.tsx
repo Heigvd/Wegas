@@ -34,6 +34,11 @@ interface SliderProps {
 
 const TypedSlider = Slider as (props: SliderProps) => JSX.Element;
 
+export const displayModes = ['None', 'External', 'Internal', 'Both'] as const;
+export type DisplayMode =
+  | typeof displayModes[number]
+  | ((value: number, internalValue: number) => React.ReactNode);
+
 interface NumberSliderProps {
   /**
    * value - the current value of the slider
@@ -57,10 +62,10 @@ interface NumberSliderProps {
    */
   steps?: number;
   /**
-   * displayValue - displays the value modified if set
-   * Can be a boolean or a formatting function that takes the value and return a string
+   * displayValue - displays the values in the slider
+   * Can be a string or a formatting function that takes the value and return a string
    */
-  displayValue?: boolean | ((value: number) => string);
+  displayValues?: DisplayMode;
   /**
    * disabled - set the component in disabled mode
    */
@@ -100,7 +105,7 @@ export function NumberSlider({
   max = 100,
   min = 0,
   steps,
-  displayValue,
+  displayValues,
   disabled,
   trackStyle,
   activePartStyle,
@@ -108,14 +113,52 @@ export function NumberSlider({
   disabledStyle,
 }: NumberSliderProps) {
   const [internalValue, setValue] = React.useState(value);
+  const timer = React.useRef<NodeJS.Timeout>();
+  React.useEffect(
+    () => {
+      if (value !== internalValue) {
+        setValue(value);
+      }
+    },
+    // We don't need to refresh on internalValue change because it will be alread done in the onChange function
+    // eslint-disable-next-line
+    [value /*internalValue,*/],
+  );
+
+  const Info = () => {
+    let display;
+    if (displayValues == null) {
+      display = null;
+    } else if (typeof displayValues === 'string') {
+      switch (displayValues) {
+        case 'External':
+          display = value;
+          break;
+        case 'Internal':
+          display = internalValue;
+          break;
+        case 'Both':
+          display = (
+            <>
+              <div>External value : {value}</div>
+              <div>Internal value : {internalValue}</div>
+            </>
+          );
+          break;
+        case 'None':
+        default:
+          display = undefined;
+          break;
+      }
+    } else if (typeof displayValues === 'function') {
+      display = displayValues(value, internalValue);
+    }
+    return <div className={valueDisplayStyle}>{display}</div>;
+  };
+
   return (
     <div>
-      <div className={valueDisplayStyle}>
-        {displayValue !== undefined &&
-          (typeof displayValue === 'boolean'
-            ? internalValue
-            : displayValue(internalValue))}
-      </div>
+      <Info />
       <TypedSlider
         styles={{
           track: desinterpolate(trackStyle),
@@ -127,10 +170,15 @@ export function NumberSlider({
         xmax={max}
         xmin={min}
         xstep={Math.abs(max - min) / (steps ? steps : 100)}
-        x={value}
+        x={internalValue}
         onChange={({ x }) => {
           setValue(x);
-          onChange && onChange(x);
+          if (timer.current !== undefined) {
+            clearTimeout(timer.current);
+          }
+          timer.current = setTimeout(() => {
+            onChange && onChange(x);
+          }, 100);
         }}
         disabled={disabled}
       />

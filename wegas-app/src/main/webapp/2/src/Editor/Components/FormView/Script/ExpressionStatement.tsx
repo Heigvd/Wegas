@@ -31,6 +31,7 @@ import {
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
 import { wlog } from '../../../../Helper/wegaslog';
 import { css } from 'emotion';
+import { ScriptMode } from '.';
 
 const sigleLineScriptEdit = css({
   height: '2em',
@@ -41,7 +42,8 @@ const sigleLineScriptEdit = css({
 interface ImpactProps {
   stmt: ExpressionStatement | EmptyStatement;
   onChange: (stmt: ExpressionStatement) => void;
-  mode: 'SET' | 'GET';
+  mode: ScriptMode;
+  scriptableClassFilter?: WegasScriptEditorReturnTypeName[];
 }
 type parameterType =
   | 'string'
@@ -108,7 +110,7 @@ function argsToDefault(
 }
 async function buildDefaultVariableCallAST(
   variable: IVariableDescriptor,
-  mode: 'SET' | 'GET',
+  mode: ScriptMode,
 ) {
   const config = await getMethodConfig(variable);
   const method = Object.keys(config).filter(m =>
@@ -136,11 +138,11 @@ function getInfo(stmt: ExpressionStatement) {
   }
   return {};
 }
-function buildDefaultGlobalCAllAST(method: string, mode: 'SET' | 'GET') {
+function buildDefaultGlobalCAllAST(method: string, mode: ScriptMode) {
   const config = getGlobals(mode === 'GET' ? 'condition' : 'impact')[method];
   return createGlobalCallAST(method, argsToDefault(config.parameters));
 }
-function genGlobalItems(mode: 'SET' | 'GET') {
+function genGlobalItems(mode: ScriptMode) {
   return Object.entries(
     getGlobals(mode === 'GET' ? 'condition' : 'impact'),
   ).map(([k, v]) => ({
@@ -149,19 +151,25 @@ function genGlobalItems(mode: 'SET' | 'GET') {
   })); // Global start with a DOT
 }
 
-const defaultExprState = (mode: ImpactProps['mode']): ExprState => ({
+const defaultExprState = (
+  mode: ImpactProps['mode'],
+  scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
+): ExprState => ({
   methodsConfig: {},
   variableSchema: {
     view: {
       type: 'variableselect',
       layout: 'inline',
       items: genGlobalItems(mode),
+      classFilter: scriptableClassFilter
+        ? scriptableClassFilter.map(sc => sc.substr(2))
+        : undefined,
     },
   },
 });
 
 export class ExprStatement extends React.Component<ImpactProps, ExprState> {
-  state = defaultExprState(this.props.mode);
+  state = defaultExprState(this.props.mode, this.props.scriptableClassFilter);
   variableChange = async (variable: string) => {
     const { stmt } = this.props;
     if (variable.startsWith('.')) {
@@ -392,6 +400,9 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
         ? methodsConfig[m].returns === undefined
         : methodsConfig[m].returns !== undefined,
     );
+
+    wlog(this.state.variableSchema.view);
+
     if (isEmptyStatement(stmt)) {
       return (
         <Form
@@ -519,6 +530,7 @@ export class SecureExpressionStatement extends React.Component<
           }}
           noGutter={true}
           minimap={false}
+          returnType={this.props.scriptableClassFilter}
         />
       </div>
     ) : (

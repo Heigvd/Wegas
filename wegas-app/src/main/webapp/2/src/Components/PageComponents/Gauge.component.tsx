@@ -137,7 +137,7 @@ registerComponent(
     'Gauge',
     'tachometer-alt',
     {
-      variable: schemaProps.variable('Variable', ['NumberDescriptor'], false),
+      variable: schemaProps.script('Variable', false, ['ISNumberDescriptor']),
       min: schemaProps.number('Min', false),
       max: schemaProps.number('Max', false),
       neutralValue: schemaProps.number('Neutral value', false),

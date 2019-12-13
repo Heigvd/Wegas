@@ -18,11 +18,17 @@ import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 
 export interface WegasScriptEditorProps extends SrcEditorProps {
   clientScript?: boolean;
-  returnType?: WegasScriptEditorReturnTypeName;
+  returnType?: WegasScriptEditorReturnTypeName[];
 }
 
-const header = (type?: string) => {
-  const cleanType = type !== undefined ? type.replace(/\r?\n/, '') : '';
+const header = (type?: string[]) => {
+  const cleanType =
+    type !== undefined
+      ? type.reduce(
+          (o, t, i) => o + (i ? '|' : '') + t.replace(/\r?\n/, ''),
+          '',
+        )
+      : '';
   return `/*\n *\tPlease always respect the return type : ${cleanType}\n *\tPlease only write in JS even if the editor let you write in TS\n */\n() : ${cleanType} => {\n\t`;
 };
 const headerSize = textToArray(header()).length;
@@ -36,7 +42,7 @@ const footerSize = textToArray(footer()).length - 1;
  */
 const formatScriptToFunction = (
   val: string,
-  returnType?: WegasScriptEditorReturnTypeName,
+  returnType?: WegasScriptEditorReturnTypeName[],
 ) => {
   if (returnType !== undefined) {
     let newValue = val;
@@ -86,7 +92,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
    */
   const acceptFunctionStyle = (
     val?: string,
-    returnType?: WegasScriptEditorReturnTypeName,
+    returnType?: WegasScriptEditorReturnTypeName[],
   ) => {
     const newVal = val ? val : '';
     if (returnType !== undefined) {

@@ -84,10 +84,13 @@ function scriptObject(script?: string | IScript | null) {
     ? script.content
     : script || '';
 }
+
+export type ScriptMode = 'SET' | 'GET' | 'NONE';
+
 interface ScriptBodyProps {
   script?: IScript | string | null;
   onChange: (script: IScript) => void;
-  mode: 'GET' | 'SET';
+  mode: ScriptMode;
   children: (props: {
     ast: Statement[];
     onChange: (ast: Statement[]) => void;
@@ -134,7 +137,12 @@ function ScriptBody({ script, onChange, children, mode }: ScriptBodyProps) {
 
 interface ScriptProps
   extends WidgetProps.BaseProps<
-    LabeledView & CommonView & { mode?: 'SET' | 'GET' }
+    LabeledView &
+      CommonView & {
+        mode?: ScriptMode;
+        single?: boolean;
+        scriptableClassFilter?: WegasScriptEditorReturnTypeName[];
+      }
   > {
   value?: string | IScript;
   context?: IVariableDescriptor<IVariableInstance>;
@@ -208,6 +216,7 @@ export function Script({
                     onBlur={handleChanges}
                     minimap={false}
                     noGutter={true}
+                    returnType={view.scriptableClassFilter}
                   />
                 </div>
               ) : (
@@ -221,6 +230,8 @@ export function Script({
                       statements={ast}
                       onChange={onChange}
                       mode={mode}
+                      single={view.single}
+                      scriptableClassFilter={view.scriptableClassFilter}
                     />
                   )}
                 </ScriptBody>
@@ -245,14 +256,18 @@ interface CodeProps
     LabeledView & CommonView & { language?: CodeLanguage }
   > {
   value?: {} | string;
-  onChange: (code: {} | string) => void;
+  onChange: (code?: {} | string) => void;
 }
 
 export function Code({ view, value, onChange }: CodeProps) {
   const onValueChange = React.useCallback(
     (val: string) => {
       onChange(
-        view.language !== 'JSON' ? val : val === '' ? {} : JSON.parse(val),
+        view.language === 'JSON'
+          ? val === ''
+            ? undefined
+            : JSON.parse(val)
+          : val,
       );
     },
     [onChange, view.language],

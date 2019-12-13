@@ -319,7 +319,7 @@ export default function ThemeEditor() {
                   onChange={v =>
                     setThemeEntry(currentModifiedTheme, k, v + 'px')
                   }
-                  displayValue={val => val + 'px'}
+                  displayValues={val => val + 'px'}
                 />
               </p>
             ))}

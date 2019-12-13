@@ -11,11 +11,14 @@ import { SecureExpressionStatement } from './ExpressionStatement';
 import { IconButton } from '../../../../Components/Inputs/Button/IconButton';
 import { css } from 'emotion';
 import { isBinaryExpression } from '@babel/types';
+import { ScriptMode } from '.';
 
 interface StatementsProps {
   statements: Statement[];
   onChange: (statements: Statement[]) => void;
-  mode: 'SET' | 'GET';
+  mode: ScriptMode;
+  single?: boolean;
+  scriptableClassFilter?: WegasScriptEditorReturnTypeName[];
 }
 const contentStyle = css({
   display: 'flex',
@@ -29,7 +32,13 @@ const codeStyle = css({
   margin: '0.4em 0',
   whiteSpace: 'pre',
 });
-export function Statements({ statements, onChange, mode }: StatementsProps) {
+export function Statements({
+  statements,
+  onChange,
+  mode,
+  single,
+  scriptableClassFilter
+}: StatementsProps) {
   return (
     <>
       {statements.map((s, i) => (
@@ -47,25 +56,30 @@ export function Statements({ statements, onChange, mode }: StatementsProps) {
                   copy.splice(i, 1, stmt);
                   onChange(copy);
                 }}
+                scriptableClassFilter={scriptableClassFilter}
               />
             ) : (
               <code className={codeStyle}>{generate(s).code}</code>
             )}
           </div>
-          <IconButton
-            icon="trash"
-            onClick={() => {
-              const copy = statements.slice();
-              copy.splice(i, 1);
-              onChange(copy);
-            }}
-          />
+          {!single && (
+            <IconButton
+              icon="trash"
+              onClick={() => {
+                const copy = statements.slice();
+                copy.splice(i, 1);
+                onChange(copy);
+              }}
+            />
+          )}
         </div>
       ))}
-      <IconButton
-        icon="plus"
-        onClick={() => onChange(statements.concat(emptyStatement()))}
-      />
+      {!single && (
+        <IconButton
+          icon="plus"
+          onClick={() => onChange(statements.concat(emptyStatement()))}
+        />
+      )}
     </>
   );
 }

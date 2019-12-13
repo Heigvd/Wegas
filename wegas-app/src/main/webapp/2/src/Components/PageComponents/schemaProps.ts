@@ -88,6 +88,7 @@ export const schemaProps = {
   script: (
     label: string,
     required: boolean = true,
+    scriptableClassFilter: WegasScriptEditorReturnTypeName[] = [],
     language?: 'JavaScript' | 'JSON' | 'TypeScript' | 'CSS',
     value?: string,
     featureLevel: FeatureLevel = 'DEFAULT',
@@ -109,6 +110,7 @@ export const schemaProps = {
       label,
       mode: 'SET',
       type: 'script',
+      scriptableClassFilter,
     },
   }),
   code: (
@@ -132,7 +134,7 @@ export const schemaProps = {
   }),
   select: (
     label: string,
-    values: string[],
+    values: readonly string[],
     required: boolean = true,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
@@ -162,7 +164,7 @@ export const schemaProps = {
       featureLevel,
       index,
       label,
-      type: 'flatvariableselect',
+      type: 'variableselect',
     },
   }),
 };

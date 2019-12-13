@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { usePageComponentStore } from './componentFactory';
+import { ErrorBoundary } from '../../Editor/Components/ErrorBoundary';
 
 interface PageDeserializerProps {
   json: WegasComponent;
@@ -14,20 +15,22 @@ export function PageDeserializer({
   const { children = [], ...restProps } = json.props || {};
   const component = usePageComponentStore(s => s[json.type]);
   return component ? (
-    React.createElement(
-      component.getComponent(),
-      {
-        path: realPath,
-        ...restProps,
-      },
-      children.map((cjson, i) => (
-        <PageDeserializer
-          key={i}
-          json={cjson}
-          path={realPath.concat([String(i)])}
-        />
-      )),
-    )
+    <ErrorBoundary>
+      {React.createElement(
+        component.getComponent(),
+        {
+          path: realPath,
+          ...restProps,
+        },
+        children.map((cjson, i) => (
+          <PageDeserializer
+            key={i}
+            json={cjson}
+            path={realPath.concat([String(i)])}
+          />
+        )),
+      )}
+    </ErrorBoundary>
   ) : (
     <div>{`Unknown component : ${json.type}`}</div>
   );
