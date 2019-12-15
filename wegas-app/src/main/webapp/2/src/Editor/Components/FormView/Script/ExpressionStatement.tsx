@@ -401,8 +401,6 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
         : methodsConfig[m].returns !== undefined,
     );
 
-    wlog(this.state.variableSchema.view);
-
     if (isEmptyStatement(stmt)) {
       return (
         <Form

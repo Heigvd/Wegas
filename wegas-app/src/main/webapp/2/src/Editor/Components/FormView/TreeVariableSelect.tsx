@@ -102,7 +102,10 @@ function labelForValue(items: Item[], value?: string) {
   return '';
 }
 interface TreeVariableSelectProps
-  extends WidgetProps.BaseProps<CommonView & LabeledView & { items?: Item[] }> {
+  extends WidgetProps.BaseProps<
+    CommonView &
+      LabeledView & { items?: Item[]; classFilter?: WegasClassNames[] }
+  > {
   value?: string;
 }
 export class TreeVSelect extends React.Component<
@@ -198,7 +201,11 @@ export function TreeVariableSelect(
       selector={() => ({ items: GameModel.selectCurrent().itemsIds, props })}
     >
       {({ state }) => {
-        const items = genVarItems(state.items).concat(props.view.items || []);
+        const items = genVarItems(
+          state.items,
+          undefined,
+          props.view.classFilter,
+        ).concat(props.view.items || []);
         return <TreeVSelect {...props} items={items} />;
       }}
     </StoreConsumer>

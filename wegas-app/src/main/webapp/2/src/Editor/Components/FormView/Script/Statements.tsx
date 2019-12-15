@@ -37,7 +37,7 @@ export function Statements({
   onChange,
   mode,
   single,
-  scriptableClassFilter
+  scriptableClassFilter,
 }: StatementsProps) {
   return (
     <>
