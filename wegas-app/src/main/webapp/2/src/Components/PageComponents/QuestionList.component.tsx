@@ -19,7 +19,9 @@ registerComponent(
     'QuestionList',
     'bars',
     {
-      questionList: schemaProps.variable('Question list', ['ListDescriptor']),
+      questionList: schemaProps.variable('Question list', true, [
+        'ListDescriptor',
+      ]),
     },
     ['string'],
     () => ({}),

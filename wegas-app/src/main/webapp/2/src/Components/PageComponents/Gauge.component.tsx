@@ -9,6 +9,7 @@ import { themeVar } from '../Theme';
 import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
 import { TranslatableContent } from '../../data/i18n';
 import { schemaProps } from './schemaProps';
+import { useScript } from '../Hooks/useScript';
 
 const containerStyle = css({
   minWidth: '8em',
@@ -43,7 +44,7 @@ function ratio(value: number, min: number, max: number) {
 }
 
 interface GaugeProps {
-  variable?: string;
+  variable?: IScript;
   /**
    * lower bound, defaults to descriptor.minValue
    */
@@ -67,7 +68,10 @@ interface GaugeProps {
 }
 
 const Gauge: React.FunctionComponent<GaugeProps> = (props: GaugeProps) => {
-  const descriptor = useVariableDescriptor<INumberDescriptor>(props.variable);
+  // const descriptor = useVariableDescriptor<INumberDescriptor>(props.variable);
+  const descriptor = useScript(
+    props.variable ? props.variable.content : '',
+  ) as ISNumberDescriptor;
   const instance = useVariableInstance(descriptor);
   if (descriptor === undefined || instance === undefined) {
     return <pre>Not found: {props.variable}</pre>;
@@ -124,7 +128,7 @@ const Gauge: React.FunctionComponent<GaugeProps> = (props: GaugeProps) => {
         />
       </svg>
       <div className={textStyle}>
-        <div>{TranslatableContent.toString(descriptor.label)}</div>
+        <div>{descriptor.label}</div>
         <div>{instance.value}</div>
       </div>
     </div>
@@ -137,7 +141,12 @@ registerComponent(
     'Gauge',
     'tachometer-alt',
     {
-      variable: schemaProps.script('Variable', false, ['ISNumberDescriptor']),
+      variable: schemaProps.script(
+        'Variable',
+        false,
+        ['ISNumberDescriptor'],
+        'GET',
+      ),
       min: schemaProps.number('Min', false),
       max: schemaProps.number('Max', false),
       neutralValue: schemaProps.number('Neutral value', false),

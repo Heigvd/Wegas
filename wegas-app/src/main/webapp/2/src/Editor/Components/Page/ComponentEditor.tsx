@@ -6,6 +6,7 @@ import { usePageComponentStore } from '../../../Components/PageComponents/compon
 import { cx } from 'emotion';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { BaseView, Schema } from 'jsoninput/typings/types';
+import { wlog } from '../../../Helper/wegaslog';
 
 interface EditorProps<T = WegasComponent['props']> {
   entity: T;
@@ -27,7 +28,6 @@ async function WindowedEditor({
   schema,
   update,
   actions = [],
-  path,
   error,
 }: EditorProps) {
   const [Form] = await Promise.all<typeof import('../Form')['Form']>([
@@ -45,7 +45,6 @@ async function WindowedEditor({
       <Form
         entity={entity}
         update={value => update && update(value)}
-        path={path}
         actions={actions}
         schema={schema}
       />

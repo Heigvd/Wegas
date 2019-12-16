@@ -10,7 +10,7 @@ registerComponent(
     'List',
     'bars',
     {
-      children: schemaProps.hidden(true),
+      children: schemaProps.hidden(undefined, true),
       style: schemaProps.code('Style', false, 'JSON'),
       className: schemaProps.string('ClassName', false),
       horizontal: schemaProps.boolean('Horizontal', false),

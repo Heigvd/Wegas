@@ -9,7 +9,7 @@ registerComponent(
     'IconButton',
     'cube',
     {
-      icon: schemaProps.select('Icon', Object.keys(icons)),
+      icon: schemaProps.select('Icon', true, Object.keys(icons)),
       label: schemaProps.string('Label', false),
       onClick: schemaProps.script('onClick', false),
       onMouseDown: schemaProps.script('onMouseDown', false),
@@ -19,7 +19,7 @@ registerComponent(
       tooltip: schemaProps.string('Tooltip', false),
       tabIndex: schemaProps.number('Tab index', false),
       prefixedLabel: schemaProps.boolean('Prefixed label', false),
-      type: schemaProps.select('Type', ['submit', 'reset'], false),
+      type: schemaProps.select('Type', false, ['submit', 'reset']),
     },
     [],
     () => ({

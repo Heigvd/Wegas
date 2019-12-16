@@ -1,4 +1,7 @@
-import { CodeLanguage } from '../../Editor/Components/FormView/Script';
+import {
+  CodeLanguage,
+  ScriptMode,
+} from '../../Editor/Components/FormView/Script';
 
 type SchemaPrimitives =
   | 'boolean'
@@ -15,20 +18,22 @@ type SchemaLayouts = 'inline' | 'shortInline';
 
 export const schemaProps = {
   hidden: (
+    label?: string,
+    required: boolean = true,
     isChildren: boolean = false,
     type: SchemaPrimitives = 'array',
-    required: boolean = true,
   ) => ({
     required,
     isChildren,
     type,
     view: {
+      label,
       index: 0,
       type: 'hidden',
     },
   }),
   boolean: (
-    label: string,
+    label?: string,
     required: boolean = true,
     value?: boolean,
     readOnly: boolean = false,
@@ -46,7 +51,7 @@ export const schemaProps = {
     },
   }),
   number: (
-    label: string,
+    label?: string,
     required: boolean = true,
     value?: number,
     readOnly: boolean = false,
@@ -68,7 +73,7 @@ export const schemaProps = {
     },
   }),
   string: (
-    label: string,
+    label?: string,
     required: boolean = true,
     value?: string,
     featureLevel: FeatureLevel = 'DEFAULT',
@@ -86,9 +91,10 @@ export const schemaProps = {
     },
   }),
   script: (
-    label: string,
+    label?: string,
     required: boolean = true,
     scriptableClassFilter: WegasScriptEditorReturnTypeName[] = [],
+    mode: ScriptMode = 'SET',
     language?: 'JavaScript' | 'JSON' | 'TypeScript' | 'CSS',
     value?: string,
     featureLevel: FeatureLevel = 'DEFAULT',
@@ -108,13 +114,13 @@ export const schemaProps = {
       featureLevel,
       index,
       label,
-      mode: 'SET',
-      type: 'script',
+      mode,
+      type: 'fonkyScript',
       scriptableClassFilter,
     },
   }),
   code: (
-    label: string,
+    label?: string,
     required: boolean = true,
     language: CodeLanguage = 'JavaScript',
     value?: string,
@@ -133,9 +139,9 @@ export const schemaProps = {
     },
   }),
   select: (
-    label: string,
-    values: readonly string[],
+    label?: string,
     required: boolean = true,
+    values: readonly string[] = [],
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
   ) => ({
@@ -151,9 +157,9 @@ export const schemaProps = {
     },
   }),
   variable: (
-    label: string,
-    classFilter: WegasClassNames[] = [],
+    label?: string,
     required: boolean = true,
+    classFilter: WegasClassNames[] = [],
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
   ) => ({

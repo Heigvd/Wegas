@@ -7,7 +7,9 @@ import Textarea from './Textarea';
 import BooleanView from './Boolean';
 import Select from './Select';
 import ArrayWidget from './Array';
-import { Script, Code } from './Script';
+import { Script } from './Script';
+import { Script as FunkyScript } from './Script/Script';
+import { Code } from './Code';
 import { TreeVariableSelect } from './TreeVariableSelect';
 import translatable from './translatable';
 import EntityArrayFieldSelect from './EntityArrayFieldSelect';
@@ -29,6 +31,7 @@ const DEFINED_VIEWS = {
   html: LabeledHTMLEditor,
   i18nhtml: translatable(LabeledHTMLEditor),
   script: Script,
+  fonkyScript: FunkyScript,
   code: Code,
   variableselect: TreeVariableSelect,
   entityarrayfieldselect: EntityArrayFieldSelect,

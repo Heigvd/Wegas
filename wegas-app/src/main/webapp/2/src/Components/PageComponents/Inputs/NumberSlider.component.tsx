@@ -101,11 +101,11 @@ registerComponent(
     'NumberSlider',
     'sliders-h',
     {
-      variable: schemaProps.variable('Variable', ['NumberDescriptor'], false),
+      variable: schemaProps.variable('Variable', true, ['NumberDescriptor']),
       max: schemaProps.number('Max', false),
       min: schemaProps.number('Min', false),
       steps: schemaProps.number('Steps', false),
-      displayValues: schemaProps.select('Display value', displayModes, false),
+      displayValues: schemaProps.select('Display value', false, displayModes),
       disabled: schemaProps.boolean('Disabled', false),
       trackStyle: schemaProps.code('Track style', false, 'JSON'),
       activePartStyle: schemaProps.code('Active part style', false, 'JSON'),

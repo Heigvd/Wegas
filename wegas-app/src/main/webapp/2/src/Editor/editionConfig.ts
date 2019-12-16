@@ -8,21 +8,23 @@ import { ThunkResult } from '../data/store';
 
 export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 
+export interface WegasMethod {
+  label: string;
+  parameters: (Schema<AvailableViews> & {
+    type:
+      | 'string'
+      | 'number'
+      | 'array'
+      | 'object'
+      | 'boolean'
+      | 'identifier'
+      | 'null';
+  })[];
+  returns?: 'number' | 'string' | 'boolean';
+}
+
 export interface MethodConfig {
-  [method: string]: {
-    label: string;
-    parameters: (Schema<AvailableViews> & {
-      type:
-        | 'string'
-        | 'number'
-        | 'array'
-        | 'object'
-        | 'boolean'
-        | 'identifier'
-        | 'null';
-    })[];
-    returns?: 'number' | 'string' | 'boolean';
-  };
+  [method: string]: WegasMethod;
 }
 
 /**
