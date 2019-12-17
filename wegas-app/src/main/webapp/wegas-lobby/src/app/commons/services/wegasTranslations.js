@@ -1418,6 +1418,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Facilitate the " + keywords.session.singular.en,
                             'fr': "Animer la " + keywords.session.singular.fr
                         },
+                        'TRAINER-CARD-VIEW-PLAYING-BTN': {
+                            'en': "View playing " + keywords.session.singular.en,
+                            'fr': "Voir la " + keywords.session.singular.fr
+                        },
                         'TRAINER-MODALE-USERS-TAB-PLAYER': {
                             'en': startSentence(keywords.player.plural.en),
                             'fr': startSentence(keywords.player.plural.fr)
