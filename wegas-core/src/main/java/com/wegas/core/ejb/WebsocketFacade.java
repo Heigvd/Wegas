@@ -309,7 +309,8 @@ public class WebsocketFacade {
      *
      * @param dispatchedEntities
      * @param destroyedEntities
-     * @param socketId           Client's socket id. Prevent that specific client to receive this particular message
+     * @param socketId           Client's socket id. Prevent that specific client to receive this
+     *                           particular message
      */
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
         final Map<String, List<AbstractEntity>> destroyedEntities,
@@ -618,10 +619,10 @@ public class WebsocketFacade {
     }
 
     @Asynchronous
-    public void touchOnlineUser(Long userId) {
+    public void touchOnlineUser(Long userId, Long playerId) {
         if (userId != null) {
             // do not use lambda since
-            onlineUsers.invoke(userId, new OnlineUserToucher());
+            onlineUsers.invoke(userId, new OnlineUserToucher(playerId));
         }
     }
 
@@ -850,13 +851,18 @@ public class WebsocketFacade {
     public static class OnlineUserToucher implements EntryProcessor<Long, OnlineUser, Object>, Serializable {
 
         private static final long serialVersionUID = 1L;
+        private final Long playerId;
+
+        public OnlineUserToucher(Long playerId) {
+            this.playerId = playerId;
+        }
 
         @Override
         public Object process(MutableEntry<Long, OnlineUser> entry, Object... arguments) throws EntryProcessorException {
             if (entry != null) {
                 OnlineUser value = entry.getValue();
                 if (value != null) {
-                    value.touch();
+                    value.touch(playerId);
                     entry.setValue(value);
                 }
             }

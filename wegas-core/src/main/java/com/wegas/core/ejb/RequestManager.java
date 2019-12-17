@@ -1114,7 +1114,8 @@ public class RequestManager implements RequestManagerI {
         }
 
         if (currentUser != null) {
-            websocketFacade.touchOnlineUser(currentUser.getId());
+            websocketFacade.touchOnlineUser(currentUser.getId(), 
+               currentPlayer != null ? currentPlayer.getId() : null);
         }
 
         if (this.currentScriptContext != null) {
