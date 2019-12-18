@@ -3,22 +3,19 @@ import {
   Statement,
   Expression,
   CallExpression,
-  SpreadElement,
-  ExpressionStatement,
-  MemberExpression,
-  Identifier,
   StringLiteral,
   BinaryExpression,
   Literal,
-  program,
+  NumericLiteral,
+  isCallExpression,
+  isMemberExpression,
+  isIdentifier,
+  isBinaryExpression,
+  isExpressionStatement,
+  isStringLiteral,
 } from '@babel/types';
 import generate from '@babel/generator';
-import {
-  ScriptView,
-  scriptIsCondition,
-  scriptEditStyle,
-  ScriptMode,
-} from './Script';
+import { ScriptView, scriptIsCondition, scriptEditStyle } from './Script';
 import {
   getMethodConfig,
   WegasMethod,
@@ -47,59 +44,41 @@ const expressionEditorStyle = css({
   },
 });
 
-const isExpression = (
-  statement: Statement | Expression,
-): statement is ExpressionStatement => statement.type === 'ExpressionStatement';
-const isCallExpression = (
-  expression: Expression,
-): expression is CallExpression => expression.type === 'CallExpression';
-const isMemberExpression = (
-  expression: Expression,
-): expression is MemberExpression => expression.type === 'MemberExpression';
-const isBinaryExpression = (
-  expression: Expression,
-): expression is BinaryExpression => expression.type === 'BinaryExpression';
 const isLiteralExpression = (expression: Expression): expression is Literal =>
   expression.type === 'BooleanLiteral' ||
   expression.type === 'NullLiteral' ||
   expression.type === 'NumericLiteral' ||
   expression.type === 'StringLiteral';
-const isIdentifierExpression = (
-  expression: Expression,
-): expression is Identifier => expression.type === 'Identifier';
-const isStringLiteral = (
-  expression: Expression | SpreadElement,
-): expression is StringLiteral => expression.type === 'StringLiteral';
+
 const isVariableObject = (expression: Expression) =>
-  isIdentifierExpression(expression) && expression.name === 'Variable';
+  isIdentifier(expression) && expression.name === 'Variable';
 const isFindProperty = (expression: Expression) =>
-  isIdentifierExpression(expression) && expression.name === 'find';
+  isIdentifier(expression) && expression.name === 'find';
 
 // Variable setter methods
-type VariableMethodExpression = Statement & {
-  callee: {
-    object: {
-      arguments: {
-        value: string;
-      }[];
+type VariableMethodExpression = Statement &
+  CallExpression & {
+    callee: {
+      object: {
+        arguments: {
+          value: string;
+        }[];
+      };
+      property: {
+        name: string;
+      };
     };
-    property: {
-      name: string;
-    };
+    arguments: Expression[];
   };
-  arguments: {
-    value: unknown;
-  }[];
-};
 
 type VariableMethodStatement = Statement & {
   expression: VariableMethodExpression;
 };
 
 const isVariableMethodStatement = (
-  statement: Statement | Expression,
+  statement: Expression | Statement,
 ): statement is VariableMethodStatement =>
-  isExpression(statement) &&
+  isExpressionStatement(statement) &&
   isCallExpression(statement.expression) &&
   isMemberExpression(statement.expression.callee) &&
   isCallExpression(statement.expression.callee.object) &&
@@ -108,7 +87,7 @@ const isVariableMethodStatement = (
   isFindProperty(statement.expression.callee.object.callee.property) &&
   statement.expression.callee.object.arguments.length === 2 &&
   isStringLiteral(statement.expression.callee.object.arguments[1]) &&
-  isIdentifierExpression(statement.expression.callee.property);
+  isIdentifier(statement.expression.callee.property);
 const getVariable = (expression: VariableMethodExpression) =>
   expression.callee.object.arguments[1].value;
 const getMethodName = (expression: VariableMethodExpression) =>
@@ -117,8 +96,19 @@ const getMethodName = (expression: VariableMethodExpression) =>
 const listToObject: <T>(list: T[]) => { [id: string]: T } = list =>
   list.reduce((o, p, i) => ({ ...o, [i]: p }), {});
 
-const getParameters = (expression: VariableMethodExpression) =>
-  listToObject(expression.arguments.map(a => a.value));
+const getParameters = (expression: CallExpression) =>
+  listToObject(
+    expression.arguments.map(a => {
+      switch (a.type) {
+        case 'StringLiteral':
+          return (a as StringLiteral).value;
+        case 'NumericLiteral':
+          return (a as NumericLiteral).value;
+        default:
+          return generate(a).code;
+      }
+    }),
+  );
 
 const generateParameterSchema = (parameters: WegasMethodParameter[]) =>
   parameters.reduce(
@@ -127,7 +117,8 @@ const generateParameterSchema = (parameters: WegasMethodParameter[]) =>
       [String(i)]: {
         ...p,
         index: i + 2,
-        type: p.type === 'identifier' ? 'string' : p.type,
+        type: p.type === 'number' ? 'number' : 'string',
+        formated: p.type !== 'string',
         view: { ...p.view, label: 'Argument ' + i, index: i + 2 },
       },
     }),
@@ -137,7 +128,7 @@ const generateParameterSchema = (parameters: WegasMethodParameter[]) =>
 // Condition methods
 type ConditionExpressionType = Statement & {
   expression: BinaryExpression & {
-    left: VariableMethodExpression;
+    left: CallExpression & VariableMethodExpression;
     right: {
       value: unknown;
     };
@@ -147,7 +138,7 @@ type ConditionExpressionType = Statement & {
 const isConditionStatement = (
   statement: Statement,
 ): statement is ConditionExpressionType =>
-  isExpression(statement) &&
+  isExpressionStatement(statement) &&
   isBinaryExpression(statement.expression) &&
   isVariableMethodStatement({
     ...statement,
@@ -196,6 +187,7 @@ export function ExpressionEditor({
   scriptableClassFilter,
   onChange,
 }: ExpressionEditorProps) {
+  const oldScript = React.useRef('');
   const [methods, setMethods] = React.useState<{
     [key: string]: WegasMethod;
   }>();
@@ -207,7 +199,6 @@ export function ExpressionEditor({
       ? defaultConditionAttributes
       : defaultAttributes,
   );
-
   const variable = useVariableDescriptor(scriptAttributes.variableName);
   const scriptMethodName = scriptAttributes.methodName;
   const scriptMethod =
@@ -215,7 +206,10 @@ export function ExpressionEditor({
       ? methods[scriptMethodName]
       : undefined;
 
-  const schema = {
+  const schema: {
+    description: string;
+    properties: { [name: string]: ReturnType<ValueOf<typeof schemaProps>> };
+  } = {
     description: 'booleanExpressionSchema',
     properties: {
       variableName: schemaProps.variable(
@@ -240,7 +234,7 @@ export function ExpressionEditor({
             operator: schemaProps.select(
               'operator',
               false,
-              Object.keys(booleanOperators).map(
+              Object.keys(booleanOperators).filter(k=>scriptMethod.returns === "number" || k === "===").map(
                 (k: keyof typeof booleanOperators) => ({
                   label: booleanOperators[k].label,
                   value: k,
@@ -253,7 +247,7 @@ export function ExpressionEditor({
             comparator: schemaProps.custom(
               'comparator',
               false,
-              scriptMethod && scriptMethod.returns,
+              scriptMethod.returns,
               undefined,
               scriptMethod.parameters.length + 3,
             ),
@@ -264,13 +258,17 @@ export function ExpressionEditor({
 
   const onScriptEditorChange = React.useCallback(
     (value: string) => {
-      try {
-        const newStatement = parse(value, { sourceType: 'script' }).program
-          .body;
-        setError(undefined);
-        onChange && onChange(newStatement);
-      } catch (e) {
-        setError(e.message);
+      if (oldScript.current !== value) {
+        oldScript.current = value;
+        try {
+          const newStatement = parse(value, { sourceType: 'script' }).program
+            .body;
+          setError(undefined);
+          wlog(value);
+          onChange && onChange(newStatement);
+        } catch (e) {
+          setError(e.message);
+        }
       }
     },
     [onChange],
@@ -280,23 +278,25 @@ export function ExpressionEditor({
     if (statement) {
       if (scriptIsCondition(mode, scriptableClassFilter)) {
         if (isConditionStatement(statement)) {
-          setScriptAttributes({
+          const newScriptAttributes = {
             variableName: getVariable(statement.expression.left),
             methodName: getMethodName(statement.expression.left),
             ...getParameters(statement.expression.left),
             operator: getOperator(statement.expression),
             comparator: statement.expression.right.value,
-          });
+          };
+          setScriptAttributes(newScriptAttributes);
         } else {
           setError('Cannot be parsed as a condition');
         }
       } else {
         if (isVariableMethodStatement(statement)) {
-          setScriptAttributes({
+          const newScriptAttributes = {
             variableName: getVariable(statement.expression),
             methodName: getMethodName(statement.expression),
             ...getParameters(statement.expression),
-          });
+          };
+          setScriptAttributes(newScriptAttributes);
         } else {
           setError('Cannot be parsed as a variable statement');
         }
@@ -307,39 +307,65 @@ export function ExpressionEditor({
   React.useEffect(() => {
     if (variable) {
       getMethodConfig(variable).then(res => {
-        setMethods(Object.keys(res).filter(k => mode === "GET" ? res[k].returns !== undefined : res[k].returns === undefined).reduce((o,k)=>({...o,[k]:res[k]}),{}));
+        setMethods(
+          Object.keys(res)
+            .filter(k =>
+              mode === 'GET'
+                ? res[k].returns !== undefined
+                : res[k].returns === undefined,
+            )
+            .reduce((o, k) => ({ ...o, [k]: res[k] }), {}),
+        );
       });
     } else {
       setMethods(undefined);
     }
   }, [variable, mode]);
 
-  React.useEffect(() => {
-    let script = '';
-    script = `Variable.find(gameModel,${
-      scriptAttributes.variableName
-        ? `'${scriptAttributes.variableName}'`
-        : 'undefined'
-    })`;
-
-    if (scriptAttributes.methodName) {
-      const parameters = Object.values(
-        omit(scriptAttributes, Object.keys(defaultConditionAttributes)),
-      ).map(p => `${typeof p === 'string' ? `'${p}'` : p},`);
-      script += `.${scriptAttributes.methodName}(${parameters})`;
-      if (scriptIsCondition(mode, scriptableClassFilter)) {
-        if (scriptAttributes.operator) {
-          script += ` ${scriptAttributes.operator} ${
-            typeof scriptAttributes.comparator === 'string'
-              ? `'${scriptAttributes.comparator}`
-              : scriptAttributes.comparator
-          }`;
-          // onScriptEditorChange(script);
+  const onEditorChange = React.useCallback(
+    (scriptAttributes: IAttributes | IConditionAttributes) => {
+      let script = '';
+      script = `Variable.find(gameModel,${
+        scriptAttributes.variableName
+          ? `'${scriptAttributes.variableName}'`
+          : 'undefined'
+      })`;
+      if (scriptAttributes.methodName && methods !== undefined) {
+        const parameters = Object.keys(
+          omit(schema.properties, Object.keys(defaultConditionAttributes)),
+        ).map(k => {
+          const param = scriptAttributes[k as keyof typeof scriptAttributes];
+          const properties = schema.properties[k] as {
+            type?: string;
+            formated?: boolean;
+          };
+          return properties.type === 'string' && !properties.formated
+            ? `'${param}'`
+            : param;
+        });
+        script += `.${scriptAttributes.methodName}(${parameters})`;
+        if (scriptIsCondition(mode, scriptableClassFilter)) {
+          if (scriptAttributes.operator) {
+            script += ` ${scriptAttributes.operator} ${
+              typeof scriptAttributes.comparator === 'string'
+                ? `'${scriptAttributes.comparator}`
+                : scriptAttributes.comparator
+            }`;
+            onScriptEditorChange(script);
+          }
+        } else {
+          onScriptEditorChange(script);
         }
       }
-    }
-    wlog(script);
-  }, [scriptAttributes, mode, scriptableClassFilter]);
+    },
+    [
+      mode,
+      scriptableClassFilter,
+      onScriptEditorChange,
+      methods,
+      schema.properties,
+    ],
+  );
 
   return (
     <div className={expressionEditorStyle}>
@@ -347,7 +373,7 @@ export function ExpressionEditor({
         <div className={scriptEditStyle}>
           <StyledLabel type="error" value={error} duration={3000} />
           <WegasScriptEditor
-            value={statement ? generate(program([statement])).code : ''}
+            value={statement ? generate(statement).code : ''}
             onChange={onScriptEditorChange}
           />
         </div>
@@ -356,7 +382,7 @@ export function ExpressionEditor({
           value={pick(scriptAttributes, Object.keys(schema.properties))}
           schema={schema}
           onChange={v => {
-            wlog(v);
+            onEditorChange(v);
             setScriptAttributes(v);
           }}
         />

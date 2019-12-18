@@ -36,10 +36,11 @@ export function Labeled({ label, children, description, index }: LabeledProps) {
         htmlFor={internalId.current}
         title={description}
       >
-        {label}
-        {currentFeatures.includes('ADVANCED') && index !== undefined
-          ? ` (${index})`
-          : ''}
+        {`${label ? label : ''} ${
+          currentFeatures.includes('ADVANCED') && index != null
+            ? `(${index})`
+            : ''
+        }`}
       </label>
     ),
   });

@@ -9,8 +9,9 @@ import { store } from '../../../../data/store';
 import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../../data/selectors';
 import { WyswygScriptEditor } from './WyswygScriptEditor';
-import { Statement } from '@babel/types';
+import { Statement, program } from '@babel/types';
 import { parse } from '@babel/parser';
+import generate from '@babel/generator';
 
 export const scriptEditStyle = css({
   height: '5em',
@@ -77,18 +78,17 @@ export function Script({
       if (timer.current !== undefined) {
         clearTimeout(timer.current);
       }
-      timer.current = setTimeout(
-        () =>
-          setScriptContent(() => {
-            onChange({
-              '@class': 'Script',
-              language: 'JavaScript',
-              content: value,
-            });
-            return value;
-          }),
-        100,
-      );
+      timer.current = setTimeout(() => {
+        onChange({
+          '@class': 'Script',
+          language: 'JavaScript',
+          content: value,
+        });
+
+        setScriptContent(() => {
+          return value;
+        });
+      }, 100);
     },
     [onChange],
   );
@@ -171,7 +171,7 @@ export function Script({
               ) : (
                 <WyswygScriptEditor
                   expressions={expressions}
-                  onChange={setExpressions}
+                  onChange={e => onCodeChange(generate(program(e)).code)}
                   mode={view.mode}
                 />
               )}

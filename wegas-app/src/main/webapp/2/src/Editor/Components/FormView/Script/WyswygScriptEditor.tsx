@@ -2,6 +2,7 @@ import * as React from 'react';
 import { ScriptView } from './Script';
 import { ExpressionEditor } from './ExpressionEditor';
 import { Statement } from '@babel/types';
+import { wlog } from '../../../../Helper/wegaslog';
 
 interface WyswygScriptEditorProps extends ScriptView {
   expressions: Statement[] | null;
