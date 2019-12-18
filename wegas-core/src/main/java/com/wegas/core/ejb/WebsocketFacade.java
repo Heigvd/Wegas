@@ -177,7 +177,7 @@ public class WebsocketFacade {
             logger.info("send lock  \"{}\" to \"{}\"", token, channel);
             try {
                 pusher.trigger(channel, "LockEvent",
-                        parseJSON("{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"lock\"}"), null);
+                    parseJSON("{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"lock\"}"), null);
             } catch (IOException ex) {
                 logger.error("Fail to send lockEvent");
             }
@@ -196,7 +196,7 @@ public class WebsocketFacade {
             logger.info("send unlock  \"{}\" to \"{}\"", token, channel);
             try {
                 pusher.trigger(channel, "LockEvent",
-                        parseJSON("{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"unlock\"}"), null);
+                    parseJSON("{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"unlock\"}"), null);
             } catch (IOException ex) {
                 logger.error("Fail to send unlockEvent");
             }
@@ -213,7 +213,7 @@ public class WebsocketFacade {
         if (this.pusher != null) {
             try {
                 pusher.trigger(channel, "LifeCycleEvent",
-                        parseJSON("{\"@class\": \"LifeCycleEvent\", \"status\": \"" + status.toString() + "\"}"), socketId);
+                    parseJSON("{\"@class\": \"LifeCycleEvent\", \"status\": \"" + status.toString() + "\"}"), socketId);
             } catch (IOException ex) {
                 logger.error("Fails to parse json");
             }
@@ -239,7 +239,7 @@ public class WebsocketFacade {
         if (this.pusher != null) {
             try {
                 pusher.trigger(channel, "CustomEvent",
-                        parseJSON("{\"@class\": \"CustomEvent\", \"type\": \"popupEvent\", \"payload\": {\"content\": \"<p>" + message + "</p>\"}}"), socketId);
+                    parseJSON("{\"@class\": \"CustomEvent\", \"type\": \"popupEvent\", \"payload\": {\"content\": \"<p>" + message + "</p>\"}}"), socketId);
             } catch (IOException ex) {
                 logger.error("Fails to send custom event");
             }
@@ -255,7 +255,7 @@ public class WebsocketFacade {
         if (this.pusher != null) {
             try {
                 pusher.trigger(channel, "CustomEvent",
-                        parseJSON("{\"@class\": \"CustomEvent\", \"type\": \"" + objectId + ":LiveUpdate\", \"payload\": " + toJson(entity) + "}"), socketId);
+                    parseJSON("{\"@class\": \"CustomEvent\", \"type\": \"" + objectId + ":LiveUpdate\", \"payload\": " + toJson(entity) + "}"), socketId);
             } catch (IOException ex) {
                 logger.error("Fails to send custom event");
             }
@@ -300,7 +300,7 @@ public class WebsocketFacade {
      * @param destroyedEntities
      */
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
-            final Map<String, List<AbstractEntity>> destroyedEntities) {
+        final Map<String, List<AbstractEntity>> destroyedEntities) {
         this.onRequestCommit(dispatchedEntities, destroyedEntities, null);
     }
 
@@ -309,12 +309,12 @@ public class WebsocketFacade {
      *
      * @param dispatchedEntities
      * @param destroyedEntities
-     * @param socketId           Client's socket id. Prevent that specific
-     *                           client to receive this particular message
+     * @param socketId           Client's socket id. Prevent that specific client to receive this
+     *                           particular message
      */
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
-            final Map<String, List<AbstractEntity>> destroyedEntities,
-            final String socketId) {
+        final Map<String, List<AbstractEntity>> destroyedEntities,
+        final String socketId) {
         if (this.pusher == null) {
             return;
         }
@@ -353,8 +353,8 @@ public class WebsocketFacade {
                 propagate(event, audience, socketId);
             }
         } catch (NoSuchMethodException | SecurityException
-                | InstantiationException | IllegalAccessException
-                | IllegalArgumentException | InvocationTargetException ex) {
+            | InstantiationException | IllegalAccessException
+            | IllegalArgumentException | InvocationTargetException ex) {
             logger.error("EVENT INSTANTIATION FAILS");
         }
     }
@@ -519,10 +519,10 @@ public class WebsocketFacade {
                     }
 
                     pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update",
-                            parseJSON(
-                                    // serialise with jackson to exlude unneeded properties
-                                    toJson(newPlayer.getTeam()
-                                    )));
+                        parseJSON(
+                            // serialise with jackson to exlude unneeded properties
+                            toJson(newPlayer.getTeam()
+                            )));
                 } catch (IOException ex) {
                     logger.error("Error while propagating player");
                 }
@@ -533,7 +533,7 @@ public class WebsocketFacade {
     private void fallback(ClientEvent clientEvent, String audience, final String socketId) {
         if (clientEvent instanceof EntityUpdatedEvent) {
             this.propagate(new OutdatedEntitiesEvent(((EntityUpdatedEvent) clientEvent).getUpdatedEntities()),
-                    audience, socketId);
+                audience, socketId);
             //this.outdateEntities(audience, ((EntityUpdatedEvent) clientEvent), socketId);
         } else {
             logger.error("  -> OUTDATE");
@@ -619,10 +619,10 @@ public class WebsocketFacade {
     }
 
     @Asynchronous
-    public void touchOnlineUser(Long userId) {
+    public void touchOnlineUser(Long userId, Long playerId) {
         if (userId != null) {
             // do not use lambda since
-            onlineUsers.invoke(userId, new OnlineUserToucher());
+            onlineUsers.invoke(userId, new OnlineUserToucher(playerId));
         }
     }
 
@@ -791,8 +791,7 @@ public class WebsocketFacade {
     }
 
     /**
-     * Say to admin's who are currently logged in that some users connect or
-     * disconnect
+     * Say to admin's who are currently logged in that some users connect or disconnect
      */
     private void propagateOnlineUsers() {
         Result trigger = pusher.trigger(WebsocketFacade.ADMIN_CHANNEL, "online-users", "");
@@ -847,13 +846,18 @@ public class WebsocketFacade {
     public static class OnlineUserToucher implements EntryProcessor<Long, OnlineUser, Object>, Serializable {
 
         private static final long serialVersionUID = 1L;
+        private final Long playerId;
+
+        public OnlineUserToucher(Long playerId) {
+            this.playerId = playerId;
+        }
 
         @Override
         public Object process(MutableEntry<Long, OnlineUser> entry, Object... arguments) throws EntryProcessorException {
             if (entry != null) {
                 OnlineUser value = entry.getValue();
                 if (value != null) {
-                    value.touch();
+                    value.touch(playerId);
                     entry.setValue(value);
                 }
             }

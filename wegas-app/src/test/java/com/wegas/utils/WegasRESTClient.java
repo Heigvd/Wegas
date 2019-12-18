@@ -139,7 +139,7 @@ public class WegasRESTClient {
         }
     }
 
-    public <T> T get(String url, TypeReference valueTypeRef) throws IOException {
+    public <T> T get(String url, TypeReference<T> valueTypeRef) throws IOException {
         String get = this.get(url);
         if (!Helper.isNullOrEmpty(get)) {
             return getObjectMapper().readValue(get, valueTypeRef);
@@ -199,7 +199,7 @@ public class WegasRESTClient {
         return entity;
     }
 
-    public <T> T post(String url, Object object, TypeReference valueType) throws IOException {
+    public <T> T post(String url, Object object, TypeReference<T> valueType) throws IOException {
         String post = this.post(url, object);
         if (!Helper.isNullOrEmpty(post)) {
             return getObjectMapper().readValue(post, valueType);

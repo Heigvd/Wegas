@@ -30,12 +30,24 @@
                 </div>
             </div>
             <div class="card__actions">
-                <div class="card-be button button--small button--round button--default-reverse button--label-off button--play"
+                <a ng-if="user.playerId" class="card-be button button--extra-small button--round button--default-reverse button--label-off button--trainer" 
+                   title="{{'TRAINER-CARD-MONITORING-BTN'| translate}}" 
+                   href="{{ServiceURL}}host.html?id={{user.playerId}}" target="_blank">
+                    <span class="button__label">{{'TRAINER-CARD-MONITORING-BTN'| translate}}</span>
+                </a>
+
+                <a ng-if="user.playerId" class="card-be button button--extra-small button--round button--default-reverse button--label-off button--eye"
+                   title="{{'TRAINER-CARD-VIEW-PLAYING-BTN'| translate}}"
+                   href="{{ServiceURL}}game-lock.html?id={{user.playerId}}" target="_blank">
+                    <span class="button__label">{{'TRAINER-CARD-MONITORING-BTN'| translate}}</span>
+                </a>
+
+                <div class="card-be button button--extra-small button--round button--default-reverse button--label-off button--play"
                      title="Impersonate !"
                      ng-click="adminWhoCtrl.beByAccountId(user.mainAccountId, user.fullname)">
                     <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN'| translate}}</span>
                 </div>
-                <div class="card-be button button--small button--round button--default-reverse button--label-off button--customize"
+                <div class="card-be button button--extra-small button--round button--default-reverse button--label-off button--customize"
                      title="{{'ADMIN-USERS-CARD-EDIT-BTN'| translate}}"
                      ui-sref="wegas.private.admin.users.edit({id: user.userId})">
                     <span class="button__label">{{'ADMIN-USERS-CARD-EDIT-BTN'| translate}}</span>

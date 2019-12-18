@@ -223,26 +223,27 @@ YUI.add('wegas-app', function(Y) {
                 }
 
                 Y.one("body").on("key", function(e) { // detect ctrl+§ key
-                    if (e.ctrlKey || e.metaKey) {
-                        var body = e.currentTarget;
-                        if (e.shiftKey) {
-                            body.toggleClass("wegas-internalmode");
-                            //Toggle stdmode class on body (hides any wegas-advancedfeature)
-                        } else {
-                            body.toggleClass("wegas-advancedmode");
-                        }
+                    // top left key only
+                    if (e._event.code === "Backquote") {
+                        if (e.ctrlKey || e.metaKey) {
+                            var body = e.currentTarget;
+                            if (e.altKey) {
+                                body.toggleClass("wegas-internalmode");
+                                //Toggle stdmode class on body (hides any wegas-advancedfeature)
+                            } else {
+                                body.toggleClass("wegas-advancedmode");
+                            }
 
-                        if (body.hasClass("wegas-internalmode") || body.hasClass("wegas-advancedmode")) {
-                            body.removeClass("wegas-stdmode");
-                            Y.config.win.Y = Y; // Allow access to Y instance
-                        } else {
-                            body.addClass("wegas-stdmode");
-                            Y.config.win.Y = undefined; // remove acces to Y instance
+                            if (body.hasClass("wegas-internalmode") || body.hasClass("wegas-advancedmode")) {
+                                body.removeClass("wegas-stdmode");
+                                Y.config.win.Y = Y; // Allow access to Y instance
+                            } else {
+                                body.addClass("wegas-stdmode");
+                                Y.config.win.Y = undefined; // remove acces to Y instance
+                            }
                         }
-
                     }
-                    // handle top left key for, at least, en_US, fr_CH and fr_FR keyboard layout
-                }, "down:191,192,222", this);
+                }, "down:", this);
             });
         },
         resume: function() {
