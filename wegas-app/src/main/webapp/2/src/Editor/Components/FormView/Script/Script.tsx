@@ -8,16 +8,9 @@ import { css } from 'emotion';
 import { store } from '../../../../data/store';
 import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../../data/selectors';
-import { useScript } from '../../../../Components/Hooks/useScript';
 import { WyswygScriptEditor } from './WyswygScriptEditor';
-
-function useDebounce(fn: () => void, duration: number = 100) {
-  const timer = React.useRef<NodeJS.Timeout>();
-  if (timer.current !== undefined) {
-    clearTimeout(timer.current);
-  }
-  timer.current = setTimeout(fn, duration);
-}
+import { Statement } from '@babel/types';
+import { parse } from '@babel/parser';
 
 export const scriptEditStyle = css({
   height: '5em',
@@ -34,10 +27,15 @@ export type CodeLanguage =
   | 'JSON'
   | 'PlainText';
 
+export const scriptIsCondition = (
+  mode?: ScriptMode,
+  scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
+) => mode === 'GET' && scriptableClassFilter === undefined;
+
 export interface ScriptView {
   mode?: ScriptMode;
   singleExpression?: boolean;
-  clientScript?: boolean;
+  // clientScript?: boolean;
   scriptableClassFilter?: WegasScriptEditorReturnTypeName[];
 }
 
@@ -56,21 +54,21 @@ export function Script({
   onChange,
 }: ScriptProps) {
   const timer = React.useRef<NodeJS.Timeout>();
-  const [error, setError] = React.useState();
+  const [error, setError] = React.useState(errorMessage);
   const [srcMode, setSrcMode] = React.useState(false);
-  const [scriptContent, setScriptContent] = React.useState(
-    value == null ? '' : typeof value === 'string' ? value : value.content,
+  const [scriptContent, setScriptContent] = React.useState('');
+  const [expressions, setExpressions] = React.useState<Statement[] | null>(
+    null,
   );
+
+  const isServerScript = view.mode === 'SET';
 
   const testScript = React.useCallback(() => {
     try {
-      //   if (view.clientScript) {
-      //     useScript(scriptContent);
-      //   } else {
       store.dispatch(runScript(scriptContent, Player.selectCurrent(), context));
-      //   }
+      setError(undefined);
     } catch (error) {
-      setError(error.message);
+      setError([error.message]);
     }
   }, [context, scriptContent]);
 
@@ -91,37 +89,74 @@ export function Script({
           }),
         100,
       );
-
-      //   useDebounce(() =>
-      //     setScriptContent(() => {
-      //       onChange({
-      //         '@class': 'Script',
-      //         language: 'JavaScript',
-      //         content: value,
-      //       });
-      //       return value;
-      //     }),
-      //   );
     },
     [onChange],
   );
 
+  React.useEffect(() => {
+    setError(errorMessage);
+  }, [errorMessage]);
+
+  React.useEffect(() => {
+    if (error !== undefined && error.length > 0) {
+      setSrcMode(true);
+    }
+  }, [error]);
+
+  React.useEffect(() => {
+    setScriptContent(
+      value == null ? '' : typeof value === 'string' ? value : value.content,
+    );
+  }, [value]);
+
+  React.useEffect(() => {
+    try {
+      if (scriptContent === '') {
+        setExpressions(null);
+      } else {
+        const newScriptContent = scriptIsCondition(
+          view.mode,
+          view.scriptableClassFilter,
+        )
+          ? scriptContent.replace(/&&/gm, ';')
+          : scriptContent;
+        const newExpressions = parse(newScriptContent, { sourceType: 'script' })
+          .program.body;
+        if (view.singleExpression) {
+          if (newExpressions.length > 1) {
+            throw Error('Too much expressions for a single expression script');
+          }
+        }
+        setExpressions(newExpressions);
+      }
+      setError(undefined);
+    } catch (e) {
+      setError([e.message]);
+    }
+  }, [
+    scriptContent,
+    view.singleExpression,
+    view.mode,
+    view.scriptableClassFilter,
+  ]);
+
   return (
-    <CommonViewContainer
-      view={view}
-      errorMessage={error ? [error] : errorMessage}
-    >
+    <CommonViewContainer view={view} errorMessage={error}>
       <Labeled label={view.label} description={view.description} /*{...view}*/>
         {({ labelNode }) => {
           return (
             <>
               {labelNode}
-              <IconButton
-                icon="code"
-                pressed={error}
-                onClick={() => setSrcMode(sm => !sm)}
-              />
-              <IconButton icon="play" onClick={testScript} />
+              {!error && (
+                <IconButton
+                  icon="code"
+                  pressed={error !== undefined}
+                  onClick={() => setSrcMode(sm => !sm)}
+                />
+              )}
+              {isServerScript && (
+                <IconButton icon="play" onClick={testScript} />
+              )}
               {srcMode ? (
                 <div className={scriptEditStyle}>
                   <WegasScriptEditor
@@ -135,8 +170,8 @@ export function Script({
                 </div>
               ) : (
                 <WyswygScriptEditor
-                  script={scriptContent}
-                  onChange={onChange}
+                  expressions={expressions}
+                  onChange={setExpressions}
                   mode={view.mode}
                 />
               )}

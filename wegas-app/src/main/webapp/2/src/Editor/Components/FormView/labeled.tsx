@@ -1,14 +1,17 @@
 import * as React from 'react';
 import { css } from 'emotion';
+import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
 
 export interface LabeledView {
   label?: string;
   description?: string;
+  index?: number;
 }
 interface LabeledProps extends LabeledView {
-  children: (
-    inputProps: { inputId: string; labelNode: JSX.Element },
-  ) => React.ReactNode;
+  children: (inputProps: {
+    inputId: string;
+    labelNode: JSX.Element;
+  }) => React.ReactNode;
 }
 const titleStyle = css({
   '[title]': {
@@ -19,22 +22,25 @@ const titleStyle = css({
   },
 });
 let id = 0;
+
 /** Handle view's label and description  */
-export class Labeled extends React.Component<LabeledProps> {
-  id: string;
-  constructor(props: LabeledProps) {
-    super(props);
-    this.id = `__labelInput__${id++}`;
-  }
-  render() {
-    const { label, children, description } = this.props;
-    return children({
-      inputId: this.id,
-      labelNode: (
-        <label className={titleStyle} htmlFor={this.id} title={description}>
-          {label}
-        </label>
-      ),
-    });
-  }
+export function Labeled({ label, children, description, index }: LabeledProps) {
+  const internalId = React.useRef(`__labelInput__${id++}`);
+  const { currentFeatures } = React.useContext(featuresCTX);
+
+  return children({
+    inputId: internalId.current,
+    labelNode: (
+      <label
+        className={titleStyle}
+        htmlFor={internalId.current}
+        title={description}
+      >
+        {label}
+        {currentFeatures.includes('ADVANCED') && index !== undefined
+          ? ` (${index})`
+          : ''}
+      </label>
+    ),
+  });
 }

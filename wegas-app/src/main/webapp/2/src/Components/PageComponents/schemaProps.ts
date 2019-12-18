@@ -2,8 +2,9 @@ import {
   CodeLanguage,
   ScriptMode,
 } from '../../Editor/Components/FormView/Script';
+import { WegasMethod } from '../../Editor/editionConfig';
 
-type SchemaPrimitives =
+type SchemaPrimitive =
   | 'boolean'
   | 'number'
   | 'string'
@@ -14,21 +15,26 @@ type SchemaPrimitives =
   | 'undefined'
   | 'unknown';
 
-type SchemaLayouts = 'inline' | 'shortInline';
+type SchemaLayout = 'inline' | 'shortInline';
+
+export interface SelectItem {
+  label: string;
+  value: unknown;
+}
 
 export const schemaProps = {
   hidden: (
     label?: string,
     required: boolean = true,
     isChildren: boolean = false,
-    type: SchemaPrimitives = 'array',
+    type: SchemaPrimitive = 'array',
   ) => ({
     required,
     isChildren,
     type,
+    index: 0,
     view: {
       label,
-      index: 0,
       type: 'hidden',
     },
   }),
@@ -43,10 +49,11 @@ export const schemaProps = {
     required,
     type: 'boolean',
     value,
+    index,
     view: {
+      index,
       readOnly,
       featureLevel,
-      index,
       label,
     },
   }),
@@ -57,15 +64,16 @@ export const schemaProps = {
     readOnly: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
-    layout: SchemaLayouts = 'shortInline',
+    layout: SchemaLayout = 'shortInline',
   ) => ({
     featureLevel,
     required,
     type: 'number',
     value,
+    index,
     view: {
-      featureLevel,
       index,
+      featureLevel,
       label,
       layout,
       readOnly,
@@ -78,22 +86,47 @@ export const schemaProps = {
     value?: string,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
-    layout: SchemaLayouts = 'shortInline',
+    layout: SchemaLayout = 'shortInline',
   ) => ({
     required,
     type: 'string',
     value,
+    index,
     view: {
+      index,
       layout,
       featureLevel,
-      index,
       label,
+    },
+  }),
+  custom: (
+    label?: string,
+    required: boolean = true,
+    type?: WegasMethod['returns'],
+    value?: number,
+    index: number = 0,
+    readOnly: boolean = false,
+    featureLevel: FeatureLevel = 'DEFAULT',
+    layout: SchemaLayout = 'shortInline',
+  ) => ({
+    featureLevel,
+    required,
+    type,
+    value,
+    index,
+    view: {
+      index,
+      featureLevel,
+      label,
+      layout,
+      readOnly,
+      type,
     },
   }),
   script: (
     label?: string,
     required: boolean = true,
-    scriptableClassFilter: WegasScriptEditorReturnTypeName[] = [],
+    scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
     mode: ScriptMode = 'SET',
     language?: 'JavaScript' | 'JSON' | 'TypeScript' | 'CSS',
     value?: string,
@@ -110,9 +143,10 @@ export const schemaProps = {
             language,
           }
         : value,
+    index,
     view: {
-      featureLevel,
       index,
+      featureLevel,
       label,
       mode,
       type: 'fonkyScript',
@@ -130,9 +164,10 @@ export const schemaProps = {
     required,
     type: 'object',
     value,
+    index,
     view: {
-      featureLevel,
       index,
+      featureLevel,
       label,
       language,
       type: 'code',
@@ -141,21 +176,37 @@ export const schemaProps = {
   select: (
     label?: string,
     required: boolean = true,
-    values: readonly string[] = [],
+    values: readonly (string | SelectItem)[] = [],
+    returnType: SchemaPrimitive = 'string',
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
-  ) => ({
-    enum: values,
-    required,
-    type: 'string',
-    view: {
-      choices: values.map(v => v && { label: v, value: v }),
-      featureLevel,
+  ) => {
+    let enumerated: readonly unknown[] = [];
+    let choices: readonly SelectItem[] = [];
+    if (values.length > 0) {
+      if (typeof values[0] === 'string') {
+        enumerated = values;
+        choices = values.map((v: string) => ({ label: v, value: v }));
+      } else {
+        enumerated = values.map((v: SelectItem) => v.value);
+        choices = values as SelectItem[];
+      }
+    }
+
+    return {
+      enum: enumerated,
+      required,
+      type: returnType,
       index,
-      label,
-      type: 'select',
-    },
-  }),
+      view: {
+        index,
+        choices,
+        featureLevel,
+        label,
+        type: 'select',
+      },
+    };
+  },
   variable: (
     label?: string,
     required: boolean = true,
@@ -165,10 +216,11 @@ export const schemaProps = {
   ) => ({
     required,
     type: 'string',
+    index,
     view: {
+      index,
       classFilter,
       featureLevel,
-      index,
       label,
       type: 'variableselect',
     },

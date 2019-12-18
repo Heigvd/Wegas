@@ -6,7 +6,6 @@ import { usePageComponentStore } from '../../../Components/PageComponents/compon
 import { cx } from 'emotion';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { BaseView, Schema } from 'jsoninput/typings/types';
-import { wlog } from '../../../Helper/wegaslog';
 
 interface EditorProps<T = WegasComponent['props']> {
   entity: T;

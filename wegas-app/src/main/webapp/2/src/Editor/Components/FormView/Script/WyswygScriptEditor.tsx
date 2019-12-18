@@ -1,39 +1,56 @@
 import * as React from 'react';
 import { ScriptView } from './Script';
-import { parse } from '@babel/parser';
-import { wlog } from '../../../../Helper/wegaslog';
 import { ExpressionEditor } from './ExpressionEditor';
+import { Statement } from '@babel/types';
 
 interface WyswygScriptEditorProps extends ScriptView {
-  script: string;
-  onChange: (script: IScript) => void;
+  expressions: Statement[] | null;
+  onChange: (script: Statement[]) => void;
 }
 
 export function WyswygScriptEditor({
-  script,
+  expressions,
   onChange,
   mode,
-  singleExpression,
   scriptableClassFilter,
 }: WyswygScriptEditorProps) {
-  const expressions = parse(script, { sourceType: 'script' }).program.body;
-  if (singleExpression) {
-    if (expressions.length > 1) {
-      throw Error('Too much expressions for a single expression script');
-    }
-  }
+  const onExpressionChange = React.useCallback(
+    (expression: Statement | Statement[], index?: number) => {
+      if (index && expressions) {
+        const newExpressions = [...expressions];
+        newExpressions.splice(
+          index,
+          1,
+          ...(Array.isArray(expression) ? expression : [expression]),
+        );
+        onChange(newExpressions);
+      } else {
+        onChange(Array.isArray(expression) ? expression : [expression]);
+      }
+    },
+    [expressions, onChange],
+  );
 
-  wlog(expressions);
   return (
     <div>
-      {expressions.map((e, i) => (
+      {expressions == null ? (
         <ExpressionEditor
-          key={i}
-          expression={e}
+          statement={null}
           mode={mode}
           scriptableClassFilter={scriptableClassFilter}
+          onChange={onExpressionChange}
         />
-      ))}
+      ) : (
+        expressions.map((e, i) => (
+          <ExpressionEditor
+            key={i}
+            statement={e}
+            mode={mode}
+            scriptableClassFilter={scriptableClassFilter}
+            onChange={statement => onExpressionChange(statement, i)}
+          />
+        ))
+      )}
     </div>
   );
 }

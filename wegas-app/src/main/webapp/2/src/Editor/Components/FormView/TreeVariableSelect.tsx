@@ -138,7 +138,7 @@ export class TreeVSelect extends React.Component<
         view={this.props.view}
         errorMessage={this.props.errorMessage}
       >
-        <Labeled>
+        <Labeled {...this.props.view}>
           {({ labelNode, inputId }) => (
             <div
               onBlur={ev => {

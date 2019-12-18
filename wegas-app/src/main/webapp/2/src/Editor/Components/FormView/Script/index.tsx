@@ -214,6 +214,7 @@ export function Script({
                   <WegasScriptEditor
                     value={editorValue}
                     onBlur={handleChanges}
+                    onChange={handleChanges}
                     minimap={false}
                     noGutter={true}
                     returnType={view.scriptableClassFilter}
