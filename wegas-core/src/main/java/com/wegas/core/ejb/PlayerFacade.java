@@ -364,6 +364,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public List<VariableInstance> getInstances(final Long playerId) {
         Player player = this.find(playerId);
+        requestManager.setPlayer(player);
         Team team = player.getTeam();
         Game game = team.getGame();
         GameModel gameModel = game.getGameModel();
