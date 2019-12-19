@@ -84,7 +84,6 @@ export function Script({
           language: 'JavaScript',
           content: value,
         });
-
         setScriptContent(() => {
           return value;
         });

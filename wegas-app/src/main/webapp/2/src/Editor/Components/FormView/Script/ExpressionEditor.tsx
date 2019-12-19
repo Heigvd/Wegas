@@ -30,6 +30,7 @@ import { parse } from '@babel/parser';
 import { StyledLabel } from '../../../../Components/AutoImport/String/String';
 import { wlog } from '../../../../Helper/wegaslog';
 import { pick, omit } from 'lodash';
+import { DEFINED_VIEWS } from '..';
 
 const testStyle = css({
   borderColor: 'lime',
@@ -84,10 +85,8 @@ const isVariableMethodStatement = (
   isCallExpression(statement.expression.callee.object) &&
   isMemberExpression(statement.expression.callee.object.callee) &&
   isVariableObject(statement.expression.callee.object.callee.object) &&
-  isFindProperty(statement.expression.callee.object.callee.property) &&
-  statement.expression.callee.object.arguments.length === 2 &&
-  isStringLiteral(statement.expression.callee.object.arguments[1]) &&
-  isIdentifier(statement.expression.callee.property);
+  isFindProperty(statement.expression.callee.object.callee.property);
+// statement.expression.callee.object.arguments.length === 2;
 const getVariable = (expression: VariableMethodExpression) =>
   expression.callee.object.arguments[1].value;
 const getMethodName = (expression: VariableMethodExpression) =>
@@ -111,19 +110,21 @@ const getParameters = (expression: CallExpression) =>
   );
 
 const generateParameterSchema = (parameters: WegasMethodParameter[]) =>
-  parameters.reduce(
-    (o, p, i) => ({
+  parameters.reduce((o, p, i) => {
+    const type = Object.keys(DEFINED_VIEWS).includes(p.type)
+      ? p.type
+      : 'hidden';
+    return {
       ...o,
       [String(i)]: {
         ...p,
         index: i + 2,
         type: p.type === 'number' ? 'number' : 'string',
         formated: p.type !== 'string',
-        view: { ...p.view, label: 'Argument ' + i, index: i + 2 },
+        view: { ...p.view, type, label: 'Argument ' + i, index: i + 2 },
       },
-    }),
-    {},
-  );
+    };
+  }, {});
 
 // Condition methods
 type ConditionExpressionType = Statement & {
@@ -188,6 +189,7 @@ export function ExpressionEditor({
   onChange,
 }: ExpressionEditorProps) {
   const oldScript = React.useRef('');
+  const [currentStatement, setCurrentStatement] = React.useState(statement);
   const [methods, setMethods] = React.useState<{
     [key: string]: WegasMethod;
   }>();
@@ -234,12 +236,12 @@ export function ExpressionEditor({
             operator: schemaProps.select(
               'operator',
               false,
-              Object.keys(booleanOperators).filter(k=>scriptMethod.returns === "number" || k === "===").map(
-                (k: keyof typeof booleanOperators) => ({
+              Object.keys(booleanOperators)
+                .filter(k => scriptMethod.returns === 'number' || k === '===')
+                .map((k: keyof typeof booleanOperators) => ({
                   label: booleanOperators[k].label,
                   value: k,
-                }),
-              ),
+                })),
               'string',
               'DEFAULT',
               scriptMethod.parameters.length + 2,
@@ -261,10 +263,13 @@ export function ExpressionEditor({
       if (oldScript.current !== value) {
         oldScript.current = value;
         try {
+          wlog(value);
           const newStatement = parse(value, { sourceType: 'script' }).program
             .body;
           setError(undefined);
-          wlog(value);
+          if (newStatement.length === 1) {
+            setCurrentStatement(newStatement[0]);
+          }
           onChange && onChange(newStatement);
         } catch (e) {
           setError(e.message);
@@ -273,54 +278,6 @@ export function ExpressionEditor({
     },
     [onChange],
   );
-
-  React.useEffect(() => {
-    if (statement) {
-      if (scriptIsCondition(mode, scriptableClassFilter)) {
-        if (isConditionStatement(statement)) {
-          const newScriptAttributes = {
-            variableName: getVariable(statement.expression.left),
-            methodName: getMethodName(statement.expression.left),
-            ...getParameters(statement.expression.left),
-            operator: getOperator(statement.expression),
-            comparator: statement.expression.right.value,
-          };
-          setScriptAttributes(newScriptAttributes);
-        } else {
-          setError('Cannot be parsed as a condition');
-        }
-      } else {
-        if (isVariableMethodStatement(statement)) {
-          const newScriptAttributes = {
-            variableName: getVariable(statement.expression),
-            methodName: getMethodName(statement.expression),
-            ...getParameters(statement.expression),
-          };
-          setScriptAttributes(newScriptAttributes);
-        } else {
-          setError('Cannot be parsed as a variable statement');
-        }
-      }
-    }
-  }, [statement, mode, scriptableClassFilter, methods]);
-
-  React.useEffect(() => {
-    if (variable) {
-      getMethodConfig(variable).then(res => {
-        setMethods(
-          Object.keys(res)
-            .filter(k =>
-              mode === 'GET'
-                ? res[k].returns !== undefined
-                : res[k].returns === undefined,
-            )
-            .reduce((o, k) => ({ ...o, [k]: res[k] }), {}),
-        );
-      });
-    } else {
-      setMethods(undefined);
-    }
-  }, [variable, mode]);
 
   const onEditorChange = React.useCallback(
     (scriptAttributes: IAttributes | IConditionAttributes) => {
@@ -348,7 +305,7 @@ export function ExpressionEditor({
           if (scriptAttributes.operator) {
             script += ` ${scriptAttributes.operator} ${
               typeof scriptAttributes.comparator === 'string'
-                ? `'${scriptAttributes.comparator}`
+                ? `'${scriptAttributes.comparator}'`
                 : scriptAttributes.comparator
             }`;
             onScriptEditorChange(script);
@@ -367,14 +324,74 @@ export function ExpressionEditor({
     ],
   );
 
+  React.useEffect(() => {
+    setCurrentStatement(statement);
+  }, [statement]);
+
+  React.useEffect(() => {
+    if (variable) {
+      getMethodConfig(variable).then(res => {
+        setMethods(
+          Object.keys(res)
+            .filter(k =>
+              mode === 'GET'
+                ? res[k].returns !== undefined
+                : res[k].returns === undefined,
+            )
+            .reduce((o, k) => ({ ...o, [k]: res[k] }), {}),
+        );
+      });
+    } else {
+      setMethods(undefined);
+    }
+  }, [variable, mode]);
+
+  React.useEffect(() => {
+    if (currentStatement) {
+      if (scriptIsCondition(mode, scriptableClassFilter)) {
+        if (isConditionStatement(currentStatement)) {
+          const newScriptAttributes = {
+            variableName: getVariable(currentStatement.expression.left),
+            methodName: getMethodName(currentStatement.expression.left),
+            ...getParameters(currentStatement.expression.left),
+            operator: getOperator(currentStatement.expression),
+            comparator: currentStatement.expression.right.value,
+          };
+          setScriptAttributes(newScriptAttributes);
+        } else {
+          setError('Cannot be parsed as a condition');
+        }
+      } else {
+        if (isVariableMethodStatement(currentStatement)) {
+          const newScriptAttributes = {
+            variableName: getVariable(currentStatement.expression),
+            methodName: getMethodName(currentStatement.expression),
+            ...getParameters(currentStatement.expression),
+          };
+          setScriptAttributes(newScriptAttributes);
+        } else {
+          setError('Cannot be parsed as a variable statement');
+        }
+      }
+    }
+  }, [currentStatement, mode, scriptableClassFilter, methods]);
+
   return (
     <div className={expressionEditorStyle}>
       {error ? (
         <div className={scriptEditStyle}>
           <StyledLabel type="error" value={error} duration={3000} />
           <WegasScriptEditor
-            value={statement ? generate(statement).code : ''}
+            value={
+              oldScript.current === ''
+                ? currentStatement
+                  ? generate(currentStatement).code
+                  : ''
+                : oldScript.current
+            }
             onChange={onScriptEditorChange}
+            noGutter
+            minimap={false}
           />
         </div>
       ) : (

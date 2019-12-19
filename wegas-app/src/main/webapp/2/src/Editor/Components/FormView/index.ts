@@ -17,7 +17,7 @@ import FlatVariableSelect from './FlatVariableSelect';
 import { LabeledHTMLEditor } from '../../../Components/HTMLEditor';
 import { TimestampView } from './Timestamp';
 
-const DEFINED_VIEWS = {
+export const DEFINED_VIEWS = {
   hidden,
   uneditable,
   object: ObjectView,

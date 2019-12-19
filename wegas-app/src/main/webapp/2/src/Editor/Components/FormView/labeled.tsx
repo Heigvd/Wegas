@@ -24,7 +24,7 @@ const titleStyle = css({
 let id = 0;
 
 /** Handle view's label and description  */
-export function Labeled({ label, children, description, index }: LabeledProps) {
+export const Labeled : React.FunctionComponent<LabeledProps> = ({ label, children, description, index }: LabeledProps) => {
   const internalId = React.useRef(`__labelInput__${id++}`);
   const { currentFeatures } = React.useContext(featuresCTX);
 
@@ -43,5 +43,5 @@ export function Labeled({ label, children, description, index }: LabeledProps) {
         }`}
       </label>
     ),
-  });
+  }) as React.ReactElement;;
 }
