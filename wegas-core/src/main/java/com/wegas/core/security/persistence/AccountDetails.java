@@ -7,12 +7,7 @@
  */
 package com.wegas.core.security.persistence;
 
-import ch.albasim.wegas.annotations.IMergeable;
-import ch.albasim.wegas.annotations.View;
-import ch.albasim.wegas.annotations.WegasCallback;
-import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
@@ -96,7 +91,7 @@ public class AccountDetails extends AbstractEntity {
 
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
-        Collection<WegasPermission> p = getRequieredUpdatePermission(); // the user itselft
+        Collection<WegasPermission> p = getRequieredUpdatePermission(); // the user itself
 
         /*
          * Trainers of game in which the user plays can read details (email address)

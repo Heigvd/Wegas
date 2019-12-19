@@ -60,6 +60,12 @@ import org.slf4j.LoggerFactory;
     query = "SELECT true FROM player as self JOIN player AS mate on mate.team_id = self.team_id WHERE self.user_id =?1 AND mate.user_id = ?2")
 @NamedQuery(name = "Player.findGameIds",
     query = "SELECT p.team.gameTeams.game.id FROM Player p where p.user.id = :userId")
+@NamedNativeQuery(name = "Player.IsTrainerForUser",
+    query = "SELECT true FROM player as player "
+        + " JOIN team AS team on team.id = player.team_id"
+        + " JOIN gameteams AS gt on gt.id = team.gameteams_id"
+        + " JOIN permission perm on perm.permissions LIKE 'Game:%Edit%:g' || gt.game_id"
+        + " WHERE player.user_id = ?1 AND perm.user_id = ?2")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(indexes = {
     @Index(columnList = "user_id"),
@@ -96,12 +102,13 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
 
     /**
      *
-     * @Column(name = "user_id", nullable = true, insertable = false, updatable = false) private Long userId;
+     * @Column(name = "user_id", nullable = true, insertable = false, updatable = false) private
+     * Long userId;
      */
     /**
      *
-     * @WegasEntityProperty(optional = false, nullable = false, view = @View(label = "Name", readOnly = true, value =
-     * StringView.class)) private String name;
+     * @WegasEntityProperty(optional = false, nullable = false, view = @View(label = "Name",
+     * readOnly = true, value = StringView.class)) private String name;
      */
     /**
      *
@@ -146,7 +153,8 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
 
     /**
      *
-     * @Column(name = "parentteam_id", nullable = false, insertable = false, updatable = false) private Long teamId;
+     * @Column(name = "parentteam_id", nullable = false, insertable = false, updatable = false)
+     * private Long teamId;
      */
     /**
      *
@@ -177,8 +185,9 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
 
     /**
      *
-     * @PrePersist @PreUpdate public void preUpdate() { if ((this.getName() == null || this.getName().equals("")) &&
-     * this.getUser() != null) { // User may be null for test players this.name = this.getUser().getName(); } }
+     * @PrePersist @PreUpdate public void preUpdate() { if ((this.getName() == null ||
+     * this.getName().equals("")) && this.getUser() != null) { // User may be null for test players
+     * this.name = this.getUser().getName(); } }
      */
     @Override
     public Long getId() {
@@ -290,7 +299,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      */
     @JsonView({
         Views.EditorI.class
-        /*Views.LobbyI.class*/
+    /*Views.LobbyI.class*/
     })
     @WegasExtraProperty
     public String getName() {
