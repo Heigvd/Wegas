@@ -5,7 +5,6 @@ import { formValidation } from './formValidation';
 import { entityIs } from '../data/entities';
 import { editStateMachine, editVariable } from '../data/Reducer/globalState';
 import { ThunkResult } from '../data/store';
-import { wlog } from '../Helper/wegaslog';
 
 export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 

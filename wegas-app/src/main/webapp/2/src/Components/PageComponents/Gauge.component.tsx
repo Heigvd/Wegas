@@ -1,13 +1,9 @@
 import * as React from 'react';
 import { css } from 'emotion';
 import { pageComponentFactory, registerComponent } from './componentFactory';
-import {
-  useVariableDescriptor,
-  useVariableInstance,
-} from '../Hooks/useVariable';
+import { useVariableInstance } from '../Hooks/useVariable';
 import { themeVar } from '../Theme';
 import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
-import { TranslatableContent } from '../../data/i18n';
 import { schemaProps } from './schemaProps';
 import { useScript } from '../Hooks/useScript';
 

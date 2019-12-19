@@ -12,7 +12,6 @@ import {
   isIdentifier,
   isBinaryExpression,
   isExpressionStatement,
-  isStringLiteral,
 } from '@babel/types';
 import generate from '@babel/generator';
 import { ScriptView, scriptIsCondition, scriptEditStyle } from './Script';
@@ -32,11 +31,11 @@ import { wlog } from '../../../../Helper/wegaslog';
 import { pick, omit } from 'lodash';
 import { DEFINED_VIEWS } from '..';
 
-const testStyle = css({
-  borderColor: 'lime',
-  borderStyle: 'solid',
-  borderWidth: '2px',
-});
+// const testStyle = css({
+//   borderColor: 'lime',
+//   borderStyle: 'solid',
+//   borderWidth: '2px',
+// });
 
 const expressionEditorStyle = css({
   marginTop: '0.8em',

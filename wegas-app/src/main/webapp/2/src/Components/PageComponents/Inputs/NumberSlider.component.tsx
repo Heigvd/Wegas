@@ -9,7 +9,6 @@ import {
 import { store } from '../../../data/store';
 import { Interpolation } from 'emotion';
 import { Actions } from '../../../data';
-import { wlog } from '../../../Helper/wegaslog';
 import { omit } from 'lodash';
 
 interface PlayerNumberSliderProps {
@@ -70,13 +69,6 @@ const PlayerNumberSlider: React.FunctionComponent<PlayerNumberSliderProps> = pro
     min = descriptor.minValue || 0,
     max = descriptor.maxValue || 1,
   } = props;
-
-  wlog(
-    'NumberSlider : ' +
-      JSON.stringify(
-        omit(props, ['variable', 'min', 'max', 'path', 'children']),
-      ),
-  );
 
   return (
     <NumberSlider
