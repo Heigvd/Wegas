@@ -1,5 +1,5 @@
 import generate from '@babel/generator';
-import { parseExpression } from '@babel/parser';
+import { parseExpression, parse } from '@babel/parser';
 import {
   binaryExpression,
   BinaryExpression,
@@ -28,6 +28,15 @@ import {
   isVariableCall,
   variableName,
 } from './variableAST';
+import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
+import { wlog } from '../../../../Helper/wegaslog';
+import { css } from 'emotion';
+
+const sigleLineScriptEdit = css({
+  height: '2em',
+  marginTop: '0.8em',
+  width: '500px',
+});
 
 interface ImpactProps {
   stmt: ExpressionStatement | EmptyStatement;
@@ -132,17 +141,20 @@ function genGlobalItems(mode: 'SET' | 'GET') {
     value: `.${k}`,
   })); // Global start with a DOT
 }
-export class ExprStatement extends React.Component<ImpactProps, ExprState> {
-  state: ExprState = {
-    methodsConfig: {},
-    variableSchema: {
-      view: {
-        type: 'variableselect',
-        layout: 'inline',
-        items: genGlobalItems(this.props.mode),
-      },
+
+const defaultExprState = (mode: ImpactProps['mode']): ExprState => ({
+  methodsConfig: {},
+  variableSchema: {
+    view: {
+      type: 'variableselect',
+      layout: 'inline',
+      items: genGlobalItems(mode),
     },
-  };
+  },
+});
+
+export class ExprStatement extends React.Component<ImpactProps, ExprState> {
+  state = defaultExprState(this.props.mode);
   variableChange = async (variable: string) => {
     const { stmt } = this.props;
     if (variable.startsWith('.')) {
@@ -470,5 +482,40 @@ export class ExprStatement extends React.Component<ImpactProps, ExprState> {
       );
     }
     return <pre>{JSON.stringify(stmt, null, 2)}</pre>;
+  }
+}
+
+export class SecureExpressionStatement extends React.Component<
+  ImpactProps,
+  {
+    error: boolean;
+  }
+> {
+  state = { error: false };
+
+  static getDerivedStateFromError(error: Error) {
+    wlog(error);
+    // Update state so the next render will show the fallback UI.
+    return { error: true };
+  }
+  render() {
+    const statement = this.props.stmt;
+    return this.state.error ? (
+      <div className={sigleLineScriptEdit}>
+        <WegasScriptEditor
+          value={generate(statement).code}
+          onChange={v => {
+            const ast = parse(v, { sourceType: 'script' }).program.body[0];
+            if (isExpressionStatement(ast)) {
+              this.props.onChange(ast);
+            }
+          }}
+          noGutter={true}
+          minimap={false}
+        />
+      </div>
+    ) : (
+      <ExprStatement {...this.props} />
+    );
   }
 }

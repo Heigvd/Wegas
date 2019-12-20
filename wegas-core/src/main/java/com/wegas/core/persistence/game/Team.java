@@ -349,7 +349,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     /**
      * @return String, the name of the game
      */
-    @JsonView(value = Views.Extended.class)
+    @JsonView(value = Views.ExtendedI.class)
     public String getGameName() {
         return this.getGame().getName();
     }
@@ -358,7 +358,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      * @return boolean, free if the game is played individualy, false if the
      *         game is played in team
      */
-    @JsonView(value = Views.Extended.class)
+    @JsonView(value = Views.ExtendedI.class)
     public boolean getGameFreeForAll() {
         return this.getGame().getProperties().getFreeForAll();
     }
@@ -366,7 +366,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     /**
      * @return String, the representation for the icon of the game
      */
-    @JsonView(value = Views.Extended.class)
+    @JsonView(value = Views.ExtendedI.class)
     public String getGameIcon() {
         return this.getGame().getProperties().getIconUri();
     }

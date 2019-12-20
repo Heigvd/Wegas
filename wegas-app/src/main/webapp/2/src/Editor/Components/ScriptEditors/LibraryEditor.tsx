@@ -12,11 +12,15 @@ import { GameModel } from '../../../data/selectors';
 import { omit } from 'lodash-es';
 import u from 'immer';
 import { WebSocketEvent, useWebsocket } from '../../../API/websocket';
-import SrcEditor from './SrcEditor';
+import SrcEditor, { SrcEditorProps } from './SrcEditor';
 import MergeEditor from './MergeEditor';
 import { StyledLabel } from '../../../Components/AutoImport/String/Label';
 import { TextPrompt } from '../TextPrompt';
 import { ConfirmButton } from '../../../Components/Button/ConfirmButton';
+import { WegasScriptEditor } from './WegasScriptEditor';
+import { clientScriptEval, useGlobals } from '../../../Components/Hooks/useScript';
+import * as ts from 'typescript';
+import { Menu } from '../../../Components/Menu';
 
 type IVisibility = IAbstractContentDescriptor['visibility'];
 const visibilities: IVisibility[] = [
@@ -246,14 +250,14 @@ const setLibraryState = (oldState: ILibrariesState, action: StateAction) =>
  */
 const getScriptLanguage: (
   scriptType: LibType,
-) => 'css' | 'javascript' = scriptType => {
+) => 'css' | 'typescript' = scriptType => {
   switch (scriptType) {
     case 'CSS':
       return 'css';
     case 'ClientScript':
     case 'ServerScript':
     default:
-      return 'javascript';
+      return 'typescript';
   }
 };
 
@@ -315,8 +319,8 @@ const isEditAllowed = (librariesState: ILibrariesState): boolean => {
   return (
     librariesState.selected !== '' &&
     (GameModel.selectCurrent().type !== 'SCENARIO' ||
-      (libEntry.library.visibility === 'PRIVATE' ||
-        libEntry.library.visibility === 'INHERITED'))
+      libEntry.library.visibility === 'PRIVATE' ||
+        libEntry.library.visibility === 'INHERITED')
   );
 };
 
@@ -341,6 +345,11 @@ interface ModalStateClose {
   type: 'close';
 }
 
+interface ModalStateWarn {
+  type: 'warning';
+  label: string;
+}
+
 interface ModalStateError {
   type: 'error';
   label: string;
@@ -350,7 +359,11 @@ interface ModalStateLibname {
   type: 'libname';
 }
 
-type ModalState = ModalStateClose | ModalStateError | ModalStateLibname;
+type ModalState =
+  | ModalStateClose
+  | ModalStateError
+  | ModalStateLibname
+  | ModalStateWarn;
 
 interface ScriptEditorProps {
   /**
@@ -363,8 +376,6 @@ interface ScriptEditorProps {
  * ScriptEditor is a component for wegas library management
  */
 function ScriptEditor({ scriptType }: ScriptEditorProps) {
-  const librarySelector = React.useRef<HTMLSelectElement>(null);
-  const visibilitySelector = React.useRef<HTMLSelectElement>(null);
   const [librariesState, dispatchStateAction] = React.useReducer(
     setLibraryState,
     {
@@ -375,6 +386,10 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
   const [modalState, setModalState] = React.useState<ModalState>({
     type: 'close',
   });
+  const libEntry = librariesState.libraries[librariesState.selected];
+
+  // Allows to load the globals in the script evaluator
+  useGlobals();
 
   /**
    * A callback for websocket event management
@@ -456,12 +471,23 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
       LibraryAPI.saveLibrary(
         scriptType,
         librariesState.selected,
-        librariesState.libraries[librariesState.selected].library,
+        libEntry.library,
       )
         .then(() => {
           dispatchStateAction({
             type: 'SaveLibrary',
           });
+          if (scriptType === 'ClientScript') {
+            try {
+              clientScriptEval(ts.transpile(libEntry.library.content));
+            } catch (e) {
+              setModalState({
+                type: 'warning',
+                label:
+                  'The library has been saved but the script contains errors',
+              });
+            }
+          }
         })
         .catch(() => {
           setModalState({
@@ -470,28 +496,28 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           });
         });
     }
-  }, [librariesState, scriptType]);
+  }, [librariesState, scriptType, libEntry]);
 
   /**
    * onDeleteLibrary deletes the selected library in the database
    */
-  const onDeleteLibrary = () => {
+  const onDeleteLibrary = React.useCallback(() => {
     LibraryAPI.deleteLibrary(scriptType, librariesState.selected)
       .then(() => {
-        if (librarySelector.current) {
+        if (librariesState.selected) {
           dispatchStateAction({
             type: 'RemoveLibrary',
           });
         }
       })
       .catch(() => {
-        'The library cannot be saved';
+        'The library cannot be deleted';
         setModalState({
           type: 'error',
           label: 'Cannot delete the script',
         });
       });
-  };
+  }, [librariesState.selected, scriptType]);
 
   /**
    * When scriptType changes, gets all libraries of this type and refresh the librariesState
@@ -509,7 +535,15 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
       });
   }, [scriptType]);
 
-  const libEntry = librariesState.libraries[librariesState.selected];
+  const CurrentEditor = React.useCallback(
+    (props: SrcEditorProps) =>
+      getScriptLanguage(scriptType) === 'typescript' ? (
+        <WegasScriptEditor {...props} clientScript />
+      ) : (
+        <SrcEditor {...props} />
+      ),
+    [scriptType],
+  );
 
   return (
     <Toolbar>
@@ -545,53 +579,47 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
         )}
         {librariesState.selected && (
           <>
-            <select
-              ref={librarySelector}
-              onChange={selector => {
+            <Menu
+              label={
+                librariesState.selected
+                  ? librariesState.selected
+                  : 'No library selected'
+              }
+              items={Object.keys(librariesState.libraries).map(
+                (name: string) => ({
+                  id: name,
+                  label: name,
+                }),
+              )}
+              onSelect={({ id }) =>
                 dispatchStateAction({
                   type: 'SelectLibrary',
-                  name: selector.target.value,
-                });
-              }}
-              value={librariesState.selected}
-            >
-              {Object.keys(librariesState.libraries).map((name: string) => {
-                return (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                );
-              })}
-            </select>
-            <select
-              ref={visibilitySelector}
-              onChange={selector =>
-                dispatchStateAction({
-                  type: 'SetLibraryVisibility',
-                  visibility: selector.target.value as IVisibility,
+                  name: id,
                 })
               }
-              value={getLibraryVisibility(librariesState)}
-            >
-              {visibilities.map(visibility => {
-                return (
-                  <option
-                    key={visibility}
-                    hidden={!isVisibilityAllowed(librariesState, visibility)}
-                    value={visibility}
-                  >
-                    {visibility}
-                  </option>
-                );
-              })}
-            </select>
+            />
+            <Menu
+              label={getLibraryVisibility(librariesState)}
+              items={visibilities
+                .filter(v => isVisibilityAllowed(librariesState, v))
+                .map(v => ({
+                  id: v,
+                  label: v,
+                }))}
+              onSelect={({ id }) =>
+                dispatchStateAction({
+                  type: 'SetLibraryVisibility',
+                  visibility: id as IVisibility,
+                })
+              }
+            />
             {!isLibraryOutdated(libEntry) && (
               <>
                 {isEditAllowed(librariesState) && (
                   <IconButton
                     icon="save"
                     tooltip="Save the script"
-                    onClick={() => onSaveLibrary()}
+                    onClick={onSaveLibrary}
                   />
                 )}
                 {isDeleteAllowed(librariesState) && (
@@ -618,9 +646,9 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
                 duration={3000}
               />
             )}
-            {modalState.type === 'error' && (
+            {(modalState.type === 'error' || modalState.type === 'warning') && (
               <StyledLabel
-                type="error"
+                type={modalState.type}
                 value={modalState.label}
                 duration={3000}
                 onLabelVanish={() => setModalState({ type: 'close' })}
@@ -644,13 +672,8 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             onResolved={onSaveLibrary}
           />
         ) : librariesState.selected ? (
-          <SrcEditor
-            value={
-              librariesState.selected
-                ? librariesState.libraries[librariesState.selected].library
-                    .content
-                : ''
-            }
+          <CurrentEditor
+            value={librariesState.selected ? libEntry.library.content : ''}
             onChange={content =>
               dispatchStateAction({
                 type: 'SetLibraryContent',
@@ -658,7 +681,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
               })
             }
             language={getScriptLanguage(scriptType)}
-            readonly={!isEditAllowed(librariesState)}
+            readOnly={!isEditAllowed(librariesState)}
             onSave={onSaveLibrary}
           />
         ) : (

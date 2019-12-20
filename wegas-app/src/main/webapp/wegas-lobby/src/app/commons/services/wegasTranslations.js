@@ -502,8 +502,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Erreur durant la création de l'" + keywords.team.singular.fr
                         },
                         'COMMONS-TEAMS-GUEST-JOINING': {
-                            'en': "Preparation of guest account ...",
-                            'fr': "Préparation du compte invité ..."
+                            'en': "Preparation of anonymous guest account ...",
+                            'fr': "Préparation d'un compte invité anonyme ..."
                         },
 
                         // Commons Sessions Model
@@ -1187,6 +1187,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Last name",
                             'fr': "Nom de famille"
                         },
+                        'PRIVATE-PROFILE-INPUT-LABEL-COMMENT': {
+                            'en': "Admin comments",
+                            'fr': "Remarques administrateur"
+                        },
                         'PRIVATE-PROFILE-INPUT-PLACEHOLDER-EMAIL': {
                             'en': "Please enter your email",
                             'fr': "Veuillez entrer votre email"
@@ -1417,6 +1421,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'TRAINER-CARD-MONITORING-BTN': {
                             'en': "Facilitate the " + keywords.session.singular.en,
                             'fr': "Animer la " + keywords.session.singular.fr
+                        },
+                        'TRAINER-CARD-VIEW-PLAYING-BTN': {
+                            'en': "View playing " + keywords.session.singular.en,
+                            'fr': "Voir la " + keywords.session.singular.fr
                         },
                         'TRAINER-MODALE-USERS-TAB-PLAYER': {
                             'en': startSentence(keywords.player.plural.en),

@@ -92,7 +92,7 @@ public class WaitingController extends AbstractGameController {
     }
 
     public String getCurrentUserEmail() {
-        return this.getCurrentUser().getMainAccount().getEmail();
+        return this.getCurrentUser().getMainAccount().getDetails().getEmail();
     }
 
     /**

@@ -10,6 +10,8 @@ import { getEntityActions, getIcon } from '../editionConfig';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { FontAwesome, withDefault } from './Views/FontAwesome';
 import { css } from 'emotion';
+import { entityIs } from '../../data/entities';
+import { focusTabContext } from './LinearTabLayout/LinearLayout';
 
 interface SearchPanelProps {
   search: State['global']['search'];
@@ -19,6 +21,45 @@ const resultStyle = css({
   listStyle: 'none',
   cursor: 'pointer',
 });
+
+function SearchResult({
+  vId,
+  onClick,
+  variable,
+}: {
+  vId: number;
+  onClick: () => void;
+  variable: IVariableDescriptor;
+}) {
+  const focusTab = React.useContext(focusTabContext);
+  const Title = asyncSFC(async () => (
+    <FontAwesome
+      icon={withDefault(await getIcon(variable!), 'question')}
+      fixedWidth
+    />
+  ));
+  return (
+    <li
+      key={vId}
+      className={resultStyle}
+      onClick={() => {
+        if (
+          entityIs<IAbstractStateMachineDescriptor>(
+            variable,
+            'IAbstractStateMachineDescriptor',
+          )
+        ) {
+          focusTab('StateMachine');
+        }
+        onClick();
+      }}
+    >
+      <Title />
+      {editorLabel(variable)}
+    </li>
+  );
+}
+
 class SearchPanel extends React.Component<
   SearchPanelProps,
   { show: boolean; searchField: string }
@@ -80,14 +121,10 @@ class SearchPanel extends React.Component<
           </li>
         );
       }
-      const Title = asyncSFC(async () => {
-        const icon = await getIcon(variable!);
-        return <FontAwesome icon={withDefault(icon, 'question')} fixedWidth />;
-      });
       return (
-        <li
+        <SearchResult
           key={vId}
-          className={resultStyle}
+          vId={vId}
           onClick={() =>
             this.setState({ show: false }, () =>
               getEntityActions(variable).then(({ edit }) =>
@@ -95,10 +132,8 @@ class SearchPanel extends React.Component<
               ),
             )
           }
-        >
-          <Title />
-          {editorLabel(variable)}
-        </li>
+          variable={variable}
+        />
       );
     });
   }

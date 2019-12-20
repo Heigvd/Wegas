@@ -50,7 +50,7 @@ angular.module('private.player.join.directives', [])
         };
 
         ctrl.checkSize = function() {
-            ctrl.newTeam.validSize = ctrl.newTeam.size!=="0";
+            ctrl.newTeam.validSize = ctrl.newTeam.size !== "0";
         };
 
         ctrl.checkNameUsability = function() {
@@ -167,14 +167,15 @@ angular.module('private.player.join.directives', [])
                         });
                     } else {
                         // The name or the size have not been specified by the user:
-                        if (scope.newTeam.name === "" || scope.newTeam.alreadyUsed)
+                        if (scope.newTeam.name === "" || scope.newTeam.alreadyUsed) {
                             $translate('PLAYER-MODALE-JOIN-TEAM-CREATE-INPUT-MESSAGE').then(function(message) {
                                 Flash.danger(message);
                             });
-                        else if (!scope.newTeam.validSize)
+                        } else if (!scope.newTeam.validSize) {
                             $translate('PLAYER-MODALE-JOIN-TEAM-CREATE-SIZE-MESSAGE').then(function(message) {
                                 Flash.danger(message);
                             });
+                        }
                     }
                 };
             }

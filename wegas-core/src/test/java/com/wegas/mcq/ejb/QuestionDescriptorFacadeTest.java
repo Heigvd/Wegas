@@ -293,7 +293,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
-    public void testRadioChocie() throws Exception {
+    public void testRadioChoice() throws Exception {
         QuestionDescriptor question = createCbxQuestion(scenario.getId(), "question", 1, 1);
 
         ChoiceDescriptor choice1 = createChoice(question, "choice1", null, "result", wegasFactory.createResult("result"));

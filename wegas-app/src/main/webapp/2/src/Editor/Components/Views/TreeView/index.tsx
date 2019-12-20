@@ -8,7 +8,7 @@ import {
   Outcome,
 } from './DropZone';
 import { FontAwesome } from '../FontAwesome';
-import { DefaultDndProvider } from '../../../../Components/DefaultDndProvider';
+import { DefaultDndProvider } from '../../../../Components/Contexts/DefaultDndProvider';
 
 function noop() {}
 

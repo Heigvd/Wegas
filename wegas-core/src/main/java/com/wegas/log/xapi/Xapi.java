@@ -72,7 +72,7 @@ public class Xapi implements XapiI {
     }
 
     @Inject
-    private RequestManager manager;
+    private RequestManager requestManager;
 
     @Inject
     private TeamFacade teamFacade;
@@ -92,13 +92,13 @@ public class Xapi implements XapiI {
     private LearningLockerClient getLearningLockerClient() {
         return new LearningLockerClient(Helper.getWegasProperty("xapi.ll.host"),
                 "Basic " + Helper.getWegasProperty("xapi.auth"),
-                manager.getBaseUrl());
+                requestManager.getBaseUrl());
     }
 
     @Override
     public Statement userStatement(final String verb, final IStatementObject object) {
 
-        final Agent agent = this.agent(manager.getCurrentUser());
+        final Agent agent = this.agent(requestManager.getCurrentUser());
         final Verb v = new Verb(verb);
         final Statement stmt = new Statement(agent, v, object);
         stmt.setTimestamp(OffsetDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
@@ -201,9 +201,9 @@ public class Xapi implements XapiI {
     }
 
     private Context genContext() {
-        final String logID = manager.getPlayer().getGameModel().getProperties().getLogID();
-        final Team team = manager.getPlayer().getTeam();
-        final Game game = manager.getPlayer().getGame();
+        final String logID = requestManager.getPlayer().getGameModel().getProperties().getLogID();
+        final Team team = requestManager.getPlayer().getTeam();
+        final Game game = requestManager.getPlayer().getGame();
 
         final Context context = new Context();
         final List<User> instructorsUser = userFacade.findEditors("g" + game.getId());
@@ -251,7 +251,7 @@ public class Xapi implements XapiI {
      * Check if there is a current player, not Debug, there is a LogID and xapi is configured
      */
     private Boolean isValid() {
-        final Player player = manager.getPlayer();
+        final Player player = requestManager.getPlayer();
 
         boolean logDebug = Helper.getWegasProperty("xapi.log_debug_player", "false").equals("true");
 
@@ -422,7 +422,7 @@ public class Xapi implements XapiI {
                 Game game = gameFacade.find(Long.parseLong(stmt.getGame()));
 
                 if (user != null) {
-                    stmt.setActor(digest(registry, user.getMainAccount().getSalt(), stmt.getActor()));
+                    stmt.setActor(digest(registry, user.getMainAccount().getRefId(), stmt.getActor()));
                 }
 
                 if (team != null) {
@@ -459,7 +459,7 @@ public class Xapi implements XapiI {
                 Game game = gameFacade.find(Long.parseLong(stmt.getGame()));
 
                 if (user != null) {
-                    stmt.setActor(digest(registry, user.getMainAccount().getSalt(), stmt.getActor()));
+                    stmt.setActor(digest(registry, user.getMainAccount().getRefId(), stmt.getActor()));
                 }
 
                 if (team != null) {

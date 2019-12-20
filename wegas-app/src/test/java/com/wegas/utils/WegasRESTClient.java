@@ -15,6 +15,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.security.jparealm.JpaAccount;
+import com.wegas.core.security.persistence.AccountDetails;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
@@ -81,11 +82,13 @@ public class WegasRESTClient {
 
     public TestAuthenticationInformation signup(String email, String password) throws IOException {
         JpaAccount ja = new JpaAccount();
-        ja.setEmail(email);
         ja.setUsername(email);
         ja.setFirstname(email);
         ja.setLastname(email);
         ja.setPassword(password);
+
+        ja.setDetails(new AccountDetails());
+        ja.getDetails().setEmail(email);
 
         String post_asString = this.post_asString("/rest/User/Signup", ja);
         TestAuthenticationInformation authInfo = getAuthInfo(email, password);
@@ -139,7 +142,7 @@ public class WegasRESTClient {
         }
     }
 
-    public <T> T get(String url, TypeReference valueTypeRef) throws IOException {
+    public <T> T get(String url, TypeReference<T> valueTypeRef) throws IOException {
         String get = this.get(url);
         if (!Helper.isNullOrEmpty(get)) {
             return getObjectMapper().readValue(get, valueTypeRef);
@@ -199,7 +202,7 @@ public class WegasRESTClient {
         return entity;
     }
 
-    public <T> T post(String url, Object object, TypeReference valueType) throws IOException {
+    public <T> T post(String url, Object object, TypeReference<T> valueType) throws IOException {
         String post = this.post(url, object);
         if (!Helper.isNullOrEmpty(post)) {
             return getObjectMapper().readValue(post, valueType);
@@ -222,7 +225,8 @@ public class WegasRESTClient {
     }
 
     private String post_asString(String url, Object object) throws IOException {
-        return this.postJSON_asString(url, getObjectMapper().writeValueAsString(object));
+        String strObject = getObjectMapper().writeValueAsString(object);
+        return this.postJSON_asString(url, strObject);
     }
 
     public String delete(String url) throws IOException {

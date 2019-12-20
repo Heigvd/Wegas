@@ -5,7 +5,6 @@ export function addOccupation(_rd: IResourceDescriptor) {
     _self: IPlayer,
     _time: number,
     _editable: boolean,
-    _description: string,
   ) => {
     throw Error('This is readonly');
   };

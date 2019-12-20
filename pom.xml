@@ -96,14 +96,14 @@
 
         <shiro.version>1.4.0</shiro.version>
         <jdk.version>1.8</jdk.version>
-        <payara.version>5.193</payara.version>
-        <payara.micro.version>5.193.albasim-p1</payara.micro.version>
-        <payara-api.version>5.193</payara-api.version>
+        <payara.version>5.194</payara.version>
+        <payara.micro.version>5.194.albasim-p1</payara.micro.version>
+        <payara-api.version>5.194</payara-api.version>
         <junit.version>4.12</junit.version>
         <arquillian.version>1.4.1.Final</arquillian.version>
         <exec.plugin.version>1.2</exec.plugin.version>
 
-        <jackson.version>2.9.9</jackson.version>
+        <jackson.version>2.10.0</jackson.version>
         <jackson.scope>provided</jackson.scope>
 
         <jersey.version>2.29.payara-p5</jersey.version>
@@ -138,7 +138,7 @@
                 <build.optimize>true</build.optimize>
                 <wegas.debug>false</wegas.debug>
                 <wegas.clientErrorLogging>true</wegas.clientErrorLogging>
-                <wegas.useYUICDN>true</wegas.useYUICDN>
+                <wegas.useYUICDN>false</wegas.useYUICDN>
             </properties>
         </profile>
         <profile>
@@ -999,6 +999,7 @@
             <id>albasim-patched-externals</id>
             <name>AlbaSim Patched Externals</name>
             <url>https://raw.github.com/Heigvd/Wegas_PatchedProjects/master/repository</url>
+            <!--<url>file:///home/maxence/AlbaSim/Wegas_PatchedProjects/repository</url>-->
             <releases>
                 <enabled>true</enabled>
             </releases>

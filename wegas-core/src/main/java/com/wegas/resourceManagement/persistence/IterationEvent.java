@@ -41,7 +41,10 @@ public class IterationEvent extends AbstractEntity implements Serializable {
         ADD_TASK,
         REMOVE_TASK,
         START_TASK,
-        COMPLETE_TASK
+        COMPLETE_TASK,
+        WORKLOAD_ADJUSTMENT,
+        SPENT_ADJUSTMENT,
+        BUDGETED_ADJUSTMENT,
     }
 
     /**

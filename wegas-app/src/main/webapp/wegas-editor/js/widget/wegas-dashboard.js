@@ -42,8 +42,8 @@ YUI.add('wegas-dashboard', function(Y) {
                     "label": "Actions",
                     "itemType": "group",
                     "items": {
-                        sendmail: {
-                            "id": "sendmail",
+                        sendmail_irl: {
+                            "id": "sendmail_irl",
                             "order": 0,
                             "icon": "fa fa-envelope",
                             "itemType": "action",

@@ -12,6 +12,8 @@ import com.hazelcast.core.Member;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
 import com.wegas.core.ejb.MetricsFacade;
+import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.WebsocketFacade;
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;

@@ -233,17 +233,27 @@ public class IterationFacade extends BaseFacade<Iteration> implements IterationF
                 for (IterationPeriod period : iteration.getPeriods()) {
                     for (IterationEvent event : period.getIterationEvents()) {
                         String taskName = event.getDeserialisedTaskName();
-                        try {
-                            TaskDescriptor theTask = (TaskDescriptor) variableDescriptorFacade.find(gameModel, taskName);
-                            TaskInstance taskInstance = theTask.findInstance(burndownInstance, requestManager.getCurrentUser());
-                            event.setTaskInstance(taskInstance);
-                        } catch (WegasNoResultException ex) {
-                            throw WegasErrorMessage.error("Task " + taskName + " not found");
+                        if (taskName != null) {
+                            try {
+                                TaskDescriptor theTask = (TaskDescriptor) variableDescriptorFacade.find(gameModel, taskName);
+                                TaskInstance taskInstance = theTask.findInstance(burndownInstance, requestManager.getCurrentUser());
+                                event.setTaskInstance(taskInstance);
+                            } catch (WegasNoResultException ex) {
+                                throw WegasErrorMessage.error("Task " + taskName + " not found");
+                            }
                         }
                     }
                 }
             }
         }
+    }
+
+    public Iteration replan(Long iterationId, Long periodNumber, double workload) {
+        Iteration iteration = this.find(iterationId);
+        IterationPeriod period = iteration.getOrCreatePeriod(periodNumber);
+
+        period.setReplanned(workload);
+        return iteration;
     }
 
     public Iteration plan(Long iterationId, Long periodNumber, double workload) {
@@ -254,6 +264,7 @@ public class IterationFacade extends BaseFacade<Iteration> implements IterationF
             period.setReplanned(workload);
         } else {
             period.setPlanned(workload);
+            period.setReplanned(workload);
         }
         return iteration;
     }

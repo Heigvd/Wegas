@@ -7,7 +7,7 @@ import getEditionConfig from '../editionConfig';
 import { Actions } from '../../data';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepUpdate } from '../../data/updateUtils';
-import { StoreConsumer, StoreDispatch } from '../../data/store';
+import { StoreConsumer, StoreDispatch, store } from '../../data/store';
 import { AvailableViews } from './FormView';
 import { cx } from 'emotion';
 import { flex, grow, flexColumn } from '../../css/classes';
@@ -147,7 +147,7 @@ export function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
   return schema;
 }
 
-async function WindowedEditor<T>({
+async function WindowedEditor<T extends IMergeable>({
   entity,
   update,
   actions = [],
@@ -159,6 +159,11 @@ async function WindowedEditor<T>({
   if (Array.isArray(path) && path.length > 0) {
     pathEntity = get(entity, path);
   }
+
+  // const customSchemas = useStore(s => {
+  //   return s.global.schemas;
+  // }, shallowDifferent);
+
   if (pathEntity === undefined) {
     // return <span>There is nothing to edit</span>;
     return null;
@@ -172,6 +177,32 @@ async function WindowedEditor<T>({
     typeof import('./Form')['Form'],
     Schema<AvailableViews>
   >([import('./Form').then(m => m.Form), getConfig(pathEntity)]);
+
+  // First try to get schema from simple filters
+  const customSchemas = store.getState().global.schemas;
+  let customSchema: SimpleSchema | void;
+  const simpleCustomShemaName = customSchemas.filtered[pathEntity['@class']];
+  if (simpleCustomShemaName !== undefined) {
+    const nfSchema = customSchemas.views[simpleCustomShemaName](
+      pathEntity as TypedEntity,
+      schema,
+    );
+    if (nfSchema !== undefined) {
+      customSchema = nfSchema;
+    }
+  }
+  // Then try to get shema from complex filters
+  for (const schemaName of customSchemas.unfiltered) {
+    const nfSchema = customSchemas.views[schemaName](
+      pathEntity as TypedEntity,
+      schema,
+    );
+    if (nfSchema !== undefined) {
+      customSchema = nfSchema;
+      break;
+    }
+  }
+
   return (
     <div className={cx(flex, grow, flexColumn)}>
       <StyledLabel
@@ -192,7 +223,11 @@ async function WindowedEditor<T>({
           };
         })}
         path={path}
-        schema={overrideSchema(entity, schema)}
+        schema={overrideSchema(
+          entity,
+          customSchema !== undefined ? customSchema : schema,
+        )}
+        // schema={overrideSchema(entity, schema)}
       />
     </div>
   );

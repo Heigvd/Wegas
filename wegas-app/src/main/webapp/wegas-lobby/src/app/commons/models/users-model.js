@@ -29,7 +29,7 @@ angular.module('wegas.models.users', [])
             cacheUsers = function() {
                 var deferred = $q.defer();
                 if (users.cache) {
-                    var url = "rest/Extended/User/?view=Public";
+                    var url = "rest/Shadow/User/";
                     $http.get(ServiceURL + url, {
                         "headers": {
                             "managed-mode": "true"
@@ -191,7 +191,7 @@ angular.module('wegas.models.users', [])
                 return;
             }
 
-            var url = "rest/Extended/User/" + id + "?view=Editor";
+            var url = "rest/Shadow/User/" + id;
             $http.get(ServiceURL + url, {
                 "headers": {
                     "managed-mode": "true"

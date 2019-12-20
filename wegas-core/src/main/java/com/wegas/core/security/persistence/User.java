@@ -19,6 +19,8 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasEntityPermission;
+import com.wegas.core.security.util.WegasIsTeamMate;
+import com.wegas.core.security.util.WegasIsTrainerForUser;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.View.StringView;
@@ -80,10 +82,10 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     @ManyToMany
     @JsonView(Views.ExtendedI.class)
     @JoinTable(name = "users_roles",
-            joinColumns = {
-                @JoinColumn(name = "user_id", referencedColumnName = "id")},
-            inverseJoinColumns = {
-                @JoinColumn(name = "role_id", referencedColumnName = "id")})
+        joinColumns = {
+            @JoinColumn(name = "user_id", referencedColumnName = "id")},
+        inverseJoinColumns = {
+            @JoinColumn(name = "role_id", referencedColumnName = "id")})
     private Collection<Role> roles = new ArrayList<>();
 
     /**
@@ -169,11 +171,10 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
      * @return main account name or unnamed if user doesn't have any account
      */
     @WegasExtraProperty(optional = false, nullable = true, view = @View(
-            label = "Name",
-            readOnly = true,
-            value = StringView.class
-    )
-    )
+        label = "Name",
+        readOnly = true,
+        value = StringView.class
+    ))
     public String getName() {
         if (this.getMainAccount() != null) {
             return this.getMainAccount().getName();
@@ -216,6 +217,15 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
         return false;
     }
 
+    public boolean isMemberOf(String roleName) {
+        for (Role r : roles) {
+            if (r.getName().equals(roleName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * @return the roles
      */
@@ -251,12 +261,46 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
         return this.getName().toLowerCase(Locale.ENGLISH).compareTo(o.getName().toLowerCase(Locale.ENGLISH));
     }
 
+    @JsonIgnore
+    public WegasPermission getAssociatedReadPermission() {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.READ, WegasEntityPermission.EntityType.USER);
+    }
+
+    @JsonIgnore
+    public WegasPermission getAssociatedWritePermission() {
+        return new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.USER);
+    }
+
+    /**
+     * Return all Team write permission which the use is member of (i.e user team-mate)
+     *
+     * @return
+     */
+    @JsonIgnore
+    public Collection<WegasPermission> getPlayersTeamsRelatedPermissions() {
+        return WegasPermission.getAsCollection(
+            new WegasIsTeamMate(id)
+        );
+    }
+
+    /**
+     * Return all game write permission which the use is member of (as player)
+     *
+     * @return
+     */
+    @JsonIgnore
+    public Collection<WegasPermission> getPlayerGameRelatedPermissions() {
+        return WegasPermission.getAsCollection(
+            new WegasIsTrainerForUser(id)
+        );
+    }
+
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         Collection<WegasPermission> p = WegasPermission.getAsCollection(
-                new WegasEntityPermission(this.getId(), WegasEntityPermission.Level.WRITE, WegasEntityPermission.EntityType.USER)
+            this.getAssociatedWritePermission()
         );
-        p.addAll(WegasMembership.TRAINER); // why ? maybe to share game/gameModel
+        p.addAll(WegasMembership.TRAINER); // why ? maybe to share game/gameModel (ie add permission)
         return p;
     }
 

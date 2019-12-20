@@ -4,11 +4,17 @@
  * Inspired from from https://gist.github.com/sqren/780ae8ca1e2cf59050b0695c901b5aa3
  */
 import * as React from 'react';
+import { omit } from 'lodash-es';
+import { wlog } from './wegaslog';
 
+const defaultPropsCheckerProps = {
+  children: (_props: {}) => {},
+  compType: 'SIMPLE',
+  verbose: false,
+};
 // TYPES
 interface PropsCheckerProps<T> {
   children: (props: T) => React.ReactElement | null;
-  childrenProps: T;
   compType?: ComparaisonTypes;
   verbose?: boolean;
 }
@@ -74,10 +80,14 @@ function compFNSelection(compType: ComparaisonTypes) {
  * @param WrappedComponent The component to analyse
  * @param compType The possible comparaison type (Be carefull with "DEEP". It may get errors in case of circular references)
  */
-export function ReactFnCompPropsChecker<T extends Props>(
-  props: PropsCheckerProps<T>,
+export function ReactFnCompPropsChecker<T extends { [id: string]: unknown }>(
+  props: PropsCheckerProps<T> & T,
 ) {
-  const { children, childrenProps, compType = 'SIMPLE', verbose } = props;
+  const { children, compType = 'SIMPLE', verbose } = props;
+  const childrenProps = (omit(
+    props,
+    Object.keys(defaultPropsCheckerProps),
+  ) as unknown) as T;
   const oldPropsRef = React.useRef<T>();
   React.useEffect(() => {
     const oldProps = oldPropsRef.current;
@@ -102,4 +112,69 @@ export function ReactFnCompPropsChecker<T extends Props>(
     oldPropsRef.current = childrenProps;
   }, [childrenProps, compType, verbose]);
   return children(childrenProps);
+}
+
+export function useComparator(
+  object: any,
+  compType: ComparaisonTypes = 'SIMPLE',
+) {
+  const state = React.useRef(object);
+
+  wlog('\n====== COMPARATOR ======');
+  Object.keys(object).map(k => {
+    const oldValue = state.current[k];
+    const newValue = object[k];
+    if (!compFNSelection(compType)(oldValue, newValue)) {
+      wlog(
+        `Changes in ${k} : \n----------------\nOLD : ${oldValue}\nNEW : ${newValue}`,
+      );
+    }
+  });
+
+  state.current = object;
+}
+
+function timeDifference(start?: number, end?: number) {
+  if (start === undefined || end === undefined) {
+    return 'Start or end time undefined';
+  }
+
+  let difference = start - end;
+  let time = '';
+  const daysDifference = Math.floor(difference / 1000 / 60 / 60 / 24);
+  if (daysDifference > 0) {
+    time += daysDifference + ' day/s ';
+    difference -= daysDifference * 1000 * 60 * 60 * 24;
+  }
+
+  const hoursDifference = Math.floor(difference / 1000 / 60 / 60);
+  if (hoursDifference > 0) {
+    time += hoursDifference + ':';
+    difference -= hoursDifference * 1000 * 60 * 60;
+  }
+
+  const minutesDifference = Math.floor(difference / 1000 / 60);
+  if (minutesDifference > 0) {
+    time += minutesDifference + ':';
+    difference -= minutesDifference * 1000 * 60;
+  }
+
+  const secondsDifference = Math.floor(difference / 1000);
+  time += minutesDifference + ',';
+  difference -= secondsDifference * 1000;
+  time += difference + ' sec';
+
+  return time;
+}
+
+export function useChronometer(label: string) {
+  const checks = React.useRef<{ [id: string]: number }>({});
+  const start = Date.now();
+  const last = checks.current[label];
+  wlog(
+    `Chrono ${label} : ${
+      last === undefined ? 'Starting' : timeDifference(start, last)
+    }`,
+  );
+  checks.current[label] = start;
 }

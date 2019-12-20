@@ -222,16 +222,28 @@ YUI.add('wegas-app', function(Y) {
                         }, this);
                 }
 
-                Y.one("body").on("key", function(e) { // Add shortcut to activate developper mode on key '§' pressed
-                    e.currentTarget.toggleClass("wegas-stdmode") // Toggle stdmode class on body (hides any wegas-advancedfeature)
-                        .toggleClass("wegas-advancedmode");
-                    Y.config.win.Y = Y; // Allow access to Y instance
-                }, "167", this);
+                Y.one("body").on("key", function(e) { // detect ctrl+§ key
+                    // top left key only
+                    if (e._event.code === "Backquote") {
+                        if (e.ctrlKey || e.metaKey) {
+                            var body = e.currentTarget;
+                            if (e.altKey) {
+                                body.toggleClass("wegas-internalmode");
+                                //Toggle stdmode class on body (hides any wegas-advancedfeature)
+                            } else {
+                                body.toggleClass("wegas-advancedmode");
+                            }
 
-                Y.one("body").on("key", function(e) { // Add shortcut to activate internal mode on key '°' pressed
-                    e.currentTarget.toggleClass("wegas-internalmode");
-                    Y.config.win.Y = Y; // Allow access to Y instance
-                }, "176", this);
+                            if (body.hasClass("wegas-internalmode") || body.hasClass("wegas-advancedmode")) {
+                                body.removeClass("wegas-stdmode");
+                                Y.config.win.Y = Y; // Allow access to Y instance
+                            } else {
+                                body.addClass("wegas-stdmode");
+                                Y.config.win.Y = undefined; // remove acces to Y instance
+                            }
+                        }
+                    }
+                }, "down:", this);
             });
         },
         resume: function() {

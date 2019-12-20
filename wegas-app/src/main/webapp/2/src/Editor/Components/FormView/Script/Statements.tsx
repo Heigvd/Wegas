@@ -7,7 +7,7 @@ import {
 } from '@babel/types';
 import generate from '@babel/generator';
 import * as React from 'react';
-import { ExprStatement } from './ExpressionStatement';
+import { SecureExpressionStatement } from './ExpressionStatement';
 import { IconButton } from '../../../../Components/Button/IconButton';
 import { css } from 'emotion';
 import { isBinaryExpression } from '@babel/types';
@@ -39,7 +39,7 @@ export function Statements({ statements, onChange, mode }: StatementsProps) {
               (isCallExpression(s.expression) ||
                 isBinaryExpression(s.expression))) ||
             isEmptyStatement(s) ? (
-              <ExprStatement
+              <SecureExpressionStatement
                 stmt={s}
                 mode={mode}
                 onChange={stmt => {

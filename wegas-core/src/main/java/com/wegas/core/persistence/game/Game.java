@@ -41,13 +41,13 @@ import javax.validation.constraints.Pattern;
  */
 @Entity
 @Table(
-        //uniqueConstraints = {
-        //    @UniqueConstraint(columnNames = {"name"}),
-        //    @UniqueConstraint(columnNames = {"token"})}, // partial index : WHERE status = LIVE OR status = BIN
-        indexes = {
-            @Index(columnList = "gamemodel_id"),
-            @Index(columnList = "createdby_id")
-        }
+    //uniqueConstraints = {
+    //    @UniqueConstraint(columnNames = {"name"}),
+    //    @UniqueConstraint(columnNames = {"token"})}, // partial index : WHERE status = LIVE OR status = BIN
+    indexes = {
+        @Index(columnList = "gamemodel_id"),
+        @Index(columnList = "createdby_id")
+    }
 )
 @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC")
 @NamedQuery(name = "Game.findIdById", query = "SELECT DISTINCT g.id FROM Game g WHERE g.id = :gameId")
@@ -71,8 +71,8 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     @Basic(optional = false)
     @Pattern(regexp = "^.*\\S+.*$", message = "Game name cannot be empty")// must at least contains one non-whitespace character
     @WegasEntityProperty(
-            optional = false, nullable = false,
-            view = @View(label = "Name"))
+        optional = false, nullable = false,
+        view = @View(label = "Name"))
     private String name;
 
     /**
@@ -80,11 +80,10 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @NotNull
     @Basic(optional = false)
-
     @Pattern(regexp = "^([a-zA-Z0-9_-]|\\.(?!\\.))*$", message = "Token shall only contains alphanumeric characters, numbers, dots, underscores or hyphens")
     @WegasEntityProperty(
-            nullable = false, optional = false,
-            view = @View(label = "Token"))
+        nullable = false, optional = false,
+        view = @View(label = "Token"))
     private String token;
 
     /**
@@ -127,8 +126,8 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @Enumerated
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = Open.class,
-            view = @View(label = "Access"))
+        optional = false, nullable = false, proposal = Open.class,
+        view = @View(label = "Access"))
     private GameAccess access = GameAccess.OPEN;
 
     /**
@@ -197,7 +196,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @JsonManagedReference("game-team")
     // Exclude this property from the Lobby view and force a fetch in Editor view:
-    @JsonView(Views.EditorI.class)
+    @JsonView(Views.ExtendedI.class)
     @WegasExtraProperty(optional = false, nullable = false, view = @View(label = "Teams", value = Hidden.class))
     public List<Team> getTeams() {
         return this.getGameTeams().getTeams();
@@ -370,6 +369,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     /**
      * @return game creator name or null if the user doesn't exists anymore
      */
+    @JsonView({Views.EditorI.class, Views.LobbyI.class})
     public String getCreatedByName() {
         if (this.getCreatedBy() != null) {
             return this.getCreatedBy().getName();
@@ -387,7 +387,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
 
     /**
      * @param gameModelId the gameModelId to set public void setGameModelId(Long gameModelId) { this.gameModelId =
-     * gameModelId; }
+     *                    gameModelId; }
      */
     /**
      * @return the access
