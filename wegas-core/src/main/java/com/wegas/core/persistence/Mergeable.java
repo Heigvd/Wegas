@@ -65,7 +65,7 @@ public interface Mergeable extends IMergeable {
     default public String getJSONClassName() {
         return Mergeable.getJSONClassName(this.getClass());
     }
-
+    
     @JsonProperty("@class")
     default public void setJSONClassName(String atClass){
         // no-op
