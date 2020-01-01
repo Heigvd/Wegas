@@ -38,7 +38,7 @@ const SCRIPTS: ScriptStore = {
                 type: 'html',
               },
             },
-          }
+          },
         },
       ],
     },
@@ -108,7 +108,7 @@ export function createGlobalCallAST(
 }
 
 export function extractGlobalMethod(node: CallExpression) {
-  let ret: Identifier[] = [];
+  const ret: Identifier[] = [];
   let depth = node.callee;
   while (isMemberExpression(depth)) {
     if (!isIdentifier(depth.property)) {

@@ -7,7 +7,7 @@ import Textarea from './Textarea';
 import BooleanView from './Boolean';
 import Select from './Select';
 import ArrayWidget from './Array';
-import { Script } from './Script';
+// import { Script } from './Script';
 import { Script as FunkyScript } from './Script/Script';
 import { Code } from './Code';
 import { TreeVariableSelect } from './TreeVariableSelect';
@@ -16,6 +16,7 @@ import EntityArrayFieldSelect from './EntityArrayFieldSelect';
 import FlatVariableSelect from './FlatVariableSelect';
 import { LabeledHTMLEditor } from '../../../Components/HTMLEditor';
 import { TimestampView } from './Timestamp';
+import { VariableInput } from './Script/VariableInput';
 
 export const DEFINED_VIEWS = {
   hidden,
@@ -30,10 +31,11 @@ export const DEFINED_VIEWS = {
   select: Select,
   html: LabeledHTMLEditor,
   i18nhtml: translatable(LabeledHTMLEditor),
-  script: Script,
-  fonkyScript: FunkyScript,
+  // script: Script,
+  script: FunkyScript,
   code: Code,
   variableselect: TreeVariableSelect,
+  variableInput: VariableInput,
   entityarrayfieldselect: EntityArrayFieldSelect,
   flatvariableselect: FlatVariableSelect,
   timestamp: TimestampView,

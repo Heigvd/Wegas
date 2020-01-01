@@ -14,7 +14,12 @@ import {
   isExpressionStatement,
 } from '@babel/types';
 import generate from '@babel/generator';
-import { ScriptView, scriptIsCondition, scriptEditStyle } from './Script';
+import {
+  ScriptView,
+  scriptIsCondition,
+  scriptEditStyle,
+  returnTypes,
+} from './Script';
 import {
   getMethodConfig,
   WegasMethod,
@@ -27,15 +32,9 @@ import { css } from 'emotion';
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
 import { parse } from '@babel/parser';
 import { StyledLabel } from '../../../../Components/AutoImport/String/String';
-import { wlog } from '../../../../Helper/wegaslog';
 import { pick, omit } from 'lodash';
 import { DEFINED_VIEWS } from '..';
-
-// const testStyle = css({
-//   borderColor: 'lime',
-//   borderStyle: 'solid',
-//   borderWidth: '2px',
-// });
+import { IconButton } from '../../../../Components/Inputs/Button/IconButton';
 
 const expressionEditorStyle = css({
   marginTop: '0.8em',
@@ -187,12 +186,13 @@ export function ExpressionEditor({
   scriptableClassFilter,
   onChange,
 }: ExpressionEditorProps) {
-  const oldScript = React.useRef('');
   const [currentStatement, setCurrentStatement] = React.useState(statement);
   const [methods, setMethods] = React.useState<{
     [key: string]: WegasMethod;
   }>();
   const [error, setError] = React.useState();
+  const [srcMode, setSrcMode] = React.useState(false);
+  const [newSrc, setNewSrc] = React.useState();
   const [scriptAttributes, setScriptAttributes] = React.useState<
     IAttributes | IConditionAttributes /* & { [param: string]: unknown }*/
   >(
@@ -216,8 +216,10 @@ export function ExpressionEditor({
       variableName: schemaProps.variable(
         'variable',
         false,
-        scriptableClassFilter &&
-          scriptableClassFilter.map(sf => sf.substr(2) as WegasClassNames),
+        scriptIsCondition(mode, scriptableClassFilter)
+          ? undefined
+          : scriptableClassFilter &&
+              scriptableClassFilter.map(sf => sf.substr(2) as WegasClassNames),
         'DEFAULT',
         0,
       ),
@@ -257,22 +259,20 @@ export function ExpressionEditor({
     },
   };
 
-  const onScriptEditorChange = React.useCallback(
+  const onScripEditorSave = React.useCallback(
     (value: string) => {
-      if (oldScript.current !== value) {
-        oldScript.current = value;
-        try {
-          wlog(value);
-          const newStatement = parse(value, { sourceType: 'script' }).program
-            .body;
-          setError(undefined);
-          if (newStatement.length === 1) {
-            setCurrentStatement(newStatement[0]);
-          }
-          onChange && onChange(newStatement);
-        } catch (e) {
-          setError(e.message);
+      try {
+        const newStatement = parse(value, {
+          sourceType: 'script',
+        }).program.body;
+        setError(undefined);
+        if (newStatement.length === 1) {
+          setCurrentStatement(newStatement[0]);
         }
+        onChange && onChange(newStatement);
+        setNewSrc(undefined);
+      } catch (e) {
+        setError(e.message);
       }
     },
     [onChange],
@@ -280,8 +280,7 @@ export function ExpressionEditor({
 
   const onEditorChange = React.useCallback(
     (scriptAttributes: IAttributes | IConditionAttributes) => {
-      let script = '';
-      script = `Variable.find(gameModel,${
+      let script = `Variable.find(gameModel,${
         scriptAttributes.variableName
           ? `'${scriptAttributes.variableName}'`
           : 'undefined'
@@ -307,17 +306,15 @@ export function ExpressionEditor({
                 ? `'${scriptAttributes.comparator}'`
                 : scriptAttributes.comparator
             }`;
-            onScriptEditorChange(script);
           }
-        } else {
-          onScriptEditorChange(script);
         }
       }
+      onScripEditorSave(script);
     },
     [
       mode,
       scriptableClassFilter,
-      onScriptEditorChange,
+      onScripEditorSave,
       methods,
       schema.properties,
     ],
@@ -377,29 +374,42 @@ export function ExpressionEditor({
 
   return (
     <div className={expressionEditorStyle}>
-      {error ? (
+      {newSrc !== undefined ? (
+        <IconButton icon="save" onClick={() => onScripEditorSave(newSrc)} />
+      ) : (
+        <IconButton
+          icon="code"
+          pressed={error !== undefined}
+          onClick={() => setSrcMode(sm => !sm)}
+        />
+      )}
+      {error || srcMode ? (
         <div className={scriptEditStyle}>
           <StyledLabel type="error" value={error} duration={3000} />
           <WegasScriptEditor
             value={
-              oldScript.current === ''
+              newSrc === undefined
                 ? currentStatement
                   ? generate(currentStatement).code
                   : ''
-                : oldScript.current
+                : newSrc
             }
-            onChange={onScriptEditorChange}
+            onChange={setNewSrc}
             noGutter
             minimap={false}
+            returnType={returnTypes(mode, scriptableClassFilter)}
           />
         </div>
       ) : (
         <Form
           value={pick(scriptAttributes, Object.keys(schema.properties))}
           schema={schema}
-          onChange={v => {
+          onChange={(v, e) => {
             onEditorChange(v);
             setScriptAttributes(v);
+            if (e && e.length > 0) {
+              setError(e[0].message);
+            }
           }}
         />
       )}

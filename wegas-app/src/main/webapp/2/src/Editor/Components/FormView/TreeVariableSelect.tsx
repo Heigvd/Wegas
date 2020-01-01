@@ -101,7 +101,7 @@ function labelForValue(items: Item[], value?: string) {
   }
   return '';
 }
-interface TreeVariableSelectProps
+export interface TreeVariableSelectProps
   extends WidgetProps.BaseProps<
     CommonView &
       LabeledView & { items?: Item[]; classFilter?: WegasClassNames[] }

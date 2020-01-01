@@ -1,8 +1,8 @@
-import {
-  CodeLanguage,
-  ScriptMode,
-} from '../../Editor/Components/FormView/Script';
 import { WegasMethod } from '../../Editor/editionConfig';
+import {
+  ScriptMode,
+  CodeLanguage,
+} from '../../Editor/Components/FormView/Script/Script';
 
 type SchemaPrimitive =
   | 'boolean'

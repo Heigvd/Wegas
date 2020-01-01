@@ -31,7 +31,20 @@ export type CodeLanguage =
 export const scriptIsCondition = (
   mode?: ScriptMode,
   scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
-) => mode === 'GET' && scriptableClassFilter === undefined;
+) =>
+  mode === 'GET' &&
+  (scriptableClassFilter === undefined ||
+    scriptableClassFilter.includes('boolean'));
+
+export const returnTypes = (
+  mode?: ScriptMode,
+  scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
+): WegasScriptEditorReturnTypeName[] | undefined =>
+  mode === 'GET'
+    ? ['boolean']
+    : mode === 'SET' && mode === undefined
+    ? ['void']
+    : scriptableClassFilter;
 
 export interface ScriptView {
   mode?: ScriptMode;
@@ -156,7 +169,10 @@ export function Script({
               {isServerScript && (
                 <IconButton icon="play" onClick={testScript} />
               )}
-              {srcMode ? (
+              {srcMode /*||
+              (view.mode === 'NONE' &&
+                expressions != null &&
+                expressions.length > 1) */ ? (
                 <div className={scriptEditStyle}>
                   <WegasScriptEditor
                     value={scriptContent}
@@ -172,6 +188,10 @@ export function Script({
                   expressions={expressions}
                   onChange={e => onCodeChange(generate(program(e)).code)}
                   mode={view.mode}
+                  scriptableClassFilter={returnTypes(
+                    view.mode,
+                    view.scriptableClassFilter,
+                  )}
                 />
               )}
             </>
