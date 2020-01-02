@@ -35,6 +35,8 @@ import { StyledLabel } from '../../../../Components/AutoImport/String/String';
 import { pick, omit } from 'lodash';
 import { DEFINED_VIEWS } from '..';
 import { IconButton } from '../../../../Components/Inputs/Button/IconButton';
+import { deepDifferent } from '../../../../Components/Hooks/storeHookFactory';
+import { useComparator } from '../../../../Helper/react.debug';
 
 const expressionEditorStyle = css({
   marginTop: '0.8em',
@@ -44,6 +46,7 @@ const expressionEditorStyle = css({
 });
 
 const isLiteralExpression = (expression: Expression): expression is Literal =>
+  (isIdentifier(expression) && expression.name === 'undefined') ||
   expression.type === 'BooleanLiteral' ||
   expression.type === 'NullLiteral' ||
   expression.type === 'NumericLiteral' ||
@@ -285,7 +288,7 @@ export function ExpressionEditor({
           ? `'${scriptAttributes.variableName}'`
           : 'undefined'
       })`;
-      if (scriptAttributes.methodName && methods !== undefined) {
+      if (scriptAttributes.methodName) {
         const parameters = Object.keys(
           omit(schema.properties, Object.keys(defaultConditionAttributes)),
         ).map(k => {
@@ -306,22 +309,24 @@ export function ExpressionEditor({
                 ? `'${scriptAttributes.comparator}'`
                 : scriptAttributes.comparator
             }`;
+            onScripEditorSave(script);
           }
+        } else {
+          onScripEditorSave(script);
         }
       }
-      onScripEditorSave(script);
     },
-    [
-      mode,
-      scriptableClassFilter,
-      onScripEditorSave,
-      methods,
-      schema.properties,
-    ],
+    [mode, scriptableClassFilter, onScripEditorSave, schema.properties],
   );
 
   React.useEffect(() => {
-    setCurrentStatement(statement);
+    setCurrentStatement(cs => {
+      if (deepDifferent(cs, statement)) {
+        return statement;
+      } else {
+        return cs;
+      }
+    });
   }, [statement]);
 
   React.useEffect(() => {
@@ -342,9 +347,15 @@ export function ExpressionEditor({
     }
   }, [variable, mode]);
 
+  useComparator(
+    { currentStatement, mode, scriptableClassFilter, methods },
+    'SIMPLE',
+  );
+
   React.useEffect(() => {
     if (currentStatement) {
       if (scriptIsCondition(mode, scriptableClassFilter)) {
+        debugger;
         if (isConditionStatement(currentStatement)) {
           const newScriptAttributes = {
             variableName: getVariable(currentStatement.expression.left),
@@ -370,7 +381,7 @@ export function ExpressionEditor({
         }
       }
     }
-  }, [currentStatement, mode, scriptableClassFilter, methods]);
+  }, [currentStatement, mode, scriptableClassFilter]);
 
   return (
     <div className={expressionEditorStyle}>
@@ -407,9 +418,9 @@ export function ExpressionEditor({
           onChange={(v, e) => {
             onEditorChange(v);
             setScriptAttributes(v);
-            if (e && e.length > 0) {
-              setError(e[0].message);
-            }
+            // if (e && e.length > 0) {
+            //   setError(e[0].message);
+            // }
           }}
         />
       )}

@@ -30,7 +30,7 @@ const schema = (scriptableClassFilter?: WegasScriptEditorReturnTypeName[]) => ({
 
 export function VariableInput(props: VariableInputProps) {
   const [srcMode, setSrcMode] = React.useState(false);
-
+  const onChange = React.useCallback((value: string) => {});
   return (
     <div>
       <IconButton icon="code" onClick={() => setSrcMode(sm => !sm)} />

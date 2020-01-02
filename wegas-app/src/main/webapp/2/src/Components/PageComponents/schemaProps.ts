@@ -149,7 +149,7 @@ export const schemaProps = {
       featureLevel,
       label,
       mode,
-      type: 'fonkyScript',
+      type: 'script',
       scriptableClassFilter,
     },
   }),

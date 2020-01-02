@@ -16,7 +16,7 @@ export function WyswygScriptEditor({
 }: WyswygScriptEditorProps) {
   const onExpressionChange = React.useCallback(
     (expression: Statement | Statement[], index?: number) => {
-      if (index && expressions) {
+      if (index !== undefined && expressions) {
         const newExpressions = [...expressions];
         newExpressions.splice(
           index,

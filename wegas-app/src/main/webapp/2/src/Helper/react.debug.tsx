@@ -115,13 +115,13 @@ export function ReactFnCompPropsChecker<T extends { [id: string]: unknown }>(
 }
 
 export function useComparator(
-  object: any,
+  object: object,
   compType: ComparaisonTypes = 'SIMPLE',
 ) {
   const state = React.useRef(object);
 
   wlog('\n====== COMPARATOR ======');
-  Object.keys(object).map(k => {
+  Object.keys(object).map((k: keyof object) => {
     const oldValue = state.current[k];
     const newValue = object[k];
     if (!compFNSelection(compType)(oldValue, newValue)) {
