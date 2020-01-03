@@ -6,7 +6,7 @@ import { omit } from 'lodash';
 
 interface DummyProps {
   test1?: IScript;
-  test2?: IScript;
+  // test2?: IScript;
 }
 
 const Dummy: React.FunctionComponent<DummyProps> = (props: DummyProps) => {
@@ -27,8 +27,8 @@ registerComponent(
     'Dummy',
     'question',
     {
-      test1: schemaProps.script('Test1', false, undefined, 'GET'),
-      test2: schemaProps.script('Test2', false, undefined, 'SET'),
+      test1: schemaProps.script('Test1', false, ["ISNumberInstance","ISStringDescriptor"], 'NONE'),
+      // test2: schemaProps.script('Test2', false, undefined, 'SET'),
     },
     [],
     () => ({}),

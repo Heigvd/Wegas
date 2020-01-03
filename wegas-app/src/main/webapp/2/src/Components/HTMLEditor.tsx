@@ -219,8 +219,8 @@ export default function HTMLEditor({
             testbutton: { text: 'test', className: 'testclass' },
           })}
           onInit={editor => (HTMLEditor.current = editor.target)}
-          onChange={(event: { level: { content: string } }) => {
-            HTMLContent.current = event.level ? event.level.content : '';
+          onChange={event => {
+            HTMLContent.current = event.target.getContent();
             onChange && onChange(HTMLContent.current);
           }}
           onFocus={() => setEditorFocus(true)}

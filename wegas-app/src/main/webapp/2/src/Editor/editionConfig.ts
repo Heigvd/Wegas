@@ -5,19 +5,25 @@ import { formValidation } from './formValidation';
 import { entityIs } from '../data/entities';
 import { editStateMachine, editVariable } from '../data/Reducer/globalState';
 import { ThunkResult } from '../data/store';
+import { TYPESTRING } from 'jsoninput/typings/types';
 
 export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 
-export type WegasMethodParameter = Schema<AvailableViews> & {
-  type:
-    | 'string'
-    | 'number'
-    | 'array'
-    | 'object'
-    | 'boolean'
-    | 'identifier'
-    | 'null';
-};
+// export type WegasMethodParameter = Schema<AvailableViews> & {
+//   type:
+//     | 'string'
+//     | 'number'
+//     | 'array'
+//     | 'object'
+//     | 'boolean'
+//     | 'identifier'
+//     | 'null';
+// };
+
+export interface WegasMethodParameter {
+  type?: TYPESTRING | TYPESTRING[] | 'identifier' | ['identifier', TYPESTRING];
+  view: AvailableViews;
+}
 
 export interface WegasMethod {
   label: string;

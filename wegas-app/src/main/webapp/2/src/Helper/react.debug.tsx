@@ -126,7 +126,7 @@ export function useComparator(
     const newValue = object[k];
     if (!compFNSelection(compType)(oldValue, newValue)) {
       wlog(
-        `Changes in ${k} : \n----------------\nOLD : ${oldValue}\nNEW : ${newValue}`,
+        `Changes in ${k} : ${typeof newValue} \n----------------\nOLD : ${oldValue}\nNEW : ${newValue}`,
       );
     }
   });

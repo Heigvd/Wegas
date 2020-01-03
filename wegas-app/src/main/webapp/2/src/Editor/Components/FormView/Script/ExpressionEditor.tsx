@@ -12,6 +12,7 @@ import {
   isIdentifier,
   isBinaryExpression,
   isExpressionStatement,
+  isEmptyStatement,
 } from '@babel/types';
 import generate from '@babel/generator';
 import {
@@ -36,7 +37,16 @@ import { pick, omit } from 'lodash';
 import { DEFINED_VIEWS } from '..';
 import { IconButton } from '../../../../Components/Inputs/Button/IconButton';
 import { deepDifferent } from '../../../../Components/Hooks/storeHookFactory';
-import { useComparator } from '../../../../Helper/react.debug';
+import { TYPESTRING } from 'jsoninput/typings/types';
+
+const schemaTypestrings: TYPESTRING[] = [
+  'array',
+  'boolean',
+  'null',
+  'number',
+  'object',
+  'string',
+];
 
 const expressionEditorStyle = css({
   marginTop: '0.8em',
@@ -104,25 +114,55 @@ const getParameters = (expression: CallExpression) =>
           return (a as StringLiteral).value;
         case 'NumericLiteral':
           return (a as NumericLiteral).value;
-        default:
-          return generate(a).code;
+        default: {
+          const code = generate(a).code;
+          try {
+            return JSON.parse(code);
+          } catch {
+            return code;
+          }
+        }
       }
     }),
   );
 
+const normalizeInputType = (type?: string) => {
+  return type
+    ? schemaTypestrings.includes(type as TYPESTRING)
+      ? type
+      : 'object'
+    : undefined;
+};
+
 const generateParameterSchema = (parameters: WegasMethodParameter[]) =>
   parameters.reduce((o, p, i) => {
-    const type = Object.keys(DEFINED_VIEWS).includes(p.type)
-      ? p.type
-      : 'hidden';
+    let type;
+    if (Array.isArray(p.type)) {
+      type = (p.type as unknown[]).map(normalizeInputType);
+    } else {
+      type = normalizeInputType(p.type);
+    }
+    const viewType =
+      p.view && p.view.type
+        ? Object.keys(DEFINED_VIEWS).includes(p.view.type)
+          ? p.view.type
+          : type === 'string' || type === 'number'
+          ? type
+          : 'hidden'
+        : undefined;
     return {
       ...o,
       [String(i)]: {
         ...p,
         index: i + 2,
-        type: p.type === 'number' ? 'number' : 'string',
-        formated: p.type !== 'string',
-        view: { ...p.view, type, label: 'Argument ' + i, index: i + 2 },
+        type,
+        identifier: p.type === 'identifier',
+        view: {
+          ...p.view,
+          type: viewType,
+          label: 'Argument ' + i,
+          index: i + 2,
+        },
       },
     };
   }, {});
@@ -179,8 +219,9 @@ const defaultConditionAttributes: IConditionAttributes = {
 
 interface ExpressionEditorProps
   extends Exclude<ScriptView, ['singleExpression', 'clientScript']> {
-  statement: Statement | null;
+  statement: Statement;
   onChange?: (expression: Statement | Statement[]) => void;
+  onDelete?: () => void;
 }
 
 export function ExpressionEditor({
@@ -188,6 +229,7 @@ export function ExpressionEditor({
   mode,
   scriptableClassFilter,
   onChange,
+  onDelete,
 }: ExpressionEditorProps) {
   const [currentStatement, setCurrentStatement] = React.useState(statement);
   const [methods, setMethods] = React.useState<{
@@ -292,14 +334,20 @@ export function ExpressionEditor({
         const parameters = Object.keys(
           omit(schema.properties, Object.keys(defaultConditionAttributes)),
         ).map(k => {
+          // return scriptAttributes[k as keyof typeof scriptAttributes];
           const param = scriptAttributes[k as keyof typeof scriptAttributes];
           const properties = schema.properties[k] as {
             type?: string;
-            formated?: boolean;
+            identifier?: boolean;
           };
-          return properties.type === 'string' && !properties.formated
-            ? `'${param}'`
-            : param;
+          // return properties.type === 'string' && !properties.formated
+          //   ? `'${param}'`
+          //   : param;
+          return properties.type === 'number' ||
+            properties.type === 'string' ||
+            properties.identifier
+            ? param
+            : JSON.stringify(param);
         });
         script += `.${scriptAttributes.methodName}(${parameters})`;
         if (scriptIsCondition(mode, scriptableClassFilter)) {
@@ -347,15 +395,12 @@ export function ExpressionEditor({
     }
   }, [variable, mode]);
 
-  useComparator(
-    { currentStatement, mode, scriptableClassFilter, methods },
-    'SIMPLE',
-  );
+  // useComparator(scriptAttributes, 'SIMPLE');
+  // useComparator({ currentStatement, methods, scriptAttributes }, 'SIMPLE');
 
   React.useEffect(() => {
-    if (currentStatement) {
+    if (!isEmptyStatement(currentStatement)) {
       if (scriptIsCondition(mode, scriptableClassFilter)) {
-        debugger;
         if (isConditionStatement(currentStatement)) {
           const newScriptAttributes = {
             variableName: getVariable(currentStatement.expression.left),
@@ -394,13 +439,14 @@ export function ExpressionEditor({
           onClick={() => setSrcMode(sm => !sm)}
         />
       )}
-      {error || srcMode ? (
+      <IconButton icon="trash" onClick={onDelete} />
+      {srcMode ? (
         <div className={scriptEditStyle}>
           <StyledLabel type="error" value={error} duration={3000} />
           <WegasScriptEditor
             value={
               newSrc === undefined
-                ? currentStatement
+                ? !isEmptyStatement(currentStatement)
                   ? generate(currentStatement).code
                   : ''
                 : newSrc
@@ -409,6 +455,7 @@ export function ExpressionEditor({
             noGutter
             minimap={false}
             returnType={returnTypes(mode, scriptableClassFilter)}
+            onSave={onScripEditorSave}
           />
         </div>
       ) : (
@@ -418,9 +465,11 @@ export function ExpressionEditor({
           onChange={(v, e) => {
             onEditorChange(v);
             setScriptAttributes(v);
-            // if (e && e.length > 0) {
-            //   setError(e[0].message);
-            // }
+            if (e && e.length > 0) {
+              setError(e[0].message);
+            } else {
+              setError(undefined);
+            }
           }}
         />
       )}

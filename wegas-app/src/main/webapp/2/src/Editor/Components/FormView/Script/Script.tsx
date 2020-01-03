@@ -169,10 +169,7 @@ export function Script({
               {isServerScript && (
                 <IconButton icon="play" onClick={testScript} />
               )}
-              {srcMode /*||
-              (view.mode === 'NONE' &&
-                expressions != null &&
-                expressions.length > 1) */ ? (
+              {srcMode ? (
                 <div className={scriptEditStyle}>
                   <WegasScriptEditor
                     value={scriptContent}
