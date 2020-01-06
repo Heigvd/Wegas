@@ -30,6 +30,8 @@ import { LabeledView, Labeled } from '../Editor/Components/FormView/labeled';
 import { FileBrowser } from '../Editor/Components/FileBrowser/FileBrowser';
 import { css } from 'emotion';
 import { classesCTX } from './Contexts/ClassesProvider';
+import { debounceAction } from '../Helper/debounceAction';
+import { wlog } from '../Helper/wegaslog';
 
 const toolbar = css({
   width: '300px',
@@ -152,12 +154,12 @@ export default function HTMLEditor({
         editor.on('init', () => {
           formatter = editor.formatter;
         });
-        editor.on('blur', () => {
-          // TODO : find a way to close the expended toolbar to avoid bug
-          // editor.execCommand('commandName');
-          // wlog(e);
-          // debugger;
-        });
+        // editor.on('blur', () => {
+        //   // TODO : find a way to close the expended toolbar to avoid bug
+        //   // editor.execCommand('commandName');
+        //   // wlog(e);
+        //   // debugger;
+        // });
         extraButtonsKeys.forEach(btnName => {
           editor.ui.registry.addToggleButton(btnName, {
             text: extraButtons[btnName].text,
@@ -165,7 +167,11 @@ export default function HTMLEditor({
             onAction: () => {
               formatter && formatter.toggle(`custom-${btnName}`);
               editor.fire('change', {
-                level: { content: editor.getContent() },
+                event: {
+                  target: {
+                    getContent: editor.getContent,
+                  },
+                },
               });
             },
             onSetup: function(buttonApi) {
@@ -219,9 +225,12 @@ export default function HTMLEditor({
             testbutton: { text: 'test', className: 'testclass' },
           })}
           onInit={editor => (HTMLEditor.current = editor.target)}
-          onChange={event => {
-            HTMLContent.current = event.target.getContent();
-            onChange && onChange(HTMLContent.current);
+          onEditorChange={value => {
+            debounceAction('HTMLEditorOnChange', () => {
+              HTMLContent.current = value;
+              wlog(HTMLContent.current);
+              onChange && onChange(HTMLContent.current);
+            });
           }}
           onFocus={() => setEditorFocus(true)}
           onBlur={() => setEditorFocus(false)}
@@ -273,18 +282,18 @@ export class LabeledHTMLEditor extends React.Component<HtmlProps, HtmlState> {
     oldProps: this.props,
     value: this.props.value || '<p></p>',
   };
-  onChange = (value: string) => {
-    if (this.state.value !== value) {
-      const oldVal = this.state.value;
-      this.setState({ value }, () => {
-        if (oldVal !== this.state.value) {
-          this.props.onChange(this.state.value);
-        }
-      });
-    } else {
-      this.setState({ value });
-    }
-  };
+  // onChange = (value: string) => {
+  //   if (this.state.value !== value) {
+  //     const oldVal = this.state.value;
+  //     this.setState({ value }, () => {
+  //       if (oldVal !== this.state.value) {
+  //         this.props.onChange(this.state.value);
+  //       }
+  //     });
+  //   } else {
+  //     this.setState({ value });
+  //   }
+  // };
 
   render() {
     return (
@@ -296,7 +305,11 @@ export class LabeledHTMLEditor extends React.Component<HtmlProps, HtmlState> {
           {({ labelNode /*, inputId*/ }) => (
             <>
               {labelNode}
-              <HTMLEditor value={this.state.value} onChange={this.onChange} />
+              <HTMLEditor
+                value={this.state.value}
+                // onChange={this.onChange} />
+                onChange={this.props.onChange}
+              />
             </>
           )}
         </Labeled>
