@@ -42,7 +42,7 @@ angular.module('wegas.service.wegasTranslations', [])
                     }
                 }
             },
-            $get: function() { debugger;
+            $get: function() {
                 var keywords = {
                     'user': {
                         singular: {
