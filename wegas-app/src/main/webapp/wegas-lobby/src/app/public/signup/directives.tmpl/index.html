@@ -32,7 +32,10 @@
         </div>
         <div class="form__row">
             <input class="form__row__entry" ng-model="publicSignupCtrl.newUser.agree" type="checkbox" id="agree" autocomplete="off" style="width:22px; margin-top:3px;">
-            <label for="agree" id="agreeLabel">{{'CREATE-ACCOUNT-INPUT-AGREE' | translate}} <a href="http://www.albasim.ch/en/terms-of-use/" class="link-same-color" target="_blank">{{'CREATE-ACCOUNT-INPUT-TERMS' | translate}}</a></label>
+            <label for="agree" id="agreeLabel">{{'CREATE-ACCOUNT-INPUT-AGREE' | translate}} <a href="{{'WEGAS-TERMS-OF-USE-URL' | translate}}" class="link-same-color" target="_blank">{{'WEGAS-TERMS-OF-USE-TITLE' | translate}}</a>
+            {{'WEGAS-KEYWORD-AND' | translate}}
+            <a href="{{'WEGAS-DATA-PRIVACY-URL' | translate}}" class="link-same-color" target="_blank">{{'WEGAS-DATA-PRIVACY-TITLE' | translate}}</a>
+            </label>
         </div>
         <div class="form__row form__row--right">
             <input class="form__row__btn button button--success" type="submit" value="{{'CREATE-ACCOUNT-SEND-BTN' | translate}}" />

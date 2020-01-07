@@ -32,7 +32,9 @@
     <div class="form__row" id="agreeDiv" ng-init="init()" style="display:none;clear:both;font-size:110%">
         <input class="form__row__entry" ng-model="agreeCbx" type="checkbox" id="agreeCbx" autocomplete="off" style="width:22px;margin-top:5px;">
         <label for="agreeCbx" style="font-weight:bold; color:white;">{{'CREATE-ACCOUNT-INPUT-AGREE' | translate}}
-            <a href="http://www.albasim.ch/en/terms-of-use/" target="_blank" style="font-weight:bold;color:white;text-decoration:underline;">{{'CREATE-ACCOUNT-INPUT-TERMS' | translate}}</a>
+            <a href="{{'WEGAS-TERMS-OF-USE-URL' | translate}}" target="_blank" style="font-weight:bold;color:white;text-decoration:underline;">{{'WEGAS-TERMS-OF-USE-TITLE' | translate}}</a>
+            {{'WEGAS-KEYWORD-AND' | translate}}
+            <a href="{{'WEGAS-DATA-PRIVACY-URL' | translate}}" target="_blank" style="font-weight:bold;color:white;text-decoration:underline;">{{'WEGAS-DATA-PRIVACY-TITLE' | translate}}</a>
         </label>
     </div>
     <div class="form__row form__row--left" id="recoverPassDiv" style="margin:-25px 2px -35px 0;">
