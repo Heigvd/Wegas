@@ -69,7 +69,7 @@ YUI.add('wegas-text-input', function(Y) {
             }
         },
         isLocked: function() {
-            return Y.Array.find(Object.values(this.locks), function(item) {
+            return Y.Array.find(Y.Object.values(this.locks), function(item) {
                 return item; // a lock set to true !
             });
         },
