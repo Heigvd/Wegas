@@ -11,6 +11,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.log.xapi.Xapi;
 import javax.inject.Inject;
+import javax.persistence.PostPersist;
 import javax.persistence.PostUpdate;
 
 /**
@@ -19,6 +20,21 @@ import javax.persistence.PostUpdate;
 public class NumberListener {
 
     @Inject Xapi xapi;
+
+    /**
+     * @param number received from EntityListener
+     */
+    @PostPersist
+    public void createInstance(Object number) {
+        if (number instanceof NumberInstance) {
+            NumberInstance n = (NumberInstance) number;
+            if (n.getScope() != null) {
+                xapi.postAuthorNumberInstance(n);
+            }
+        }
+    }
+
+
 
     /**
      * @param number received from EntityListener

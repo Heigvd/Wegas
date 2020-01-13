@@ -188,6 +188,12 @@ public class RequestManager implements RequestManagerI {
      * The current player
      */
     private Player currentPlayer;
+
+    /**
+     * The current team
+     */
+    private Team currentTeam;
+
     /**
      * The current user
      */
@@ -309,8 +315,8 @@ public class RequestManager implements RequestManagerI {
     private static int logIndent = 0;
 
     /**
-     * Internal method to pretty print logs. Call logger.trace(msg), but add whitespaces at the begining of the line,
-     * according to current logLevel
+     * Internal method to pretty print logs. Call logger.trace(msg), but add whitespaces at the
+     * begining of the line, according to current logLevel
      *
      * @param msg  message to display
      * @param args message arguments
@@ -426,10 +432,10 @@ public class RequestManager implements RequestManagerI {
      * Add entity within container, mapping entity with audience.
      * <b>GENUINE HACK INSIDE</b>. make sure entity in not in both updated and destroyed containers:
      * <ul>
-     * <li>When registering entity as a destroyed one, this method ensure entity is not registered as an updated one by
-     * removing it from updatedEntities container.</li>
-     * <li>This method don't do anything when registering an entity within updated container if this entity has already
-     * been registered in the destroyed one</li>
+     * <li>When registering entity as a destroyed one, this method ensure entity is not registered
+     * as an updated one by removing it from updatedEntities container.</li>
+     * <li>This method don't do anything when registering an entity within updated container if this
+     * entity has already been registered in the destroyed one</li>
      * </ul>
      *
      * @param entity    the entity to register
@@ -464,8 +470,8 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Get the currentUser, based one the shiro login state. If shiro current principal does not equals
-     * {@link #currentPrincipal}, reset all transient permissions
+     * Get the currentUser, based one the shiro login state. If shiro current principal does not
+     * equals {@link #currentPrincipal}, reset all transient permissions
      *
      * @return the user which is currently logged in
      */
@@ -511,8 +517,8 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Set the currentPlayer. Reset the {@link #currentScriptContext} if the new currentPlayer is null or if it doesn't
-     * equal the previous one
+     * Set the currentPlayer. Reset the {@link #currentScriptContext} if the new currentPlayer is
+     * null or if it doesn't equal the previous one
      *
      * @param currentPlayer the currentPlayer to set
      */
@@ -521,6 +527,36 @@ public class RequestManager implements RequestManagerI {
             this.setCurrentScriptContext(null);
         }
         this.currentPlayer = currentPlayer != null ? (currentPlayer.getId() != null ? playerFacade.find(currentPlayer.getId()) : currentPlayer) : null;
+
+        /*
+         * make sure to set the current team
+         */
+        if (currentPlayer != null) {
+            this.setCurrentTeam(currentPlayer.getTeam());
+        } else {
+            this.setCurrentTeam(null);
+        }
+    }
+
+    /**
+     * Get the current team. When a currentPlayer is available, the currentTeam always equals the
+     * currentPlayer.getTeam().
+     * <p>
+     * There is at least one case a currentTeam is set without any currentPlayer : on team creation
+     *
+     * @return
+     */
+    public Team getCurrentTeam() {
+        return this.currentTeam;
+    }
+
+    /**
+     * set the current team.
+     *
+     * @param team
+     */
+    public void setCurrentTeam(Team team) {
+        this.currentTeam = team;
     }
 
     /**
@@ -724,8 +760,8 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * how many exception have been registered ? it number of event within {@link #events} which are instanceof
-     * ExceptionEvent
+     * how many exception have been registered ? it number of event within {@link #events} which are
+     * instanceof ExceptionEvent
      *
      * @return exception count
      */
@@ -806,7 +842,8 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Return effective audience to use. It means using "internal" if the given audien is null or empty
+     * Return effective audience to use. It means using "internal" if the given audien is null or
+     * empty
      *
      * @param audience audience
      *
@@ -1079,13 +1116,14 @@ public class RequestManager implements RequestManagerI {
         this.getEntityManager().clear();
 
         /**
-         * At this point, just flushed entities are outdated in the 2nd level cache We MUST evict them all
+         * At this point, just flushed entities are outdated in the 2nd level cache We MUST evict
+         * them all
          */
         jpaCacheHelper.evictUpdatedEntitiesLocalOnly();
 
         /**
-         * Moreover, cache synchronisation will fail and others instances 2nd level cache will be outdated too Ask to
-         * requestManager to clear them too at the end of the request
+         * Moreover, cache synchronisation will fail and others instances 2nd level cache will be
+         * outdated too Ask to requestManager to clear them too at the end of the request
          */
         this.pleaseClearCacheAtCompletion();
     }
@@ -1109,8 +1147,8 @@ public class RequestManager implements RequestManagerI {
         }
 
         if (currentUser != null) {
-            websocketFacade.touchOnlineUser(currentUser.getId(), 
-               currentPlayer != null ? currentPlayer.getId() : null);
+            websocketFacade.touchOnlineUser(currentUser.getId(),
+                currentPlayer != null ? currentPlayer.getId() : null);
         }
 
         if (this.currentScriptContext != null) {
@@ -1209,7 +1247,8 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * get all shiro permission which were associated to the currentUser before the beginning of this request
+     * get all shiro permission which were associated to the currentUser before the beginning of
+     * this request
      *
      * @return list of permission the user has for sure (fully persisted ones)
      */
@@ -1247,7 +1286,8 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Replacement method for {@link Subject#isPermitted(java.lang.String)} This method is much faster than shiro one...
+     * Replacement method for {@link Subject#isPermitted(java.lang.String)} This method is much
+     * faster than shiro one...
      *
      * @param permission
      *
@@ -1339,18 +1379,20 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Check if the currentUser has permission to read or write the given gameModel. A superPermission (write) is
-     * permitted if <ul>
+     * Check if the currentUser has permission to read or write the given gameModel. A
+     * superPermission (write) is permitted if <ul>
      * <li>The game model is not yet persisted</li>
      * <li>OR shiro EDIT permission on the gameModel is permitted</li>
-     * <li>OR the gameModel is a {@link GameModel.Status#PLAY} one and currentUser has superPermission on the underlying
-     * game</li>
+     * <li>OR the gameModel is a {@link GameModel.Status#PLAY} one and currentUser has
+     * superPermission on the underlying game</li>
      * </ul>
      * <p/>
      * A "normal" (readonly) permission is permitted if <ul>
      * <li>any of the superPermission condition</li>
-     * <li>OR the gameModel is a {@link GameModel.Status#PLAY} one and currentUser has read on the underlying game</li>
-     * <li>OR the currentUser is a trainer/scenarist and has shiro Instantiate or Duplicate permission</li>
+     * <li>OR the gameModel is a {@link GameModel.Status#PLAY} one and currentUser has read on the
+     * underlying game</li>
+     * <li>OR the currentUser is a trainer/scenarist and has shiro Instantiate or Duplicate
+     * permission</li>
      * <li>OR the currentUser has shiro View permission</li>
      * </ul>
      *
@@ -1489,7 +1531,8 @@ public class RequestManager implements RequestManagerI {
     /**
      * check if currentUser has at least one of the permission in permissions.
      *
-     * @param permissions list of permissions, null means no permission required, empty list means forbidden
+     * @param permissions list of permissions, null means no permission required, empty list means
+     *                    forbidden
      *
      * @return truc if at least one permission from the list is permitted
      */
@@ -1514,11 +1557,13 @@ public class RequestManager implements RequestManagerI {
     /**
      * Assert currentUser has at least one of the permission in permissions.
      *
-     * @param permissions list of permissions, null means no permission required, empty list means forbidden
+     * @param permissions list of permissions, null means no permission required, empty list means
+     *                    forbidden
      * @param type        some string for logging purpose
      * @param entity      entity permissions are relatred to (logging purpose only)
      *
-     * @throws WegasAccessDenied permissions is not null and no permission in permissions is permitted
+     * @throws WegasAccessDenied permissions is not null and no permission in permissions is
+     *                           permitted
      */
     private void assertUserHasPermission(Collection<WegasPermission> permissions, String type, WithPermission entity) throws WegasAccessDenied {
         log("HAS  PERMISSION: {} / {} / {}", type, permissions, entity);
@@ -1708,7 +1753,8 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * has the currentUser the right to delete (ie move to BIN, empty from the bin) the given gameModel
+     * has the currentUser the right to delete (ie move to BIN, empty from the bin) the given
+     * gameModel
      *
      * @param gameModel the gameModel the user want to move to the bin
      *
