@@ -1389,6 +1389,8 @@ YUI.add("wegas-review-widgets", function(Y) {
                 this.widgets[evls[i].get("id")] = this.addEvaluation(evls[i], fbEContainer, modeFbEval);
                 this.values[evls[i].get("id")] = evls[i].get("value");
             }
+
+            this.get("contentBox").toggleClass("review-hide-comments", modeFbEval === "hidden");
         },
         syncUI: function() {
             var i, evl, evls, review = this.get("review"), w;

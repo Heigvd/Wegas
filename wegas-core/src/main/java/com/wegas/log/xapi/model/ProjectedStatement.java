@@ -153,7 +153,6 @@ public class ProjectedStatement {
         this.game = game;
     }
 
-    @Deprecated
     public static void writeCSVHeaders(StringBuilder sb, String sep) {
         sb.append("timestamp").append(sep)
                 .append("actor").append(sep)
