@@ -1,29 +1,23 @@
 import * as React from 'react';
-import { registerComponent, pageComponentFactory } from '../componentFactory';
-import { schemaProps } from '../schemaProps';
-import { NumberSlider, DisplayMode, displayModes } from '../../NumberSlider';
 import {
-  useVariableDescriptor,
-  useVariableInstance,
-} from '../../Hooks/useVariable';
+  registerComponent,
+  pageComponentFactory,
+  PageComponentMandatoryProps,
+} from '../tools/componentFactory';
+import { schemaProps } from '../tools/schemaProps';
+import { NumberSlider, DisplayMode, displayModes } from '../../NumberSlider';
+import { useVariableInstance } from '../../Hooks/useVariable';
 import { store } from '../../../data/store';
 import { Interpolation } from 'emotion';
 import { Actions } from '../../../data';
 import { omit } from 'lodash';
+import { useScript } from '../../Hooks/useScript';
 
-interface PlayerNumberSliderProps {
+interface PlayerNumberSliderProps extends PageComponentMandatoryProps {
   /**
-   * variable - the variable to modify
+   * script - the script that returns the variable to display and modify
    */
-  variable?: string;
-  /**
-   * max - the maximum value to slide (100 by default)
-   */
-  max?: number;
-  /**
-   * min - the minimum value to slide (0 by default)
-   */
-  min?: number;
+  script?: IScript;
   /**
    * steps - the number of steps between min and max value. 100 by default.
    */
@@ -55,37 +49,42 @@ interface PlayerNumberSliderProps {
   disabledStyle?: Interpolation;
 }
 
-const PlayerNumberSlider: React.FunctionComponent<PlayerNumberSliderProps> = props => {
-  const descriptor = useVariableDescriptor<INumberDescriptor>(props.variable);
+function PlayerNumberSlider(props: PlayerNumberSliderProps) {
+  const { script, EditHandle } = props;
+  const content = script ? script.content : '';
+  const descriptor = useScript(content) as INumberDescriptor;
   const instance = useVariableInstance(descriptor);
-  if (
-    props.variable === undefined ||
-    descriptor === undefined ||
-    instance === undefined
-  ) {
-    return <pre>Not found: {props.variable}</pre>;
+  if (content === '' || descriptor === undefined || instance === undefined) {
+    return (
+      <>
+        <EditHandle />
+        <pre>Not found: {script}</pre>
+      </>
+    );
   }
-  const {
-    min = descriptor.minValue || 0,
-    max = descriptor.maxValue || 1,
-  } = props;
+
+  const min = descriptor.minValue || 0;
+  const max = descriptor.maxValue || 1;
 
   return (
-    <NumberSlider
-      value={instance.value}
-      onChange={v =>
-        store.dispatch(
-          Actions.VariableInstanceActions.runScript(
-            `Variable.find(gameModel, "${props.variable}").setValue(self, ${v});`,
-          ),
-        )
-      }
-      min={min}
-      max={max}
-      {...omit(props, ['variable', 'min', 'max', 'path', 'children'])}
-    />
+    <>
+      <EditHandle />
+      <NumberSlider
+        value={instance.value}
+        onChange={v =>
+          store.dispatch(
+            Actions.VariableInstanceActions.runScript(
+              `${script}.setValue(self, ${v});`,
+            ),
+          )
+        }
+        min={min}
+        max={max}
+        {...omit(props, ['variable', 'min', 'max', 'path', 'children'])}
+      />
+    </>
   );
-};
+}
 
 registerComponent(
   pageComponentFactory(
@@ -93,9 +92,12 @@ registerComponent(
     'NumberSlider',
     'sliders-h',
     {
-      variable: schemaProps.variable('Variable', true, ['NumberDescriptor']),
-      max: schemaProps.number('Max', false),
-      min: schemaProps.number('Min', false),
+      script: schemaProps.scriptVariable(
+        'Variable',
+        true,
+        ['NumberDescriptor'],
+        true,
+      ),
       steps: schemaProps.number('Steps', false),
       displayValues: schemaProps.select('Display value', false, displayModes),
       disabled: schemaProps.boolean('Disabled', false),

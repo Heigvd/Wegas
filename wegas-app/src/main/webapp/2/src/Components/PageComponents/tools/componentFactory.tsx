@@ -1,11 +1,15 @@
 import * as React from 'react';
 import { createStore, Reducer, applyMiddleware } from 'redux';
 import u from 'immer';
-import { composeEnhancers } from '../../data/store';
+import { composeEnhancers } from '../../../data/store';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
-import { useAnyStore } from '../Hooks/storeHookFactory';
+import { useAnyStore } from '../../Hooks/storeHookFactory';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { EditableComponent, PageComponentProps } from './EditableComponent';
+import {
+  EditableComponent,
+  PageComponentProps,
+  EditorHandleProps,
+} from './EditableComponent';
 
 export interface PageComponent<
   P = { [name: string]: unknown } & { children?: WegasComponent[] }
@@ -88,11 +92,26 @@ export function usePageComponentStore<R>(
   return useAnyStore(selector, shouldUpdate, componentsStore);
 }
 
+export interface PageComponentMandatoryProps {
+  /**
+   * EditHandle - a handle component that appear in edit mode
+   */
+  EditHandle: React.FunctionComponent<EditorHandleProps>;
+  /**
+   * displayBorders - ask the component to highlight its borders
+   */
+  showBorders?: boolean;
+  /**
+   * path - the location of the component in the page
+   */
+  path?: string[];
+}
+
 export function pageComponentFactory<
-  P,
+  P extends PageComponentMandatoryProps,
   T extends keyof WegasScriptEditorNameAndTypes,
   V extends Readonly<WegasScriptEditorNameAndTypes[T]>,
-  R extends P
+  R extends Omit<P, keyof PageComponentMandatoryProps>
 >(
   component: React.FunctionComponent<P>,
   componentName: string,
@@ -107,7 +126,9 @@ export function pageComponentFactory<
       componentName={componentName}
       wegasChildren={props.children}
     >
-      {content => component({ ...props, children: content })}
+      {(content, EditHandle, showBorders) =>
+        component({ ...props, children: content, EditHandle, showBorders })
+      }
     </EditableComponent>
   );
   return {

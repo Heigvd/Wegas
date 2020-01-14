@@ -1,8 +1,8 @@
-import { WegasMethod } from '../../Editor/editionConfig';
+import { WegasMethod } from '../../../Editor/editionConfig';
 import {
   ScriptMode,
   CodeLanguage,
-} from '../../Editor/Components/FormView/Script/Script';
+} from '../../../Editor/Components/FormView/Script/Script';
 
 type SchemaPrimitive =
   | 'boolean'
@@ -211,6 +211,7 @@ export const schemaProps = {
     label?: string,
     required: boolean = true,
     classFilter: WegasClassNames[] = [],
+    scriptable: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
   ) => ({
@@ -222,7 +223,28 @@ export const schemaProps = {
       classFilter,
       featureLevel,
       label,
+      scriptable,
       type: 'variableselect',
+    },
+  }),
+  scriptVariable: (
+    label?: string,
+    required: boolean = true,
+    classFilter: WegasClassNames[] = [],
+    scriptable: boolean = false,
+    featureLevel: FeatureLevel = 'DEFAULT',
+    index: number = 0,
+  ) => ({
+    required,
+    type: 'object',
+    index,
+    view: {
+      index,
+      classFilter,
+      featureLevel,
+      label,
+      scriptable,
+      type: 'scriptableVariableSelect',
     },
   }),
 };

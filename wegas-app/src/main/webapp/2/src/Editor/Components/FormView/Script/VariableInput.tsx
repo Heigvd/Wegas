@@ -2,7 +2,7 @@ import * as React from 'react';
 import { IconButton } from '../../../../Components/Inputs/Button/IconButton';
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
 import Form from 'jsoninput';
-import { schemaProps } from '../../../../Components/PageComponents/schemaProps';
+import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { LabeledView } from '../labeled';
 import { CommonView } from '../commonView';

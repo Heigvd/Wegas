@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { StyledLabel } from '../../../Components/AutoImport/String/String';
 import { flex, flexColumn, grow } from '../../../css/classes';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
-import { usePageComponentStore } from '../../../Components/PageComponents/componentFactory';
+import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
 import { cx } from 'emotion';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { BaseView, Schema } from 'jsoninput/typings/types';
+import { MessageString } from '../MessageString';
 
 interface EditorProps<T = WegasComponent['props']> {
   entity: T;
@@ -35,7 +35,7 @@ async function WindowedEditor({
 
   return (
     <div className={cx(flex, grow, flexColumn)}>
-      <StyledLabel
+      <MessageString
         value={error && error.message}
         type={'error'}
         duration={3000}

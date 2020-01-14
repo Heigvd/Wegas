@@ -4,6 +4,8 @@ import { Interpolation, css } from 'emotion';
 
 // @ts-ignore
 import Slider from 'react-input-slider';
+import { debounceAction } from '../Helper/debounceAction';
+import { textCenter } from '../css/classes';
 
 const valueDisplayStyle = css({
   textAlign: 'center',
@@ -113,14 +115,13 @@ export function NumberSlider({
   disabledStyle,
 }: NumberSliderProps) {
   const [internalValue, setValue] = React.useState(value);
-  const timer = React.useRef<NodeJS.Timeout>();
   React.useEffect(
     () => {
       if (value !== internalValue) {
         setValue(value);
       }
     },
-    // We don't need to refresh on internalValue change because it will be alread done in the onChange function
+    // We don't need to refresh on internalValue change because it will be already done in the onChange function
     // eslint-disable-next-line
     [value /*internalValue,*/],
   );
@@ -157,7 +158,7 @@ export function NumberSlider({
   };
 
   return (
-    <div>
+    <div className={textCenter}>
       <Info />
       <TypedSlider
         styles={{
@@ -173,12 +174,9 @@ export function NumberSlider({
         x={internalValue}
         onChange={({ x }) => {
           setValue(x);
-          if (timer.current !== undefined) {
-            clearTimeout(timer.current);
-          }
-          timer.current = setTimeout(() => {
+          debounceAction('NumberSliderOnChange', () => {
             onChange && onChange(x);
-          }, 100);
+          });
         }}
         disabled={disabled}
       />

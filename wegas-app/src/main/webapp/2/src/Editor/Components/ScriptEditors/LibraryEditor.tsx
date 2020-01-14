@@ -14,7 +14,6 @@ import u from 'immer';
 import { WebSocketEvent, useWebsocket } from '../../../API/websocket';
 import SrcEditor, { SrcEditorProps } from './SrcEditor';
 import MergeEditor from './MergeEditor';
-import { StyledLabel } from '../../../Components/AutoImport/String/String';
 import { TextPrompt } from '../TextPrompt';
 import { ConfirmButton } from '../../../Components/Inputs/Button/ConfirmButton';
 import { WegasScriptEditor } from './WegasScriptEditor';
@@ -24,6 +23,7 @@ import {
 } from '../../../Components/Hooks/useScript';
 import * as ts from 'typescript';
 import { Menu } from '../../../Components/Menu';
+import { MessageString } from '../MessageString';
 
 type IVisibility = IAbstractContentDescriptor['visibility'];
 const visibilities: IVisibility[] = [
@@ -636,21 +636,21 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
               </>
             )}
             {isLibraryOutdated(libEntry) ? (
-              <StyledLabel
+              <MessageString
                 type="error"
                 value="The script is dangeroulsy outdated!"
               />
             ) : libEntry.status.isEdited ? (
-              <StyledLabel type="warning" value="The script is not saved" />
+              <MessageString type="warning" value="The script is not saved" />
             ) : (
-              <StyledLabel
+              <MessageString
                 type="succes"
                 value="The script is saved"
                 duration={3000}
               />
             )}
             {(modalState.type === 'error' || modalState.type === 'warning') && (
-              <StyledLabel
+              <MessageString
                 type={modalState.type}
                 value={modalState.label}
                 duration={3000}
@@ -688,7 +688,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             onSave={onSaveLibrary}
           />
         ) : (
-          <StyledLabel
+          <MessageString
             value="Please create a library by pressing the + button"
             type={'warning'}
           />

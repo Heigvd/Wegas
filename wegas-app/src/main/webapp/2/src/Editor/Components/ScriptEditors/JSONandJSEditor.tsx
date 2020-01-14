@@ -7,13 +7,10 @@ import SrcEditor, {
   MonacoSCodeEditor,
   MonacoEditorSimpleToken,
 } from './SrcEditor';
-import {
-  StyledLabel,
-  LabelStyle,
-} from '../../../Components/AutoImport/String/String';
 import { WegasScriptEditor } from './WegasScriptEditor';
 import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
 import { Button } from '../../../Components/Inputs/Button/Button';
+import { MessageString, MessageStringStyle } from '../MessageString';
 
 const infoDuration = 5000;
 
@@ -22,7 +19,7 @@ const fullHeight = css({
 });
 
 export interface OnSaveStatus {
-  status?: LabelStyle;
+  status?: MessageStringStyle;
   text?: string;
 }
 
@@ -162,7 +159,7 @@ export function JSONandJSEditor({
       <Toolbar.Header>
         <Button label="Save" onClick={() => trySave(editorContent)} />
         {error !== undefined && (
-          <StyledLabel
+          <MessageString
             type={error.status}
             value={error.text}
             duration={infoDuration}

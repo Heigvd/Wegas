@@ -7,8 +7,8 @@ import WegasDiffEditor, {
   ExtendedDiffNavigator,
   DiffEditorLineChanges,
 } from './WegasDiffEditor';
-import { StyledLabel } from '../../../Components/AutoImport/String/String';
 import { arrayToText, textToArray } from './SrcEditor';
+import { MessageString } from '../MessageString';
 
 const diffLabel = css({
   color: themeVar.primaryLighterColor,
@@ -342,7 +342,7 @@ function MergeEditor({
           />
         )}
         {modalState.type === 'error' && (
-          <StyledLabel
+          <MessageString
             type="error"
             value={modalState.label}
             duration={3000}

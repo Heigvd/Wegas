@@ -2,11 +2,11 @@ import * as React from 'react';
 import { generateAbsolutePath, FileAPI } from '../../../API/files.api';
 import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
 import { FileBrowserNode, FileBrowserNodeProps } from './FileBrowserNode';
-import { StyledLabel } from '../../../Components/AutoImport/String/String';
 import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { StoreDispatch, useStore } from '../../../data/store';
 import { grow } from '../../../css/classes';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { MessageString } from '../MessageString';
 
 interface FileBrowserProps {
   onFileClick?: FileBrowserNodeProps['onFileClick'];
@@ -41,7 +41,7 @@ export function FileBrowser({
   return rootFile ? (
     <DefaultDndProvider>
       <div className={grow} ref={comp.current}>
-        <StyledLabel value={error} type={'error'} duration={3000} />
+        <MessageString value={error} type={'error'} duration={3000} />
         <FileBrowserNode
           defaultFile={rootFile}
           selectedLocalPaths={selectedLocalPaths}

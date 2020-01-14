@@ -12,6 +12,7 @@ import { WyswygScriptEditor } from './WyswygScriptEditor';
 import { Statement, program } from '@babel/types';
 import { parse } from '@babel/parser';
 import generate from '@babel/generator';
+import { debounceAction } from '../../../../Helper/debounceAction';
 
 export const scriptEditStyle = css({
   height: '5em',
@@ -19,7 +20,7 @@ export const scriptEditStyle = css({
   width: '500px',
 });
 
-export type ScriptMode = 'SET' | 'GET' | 'NONE';
+export type ScriptMode = 'SET' | 'GET';
 
 export type CodeLanguage =
   | 'JavaScript'
@@ -67,7 +68,6 @@ export function Script({
   context,
   onChange,
 }: ScriptProps) {
-  const timer = React.useRef<NodeJS.Timeout>();
   const [error, setError] = React.useState(errorMessage);
   const [srcMode, setSrcMode] = React.useState(false);
   const [scriptContent, setScriptContent] = React.useState('');
@@ -88,21 +88,24 @@ export function Script({
 
   const onCodeChange = React.useCallback(
     (value: string) => {
-      if (timer.current !== undefined) {
-        clearTimeout(timer.current);
-      }
-      timer.current = setTimeout(() => {
+      debounceAction('ScriptEditorOnChange', () => {
+        const cleanValue = scriptIsCondition(
+          view.mode,
+          view.scriptableClassFilter,
+        )
+          ? value.replace(/;/gm, '&&')
+          : value;
         onChange({
           '@class': 'Script',
           language: 'JavaScript',
-          content: value,
+          content: cleanValue,
         });
         setScriptContent(() => {
-          return value;
+          return cleanValue;
         });
-      }, 100);
+      });
     },
-    [onChange],
+    [onChange, view.mode, view.scriptableClassFilter],
   );
 
   React.useEffect(() => {

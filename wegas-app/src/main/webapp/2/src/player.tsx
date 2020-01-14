@@ -10,6 +10,7 @@ import { PageLoader } from './Editor/Components/Page/PageLoader';
 import { PageAPI } from './API/pages.api';
 import { GameModel } from './data/selectors';
 import { useWebsocket } from './API/websocket';
+import 'emotion';
 
 // Importing all the files containing ".component." to allow component registration without explicit import
 const componentModules = require.context(

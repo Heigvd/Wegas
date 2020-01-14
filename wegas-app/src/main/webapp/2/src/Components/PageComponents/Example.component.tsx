@@ -1,29 +1,40 @@
 import * as React from 'react';
 import { TranslatableContent } from '../../data/i18n';
 import { useVariableInstance } from '../Hooks/useVariable';
-import { pageComponentFactory, registerComponent } from './componentFactory';
-import { schemaProps } from './schemaProps';
+import {
+  pageComponentFactory,
+  registerComponent,
+  PageComponentMandatoryProps,
+} from './tools/componentFactory';
+import { schemaProps } from './tools/schemaProps';
+import { useScript } from '../Hooks/useScript';
 
-interface ExampleProps {
-  variable?: IStringDescriptor | INumberDescriptor;
+interface ExampleProps extends PageComponentMandatoryProps {
+  script?: ISScript;
 }
 
 const Example: React.FunctionComponent<ExampleProps> = ({
-  variable,
+  script,
+  EditHandle,
 }: ExampleProps) => {
-  const instance = useVariableInstance(variable);
-  if (variable === undefined) {
-    return <span>Variable undefined</span>;
-  }
-  if (instance === undefined) {
-    return <span>{`Instance of ${variable.name} not found`}</span>;
-  }
+  const descriptor = useScript(script ? script.content : '') as
+    | IStringDescriptor
+    | ISNumberDescriptor;
+  const instance = useVariableInstance(descriptor);
+
   return (
-    <div>
-      {'trValue' in instance
-        ? TranslatableContent.toString(instance.trValue)
-        : String(instance.value)}
-    </div>
+    <>
+      <EditHandle />
+      {instance === undefined ? (
+        <span>{`Instance of ${descriptor.name} not found`}</span>
+      ) : (
+        <div>
+          {'trValue' in instance
+            ? TranslatableContent.toString(instance.trValue)
+            : String(instance.value)}
+        </div>
+      )}
+    </>
   );
 };
 
@@ -33,9 +44,12 @@ registerComponent(
     'Example',
     'ambulance',
     {
-      variable: schemaProps.variable('Variable'),
+      script: schemaProps.scriptVariable('Variable', true, [
+        'TextDescriptor',
+        'NumberDescriptor',
+      ]),
     },
     ['ISNumberDescriptor', 'ISStringDescriptor'],
-    variable => ({ variable }),
+    () => ({}),
   ),
 );

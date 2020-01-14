@@ -11,10 +11,10 @@ import { StoreConsumer, StoreDispatch, store } from '../../data/store';
 import { AvailableViews } from './FormView';
 import { cx } from 'emotion';
 import { flex, grow, flexColumn } from '../../css/classes';
-import { StyledLabel } from '../../Components/AutoImport/String/String';
 import { Edition } from '../../data/Reducer/globalState';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import { wlog } from '../../Helper/wegaslog';
+import { MessageString } from './MessageString';
 
 export interface EditorProps<T> {
   entity?: T;
@@ -207,7 +207,7 @@ async function WindowedEditor<T extends IMergeable>({
   wlog(pathEntity);
   return (
     <div className={cx(flex, grow, flexColumn)}>
-      <StyledLabel
+      <MessageString
         value={error && error.message}
         type={'error'}
         duration={3000}

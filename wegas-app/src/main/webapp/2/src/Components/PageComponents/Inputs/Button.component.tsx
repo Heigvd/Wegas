@@ -1,11 +1,15 @@
 import * as React from 'react';
 import { Actions } from '../../../data';
 import { store } from '../../../data/store';
-import { pageComponentFactory, registerComponent } from '../componentFactory';
-import { schemaProps } from '../schemaProps';
+import {
+  pageComponentFactory,
+  registerComponent,
+  PageComponentMandatoryProps,
+} from '../tools/componentFactory';
+import { schemaProps } from '../tools/schemaProps';
 import { Button } from '../../Inputs/Button/Button';
 
-interface PlayerButtonProps {
+interface PlayerButtonProps extends PageComponentMandatoryProps {
   label: string;
   action: IScript | string;
 }
@@ -13,14 +17,17 @@ interface PlayerButtonProps {
 const PlayerButton: React.FunctionComponent<PlayerButtonProps> = (
   props: PlayerButtonProps,
 ) => {
-  const { label, action } = props;
+  const { label, action, EditHandle } = props;
   return (
-    <Button
-      label={label}
-      onClick={() =>
-        store.dispatch(Actions.VariableInstanceActions.runScript(action))
-      }
-    />
+    <>
+      <EditHandle />
+      <Button
+        label={label}
+        onClick={() =>
+          store.dispatch(Actions.VariableInstanceActions.runScript(action))
+        }
+      />
+    </>
   );
 };
 

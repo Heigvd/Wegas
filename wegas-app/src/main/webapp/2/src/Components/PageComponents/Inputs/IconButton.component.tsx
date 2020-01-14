@@ -1,11 +1,32 @@
-import { pageComponentFactory, registerComponent } from './componentFactory';
-import { schemaProps } from './schemaProps';
-import { IconButton, icons } from '../Inputs/Button/IconButton';
+import * as React from 'react';
+import {
+  pageComponentFactory,
+  registerComponent,
+  PageComponentMandatoryProps,
+} from '../tools/componentFactory';
+import { schemaProps } from '../tools/schemaProps';
+import {
+  IconButton,
+  icons,
+  IconButtonProps,
+} from '../../Inputs/Button/IconButton';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
+
+function PlayerIconButton(
+  props: IconButtonProps & PageComponentMandatoryProps,
+) {
+  const { EditHandle } = props;
+  return (
+    <>
+      <EditHandle />
+      <IconButton {...props} />
+    </>
+  );
+}
 
 registerComponent(
   pageComponentFactory(
-    IconButton,
+    PlayerIconButton,
     'IconButton',
     'cube',
     {

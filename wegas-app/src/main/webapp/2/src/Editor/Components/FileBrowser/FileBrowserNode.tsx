@@ -14,10 +14,10 @@ import { ConfirmButton } from '../../../Components/Inputs/Button/ConfirmButton';
 import { GameModel } from '../../../data/selectors';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { file } from '@babel/types';
-import { StyledLabel } from '../../../Components/AutoImport/String/String';
 import { store, StoreDispatch } from '../../../data/store';
 import { editFile } from '../../../data/Reducer/globalState';
 import { flex, grow, hidden, block } from '../../../css/classes';
+import { MessageString } from '../MessageString';
 
 const hoverRow = css({
   cursor: 'pointer',
@@ -458,7 +458,7 @@ export function FileBrowserNode({
           <div className={grow}>{currentFile.name}</div>
           {nbUploadingFiles > 0 && (
             <div className={grow}>
-              <StyledLabel
+              <MessageString
                 value={`Uploading ${nbUploadingFiles} files`}
                 type="warning"
               />
@@ -566,7 +566,7 @@ export function FileBrowserNode({
               />
             )}
             {modalState.type === 'error' && (
-              <StyledLabel
+              <MessageString
                 value={modalState.label}
                 type="error"
                 duration={3000}

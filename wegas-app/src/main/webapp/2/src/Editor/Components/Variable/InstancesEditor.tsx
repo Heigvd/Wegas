@@ -15,9 +15,9 @@ import {
 } from '../../../data/Reducer/VariableInstanceReducer';
 import { State } from '../../../data/Reducer/reducers';
 import { VariableInstanceAPI } from '../../../API/variableInstance.api';
-import { StyledLabel } from '../../../Components/AutoImport/String/String';
 import { flex, flexColumn, grow } from '../../../css/classes';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { MessageString } from '../MessageString';
 
 const listBox = css({
   width: '100%',
@@ -106,7 +106,7 @@ export function InstancesEditor({
     <Toolbar>
       <Toolbar.Header>
         <div className={cx(flex, flexColumn)}>
-          <StyledLabel
+          <MessageString
             value={instancesState.error}
             type={'error'}
             duration={3000}

@@ -2,12 +2,10 @@ import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { LabeledView, Labeled } from './labeled';
 import { CommonView, CommonViewContainer } from './commonView';
-import {
-  WegasScriptEditor,
-  WegasScriptEditorProps,
-} from '../ScriptEditors/WegasScriptEditor';
+import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { toLower } from 'lodash';
 import { CodeLanguage, scriptEditStyle } from './Script/Script';
+import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
 
 interface CodeProps
   extends WidgetProps.BaseProps<
@@ -41,9 +39,7 @@ export function Code({ view, value, onChange }: CodeProps) {
                 <WegasScriptEditor
                   language={
                     view.language
-                      ? (toLower(
-                          view.language,
-                        ) as WegasScriptEditorProps['language'])
+                      ? (toLower(view.language) as SrcEditorLanguages)
                       : view.language
                   }
                   value={

@@ -1,8 +1,16 @@
 import * as React from 'react';
-import { pageComponentFactory, registerComponent } from './componentFactory';
-import { schemaProps } from './schemaProps';
+import {
+  pageComponentFactory,
+  registerComponent,
+  PageComponentMandatoryProps,
+} from '../tools/componentFactory';
+import { schemaProps } from '../tools/schemaProps';
 import { FunctionComponent } from 'react';
-import QuestionList from '../AutoImport/Question/List';
+import QuestionList from '../../AutoImport/Question/List';
+
+interface QuestionListDisplayProps extends PageComponentMandatoryProps {
+  questionList?: string;
+}
 
 const QuestionListDisplay: FunctionComponent<{
   questionList?: string;
@@ -19,9 +27,12 @@ registerComponent(
     'QuestionList',
     'bars',
     {
-      questionList: schemaProps.variable('Question list', true, [
-        'ListDescriptor',
-      ]),
+      questionList: schemaProps.variable(
+        'Question list',
+        true,
+        ['ListDescriptor'],
+        true,
+      ),
     },
     ['string'],
     () => ({}),

@@ -8,28 +8,44 @@ import {
   JSONandJSEditor,
   OnSaveStatus,
 } from '../ScriptEditors/JSONandJSEditor';
-import { grow } from '../../../css/classes';
 import { IconButton } from '../../../Components/Inputs/Button/IconButton';
 import { TextPrompt } from '../TextPrompt';
-import { StyledLabel } from '../../../Components/AutoImport/String/String';
 import { compare, deepClone } from 'fast-json-patch';
 import { ComponentPalette, DnDComponent } from './ComponentPalette';
-import { usePageComponentStore } from '../../../Components/PageComponents/componentFactory';
+import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
 import { ReflexElement, ReflexContainer, ReflexSplitter } from 'react-reflex';
 import { splitter } from '../LinearTabLayout/LinearLayout';
 import ComponentEditor from './ComponentEditor';
 import { PageLoader } from './PageLoader';
 import { Button } from '../../../Components/Inputs/Button/Button';
+import { MessageString } from '../MessageString';
+import { Toggler } from '../../../Components/Inputs/Button/Toggler';
+import { css } from 'emotion';
+import pageState from '../../../data/Reducer/pageState';
+
+const innerButtonStyle = css({
+  margin: '2px auto 2px auto',
+  width: 'fit-content',
+});
 
 interface PageContext {
   editMode: boolean;
-  onDrop?: (dndComponent: DnDComponent, path: string[], index?: number) => void;
-  onDelete?: (path: string[]) => void;
-  onEdit?: (path: string[]) => void;
+  showBorders: boolean;
+  showControls: boolean;
+  onDrop: (dndComponent: DnDComponent, path: string[], index?: number) => void;
+  onDelete: (path: string[]) => void;
+  onEdit: (path: string[]) => void;
+  onUpdate: (value: WegasComponent, path?: string[], patch?: boolean) => void;
 }
 
 export const pageCTX = React.createContext<PageContext>({
   editMode: false,
+  showBorders: false,
+  showControls: true,
+  onDrop: () => {},
+  onEdit: () => {},
+  onDelete: () => {},
+  onUpdate: () => {},
 });
 
 const defaultPage = {
@@ -104,9 +120,9 @@ export default function PageEditor() {
   });
   const [srcMode, setSrcMode] = React.useState<boolean>(false);
   const [editMode, setEditMode] = React.useState(false);
-  // const [editedComponent, setEditedComponent] = React.useState<
-  //   WegasComponent & { path: string[] }
-  // >();
+  const [showBorders, setShowBorders] = React.useState(false);
+  const [showControls, setShowControls] = React.useState(true);
+
   const components = usePageComponentStore(s => s);
   const selectedPage: Page | undefined =
     pagesState.pages[String(pagesState.selectedPage)];
@@ -197,7 +213,10 @@ export default function PageEditor() {
   const onDrop = React.useCallback(
     (dndComponent: DnDComponent, path: string[], index?: number) => {
       const { newPage, component } = findComponent(path);
-      if (component && component.props.children) {
+      if (component) {
+        if (component.props.children === undefined) {
+          component.props.children = [];
+        }
         const children = component.props.children;
         const droppedComp: WegasComponent = {
           type: dndComponent.componentName,
@@ -239,15 +258,28 @@ export default function PageEditor() {
   );
 
   const onUpdate = React.useCallback(
-    (value: WegasComponent) => {
-      if (pagesState.editedPath) {
-        const { newPage, parent } = findComponent(pagesState.editedPath);
+    (value: WegasComponent, componentPath?: string[], patch?: boolean) => {
+      const path = componentPath ? componentPath : pagesState.editedPath;
+      if (path) {
+        const { newPage, parent } = findComponent(path);
         if (parent) {
-          if (parent.props.children && pagesState.editedPath) {
+          if (parent.props.children && path) {
+            let comp = value;
+            if (patch) {
+              const oldComp =
+                parent.props.children[Number(path[path.length - 1])];
+              comp = {
+                ...oldComp,
+                props: {
+                  ...oldComp.props,
+                  ...value.props,
+                },
+              };
+            }
             parent.props.children.splice(
-              Number(pagesState.editedPath[pagesState.editedPath.length - 1]),
+              Number(path[path.length - 1]),
               1,
-              value,
+              comp,
             );
             patchPage(pagesState.selectedPage, newPage);
           }
@@ -262,7 +294,7 @@ export default function PageEditor() {
   return (
     <Toolbar>
       <Toolbar.Header>
-        <div className={grow}>
+        <div>
           {modalState.type === 'newpage' || modalState.type === 'editpage' ? (
             <TextPrompt
               placeholder="Page name"
@@ -359,11 +391,36 @@ export default function PageEditor() {
             }}
           />
           {modalState.type === 'error' && (
-            <StyledLabel
+            <MessageString
               type={modalState.type}
               value={modalState.label}
               duration={3000}
             />
+          )}
+        </div>
+        <div style={{ margin: 'auto' }}>
+          {editMode && (
+            <>
+              <Button
+                label={'Toggle controls'}
+                disableBorders={{ right: true }}
+              >
+                <div className={innerButtonStyle}>
+                  <Toggler
+                    checked={showControls}
+                    onClick={() => setShowControls(c => !c)}
+                  />
+                </div>
+              </Button>
+              <Button label={'Toggle borders'} disableBorders={{ left: true }}>
+                <div className={innerButtonStyle}>
+                  <Toggler
+                    checked={showBorders}
+                    onClick={() => setShowBorders(b => !b)}
+                  />
+                </div>
+              </Button>
+            </>
           )}
         </div>
         {!srcMode && (
@@ -414,13 +471,16 @@ export default function PageEditor() {
               )}
             </ReflexElement>
             {editMode && <ReflexSplitter />}
-            <ReflexElement>
+            <ReflexElement style={{ display: 'flex' }}>
               <pageCTX.Provider
                 value={{
-                  editMode: editMode,
-                  onDrop: onDrop,
-                  onDelete: onDelete,
-                  onEdit: onEdit,
+                  editMode,
+                  showControls,
+                  showBorders,
+                  onDrop,
+                  onDelete,
+                  onEdit,
+                  onUpdate,
                 }}
               >
                 <PageLoader selectedPage={selectedPage} />

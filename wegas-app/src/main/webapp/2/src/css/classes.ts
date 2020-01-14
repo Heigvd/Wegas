@@ -55,6 +55,9 @@ export const flexWrap = css({
 });
 
 // Position
+export const textCenter = css({
+  textAlign: 'center',
+});
 export const itemCenter = css({
   alignItems: 'center',
 });

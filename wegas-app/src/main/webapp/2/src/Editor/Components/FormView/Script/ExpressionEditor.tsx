@@ -27,17 +27,17 @@ import {
   WegasMethodParameter,
 } from '../../../editionConfig';
 import { useVariableDescriptor } from '../../../../Components/Hooks/useVariable';
-import { schemaProps } from '../../../../Components/PageComponents/schemaProps';
+import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
 import Form from 'jsoninput';
 import { css } from 'emotion';
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
 import { parse } from '@babel/parser';
-import { StyledLabel } from '../../../../Components/AutoImport/String/String';
 import { pick, omit } from 'lodash';
 import { DEFINED_VIEWS } from '..';
 import { IconButton } from '../../../../Components/Inputs/Button/IconButton';
 import { deepDifferent } from '../../../../Components/Hooks/storeHookFactory';
 import { TYPESTRING } from 'jsoninput/typings/types';
+import { MessageString } from '../../MessageString';
 
 const schemaTypestrings: TYPESTRING[] = [
   'array',
@@ -265,6 +265,7 @@ export function ExpressionEditor({
           ? undefined
           : scriptableClassFilter &&
               scriptableClassFilter.map(sf => sf.substr(2) as WegasClassNames),
+        false,
         'DEFAULT',
         0,
       ),
@@ -442,7 +443,7 @@ export function ExpressionEditor({
       <IconButton icon="trash" onClick={onDelete} />
       {srcMode ? (
         <div className={scriptEditStyle}>
-          <StyledLabel type="error" value={error} duration={3000} />
+          <MessageString type="error" value={error} duration={3000} />
           <WegasScriptEditor
             value={
               newSrc === undefined

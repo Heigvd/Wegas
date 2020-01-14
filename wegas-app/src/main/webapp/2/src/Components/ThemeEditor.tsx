@@ -17,10 +17,10 @@ import { useOnClickOutside } from './Hooks/useOnClickOutside';
 import { IconButton } from './Inputs/Button/IconButton';
 import { Menu } from './Menu';
 import { TextPrompt } from '../Editor/Components/TextPrompt';
-import { StyledLabel } from './AutoImport/String/String';
 import { ConfirmButton } from './Inputs/Button/ConfirmButton';
 import { NumberSlider } from './NumberSlider';
 import { wlog } from '../Helper/wegaslog';
+import { MessageString } from '../Editor/Components/MessageString';
 
 const colorButton = (color: string, bgColor?: string) =>
   css({
@@ -187,7 +187,7 @@ export default function ThemeEditor() {
               onBlur={() => setModalState({ type: 'close' })}
             />
             {modalState.type === 'error' && (
-              <StyledLabel
+              <MessageString
                 type="error"
                 value={modalState.label}
                 onLabelVanish={() => setModalState({ type: 'close' })}

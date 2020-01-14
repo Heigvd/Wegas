@@ -1,14 +1,16 @@
 import * as React from 'react';
-import { TranslatableContent } from '../../../data/i18n';
-import { themeVar } from '../../Theme';
-import {
-  useVariableDescriptor,
-  useVariableInstance,
-} from '../../Hooks/useVariable';
+import { themeVar } from '../../Components/Theme';
 
-export type LabelStyle = 'normal' | 'warning' | 'error' | 'succes';
+export const messageStringStyles = [
+  'normal',
+  'warning',
+  'error',
+  'succes',
+] as const;
 
-interface StyledLabelProps {
+export type MessageStringStyle = typeof messageStringStyles[number];
+
+interface MessageStringProps {
   /**
    * value - the value of the text
    */
@@ -16,7 +18,7 @@ interface StyledLabelProps {
   /**
    * type - changes the style of the text, normal by default
    */
-  type?: LabelStyle;
+  type?: MessageStringStyle;
   /**
    * duration - the time during which is the value displayed.
    * If undefined, the text is displayed forever
@@ -28,7 +30,7 @@ interface StyledLabelProps {
   onLabelVanish?: () => void;
 }
 
-function colorByType(type?: LabelStyle) {
+function colorByType(type?: MessageStringStyle) {
   switch (type) {
     case 'succes': {
       return themeVar.successColor;
@@ -49,12 +51,12 @@ function colorByType(type?: LabelStyle) {
 /**
  * StyledLabel is a component that creates a styled label with text
  */
-export function StyledLabel({
+export function MessageString({
   type,
   value,
   duration,
   onLabelVanish,
-}: StyledLabelProps) {
+}: MessageStringProps) {
   const timeout = React.useRef(0);
   const [text, setText] = React.useState(value);
   React.useEffect(() => {
@@ -82,35 +84,6 @@ export function StyledLabel({
       }}
     >
       {text !== undefined ? text : ''}
-    </div>
-  );
-}
-
-interface LabelProps {
-  /**
-   * variable - the id of the variable to display
-   */
-  variable: string;
-  /**
-   * type - changes the style of the text, normal by default
-   */
-  type?: 'normal' | 'warning' | 'error' | 'succes';
-}
-
-export default function String(props: LabelProps) {
-  const descriptor = useVariableDescriptor<IStringDescriptor>(props.variable);
-  const instance = useVariableInstance(descriptor);
-  if (descriptor === undefined || instance === undefined) {
-    return <span>Not found: {props.variable}</span>;
-  }
-  const label = TranslatableContent.toString(descriptor.label) + ': ';
-  return (
-    <div>
-      {label && <span>{label}</span>}
-      <StyledLabel
-        value={TranslatableContent.toString(instance.trValue)}
-        type={props.type}
-      />
     </div>
   );
 }

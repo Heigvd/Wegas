@@ -136,6 +136,7 @@ export function DropTab(props: DropTabProps) {
   const [style, setStyle] = React.useState(hidden);
 
   React.useEffect(() => {
+    /* Delaying action on purpose to avoid DnD loosing drop target while dropping */
     setTimeout(() => {
       setStyle(
         dropTabProps.canDrop && dropTabProps.isOverCurrent && !props.disabled
