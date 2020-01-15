@@ -17,7 +17,7 @@ import { StoreDispatch, useStore, store } from '../../../data/store';
 import { css, cx } from 'emotion';
 import { shallowIs } from '../../../Helper/shallowIs';
 import { Menu } from '../../../Components/Menu';
-import { FontAwesome, withDefault } from '../Views/FontAwesome';
+import { withDefault } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { AddMenuParent, AddMenuChoice } from './AddMenu';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
@@ -34,20 +34,17 @@ import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { Edition } from '../../../data/Reducer/globalState';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { IconComp } from '../../../Components/Inputs/Button/IconButton';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
     children.map(i => {
       const Label = asyncSFC(async () => {
         const entity = { '@class': i };
-        const [icon, label = ''] = await Promise.all([
-          getIcon(entity),
-          getLabel(entity),
-        ]);
         return (
           <>
-            <FontAwesome icon={withDefault(icon, 'question')} fixedWidth />
-            {label}
+            <IconComp icon={withDefault(getIcon(entity), 'question')} />
+            {getLabel(entity)}
           </>
         );
       });
@@ -214,7 +211,7 @@ function CTree(
   if (variable) {
     const Title = asyncSFC(async () => {
       const icon = await getIcon(variable!);
-      return <FontAwesome icon={withDefault(icon, 'question')} fixedWidth />;
+      return <IconComp icon={withDefault(icon, 'question')} />;
     });
     if (!match) {
       return null;

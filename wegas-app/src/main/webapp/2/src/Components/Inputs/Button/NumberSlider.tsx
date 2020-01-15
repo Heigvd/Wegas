@@ -4,8 +4,8 @@ import { Interpolation, css } from 'emotion';
 
 // @ts-ignore
 import Slider from 'react-input-slider';
-import { debounceAction } from '../Helper/debounceAction';
-import { textCenter } from '../css/classes';
+import { debounceAction } from '../../../Helper/debounceAction';
+import { textCenter } from '../../../css/classes';
 
 const valueDisplayStyle = css({
   textAlign: 'center',

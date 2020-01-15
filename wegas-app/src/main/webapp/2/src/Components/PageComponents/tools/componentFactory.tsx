@@ -4,19 +4,19 @@ import u from 'immer';
 import { composeEnhancers } from '../../../data/store';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { useAnyStore } from '../../Hooks/storeHookFactory';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import {
   EditableComponent,
   PageComponentProps,
   EditorHandleProps,
 } from './EditableComponent';
+import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 
 export interface PageComponent<
   P = { [name: string]: unknown } & { children?: WegasComponent[] }
 > {
   getComponent: () => React.FunctionComponent<P & PageComponentProps>;
   getName: () => string;
-  getIcon: () => IconProp;
+  getIcon: () => Icon;
   getSchema: () => SimpleSchema;
   getAllowedVariables: () => (keyof WegasScriptEditorNameAndTypes)[];
   /**
@@ -115,7 +115,7 @@ export function pageComponentFactory<
 >(
   component: React.FunctionComponent<P>,
   componentName: string,
-  icon: IconProp,
+  icon: Icon,
   schema: SimpleSchema,
   allowedVariables: T[],
   getComputedPropsFromVariable: (variable?: V) => R,

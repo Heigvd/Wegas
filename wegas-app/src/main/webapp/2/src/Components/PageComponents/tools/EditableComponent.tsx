@@ -11,7 +11,7 @@ import { themeVar } from '../../Theme';
 import { IconButton } from '../../Inputs/Button/IconButton';
 import { ConfirmButton } from '../../Inputs/Button/ConfirmButton';
 import { Toggler, TogglerProps } from '../../Inputs/Button/Toggler';
-import List from '../../AutoImport/Layout/List';
+import List from '../../Layouts/List';
 
 const editItemStyle = css({
   display: 'list-item',
@@ -51,7 +51,7 @@ export function ComponentEditorHandle({
     return editMode && showControls ? (
       <div>
         <div className={cx(editZoneStyle, className)}>
-          <List horizontal={!vertical} shrink>
+          <List horizontal={!vertical} shrink centered>
             {name}
             <IconButton icon="edit" onClick={() => onEdit(path)} />
             <ConfirmButton

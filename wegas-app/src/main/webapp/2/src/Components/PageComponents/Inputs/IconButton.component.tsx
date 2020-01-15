@@ -10,7 +10,7 @@ import {
   icons,
   IconButtonProps,
 } from '../../Inputs/Button/IconButton';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { IconName } from '@fortawesome/fontawesome-svg-core';
 
 function PlayerIconButton(
   props: IconButtonProps & PageComponentMandatoryProps,
@@ -44,7 +44,7 @@ registerComponent(
     },
     [],
     () => ({
-      icon: 'cube' as IconProp,
+      icon: 'cube' as IconName,
       label: 'IconButton',
     }),
   ),

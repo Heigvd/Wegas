@@ -1,11 +1,15 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
-import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
-import { Props } from '@fortawesome/react-fontawesome';
+import {
+  FontAwesome,
+  Icon,
+} from '../../../Editor/Components/Views/FontAwesome';
 import { themeVar } from '../../Theme';
 import * as iconModules from '@fortawesome/free-solid-svg-icons';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { IconPrefix, IconName } from '@fortawesome/fontawesome-svg-core';
+
+export const prefixes = ['fas', 'fab', 'far', 'fal', 'fad'] as IconPrefix[];
 
 export const icons = Object.values(iconModules).reduce(
   (o: {}, v: IconDefinition) =>
@@ -15,8 +19,8 @@ export const icons = Object.values(iconModules).reduce(
   {},
 );
 
-export interface IconButtonProps extends Props {
-  icon: IconProp;
+export interface IconButtonProps /*extends Props*/ {
+  icon: Icon | Icon[];
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onMouseDown?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   label?: React.ReactNode;
@@ -27,6 +31,7 @@ export interface IconButtonProps extends Props {
   tabIndex?: number;
   prefixedLabel?: boolean;
   type?: 'submit' | 'reset';
+  className?: string;
 }
 const defaultActiveStyle = css({ color: themeVar.primaryDarkerColor });
 
@@ -38,8 +43,6 @@ export const shapeStyle = css({
   fontFamily: 'initial',
   fontSize: 'initial',
   cursor: 'pointer',
-  // minWidth: '16px',
-  // height: '16px',
   textAlign: 'center',
   display: 'inline-block',
   color: themeVar.primaryColor,
@@ -57,6 +60,18 @@ const disabledStyle = css({
   },
 });
 
+function isIconName(icon: Icon): icon is IconName {
+  return typeof icon === 'string';
+}
+
+export function IconComp({ icon }: { icon: Icon }) {
+  return isIconName(icon) ? (
+    <FontAwesome fixedWidth icon={icon} />
+  ) : (
+    <FontAwesome fixedWidth {...icon} />
+  );
+}
+
 export const IconButton: React.FunctionComponent<IconButtonProps> = (
   props: IconButtonProps,
 ) => {
@@ -72,8 +87,9 @@ export const IconButton: React.FunctionComponent<IconButtonProps> = (
     id,
     type,
     className,
-    ...other
+    icon,
   } = props;
+
   return (
     <button
       id={id}
@@ -81,8 +97,6 @@ export const IconButton: React.FunctionComponent<IconButtonProps> = (
       title={tooltip}
       tabIndex={tabIndex}
       aria-label={tooltip}
-      // role="button"
-      // tabIndex={0}
       aria-pressed={pressed}
       onClick={onClick != null ? event => !disabled && onClick(event) : onClick}
       onMouseDown={
@@ -96,7 +110,15 @@ export const IconButton: React.FunctionComponent<IconButtonProps> = (
       })}
     >
       {prefixedLabel && label}
-      <FontAwesome {...other} />
+      {Array.isArray(icon) ? (
+        <span className="fa-layers fa-fw">
+          {icon.map((ic, i) => (
+            <IconComp key={JSON.stringify(ic) + String(i)} icon={ic} />
+          ))}
+        </span>
+      ) : (
+        <IconComp icon={icon} />
+      )}
       {!prefixedLabel && label}
     </button>
   );

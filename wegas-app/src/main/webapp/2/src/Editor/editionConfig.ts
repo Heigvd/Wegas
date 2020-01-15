@@ -1,4 +1,4 @@
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { IconName } from '@fortawesome/fontawesome-svg-core';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from './Components/FormView';
 import { formValidation } from './formValidation';
@@ -195,9 +195,9 @@ export async function getMethodConfig<T extends IAbstractEntity>(
   );
 }
 
-export async function getIcon<T extends IAbstractEntity>(
+export function getIcon<T extends IAbstractEntity>(
   entity: T,
-): Promise<IconProp> {
+): IconName | undefined {
   switch (
     entity['@class'] as
       | ValueOf<typeof ListDescriptorChild>
@@ -233,9 +233,9 @@ export async function getIcon<T extends IAbstractEntity>(
   }
 }
 
-export async function getLabel<T extends IAbstractEntity>(
+export function getLabel<T extends IAbstractEntity>(
   entity: T,
-): Promise<string> {
+): string | undefined {
   switch (
     entity['@class'] as
       | ValueOf<typeof ListDescriptorChild>
@@ -269,6 +269,7 @@ export async function getLabel<T extends IAbstractEntity>(
     case 'TaskDescriptor':
       return 'Task';
   }
+  return '';
 }
 const ListDescriptorChild = [
   'NumberDescriptor',

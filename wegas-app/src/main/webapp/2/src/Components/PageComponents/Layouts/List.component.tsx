@@ -4,19 +4,18 @@ import {
   registerComponent,
   PageComponentMandatoryProps,
 } from '../tools/componentFactory';
-import List, { ListProps } from '../../AutoImport/Layout/List';
 import { schemaProps } from '../tools/schemaProps';
 import { css, cx } from 'emotion';
 import { themeVar } from '../../Theme';
+import List, { ListProps } from '../../Layouts/List';
 
-const layoutHighlightStyle = css({
+export const layoutHighlightStyle = css({
   borderStyle: 'solid',
   borderWidth: '2px',
   borderColor: themeVar.searchColor,
 });
 
-export type PlayerListProps = ListProps<WegasComponent> &
-  PageComponentMandatoryProps;
+type PlayerListProps = ListProps<WegasComponent> & PageComponentMandatoryProps;
 
 function PlayerList(props: PlayerListProps) {
   const { EditHandle, showBorders } = props;
@@ -54,10 +53,12 @@ registerComponent(
     'List',
     'bars',
     {
-      children: schemaProps.hidden(undefined, true),
+      children: schemaProps.hidden(false),
       style: schemaProps.code('Style', false, 'JSON'),
       className: schemaProps.string('ClassName', false),
       horizontal: schemaProps.boolean('Horizontal', false),
+      shrink: schemaProps.boolean('Shrink', false),
+      center: schemaProps.boolean('Center', false),
     },
     ['ISListDescriptor'],
     (val?: Readonly<ISListDescriptor>) =>

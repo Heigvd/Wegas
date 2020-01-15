@@ -54,10 +54,11 @@ export default function LanguageEditor() {
         <Toolbar.Header>
           <div className={cx(flex, grow)}>{title}</div>
           <IconButton
-            icon="cog"
-            fixedWidth
+            icon={{
+              icon: 'cog',
+              style: editMode ? edition : simple,
+            }}
             onClick={() => setEditMode(oldMode => !oldMode)}
-            style={editMode ? edition : simple}
           />
         </Toolbar.Header>
         <Toolbar.Content>

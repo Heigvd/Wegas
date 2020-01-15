@@ -1,47 +1,25 @@
 import * as React from 'react';
+import { Text, TextProps } from '../../Outputs/Text';
 import {
-  pageComponentFactory,
-  registerComponent,
   PageComponentMandatoryProps,
+  registerComponent,
+  pageComponentFactory,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { useScript } from '../../Hooks/useScript';
-import { useVariableInstance } from '../../Hooks/useVariable';
-import { TranslatableContent } from '../../../data/i18n';
 
-interface TextProps extends PageComponentMandatoryProps {
-  script?: IScript;
-  className?: string;
-}
-
-function Text({ script, className, EditHandle }: TextProps) {
-  const textD = useScript(script ? script.content : '') as ISTextDescriptor;
-  const textI = useVariableInstance(textD);
-
+function PlayerText(props: TextProps & PageComponentMandatoryProps) {
+  const { EditHandle } = props;
   return (
     <>
       <EditHandle />
-      {textD === undefined || textI === undefined ? (
-        <span>Not found: {script}</span>
-      ) : (
-        <div className={className}>
-          <div
-            style={{ display: 'inline-block' }}
-            dangerouslySetInnerHTML={{
-              __html: TranslatableContent.toString(
-                textI.trValue === undefined ? null : textI.trValue,
-              ),
-            }}
-          />
-        </div>
-      )}
+      <Text {...props} />
     </>
   );
 }
 
 registerComponent(
   pageComponentFactory(
-    Text,
+    PlayerText,
     'Text',
     'paragraph',
     {

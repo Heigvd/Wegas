@@ -23,18 +23,11 @@ export interface SelectItem {
 }
 
 export const schemaProps = {
-  hidden: (
-    label?: string,
-    required: boolean = true,
-    isChildren: boolean = false,
-    type: SchemaPrimitive = 'array',
-  ) => ({
+  hidden: (required: boolean = true, type: SchemaPrimitive = 'array') => ({
     required,
-    isChildren,
     type,
     index: 0,
     view: {
-      label,
       type: 'hidden',
     },
   }),

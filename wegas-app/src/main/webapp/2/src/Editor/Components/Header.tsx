@@ -30,7 +30,7 @@ export default function Header() {
             onClick={() => dispatch(Actions.VariableDescriptorActions.reset())}
           />
           <IconButton
-            icon="trash-restore"
+            icon={[{ icon: 'undo' }, { icon: 'window-restore', size: 'xs' }]}
             tooltip="Reset layout"
             onClick={() => {
               window.localStorage.removeItem('DnDGridLayoutData');

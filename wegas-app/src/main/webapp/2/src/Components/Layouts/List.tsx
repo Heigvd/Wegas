@@ -1,5 +1,13 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
+import { Centered } from './Centered';
+import { themeVar } from '../Theme';
+
+export const layoutHighlightStyle = css({
+  borderStyle: 'solid',
+  borderWidth: '2px',
+  borderColor: themeVar.searchColor,
+});
 
 const listStyle = css({
   display: 'flex',
@@ -27,7 +35,7 @@ const verticalStyle = css({
   // width: '100%',
 });
 
-export interface ListProps<T> {
+export interface OrientedLayoutProps<T> {
   /**
    * children - the items to display
    */
@@ -44,10 +52,17 @@ export interface ListProps<T> {
    * horizontal - the component orientation
    */
   horizontal?: boolean;
+}
+
+export interface ListProps<T> extends OrientedLayoutProps<T> {
   /**
    * shrink - if true, the items wont be equally spread out
    */
   shrink?: boolean;
+  /**
+   * centered - if true, the items will be centered
+   */
+  centered?: boolean;
 }
 /**
  * Flex list.
@@ -58,6 +73,7 @@ export default function List<T = React.ReactChild>({
   className,
   style,
   shrink,
+  centered,
 }: ListProps<T>) {
   return (
     <div
@@ -71,13 +87,16 @@ export default function List<T = React.ReactChild>({
         className,
       )}
     >
-      {horizontal
-        ? children.map((c, i) => (
-            <div key={i} className={horizontalChildren(shrink)}>
-              {c}
-            </div>
-          ))
-        : children}
+      {children.map((c, i) => {
+        const child = centered ? <Centered>{c}</Centered> : c;
+        return horizontal ? (
+          <div key={i} className={horizontalChildren(shrink)}>
+            {child}
+          </div>
+        ) : (
+          child
+        );
+      })}
     </div>
   );
 }

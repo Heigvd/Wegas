@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Value, Editor, Block } from 'slate';
-import { Props } from '@fortawesome/react-fontawesome';
 import {
   Generated,
   hasMark,
@@ -9,6 +8,7 @@ import {
   blockStack,
 } from './tools';
 import { IconButton } from '../../../../../Components/Inputs/Button/IconButton';
+import { Icon } from '../../../Views/FontAwesome';
 
 export function genMark({
   render,
@@ -19,7 +19,7 @@ export function genMark({
   render: (props: { children: React.ReactNode }) => JSX.Element;
   mark: string;
   htmlIsMark: (el: Element) => boolean;
-  buttonIcon: Props['icon'];
+  buttonIcon: Icon;
 }): Generated {
   return {
     name: `Mark_${mark}`,
@@ -75,12 +75,13 @@ export function genBlock({
   htmlIsBlock,
   buttonIcon,
 }: {
-  render: (
-    props: { children: React.ReactNode; [prop: string]: any },
-  ) => JSX.Element;
+  render: (props: {
+    children: React.ReactNode;
+    [prop: string]: any;
+  }) => JSX.Element;
   block: string;
   htmlIsBlock: (el: Element) => boolean;
-  buttonIcon: Props['icon'];
+  buttonIcon: Icon;
 }): Generated {
   return {
     name: `Block_${block}`,
@@ -110,7 +111,7 @@ export function genBlock({
     Button({
       value,
       editor,
-      change = (editor) => {
+      change = editor => {
         if (editor !== null) {
           if (!hasBlock(value, block)) {
             blockStack(value).forEach(b => editor.unwrapBlock(b));

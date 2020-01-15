@@ -21,7 +21,6 @@ import { Button } from '../../../Components/Inputs/Button/Button';
 import { MessageString } from '../MessageString';
 import { Toggler } from '../../../Components/Inputs/Button/Toggler';
 import { css } from 'emotion';
-import pageState from '../../../data/Reducer/pageState';
 
 const innerButtonStyle = css({
   margin: '2px auto 2px auto',

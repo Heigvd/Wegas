@@ -12,13 +12,20 @@ interface QuestionListDisplayProps extends PageComponentMandatoryProps {
   questionList?: string;
 }
 
-const QuestionListDisplay: FunctionComponent<{
-  questionList?: string;
-}> = ({ questionList }) => {
-  if (questionList === undefined) {
-    return <pre>No selected list</pre>;
-  }
-  return <QuestionList variable={questionList} />;
+const QuestionListDisplay: FunctionComponent<QuestionListDisplayProps> = ({
+  EditHandle,
+  questionList,
+}) => {
+  return (
+    <>
+      <EditHandle />
+      {questionList === undefined ? (
+        <pre>No selected list</pre>
+      ) : (
+        <QuestionList variable={questionList} />
+      )}
+    </>
+  );
 };
 
 registerComponent(

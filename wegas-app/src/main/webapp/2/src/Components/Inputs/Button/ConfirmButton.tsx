@@ -3,8 +3,8 @@ import { IconButton } from './IconButton';
 import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
 import { css } from 'emotion';
 import { Button, DisableBorders, disableBordersCSS } from './Button';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { themeVar } from '../../Theme';
+import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 
 const buttonZone = (disableBorders?: DisableBorders) =>
   css({
@@ -19,7 +19,7 @@ const buttonZone = (disableBorders?: DisableBorders) =>
 
 interface ConfirmButtonProps {
   label?: React.ReactNode;
-  icon?: IconProp;
+  icon?: Icon;
   tooltip?: string;
   onAction?: (success: boolean) => void;
   onBlur?: () => void;
@@ -64,7 +64,6 @@ export function ConfirmButton(props: ConfirmButtonProps /*& IconButtonProps*/) {
           icon={props.icon}
           onClick={onClick}
           tooltip={props.tooltip}
-          fixedWidth
         />
       )}
     </>

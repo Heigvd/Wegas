@@ -18,7 +18,7 @@ import { IconButton } from './Inputs/Button/IconButton';
 import { Menu } from './Menu';
 import { TextPrompt } from '../Editor/Components/TextPrompt';
 import { ConfirmButton } from './Inputs/Button/ConfirmButton';
-import { NumberSlider } from './NumberSlider';
+import { NumberSlider } from './Inputs/Button/NumberSlider';
 import { wlog } from '../Helper/wegaslog';
 import { MessageString } from '../Editor/Components/MessageString';
 

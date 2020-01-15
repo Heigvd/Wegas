@@ -5,7 +5,11 @@ import {
   PageComponentMandatoryProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { NumberSlider, DisplayMode, displayModes } from '../../NumberSlider';
+import {
+  NumberSlider,
+  DisplayMode,
+  displayModes,
+} from '../../Inputs/Button/NumberSlider';
 import { useVariableInstance } from '../../Hooks/useVariable';
 import { store } from '../../../data/store';
 import { Interpolation } from 'emotion';
