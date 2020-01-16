@@ -42,9 +42,7 @@ const listStyle = css({
 });
 
 const dropZoneFocus = css({
-  borderStyle: 'solid',
-  borderWidth: '2px',
-  borderColor: themeVar.successColor,
+  background: "repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, #eeeeee80 10px, #eeeeee80 20px);",
   zIndex: 1000,
 });
 

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { useDrag, DropTargetMonitor, useDrop } from 'react-dnd';
-import { primaryLight, primaryDark, themeVar } from '../../../Components/Theme';
+import { primaryLight, primaryDark } from '../../../Components/Theme';
 import { DropAction } from './DnDTabLayout';
 import { hidden, flex } from '../../../css/classes';
 
@@ -9,10 +9,8 @@ export const dndAcceptType = 'DnDTab';
 
 const dropZoneFocus = css({
   width: '50px',
-  borderStyle: 'solid',
-  borderWidth: '2px',
-  borderColor: themeVar.successColor,
   zIndex: 1000,
+    background: "repeating-Linear-gradient( 45deg, #fff, #fff 10px, #eee 10px, #eee 20px);"
 });
 
 const defaultTabStyle = css({
