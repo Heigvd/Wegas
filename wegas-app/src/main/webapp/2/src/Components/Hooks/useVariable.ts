@@ -2,7 +2,7 @@ import * as React from 'react';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { Player, VariableDescriptor } from '../../data/selectors';
 import { useStore } from '../../data/store';
-import { shallowDifferent } from '../../data/connectStore';
+import { shallowDifferent } from './storeHookFactory';
 
 type instanceOf<D> = D extends IVariableDescriptor<infer U> ? U : never;
 /**
@@ -10,7 +10,7 @@ type instanceOf<D> = D extends IVariableDescriptor<infer U> ? U : never;
  * @param name VariableDescriptor's name
  */
 export function useVariableDescriptor<D extends IVariableDescriptor>(
-  name: string,
+  name?: string,
 ) {
   const getDescriptor = React.useCallback(
     () => VariableDescriptor.findByName<D>(name),

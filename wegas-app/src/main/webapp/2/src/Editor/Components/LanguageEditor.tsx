@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { cx } from 'emotion';
 import { Toolbar } from '../../Components/Toolbar';
-import { IconButton } from '../../Components/Button/IconButton';
+import { IconButton } from '../../Components/Inputs/Button/IconButton';
 import { themeVar } from '../../Components/Theme';
 import { LanguagesAPI } from '../../API/languages.api';
 import { useGameModel } from '../../Components/Hooks/useGameModel';
@@ -54,10 +54,11 @@ export default function LanguageEditor() {
         <Toolbar.Header>
           <div className={cx(flex, grow)}>{title}</div>
           <IconButton
-            icon="cog"
-            fixedWidth
+            icon={{
+              icon: 'cog',
+              style: editMode ? edition : simple,
+            }}
             onClick={() => setEditMode(oldMode => !oldMode)}
-            style={editMode ? edition : simple}
           />
         </Toolbar.Header>
         <Toolbar.Content>

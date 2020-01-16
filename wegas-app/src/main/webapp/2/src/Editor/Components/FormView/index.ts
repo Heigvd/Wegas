@@ -7,15 +7,21 @@ import Textarea from './Textarea';
 import BooleanView from './Boolean';
 import Select from './Select';
 import ArrayWidget from './Array';
-import { Script } from './Script';
-import { TreeVariableSelect } from './TreeVariableSelect';
+import { Script } from './Script/Script';
+import { Code } from './Code';
+import {
+  TreeVariableSelect,
+  ScripableVariableSelect,
+} from './TreeVariableSelect';
 import translatable from './translatable';
 import EntityArrayFieldSelect from './EntityArrayFieldSelect';
 import FlatVariableSelect from './FlatVariableSelect';
 import { LabeledHTMLEditor } from '../../../Components/HTMLEditor';
 import { TimestampView } from './Timestamp';
+import { VariableInput } from './Script/VariableInput';
+import PageSelect from './PageSelect';
 
-const DEFINED_VIEWS = {
+export const DEFINED_VIEWS = {
   hidden,
   uneditable,
   object: ObjectView,
@@ -26,23 +32,27 @@ const DEFINED_VIEWS = {
   textarea: Textarea,
   array: ArrayWidget,
   select: Select,
+  pageselect: PageSelect,
   html: LabeledHTMLEditor,
   i18nhtml: translatable(LabeledHTMLEditor),
   script: Script,
+  code: Code,
   variableselect: TreeVariableSelect,
+  scriptableVariableSelect: ScripableVariableSelect,
+  variableInput: VariableInput,
   entityarrayfieldselect: EntityArrayFieldSelect,
   flatvariableselect: FlatVariableSelect,
   timestamp: TimestampView,
 };
 setDefaultWidgets(DEFINED_VIEWS);
 
-type ViewTypes = keyof (typeof DEFINED_VIEWS);
+type ViewTypes = keyof typeof DEFINED_VIEWS;
 type PropsType<T> = T extends React.ComponentType<infer U>
   ? U
   : T extends (p: infer P) => unknown
   ? P
   : never;
-type View<P extends ViewTypes> = PropsType<(typeof DEFINED_VIEWS)[P]> extends {
+type View<P extends ViewTypes> = PropsType<typeof DEFINED_VIEWS[P]> extends {
   view: infer V;
 }
   ? V & { type?: P }
