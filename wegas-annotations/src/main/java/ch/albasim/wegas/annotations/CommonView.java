@@ -72,7 +72,6 @@ public class CommonView extends BaseView {
     /**
      * @param label the label to set
      *
-     * @return this
      */
     final public void setLabel(String label) {
         this.label = label;
@@ -88,7 +87,6 @@ public class CommonView extends BaseView {
     /**
      * @param description the description to set
      *
-     * @return this
      */
     final public void setDescription(String description) {
         this.description = description;
@@ -105,7 +103,6 @@ public class CommonView extends BaseView {
     /**
      * @param layout the layout to set
      *
-     * @return this
      */
     final public void setLayout(LAYOUT layout) {
         this.layout = layout;
@@ -122,7 +119,6 @@ public class CommonView extends BaseView {
     /**
      * @param borderTop the borderTop to set
      *
-     * @return this
      */
     final public void setBorderTop(Boolean borderTop) {
         this.borderTop = borderTop;
@@ -139,7 +135,6 @@ public class CommonView extends BaseView {
     /**
      * @param readOnly readOnly view
      *
-     * @return this
      */
     final public void setReadOnly(Boolean readOnly) {
         this.readOnly = readOnly;
