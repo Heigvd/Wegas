@@ -20,13 +20,6 @@ const editItemStyle = css({
   marginLeft: '10px',
 });
 
-const editZoneStyle = css({
-  backgroundColor: themeVar.primaryHoverColor,
-  padding: '2px',
-  width: 'fit-content',
-  height: 'fit-content',
-});
-
 interface ComponentEditorHandleProps {
   name: string;
   path: string[];
