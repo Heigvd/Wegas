@@ -7,12 +7,10 @@ import SrcEditor, {
   MonacoSCodeEditor,
   MonacoEditorSimpleToken,
 } from './SrcEditor';
-import {
-  StyledLabel,
-  LabelStyle,
-} from '../../../Components/AutoImport/String/Label';
 import { WegasScriptEditor } from './WegasScriptEditor';
 import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
+import { Button } from '../../../Components/Inputs/Button/Button';
+import { MessageString, MessageStringStyle } from '../MessageString';
 
 const infoDuration = 5000;
 
@@ -21,18 +19,25 @@ const fullHeight = css({
 });
 
 export interface OnSaveStatus {
-  status?: LabelStyle;
+  status?: MessageStringStyle;
   text?: string;
 }
 
 interface JSONandJSEditorProps {
   content: string;
-  onSave: (content: string) => OnSaveStatus;
+  onSave: (content: string) => OnSaveStatus | void;
+  status?: OnSaveStatus;
 }
 
-export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
+export function JSONandJSEditor({
+  content,
+  onSave,
+  status,
+}: JSONandJSEditorProps) {
   const [editing, setEditing] = React.useState(false);
-  const [error, setError] = React.useState<OnSaveStatus>({});
+  const [error, setError] = React.useState<OnSaveStatus | undefined | void>(
+    status,
+  );
   const [editorContent, setEditorContent] = React.useState(content);
   const cursorOffset = React.useRef(0);
   const jsContent = React.useRef('');
@@ -43,6 +48,8 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
   React.useEffect(() => {
     setEditorContent(content);
   }, [content]);
+
+  React.useEffect(() => setError(status), [status]);
 
   const trySave = (content: string) => {
     setError(onSave(content));
@@ -134,8 +141,6 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
       }
     } catch (e) {
       setError({ status: 'error', text: e });
-      // clearTimeout(timeout.current);
-      // timeout.current = window.setTimeout(() => setError({}), 10000);
     }
   };
   const onAcceptJS = () => {
@@ -152,12 +157,14 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
   return (
     <Toolbar className={fullHeight}>
       <Toolbar.Header>
-        <button onClick={() => trySave(editorContent)}>Save</button>
-        <StyledLabel
-          type={error.status}
-          value={error.text}
-          duration={infoDuration}
-        />
+        <Button label="Save" onClick={() => trySave(editorContent)} />
+        {error !== undefined && (
+          <MessageString
+            type={error.status}
+            value={error.text}
+            duration={infoDuration}
+          />
+        )}
       </Toolbar.Header>
       <Toolbar.Content>
         {editing && (
@@ -177,8 +184,16 @@ export function JSONandJSEditor({ content, onSave }: JSONandJSEditorProps) {
                 onSave={onAcceptJS}
               />
             </div>
-            <button onClick={onAcceptJS}>Accept</button>
-            <button onClick={() => setEditing(false)}>Cancel</button>
+            <Button
+              label="Accept"
+              onClick={onAcceptJS}
+              disableBorders={{ right: true }}
+            />
+            <Button
+              label="Cancel"
+              onClick={() => setEditing(false)}
+              disableBorders={{ left: true }}
+            />
           </Modal>
         )}
         <SrcEditor

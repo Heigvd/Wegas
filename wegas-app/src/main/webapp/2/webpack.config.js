@@ -10,6 +10,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
   .BundleAnalyzerPlugin;
 
 const PROD = process.env.NODE_ENV === 'production';
+const PREPROD = process.env.NODE_ENV === 'pre-production';
 const STATS = process.env.NODE_ENV === 'stats';
 const isCI =
   typeof process.env.CI === 'string'
@@ -24,7 +25,7 @@ const plugins = [
     formatter: 'codeframe',
   }),
 ];
-if (!isCI && !PROD) {
+if (!isCI && PREPROD) {
   plugins.push(new BundleAnalyzerPlugin());
 }
 
@@ -35,9 +36,10 @@ const modules = {
     module: 'empty',
   },
   // stats: 'verbose',
-  devtool: PROD ? 'source-map' : 'inline-source-map',
+  devtool: PROD || PREPROD ? 'source-map' : 'inline-source-map',
   entry: {
     editor: ['./src/Editor/index.tsx'],
+    player: ['./src/player.tsx'],
   },
   output: {
     path: path.join(__dirname, 'dist'),
@@ -118,7 +120,7 @@ const modules = {
     ],
   },
   devServer: {
-    port: PROD ? 4004 : 3003,
+    port: PREPROD ? 4004 : 3003,
     overlay: true,
     publicPath: '/Wegas/2/dist/',
     proxy: {

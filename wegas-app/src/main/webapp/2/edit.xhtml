@@ -22,6 +22,7 @@
     <div id="root" />
     <script type="application/javascript">
         var API_ENDPOINT = "#{request.contextPath}" + "/rest/";
+        var API_VIEW = "Editor";
         var CurrentUser = #{requestController.currentUser.toJsonWithView("Index")};
         var CurrentGM = #{editorGameController.currentGameModel.toJsonWithView("Editor")};
         var CurrentGame = #{editorGameController.currentGame.toJsonWithView("Editor")};

@@ -4,7 +4,8 @@ import Header from './Header';
 import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
-const PageDisplay = React.lazy(() => import('./Page/PageDisplay'));
+// const PageDisplay = React.lazy(() => import('./Page/PageDisplay.old'));
+const PageEditor = React.lazy(() => import('./Page/PageEditor'));
 const TreeView = React.lazy(() => import('./Variable/VariableTree'));
 const EntityEditor = React.lazy(() => import('./EntityEditor'));
 const FileBrowserWithMeta = React.lazy(() =>
@@ -17,18 +18,6 @@ const InstancesEditor = React.lazy(() => import('./Variable/InstancesEditor'));
 const HTMLEditor = React.lazy(() => import('../../Components/HTMLEditor'));
 const ThemeEditor = React.lazy(() => import('../../Components/ThemeEditor'));
 
-// import StateMachineEditor from './StateMachineEditor';
-// import PageDisplay from './Page/PageDisplay';
-// import TreeView from './Variable/VariableTree';
-// import EntityEditor from './EntityEditor';
-// import FileBrowserWithMeta from './FileBrowser/FileBrowser';
-// import LibraryEditor from './ScriptEditors/LibraryEditor';
-// import LanguageEditor from './LanguageEditor';
-// import PlayLocal from './PlayLocal';
-// import InstancesEditor from './Variable/InstancesEditor';
-// import HTMLEditor from '../../Components/HTMLEditor';
-// import ThemeEditor from '../../Components/ThemeEditor';
-
 const layout = css({
   display: 'flex',
   flexDirection: 'column',
@@ -37,7 +26,7 @@ const layout = css({
 
 export const availableLayoutTabs = {
   Variables: <TreeView />,
-  Page: <PageDisplay />,
+  // Page: <PageDisplay />,
   StateMachine: <StateMachineEditor />,
   Editor: <EntityEditor />,
   Files: <FileBrowserWithMeta />,
@@ -49,6 +38,7 @@ export const availableLayoutTabs = {
     <HTMLEditor value={'<div class="testClass">Testing testClass</div>'} />
   ),
   ThemeEditor: <ThemeEditor />,
+  PageEditor: <PageEditor />,
 };
 
 export default class AppLayout extends React.Component<
@@ -69,10 +59,7 @@ export default class AppLayout extends React.Component<
           tabs={availableLayoutTabs}
           layout={[
             ['Variables'],
-            [
-              ['PlayLocal', 'Page'],
-              [['StateMachine'], ['Files']],
-            ],
+            [['PlayLocal'], [['StateMachine'], ['Files']]],
             ['Editor'],
           ]}
         />

@@ -38,12 +38,11 @@ export interface IManagedResponse {
   updatedEntities: IAbstractEntity[];
   events: WegasEvents[];
 }
-type View = 'Editor' | 'Instance' | 'Export';
 
 export function rest(
   url: string,
   options: RequestInit = {},
-  view?: View,
+  view: View = API_VIEW,
   contentType: ContentType = 'application/json',
 ) {
   let type: ContentType = contentType;
@@ -66,10 +65,8 @@ export function rest(
     }
     throw res;
   });
-  // const oReq = new XMLHttpRequest();
-  // oReq.open(options.method ? options.method : 'GET', `${API_ENDPOINT}${v}${u}`);
-  // oReq.send();
 }
+
 export function managedModeRequest(
   url: string,
   options: RequestInit = {},

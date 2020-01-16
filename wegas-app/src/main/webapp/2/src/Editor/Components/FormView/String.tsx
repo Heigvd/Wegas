@@ -32,6 +32,8 @@ export const inputStyle = css({
 function undefToEmpty(val?: string | number) {
   if (val == null) {
     return '';
+  } else if (typeof val === 'number') {
+    return JSON.stringify(val);
   }
   return val;
 }

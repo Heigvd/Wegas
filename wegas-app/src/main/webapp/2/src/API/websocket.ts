@@ -141,13 +141,16 @@ class WebSocketListener {
         authEndpoint,
         encrypted: true,
       });
-      this.socket.connection.bind('state_change', (
-        state: any, //eslint-disable-line @typescript-eslint/no-explicit-any
-      ) => {
-        this.status = state.current;
-        this.socketId = this.socket!.connection.socket_id;
-        store.dispatch(updatePusherStatus(state.current, this.socketId));
-      });
+      this.socket.connection.bind(
+        'state_change',
+        (
+          state: any, //eslint-disable-line @typescript-eslint/no-explicit-any
+        ) => {
+          this.status = state.current;
+          this.socketId = this.socket!.connection.socket_id;
+          store.dispatch(updatePusherStatus(state.current, this.socketId));
+        },
+      );
       const channels = [
         CHANNEL_PREFIX.GameModel + CurrentGM.id,
         CHANNEL_PREFIX.Game + CurrentGame.id,

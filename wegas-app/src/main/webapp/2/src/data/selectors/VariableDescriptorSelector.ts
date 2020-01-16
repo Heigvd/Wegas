@@ -60,7 +60,10 @@ const descriptorNameIdCache = new Map<string, number>();
  * They are cached by their id for faster subsequent calls.
  * @param name descriptor's name
  */
-export function findByName<T extends IVariableDescriptor>(name: string) {
+export function findByName<T extends IVariableDescriptor>(name?: string) {
+  if (name === undefined) {
+    return undefined;
+  }
   const id = descriptorNameIdCache.get(name);
   if (typeof id === 'number') {
     const descriptor = select<T>(id);

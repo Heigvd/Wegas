@@ -2,11 +2,11 @@ import * as React from 'react';
 import { generateAbsolutePath, FileAPI } from '../../../API/files.api';
 import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
 import { FileBrowserNode, FileBrowserNodeProps } from './FileBrowserNode';
-import { StyledLabel } from '../../../Components/AutoImport/String/Label';
 import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { StoreDispatch, useStore } from '../../../data/store';
 import { grow } from '../../../css/classes';
-import { shallowDifferent } from '../../../data/connectStore';
+import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { MessageString } from '../MessageString';
 
 interface FileBrowserProps {
   onFileClick?: FileBrowserNodeProps['onFileClick'];
@@ -25,20 +25,23 @@ export function FileBrowser({
 }: FileBrowserProps) {
   const [rootFile, setRootFile] = React.useState<IAbstractContentDescriptor>();
   const [error, setError] = React.useState<string>('');
+  const comp = React.useRef(); // Safeguard to avoid changing state when unmounted comp
 
   React.useEffect(() => {
     FileAPI.getFileMeta()
       .then(file => setRootFile(file))
       .catch(({ statusText }: Response) => {
-        setRootFile(undefined);
-        setError(statusText);
+        if (comp.current) {
+          setRootFile(undefined);
+          setError(statusText);
+        }
       });
   }, []);
 
   return rootFile ? (
     <DefaultDndProvider>
-      <div className={grow}>
-        <StyledLabel value={error} type={'error'} duration={3000} />
+      <div className={grow} ref={comp.current}>
+        <MessageString value={error} type={'error'} duration={3000} />
         <FileBrowserNode
           defaultFile={rootFile}
           selectedLocalPaths={selectedLocalPaths}
