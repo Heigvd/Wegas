@@ -1,5 +1,5 @@
 import { getInstance as rawGetInstance } from '../../methods/VariableDescriptorMethods';
-import { VariableDescriptor } from '../../selectors';
+import { VariableDescriptor, Player } from '../../selectors';
 import { proxyfy } from '..';
 import { isStillAnswerabled } from './QuestionDescriptor';
 import { getChoiceReplies } from '../instancesHelpers';
@@ -83,5 +83,29 @@ export function isActive(cd: IChoiceDescriptor) {
 export function deactivate(_cd: IChoiceDescriptor) {
   return (_self: IPlayer) => {
     throw Error('This is readonly');
+  };
+}
+
+// Unmapped methods
+
+export function isSelected(cd: IChoiceDescriptor) {
+  return (self?: IPlayer) => {
+    const p = self != null ? self : Player.selectCurrent();
+    const ci = rawGetInstance(cd, p);
+    if (ci) {
+      return ci.replies.find(r => r.choiceName === cd.name) != null;
+    }
+    return false;
+  };
+}
+
+export function getReply(cd: IChoiceDescriptor) {
+  return (self?: IPlayer) => {
+    const p = self != null ? self : Player.selectCurrent();
+    const ci = rawGetInstance(cd, p);
+    if (ci) {
+      return ci.replies.find(r => r.choiceName === cd.name);
+    }
+    return false;
   };
 }

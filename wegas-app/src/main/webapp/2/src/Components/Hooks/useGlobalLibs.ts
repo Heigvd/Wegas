@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useStore } from '../../data/store';
 import { State } from '../../data/Reducer/reducers';
-import { refDifferent } from '../../data/connectStore';
 import { GameModel } from '../../data/selectors';
 import { MonacoDefinitionsLibraries } from '../../Editor/Components/ScriptEditors/SrcEditor';
 import { classesCTX } from '../Contexts/ClassesProvider';
@@ -17,6 +16,7 @@ import methodGlobalSrc from '!!raw-loader!../../../types/scripts/MethodGlobals.d
 import schemaGlobalSrc from '!!raw-loader!../../../types/scripts/SchemaGlobals.d.ts';
 // @ts-ignore
 import classesGlobalSrc from '!!raw-loader!../../../types/scripts/ClassesGlobals.d.ts';
+import { refDifferent } from './storeHookFactory';
 
 // We'll keep it for later uses
 // const cleanLib = (libSrc: string) => libSrc.replace(/^(export )/gm, '');

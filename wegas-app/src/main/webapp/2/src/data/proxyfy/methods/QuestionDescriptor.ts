@@ -1,5 +1,9 @@
-import { getInstance as rawGetInstance } from '../../methods/VariableDescriptorMethods';
+import {
+  getInstance as rawGetInstance,
+  getInstance,
+} from '../../methods/VariableDescriptorMethods';
 import { getQuestionReplies } from '../instancesHelpers';
+import { VariableDescriptor, Player } from '../../selectors';
 
 export function isReplied(qd: IQuestionDescriptor) {
   return (self: IPlayer) => getQuestionReplies(qd, true, self).length > 0;
@@ -56,5 +60,24 @@ export function getValidated(qd: IQuestionDescriptor) {
 export function deactivate(_qd: IQuestionDescriptor) {
   return (_self: IPlayer) => {
     throw Error('This is readonly');
+  };
+}
+
+// Unmapped methods
+
+export function getChoices(qd: IQuestionDescriptor) {
+  return VariableDescriptor.select<IChoiceDescriptor>(qd.itemsIds).filter(
+    c => c != null,
+  ) as Readonly<IChoiceDescriptor>[];
+}
+
+export function isUnread(qd: IQuestionDescriptor) {
+  return (self?: IPlayer) => {
+    const p = self != null ? self : Player.selectCurrent();
+    return (
+      getChoices(qd)
+        .map(cd => getInstance(cd, p))
+        .filter(ci => ci && ci.unread).length > 0
+    );
   };
 }

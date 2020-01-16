@@ -1,6 +1,6 @@
 import * as React from "react";
 import { hasBlock, Generated, ToolbarButtonProps, blockStack } from "./tools";
-import { IconButton } from "../../../../../Components/Button/IconButton";
+import { IconButton } from "../../../../../Components/Inputs/Button/IconButton";
 import { Block } from "slate";
 
 export function bulletList(): Generated {

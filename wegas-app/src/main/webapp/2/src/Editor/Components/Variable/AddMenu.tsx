@@ -12,14 +12,10 @@ function buildMenuItems(variable: IAbstractEntity) {
     return children.map(i => {
       const Label = asyncSFC(async () => {
         const entity = { '@class': i };
-        const [icon, label = ''] = await Promise.all([
-          getIcon(entity),
-          getLabel(entity),
-        ]);
         return (
           <>
-            <FontAwesome icon={withDefault(icon, 'question')} fixedWidth />
-            {label}
+            <FontAwesome icon={withDefault(getIcon(entity), 'question')} />
+            {getLabel(entity)}
           </>
         );
       });
