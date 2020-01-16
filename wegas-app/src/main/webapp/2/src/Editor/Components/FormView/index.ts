@@ -19,6 +19,7 @@ import FlatVariableSelect from './FlatVariableSelect';
 import { LabeledHTMLEditor } from '../../../Components/HTMLEditor';
 import { TimestampView } from './Timestamp';
 import { VariableInput } from './Script/VariableInput';
+import PageSelect from './PageSelect';
 
 export const DEFINED_VIEWS = {
   hidden,
@@ -31,6 +32,7 @@ export const DEFINED_VIEWS = {
   textarea: Textarea,
   array: ArrayWidget,
   select: Select,
+  pageselect: PageSelect,
   html: LabeledHTMLEditor,
   i18nhtml: translatable(LabeledHTMLEditor),
   script: Script,

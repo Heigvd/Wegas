@@ -14,7 +14,9 @@ import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 export interface PageComponent<
   P = { [name: string]: unknown } & { children?: WegasComponent[] }
 > {
-  getComponent: () => React.FunctionComponent<P & PageComponentProps>;
+  getComponent: (
+    uneditable?: boolean,
+  ) => React.FunctionComponent<P & PageComponentProps>;
   getName: () => string;
   getIcon: () => Icon;
   getSchema: () => SimpleSchema;
@@ -120,19 +122,23 @@ export function pageComponentFactory<
   allowedVariables: T[],
   getComputedPropsFromVariable: (variable?: V) => R,
 ) {
-  const Editable: React.FunctionComponent<P & PageComponentProps> = props => (
-    <EditableComponent
-      {...props}
-      componentName={componentName}
-      wegasChildren={props.children}
-    >
-      {(content, EditHandle, showBorders) =>
-        component({ ...props, children: content, EditHandle, showBorders })
-      }
-    </EditableComponent>
-  );
+  function generateComponent(uneditable?: boolean) {
+    const Editable: React.FunctionComponent<P & PageComponentProps> = props => (
+      <EditableComponent
+        {...props}
+        componentName={componentName}
+        wegasChildren={props.children}
+        uneditable={uneditable}
+      >
+        {(content, EditHandle, showBorders) =>
+          component({ ...props, children: content, EditHandle, showBorders })
+        }
+      </EditableComponent>
+    );
+    return Editable;
+  }
   return {
-    getComponent: () => Editable,
+    getComponent: (uneditable?: boolean) => generateComponent(uneditable),
     getIcon: () => icon,
     getName: () => componentName,
     getSchema: () => ({

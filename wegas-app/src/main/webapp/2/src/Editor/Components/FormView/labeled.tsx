@@ -24,7 +24,12 @@ const titleStyle = css({
 let id = 0;
 
 /** Handle view's label and description  */
-export const Labeled : React.FunctionComponent<LabeledProps> = ({ label, children, description, index }: LabeledProps) => {
+export const Labeled: React.FunctionComponent<LabeledProps> = ({
+  label,
+  children,
+  description,
+  index,
+}: LabeledProps) => {
   const internalId = React.useRef(`__labelInput__${id++}`);
   const { currentFeatures } = React.useContext(featuresCTX);
 
@@ -36,12 +41,13 @@ export const Labeled : React.FunctionComponent<LabeledProps> = ({ label, childre
         htmlFor={internalId.current}
         title={description}
       >
-        {`${label ? label : ''} ${
-          currentFeatures.includes('ADVANCED') && index != null
-            ? `(${index})`
-            : ''
-        }`}
+        <span style={{ display: 'inline-flex' }}>
+          {label}
+          {currentFeatures.includes('ADVANCED') && index != null && (
+            <span style={{ marginLeft: '1em' }}>{index}</span>
+          )}
+        </span>
       </label>
     ),
-  }) as React.ReactElement;;
-}
+  }) as React.ReactElement;
+};

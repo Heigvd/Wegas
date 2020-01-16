@@ -17,7 +17,7 @@ const listStyle = css({
   height: '100%',
 });
 const horizontalStyle = css({
-  display: 'flex',
+  display: 'inline-flex',
   // display: 'table',
   // width: '100%',
 });
@@ -29,9 +29,9 @@ const horizontalChildren = (shrink?: boolean) =>
   });
 const verticalStyle = css({
   flexDirection: 'column',
-  '&>div': {
-    width: '100%',
-  },
+  // '&>div': {
+  //   width: '100%',
+  // },
   // width: '100%',
 });
 
@@ -88,13 +88,18 @@ export default function List<T = React.ReactChild>({
       )}
     >
       {children.map((c, i) => {
-        const child = centered ? <Centered>{c}</Centered> : c;
         return horizontal ? (
-          <div key={i} className={horizontalChildren(shrink)}>
-            {child}
+          <div
+            key={i}
+            style={{ margin: centered ? 'auto' : undefined }}
+            className={horizontalChildren(shrink)}
+          >
+            {c}
           </div>
+        ) : centered ? (
+          <Centered>{c}</Centered>
         ) : (
-          child
+          c
         );
       })}
     </div>

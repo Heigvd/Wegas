@@ -15,6 +15,16 @@ export const layoutHighlightStyle = css({
   borderColor: themeVar.searchColor,
 });
 
+export const childHighlightCSS = {
+  borderStyle: 'dotted',
+  borderWidth: '1px',
+  borderColor: themeVar.searchColor,
+};
+
+export const childHighlightStyle = css({
+  '&>*': childHighlightCSS,
+});
+
 type PlayerListProps = ListProps<WegasComponent> & PageComponentMandatoryProps;
 
 function PlayerList(props: PlayerListProps) {
@@ -34,15 +44,26 @@ function PlayerList(props: PlayerListProps) {
       className={cx(showLayout && layoutHighlightStyle)}
       style={{ width: '100%', display: 'flex' }}
     >
-      <EditHandle
-        togglerProps={{
-          onClick: setShowLayout,
-          checked: showLayout,
-          hint: 'Highlight list borders (only during edition mode)',
+      <div
+        style={{
+          display: props.horizontal ? 'block' : 'inline-flex',
+          width: '100%',
+          height: '100%',
         }}
-        vertical={!props.horizontal}
-      />
-      <List {...props} />
+      >
+        <EditHandle
+          togglerProps={{
+            onClick: setShowLayout,
+            checked: showLayout,
+            hint: 'Highlight list borders (only during edition mode)',
+          }}
+          vertical={!props.horizontal}
+        />
+        <List
+          {...props}
+          className={cx(props.className, showLayout && childHighlightStyle)}
+        />
+      </div>
     </div>
   );
 }

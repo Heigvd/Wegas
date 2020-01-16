@@ -12,6 +12,8 @@ import { IconButton } from '../../Inputs/Button/IconButton';
 import { ConfirmButton } from '../../Inputs/Button/ConfirmButton';
 import { Toggler, TogglerProps } from '../../Inputs/Button/Toggler';
 import List from '../../Layouts/List';
+import { expand } from '../../../css/classes';
+import { Centered } from '../../Layouts/Centered';
 
 const editItemStyle = css({
   display: 'list-item',
@@ -19,7 +21,7 @@ const editItemStyle = css({
 });
 
 const editZoneStyle = css({
-  backgroundColor: themeVar.disabledColor,
+  backgroundColor: themeVar.primaryHoverColor,
   padding: '2px',
   width: 'fit-content',
   height: 'fit-content',
@@ -49,21 +51,34 @@ export function ComponentEditorHandle({
       pageCTX,
     );
     return editMode && showControls ? (
-      <div>
-        <div className={cx(editZoneStyle, className)}>
-          <List horizontal={!vertical} shrink centered>
-            {name}
-            <IconButton icon="edit" onClick={() => onEdit(path)} />
-            <ConfirmButton
-              icon="trash"
-              onAction={success => {
-                if (success) {
-                  onDelete(path);
-                }
-              }}
-            />
-            {togglerProps && <Toggler {...togglerProps} />}
-          </List>
+      <div className={className}>
+        <div
+          className={cx(
+            expand,
+            css({ background: themeVar.primaryHoverColor }),
+          )}
+        >
+          <Centered
+            className={css({
+              padding: '2px',
+              width: 'fit-content',
+              height: 'fit-content',
+            })}
+          >
+            <List horizontal={!vertical} shrink centered>
+              {name}
+              <IconButton icon="edit" onClick={() => onEdit(path)} />
+              <ConfirmButton
+                icon="trash"
+                onAction={success => {
+                  if (success) {
+                    onDelete(path);
+                  }
+                }}
+              />
+              {togglerProps && <Toggler {...togglerProps} />}
+            </List>
+          </Centered>
         </div>
       </div>
     ) : null;
@@ -115,6 +130,7 @@ interface EditableComponentProps {
   ) => React.ReactElement | null;
   wegasChildren?: WegasComponent[];
   path: string[];
+  uneditable?: boolean;
 }
 
 export function EditableComponent({
@@ -122,8 +138,10 @@ export function EditableComponent({
   children,
   wegasChildren,
   path,
+  uneditable,
 }: EditableComponentProps) {
-  const { editMode, onDrop, showBorders } = React.useContext(pageCTX);
+  const { editMode: edit, onDrop, showBorders } = React.useContext(pageCTX);
+  const editMode = edit && !uneditable;
   let content: WegasComponent[] = [];
   if (wegasChildren !== undefined) {
     content = editMode
@@ -148,7 +166,9 @@ export function EditableComponent({
 
   return children(
     content,
-    ComponentEditorHandle({ name: componentName, path }),
-    showBorders,
+    uneditable
+      ? () => null
+      : ComponentEditorHandle({ name: componentName, path }),
+    showBorders && !uneditable,
   );
 }

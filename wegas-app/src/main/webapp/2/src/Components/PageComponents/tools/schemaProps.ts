@@ -200,6 +200,24 @@ export const schemaProps = {
       },
     };
   },
+  pageSelect: (
+    label?: string,
+    required: boolean = true,
+    featureLevel: FeatureLevel = 'DEFAULT',
+    index: number = 0,
+  ) => {
+    return {
+      required,
+      type: 'object',
+      index,
+      view: {
+        index,
+        featureLevel,
+        label,
+        type: 'pageselect',
+      },
+    };
+  },
   variable: (
     label?: string,
     required: boolean = true,

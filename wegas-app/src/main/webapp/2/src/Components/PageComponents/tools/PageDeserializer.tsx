@@ -11,11 +11,13 @@ import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 interface PageDeserializerProps {
   json: WegasComponent;
   path?: string[];
+  uneditable?: boolean;
 }
 
 export function PageDeserializer({
   json,
   path,
+  uneditable,
 }: PageDeserializerProps): JSX.Element {
   const realPath = path ? path : [];
   const { children = [], ...restProps } = json.props || {};
@@ -24,7 +26,7 @@ export function PageDeserializer({
   return component ? (
     <ErrorBoundary>
       {
-        component.getComponent()({
+        component.getComponent(uneditable)({
           path: realPath,
           ...restProps,
           children: children.map((cjson, i) => (
@@ -32,6 +34,7 @@ export function PageDeserializer({
               key={i}
               json={cjson}
               path={realPath.concat([String(i)])}
+              uneditable={uneditable}
             />
           )),
         }) as JSX.Element
