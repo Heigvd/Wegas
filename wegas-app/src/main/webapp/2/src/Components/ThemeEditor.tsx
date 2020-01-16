@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Toolbar } from './Toolbar';
 import { ThemeModifiers, Theme, themeCTX, ThemeValues } from './Theme';
 import { cx, css } from 'emotion';
-import { flex, grow, flexColumn } from '../css/classes';
+import { flex, grow, flexColumn, defaultPadding } from '../css/classes';
 import { ChromePicker } from 'react-color';
 import { OnChangeHandler } from 'react-color/lib/components/common/ColorWrap';
 import * as Color from 'color';
@@ -32,10 +32,6 @@ const colorButton = (color: string, bgColor?: string) =>
     borderRadius: '5px',
     cursor: 'pointer',
   });
-
-const themeAttrForm = css({
-  padding: '10px',
-});
 
 interface MyColorPickerProps {
   color: string;
@@ -239,7 +235,7 @@ export default function ThemeEditor() {
       </Toolbar.Header>
       <Toolbar.Content>
         {selectedSection.values && (
-          <div className={cx(flex, grow, flexColumn, themeAttrForm)}>
+          <div className={cx(flex, grow, flexColumn, defaultPadding)}>
             {Object.keys(currentValues).map((k: keyof ThemeValues) => (
               <p key={k}>
                 <label
@@ -267,7 +263,7 @@ export default function ThemeEditor() {
           </div>
         )}
         {selectedSection.modifiers && (
-          <div className={cx(flex, grow, flexColumn, themeAttrForm)}>
+            <div className={cx(flex, grow, flexColumn, defaultPadding)}>
             {Object.keys(currentModifiers).map((k: keyof ThemeModifiers) => (
               <p key={k}>
                 <label
