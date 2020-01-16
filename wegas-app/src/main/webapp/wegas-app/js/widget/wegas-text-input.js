@@ -832,6 +832,7 @@ YUI.add('wegas-text-input', function(Y) {
                 h.detach();
             });
 
+            this.destroySortHandle();
             if (this.onInstanceUpdate) {
                 this.onInstanceUpdate.detach();
             }
@@ -853,9 +854,14 @@ YUI.add('wegas-text-input', function(Y) {
                 return desc.get("maxSelectable") || Number.POSITIVE_INFINITY;
             }
         },
+        getSortable: function() {
+            var desc = this.get('variable.evaluated');
+            return desc && desc.get("sortable") || false;
+        },
         /**
          * Try to save value.
          * @param {type} value the new value to save
+         * @param {addMode} set to true if you want to add ar make sure values is selected, undefined of false will toggle selection state
          * @returns {Boolean} true is the value has been saved, false otherwise
          */
         updateValue: function(value) {
@@ -909,18 +915,43 @@ YUI.add('wegas-text-input', function(Y) {
                     value = JSON.stringify([value]);
                 }
             }
-
+            this.updateEffectiveValue(value);
+        },
+        updateEffectiveValue: function(value) {
+            var desc = this.get('variable.evaluated'),
+                inst = desc.getInstance();
             if (inst.get('value') !== value) {
                 // HERE
                 this._initialValue = value;
                 if (this.get('selfSaving')) {
-                    cb.addClass('loading');
+                    this.get("contentBox").addClass('loading');
                 }
                 this.fire('save', this.getPayload(value));
             } else {
                 this.fire('revert', this.getPayload(value));
             }
             return true;
+        },
+        onDragEnd: function(e) {
+            if (!this.get('readonly.evaluated')) {
+                var selectedsContainer = this.get("contentBox").one(".selecteds");
+                var values = [];
+                selectedsContainer.all("li").each(function(item) {
+                    values.push(item.getData().value)
+                }, this);
+
+
+                var numSelectable = this.getNumSelectable();
+
+                if (values.length > numSelectable) {
+                    this.showMessage('error', Y.Wegas.I18n.t('errors.limitReached', {
+                        num: numSelectable
+                    }));
+                    this.syncUI();
+                } else {
+                    this.updateEffectiveValue(JSON.stringify(values));
+                }
+            }
         },
         _save: function(e) {
             var inst = e.descriptor.getInstance(),
@@ -929,25 +960,19 @@ YUI.add('wegas-text-input', function(Y) {
             this._initialContent = value;
             inst.set('value', value);
             if (this.get('selfSaving')) {
-                Wegas.Facade.Variable.script.remoteEval(
-                    'Variable.find(gameModel, "' +
-                    e.descriptor.get('name') +
-                    '").setValue(self, ' +
-                    JSON.stringify(value) +
-                    ');',
-                    {
-                        on: {
-                            success: Y.bind(function() {
-                                cb.removeClass('loading');
-                                this._saved(value);
-                            }, this),
-                            failure: Y.bind(function() {
-                                cb.removeClass('loading');
-                                this._saved(value);
-                            }, this)
-                        }
+                Wegas.Facade.Variable.script.remoteEval('Variable.find(gameModel, "' + e.descriptor.get('name') + '")'
+                    + '.setValue(self, ' + JSON.stringify(value) + ');', {
+                    on: {
+                        success: Y.bind(function() {
+                            cb.removeClass('loading');
+                            this._saved(value);
+                        }, this),
+                        failure: Y.bind(function() {
+                            cb.removeClass('loading');
+                            this._saved(value);
+                        }, this)
                     }
-                );
+                });
             } else {
                 this._saved(value);
                 this.syncUI();
@@ -987,23 +1012,43 @@ YUI.add('wegas-text-input', function(Y) {
                     content.push('</select>');
                     input.setContent(content.join(''));
                 } else {
-                    // CheckBox Like
-                    content = [
-                        '<ul class="wegas-string-input-checkboxes">'
-                    ];
-                    for (i in allowedValues) {
-                        value = allowedValues[i];
-                        content.push('<li role="button" tabindex="0" data-value='
-                            + JSON.stringify(value.get("name")) + ' '
-                            + (value.get("name") === inst.get('value') ? "class='selected'" : '') + '>'
-                            + I18n.t(value.get("label")) + '</li>');
-                    }
+                    if (this.getSortable()) {
+                        // Ordonnable CheckboxesLike
+                        content = [
+                            '<ol class="wegas-string-input-checkboxes selecteds"></ol>',
+                            '<ul class="wegas-string-input-checkboxes unselecteds">'
+                        ];
+                        for (i in allowedValues) {
+                            value = allowedValues[i];
+                            content.push('<li role="button" tabindex="0" data-value='
+                                + JSON.stringify(value.get("name")) + '>'
+                                + I18n.t(value.get("label")) + '</li>');
+                        }
 
-                    if (this.get('allowNull')) {
-                        content.push('<li data-value="">' + I18n.t('global.dunno') + '</li>');
+                        if (this.get('allowNull')) {
+                            content.push('<li data-value="">' + I18n.t('global.dunno') + '</li>');
+                        }
+                        content.push('</ul>');
+                        input.setContent(content.join(''));
+                    } else {
+                        // CheckBox Like
+                        content = [
+                            '<ul class="wegas-string-input-checkboxes">'
+                        ];
+                        for (i in allowedValues) {
+                            value = allowedValues[i];
+                            content.push('<li role="button" tabindex="0" data-value='
+                                + JSON.stringify(value.get("name")) + ' '
+                                + (value.get("name") === inst.get('value') ? "class='selected'" : '') + '>'
+                                + I18n.t(value.get("label")) + '</li>');
+                        }
+
+                        if (this.get('allowNull')) {
+                            content.push('<li data-value="">' + I18n.t('global.dunno') + '</li>');
+                        }
+                        content.push('</ul>');
+                        input.setContent(content.join(''));
                     }
-                    content.push('</ul>');
-                    input.setContent(content.join(''));
                 }
             } else {
                 // INPUT
@@ -1057,9 +1102,6 @@ YUI.add('wegas-text-input', function(Y) {
                         input.append(select.join(''));
                     }
                 } else {
-                    // First deselect *
-                    select = CB.one('.wegas-string-input-checkboxes');
-                    select.all('.selected').removeClass('selected');
                     //if (this.get("numSelectable") > 1) {
                     if (!value) {
                         value = '[]';
@@ -1072,20 +1114,40 @@ YUI.add('wegas-text-input', function(Y) {
                     }
                     var numSelectable = this.getNumSelectable();
                     var maxReached = values.length >= numSelectable;
+                    var sortable = this.getSortable();
 
-                    select.toggleClass("maximumReached", maxReached && numSelectable !== 1);
+                    if (sortable) {
+                        var selectedsContainer = CB.one(".selecteds");
+                        var unselectedsContainer = CB.one(".unselecteds");
 
-                    /*if (!Y.Lang.isArray(values)) {
-                     values = [values];
-                     }*/
-                    for (i in values) {
-                        select.all('li[data-value="' + values[i] + '"]').addClass('selected');
+                        // First deselect previously selected and move them to the unselected list
+                        var selecteds = selectedsContainer.all('li');
+
+                        selecteds.each(function(selected) {
+                            selectedsContainer.removeChild(selected);
+                            unselectedsContainer.appendChild(selected);
+                        }, this);
+
+                        // make sure none is selected
+                        unselectedsContainer.all("li").removeClass("selected");
+
+                        // then process effective selected values
+                        for (i in values) {
+                            var selected = CB.one('li[data-value="' + values[i] + '"]');
+                            selected.addClass('selected');
+
+                            selected.remove();
+                            selectedsContainer.appendChild(selected);
+                        }
+                    } else {
+                        select = CB.one('.wegas-string-input-checkboxes');
+                        select.all('.selected').removeClass('selected');
+                        select.toggleClass("maximumReached", maxReached && numSelectable !== 1);
+
+                        for (i in values) {
+                            select.all('li[data-value="' + values[i] + '"]').addClass('selected');
+                        }
                     }
-
-                    //} else {
-                    // value will never contains several values
-                    //select.all("li[data-value=\"" + value + "\"]").addClass("selected");
-                    //}
                 }
             } else {
                 input = CB.one('input');
@@ -1096,7 +1158,10 @@ YUI.add('wegas-text-input', function(Y) {
                 }
             }
         },
-
+        destroySortHandle: function() {
+            this.sortHandle1 && this.sortHandle1.destroy();
+            this.sortHandle2 && this.sortHandle2.destroy();
+        },
         bindUpdatedInstance: function() {
             if (this.onInstanceUpdate) {
                 this.onInstanceUpdate.detach();
@@ -1108,32 +1173,70 @@ YUI.add('wegas-text-input', function(Y) {
             }
         },
         bindUI: function() {
+            var CB = this.get("contentBox");
             this.bindUpdatedInstance();
+
             this.after("variableChange", this.bindUpdatedInstance, this);
 
             var input, select, ul;
 //            this.handlers.push(
 //                Y.Wegas.Facade.Variable.after('update', this.syncUI, this)
 //                );
-            input = this.get(CONTENTBOX).one('input');
+            input = CB.one('input');
             if (input) {
                 //this.handlers.push(input.on("blur", this.updateFromInput, this));
                 this.handlers.push(
                     input.on('valuechange', this.keyUp, this)
                     );
             }
-            select = this.get(CONTENTBOX).one('select');
+            select = CB.one('select');
             if (select) {
                 this.handlers.push(
                     select.on('change', this.updateFromSelect, this)
                     );
             }
-            ul = this.get(CONTENTBOX).one('ul');
+            ul = CB.one('ul');
             if (ul) {
-                this.handlers.push(this.get(CONTENTBOX).delegate('key', this.updateFromUl, 'up:13,32', 'li', this));
-                this.handlers.push(this.get(CONTENTBOX).delegate('click', this.updateFromUl, 'li', this));
+                this.handlers.push(CB.delegate('key', this.updateFromUl, 'up:13,32', 'li', this));
+                this.handlers.push(CB.delegate('click', this.updateFromUl, 'li', this));
             }
             this.on('save', this._save);
+
+            var sortable = this.getSortable();
+
+            if (sortable) {
+                var selectedsContainer = CB.one(".selecteds");
+                var unselectedsContainer = CB.one(".unselecteds");
+                var constrain = CB.one(".wegas-input-text");
+
+                this.destroySortHandle();
+
+                this.sortHandle1 = new Y.Sortable({
+                    container: selectedsContainer,
+                    nodes: "li",
+                    opacity: ".5"
+                });
+                this.sortHandle1.delegate.after("drag:end", this.onDragEnd, this);
+
+
+                this.sortHandle2 = new Y.Sortable({
+                    container: unselectedsContainer,
+                    nodes: "li",
+                    opacity: ".5"
+                });
+                this.sortHandle2.delegate.after("drag:end", this.onDragEnd, this);
+
+                this.sortHandle1.delegate.dd.plug((Y.Plugin.DDConstrained, {
+                    constrain2node: constrain
+                }));
+
+                this.sortHandle2.delegate.dd.plug((Y.Plugin.DDConstrained, {
+                    constrain2node: constrain
+                }));
+
+                this.sortHandle1.join(this.sortHandle2);
+            }
+
         },
         updateFromUl: function(e) {
             var v;

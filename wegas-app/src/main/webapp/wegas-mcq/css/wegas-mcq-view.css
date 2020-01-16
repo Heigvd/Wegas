@@ -910,8 +910,3 @@
     padding: 0;
     margin: 0;
 }
-
-.wegas-whview .wegas-boolean-input ul.wegas-boolean-input-checkboxes li:first-child,
-.wegas-whview .wegas-string-input ul.wegas-string-input-checkboxes li:first-child {
-    margin-left: 0;
-}
