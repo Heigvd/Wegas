@@ -44,22 +44,6 @@ public class JpaRealm extends AuthorizingRealm {
         AccountFacade accountFacade = AccountFacade.lookup();
         try {
             JpaAccount account = accountFacade.findJpaByEmail(token.getUsername());
-
-            String resetToken = account.getToken();
-
-            if (resetToken != null) {
-                String[] tokenElemeents = resetToken.split(":");
-                Long timestamp = Long.parseLong(tokenElemeents[0], 10);
-                String theToken = tokenElemeents[1];
-
-                Long now = (new Date()).getTime();
-
-                if (now - timestamp < 1000 * 60 * 60) {// 1 hour
-                    SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), theToken, getName());
-                    info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
-                }
-            }
-
             SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
             info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
             return info;
