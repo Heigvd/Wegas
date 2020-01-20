@@ -9,7 +9,7 @@ import {
   themeVar,
 } from './Theme';
 import { cx, css } from 'emotion';
-import { flex, grow, flexColumn } from '../css/classes';
+import { flex, grow, flexColumn, defaultPadding } from '../css/classes';
 import { ChromePicker } from 'react-color';
 import { OnChangeHandler } from 'react-color/lib/components/common/ColorWrap';
 import * as Color from 'color';
@@ -39,10 +39,6 @@ const colorButton = (color: string, bgColor?: string) =>
     borderRadius: themeVar.borderRadius,
     cursor: 'pointer',
   });
-
-const themeAttrForm = css({
-  padding: '10px',
-});
 
 interface MyColorPickerProps {
   color: string;
@@ -248,7 +244,7 @@ export default function ThemeEditor() {
       </Toolbar.Header>
       <Toolbar.Content>
         {selectedSection.colors && (
-          <div className={cx(flex, grow, flexColumn, themeAttrForm)}>
+          <div className={cx(flex, grow, flexColumn, defaultPadding)}>
             {Object.keys(currentValues).map((k: keyof ThemeColors) => (
               <p key={k}>
                 <label
@@ -276,32 +272,32 @@ export default function ThemeEditor() {
           </div>
         )}
         {selectedSection.modifiers && (
-          <div className={cx(flex, grow, flexColumn, themeAttrForm)}>
+          <div className={cx(flex, grow, flexColumn, defaultPadding)}>
             {Object.keys(currentModifiers).map(
               (k: keyof ThemeColorModifiers) => (
-                <p key={k}>
-                  <label
-                    className={cx(
-                      css({ display: 'flex', alignItems: 'center' }),
-                    )}
-                    htmlFor={k}
-                    title={k}
-                  >
-                    {k} :
-                  </label>
-                  <NumberSlider
-                    max={1}
-                    min={0}
-                    value={currentModifiers[k]}
-                    onChange={v => setThemeModifer(currentModifiedTheme, k, v)}
-                  />
-                </p>
+              <p key={k}>
+                <label
+                  className={cx(
+                    css({ display: 'flex', alignItems: 'center' }),
+                  )}
+                  htmlFor={k}
+                  title={k}
+                >
+                  {k} :
+                </label>
+                <NumberSlider
+                  max={1}
+                  min={0}
+                  value={currentModifiers[k]}
+                  onChange={v => setThemeModifer(currentModifiedTheme, k, v)}
+                />
+              </p>
               ),
             )}
           </div>
         )}
         {selectedSection.entries && (
-          <div className={cx(flex, grow, flexColumn, themeAttrForm)}>
+          <div className={cx(flex, grow, flexColumn, defaultPadding)}>
             {Object.keys(currentEntries).map((k: keyof ThemeEntries) => (
               <p key={k}>
                 <label

@@ -65,7 +65,7 @@
     "handlebars": "^4.0.11",
     "immer": "3.2.0",
     "immutable": "^3.8.2",
-    "jsoninput": "github:cigit/jsoninput",
+    "jsoninput": "github:heigvd/jsoninput",
     "jsplumb": "^2.11.2",
     "lodash-es": "^4.17.11",
     "match-sorter": "^4.0.1",

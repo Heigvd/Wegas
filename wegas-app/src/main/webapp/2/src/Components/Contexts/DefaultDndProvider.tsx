@@ -5,9 +5,7 @@ import { css } from 'emotion';
 import { themeVar } from '../Theme';
 
 export const dropZoneFocusCss = {
-  borderStyle: 'solid',
-  borderWidth: '2px',
-  borderColor: themeVar.successColor,
+  background: "repeating-Linear-gradient( 45deg, #fff, #fff 10px, #eee 10px, #eee 20px);",
   zIndex: 1000,
 };
 

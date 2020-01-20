@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable;
 
+import ch.albasim.wegas.annotations.CommonView;
 import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
@@ -324,7 +325,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @WegasExtraProperty(view = @View(
             index = -500,
             label = "Scope Key",
-            value = NumberView.class
+            value = NumberView.class,
+            featureLevel = CommonView.FEATURE_LEVEL.INTERNAL
     ))
     public Long getScopeKey() {
         if (this.getTeamScope() != null) {

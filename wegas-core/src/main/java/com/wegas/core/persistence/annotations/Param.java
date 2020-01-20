@@ -7,6 +7,9 @@
  */
 package com.wegas.core.persistence.annotations;
 
+import ch.albasim.wegas.annotations.JSONSchema;
+import ch.albasim.wegas.annotations.Scriptable;
+import ch.albasim.wegas.annotations.UndefinedSchema;
 import ch.albasim.wegas.annotations.ValueGenerator;
 import ch.albasim.wegas.annotations.ValueGenerator.Undefined;
 import ch.albasim.wegas.annotations.View;
@@ -23,6 +26,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface Param {
+
+    Class<? extends JSONSchema> schema() default UndefinedSchema.class;
 
     View view() default @View(label = "");
 

@@ -88,7 +88,7 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
     @WegasEntityProperty(
             nullable = false, optional = false, proposal = EmptyScript.class,
             view = @View(
-                    index = 603,
+                    index = 604,
                     label = "Impact",
                     value = ScriptView.Impact.class
             ))
