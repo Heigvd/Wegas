@@ -15,11 +15,16 @@ interface IName {
 }
 
 interface IEntityArrayFieldSelectProps extends WidgetProps.BaseProps {
+  context?: {
+      variableName?: string;
+  },
   view: {
     returnAttr: string;
     scope: 'instance' | string;
     field: string;
-    entity: string;
+    context?: {
+        entity: string;
+    };
     name: IName;
   } & CommonView &
     LabeledView;
@@ -38,10 +43,11 @@ function optionNameToString(result: any, name: IName) {
 }
 
 function EntityArrayFieldSelect(props: IEntityArrayFieldSelectProps) {
-  const { field, returnAttr, scope, entity, name, ...restView } = props.view;
+  const context = props.context || {};
+  const { field, returnAttr, scope, name, ...restView } = props.view;
 
-  const computedEntity = entity
-    ? VariableDescriptor.first('name', entity)
+  const computedEntity = context.variableName
+    ? VariableDescriptor.first('name', context.variableName)
     : props.formValue;
   if (!computedEntity) {
     return null;

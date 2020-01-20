@@ -141,19 +141,24 @@
     user-select: none;
 }
 
-.wegas-string-input-checkboxes.yui3-dd-drop-active-valid:empty {
-    margin: 2px 5px 4px 15px;
-    padding: 2px 10px;
-    height: 17px;
-    width: 50px;
-    background: repeating-linear-gradient(
-        45deg,
-        #fff,
-        #fff 10px,
-        #eee 10px,
-        #eee 20px
-        );
+ol.wegas-string-input-checkboxes:empty {
+    margin: 2px 5px 4px 0px;
+    padding: 0px 10px;
+    height: 21px;
+    width: fit-content;
+    color: #4c524d;
+    border: 2px dashed grey;
+    font-style: italic;
+    box-sizing: border-box;
+    border-radius: 6px;
 }
+
+ol.wegas-string-input-checkboxes:empty:before {
+    content: "drop here";
+    box-sizing: content-box;
+}
+
+
 .wegas-string-input-checkboxes.yui3-dd-drop-active-valid li {
     transition: none;
 }

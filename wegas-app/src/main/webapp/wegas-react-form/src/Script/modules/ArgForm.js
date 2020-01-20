@@ -32,10 +32,13 @@ export default class ArgFrom extends React.Component {
         this.props.onChange(valueToAST(value, this.props.schema));
     }
     render() {
-        const { entity } = this.props;
         const { schema, value } = this.state;
-        const s = { ...schema, view: { ...schema.view, entity } };
-        return <Form schema={s} value={value} onChange={this.onChange} />;
+        return (<Form
+            schema={{...schema}}
+            context={{ entity: this.props.entity }}
+            value={value}
+            onChange={this.onChange}
+        />);
     }
 }
 ArgFrom.propTypes = {

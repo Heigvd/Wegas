@@ -22,7 +22,7 @@
     "classnames": "^2.2.6",
     "core-js": "^2.6.5",
     "glamor": "^2.20.40",
-    "jsoninput": "github:cigit/JSONInput",
+    "jsoninput": "github:heigvd/jsoninput",
     "lodash-es": "^4.17.11",
     "prop-types": "^15.7.2",
     "react": "^16.9.0",

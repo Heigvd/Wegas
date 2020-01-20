@@ -42,4 +42,11 @@ public abstract class EntityArrayFiledSelect extends CommonView {
             super("name", "results");
         }
     }
+
+    public static class StringAllowedValuesSelect extends EntityArrayFiledSelect {
+
+        public StringAllowedValuesSelect() {
+            super("name", "allowedValues");
+        }
+    }
 }

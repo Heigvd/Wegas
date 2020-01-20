@@ -48,7 +48,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import jdk.nashorn.api.scripting.JSObject;
-import org.eclipse.persistence.annotations.Array;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -323,7 +322,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
                 label = "Values",
                 value = ArrayView.HighlightAndSortable.class)
         ) List<String> expectedValues,
-        @Param(view = @View(label = "Must respect order")) boolean strictOrder) {
+        @Param(view = @View(label = "Must respect order"), proposal = False.class) boolean strictOrder) {
         StringInstance instance = this.getInstance(p);
 
         List<String> values = Arrays.asList(instance.parseValues(instance.getValue()));

@@ -463,6 +463,9 @@ export function ExpressionEditor({
         <Form
           value={pick(scriptAttributes, Object.keys(schema.properties))}
           schema={schema}
+          context={{
+              variableName: scriptAttributes.variableName,
+          }}
           onChange={(v, e) => {
             onEditorChange(v);
             setScriptAttributes(v);
