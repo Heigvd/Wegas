@@ -11,9 +11,10 @@ import { StoreConsumer, StoreDispatch, store } from '../../data/store';
 import { AvailableViews } from './FormView';
 import { cx } from 'emotion';
 import { flex, grow, flexColumn } from '../../css/classes';
-import { StyledLabel } from '../../Components/AutoImport/String/Label';
-import { shallowDifferent } from '../../data/connectStore';
 import { Edition } from '../../data/Reducer/globalState';
+import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
+import { wlog } from '../../Helper/wegaslog';
+import { MessageString } from './MessageString';
 
 export interface EditorProps<T> {
   entity?: T;
@@ -137,6 +138,7 @@ function _overrideSchema(
 export function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
   const gameModel = GameModel.selectCurrent();
   if (gameModel.type === 'SCENARIO') {
+    wlog(_overrideSchema(cloneDeep(schema), entity));
     return _overrideSchema(cloneDeep(schema), entity);
     /*if (gameModel.basedOnId && gameModel.basedOnId >= 0) {
       // Editing a scenario which depends on a model -> some properties are read-only
@@ -202,10 +204,10 @@ async function WindowedEditor<T extends IMergeable>({
       break;
     }
   }
-
+  wlog(pathEntity);
   return (
     <div className={cx(flex, grow, flexColumn)}>
-      <StyledLabel
+      <MessageString
         value={error && error.message}
         type={'error'}
         duration={3000}

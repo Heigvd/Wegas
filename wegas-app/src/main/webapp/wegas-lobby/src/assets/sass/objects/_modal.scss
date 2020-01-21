@@ -126,6 +126,15 @@
         .form__row{
             margin:8px 4px;
         }
+        input#agree + label {
+            position: absolute;
+        }
+        input#agree:checked + label a {
+            color: inherit;
+        }
+        input#agree + label a {
+            color: red;
+        }
         @media screen and (max-width: 400px) {
             width: 100%;
             margin-left: 0;

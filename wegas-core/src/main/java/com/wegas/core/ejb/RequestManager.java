@@ -191,6 +191,12 @@ public class RequestManager implements RequestManagerI {
      * The current player
      */
     private Player currentPlayer;
+
+    /**
+     * The current team
+     */
+    private Team currentTeam;
+
     /**
      * The current user
      */
@@ -526,6 +532,36 @@ public class RequestManager implements RequestManagerI {
             this.setCurrentScriptContext(null);
         }
         this.currentPlayer = currentPlayer != null ? (currentPlayer.getId() != null ? playerFacade.find(currentPlayer.getId()) : currentPlayer) : null;
+
+        /*
+         * make sure to set the current team
+         */
+        if (currentPlayer != null) {
+            this.setCurrentTeam(currentPlayer.getTeam());
+        } else {
+            this.setCurrentTeam(null);
+        }
+    }
+
+    /**
+     * Get the current team. When a currentPlayer is available, the currentTeam always equals the
+     * currentPlayer.getTeam().
+     * <p>
+     * There is at least one case a currentTeam is set without any currentPlayer : on team creation
+     *
+     * @return
+     */
+    public Team getCurrentTeam() {
+        return this.currentTeam;
+    }
+
+    /**
+     * set the current team.
+     *
+     * @param team
+     */
+    public void setCurrentTeam(Team team) {
+        this.currentTeam = team;
     }
 
     /**

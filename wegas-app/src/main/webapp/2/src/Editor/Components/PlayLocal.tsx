@@ -44,7 +44,7 @@ export default function PlayLocal() {
         <WegasScriptEditor
           value={script}
           onChange={e => setScript(e)}
-          returnType={'number'}
+          returnType={['number']}
         />
       </div>
       <ErrorBoundary script={debouncedScript}>

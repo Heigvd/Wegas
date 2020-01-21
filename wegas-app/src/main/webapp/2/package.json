@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "start": "webpack-dev-server --hot --mode development",
-    "start-prod": "cross-env NODE_ENV=production webpack-dev-server --hot --mode production",
+    "start-pre-prod": "cross-env NODE_ENV=pre-production webpack-dev-server --hot --mode production",
     "build": "rimraf dist && cross-env NODE_ENV=production webpack --mode production",
     "test": "jest",
     "lint": "eslint 'src' --ext '.js,.ts,.tsx'",
@@ -65,7 +65,7 @@
     "handlebars": "^4.0.11",
     "immer": "3.2.0",
     "immutable": "^3.8.2",
-    "jsoninput": "github:cigit/jsoninput",
+    "jsoninput": "github:heigvd/jsoninput",
     "jsplumb": "^2.11.2",
     "lodash-es": "^4.17.11",
     "match-sorter": "^4.0.1",

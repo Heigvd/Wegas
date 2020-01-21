@@ -44,15 +44,15 @@ export default function translatable<P extends EndProps>(
     );
     const pvalue: ITranslatableContent =
       props.value == null
-            ? {'@class': 'TranslatableContent', translations: {}, version: 0 }
+        ? { '@class': 'TranslatableContent', translations: {}, version: 0 }
         : props.value;
+
     const currTranslation = pvalue.translations[lang];
+
     return (
       <Comp
-        {...props as any} // https://github.com/Microsoft/TypeScript/issues/28748
-        value={
-          currTranslation != null ? currTranslation.translation : ''
-        }
+        {...(props as any)} // https://github.com/Microsoft/TypeScript/issues/28748
+        value={currTranslation != null ? currTranslation.translation : ''}
         view={view}
         onChange={value => {
           const v: ITranslatableContent = {
@@ -60,7 +60,7 @@ export default function translatable<P extends EndProps>(
             translations: {
               ...pvalue.translations,
               [lang]: {
-                ...{status: ''},
+                ...{ status: '' },
                 ...pvalue.translations[lang],
                 translation: value,
                 lang,

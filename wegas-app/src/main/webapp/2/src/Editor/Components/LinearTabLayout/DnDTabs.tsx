@@ -1,19 +1,14 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { useDrag, DropTargetMonitor, useDrop } from 'react-dnd';
-import { primaryLight, primaryDark, themeVar } from '../../../Components/Theme';
+import { primaryLight, primaryDark } from '../../../Components/Theme';
 import { DropAction } from './DnDTabLayout';
 import { hidden, flex } from '../../../css/classes';
+import { dropZoneFocus } from '../../../Components/Contexts/DefaultDndProvider';
 
 export const dndAcceptType = 'DnDTab';
 
-const dropZoneFocus = css({
-  width: '50px',
-  borderStyle: 'solid',
-  borderWidth: '2px',
-  borderColor: themeVar.successColor,
-  zIndex: 1000,
-});
+const dropZone = cx(dropZoneFocus, css({ width: '50px' }));
 
 const defaultTabStyle = css({
   display: 'inline-block',
@@ -141,10 +136,11 @@ export function DropTab(props: DropTabProps) {
   const [style, setStyle] = React.useState(hidden);
 
   React.useEffect(() => {
+    /* Delaying action on purpose to avoid DnD loosing drop target while dropping */
     setTimeout(() => {
       setStyle(
         dropTabProps.canDrop && dropTabProps.isOverCurrent && !props.disabled
-          ? dropZoneFocus
+          ? dropZone
           : hidden,
       );
     }, 50);

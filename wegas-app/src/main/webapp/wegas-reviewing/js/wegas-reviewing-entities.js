@@ -422,16 +422,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             description: Y.Wegas.Helper.getTranslationAttr({
                 label: "Description",
                 type: HTML
-            }),
-            description: {
-                type: NULLSTRING,
-                optional: true,
-                view: {
-                    type: HTML,
-                    label: "Description",
-                    height: '50px'
-                }
-            }
+            })
         },
         EDITMENU: {
             editBtn: {

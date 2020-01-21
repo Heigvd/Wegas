@@ -796,6 +796,20 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         return formVal.allowedValues && formVal.allowedValues.length >= 1;
                     }
                 },
+                sortable: {
+                    index: 2,
+                    type: ["boolean", "null"],
+                    value: false,
+                    view: {
+                        "featureLevel": "DEFAULT",
+                        "index": 2,
+                        "label": "Sortable",
+                        "layout": "shortInline"
+                    },
+                    visible: function(val, formVal) {
+                        return formVal.allowedValues && formVal.allowedValues.length >= 1 && formVal.maxSelectable > 1;
+                    }
+                }
             },
             METHODS: {
                 setValue: {
@@ -837,6 +851,23 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                          return v === value;
                          }*/
                 },
+                countSelectedValues: {
+                    label: "number of selected value is",
+                    returns: NUMBER,
+                    arguments: [SELFARG]
+                },
+                getPositionOfValue: {
+                    label: "position of value, starting at 1",
+                    returns: NUMBER,
+                    arguments: [SELFARG, {
+                            type: STRING,
+                            view: {
+                                type: "entityarrayfieldselect",
+                                field: "allowedValues",
+                                returnAttr: "name"
+                            }
+                        }]
+                },
                 isNotSelectedValue: {
                     label: "selected value is not",
                     returns: BOOLEAN,
@@ -846,6 +877,33 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                 type: "entityarrayfieldselect",
                                 field: "allowedValues",
                                 returnAttr: "name"
+                            }
+                        }]
+                },
+                areSelectedValues: {
+                    label: "selected values are",
+                    returns: BOOLEAN,
+                    arguments: [SELFARG, {
+                            type: ARRAY,
+                            items: {
+                                type: STRING,
+                                view: {
+                                    type: "entityarrayfieldselect",
+                                    field: "allowedValues",
+                                    returnAttr: "name"
+                                }
+                            },
+                            view: {
+                                label: 'Allowed Values',
+                                sortable: true,
+                                highlight: true
+                            }
+                        }, {
+                            type: "boolean",
+                            value: false,
+                            view: {
+                                "label": "Must respect order",
+                                "layout": "shortInline"
                             }
                         }]
                 }
@@ -885,7 +943,35 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     label: "Value",
                     index: -1,
                     type: STRING
-                })
+                }),
+                selectedValue: {
+                    type: "string",
+                    transient: true,
+                    getter: function() {
+                        var val = I18n.t(this.get("trValue"));
+                        try {
+                            return JSON.parse(val)[0];
+                        } catch (_e) {
+                        }
+                        return val;
+                    },
+                    setter: function(newVal) {
+                    }
+                },
+                selectedValueLabel: {
+                    type: "string",
+                    transient: true,
+                    getter: function() {
+                        var val = I18n.t(this.get("trValue"));
+                        try {
+                            return this.getDescriptor().getLabelForAllowedValue(JSON.parse(val)[0]);
+                        } catch (_e) {
+                        }
+                        return val;
+                    },
+                    setter: function(newVal) {
+                    }
+                }
             }
         }
     );

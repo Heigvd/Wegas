@@ -6,9 +6,9 @@ import { Schema } from 'jsoninput';
 import { AvailableViews } from '../Editor/Components/FormView';
 import { StoreDispatch } from './store';
 import { EditingState, closeEditor, Edition } from './Reducer/globalState';
-import { shallowDifferent } from './connectStore';
 import { getEntityActions } from '../Editor/editionConfig';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
+import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
 
 export { ActionType };
 export type ActionTypeValues = ValueOf<typeof ActionType>;

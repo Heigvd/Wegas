@@ -2,7 +2,7 @@ import { css, cx } from 'emotion';
 import produce from 'immer';
 import { Connection, Defaults, jsPlumbInstance } from 'jsplumb';
 import * as React from 'react';
-import { IconButton } from '../../Components/Button/IconButton';
+import { IconButton } from '../../Components/Inputs/Button/IconButton';
 import { VariableDescriptor } from '../../data/selectors';
 import { StoreDispatch, useStore } from '../../data/store';
 import { entityIs } from '../../data/entities';
@@ -15,9 +15,9 @@ import { EditorAction } from '../../data/Reducer/globalState';
 import { State as RState } from '../../data/Reducer/reducers';
 import { wlog } from '../../Helper/wegaslog';
 import { ComponentWithForm } from './FormView/ComponentWithForm';
-import { shallowDifferent } from '../../data/connectStore';
 import { store } from '../../data/store';
 import { forceScroll, grow } from '../../css/classes';
+import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 
 const editorStyle = css({
   position: 'relative',

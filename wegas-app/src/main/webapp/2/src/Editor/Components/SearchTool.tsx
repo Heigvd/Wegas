@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IconButton } from '../../Components/Button/IconButton';
+import { IconButton } from '../../Components/Inputs/Button/IconButton';
 import { Modal } from '../../Components/Modal';
 import { Actions } from '../../data';
 import { editorLabel } from '../../data/methods/VariableDescriptorMethods';
@@ -33,10 +33,7 @@ function SearchResult({
 }) {
   const focusTab = React.useContext(focusTabContext);
   const Title = asyncSFC(async () => (
-    <FontAwesome
-      icon={withDefault(await getIcon(variable!), 'question')}
-      fixedWidth
-    />
+    <FontAwesome icon={withDefault(getIcon(variable!), 'question')} />
   ));
   return (
     <li
@@ -184,8 +181,7 @@ class SearchPanel extends React.Component<
     return (
       <>
         <IconButton
-          icon="search"
-          mask="cloud"
+          icon={{ icon: 'search', mask: 'cloud' }}
           tooltip="Cloud search"
           onClick={this.togglePanel}
         />

@@ -147,32 +147,6 @@ export function clientScriptEval<ReturnValue>(script: string) {
   );
 }
 
-// export function serverScriptEval(
-//   script: string,
-//   context?: IVariableDescriptor<IVariableInstance>,
-//   gameModelId?: number,
-//   playerId?: number,
-//   cb?: (error?: string) => void,
-// ) {
-//   const state = store.getState();
-//   VariableDescriptorAPI.runScript(
-//     gameModelId || state.global.currentGameModelId,
-//     playerId || state.global.currentPlayerId,
-//     {
-//       '@class': 'Script',
-//       language: 'JavaScript',
-//       content: script,
-//     },
-//     context,
-//   ).then(res => {
-//     wlog(res);
-//     if (cb) {
-//       cb('TODO : Parse managed request');
-//     }
-//     debugger;
-//   });
-// }
-
 /**
  * Hook, execute a script locally.
  * @param script code to execute

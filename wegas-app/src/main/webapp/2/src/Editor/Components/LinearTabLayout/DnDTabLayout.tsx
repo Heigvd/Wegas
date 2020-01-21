@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useDrop, DropTargetMonitor } from 'react-dnd';
 import { Tab, dndAcceptType, DragTab, DropTab } from './DnDTabs';
-import { IconButton } from '../../../Components/Button/IconButton';
+import { IconButton } from '../../../Components/Inputs/Button/IconButton';
 import { Toolbar } from '../../../Components/Toolbar';
 import { Menu } from '../../../Components/Menu';
 import { Reparentable } from '../Reparentable';
@@ -17,34 +17,23 @@ import {
   hidden,
   hideOverflow,
   autoScroll,
+  button,
 } from '../../../css/classes';
 
-const buttonStyle = {
-  ':hover,:focus': {
-    color: themeVar.primaryHoverColor,
-    outline: 'none',
-  },
-};
-
-const inactiveButton = css({
-  color: themeVar.primaryLighterTextColor,
-  ...buttonStyle,
-});
-
-const activeButton = css({
+const activeButton = cx(
+  css({
   color: themeVar.primaryDarkerTextColor,
-  ...buttonStyle,
-});
+  }),
+  button,
+);
 
 const listStyle = css({
-  color: themeVar.primaryDarkerTextColor,
-  backgroundColor: themeVar.primaryDarkerColor,
+  color: themeVar.primaryColor,
+  backgroundColor: themeVar.backgroundColor,
 });
 
 const dropZoneFocus = css({
-  borderStyle: 'solid',
-  borderWidth: '2px',
-  borderColor: themeVar.successColor,
+  background: "repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, #eeeeee80 10px, #eeeeee80 20px);",
   zIndex: 1000,
 });
 
@@ -229,9 +218,7 @@ export function DnDTabLayout({
                 icon="times"
                 tooltip="Remove tab"
                 onClick={() => onDeleteTab(label)}
-                className={
-                  label === defaultActiveLabel ? activeButton : inactiveButton
-                }
+                className={label === defaultActiveLabel ? activeButton : button}
               />
             </span>
           </DragTab>
@@ -258,16 +245,7 @@ export function DnDTabLayout({
   return (
     <Toolbar vertical={vertical} className={relative}>
       <Toolbar.Header>
-        {
-          /* Discuss this !(
-          dropLeftProps.isOver ||
-          dropRightProps.isOver ||
-          dropTopProps.isOver ||
-          dropBottomProps.isOver
-        ) && */ <div
-            ref={dropTabs}
-            className={cx(flex, grow, autoScroll)}
-          >
+        <div ref={dropTabs} className={cx(flex, grow, autoScroll)}>
             {renderTabs()}
             {selectItems && Object.keys(selectItems).length > 0 && (
               <Tab key={'-1'}>
@@ -281,33 +259,27 @@ export function DnDTabLayout({
                     onSelect && onSelect(i.value);
                     onNewTab(String(i.value));
                   }}
-                  buttonClassName={inactiveButton}
+                buttonClassName={button}
                   listClassName={listStyle}
                 />
               </Tab>
             )}
           </div>
-        }
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, relative)}>
         <div className={cx(expand, hideOverflow)}>
           <div className={cx(autoScroll, absoute, expand, flex)}>
-            {Object.keys(components).map(label => (
+            {defaultActiveLabel && (
               <Reparentable
-                key={label}
-                id={label}
+                id={defaultActiveLabel}
                 innerClassName={cx(flex, grow)}
-                outerClassName={cx(
-                  flex,
-                  grow,
-                  label !== defaultActiveLabel ? hidden : '',
-                )}
+                outerClassName={cx(flex, grow)}
               >
                 <React.Suspense fallback={<div>Loading...</div>}>
-                  {components[label]}
+                  {components[defaultActiveLabel]}
                 </React.Suspense>
               </Reparentable>
-            ))}
+            )}
           </div>
           {(dropLeftProps.canDrop ||
             dropRightProps.canDrop ||

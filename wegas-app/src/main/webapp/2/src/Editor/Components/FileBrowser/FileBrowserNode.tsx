@@ -6,18 +6,18 @@ import {
   localSelection,
   globalSelection,
 } from '../../../Components/Theme';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { IconName } from '@fortawesome/fontawesome-svg-core';
 import { generateAbsolutePath, FileAPI, fileURL } from '../../../API/files.api';
-import { IconButton } from '../../../Components/Button/IconButton';
+import { IconButton } from '../../../Components/Inputs/Button/IconButton';
 import { TextPrompt } from '../TextPrompt';
-import { ConfirmButton } from '../../../Components/Button/ConfirmButton';
+import { ConfirmButton } from '../../../Components/Inputs/Button/ConfirmButton';
 import { GameModel } from '../../../data/selectors';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { file } from '@babel/types';
-import { StyledLabel } from '../../../Components/AutoImport/String/Label';
 import { store, StoreDispatch } from '../../../data/store';
 import { editFile } from '../../../data/Reducer/globalState';
 import { flex, grow, hidden, block } from '../../../css/classes';
+import { MessageString } from '../MessageString';
 
 const hoverRow = css({
   cursor: 'pointer',
@@ -98,7 +98,7 @@ const dropSpecs = (action: DropAction) => ({
   }),
 });
 
-const getIconForFileType = (fileType: string): IconProp => {
+const getIconForFileType = (fileType: string): IconName => {
   if (fileType.indexOf('directory') !== -1) {
     return 'folder';
   } else if (fileType.indexOf('audio/') !== -1) {
@@ -429,7 +429,6 @@ export function FileBrowserNode({
               event.preventDefault();
               setOpen(oldOpen => !oldOpen);
             }}
-            fixedWidth
           />
         </div>
       )}
@@ -451,14 +450,11 @@ export function FileBrowserNode({
             dispatch(editFile(currentFile, setCurrentFile));
           }}
         >
-          <IconButton
-            icon={getIconForFileType(currentFile.mimeType)}
-            fixedWidth
-          />
+          <IconButton icon={getIconForFileType(currentFile.mimeType)} />
           <div className={grow}>{currentFile.name}</div>
           {nbUploadingFiles > 0 && (
             <div className={grow}>
-              <StyledLabel
+              <MessageString
                 value={`Uploading ${nbUploadingFiles} files`}
                 type="warning"
               />
@@ -491,7 +487,6 @@ export function FileBrowserNode({
                     setModalState({ type: 'close' });
                   }
                 }}
-                fixedWidth
                 defaultConfirm
               />
             )}
@@ -506,14 +501,12 @@ export function FileBrowserNode({
                       event.stopPropagation();
                       setModalState({ type: 'filename' });
                     }}
-                    fixedWidth
                   />
                   <IconButton
                     icon={'file-upload'}
                     tooltip={'Upload file in the folder'}
                     disabled={!isUploadAllowed(currentFile)}
                     onClick={openUploader}
-                    fixedWidth={true}
                   />
                 </>
               ) : (
@@ -525,14 +518,12 @@ export function FileBrowserNode({
                       event.stopPropagation();
                       openFile(currentFile);
                     }}
-                    fixedWidth
                   />
                   <IconButton
                     icon={'file-import'}
                     tooltip={'Upload new version'}
                     disabled={!isUploadAllowed(currentFile)}
                     onClick={openUploader}
-                    fixedWidth
                   />
                 </>
               ))}
@@ -549,7 +540,6 @@ export function FileBrowserNode({
                     }
                   }
                 }}
-                fixedWidth
               />
             )}
             {modalState.type === 'delete' && (
@@ -564,11 +554,10 @@ export function FileBrowserNode({
                   }
                   setModalState({ type: 'close' });
                 }}
-                fixedWidth
               />
             )}
             {modalState.type === 'error' && (
-              <StyledLabel
+              <MessageString
                 value={modalState.label}
                 type="error"
                 duration={3000}
@@ -612,7 +601,6 @@ export function FileBrowserNode({
                     removeFile();
                   }
                 }}
-                fixedWidth
                 defaultConfirm
               />
             )}

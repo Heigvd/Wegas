@@ -256,7 +256,7 @@ YUI().use(function(Y) {
             "wegas-text-input": {
                 path: "js/widget/wegas-text-input-min.js",
                 ws_provides: ["TextInput", "StringInput", "BooleanInput", "SaveStatusAggregator"],
-                requires: ["wegas-text-inputcss", "wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button", "event-valuechange"]
+                requires: ["sortable", "wegas-text-inputcss", "wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button", "event-valuechange"]
             },
             "wegas-number-inputcss": {
                 type: CSS

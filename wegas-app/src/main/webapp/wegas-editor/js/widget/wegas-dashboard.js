@@ -733,7 +733,7 @@ YUI.add('wegas-dashboard', function(Y) {
                             children: []
                         };
                         firstOfGroup = true;
-                        var children = Object.values(cellDef.items).sort(function(a, b) {
+                        var children = Y.Object.values(cellDef.items).sort(function(a, b) {
                             return a.order - b.order;
                         });
                         for (j in children) {

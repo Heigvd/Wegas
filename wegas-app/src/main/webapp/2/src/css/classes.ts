@@ -1,4 +1,5 @@
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
+import { themeVar } from '../Components/Theme';
 
 // Display
 export const flex = css({
@@ -49,8 +50,14 @@ export const flexColumn = css({
 export const flexRow = css({
   flexDirection: 'row',
 });
+export const flexWrap = css({
+  flexWrap: 'wrap',
+});
 
 // Position
+export const textCenter = css({
+  textAlign: 'center',
+});
 export const itemCenter = css({
   alignItems: 'center',
 });
@@ -59,4 +66,37 @@ export const centeredContent = css({
 });
 export const foregroundContent = css({
   zIndex: 1000,
+});
+
+/* Paddings */
+export const defaultPaddingLeft = css({
+  marginLeft: "10px"
+});
+
+export const defaultPaddingRight = css({
+  marginRight: "10px"
+});
+
+export const defaultPaddingTop = css({
+  marginTop: "10px"
+});
+
+export const defaultPaddingBottom = css({
+  marginTop: "10px"
+});
+
+export const defaultPadding = cx(
+  defaultPaddingTop,
+  defaultPaddingRight,
+  defaultPaddingBottom,
+  defaultPaddingLeft
+)
+
+// Components
+export const button = css({
+  color: themeVar.primaryLighterTextColor,
+  ':hover,:focus': {
+    color: themeVar.primaryHoverColor,
+    outline: 'none',
+  },
 });

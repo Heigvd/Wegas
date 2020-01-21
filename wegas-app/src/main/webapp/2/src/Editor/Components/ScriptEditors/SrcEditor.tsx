@@ -11,6 +11,12 @@ import Editor, {
 import schemas from '../../../page-schema.build';
 import { wlog } from '../../../Helper/wegaslog';
 
+export type SrcEditorLanguages =
+  | 'javascript'
+  | 'plaintext'
+  | 'css'
+  | 'json'
+  | 'typescript';
 export type MonacoEditor = Monaco;
 export type MonacoEditorProperties = Exclude<EditorProps['options'], undefined>;
 export type MonacoLangaugesServices = MonacoEditor['languages']['typescript']['typescriptDefaults'];
@@ -93,7 +99,7 @@ export interface SrcEditorProps {
   /**
    * language - the editor language
    */
-  language?: 'javascript' | 'plaintext' | 'css' | 'json' | 'typescript';
+  language?: SrcEditorLanguages;
   /**
    * cursorOffset - the position of the cursor in the text
    */

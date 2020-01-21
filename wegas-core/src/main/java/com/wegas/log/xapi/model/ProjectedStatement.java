@@ -8,6 +8,10 @@
 package com.wegas.log.xapi.model;
 
 import com.wegas.core.XlsxSpreadsheet;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -27,7 +31,7 @@ public class ProjectedStatement {
     private String objectType;
     private String objectDesc;
     private String result;
-    private String timestamp;
+    private Date timestamp;
     private String verb;
     private Boolean success;
     private Boolean completion;
@@ -37,7 +41,11 @@ public class ProjectedStatement {
 
     public ProjectedStatement(Map<String, Object> object) {
         this.actor = (String) object.get("actor");
-        this.timestamp = (String) object.get("timestamp");
+
+        String sDate = (String) object.get("timestamp");
+        Instant instant = ZonedDateTime.parse(sDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME).toInstant();
+        this.timestamp = Date.from(instant);
+
         this.verb = (String) object.get("verb");
         this.objectId = (String) object.get("object_id");
         this.objectType = (String) object.get("object_type");
@@ -121,11 +129,11 @@ public class ProjectedStatement {
         this.completion = completion;
     }
 
-    public String getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -153,7 +161,6 @@ public class ProjectedStatement {
         this.game = game;
     }
 
-    @Deprecated
     public static void writeCSVHeaders(StringBuilder sb, String sep) {
         sb.append("timestamp").append(sep)
                 .append("actor").append(sep)
@@ -208,7 +215,7 @@ public class ProjectedStatement {
 
     public void writeXLSXRecord(XlsxSpreadsheet xlsx, CellStyle style) {
         xlsx.newRow();
-        xlsx.addValue(escape(timestamp), style);
+        xlsx.addValue(timestamp, style);
         xlsx.addValue(escape(actor), style);
         xlsx.addValue(escape(team), style);
         xlsx.addValue(escape(game), style);

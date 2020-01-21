@@ -744,7 +744,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 parent.save(Y.bind(function(e) {
                     var stateId = Plugin.EditEntityAction.currentEntity.get("id"),
                         fsmDesc = e.response.entity,
-                        state = Y.Array.find(Object.values(fsmDesc.get("states")), function(state) {
+                        state = Y.Array.find(Y.Object.values(fsmDesc.get("states")), function(state) {
                             return state.get("id") === stateId;
                         });
 

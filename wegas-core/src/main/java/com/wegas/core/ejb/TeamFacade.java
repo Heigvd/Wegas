@@ -10,6 +10,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -127,6 +128,10 @@ public class TeamFacade extends BaseFacade<Team> {
         entity.setStatus(Status.LIVE);
 
         getEntityManager().persist(entity);
+        Player aLivePlayer = entity.getAnyLivePlayer();
+        if (aLivePlayer != null) {
+            requestManager.setPlayer(aLivePlayer);
+        }
         gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
     }
 
