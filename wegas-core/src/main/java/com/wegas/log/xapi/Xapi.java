@@ -13,6 +13,7 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -201,9 +202,9 @@ public class Xapi implements XapiI {
     }
 
     private Context genContext() {
-        final String logID = requestManager.getPlayer().getGameModel().getProperties().getLogID();
-        final Team team = requestManager.getPlayer().getTeam();
-        final Game game = requestManager.getPlayer().getGame();
+        final Team team = requestManager.getCurrentTeam();
+        final Game game = team.getGame();
+        final String logID = game.getGameModel().getProperties().getLogID();
 
         final Context context = new Context();
         final List<User> instructorsUser = userFacade.findEditors("g" + game.getId());
@@ -215,15 +216,15 @@ public class Xapi implements XapiI {
             context.setInstructor(new Group(instructorsAgent));
         }
 
-        ContextActivities ctx = new ContextActivities();
-        ctx.setCategory(new ArrayList<Activity>() {
+        ContextActivities ctxActivities = new ContextActivities();
+        ctxActivities.setCategory(new ArrayList<Activity>() {
             private static final long serialVersionUID = 1L;
 
             {
                 add(new Activity(LOG_ID_PREFIX + logID));
             }
         });
-        ctx.setGrouping(new ArrayList<Activity>() {
+        ctxActivities.setGrouping(new ArrayList<Activity>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -231,7 +232,7 @@ public class Xapi implements XapiI {
                 add(new Activity("internal://wegas/game/" + String.valueOf(game.getId())));
             }
         });
-        context.setContextActivities(ctx);
+        context.setContextActivities(ctxActivities);
         return context;
     }
 
@@ -251,17 +252,17 @@ public class Xapi implements XapiI {
      * Check if there is a current player, not Debug, there is a LogID and xapi is configured
      */
     private Boolean isValid() {
-        final Player player = requestManager.getPlayer();
+        final Team team = requestManager.getCurrentTeam();
 
         boolean logDebug = Helper.getWegasProperty("xapi.log_debug_player", "false").equals("true");
 
-        if (player == null) {
+        if (team == null) {
             logger.debug("No player");
             return false;
-        } else if (!logDebug && (player.getTeam() instanceof DebugTeam || player.getTeam() instanceof DebugTeam)) {
+        } else if (!logDebug && (team instanceof DebugTeam || team.getGame() instanceof DebugGame)) {
             logger.debug("Do not log statements for debug players");
             return false;
-        } else if (Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID())) {
+        } else if (Helper.isNullOrEmpty(team.getGame().getGameModel().getProperties().getLogID())) {
             logger.debug("No Log ID defined");
             return false;
         } else if (Helper.isNullOrEmpty(this.getAgentHomePage())) {

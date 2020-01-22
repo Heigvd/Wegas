@@ -90,6 +90,7 @@ public class PopulatorFacade extends WegasAbstractFacade {
         try {
             utx.begin();
             team = teamFacade.find(teamId);
+            requestManager.setCurrentTeam(team);
             Game game = gameFacade.find(team.getGameId());
             gameModelFacade.createAndRevivePrivateInstance(game.getGameModel(), team);
 
@@ -130,6 +131,7 @@ public class PopulatorFacade extends WegasAbstractFacade {
 
             websocketFacade.propagateNewPlayer(player);
             Team team = teamFacade.find(player.getTeamId());
+            requestManager.setPlayer(player);
 
             gameModelFacade.createAndRevivePrivateInstance(team.getGame().getGameModel(), player);
 

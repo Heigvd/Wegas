@@ -1,6 +1,7 @@
 import * as React from 'react';
 import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
+import { defaultPadding } from '../../css/classes';
 import './FormView';
 import { Button } from '../../Components/Inputs/Button/Button';
 import { ConfirmButton } from '../../Components/Inputs/Button/ConfirmButton';
@@ -30,7 +31,7 @@ export class Form<T> extends React.Component<
     // Used to reset Form (for default values)
     id: number;
   }
-> {
+  > {
   form?: JSONForm;
   static getDerivedStateFromProps(
     nextProps: FormProps<any>,
@@ -102,19 +103,21 @@ export class Form<T> extends React.Component<
           })}
         </Toolbar.Header>
         <Toolbar.Content>
-          <JSONForm
-            ref={n => {
-              if (n != null) {
-                this.form = n;
-              }
-            }}
-            key={this.state.id}
-            value={this.state.val}
-            schema={this.props.schema}
-            onChange={val => {
-              this.setState({ val });
-            }}
-          />
+          <div className={defaultPadding}>
+            <JSONForm
+              ref={n => {
+                if (n != null) {
+                  this.form = n;
+                }
+              }}
+              key={this.state.id}
+              value={this.state.val}
+              schema={this.props.schema}
+              onChange={val => {
+                this.setState({ val });
+              }}
+            />
+          </div>
         </Toolbar.Content>
       </Toolbar>
     );

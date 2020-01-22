@@ -52,8 +52,8 @@ public class StringInstance extends VariableInstance {
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(label = "Value", value = I18nStringView.class))
+        optional = false, nullable = false, proposal = EmptyI18n.class,
+        view = @View(label = "Value", value = I18nStringView.class))
     private TranslatableContent trValue;
 
     /**
@@ -97,12 +97,11 @@ public class StringInstance extends VariableInstance {
     /**
      * Value can be a string "as-is", or JSON array of string.
      * <p>
-     * If the StringDescriptor defines some allowed values, the as-is value or
-     * each string in the array must equal one of the allowed values. Otherwise,
-     * a WegasErrorMessage is therown.
+     * If the StringDescriptor defines some allowed values, the as-is value or each string in the
+     * array must equal one of the allowed values. Otherwise, a WegasErrorMessage is therown.
      * <p>
-     * since no language is given, the first one defined in the game model will be used.
-     * This will erase all other translations.
+     * since no language is given, the first one defined in the game model will be used. This will
+     * erase all other translations.
      *
      * @param value the value to set
      */
@@ -124,9 +123,8 @@ public class StringInstance extends VariableInstance {
     /**
      * Value can be a string "as-is", or JSON array of string.
      * <p>
-     * If the StringDescriptor defines some allowed values, the as-is value or
-     * each string in the array must equal one of the allowed values. Otherwise,
-     * a WegasErrorMessage is therown.
+     * If the StringDescriptor defines some allowed values, the as-is value or each string in the
+     * array must equal one of the allowed values. Otherwise, a WegasErrorMessage is therown.
      * <p>
      * This will set the value for the given language. All other translations will be erased.
      *

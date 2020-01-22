@@ -969,6 +969,9 @@ export function ExpressionEditor({
             debugger;
             onStatementChange(newScriptAttributes);
           }}
+          context={{
+            variableName: scriptAttributes.variableName,
+          }}
         />
       )}
     </div>

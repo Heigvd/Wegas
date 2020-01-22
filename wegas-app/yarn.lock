@@ -8461,17 +8461,9 @@ jsonfile@^3.0.0:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
-"jsoninput@github:cigit/JSONInput":
-  version "0.0.25"
-  resolved "https://codeload.github.com/cigit/JSONInput/tar.gz/4bd825b124fc38325d57ce8b552e2af60a852387"
-  dependencies:
-    immer "^3.2.0"
-    jsonschema "^1.2.4"
-    lodash-es "^4.17.15"
-
-"jsoninput@github:cigit/jsoninput":
-  version "0.0.25"
-  resolved "https://codeload.github.com/cigit/jsoninput/tar.gz/4bd825b124fc38325d57ce8b552e2af60a852387"
+"jsoninput@github:heigvd/jsoninput":
+  version "0.0.26"
+  resolved "https://codeload.github.com/heigvd/jsoninput/tar.gz/31837ce765d896d03ed8c6fb36bcba8661bda8f7"
   dependencies:
     immer "^3.2.0"
     jsonschema "^1.2.4"

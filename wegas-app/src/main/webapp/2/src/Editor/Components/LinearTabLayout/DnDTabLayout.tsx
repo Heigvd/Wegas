@@ -22,7 +22,7 @@ import {
 
 const activeButton = cx(
   css({
-    color: themeVar.primaryDarkerTextColor,
+  color: themeVar.primaryDarkerTextColor,
   }),
   button,
 );
@@ -33,9 +33,7 @@ const listStyle = css({
 });
 
 const dropZoneFocus = css({
-  borderStyle: 'solid',
-  borderWidth: '2px',
-  borderColor: themeVar.successColor,
+  background: "repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, #eeeeee80 10px, #eeeeee80 20px);",
   zIndex: 1000,
 });
 
@@ -248,25 +246,25 @@ export function DnDTabLayout({
     <Toolbar vertical={vertical} className={relative}>
       <Toolbar.Header>
         <div ref={dropTabs} className={cx(flex, grow, autoScroll)}>
-          {renderTabs()}
-          {selectItems && Object.keys(selectItems).length > 0 && (
-            <Tab key={'-1'}>
-              <Menu
-                items={Object.keys(selectItems).map(label => ({
-                  label: label,
-                  value: label,
-                }))}
-                icon="plus"
-                onSelect={i => {
-                  onSelect && onSelect(i.value);
-                  onNewTab(String(i.value));
-                }}
+            {renderTabs()}
+            {selectItems && Object.keys(selectItems).length > 0 && (
+              <Tab key={'-1'}>
+                <Menu
+                  items={Object.keys(selectItems).map(label => ({
+                    label: label,
+                    value: label,
+                  }))}
+                  icon="plus"
+                  onSelect={i => {
+                    onSelect && onSelect(i.value);
+                    onNewTab(String(i.value));
+                  }}
                 buttonClassName={button}
-                listClassName={listStyle}
-              />
-            </Tab>
-          )}
-        </div>
+                  listClassName={listStyle}
+                />
+              </Tab>
+            )}
+          </div>
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, relative)}>
         <div className={cx(expand, hideOverflow)}>
