@@ -24,7 +24,6 @@ import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.StringView;
 import java.util.*;
 import javax.persistence.*;
 

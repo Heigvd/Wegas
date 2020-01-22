@@ -604,11 +604,13 @@ public class WebsocketFacade {
                 User user = this.getUserFromChannel(hook.getChannel());
                 if (user != null) {
                     this.registerUser(user);
+                    userFacade.touchLastSeenAt(user);
                 }
             } else if (hook.getName().equals("channel_vacated")) {
                 Long userId = this.getUserIdFromChannel(hook.getChannel());
                 if (userId != null) {
                     onlineUsers.remove(userId);
+                    userFacade.touchLastSeenAt(userId);
                 }
             }
 

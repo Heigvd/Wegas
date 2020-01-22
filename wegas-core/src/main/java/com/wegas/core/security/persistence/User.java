@@ -47,6 +47,14 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     private Long id;
 
     /**
+     * last activity date
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamp with time zone")
+    @JsonIgnore
+    private Date lastSeenAt = null;
+
+    /**
      *
      */
     @OneToMany(mappedBy = "user", cascade = {
@@ -104,6 +112,14 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     @Override
     public Long getId() {
         return id;
+    }
+
+    public Date getLastSeetAt() {
+        return lastSeenAt != null ? new Date(lastSeenAt.getTime()) : null;
+    }
+
+    public void setLastSeenAt(Date lastSeenAt) {
+        this.lastSeenAt = lastSeenAt != null ? new Date(lastSeenAt.getTime()) : null;
     }
 
     /**
