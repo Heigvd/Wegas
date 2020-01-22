@@ -9,10 +9,17 @@ import { store } from '../../../../data/store';
 import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../../data/selectors';
 import { WyswygScriptEditor } from './WyswygScriptEditor';
-import { Statement, program } from '@babel/types';
+import { Statement, program, BinaryExpression } from '@babel/types';
 import { parse } from '@babel/parser';
 import generate from '@babel/generator';
 import { debounceAction } from '../../../../Helper/debounceAction';
+import { Expression } from '@babel/types';
+import { isExpressionStatement } from '@babel/types';
+import { isLogicalExpression } from '@babel/types';
+import { expressionStatement } from '@babel/types';
+import { LogicalExpression } from '@babel/types';
+import { logicalExpression } from '@babel/types';
+import { isBinaryExpression } from '@babel/types';
 
 export const scriptEditStyle = css({
   height: '5em',
@@ -29,28 +36,83 @@ export type CodeLanguage =
   | 'JSON'
   | 'PlainText';
 
-export const scriptIsCondition = (
+export function scriptIsCondition(
   mode?: ScriptMode,
   scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
-) =>
-  mode === 'GET' &&
-  (scriptableClassFilter === undefined ||
-    scriptableClassFilter.includes('boolean'));
+) {
+  return (
+    mode === 'GET' &&
+    (scriptableClassFilter === undefined ||
+      scriptableClassFilter.includes('boolean'))
+  );
+}
 
-export const returnTypes = (
+export function returnTypes(
   mode?: ScriptMode,
   scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
-): WegasScriptEditorReturnTypeName[] | undefined =>
-  mode === 'GET'
+): WegasScriptEditorReturnTypeName[] | undefined {
+  return mode === 'GET'
     ? ['boolean']
     : mode === 'SET' && mode === undefined
     ? ['void']
     : scriptableClassFilter;
+}
+
+function conditionVisitor(
+  expression: Expression,
+  prevStatement: Statement[] = [],
+): Statement[] {
+  if (isLogicalExpression(expression) && expression.operator === '&&') {
+    return conditionVisitor(expression.left, [
+      ...prevStatement,
+      expressionStatement(expression.right),
+    ]);
+  } else {
+    return [...prevStatement, expressionStatement(expression)];
+  }
+}
+
+function concatBinaryExpressionsToLogicalExpression(
+  binaryExpressions: BinaryExpression[],
+  index: number = 0,
+): LogicalExpression {
+  if (index === binaryExpressions.length - 2) {
+    return logicalExpression(
+      '&&',
+      binaryExpressions[index + 1],
+      binaryExpressions[index],
+    );
+  } else {
+    return logicalExpression(
+      '&&',
+      concatBinaryExpressionsToLogicalExpression(binaryExpressions, index + 1),
+      binaryExpressions[index],
+    );
+  }
+}
+
+function concatStatementsToCondition(statements: Statement[]): Statement[] {
+  const binaryExpressions: BinaryExpression[] = [];
+  let canBeMerged = true;
+  statements.forEach(s => {
+    if (isExpressionStatement(s) && isBinaryExpression(s.expression)) {
+      binaryExpressions.push(s.expression);
+    } else {
+      canBeMerged = false;
+    }
+  });
+
+  if (canBeMerged && binaryExpressions.length > 1) {
+    const test = concatBinaryExpressionsToLogicalExpression(binaryExpressions);
+    //debugger;
+    return [expressionStatement(test)];
+  } else {
+    throw Error("Condition's expressions cannot be merged");
+  }
+}
 
 export interface ScriptView {
   mode?: ScriptMode;
-  singleExpression?: boolean;
-  // clientScript?: boolean;
   scriptableClassFilter?: WegasScriptEditorReturnTypeName[];
 }
 
@@ -89,23 +151,17 @@ export function Script({
   const onCodeChange = React.useCallback(
     (value: string) => {
       debounceAction('ScriptEditorOnChange', () => {
-        const cleanValue = scriptIsCondition(
-          view.mode,
-          view.scriptableClassFilter,
-        )
-          ? value.replace(/;/gm, '&&')
-          : value;
         onChange({
           '@class': 'Script',
           language: 'JavaScript',
-          content: cleanValue,
+          content: value,
         });
         setScriptContent(() => {
-          return cleanValue;
+          return value;
         });
       });
     },
-    [onChange, view.mode, view.scriptableClassFilter],
+    [onChange],
   );
 
   React.useEffect(() => {
@@ -129,18 +185,21 @@ export function Script({
       if (scriptContent === '') {
         setExpressions(null);
       } else {
-        const newScriptContent = scriptIsCondition(
-          view.mode,
-          view.scriptableClassFilter,
-        )
-          ? scriptContent.replace(/&&/gm, ';')
-          : scriptContent;
-        const newExpressions = parse(newScriptContent, { sourceType: 'script' })
+        let newExpressions = parse(scriptContent, { sourceType: 'script' })
           .program.body;
-        if (view.singleExpression) {
-          if (newExpressions.length > 1) {
-            throw Error('Too much expressions for a single expression script');
+
+        if (
+          scriptIsCondition(view.mode, view.scriptableClassFilter) &&
+          newExpressions.length === 1
+        ) {
+          const condition = newExpressions[0];
+          if (isExpressionStatement(condition)) {
+            newExpressions = conditionVisitor(condition.expression);
+          } else {
+            setError(['The script cannot be parsed as a condition']);
           }
+        } else {
+          setError(['The script cannot be parsed as a condition']);
         }
         setExpressions(newExpressions);
       }
@@ -148,12 +207,7 @@ export function Script({
     } catch (e) {
       setError([e.message]);
     }
-  }, [
-    scriptContent,
-    view.singleExpression,
-    view.mode,
-    view.scriptableClassFilter,
-  ]);
+  }, [scriptContent, view.mode, view.scriptableClassFilter]);
 
   return (
     <CommonViewContainer view={view} errorMessage={error}>
@@ -186,7 +240,25 @@ export function Script({
               ) : (
                 <WyswygScriptEditor
                   expressions={expressions}
-                  onChange={e => onCodeChange(generate(program(e)).code)}
+                  onChange={e => {
+                    let returnedProgram = program(
+                      expressions ? expressions : [],
+                    );
+                    if (
+                      scriptIsCondition(view.mode, view.scriptableClassFilter)
+                    ) {
+                      try {
+                        returnedProgram = program(
+                          concatStatementsToCondition(e),
+                        );
+                      } catch (e) {
+                        setError([e.message]);
+                      }
+                    } else {
+                      returnedProgram = program(e);
+                    }
+                    onCodeChange(generate(returnedProgram).code);
+                  }}
                   mode={view.mode}
                   scriptableClassFilter={returnTypes(
                     view.mode,

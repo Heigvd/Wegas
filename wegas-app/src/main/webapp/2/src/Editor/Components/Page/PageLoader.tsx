@@ -3,14 +3,12 @@ import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvi
 import { ThemeProvider } from '../../../Components/Theme';
 import { TextLoader } from '../../../Components/Loader';
 import { PageDeserializer } from '../../../Components/PageComponents/tools/PageDeserializer';
-import { wlog } from '../../../Helper/wegaslog';
 
 interface PageLoaderProps {
   selectedPage: Page;
 }
 
 export function PageLoader({ selectedPage }: PageLoaderProps) {
-  wlog(selectedPage);
   return (
     <DefaultDndProvider>
       <ThemeProvider contextName="player">

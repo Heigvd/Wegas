@@ -356,6 +356,7 @@ const incrementNumericKey = (key: string, increment: number = 1) => {
  *
  * @param layouts
  */
+// @ts-ignore
 const logLayouts = (layouts: LayoutMap) => {
   wlog(
     'layouts',
@@ -880,7 +881,6 @@ function MainLinearLayout<T extends ComponentMap>(props: LinearLayoutProps<T>) {
       }
     }
   };
-  logLayouts(layout.layoutMap);
   return (
     <focusTabContext.Provider
       value={(id: keyof typeof availableLayoutTabs) => {

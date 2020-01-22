@@ -472,8 +472,8 @@ export function ConnectedStateMachineEditor({
       ? getInstance(stateMachine.current)
       : undefined;
     if (
-      entityIs<IFSMDescriptor>(stateMachine.current, 'FSMDescriptor') &&
-      entityIs<IFSMInstance>(instance, 'FSMInstance')
+      entityIs(stateMachine.current, 'FSMDescriptor') &&
+      entityIs(instance, 'FSMInstance')
     ) {
       return {
         descriptor: stateMachine.current,

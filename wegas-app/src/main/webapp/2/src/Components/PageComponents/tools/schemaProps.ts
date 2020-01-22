@@ -38,6 +38,7 @@ export const schemaProps = {
     readOnly: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
+    layout: SchemaLayout = 'shortInline',
   ) => ({
     required,
     type: 'boolean',
@@ -48,6 +49,7 @@ export const schemaProps = {
       readOnly,
       featureLevel,
       label,
+      layout,
     },
   }),
   number: (
@@ -98,9 +100,9 @@ export const schemaProps = {
     type?: WegasMethod['returns'],
     value?: number,
     index: number = 0,
+    layout: SchemaLayout = 'shortInline',
     readOnly: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
-    layout: SchemaLayout = 'shortInline',
   ) => ({
     featureLevel,
     required,
@@ -125,6 +127,7 @@ export const schemaProps = {
     value?: string,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
+    layout: SchemaLayout = 'shortInline',
   ) => ({
     required,
     type: 'object',
@@ -144,6 +147,7 @@ export const schemaProps = {
       mode,
       type: 'script',
       scriptableClassFilter,
+      layout,
     },
   }),
   code: (
@@ -153,6 +157,7 @@ export const schemaProps = {
     value?: string,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
+    layout: SchemaLayout = 'shortInline',
   ) => ({
     required,
     type: 'object',
@@ -164,6 +169,7 @@ export const schemaProps = {
       label,
       language,
       type: 'code',
+      layout,
     },
   }),
   select: (
@@ -173,6 +179,7 @@ export const schemaProps = {
     returnType: SchemaPrimitive = 'string',
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
+    layout: SchemaLayout = 'shortInline',
   ) => {
     let enumerated: readonly unknown[] = [];
     let choices: readonly SelectItem[] = [];
@@ -197,6 +204,7 @@ export const schemaProps = {
         featureLevel,
         label,
         type: 'select',
+        layout,
       },
     };
   },
@@ -205,6 +213,7 @@ export const schemaProps = {
     required: boolean = true,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
+    layout: SchemaLayout = 'shortInline',
   ) => {
     return {
       required,
@@ -215,6 +224,7 @@ export const schemaProps = {
         featureLevel,
         label,
         type: 'pageselect',
+        layout,
       },
     };
   },
@@ -225,6 +235,7 @@ export const schemaProps = {
     scriptable: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
+    layout: SchemaLayout = 'shortInline',
   ) => ({
     required,
     type: 'string',
@@ -236,6 +247,7 @@ export const schemaProps = {
       label,
       scriptable,
       type: 'variableselect',
+      layout,
     },
   }),
   scriptVariable: (
@@ -245,6 +257,7 @@ export const schemaProps = {
     scriptable: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
+    layout: SchemaLayout = 'shortInline',
   ) => ({
     required,
     type: 'object',
@@ -256,6 +269,7 @@ export const schemaProps = {
       label,
       scriptable,
       type: 'scriptableVariableSelect',
+      layout,
     },
   }),
 };

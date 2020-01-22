@@ -4,6 +4,7 @@ import { CommonViewContainer, CommonView } from './commonView';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { Labeled, LabeledView } from './labeled';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
+import { inputDefaultCSS } from './String';
 
 interface Choice {
   value: {};
@@ -29,11 +30,13 @@ interface IAsyncSelectProps extends WidgetProps.BaseProps {
     LabeledView;
 }
 const selectStyle = css({
+  ...inputDefaultCSS,
   display: 'inline-block',
   padding: '2px 4px',
   border: '1px solid lightgray',
   backgroundColor: 'lightgray',
-  minWidth: '4em',
+  textAlign: 'center',
+  alignItems: 'center',
 });
 
 function genItems(o: string | Choice) {
@@ -91,9 +94,9 @@ function SelectView(props: ISelectProps) {
     <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       <Labeled {...props.view}>
         {({ inputId, labelNode }) => (
-          <>
-            {labelNode}
-            <div>
+          <div>
+            <>
+              {labelNode}
               {choices.length > 1 ? (
                 <select
                   id={inputId}
@@ -111,8 +114,8 @@ function SelectView(props: ISelectProps) {
                     : (choices[0] as Choice).label}
                 </span>
               )}
-            </div>
-          </>
+            </>
+          </div>
         )}
       </Labeled>
     </CommonViewContainer>

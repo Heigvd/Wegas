@@ -24,7 +24,7 @@ function QuestionDisplay({ script, EditHandle }: QuestionDisplayProps) {
     <>
       <EditHandle />
       {descriptor === undefined ||
-      !entityIs<IQuestionDescriptor>(descriptor, 'QuestionDescriptor') ? (
+      !entityIs(descriptor, 'QuestionDescriptor') ? (
         <pre>Undefined entity</pre>
       ) : (
         <ConnectedQuestionDisplay entity={descriptor} />

@@ -231,7 +231,7 @@ function CTree(
               if (e.ctrlKey && props.localDispatch) {
                 dispatch = props.localDispatch;
               } else {
-                if (entityIs<IFSMDescriptor>(variable, 'FSMDescriptor')) {
+                if (entityIs(variable, 'FSMDescriptor')) {
                   focusTab('StateMachine');
                 }
                 focusTab('Editor');
@@ -250,14 +250,14 @@ function CTree(
               <Title />
               {editorLabel(variable)}
             </span>
-            {entityIs<IListDescriptor>(variable, 'ListDescriptor') ||
-            entityIs<IQuestionDescriptor>(variable, 'QuestionDescriptor') ? (
+            {entityIs(variable, 'ListDescriptor') ||
+            entityIs(variable, 'QuestionDescriptor') ? (
               <AddMenuParent
                 variable={variable}
                 localDispatch={props.localDispatch}
                 focusTab={focusTab}
               />
-            ) : entityIs<IChoiceDescriptor>(variable, 'ChoiceDescriptor') ? (
+            ) : entityIs(variable, 'ChoiceDescriptor') ? (
               <AddMenuChoice
                 variable={variable}
                 localDispatch={props.localDispatch}
@@ -280,7 +280,7 @@ function CTree(
                   localDispatch={props.localDispatch}
                 />
               ))
-            : entityIs<IChoiceDescriptor>(variable, 'ChoiceDescriptor')
+            : entityIs(variable, 'ChoiceDescriptor')
             ? variable.results.map((r, index) => (
                 <CTree
                   nodeProps={nodeProps}

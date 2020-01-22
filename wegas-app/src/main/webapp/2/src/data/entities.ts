@@ -59,15 +59,26 @@ export function varIsList<Type>(
  * @param variable Variable to test
  * @param cls Discriminant, class
  */
-export function entityIs<T extends IAbstractEntity>(
+export function entityIs<T extends WegasClassNames>(
   variable: unknown,
-  cls: T['@class'],
-): variable is T {
+  cls: T,
+): variable is WegasClassNamesAndClasses[T] {
   if ('object' === typeof variable && variable !== null) {
     return (variable as Record<string, unknown>)['@class'] === cls;
   }
   return false;
 }
+
+// export function entityIs<T extends IAbstractEntity>(
+//   variable: unknown,
+//   cls: T['@class'],
+// ): variable is T {
+//   if ('object' === typeof variable && variable !== null) {
+//     return (variable as Record<string, unknown>)['@class'] === cls;
+//   }
+//   return false;
+// }
+
 /**
  * Test if a given entity is persisted, ie it has an id
  * @param entity entity to test for

@@ -9,7 +9,6 @@ import Editor, {
   EditorDidMount,
 } from '@monaco-editor/react';
 import schemas from '../../../page-schema.build';
-import { wlog } from '../../../Helper/wegaslog';
 
 export type SrcEditorLanguages =
   | 'javascript'
@@ -288,11 +287,6 @@ function SrcEditor({
           addExtraLib(reactMonaco.languages.typescript.typescriptDefaults, [
             ...extraLibs,
           ]);
-
-        wlog(
-          'monaco editor ts version : ' +
-            reactMonaco.languages.typescript.typescriptVersion,
-        );
       } else if (language === 'json') {
         reactMonaco.languages.json.jsonDefaults.setDiagnosticsOptions({
           validate: true,

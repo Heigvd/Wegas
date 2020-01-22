@@ -40,12 +40,7 @@ function SearchResult({
       key={vId}
       className={resultStyle}
       onClick={() => {
-        if (
-          entityIs<IAbstractStateMachineDescriptor>(
-            variable,
-            'IAbstractStateMachineDescriptor',
-          )
-        ) {
+        if (entityIs(variable, 'AbstractStateMachineDescriptor')) {
           focusTab('StateMachine');
         }
         onClick();

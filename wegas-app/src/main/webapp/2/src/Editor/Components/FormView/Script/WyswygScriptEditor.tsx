@@ -10,7 +10,6 @@ const scriptStyle = css({
   borderWidth: '1px',
   padding: '2px',
   borderStyle: 'solid',
-  // borderColor: themeVar.primaryLighterColor,
 });
 
 interface WyswygScriptEditorProps extends ScriptView {
@@ -24,14 +23,6 @@ export function WyswygScriptEditor({
   mode,
   scriptableClassFilter,
 }: WyswygScriptEditorProps) {
-  // const [currentExpressions, setCurrentExpressions] = React.useState(
-  //   expressions,
-  // );
-
-  // React.useEffect(() => {
-  //   setCurrentExpressions(expressions);
-  // }, [expressions]);
-
   const onExpressionChange = React.useCallback(
     (expression: Statement | Statement[], index?: number) => {
       if (index !== undefined && expressions) {
@@ -78,7 +69,7 @@ export function WyswygScriptEditor({
       <IconButton icon="plus" onClick={() => onExpressionAdd(0)} />
       {expressions != null &&
         expressions.map((e, i) => (
-          <>
+          <div key={JSON.stringify(e)}>
             <ExpressionEditor
               key={'Editor' + i}
               statement={e}
@@ -92,7 +83,7 @@ export function WyswygScriptEditor({
               icon="plus"
               onClick={() => onExpressionAdd(i + 1)}
             />
-          </>
+          </div>
         ))}
     </div>
   );

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Schema } from 'jsoninput';
 import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
+import { entityIs } from '../../../data/entities';
 
 interface TranslatableProps {
   value?: ITranslatableContent;
@@ -36,16 +37,32 @@ export default function translatable<P extends EndProps>(
         ...props.view,
         label: (
           <span>
-            {props.view.label} <span>[{curCode}]</span>
+            {props.view.label}{' '}
+            {props.view.label !== undefined && <span>[{curCode}]</span>}
           </span>
         ),
       }),
       [props.view, curCode],
     );
     const pvalue: ITranslatableContent =
-      props.value == null
-        ? { '@class': 'TranslatableContent', translations: {}, version: 0 }
-        : props.value;
+      typeof props.value === 'object' &&
+      entityIs(props.value, 'TranslatableContent')
+        ? props.value
+        : {
+            '@class': 'TranslatableContent',
+            translations: {
+              [lang]: {
+                '@class': 'Translation',
+                lang: lang,
+                status: '',
+                translation:
+                  typeof props.value === 'string'
+                    ? props.value
+                    : JSON.stringify(props.value),
+              },
+            },
+            version: 0,
+          };
 
     const currTranslation = pvalue.translations[lang];
 

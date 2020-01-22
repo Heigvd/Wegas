@@ -17,8 +17,13 @@ export interface StringInputProps
   value?: string | number;
 }
 
+export const inputDefaultCSS = {
+  minWidth: '4em',
+  minHeight: '1.6em',
+};
+
 export const inputStyle = css({
-  minHeight: '1.5em',
+  ...inputDefaultCSS,
   width: '100%',
   resize: 'vertical',
   border: 'thin solid',

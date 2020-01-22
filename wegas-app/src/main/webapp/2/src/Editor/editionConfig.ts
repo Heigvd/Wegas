@@ -20,15 +20,17 @@ export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 //     | 'null';
 // };
 
+export type WegasTypeString = TYPESTRING | 'identifier';
+
 export interface WegasMethodParameter {
-  type?: TYPESTRING | TYPESTRING[] | 'identifier' | ['identifier', TYPESTRING];
+  type?: WegasTypeString | WegasTypeString[];
   view: AvailableViews;
 }
 
 export interface WegasMethod {
   label: string;
   parameters: WegasMethodParameter[];
-  returns?: 'number' | 'string' | 'boolean';
+  returns: 'number' | 'string' | 'boolean';
 }
 
 export interface MethodConfig {
@@ -181,7 +183,7 @@ export interface EActions {
 export async function getEntityActions(
   entity: IAbstractEntity,
 ): Promise<EActions> {
-  if (entityIs<IFSMDescriptor>(entity, 'FSMDescriptor')) {
+  if (entityIs(entity, 'FSMDescriptor')) {
     return { edit: editStateMachine };
   }
   return { edit: editVariable };

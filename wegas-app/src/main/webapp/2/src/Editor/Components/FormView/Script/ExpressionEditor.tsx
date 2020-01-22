@@ -13,6 +13,21 @@ import {
   isBinaryExpression,
   isExpressionStatement,
   isEmptyStatement,
+  expressionStatement,
+  nullLiteral,
+  stringLiteral,
+  identifier,
+  booleanLiteral,
+  numericLiteral,
+  callExpression,
+  memberExpression,
+  binaryExpression,
+  BooleanLiteral,
+  NullLiteral,
+  Identifier,
+  ObjectExpression,
+  objectExpression,
+  objectProperty,
 } from '@babel/types';
 import generate from '@babel/generator';
 import {
@@ -20,11 +35,14 @@ import {
   scriptIsCondition,
   scriptEditStyle,
   returnTypes,
+  ScriptMode,
 } from './Script';
 import {
   getMethodConfig,
   WegasMethod,
+  WegasTypeString,
   WegasMethodParameter,
+  MethodConfig,
 } from '../../../editionConfig';
 import { useVariableDescriptor } from '../../../../Components/Hooks/useVariable';
 import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
@@ -33,23 +51,18 @@ import { css } from 'emotion';
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
 import { parse } from '@babel/parser';
 import { pick, omit } from 'lodash';
-import { DEFINED_VIEWS } from '..';
 import { IconButton } from '../../../../Components/Inputs/Button/IconButton';
 import { deepDifferent } from '../../../../Components/Hooks/storeHookFactory';
-import { TYPESTRING } from 'jsoninput/typings/types';
 import { MessageString } from '../../MessageString';
-
-const schemaTypestrings: TYPESTRING[] = [
-  'array',
-  'boolean',
-  'null',
-  'number',
-  'object',
-  'string',
-];
+import { wlog } from '../../../../Helper/wegaslog';
+import { TYPESTRING } from 'jsoninput/typings/types';
+import { themeVar } from '../../../../Components/Theme';
+import { VariableDescriptor } from '../../../../data/selectors';
 
 const expressionEditorStyle = css({
+  backgroundColor: themeVar.primaryHoverColor,
   marginTop: '0.8em',
+  padding: '2px',
   div: {
     marginTop: '0',
   },
@@ -68,28 +81,27 @@ const isFindProperty = (expression: Expression) =>
   isIdentifier(expression) && expression.name === 'find';
 
 // Variable setter methods
-type VariableMethodExpression = Statement &
-  CallExpression & {
-    callee: {
-      object: {
-        arguments: {
-          value: string;
-        }[];
-      };
-      property: {
-        name: string;
-      };
+type ImpactExpression = CallExpression & {
+  callee: {
+    object: {
+      arguments: {
+        value: string;
+      }[];
     };
-    arguments: Expression[];
+    property: {
+      name: string;
+    };
   };
+  arguments: Expression[];
+};
 
-type VariableMethodStatement = Statement & {
-  expression: VariableMethodExpression;
+type ImpactStatement = Statement & {
+  expression: ImpactExpression;
 };
 
 const isVariableMethodStatement = (
   statement: Expression | Statement,
-): statement is VariableMethodStatement =>
+): statement is ImpactStatement =>
   isExpressionStatement(statement) &&
   isCallExpression(statement.expression) &&
   isMemberExpression(statement.expression.callee) &&
@@ -98,9 +110,9 @@ const isVariableMethodStatement = (
   isVariableObject(statement.expression.callee.object.callee.object) &&
   isFindProperty(statement.expression.callee.object.callee.property);
 // statement.expression.callee.object.arguments.length === 2;
-const getVariable = (expression: VariableMethodExpression) =>
+const getVariable = (expression: ImpactExpression) =>
   expression.callee.object.arguments[1].value;
-const getMethodName = (expression: VariableMethodExpression) =>
+const getMethodName = (expression: ImpactExpression) =>
   expression.callee.property.name;
 
 const listToObject: <T>(list: T[]) => { [id: string]: T } = list =>
@@ -126,60 +138,21 @@ const getParameters = (expression: CallExpression) =>
     }),
   );
 
-const normalizeInputType = (type?: string) => {
-  return type
-    ? schemaTypestrings.includes(type as TYPESTRING)
-      ? type
-      : 'object'
-    : undefined;
+// Condition methods
+type ConditionExpression = BinaryExpression & {
+  left: CallExpression & ImpactExpression;
+  right: {
+    value: unknown;
+  };
+  operator: WegasOperators;
 };
 
-const generateParameterSchema = (parameters: WegasMethodParameter[]) =>
-  parameters.reduce((o, p, i) => {
-    let type;
-    if (Array.isArray(p.type)) {
-      type = (p.type as unknown[]).map(normalizeInputType);
-    } else {
-      type = normalizeInputType(p.type);
-    }
-    const viewType =
-      p.view && p.view.type
-        ? Object.keys(DEFINED_VIEWS).includes(p.view.type)
-          ? p.view.type
-          : type === 'string' || type === 'number'
-          ? type
-          : 'hidden'
-        : undefined;
-    return {
-      ...o,
-      [String(i)]: {
-        ...p,
-        index: i + 2,
-        type,
-        identifier: p.type === 'identifier',
-        view: {
-          ...p.view,
-          type: viewType,
-          label: 'Argument ' + i,
-          index: i + 2,
-        },
-      },
-    };
-  }, {});
-
-// Condition methods
-type ConditionExpressionType = Statement & {
-  expression: BinaryExpression & {
-    left: CallExpression & VariableMethodExpression;
-    right: {
-      value: unknown;
-    };
-    operator: string;
-  };
+type ConditionStatement = Statement & {
+  expression: ConditionExpression;
 };
 const isConditionStatement = (
   statement: Statement,
-): statement is ConditionExpressionType =>
+): statement is ConditionStatement =>
   isExpressionStatement(statement) &&
   isBinaryExpression(statement.expression) &&
   isVariableMethodStatement({
@@ -188,7 +161,110 @@ const isConditionStatement = (
     expression: statement.expression.left,
   }) &&
   isLiteralExpression(statement.expression.right);
-const getOperator = (expression: BinaryExpression) => expression.operator;
+const getOperator = (expression: ConditionExpression) => expression.operator;
+const getComparator = (expression: ConditionExpression) =>
+  expression.right.value;
+
+const variableToASTNode = (
+  variable: unknown,
+  type?: WegasTypeString | WegasTypeString[],
+):
+  | BooleanLiteral
+  | Identifier
+  | NullLiteral
+  | NumericLiteral
+  | ObjectExpression
+  | StringLiteral => {
+  let usedType;
+  if (type === undefined) {
+    usedType = typeof variable;
+  } else if (Array.isArray(type)) {
+    if (type.includes(typeof variable as WegasTypeString)) {
+      usedType = typeof variable as WegasTypeString;
+    } else if (type.includes('identifier') && typeof variable === 'string') {
+      usedType = 'identifier';
+    } else {
+      throw Error(
+        `The current variable (${typeof variable}) type doesn't match the allowed types (${JSON.stringify(
+          type,
+        )})`,
+      );
+    }
+  } else {
+    if (typeof variable === type) {
+      usedType = type;
+    } else if (typeof variable === 'string' && type === 'identifier') {
+      usedType = 'identifier';
+    } else {
+      throw Error(
+        `The current variable (${typeof variable}) type doesn't match the allowed type (${type})`,
+      );
+    }
+  }
+  switch (usedType) {
+    case 'array':
+      throw Error(`Array type for method arguments not implemented yet`);
+    case 'boolean':
+      return booleanLiteral(variable as boolean);
+    case 'identifier':
+      return identifier(variable as string);
+    case 'null':
+      return nullLiteral();
+    case 'number':
+      return numericLiteral(variable as number);
+    case 'string':
+      return stringLiteral(variable as string);
+    case 'object': {
+      const objVariable = variable as object;
+      return objectExpression(
+        Object.keys(objVariable).map((k: keyof typeof objVariable) =>
+          objectProperty(stringLiteral(k), variableToASTNode(objVariable[k])),
+        ),
+      );
+    }
+    default:
+      throw Error(
+        `Type ${typeof variable} for method arguments not implemented yet`,
+      );
+  }
+};
+
+const generateImpactExpression = (
+  scriptAttributes: IForcedAttributes,
+  schemaAttributes: IArgumentSchemaAtributes,
+) => {
+  return callExpression(
+    memberExpression(
+      callExpression(
+        memberExpression(identifier('Variable'), identifier('find')),
+        [identifier('gameModel'), stringLiteral(scriptAttributes.variableName)],
+      ),
+      identifier(scriptAttributes.methodName),
+    ),
+    Object.keys(
+      omit(scriptAttributes, Object.keys(defaultConditionAttributes)),
+    ).map(arg =>
+      variableToASTNode(
+        scriptAttributes[Number(arg)],
+        schemaAttributes[Number(arg)].oldType,
+      ),
+    ),
+  );
+};
+
+const generateConditionStatement = (
+  scriptAttributes: IForcedConditionAttributes,
+  schemaAttributes: IArgumentSchemaAtributes,
+  methodReturn: WegasMethod['returns'],
+) => {
+  return expressionStatement(
+    binaryExpression(
+      scriptAttributes.operator,
+      generateImpactExpression(scriptAttributes, schemaAttributes),
+      variableToASTNode(scriptAttributes.comparator, methodReturn),
+    ),
+  );
+};
 
 const booleanOperators = {
   '===': { label: 'equals' },
@@ -198,8 +274,43 @@ const booleanOperators = {
   '<=': { label: 'lesser or equals than' },
 };
 
+type WegasOperators = keyof typeof booleanOperators;
+
+const filterMethods = (
+  methods: MethodConfig,
+  mode?: ScriptMode,
+): MethodConfig =>
+  Object.keys(methods)
+    .filter(k =>
+      mode === 'GET'
+        ? methods[k].returns !== undefined
+        : methods[k].returns === undefined,
+    )
+    .reduce((o, k) => ({ ...o, [k]: methods[k] }), {});
+
+interface SelectOperator {
+  label: string;
+  value: WegasOperators;
+}
+
+const filterOperators = (
+  methodReturns: WegasMethod['returns'],
+): SelectOperator[] =>
+  Object.keys(booleanOperators)
+    .filter(k => methodReturns === 'number' || k === '===')
+    .map((k: WegasOperators) => ({
+      label: booleanOperators[k].label,
+      value: k,
+    }));
+
+interface IForcedAttributes {
+  [param: number]: unknown;
+  variableName: string;
+  methodName: string;
+}
+
 interface IAttributes {
-  [param: string]: unknown;
+  [param: number]: unknown;
   variableName?: string;
   methodName?: string;
 }
@@ -207,8 +318,98 @@ const defaultAttributes: IAttributes = {
   variableName: undefined,
   methodName: undefined,
 };
+
+class ValidationError extends Error {
+  key: keyof IForcedConditionAttributes;
+  expected: unknown;
+  constructor(
+    key: keyof IForcedConditionAttributes,
+    expected: unknown,
+    message: string,
+  ) {
+    super(message);
+    this.key = key;
+    this.expected = expected;
+  }
+}
+
+const validateAttributes = (
+  callback: (
+    validatedResult: IForcedAttributes | ValidationError,
+    methodReturnType?: WegasMethod['returns'],
+    allowedMethods?: MethodConfig,
+  ) => void,
+  attributes: IForcedAttributes,
+  mode?: ScriptMode,
+) => {
+  const entity = VariableDescriptor.findByName(attributes.variableName);
+  if (entity) {
+    getMethodConfig(entity).then(res => {
+      const allowedMethods = filterMethods(res, mode);
+      const currentMethod = allowedMethods[attributes.methodName];
+      if (currentMethod) {
+        for (let i = 0; i < currentMethod.parameters.length; ++i) {
+          const expectedType = currentMethod.parameters[i].type;
+          const actualType = typeof attributes[i];
+          if (
+            expectedType !== actualType &&
+            !(expectedType === 'identifier' && actualType === 'string')
+          ) {
+            callback(
+              new ValidationError(
+                i,
+                expectedType,
+                `The parameter ${i} is not the good type. Expected ${expectedType} got ${actualType}`,
+              ),
+            );
+          }
+        }
+        callback(attributes, currentMethod.returns);
+      } else {
+        callback(
+          new ValidationError(
+            'methodName',
+            allowedMethods,
+            `The method ${attributes.methodName} is not a method of ${entity['@class']} entity`,
+          ),
+        );
+      }
+    });
+  } else {
+    callback(
+      new ValidationError(
+        'variableName',
+        'WegasEntity',
+        `The variable ${attributes.variableName} is unknown`,
+      ),
+    );
+  }
+};
+
+const validateExpression = (
+  callback: (
+    validatedResult: IForcedAttributes | ValidationError,
+    methodReturnType?: WegasMethod['returns'],
+  ) => void,
+  expression: ImpactExpression,
+  mode?: ScriptMode,
+) => {
+  const variableName = getVariable(expression);
+  const methodName = getMethodName(expression);
+  const parameters = getParameters(expression);
+  validateAttributes(
+    callback,
+    { variableName, methodName, ...parameters },
+    mode,
+  );
+};
+
+interface IForcedConditionAttributes extends IForcedAttributes {
+  operator: WegasOperators;
+  comparator: unknown;
+}
 interface IConditionAttributes extends IAttributes {
-  operator?: string;
+  operator?: WegasOperators;
   comparator?: unknown;
 }
 const defaultConditionAttributes: IConditionAttributes = {
@@ -217,8 +418,176 @@ const defaultConditionAttributes: IConditionAttributes = {
   comparator: undefined,
 };
 
-interface ExpressionEditorProps
-  extends Exclude<ScriptView, ['singleExpression', 'clientScript']> {
+const isOperatorAllowed = (
+  operator: BinaryExpression['operator'],
+  methodReturnType: WegasMethod['returns'],
+): operator is WegasOperators =>
+  filterOperators(methodReturnType).find(o => o.value === operator) !==
+  undefined;
+
+const validateConditionAttributes = (
+  callback: (
+    validatedResult: IForcedConditionAttributes | ValidationError,
+  ) => void,
+  attributes: IForcedConditionAttributes,
+  mode?: ScriptMode,
+) => {
+  validateAttributes(
+    (validatedScriptAttributes, methodReturnType) => {
+      if (validatedScriptAttributes instanceof ValidationError) {
+        callback(validatedScriptAttributes);
+      } else {
+        if (isOperatorAllowed(attributes.operator, methodReturnType!)) {
+          callback(attributes);
+          if (typeof attributes.comparator === methodReturnType) {
+            callback(attributes);
+          } else {
+            callback(
+              new ValidationError(
+                'comparator',
+                methodReturnType,
+                `Comparator type not allowed. Expected ${methodReturnType}, got ${typeof attributes.comparator}`,
+              ),
+            );
+          }
+        } else {
+          callback(
+            new ValidationError(
+              'operator',
+              filterOperators(methodReturnType!),
+              `Operator ${attributes.operator} not allowed with current method`,
+            ),
+          );
+        }
+      }
+    },
+    attributes,
+    mode,
+  );
+};
+
+const validateConditionnalExpression = (
+  callback: (
+    validatedResult: IForcedConditionAttributes | ValidationError,
+    methodReturnType?: WegasMethod['returns'],
+  ) => void,
+  expression: ConditionExpression,
+  mode?: ScriptMode,
+) => {
+  const variableName = getVariable(expression.left);
+  const methodName = getMethodName(expression.left);
+  const parameters = getParameters(expression.left);
+  const operator = getOperator(expression);
+  const comparator = getComparator(expression);
+  validateConditionAttributes(
+    callback,
+    { variableName, methodName, operator, comparator, ...parameters },
+    mode,
+  );
+};
+
+interface ConfigModes {
+  impact: IForcedAttributes;
+  condition: IConditionAttributes;
+}
+
+function autoValidateAttributes<T extends keyof ConfigModes>(
+  mode: T,
+  callback: (validatedResult: ConfigModes[T] | ValidationError) => void,
+  attributes: ConfigModes[T],
+) {
+  if (mode === 'condition') {
+    validateConditionAttributes(
+      callback,
+      attributes as IForcedConditionAttributes,
+      'GET',
+    );
+  } else {
+    validateAttributes(callback, attributes as IForcedAttributes, 'SET');
+  }
+}
+
+const typeCleaner = (
+  variable: unknown,
+  expectedType: WegasTypeString,
+  lastValue?: unknown,
+) => {
+  switch (expectedType) {
+    case 'boolean': {
+      return Boolean(variable);
+    }
+    case 'number': {
+      if (!isNaN(Number(variable))) {
+        return Number(variable);
+      } else {
+        if (lastValue !== undefined) {
+          return lastValue;
+        } else {
+          return undefined;
+        }
+      }
+    }
+    case 'string': {
+      return JSON.stringify(variable);
+    }
+    case 'array': {
+      return [variable];
+    }
+    case 'object': {
+      return { variable: variable };
+    }
+    case 'identifier': {
+      return JSON.stringify(variable);
+    }
+    case 'null': {
+      return null;
+    }
+    default: {
+      return null;
+    }
+  }
+};
+
+const isConditionAttributes = (
+  scriptAttributes: IAttributes | IConditionAttributes,
+): scriptAttributes is IConditionAttributes => {
+  const scriptKeys = Object.keys(scriptAttributes);
+  const compKeys = Object.keys(defaultConditionAttributes);
+  return scriptKeys.filter(k => compKeys.includes(k)).length > 0;
+};
+const hasFilledAttributes = (
+  scriptAttributes: IAttributes,
+): scriptAttributes is IForcedAttributes =>
+  Object.values(scriptAttributes).every(v => v !== undefined);
+const hasFilledConditionAttributes = (
+  scriptAttributes: IConditionAttributes,
+): scriptAttributes is IForcedConditionAttributes =>
+  Object.values(scriptAttributes).every(v => v !== undefined);
+
+interface IArgumentSchemaAtributes {
+  [param: number]: WegasMethodParameter & {
+    type: TYPESTRING;
+    oldType: WegasTypeString;
+  };
+}
+interface ISchemaAttributes extends IArgumentSchemaAtributes {
+  variableName: ReturnType<typeof schemaProps['variable']>;
+  methodName: ReturnType<typeof schemaProps['select']>;
+}
+interface IConditionSchemaAttributes extends ISchemaAttributes {
+  operator: ReturnType<typeof schemaProps['select']>;
+  comparator: ReturnType<typeof schemaProps['custom']>;
+}
+const isConditionSchemaAttributes = (
+  schemaAttributes: ISchemaAttributes | IConditionSchemaAttributes,
+): schemaAttributes is IConditionSchemaAttributes => {
+  return isConditionAttributes(
+    // Don't worry here, the function is only comparing keys
+    (schemaAttributes as unknown) as IAttributes | IConditionAttributes,
+  );
+};
+
+interface ExpressionEditorProps extends ScriptView {
   statement: Statement;
   onChange?: (expression: Statement | Statement[]) => void;
   onDelete?: () => void;
@@ -232,9 +601,6 @@ export function ExpressionEditor({
   onDelete,
 }: ExpressionEditorProps) {
   const [currentStatement, setCurrentStatement] = React.useState(statement);
-  const [methods, setMethods] = React.useState<{
-    [key: string]: WegasMethod;
-  }>();
   const [error, setError] = React.useState();
   const [srcMode, setSrcMode] = React.useState(false);
   const [newSrc, setNewSrc] = React.useState();
@@ -247,19 +613,22 @@ export function ExpressionEditor({
   );
   const variable = useVariableDescriptor(scriptAttributes.variableName);
   const scriptMethodName = scriptAttributes.methodName;
+  const [methods, setMethods] = React.useState<{
+    [key: string]: WegasMethod;
+  }>({});
   const scriptMethod =
-    methods && scriptAttributes && scriptMethodName !== undefined
+    scriptAttributes && scriptMethodName !== undefined
       ? methods[scriptMethodName]
       : undefined;
 
   const schema: {
     description: string;
-    properties: { [name: string]: ReturnType<ValueOf<typeof schemaProps>> };
+    properties: ISchemaAttributes | IConditionSchemaAttributes;
   } = {
     description: 'booleanExpressionSchema',
     properties: {
       variableName: schemaProps.variable(
-        'variable',
+        undefined,
         false,
         scriptIsCondition(mode, scriptableClassFilter)
           ? undefined
@@ -268,42 +637,101 @@ export function ExpressionEditor({
         false,
         'DEFAULT',
         0,
+        'inline',
       ),
       methodName: schemaProps.select(
-        'methodName',
+        undefined,
         false,
-        methods ? Object.keys(methods).map(k => k) : [],
+        Object.keys(methods).map(k => ({
+          label: methods[k].label,
+          value: k,
+        })),
         'string',
         'DEFAULT',
         1,
+        'inline',
       ),
-      ...(scriptMethod ? generateParameterSchema(scriptMethod.parameters) : {}),
+      ...(scriptMethod
+        ? scriptMethod.parameters.reduce(
+            (o, p, i) => ({
+              ...o,
+              [i]: {
+                ...p,
+                index: 2 + i,
+                type: p.type === 'identifier' ? 'string' : p.type,
+                oldType: p.type,
+                view: {
+                  ...p.view,
+                  index: 2 + i,
+                  layout: 'inline',
+                },
+              },
+            }),
+            {},
+          )
+        : {}),
       ...(scriptMethod && scriptIsCondition(mode, scriptableClassFilter)
         ? {
             operator: schemaProps.select(
-              'operator',
+              undefined,
               false,
-              Object.keys(booleanOperators)
-                .filter(k => scriptMethod.returns === 'number' || k === '===')
-                .map((k: keyof typeof booleanOperators) => ({
-                  label: booleanOperators[k].label,
-                  value: k,
-                })),
+              filterOperators(scriptMethod.returns),
               'string',
               'DEFAULT',
               scriptMethod.parameters.length + 2,
+              'inline',
             ),
             comparator: schemaProps.custom(
-              'comparator',
+              undefined,
               false,
               scriptMethod.returns,
               undefined,
               scriptMethod.parameters.length + 3,
+              'inline',
             ),
           }
         : {}),
     },
   };
+  const onStatementChange = React.useCallback(
+    (attributes: IAttributes | IConditionAttributes) => {
+      try {
+        if (scriptMethod) {
+          let newStatement;
+          if (
+            scriptIsCondition(mode, scriptableClassFilter) &&
+            isConditionAttributes(attributes) &&
+            isConditionSchemaAttributes(schema.properties)
+          ) {
+            if (hasFilledConditionAttributes(attributes)) {
+              newStatement = generateConditionStatement(
+                attributes,
+                schema.properties,
+                scriptMethod.returns,
+              );
+            }
+          } else {
+            if (hasFilledAttributes(attributes)) {
+              newStatement = expressionStatement(
+                generateImpactExpression(attributes, schema.properties),
+              );
+            }
+          }
+
+          if (newStatement !== undefined) {
+            setError(undefined);
+            setCurrentStatement(newStatement);
+            onChange && onChange(newStatement);
+            setNewSrc(undefined);
+          }
+        }
+      } catch (e) {
+        setError(e.message);
+      }
+      setScriptAttributes(attributes);
+    },
+    [onChange, schema.properties, mode, scriptMethod, scriptableClassFilter],
+  );
 
   const onScripEditorSave = React.useCallback(
     (value: string) => {
@@ -324,50 +752,6 @@ export function ExpressionEditor({
     [onChange],
   );
 
-  const onEditorChange = React.useCallback(
-    (scriptAttributes: IAttributes | IConditionAttributes) => {
-      let script = `Variable.find(gameModel,${
-        scriptAttributes.variableName
-          ? `'${scriptAttributes.variableName}'`
-          : 'undefined'
-      })`;
-      if (scriptAttributes.methodName) {
-        const parameters = Object.keys(
-          omit(schema.properties, Object.keys(defaultConditionAttributes)),
-        ).map(k => {
-          // return scriptAttributes[k as keyof typeof scriptAttributes];
-          const param = scriptAttributes[k as keyof typeof scriptAttributes];
-          const properties = schema.properties[k] as {
-            type?: string;
-            identifier?: boolean;
-          };
-          // return properties.type === 'string' && !properties.formated
-          //   ? `'${param}'`
-          //   : param;
-          return properties.type === 'number' ||
-            properties.type === 'string' ||
-            properties.identifier
-            ? param
-            : JSON.stringify(param);
-        });
-        script += `.${scriptAttributes.methodName}(${parameters})`;
-        if (scriptIsCondition(mode, scriptableClassFilter)) {
-          if (scriptAttributes.operator) {
-            script += ` ${scriptAttributes.operator} ${
-              typeof scriptAttributes.comparator === 'string'
-                ? `'${scriptAttributes.comparator}'`
-                : scriptAttributes.comparator
-            }`;
-            onScripEditorSave(script);
-          }
-        } else {
-          onScripEditorSave(script);
-        }
-      }
-    },
-    [mode, scriptableClassFilter, onScripEditorSave, schema.properties],
-  );
-
   React.useEffect(() => {
     setCurrentStatement(cs => {
       if (deepDifferent(cs, statement)) {
@@ -381,47 +765,46 @@ export function ExpressionEditor({
   React.useEffect(() => {
     if (variable) {
       getMethodConfig(variable).then(res => {
-        setMethods(
-          Object.keys(res)
-            .filter(k =>
-              mode === 'GET'
-                ? res[k].returns !== undefined
-                : res[k].returns === undefined,
-            )
-            .reduce((o, k) => ({ ...o, [k]: res[k] }), {}),
-        );
+        setMethods(filterMethods(res, mode));
       });
     } else {
-      setMethods(undefined);
+      setMethods({});
     }
   }, [variable, mode]);
-
-  // useComparator(scriptAttributes, 'SIMPLE');
-  // useComparator({ currentStatement, methods, scriptAttributes }, 'SIMPLE');
 
   React.useEffect(() => {
     if (!isEmptyStatement(currentStatement)) {
       if (scriptIsCondition(mode, scriptableClassFilter)) {
         if (isConditionStatement(currentStatement)) {
-          const newScriptAttributes = {
-            variableName: getVariable(currentStatement.expression.left),
-            methodName: getMethodName(currentStatement.expression.left),
-            ...getParameters(currentStatement.expression.left),
-            operator: getOperator(currentStatement.expression),
-            comparator: currentStatement.expression.right.value,
-          };
-          setScriptAttributes(newScriptAttributes);
+          validateConditionnalExpression(
+            validatedScriptAttributes => {
+              if (validatedScriptAttributes instanceof ValidationError) {
+                setError(validatedScriptAttributes.message);
+              } else {
+                setScriptAttributes(validatedScriptAttributes);
+              }
+            },
+            currentStatement.expression,
+            mode,
+          );
         } else {
           setError('Cannot be parsed as a condition');
         }
       } else {
         if (isVariableMethodStatement(currentStatement)) {
-          const newScriptAttributes = {
-            variableName: getVariable(currentStatement.expression),
-            methodName: getMethodName(currentStatement.expression),
-            ...getParameters(currentStatement.expression),
-          };
-          setScriptAttributes(newScriptAttributes);
+          validateExpression(
+            validatedScriptAttributes => {
+              if (validatedScriptAttributes instanceof ValidationError) {
+                setError(validatedScriptAttributes.message);
+              } else {
+                setScriptAttributes(
+                  omit(validatedScriptAttributes, 'methodReturnType'),
+                );
+              }
+            },
+            currentStatement.expression,
+            mode,
+          );
         } else {
           setError('Cannot be parsed as a variable statement');
         }
@@ -430,10 +813,12 @@ export function ExpressionEditor({
   }, [currentStatement, mode, scriptableClassFilter]);
 
   return (
-    <div className={expressionEditorStyle}>
-      {newSrc !== undefined ? (
-        <IconButton icon="save" onClick={() => onScripEditorSave(newSrc)} />
-      ) : (
+    <div
+      className={expressionEditorStyle}
+      //onBlur={()=>onEditorChange(scriptAttributes)}
+      onBlur={() => wlog('BLUR')}
+    >
+      {newSrc === undefined && (
         <IconButton
           icon="code"
           pressed={error !== undefined}
@@ -441,9 +826,9 @@ export function ExpressionEditor({
         />
       )}
       <IconButton icon="trash" onClick={onDelete} />
-      {srcMode ? (
+      {error || srcMode ? (
         <div className={scriptEditStyle}>
-          <MessageString type="error" value={error} duration={3000} />
+          <MessageString type="error" value={error} duration={10000} />
           <WegasScriptEditor
             value={
               newSrc === undefined
@@ -456,6 +841,7 @@ export function ExpressionEditor({
             noGutter
             minimap={false}
             returnType={returnTypes(mode, scriptableClassFilter)}
+            onBlur={onScripEditorSave}
             onSave={onScripEditorSave}
           />
         </div>
@@ -463,14 +849,125 @@ export function ExpressionEditor({
         <Form
           value={pick(scriptAttributes, Object.keys(schema.properties))}
           schema={schema}
-          onChange={(v, e) => {
-            onEditorChange(v);
-            setScriptAttributes(v);
-            if (e && e.length > 0) {
-              setError(e[0].message);
-            } else {
-              setError(undefined);
-            }
+          onChange={(v, _e) => {
+            //if (e && e.length > 0) {
+            // const newValues = e.reduce(
+            //   (o, err) => ({
+            //     ...o,
+            //     [err.property.replace('instance.', '')]: undefined,
+            //   }),
+            //   {},
+            // );
+            // onStatementChange({ ...v, ...newValues });
+            //} else {
+            const newScriptAttributes: IForcedConditionAttributes = {
+              variableName: '',
+              methodName: '',
+              operator: '===',
+              comparator: '',
+              ...v,
+            };
+            let validated;
+            do {
+              validated = true;
+              autoValidateAttributes(
+                scriptIsCondition(mode, scriptableClassFilter)
+                  ? 'condition'
+                  : 'impact',
+                validatedResult => {
+                  if (validatedResult instanceof ValidationError) {
+                    switch (validatedResult.key) {
+                      case 'variableName': {
+                        setError(validatedResult.message);
+                        break;
+                      }
+                      case 'methodName': {
+                        const allowedMethods = Object.keys(
+                          validatedResult.expected as MethodConfig,
+                        );
+                        if (allowedMethods.length === 0) {
+                          setError(validatedResult.message);
+                        } else {
+                          newScriptAttributes.methodName = Object.keys(
+                            allowedMethods,
+                          )[0];
+                          validated = false;
+                        }
+                        break;
+                      }
+                      case 'operator': {
+                        const allowedOperators = validatedResult.expected as SelectOperator[];
+                        if (allowedOperators.length === 0) {
+                          setError(validatedResult.message);
+                        } else {
+                          newScriptAttributes.operator =
+                            allowedOperators[0].value;
+                          validated = false;
+                        }
+                        break;
+                      }
+                      case 'comparator': {
+                        const returnType = validatedResult.expected as
+                          | WegasMethod['returns']
+                          | undefined;
+                        const currentValue = newScriptAttributes.comparator;
+                        if (returnType === undefined) {
+                          if (currentValue === undefined) {
+                            setError(validatedResult.message);
+                          } else {
+                            newScriptAttributes.comparator = undefined;
+                            validated = false;
+                          }
+                        } else {
+                          newScriptAttributes.comparator = typeCleaner(
+                            currentValue,
+                            returnType,
+                            'comparator' in scriptAttributes &&
+                              scriptAttributes.comparator,
+                          );
+                        }
+                        break;
+                      }
+                      /**
+                       * This case is for arguments
+                       */
+                      default: {
+                        const expectedType = validatedResult.expected as WegasTypeString;
+                        const currentValue =
+                          newScriptAttributes[validatedResult.key];
+                        if (Array.isArray(expectedType)) {
+                          const nonNullTypes = expectedType.filter(
+                            t => t != 'null',
+                          );
+                          if (nonNullTypes.length > 0) {
+                            newScriptAttributes[
+                              validatedResult.key
+                            ] = typeCleaner(
+                              currentValue,
+                              nonNullTypes[0],
+                              scriptAttributes[0],
+                            );
+                          } else {
+                            newScriptAttributes[validatedResult.key] = null;
+                          }
+                        } else {
+                          newScriptAttributes[
+                            validatedResult.key
+                          ] = typeCleaner(
+                            currentValue,
+                            expectedType,
+                            scriptAttributes[0],
+                          );
+                        }
+                      }
+                    }
+                  }
+                },
+                newScriptAttributes,
+              );
+            } while (!validated);
+            debugger;
+            onStatementChange(newScriptAttributes);
           }}
         />
       )}
