@@ -32,6 +32,7 @@ export interface IconButtonProps /*extends Props*/ {
   prefixedLabel?: boolean;
   type?: 'submit' | 'reset';
   className?: string;
+  ref?: React.ClassAttributes<HTMLButtonElement>['ref'];
 }
 const defaultActiveStyle = css({ color: themeVar.primaryDarkerColor });
 
@@ -88,10 +89,12 @@ export const IconButton: React.FunctionComponent<IconButtonProps> = (
     type,
     className,
     icon,
+    ref,
   } = props;
 
   return (
     <button
+      ref={ref}
       id={id}
       type={type}
       title={tooltip}
