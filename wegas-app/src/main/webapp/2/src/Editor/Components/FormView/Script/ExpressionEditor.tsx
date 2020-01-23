@@ -168,6 +168,7 @@ const getComparator = (expression: ConditionExpression) =>
 const variableToASTNode = (
   variable: unknown,
   type?: WegasTypeString | WegasTypeString[],
+  tolerateTypeVariation?: boolean,
 ):
   | BooleanLiteral
   | Identifier
@@ -183,6 +184,12 @@ const variableToASTNode = (
       usedType = typeof variable as WegasTypeString;
     } else if (type.includes('identifier') && typeof variable === 'string') {
       usedType = 'identifier';
+    } else if (tolerateTypeVariation) {
+      if (type.length > 0) {
+        usedType = typeof variable;
+      } else {
+        usedType = typeof variable;
+      }
     } else {
       throw Error(
         `The current variable (${typeof variable}) type doesn't match the allowed types (${JSON.stringify(
@@ -195,6 +202,8 @@ const variableToASTNode = (
       usedType = type;
     } else if (typeof variable === 'string' && type === 'identifier') {
       usedType = 'identifier';
+    } else if (tolerateTypeVariation) {
+      usedType = typeof variable;
     } else {
       throw Error(
         `The current variable (${typeof variable}) type doesn't match the allowed type (${type})`,
@@ -232,6 +241,7 @@ const variableToASTNode = (
 const generateImpactExpression = (
   scriptAttributes: IForcedAttributes,
   schemaAttributes: IArgumentSchemaAtributes,
+  tolerateTypeVariation?: boolean,
 ) => {
   return callExpression(
     memberExpression(
@@ -247,6 +257,7 @@ const generateImpactExpression = (
       variableToASTNode(
         scriptAttributes[Number(arg)],
         schemaAttributes[Number(arg)].oldType,
+        tolerateTypeVariation,
       ),
     ),
   );
@@ -256,12 +267,21 @@ const generateConditionStatement = (
   scriptAttributes: IForcedConditionAttributes,
   schemaAttributes: IArgumentSchemaAtributes,
   methodReturn: WegasMethod['returns'],
+  tolerateTypeVariation?: boolean,
 ) => {
   return expressionStatement(
     binaryExpression(
       scriptAttributes.operator,
-      generateImpactExpression(scriptAttributes, schemaAttributes),
-      variableToASTNode(scriptAttributes.comparator, methodReturn),
+      generateImpactExpression(
+        scriptAttributes,
+        schemaAttributes,
+        tolerateTypeVariation,
+      ),
+      variableToASTNode(
+        scriptAttributes.comparator,
+        methodReturn,
+        tolerateTypeVariation,
+      ),
     ),
   );
 };
@@ -352,6 +372,17 @@ const validateAttributes = (
           const expectedType = currentMethod.parameters[i].type;
           const actualType = typeof attributes[i];
           if (
+            typeof actualType === 'string' &&
+            expectedType === 'number' &&
+            !isNaN(Number(attributes[i]))
+          ) {
+            attributes[i] = Number(attributes[i]);
+          } else if (
+            typeof actualType === 'number' &&
+            expectedType === 'string'
+          ) {
+            attributes[i] = String(attributes[i]);
+          } else if (
             expectedType !== actualType &&
             !(expectedType === 'identifier' && actualType === 'string')
           ) {
@@ -439,9 +470,18 @@ const validateConditionAttributes = (
       } else {
         if (isOperatorAllowed(attributes.operator, methodReturnType!)) {
           callback(attributes);
-          if (typeof attributes.comparator === methodReturnType) {
-            callback(attributes);
-          } else {
+          if (
+            typeof attributes.comparator === methodReturnType ||
+            (typeof attributes.comparator === 'string' &&
+              methodReturnType === 'number' &&
+              !isNaN(Number(attributes.comparator)))
+          ) {
+            callback({...attributes, comparator:Number(attributes.comparator)});
+          } else if(
+            typeof attributes.comparator === 'number' &&
+            methodReturnType === 'string') {
+              callback({...attributes, comparator:String(attributes.comparator)});
+            }else {
             callback(
               new ValidationError(
                 'comparator',
@@ -726,7 +766,8 @@ export function ExpressionEditor({
           }
         }
       } catch (e) {
-        setError(e.message);
+        // setError(e.message);
+        setScriptAttributes(attributes);
       }
       setScriptAttributes(attributes);
     },
@@ -966,7 +1007,6 @@ export function ExpressionEditor({
                 newScriptAttributes,
               );
             } while (!validated);
-            debugger;
             onStatementChange(newScriptAttributes);
           }}
           context={{
