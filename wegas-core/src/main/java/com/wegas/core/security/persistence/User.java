@@ -114,7 +114,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
         return id;
     }
 
-    public Date getLastSeetAt() {
+    public Date getLastSeenAt() {
         return lastSeenAt != null ? new Date(lastSeenAt.getTime()) : null;
     }
 
