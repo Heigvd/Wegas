@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.google.common.base.Objects;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
@@ -56,8 +57,8 @@ import org.slf4j.LoggerFactory;
     query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.id = :teamId")
 @NamedQuery(name = "Player.findToPopulate",
     query = "SELECT a FROM Player a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
-@NamedNativeQuery(name = "Player.AreUsersTeamMate",
-    query = "SELECT true FROM player as self JOIN player AS mate on mate.team_id = self.team_id WHERE self.user_id =?1 AND mate.user_id = ?2")
+@NamedNativeQuery(name = "Player.isUserTeamMateOfPlayer",
+    query = "SELECT true FROM player as self JOIN player AS mate on mate.team_id = self.team_id WHERE self.id =?1 AND mate.user_id = ?2")
 @NamedQuery(name = "Player.findGameIds",
     query = "SELECT p.team.gameTeams.game.id FROM Player p where p.user.id = :userId")
 @NamedNativeQuery(name = "Player.IsTrainerForUser",
@@ -258,6 +259,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      * @return gameModel the player is linked to
      */
     @JsonIgnore
+    @Override
     public GameModel getGameModel() {
         return this.getTeam().getGame().getGameModel();
     }
@@ -396,6 +398,29 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     @JsonIgnore
     public Player getAnyLivePlayer() {
         if (this.getStatus().equals(Status.LIVE)) {
+            return this;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    @JsonIgnore
+    public Player getUserLivePlayer(User user) {
+        if (this.getStatus().equals(Status.LIVE) 
+            && Objects.equal(this.user, user)) {
+            return this;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Player getTestPlayer() {
+        if (this.isTestPlayer()){
             return this;
         } else {
             return null;

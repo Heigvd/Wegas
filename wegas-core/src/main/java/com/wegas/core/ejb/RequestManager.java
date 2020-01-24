@@ -538,6 +538,7 @@ public class RequestManager implements RequestManagerI {
          */
         if (currentPlayer != null) {
             this.setCurrentTeam(currentPlayer.getTeam());
+            this.assertUpdateRight(currentPlayer);
         } else {
             this.setCurrentTeam(null);
         }
@@ -561,7 +562,32 @@ public class RequestManager implements RequestManagerI {
      * @param team
      */
     public void setCurrentTeam(Team team) {
+        if (team != null) {
+            User user = getCurrentUser();
+
+            // if currentPlayer is set, make sure it is member of the new current team.
+            // set to null otherwise
+            if (currentPlayer != null) {
+                if (!team.equals(currentPlayer.getTeam())) {
+                    // current player is not a member of the current team
+                    this.setPlayer(null);
+                    // warning: setPlayer(null) will also set currentTeam to null
+                }
+            }
+
+            // if no current user, try to find one
+            if (currentPlayer == null) {
+                Player newPlayer = playerFacade.findPlayerInTeam(team.getId(), user.getId());
+                this.setPlayer(newPlayer);
+            }
+
+        }
         this.currentTeam = team;
+
+        if (this.currentTeam != null) {
+            // if current Team is defined, make sure current user has edit right
+            this.assertUpdateRight(team);
+        }
     }
 
     /**
@@ -1515,17 +1541,23 @@ public class RequestManager implements RequestManagerI {
      * @return
      */
     private boolean isTeamMate(WegasIsTeamMate wegasIsTeamMate) {
-        User self = this.getCurrentUser();
         Long mateId = wegasIsTeamMate.getUserId();
 
-        Query query = getEntityManager().createNamedQuery("Player.AreUsersTeamMate");
+        Player self = getPlayer();
+        if (getPlayer() != null) {
 
-        query.setParameter(1, self.getId());
-        query.setParameter(2, mateId);
+            Query query = getEntityManager().createNamedQuery("Player.isUserTeamMateOfPlayer");
 
-        List results = query.getResultList();
+            query.setParameter(1, self.getId());
+            query.setParameter(2, mateId);
 
-        return !results.isEmpty();
+            List results = query.getResultList();
+
+            return !results.isEmpty();
+        } else {
+            logger.error("NO CURRENT PLAYER IN CONTEXT!");
+            return false;
+        }
     }
 
     private boolean isTrainerForUser(WegasIsTrainerForUser perm) {

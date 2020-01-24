@@ -15,9 +15,7 @@ import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.AccountFacade;
-import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
-import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -112,6 +110,7 @@ public class TeamFacade extends BaseFacade<Team> {
         populatorScheduler.scheduleCreation();
         this.detach(t);
         t = this.find(t.getId());
+        requestManager.setCurrentTeam(t);
         return t;
     }
 
@@ -158,7 +157,7 @@ public class TeamFacade extends BaseFacade<Team> {
     /**
      * @param team
      *
-     * @return all instances which belons to the team
+     * @return all instances which belongs to the team
      *
      * @deprecated use JPA team.privateInstances
      */

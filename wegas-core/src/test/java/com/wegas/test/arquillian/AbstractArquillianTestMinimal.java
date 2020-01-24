@@ -314,6 +314,7 @@ public abstract class AbstractArquillianTestMinimal {
             userFacade.authenticate(info);
 
             subject.login(new UsernamePasswordToken(user.getUsername(), user.getPassword()));
+            requestManager.setPlayer(null);
         }
 
         User currentUser = userFacade.getCurrentUser();

@@ -8,8 +8,6 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.core.ejb.cron.EjbTimerFacade;
-import com.wegas.core.exception.client.WegasAccessDenied;
-import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;

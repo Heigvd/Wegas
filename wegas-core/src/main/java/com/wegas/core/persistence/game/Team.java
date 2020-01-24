@@ -57,11 +57,11 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @Table(
-        uniqueConstraints = @UniqueConstraint(columnNames = {"name", "gameteams_id"}),
-        indexes = {
-            @Index(columnList = "gameteams_id"),
-            @Index(columnList = "createdby_id")
-        }
+    uniqueConstraints = @UniqueConstraint(columnNames = {"name", "gameteams_id"}),
+    indexes = {
+        @Index(columnList = "gameteams_id"),
+        @Index(columnList = "createdby_id")
+    }
 )
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSubTypes(value = {
@@ -69,7 +69,6 @@ import javax.validation.constraints.NotNull;
 })
 
 @NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.gameTeams.game.id = :gameId")
-
 
 @NamedQuery(name = "Team.findToPopulate", query = "SELECT a FROM Team a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
 public class Team extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, Populatable {
@@ -231,6 +230,18 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
 
     @JsonIgnore
     @Override
+    public Player getUserLivePlayer(User user) {
+        for (Player p : this.getPlayers()) {
+            Player theP = p.getUserLivePlayer(user);
+            if (theP != null) {
+                return theP;
+            }
+        }
+        return null;
+    }
+
+    @JsonIgnore
+    @Override
     public Player getAnyLivePlayer() {
         for (Player p : this.getPlayers()) {
             if (p.getStatus().equals(Populatable.Status.LIVE)) {
@@ -238,6 +249,22 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
             }
         }
         return null;
+    }
+
+
+    @JsonIgnore
+    @Override
+    public Player getTestPlayer() {
+        if (this instanceof DebugTeam) {
+            return this.getAnyLivePlayer();
+        }
+        return null;
+    }
+
+    @JsonIgnore
+    @Override
+    public GameModel getGameModel() {
+        return this.getGame().getGameModel();
     }
 
     /**
@@ -307,8 +334,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
 
     /**
      *
-     * @param gameId public void setGameId(Long gameId) { this.gameId = gameId;
-     *               }
+     * @param gameId public void setGameId(Long gameId) { this.gameId = gameId; }
      */
     /**
      * @return the createdTime
@@ -355,8 +381,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     /**
-     * @return boolean, free if the game is played individualy, false if the
-     *         game is played in team
+     * @return boolean, free if the game is played individualy, false if the game is played in team
      */
     @JsonView(value = Views.ExtendedI.class)
     public boolean getGameFreeForAll() {
@@ -372,8 +397,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     /**
-     * Retrieve all variableInstances that belongs to this team only (ie.
-     * teamScoped)
+     * Retrieve all variableInstances that belongs to this team only (ie. teamScoped)
      *
      * @return all team's teamScoped instances
      */

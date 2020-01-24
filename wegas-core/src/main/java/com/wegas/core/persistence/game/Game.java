@@ -238,6 +238,21 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @JsonIgnore
     @Override
+    public Player getUserLivePlayer(User user) {
+        for (Team t : this.getTeams()) {
+            Player theP = t.getUserLivePlayer(user);
+            if (theP != null) {
+                return theP;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @JsonIgnore
+    @Override
     public Player getAnyLivePlayer() {
         for (Team t : this.getTeams()) {
             return t.getAnyLivePlayer();
@@ -247,9 +262,14 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
 
     @JsonIgnore
     public Player getTestPlayer() {
-        for (Team t : this.getTeams()) {
-            if (t instanceof DebugTeam) {
-                return t.getAnyLivePlayer();
+        if (this instanceof DebugGame) {
+            return this.getAnyLivePlayer();
+        } else {
+            for (Team t : this.getTeams()) {
+                Player testPlayer = t.getTestPlayer();
+                if (testPlayer != null){
+                    return testPlayer;
+                }
             }
         }
         return null;
@@ -386,8 +406,8 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     /**
-     * @param gameModelId the gameModelId to set public void setGameModelId(Long gameModelId) { this.gameModelId =
-     *                    gameModelId; }
+     * @param gameModelId the gameModelId to set public void setGameModelId(Long gameModelId) {
+     *                    this.gameModelId = gameModelId; }
      */
     /**
      * @return the access
@@ -496,7 +516,8 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
          */
         DELETE,
         /**
-         * Does not exist anymore. Actually, this status should never persist. Used internally as game's missing.
+         * Does not exist anymore. Actually, this status should never persist. Used internally as
+         * game's missing.
          */
         SUPPRESSED
     }

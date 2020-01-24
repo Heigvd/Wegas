@@ -186,6 +186,7 @@ public class StateMachineITest extends AbstractArquillianTest {
         WegasUser user31 = this.signup("user31@local");
         login(user31);
         Player testPlayer = gameFacade.joinTeam(team.getId(), null);
+        requestManager.setPlayer(testPlayer);
 
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
         NumberInstance p0Instance = (NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer);

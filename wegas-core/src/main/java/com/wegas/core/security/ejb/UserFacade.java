@@ -245,6 +245,8 @@ public class UserFacade extends BaseFacade<User> {
             subject.releaseRunAs();
         } else {
             this.touchLastSeenAt(requestManager.getCurrentUser());
+            // flush to db before logout !
+            this.flush();
             requestManager.logout();
             subject.logout();
         }

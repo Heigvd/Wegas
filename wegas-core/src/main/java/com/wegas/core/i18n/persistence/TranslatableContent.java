@@ -342,7 +342,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
 
     public Translation translate(GameModel gameModel) {
         if (gameModel != null) {
-            Player player = gameModel.findTestPlayer();
+            Player player = gameModel.getTestPlayer();
             return this.translate(gameModel.getPreferredLanguagesCodes(player));
         } else {
             return getAnyTranslation();

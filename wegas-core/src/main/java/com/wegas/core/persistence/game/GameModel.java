@@ -576,6 +576,23 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         return players;
     }
 
+    /**
+     * {@inheritDoc }
+     */
+    @JsonIgnore
+    @Override
+    public Player getUserLivePlayer(User user) {
+        for (Game g : this.getGames()) {
+            Player theP = g.getUserLivePlayer(user);
+            if (theP != null) {
+                return theP;
+            }
+        }
+        return null;
+    }
+
+
+
     @Override
     @JsonIgnore
     public Player getAnyLivePlayer() {
@@ -595,23 +612,11 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * @return testPlayer
      */
     @JsonIgnore
-    public Player findTestPlayer() {
-        Player p = null;
+    public Player getTestPlayer() {
         for (Game game : this.getGames()) {
-            if (game instanceof DebugGame) {
-                p = game.getAnyLivePlayer();
-                if (p != null) {
-                    return p;
-                }
-            } else {
-                for (Team team : game.getTeams()) {
-                    if (team instanceof DebugTeam) {
-                        p = team.getAnyLivePlayer();
-                        if (p != null) {
-                            return p;
-                        }
-                    }
-                }
+            Player testPlayer = game.getTestPlayer();
+            if (testPlayer!= null){
+                return testPlayer;
             }
         }
         return null;
