@@ -38,6 +38,7 @@ import com.wegas.editor.View.StringView;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
@@ -442,7 +443,13 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
 
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
-        return this.getTeam().getEntities();
+        String audience = this.getTeam().getChannel();
+
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
+        ArrayList<AbstractEntity> entities = new ArrayList<>();
+        entities.add(this);
+        map.put(audience, entities);
+        return map;
     }
 
     @Override

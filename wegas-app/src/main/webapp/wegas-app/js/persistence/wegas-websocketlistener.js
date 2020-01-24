@@ -254,7 +254,9 @@ YUI.add('wegas-websocketlistener', function(Y) {
             } else if (entity instanceof Y.Wegas.persistence.VariableDescriptor ||
                 entity instanceof Y.Wegas.persistence.GameModel) {
                 return Y.Wegas.Facade.Variable;
-            } else if (entity instanceof Y.Wegas.persistence.Game) {
+            } else if (entity instanceof Y.Wegas.persistence.Player ||
+                entity instanceof Y.Wegas.persistence.Team ||
+                entity instanceof Y.Wegas.persistence.Game) {
                 return Y.Wegas.Facade.Game;
             } else {
                 return null;

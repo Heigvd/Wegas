@@ -514,9 +514,9 @@ public class WebsocketFacade {
             User user = newPlayer.getUser();
             if (user != null) {
                 try {
-                    for (Entry<String, List<AbstractEntity>> entry : newPlayer.getGame().getEntities().entrySet()) {
+                    /*for (Entry<String, List<AbstractEntity>> entry : newPlayer.getGame().getEntities().entrySet()) {
                         this.propagate(new EntityUpdatedEvent(entry.getValue()), entry.getKey(), null);
-                    }
+                    }*/
 
                     pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update",
                         parseJSON(

@@ -27,6 +27,7 @@ import com.wegas.editor.View.Textarea;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.Basic;
@@ -429,7 +430,13 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     public Map<String, List<AbstractEntity>> getEntities() {
         Game game = this.getGame();
         if (game != null) {
-            return this.getGame().getEntities();
+            String audience = game.getChannel();
+
+            Map<String, List<AbstractEntity>> map = new HashMap<>();
+            ArrayList<AbstractEntity> entities = new ArrayList<>();
+            entities.add(this);
+            map.put(audience, entities);
+            return map;
         } else {
             return null;
         }
