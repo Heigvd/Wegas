@@ -715,6 +715,7 @@ public class UserController {
         Player thePlayer = playerFacade.findPlayerInTeam(teamId, currentUser.getId());
 
         if (thePlayer != null) {
+            requestManager.setPlayer(thePlayer);
             return thePlayer.getTeam();
         } else {
             return null;
