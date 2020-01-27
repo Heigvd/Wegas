@@ -4,7 +4,7 @@ import { Actions } from '../../../data';
 import { getIcon, getLabel, getChildren } from '../../editionConfig';
 import { StoreDispatch, store } from '../../../data/store';
 import { Menu, MenuProps } from '../../../Components/Menu';
-import { FontAwesome, withDefault } from '../Views/FontAwesome';
+import { withDefault, IconComp } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 
 function buildMenuItems(variable: IAbstractEntity) {
@@ -14,7 +14,7 @@ function buildMenuItems(variable: IAbstractEntity) {
         const entity = { '@class': i };
         return (
           <>
-            <FontAwesome icon={withDefault(getIcon(entity), 'question')} />
+            <IconComp icon={withDefault(getIcon(entity), 'question')} />
             {getLabel(entity)}
           </>
         );
@@ -46,7 +46,7 @@ export const AddMenuParent = asyncSFC(
     onSelect,
     focusTab,
   }: {
-    variable: IListDescriptor | IQuestionDescriptor;
+    variable: IListDescriptor | IQuestionDescriptor | IWhQuestionDescriptor;
   } & AddMenuProps) => {
     const items = await buildMenuItems(variable);
     return (

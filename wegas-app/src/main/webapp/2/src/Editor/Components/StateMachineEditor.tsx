@@ -107,14 +107,14 @@ const JS_PLUMB_OPTIONS: Defaults = {
 };
 
 interface StateMachineEditorProps {
-  stateMachine: IFSMDescriptor;
+  stateMachine: IAbstractStateMachineDescriptor;
   stateMachineInstance: IFSMInstance;
   localDispatch?: StoreDispatch;
   search: RState['global']['search'];
 }
 interface StateMachineEditorState {
   plumb?: jsPlumbInstance;
-  stateMachine: IFSMDescriptor;
+  stateMachine: IAbstractStateMachineDescriptor;
   oldProps: StateMachineEditorProps;
 }
 class StateMachineEditor extends React.Component<
@@ -182,7 +182,7 @@ class StateMachineEditor extends React.Component<
       newSourceId: string;
       newTargetId: string;
     },
-    transition: ITransition,
+    transition: IAbstractTransition,
   ) => {
     this.setState(
       produce((state: StateMachineEditorState) => {
@@ -229,7 +229,7 @@ class StateMachineEditor extends React.Component<
       }),
     );
   };
-  createState = (state: IState, transitionSource?: number) => {
+  createState = (state: IAbstractState, transitionSource?: number) => {
     this.setState(
       produce((store: StateMachineEditorState) => {
         const nextId =
@@ -261,11 +261,11 @@ class StateMachineEditor extends React.Component<
     );
   };
   editState = (e: ModifierKeysEvent, id: number) => {
-    const actions: EditorAction<IFSMDescriptor>['more'] = {};
+    const actions: EditorAction<IAbstractStateMachineDescriptor>['more'] = {};
     if (id !== this.props.stateMachine.defaultInstance.currentStateId) {
       actions.delete = {
         label: 'delete',
-        action: (_entity: IFSMDescriptor, path?: (string | number)[]) => {
+        action: (_entity: IAbstractStateMachineDescriptor, path?: (string | number)[]) => {
           this.deleteState(Number(path![1]));
         },
       };
@@ -350,7 +350,7 @@ class StateMachineEditor extends React.Component<
       });
       plumb.bind('connectionMoved', (info, ev) => {
         if (ev !== undefined) {
-          const transition: ITransition = (info.connection as any).getParameter(
+          const transition: IAbstractTransition = (info.connection as any).getParameter(
             'transition',
           );
           this.moveTransition(info, transition);
@@ -388,7 +388,7 @@ class StateMachineEditor extends React.Component<
   }
   componentDidUpdate(
     _prevProps: StateMachineEditorProps,
-    { stateMachine: oldStateMachine }: { stateMachine: IFSMDescriptor },
+    { stateMachine: oldStateMachine }: { stateMachine: IAbstractStateMachineDescriptor },
   ) {
     requestAnimationFrame(() => {
       if (this.state.plumb != null) {
@@ -454,17 +454,19 @@ export function ConnectedStateMachineEditor({
 }: {
   localDispatch?: StateMachineEditorProps['localDispatch'];
 }) {
-  const stateMachine = React.useRef<IFSMDescriptor>();
+  const stateMachine = React.useRef<IAbstractStateMachineDescriptor>();
   const globalState = useStore(s => {
     if (
       s.global.editing &&
       (s.global.editing.type === 'VariableFSM' ||
+        // The following condition seems stupid, need to be tested ans documented
         s.global.editing.type === 'Variable')
     ) {
-      stateMachine.current = s.global.editing.entity as IFSMDescriptor;
+      stateMachine.current = s.global.editing
+        .entity as IAbstractStateMachineDescriptor;
       const lastFSM = VariableDescriptor.select(
         s.global.editing.entity.id,
-      ) as IFSMDescriptor;
+      ) as IAbstractStateMachineDescriptor;
       if (shallowDifferent(stateMachine.current, lastFSM))
         stateMachine.current = lastFSM;
     }
@@ -472,8 +474,8 @@ export function ConnectedStateMachineEditor({
       ? getInstance(stateMachine.current)
       : undefined;
     if (
-      entityIs(stateMachine.current, 'FSMDescriptor') &&
-      entityIs(instance, 'FSMInstance')
+      entityIs(stateMachine.current, 'AbstractStateMachineDescriptor', true) &&
+      entityIs(instance, 'FSMInstance', true)
     ) {
       return {
         descriptor: stateMachine.current,
@@ -527,7 +529,7 @@ const sourceStyle = css({
   },
 });
 class State extends React.Component<{
-  state: IState;
+  state: IAbstractState;
   id: number;
   initialState: boolean;
   plumb: jsPlumbInstance;
@@ -538,7 +540,7 @@ class State extends React.Component<{
   editTransition: (
     e: ModifierKeysEvent,
     path: [number, number],
-    transition: ITransition,
+    transition: IAbstractTransition,
   ) => void;
   search: RState['global']['search'];
 }> {
@@ -634,14 +636,14 @@ class State extends React.Component<{
 }
 
 class Transition extends React.Component<{
-  transition: ITransition;
+  transition: IAbstractTransition;
   plumb: jsPlumbInstance;
   parent: number;
   position: number;
   editTransition: (
     e: ModifierKeysEvent,
     path: [number, number],
-    transition: ITransition,
+    transition: IAbstractTransition,
   ) => void;
   search: RState['global']['search'];
 }> {

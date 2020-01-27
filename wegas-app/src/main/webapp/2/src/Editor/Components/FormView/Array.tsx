@@ -227,7 +227,7 @@ function ArrayWidget(props: IArrayProps) {
                     }}
                   />
                   <ArrayItem
-                    // key={JSON.stringify(c.props)}
+                    key={JSON.stringify(c.props)}
                     index={i}
                     onChildRemove={
                       minItems < valueLength && !disabled && !readOnly

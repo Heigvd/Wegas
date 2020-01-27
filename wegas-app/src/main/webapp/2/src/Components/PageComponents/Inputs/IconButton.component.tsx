@@ -5,12 +5,9 @@ import {
   PageComponentMandatoryProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import {
-  IconButton,
-  icons,
-  IconButtonProps,
-} from '../../Inputs/Button/IconButton';
+import { IconButton, IconButtonProps } from '../../Inputs/Button/IconButton';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
+import { icons } from '../../../Editor/Components/Views/FontAwesome';
 
 function PlayerIconButton(
   props: IconButtonProps & PageComponentMandatoryProps,

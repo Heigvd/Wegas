@@ -8,7 +8,7 @@ import { VariableDescriptor } from '../../data/selectors';
 import { StoreConsumer, StoreDispatch } from '../../data/store';
 import { getEntityActions, getIcon } from '../editionConfig';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
-import { FontAwesome, withDefault } from './Views/FontAwesome';
+import { withDefault, IconComp } from './Views/FontAwesome';
 import { css } from 'emotion';
 import { entityIs } from '../../data/entities';
 import { focusTabContext } from './LinearTabLayout/LinearLayout';
@@ -33,7 +33,7 @@ function SearchResult({
 }) {
   const focusTab = React.useContext(focusTabContext);
   const Title = asyncSFC(async () => (
-    <FontAwesome icon={withDefault(getIcon(variable!), 'question')} />
+    <IconComp icon={withDefault(getIcon(variable!), 'question')} />
   ));
   return (
     <li

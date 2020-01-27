@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { ScriptView } from './Script';
-import { ExpressionEditor } from './ExpressionEditor';
 import { Statement } from '@babel/types';
 import { css } from 'emotion';
-import { IconButton } from '../../../../Components/Inputs/Button/IconButton';
 import { emptyStatement } from '@babel/types';
+import Form from 'jsoninput';
+import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
 
 const scriptStyle = css({
   borderWidth: '1px',
@@ -23,68 +23,39 @@ export function WyswygScriptEditor({
   mode,
   scriptableClassFilter,
 }: WyswygScriptEditorProps) {
-  const onExpressionChange = React.useCallback(
-    (expression: Statement | Statement[], index?: number) => {
-      if (index !== undefined && expressions) {
-        const newExpressions = [...expressions];
-        newExpressions.splice(
-          index,
-          1,
-          ...(Array.isArray(expression) ? expression : [expression]),
-        );
-        onChange(newExpressions);
-      } else {
-        onChange(Array.isArray(expression) ? expression : [expression]);
-      }
-    },
-    [expressions, onChange],
-  );
-
-  const onExpressionDelete = React.useCallback(
-    (index: number) => {
-      if (expressions != null) {
-        const newExpressions = [...expressions];
-        newExpressions.splice(index, 1);
-        onChange(newExpressions);
-      }
-    },
-    [expressions, onChange],
-  );
-
-  const onExpressionAdd = React.useCallback(
-    (index: number) => {
-      if (expressions != null) {
-        const newExpressions = [...expressions];
-        newExpressions.splice(index, 0, emptyStatement());
-        onChange(newExpressions);
-      } else {
-        onChange([emptyStatement()]);
-      }
-    },
-    [expressions, onChange],
-  );
-
   return (
     <div className={scriptStyle} key={expressions ? expressions.length : -1}>
-      <IconButton icon="plus" onClick={() => onExpressionAdd(0)} />
-      {expressions != null &&
-        expressions.map((e, i) => (
-          <div key={JSON.stringify(e)}>
-            <ExpressionEditor
-              key={'Editor' + i}
-              statement={e}
-              mode={mode}
-              scriptableClassFilter={scriptableClassFilter}
-              onChange={statement => onExpressionChange(statement, i)}
-              onDelete={() => onExpressionDelete(i)}
-            />
-            <IconButton
-              key={'Button' + i}
-              icon="plus"
-              onClick={() => onExpressionAdd(i + 1)}
-            />
-          </div>
-        ))}
+      <Form
+        schema={{
+          description: 'multipleStatementForm',
+          properties: {
+            statements: schemaProps.array(
+              undefined,
+              {
+                statement: schemaProps.statement(
+                  undefined,
+                  true,
+                  scriptableClassFilter,
+                  mode,
+                ),
+              },
+              //()=>expressions.push(),
+              // onExpressionDelete,
+            ),
+          },
+        }}
+        value={{
+          statements:
+            expressions == null ? [] : expressions.map(e => ({ statement: e })),
+        }}
+        onChange={value =>
+          onChange(
+            value.statements.map((s: { statement: Statement }) =>
+              s ? s.statement : emptyStatement(),
+            ),
+          )
+        }
+      />
     </div>
   );
 }

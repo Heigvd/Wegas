@@ -220,10 +220,20 @@ function SrcEditor({
   const [reactMonaco, setReactMonaco] = React.useState<MonacoEditor>();
   const getValue = React.useRef<() => string>();
   const editorValue = React.useRef(value || '');
-
+  const mounted = React.useRef<boolean>(false);
+  React.useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  });
   React.useEffect(() => {
     if (!reactMonaco) {
-      monaco.init().then(setReactMonaco);
+      monaco.init().then(me => {
+        if (mounted.current) {
+          setReactMonaco(me);
+        }
+      });
     }
   }, [reactMonaco]);
 

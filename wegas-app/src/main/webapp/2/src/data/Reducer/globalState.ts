@@ -421,7 +421,11 @@ export function editFile(
  */
 export function createVariable(
   cls: string,
-  parent?: IListDescriptor | IQuestionDescriptor | IChoiceDescriptor,
+  parent?:
+    | IListDescriptor
+    | IQuestionDescriptor
+    | IChoiceDescriptor
+    | IWhQuestionDescriptor,
   actions: EditorAction<IAbstractEntity> = {},
 ) {
   return ActionCreator.VARIABLE_CREATE({

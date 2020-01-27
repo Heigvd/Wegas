@@ -1,8 +1,9 @@
-import { WegasMethod } from '../../../Editor/editionConfig';
 import {
   ScriptMode,
   CodeLanguage,
 } from '../../../Editor/Components/FormView/Script/Script';
+import { TYPESTRING } from 'jsoninput/typings/types';
+import { DEFINED_VIEWS } from '../../../Editor/Components/FormView';
 
 type SchemaPrimitive =
   | 'boolean'
@@ -38,7 +39,7 @@ export const schemaProps = {
     readOnly: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
-    layout: SchemaLayout = 'shortInline',
+    layout?: SchemaLayout,
   ) => ({
     required,
     type: 'boolean',
@@ -59,7 +60,7 @@ export const schemaProps = {
     readOnly: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
-    layout: SchemaLayout = 'shortInline',
+    layout?: SchemaLayout,
   ) => ({
     featureLevel,
     required,
@@ -81,7 +82,7 @@ export const schemaProps = {
     value?: string,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
-    layout: SchemaLayout = 'shortInline',
+    layout?: SchemaLayout,
   ) => ({
     required,
     type: 'string',
@@ -97,10 +98,11 @@ export const schemaProps = {
   custom: (
     label?: string,
     required: boolean = true,
-    type?: WegasMethod['returns'],
+    type?: TYPESTRING,
+    viewType?: keyof typeof DEFINED_VIEWS,
     value?: number,
     index: number = 0,
-    layout: SchemaLayout = 'shortInline',
+    layout?: SchemaLayout,
     readOnly: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
   ) => ({
@@ -115,7 +117,7 @@ export const schemaProps = {
       label,
       layout,
       readOnly,
-      type,
+      type: viewType,
     },
   }),
   script: (
@@ -127,7 +129,7 @@ export const schemaProps = {
     value?: string,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
-    layout: SchemaLayout = 'shortInline',
+    layout?: SchemaLayout,
   ) => ({
     required,
     type: 'object',
@@ -157,7 +159,7 @@ export const schemaProps = {
     value?: string,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
-    layout: SchemaLayout = 'shortInline',
+    layout?: SchemaLayout,
   ) => ({
     required,
     type: 'object',
@@ -179,7 +181,7 @@ export const schemaProps = {
     returnType: SchemaPrimitive = 'string',
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
-    layout: SchemaLayout = 'shortInline',
+    layout?: SchemaLayout,
   ) => {
     let enumerated: readonly unknown[] = [];
     let choices: readonly SelectItem[] = [];
@@ -213,7 +215,7 @@ export const schemaProps = {
     required: boolean = true,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
-    layout: SchemaLayout = 'shortInline',
+    layout?: SchemaLayout,
   ) => {
     return {
       required,
@@ -235,7 +237,7 @@ export const schemaProps = {
     scriptable: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
-    layout: SchemaLayout = 'shortInline',
+    layout?: SchemaLayout,
   ) => ({
     required,
     type: 'string',
@@ -257,7 +259,7 @@ export const schemaProps = {
     scriptable: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
-    layout: SchemaLayout = 'shortInline',
+    layout?: SchemaLayout,
   ) => ({
     required,
     type: 'object',
@@ -270,6 +272,63 @@ export const schemaProps = {
       scriptable,
       type: 'scriptableVariableSelect',
       layout,
+    },
+  }),
+  array: <T>(
+    label?: string,
+    itemShema: {} = {},
+    onChildAdd?: (newChild: T) => void,
+    onChildRemove?: (index: number) => void,
+    requiredItems: boolean = false,
+    itemType: TYPESTRING = 'object',
+    required: boolean = true,
+    featureLevel: FeatureLevel = 'DEFAULT',
+    index: number = 0,
+    layout?: SchemaLayout,
+    highlight: boolean = true,
+    sortable: boolean = false,
+  ) => ({
+    required,
+    items: {
+      // description:"shemaprops.array.items",
+      properties: itemShema,
+      required: requiredItems,
+      type: itemType,
+    },
+    onChildAdd,
+    onChildRemove,
+    type: 'array',
+    index,
+    view: {
+      index,
+      featureLevel,
+      label,
+      type: 'array',
+      layout,
+      highlight,
+      sortable,
+    },
+  }),
+  statement: (
+    label?: string,
+    required: boolean = true,
+    scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
+    mode: ScriptMode = 'SET',
+    featureLevel: FeatureLevel = 'DEFAULT',
+    index: number = 0,
+    layout?: SchemaLayout,
+  ) => ({
+    required,
+    type: 'object',
+    index,
+    view: {
+      index,
+      featureLevel,
+      label,
+      type: 'statement',
+      layout,
+      scriptableClassFilter,
+      mode,
     },
   }),
 };

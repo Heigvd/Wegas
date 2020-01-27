@@ -58,26 +58,26 @@ export function varIsList<Type>(
  * Check entity type.
  * @param variable Variable to test
  * @param cls Discriminant, class
+ * @param inheritance Return true if class is inherited from searched class
  */
 export function entityIs<T extends WegasClassNames>(
   variable: unknown,
   cls: T,
+  inheritance?: boolean,
 ): variable is WegasClassNamesAndClasses[T] {
   if ('object' === typeof variable && variable !== null) {
-    return (variable as Record<string, unknown>)['@class'] === cls;
+    const variableClass = (variable as Record<string, unknown>)[
+      '@class'
+    ] as Mergeable;
+    return (
+      variableClass === cls ||
+      (variableClass !== undefined &&
+        inheritance === true &&
+        inherit(variableClass, cls))
+    );
   }
   return false;
 }
-
-// export function entityIs<T extends IAbstractEntity>(
-//   variable: unknown,
-//   cls: T['@class'],
-// ): variable is T {
-//   if ('object' === typeof variable && variable !== null) {
-//     return (variable as Record<string, unknown>)['@class'] === cls;
-//   }
-//   return false;
-// }
 
 /**
  * Test if a given entity is persisted, ie it has an id

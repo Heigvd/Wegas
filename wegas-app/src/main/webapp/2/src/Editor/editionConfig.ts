@@ -1,4 +1,3 @@
-import { IconName } from '@fortawesome/fontawesome-svg-core';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from './Components/FormView';
 import { formValidation } from './formValidation';
@@ -6,6 +5,8 @@ import { entityIs } from '../data/entities';
 import { editStateMachine, editVariable } from '../data/Reducer/globalState';
 import { ThunkResult } from '../data/store';
 import { TYPESTRING } from 'jsoninput/typings/types';
+import { Icon } from './Components/Views/FontAwesome';
+import { icon } from '@fortawesome/fontawesome-svg-core';
 
 export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 
@@ -183,7 +184,10 @@ export interface EActions {
 export async function getEntityActions(
   entity: IAbstractEntity,
 ): Promise<EActions> {
-  if (entityIs(entity, 'FSMDescriptor')) {
+  if (
+    entityIs(entity, 'FSMDescriptor') ||
+    entityIs(entity, 'DialogueDescriptor')
+  ) {
     return { edit: editStateMachine };
   }
   return { edit: editVariable };
@@ -199,7 +203,7 @@ export async function getMethodConfig<T extends IAbstractEntity>(
 
 export function getIcon<T extends IAbstractEntity>(
   entity: T,
-): IconName | undefined {
+): Icon | Icon[] | undefined {
   switch (
     entity['@class'] as
       | ValueOf<typeof ListDescriptorChild>
@@ -230,8 +234,18 @@ export function getIcon<T extends IAbstractEntity>(
       return 'paragraph';
     case 'TriggerDescriptor':
       return 'random';
+    case 'WhQuestionDescriptor':
+      return ['square-full', { icon: 'question', color: 'white', size: 'xs' }];
+    case 'InboxDescriptor':
+      return 'mailbox';
+    case 'DialogueDescriptor':
+      return 'comments';
+    case 'ResourceDescriptor':
+      return 'user';
+    case 'PeerReviewDescriptor':
+      return 'user-friends';
     case 'TaskDescriptor':
-      return 'list-ul';
+      return 'list-ol';
   }
 }
 
@@ -268,6 +282,16 @@ export function getLabel<T extends IAbstractEntity>(
       return 'Text';
     case 'TriggerDescriptor':
       return 'Trigger';
+    case 'WhQuestionDescriptor':
+      return 'Open question';
+    case 'InboxDescriptor':
+      return 'Inbox';
+    case 'DialogueDescriptor':
+      return 'Dialogue';
+    case 'ResourceDescriptor':
+      return 'Resource';
+    case 'PeerReviewDescriptor':
+      return 'Peer review';
     case 'TaskDescriptor':
       return 'Task';
   }
@@ -283,11 +307,23 @@ const ListDescriptorChild = [
   'ObjectDescriptor',
   'TriggerDescriptor',
   'QuestionDescriptor',
+  'WhQuestionDescriptor',
+  'InboxDescriptor',
+  'DialogueDescriptor',
+  'ResourceDescriptor',
+  'PeerReviewDescriptor',
+  'TaskDescriptor',
   'FSMDescriptor',
 ] as const;
 const QuestionDescriptorChild = [
   'SingleResultChoiceDescriptor',
   'ChoiceDescriptor',
+] as const;
+const WhQuestionDescriptorChild = [
+  'NumberDescriptor',
+  'StringDescriptor',
+  'TextDescriptor',
+  'BooleanDescriptor',
 ] as const;
 const ChoiceDescriptorChild = ['Result'] as const;
 export async function getChildren<T extends IAbstractEntity>(
@@ -298,6 +334,8 @@ export async function getChildren<T extends IAbstractEntity>(
       return ListDescriptorChild;
     case 'QuestionDescriptor':
       return QuestionDescriptorChild;
+    case 'WhQuestionDescriptor':
+      return WhQuestionDescriptorChild;
     case 'ChoiceDescriptor':
       return ChoiceDescriptorChild;
     default:

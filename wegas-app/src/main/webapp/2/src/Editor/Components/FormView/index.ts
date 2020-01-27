@@ -20,6 +20,7 @@ import { LabeledHTMLEditor } from '../../../Components/HTMLEditor';
 import { TimestampView } from './Timestamp';
 import { VariableInput } from './Script/VariableInput';
 import PageSelect from './PageSelect';
+import StatementView from './Script/ExpressionEditor';
 
 export const DEFINED_VIEWS = {
   hidden,
@@ -43,6 +44,7 @@ export const DEFINED_VIEWS = {
   entityarrayfieldselect: EntityArrayFieldSelect,
   flatvariableselect: FlatVariableSelect,
   timestamp: TimestampView,
+  statement: StatementView,
 };
 setDefaultWidgets(DEFINED_VIEWS);
 

@@ -55,12 +55,12 @@ import { IconButton } from '../../../../Components/Inputs/Button/IconButton';
 import { deepDifferent } from '../../../../Components/Hooks/storeHookFactory';
 import { MessageString } from '../../MessageString';
 import { wlog } from '../../../../Helper/wegaslog';
-import { TYPESTRING } from 'jsoninput/typings/types';
-import { themeVar } from '../../../../Components/Theme';
+import { TYPESTRING, WidgetProps } from 'jsoninput/typings/types';
 import { VariableDescriptor } from '../../../../data/selectors';
+import { CommonView, CommonViewContainer } from '../commonView';
+import { LabeledView, Labeled } from '../labeled';
 
 const expressionEditorStyle = css({
-  backgroundColor: themeVar.primaryHoverColor,
   marginTop: '0.8em',
   padding: '2px',
   div: {
@@ -476,12 +476,19 @@ const validateConditionAttributes = (
               methodReturnType === 'number' &&
               !isNaN(Number(attributes.comparator)))
           ) {
-            callback({...attributes, comparator:Number(attributes.comparator)});
-          } else if(
+            callback({
+              ...attributes,
+              comparator: Number(attributes.comparator),
+            });
+          } else if (
             typeof attributes.comparator === 'number' &&
-            methodReturnType === 'string') {
-              callback({...attributes, comparator:String(attributes.comparator)});
-            }else {
+            methodReturnType === 'string'
+          ) {
+            callback({
+              ...attributes,
+              comparator: String(attributes.comparator),
+            });
+          } else {
             callback(
               new ValidationError(
                 'comparator',
@@ -631,6 +638,7 @@ interface ExpressionEditorProps extends ScriptView {
   statement: Statement;
   onChange?: (expression: Statement | Statement[]) => void;
   onDelete?: () => void;
+  id?: string;
 }
 
 export function ExpressionEditor({
@@ -639,8 +647,11 @@ export function ExpressionEditor({
   scriptableClassFilter,
   onChange,
   onDelete,
+  id,
 }: ExpressionEditorProps) {
-  const [currentStatement, setCurrentStatement] = React.useState(statement);
+  const [currentStatement, setCurrentStatement] = React.useState<Statement>(
+    statement,
+  );
   const [error, setError] = React.useState();
   const [srcMode, setSrcMode] = React.useState(false);
   const [newSrc, setNewSrc] = React.useState();
@@ -656,6 +667,14 @@ export function ExpressionEditor({
   const [methods, setMethods] = React.useState<{
     [key: string]: WegasMethod;
   }>({});
+  const mounted = React.useRef<boolean>(false);
+  React.useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  });
+
   const scriptMethod =
     scriptAttributes && scriptMethodName !== undefined
       ? methods[scriptMethodName]
@@ -725,6 +744,7 @@ export function ExpressionEditor({
               undefined,
               false,
               scriptMethod.returns,
+              scriptMethod.returns,
               undefined,
               scriptMethod.parameters.length + 3,
               'inline',
@@ -735,41 +755,43 @@ export function ExpressionEditor({
   };
   const onStatementChange = React.useCallback(
     (attributes: IAttributes | IConditionAttributes) => {
-      try {
-        if (scriptMethod) {
-          let newStatement;
-          if (
-            scriptIsCondition(mode, scriptableClassFilter) &&
-            isConditionAttributes(attributes) &&
-            isConditionSchemaAttributes(schema.properties)
-          ) {
-            if (hasFilledConditionAttributes(attributes)) {
-              newStatement = generateConditionStatement(
-                attributes,
-                schema.properties,
-                scriptMethod.returns,
-              );
+      if (mounted.current) {
+        try {
+          if (scriptMethod) {
+            let newStatement;
+            if (
+              scriptIsCondition(mode, scriptableClassFilter) &&
+              isConditionAttributes(attributes) &&
+              isConditionSchemaAttributes(schema.properties)
+            ) {
+              if (hasFilledConditionAttributes(attributes)) {
+                newStatement = generateConditionStatement(
+                  attributes,
+                  schema.properties,
+                  scriptMethod.returns,
+                );
+              }
+            } else {
+              if (hasFilledAttributes(attributes)) {
+                newStatement = expressionStatement(
+                  generateImpactExpression(attributes, schema.properties),
+                );
+              }
             }
-          } else {
-            if (hasFilledAttributes(attributes)) {
-              newStatement = expressionStatement(
-                generateImpactExpression(attributes, schema.properties),
-              );
-            }
-          }
 
-          if (newStatement !== undefined) {
-            setError(undefined);
-            setCurrentStatement(newStatement);
-            onChange && onChange(newStatement);
-            setNewSrc(undefined);
+            if (newStatement !== undefined) {
+              setError(undefined);
+              setCurrentStatement(newStatement);
+              onChange && onChange(newStatement);
+              setNewSrc(undefined);
+            }
           }
+        } catch (e) {
+          // setError(e.message);
+          setScriptAttributes(attributes);
         }
-      } catch (e) {
-        // setError(e.message);
         setScriptAttributes(attributes);
       }
-      setScriptAttributes(attributes);
     },
     [onChange, schema.properties, mode, scriptMethod, scriptableClassFilter],
   );
@@ -785,9 +807,13 @@ export function ExpressionEditor({
           setCurrentStatement(newStatement[0]);
         }
         onChange && onChange(newStatement);
-        setNewSrc(undefined);
+        if (mounted.current) {
+          setNewSrc(undefined);
+        }
       } catch (e) {
-        setError(e.message);
+        if (mounted.current) {
+          setError(e.message);
+        }
       }
     },
     [onChange],
@@ -819,10 +845,12 @@ export function ExpressionEditor({
         if (isConditionStatement(currentStatement)) {
           validateConditionnalExpression(
             validatedScriptAttributes => {
-              if (validatedScriptAttributes instanceof ValidationError) {
-                setError(validatedScriptAttributes.message);
-              } else {
-                setScriptAttributes(validatedScriptAttributes);
+              if (mounted.current) {
+                if (validatedScriptAttributes instanceof ValidationError) {
+                  setError(validatedScriptAttributes.message);
+                } else {
+                  setScriptAttributes(validatedScriptAttributes);
+                }
               }
             },
             currentStatement.expression,
@@ -835,12 +863,14 @@ export function ExpressionEditor({
         if (isVariableMethodStatement(currentStatement)) {
           validateExpression(
             validatedScriptAttributes => {
-              if (validatedScriptAttributes instanceof ValidationError) {
-                setError(validatedScriptAttributes.message);
-              } else {
-                setScriptAttributes(
-                  omit(validatedScriptAttributes, 'methodReturnType'),
-                );
+              if (mounted.current) {
+                if (validatedScriptAttributes instanceof ValidationError) {
+                  setError(validatedScriptAttributes.message);
+                } else {
+                  setScriptAttributes(
+                    omit(validatedScriptAttributes, 'methodReturnType'),
+                  );
+                }
               }
             },
             currentStatement.expression,
@@ -855,6 +885,7 @@ export function ExpressionEditor({
 
   return (
     <div
+      id={id}
       className={expressionEditorStyle}
       //onBlur={()=>onEditorChange(scriptAttributes)}
       onBlur={() => wlog('BLUR')}
@@ -890,124 +921,126 @@ export function ExpressionEditor({
         <Form
           value={pick(scriptAttributes, Object.keys(schema.properties))}
           schema={schema}
-          onChange={(v, _e) => {
-            //if (e && e.length > 0) {
-            // const newValues = e.reduce(
-            //   (o, err) => ({
-            //     ...o,
-            //     [err.property.replace('instance.', '')]: undefined,
-            //   }),
-            //   {},
-            // );
-            // onStatementChange({ ...v, ...newValues });
-            //} else {
-            const newScriptAttributes: IForcedConditionAttributes = {
-              variableName: '',
-              methodName: '',
-              operator: '===',
-              comparator: '',
-              ...v,
-            };
-            let validated;
-            do {
-              validated = true;
-              autoValidateAttributes(
-                scriptIsCondition(mode, scriptableClassFilter)
-                  ? 'condition'
-                  : 'impact',
-                validatedResult => {
-                  if (validatedResult instanceof ValidationError) {
-                    switch (validatedResult.key) {
-                      case 'variableName': {
-                        setError(validatedResult.message);
-                        break;
-                      }
-                      case 'methodName': {
-                        const allowedMethods = Object.keys(
-                          validatedResult.expected as MethodConfig,
-                        );
-                        if (allowedMethods.length === 0) {
+          onChange={(v, e) => {
+            if (e && e.length > 0) {
+              // const newValues = e.reduce(
+              //   (o, err) => ({
+              //     ...o,
+              //     [err.property.replace('instance.', '')]: undefined,
+              //   }),
+              //   {},
+              // );
+              setScriptAttributes(v);
+            } else {
+              const newScriptAttributes: IForcedConditionAttributes = {
+                variableName: '',
+                methodName: '',
+                operator: '===',
+                comparator: '',
+                ...v,
+              };
+              let validated;
+              do {
+                validated = true;
+                autoValidateAttributes(
+                  scriptIsCondition(mode, scriptableClassFilter)
+                    ? 'condition'
+                    : 'impact',
+                  validatedResult => {
+                    if (validatedResult instanceof ValidationError) {
+                      switch (validatedResult.key) {
+                        case 'variableName': {
                           setError(validatedResult.message);
-                        } else {
-                          newScriptAttributes.methodName = Object.keys(
-                            allowedMethods,
-                          )[0];
-                          validated = false;
+                          break;
                         }
-                        break;
-                      }
-                      case 'operator': {
-                        const allowedOperators = validatedResult.expected as SelectOperator[];
-                        if (allowedOperators.length === 0) {
-                          setError(validatedResult.message);
-                        } else {
-                          newScriptAttributes.operator =
-                            allowedOperators[0].value;
-                          validated = false;
-                        }
-                        break;
-                      }
-                      case 'comparator': {
-                        const returnType = validatedResult.expected as
-                          | WegasMethod['returns']
-                          | undefined;
-                        const currentValue = newScriptAttributes.comparator;
-                        if (returnType === undefined) {
-                          if (currentValue === undefined) {
+                        case 'methodName': {
+                          const allowedMethods = Object.keys(
+                            validatedResult.expected as MethodConfig,
+                          );
+                          if (allowedMethods.length === 0) {
                             setError(validatedResult.message);
                           } else {
-                            newScriptAttributes.comparator = undefined;
+                            newScriptAttributes.methodName = Object.keys(
+                              allowedMethods,
+                            )[0];
                             validated = false;
                           }
-                        } else {
-                          newScriptAttributes.comparator = typeCleaner(
-                            currentValue,
-                            returnType,
-                            'comparator' in scriptAttributes &&
-                              scriptAttributes.comparator,
-                          );
+                          break;
                         }
-                        break;
-                      }
-                      /**
-                       * This case is for arguments
-                       */
-                      default: {
-                        const expectedType = validatedResult.expected as WegasTypeString;
-                        const currentValue =
-                          newScriptAttributes[validatedResult.key];
-                        if (Array.isArray(expectedType)) {
-                          const nonNullTypes = expectedType.filter(
-                            t => t != 'null',
-                          );
-                          if (nonNullTypes.length > 0) {
+                        case 'operator': {
+                          const allowedOperators = validatedResult.expected as SelectOperator[];
+                          if (allowedOperators.length === 0) {
+                            setError(validatedResult.message);
+                          } else {
+                            newScriptAttributes.operator =
+                              allowedOperators[0].value;
+                            validated = false;
+                          }
+                          break;
+                        }
+                        case 'comparator': {
+                          const returnType = validatedResult.expected as
+                            | WegasMethod['returns']
+                            | undefined;
+                          const currentValue = newScriptAttributes.comparator;
+                          if (returnType === undefined) {
+                            if (currentValue === undefined) {
+                              setError(validatedResult.message);
+                            } else {
+                              newScriptAttributes.comparator = undefined;
+                              validated = false;
+                            }
+                          } else {
+                            newScriptAttributes.comparator = typeCleaner(
+                              currentValue,
+                              returnType,
+                              'comparator' in scriptAttributes &&
+                                scriptAttributes.comparator,
+                            );
+                          }
+                          break;
+                        }
+                        /**
+                         * This case is for arguments
+                         */
+                        default: {
+                          const expectedType = validatedResult.expected as WegasTypeString;
+                          const currentValue =
+                            newScriptAttributes[validatedResult.key];
+                          if (Array.isArray(expectedType)) {
+                            const nonNullTypes = expectedType.filter(
+                              t => t != 'null',
+                            );
+                            if (nonNullTypes.length > 0) {
+                              newScriptAttributes[
+                                validatedResult.key
+                              ] = typeCleaner(
+                                currentValue,
+                                nonNullTypes[0],
+                                scriptAttributes[0],
+                              );
+                            } else {
+                              newScriptAttributes[validatedResult.key] = null;
+                            }
+                          } else {
                             newScriptAttributes[
                               validatedResult.key
                             ] = typeCleaner(
                               currentValue,
-                              nonNullTypes[0],
+                              expectedType,
                               scriptAttributes[0],
                             );
-                          } else {
-                            newScriptAttributes[validatedResult.key] = null;
                           }
-                        } else {
-                          newScriptAttributes[
-                            validatedResult.key
-                          ] = typeCleaner(
-                            currentValue,
-                            expectedType,
-                            scriptAttributes[0],
-                          );
                         }
                       }
                     }
-                  }
-                },
-                newScriptAttributes,
-              );
-            } while (!validated);
-            onStatementChange(newScriptAttributes);
+                  },
+                  newScriptAttributes,
+                );
+              } while (!validated);
+              onStatementChange(newScriptAttributes);
+              //onStatementChange(v);
+            }
           }}
           context={{
             variableName: scriptAttributes.variableName,
@@ -1015,5 +1048,30 @@ export function ExpressionEditor({
         />
       )}
     </div>
+  );
+}
+
+interface StatementViewProps extends WidgetProps.BaseProps {
+  value: Statement;
+  view: CommonView & LabeledView & ScriptView;
+}
+
+export default function StatementView(props: StatementViewProps) {
+  return (
+    <CommonViewContainer errorMessage={props.errorMessage} view={props.view}>
+      <Labeled {...props.view}>
+        {({ inputId, labelNode }) => (
+          <>
+            {labelNode}
+            <ExpressionEditor
+              id={inputId}
+              onChange={props.onChange}
+              statement={props.value}
+              {...props.view}
+            />
+          </>
+        )}
+      </Labeled>
+    </CommonViewContainer>
   );
 }

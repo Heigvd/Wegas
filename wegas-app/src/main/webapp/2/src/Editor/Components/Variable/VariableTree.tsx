@@ -17,7 +17,7 @@ import { StoreDispatch, useStore, store } from '../../../data/store';
 import { css, cx } from 'emotion';
 import { shallowIs } from '../../../Helper/shallowIs';
 import { Menu } from '../../../Components/Menu';
-import { withDefault } from '../Views/FontAwesome';
+import { withDefault, IconComp } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { AddMenuParent, AddMenuChoice } from './AddMenu';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
@@ -34,7 +34,6 @@ import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { Edition } from '../../../data/Reducer/globalState';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { IconComp } from '../../../Components/Inputs/Button/IconButton';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
@@ -231,7 +230,10 @@ function CTree(
               if (e.ctrlKey && props.localDispatch) {
                 dispatch = props.localDispatch;
               } else {
-                if (entityIs(variable, 'FSMDescriptor')) {
+                if (
+                  entityIs(variable, 'FSMDescriptor') ||
+                  entityIs(variable, 'DialogueDescriptor')
+                ) {
                   focusTab('StateMachine');
                 }
                 focusTab('Editor');
@@ -251,7 +253,8 @@ function CTree(
               {editorLabel(variable)}
             </span>
             {entityIs(variable, 'ListDescriptor') ||
-            entityIs(variable, 'QuestionDescriptor') ? (
+            entityIs(variable, 'QuestionDescriptor') ||
+            entityIs(variable, 'WhQuestionDescriptor') ? (
               <AddMenuParent
                 variable={variable}
                 localDispatch={props.localDispatch}
