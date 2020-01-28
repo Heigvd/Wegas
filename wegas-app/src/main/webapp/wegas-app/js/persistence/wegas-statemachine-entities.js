@@ -341,26 +341,20 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 value: [],
                 view: {type: HIDDEN}
             },
-            editorPosition: {
-                valueFn: function() {
-                    return {
-                        x: 30,
-                        y: 30
-                    };
-                },
+            x: {
+                type: "number",
                 view: {
-                    label: 'Box position',
-                    className: 'wegas-advanced-feature'
-                },
-                properties: {
-                    x: {
-                        type: "number",
-                        view: {type: "uneditable", label: "x"}
-                    },
-                    y: {
-                        type: "number",
-                        view: {type: "uneditable", label: "y"}
-                    },
+                    className: 'wegas-advanced-feature',
+                    type: "uneditable",
+                    label: "x"
+                }
+            },
+            y: {
+                type: "number",
+                view: {
+                    className: 'wegas-advanced-feature',
+                    type: "uneditable",
+                    label: "y"
                 }
             }
         }

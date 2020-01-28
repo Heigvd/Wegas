@@ -192,10 +192,8 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                     Y.log("connectionDetached", "info", "Wegas.StateMachineViewer");
                     if (Y.Widget.getByNode(e.target) === this) { // drop on panel
                         var node = this.onNewState(this.get("availableStates")[0], {
-                            editorPosition: {
-                                x: parseInt(Y.one(e.target).getStyle("left")),
-                                y: parseInt(Y.one(e.target).getStyle("top"))
-                            }
+                            x: parseInt(Y.one(e.target).getStyle("left")),
+                            y: parseInt(Y.one(e.target).getStyle("top"))
                         });
                         Y.Widget.getByNode(e.source).addTransition(node);
                         Y.soon(function() {
@@ -351,10 +349,8 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 var state, region = this.get(CONTENT_BOX).one(".scrollable").get("region"),
                     id;
                 cfg = cfg || {
-                    editorPosition: {
-                        x: region.width / 4,
-                        y: region.height / 4
-                    }
+                    x: region.width / 4,
+                    y: region.height / 4
                 };
 
                 id = this._genNextStateId();
@@ -567,8 +563,8 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             }
             this.get(BOUNDING_BOX).toggleClass("initial-state",
                 this.get(PARENT).get(ENTITY).getInitialStateId() === this.get(SID));
-            x = this.get(ENTITY).get("editorPosition").x;
-            y = this.get(ENTITY).get("editorPosition").y;
+            x = this.get(ENTITY).get("x");
+            y = this.get(ENTITY).get("y");
             if (x < 0) {
                 x = 0;
             }
@@ -616,8 +612,8 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                             click: Y.bind(function() {
                                 var editor = this.get(PARENT), state = this.get(ENTITY).toObject("id",
                                     "transitions"), newNode;
-                                state.editorPosition.x += 10;
-                                state.editorPosition.y += 10;
+                                state.x += 10;
+                                state.y += 10;
                                 newNode = editor.onNewState(this.get(ENTITY).get("@class"), state);
                                 newNode.get(BOUNDING_BOX).simulate(CLICK);
                             }, this)
@@ -721,10 +717,8 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             this._dragging = true;
         },
         dragEnd: function(e) {
-            this.get(ENTITY).set("editorPosition", {
-                x: e.pos[0],
-                y: e.pos[1]
-            });
+            this.get(ENTITY).set("x", e.pos[0]);
+            this.get(ENTITY).set("y", e.pos[1]);
             this.get(PARENT).save();
         },
         setEntity: function(entity) {

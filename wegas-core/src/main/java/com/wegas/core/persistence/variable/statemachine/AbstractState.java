@@ -23,7 +23,6 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyScript;
-import com.wegas.editor.ValueGenerators.Origin;
 import com.wegas.editor.ValueGenerators.Zero;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.NumberView;
@@ -42,11 +41,11 @@ import javax.persistence.*;
  */
 @Entity
 @Table(
-        name = "fsm_state",
-        indexes = {
-            @Index(columnList = "statemachine_id"),
-            @Index(columnList = "text_id") // stands in superclass since index is not generated if defined in DialogueState ...
-        }
+    name = "fsm_state",
+    indexes = {
+        @Index(columnList = "statemachine_id"),
+        @Index(columnList = "text_id") // stands in superclass since index is not generated if defined in DialogueState ...
+    }
 )
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class),
@@ -66,22 +65,33 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
-            sameEntityOnly = true, view = @View(
-                    label = "Version",
-                    readOnly = true,
-                    value = NumberView.class,
-                    featureLevel = ADVANCED
-            ))
+        sameEntityOnly = true, view = @View(
+            label = "Version",
+            readOnly = true,
+            value = NumberView.class,
+            featureLevel = ADVANCED
+        ))
     private Long version;
 
     /**
      *
      */
+    @Column(columnDefinition = "SMALLINT")
     @JsonView(value = Views.EditorI.class)
     @WegasEntityProperty(
-            nullable = false, optional = false, proposal = Origin.class,
-            view = @View(label = "Graphical coordinates", featureLevel = ADVANCED))
-    private Coordinate editorPosition;
+        nullable = false, optional = false, proposal = Zero.class,
+        view = @View(label = "Graphical x coordinate", featureLevel = ADVANCED))
+    private Integer x;
+
+    /**
+     *
+     */
+    @Column(columnDefinition = "SMALLINT")
+    @JsonView(value = Views.EditorI.class)
+    @WegasEntityProperty(
+        nullable = false, optional = false, proposal = Zero.class,
+        view = @View(label = "Graphical y coordinate", featureLevel = ADVANCED))
+    private Integer y;
 
     /**
      *
@@ -97,8 +107,8 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
      */
     @Column(name = "fsm_statekey")
     @WegasEntityProperty(
-            nullable = false,
-            view = @View(label = "Index", readOnly = true, value = NumberView.class))
+        nullable = false,
+        view = @View(label = "Index", readOnly = true, value = NumberView.class))
     private Long index;
 
     /**
@@ -107,8 +117,8 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
     @Embedded
     @JsonView(Views.EditorI.class)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyScript.class,
-            view = @View(label = "On enter impact", value = ScriptView.Impact.class))
+        optional = false, nullable = false, proposal = EmptyScript.class,
+        view = @View(label = "On enter impact", value = ScriptView.Impact.class))
     private Script onEnterEvent;
 
     /**
@@ -116,8 +126,8 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
      */
     @OneToMany(mappedBy = "state", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label = "Transitions", value = Hidden.class))
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(label = "Transitions", value = Hidden.class))
     //private List<T> transitions = new ArrayList<>(); // templated mapping <T> faisl with eclipselink 2.6.4
     private List<AbstractTransition> transitions = new ArrayList<>();
 
@@ -146,18 +156,29 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
         return getStateMachine().getId();
     }
 
-    /**
-     * @return state position in the stateMachine editor extent
-     */
-    public Coordinate getEditorPosition() {
-        return editorPosition;
+    public Integer getX() {
+        return x;
+    }
+
+    public void setX(Integer x) {
+        this.x = x;
+    }
+
+    public Integer getY() {
+        return y;
+    }
+
+    public void setY(Integer y) {
+        this.y = y;
     }
 
     /**
+     * Kept for backward compatibility
      * @param editorPosition
      */
     public void setEditorPosition(Coordinate editorPosition) {
-        this.editorPosition = editorPosition;
+        this.x = editorPosition.getX();
+        this.y = editorPosition.getY();
     }
 
     @Override

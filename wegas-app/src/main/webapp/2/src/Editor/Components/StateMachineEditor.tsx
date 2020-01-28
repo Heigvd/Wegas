@@ -222,9 +222,9 @@ class StateMachineEditor extends React.Component<
   moveState = (id: number, pos: [number, number]) => {
     this.setState(
       produce((state: StateMachineEditorState) => {
-        state.stateMachine.states[id].editorPosition.x =
+        state.stateMachine.states[id].x =
           pos[0] < 0 ? 0 : pos[0];
-        state.stateMachine.states[id].editorPosition.y =
+        state.stateMachine.states[id].y =
           pos[1] < 0 ? 0 : pos[1];
       }),
     );
@@ -369,10 +369,8 @@ class StateMachineEditor extends React.Component<
               content: '',
               language: 'JavaScript',
             },
-            editorPosition: {
-              x: parseInt(left || '0', 10),
-              y: parseInt(top || '0', 10),
-            },
+            x: parseInt(left || '0', 10),
+            y: parseInt(top || '0', 10),
             label: '',
             transitions: [],
           },
@@ -595,8 +593,8 @@ class State extends React.Component<{
         }}
         style={{
           position: 'absolute',
-          left: state.editorPosition.x,
-          top: state.editorPosition.y,
+          left: state.x,
+          top: state.y,
         }}
       >
         <Toolbar vertical>
