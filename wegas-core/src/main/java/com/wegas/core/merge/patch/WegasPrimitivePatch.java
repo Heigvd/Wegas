@@ -24,8 +24,8 @@ import java.util.Objects;
 /**
  * Patch for primitive value.
  * <p>
- * There is two cases. First one patch an entity field with the help of getter and setter.
- * The second one patch a primitive within a collection or a map.
+ * There is two cases. First one patch an entity field with the help of getter and setter. The
+ * second one patch a primitive within a collection or a map.
  *
  * @author maxence
  */
@@ -56,10 +56,10 @@ public final class WegasPrimitivePatch extends WegasPatch {
      * @param cascade
      */
     WegasPrimitivePatch(Object identifier, int order,
-            WegasCallback userCallback, Mergeable entity,
-            Method getter, Method setter, Object fromValue, Object toValue,
-            boolean ignoreNull, boolean sameEntityOnly, boolean initOnly,
-            ProtectionLevel protectionLevel) {
+        WegasCallback userCallback, Mergeable entity,
+        Method getter, Method setter, Object fromValue, Object toValue,
+        boolean ignoreNull, boolean sameEntityOnly, boolean initOnly,
+        ProtectionLevel protectionLevel) {
         super(identifier, order, getter, setter, userCallback, ignoreNull, sameEntityOnly, initOnly, false, protectionLevel);
         this.identifier = identifier;
         this.fromValue = fromValue;
@@ -158,10 +158,23 @@ public final class WegasPrimitivePatch extends WegasPatch {
     }
 
     @Override
-    protected StringBuilder print(int ident) {
-        StringBuilder sb = super.print(ident);
+    protected StringBuilder print(int indent) {
+        StringBuilder sb = super.print(indent);
         sb.append(" from ").append(fromValue).append(" to ").append(toValue);
         return sb;
     }
 
+    @Override
+    protected String printDiffOnly(int indent) {
+        if (Objects.equals(fromValue, toValue)
+            || identifier.equals("version")
+            || identifier.equals("refId")
+            ) {
+            return null;
+        } else {
+            return this.indentString(indent) + this.identifier
+                + " from " + fromValue
+                + " to " + toValue;
+        }
+    }
 }
