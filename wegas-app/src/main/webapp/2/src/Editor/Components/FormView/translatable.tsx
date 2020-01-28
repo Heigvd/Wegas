@@ -14,6 +14,43 @@ interface EndProps {
   onChange: (value: string) => void;
   view: { label?: JSX.Element; [prop: string]: unknown };
 }
+
+export function createTranslation(lang: string, value?: string): ITranslation {
+  return {
+    '@class': 'Translation',
+    lang: lang,
+    status: '',
+    translation: value === undefined ? '' : value,
+  };
+}
+
+export function createTranslatableContent(
+  lang?: string,
+  value?: string,
+): ITranslatableContent {
+  return {
+    '@class': 'TranslatableContent',
+    translations:
+      lang === undefined
+        ? {}
+        : {
+            [lang]: createTranslation(lang, value),
+          },
+    version: 0,
+  };
+}
+
+// export function translate(translatable: ITranslatableContent, lang: string, availableLang) {
+//   const translation = translatable.translations[lang];
+//   if (Object.keys(translatable.translations).length === 0) {
+//     return '';
+//   } else if (translation === undefined) {
+//     return translatable.translations[0];
+//   } else {
+//     return translation;
+//   }
+// }
+
 /**
  * HOC: Transform a hashmap (lang:value) into value based on current language
  * @param Comp
@@ -48,21 +85,12 @@ export default function translatable<P extends EndProps>(
       typeof props.value === 'object' &&
       entityIs(props.value, 'TranslatableContent')
         ? props.value
-        : {
-            '@class': 'TranslatableContent',
-            translations: {
-              [lang]: {
-                '@class': 'Translation',
-                lang: lang,
-                status: '',
-                translation:
-                  typeof props.value === 'string'
-                    ? props.value
-                    : JSON.stringify(props.value),
-              },
-            },
-            version: 0,
-          };
+        : createTranslatableContent(
+            lang,
+            typeof props.value === 'string'
+              ? props.value
+              : JSON.stringify(props.value),
+          );
 
     const currTranslation = pvalue.translations[lang];
 

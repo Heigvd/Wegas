@@ -6,6 +6,7 @@ import { StoreDispatch, store } from '../../../data/store';
 import { Menu, MenuProps } from '../../../Components/Menu';
 import { withDefault, IconComp } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
+import { VariableDescriptor } from '../../../data/selectors';
 
 function buildMenuItems(variable: IAbstractEntity) {
   return getChildren(variable).then(children => {
@@ -107,6 +108,65 @@ export const AddMenuChoice = asyncSFC(
                   dispatch(
                     Actions.EditorActions.editVariable(newChoice, [
                       'results',
+                      String(index),
+                    ]),
+                  ),
+                );
+              },
+            }),
+          );
+        }}
+      />
+    );
+  },
+);
+/**
+ * Handle Add button for Choice
+ */
+export const AddMenuFeedback = asyncSFC(
+  async ({
+    variable,
+    localDispatch,
+    onSelect,
+    focusTab,
+    path,
+  }: {
+    variable: IEvaluationDescriptorContainer;
+    path: 'feedback' | 'fbComments';
+  } & AddMenuProps) => {
+    const items = await buildMenuItems(variable);
+    return (
+      <Menu
+        items={items}
+        icon="plus"
+        onSelect={(i, e) => {
+          onSelect && onSelect(i, e);
+          const globalDispatch = store.dispatch;
+          let dispatch = globalDispatch;
+          if (e.ctrlKey && localDispatch) {
+            dispatch = localDispatch;
+          } else {
+            focusTab && focusTab('Editor');
+          }
+
+          const parent = VariableDescriptor.select(
+            variable.parentId,
+          ) as IPeerReviewDescriptor;
+
+          dispatch(
+            Actions.EditorActions.createVariable(i.value, parent, {
+              save: (entity: IEvaluationDescriptor) => {
+                const newChoice = produce(parent, v => {
+                  v[path].evaluations.push(entity);
+                });
+                const index = newChoice[path].evaluations.length - 1;
+                globalDispatch(
+                  Actions.VariableDescriptorActions.updateDescriptor(newChoice),
+                ).then(() =>
+                  dispatch(
+                    Actions.EditorActions.editVariable(newChoice, [
+                      path,
+                      'evaluations',
                       String(index),
                     ]),
                   ),

@@ -33,6 +33,10 @@ export const forceScroll = css({
 export const hideOverflow = css({
   overflow: 'hidden',
 });
+export const showOverflow = css({
+  overflow: 'visible',
+});
+
 
 // Size
 export const expand = css({

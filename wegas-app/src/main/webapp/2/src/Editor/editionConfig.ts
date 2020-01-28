@@ -6,7 +6,6 @@ import { editStateMachine, editVariable } from '../data/Reducer/globalState';
 import { ThunkResult } from '../data/store';
 import { TYPESTRING } from 'jsoninput/typings/types';
 import { Icon } from './Components/Views/FontAwesome';
-import { icon } from '@fortawesome/fontawesome-svg-core';
 
 export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 
@@ -204,12 +203,7 @@ export async function getMethodConfig<T extends IAbstractEntity>(
 export function getIcon<T extends IAbstractEntity>(
   entity: T,
 ): Icon | Icon[] | undefined {
-  switch (
-    entity['@class'] as
-      | ValueOf<typeof ListDescriptorChild>
-      | ValueOf<typeof QuestionDescriptorChild>
-      | ValueOf<typeof ChoiceDescriptorChild>
-  ) {
+  switch (entity['@class'] as WegasClassNames) {
     case 'ChoiceDescriptor':
       return 'check-square';
     case 'FSMDescriptor':
@@ -237,7 +231,7 @@ export function getIcon<T extends IAbstractEntity>(
     case 'WhQuestionDescriptor':
       return ['square-full', { icon: 'question', color: 'white', size: 'xs' }];
     case 'InboxDescriptor':
-      return 'mailbox';
+      return 'envelope';
     case 'DialogueDescriptor':
       return 'comments';
     case 'ResourceDescriptor':
@@ -246,18 +240,21 @@ export function getIcon<T extends IAbstractEntity>(
       return 'user-friends';
     case 'TaskDescriptor':
       return 'list-ol';
+    case 'EvaluationDescriptorContainer':
+      return 'eye';
+    case 'GradeDescriptor':
+      return 'arrows-alt-h';
+    case 'TextEvaluationDescriptor':
+      return 'book-reader';
+    case 'CategorizedEvaluationDescriptor':
+      return 'clipboard-list';
   }
 }
 
 export function getLabel<T extends IAbstractEntity>(
   entity: T,
 ): string | undefined {
-  switch (
-    entity['@class'] as
-      | ValueOf<typeof ListDescriptorChild>
-      | ValueOf<typeof QuestionDescriptorChild>
-      | ValueOf<typeof ChoiceDescriptorChild>
-  ) {
+  switch (entity['@class'] as WegasClassNames) {
     case 'ChoiceDescriptor':
       return 'Choice';
     case 'FSMDescriptor':
@@ -294,6 +291,12 @@ export function getLabel<T extends IAbstractEntity>(
       return 'Peer review';
     case 'TaskDescriptor':
       return 'Task';
+    case 'GradeDescriptor':
+      return 'Grade';
+    case 'TextEvaluationDescriptor':
+      return 'Text evaluation';
+    case 'CategorizedEvaluationDescriptor':
+      return 'Categorized evaluation';
   }
   return '';
 }
@@ -325,6 +328,11 @@ const WhQuestionDescriptorChild = [
   'TextDescriptor',
   'BooleanDescriptor',
 ] as const;
+const EvaluationDescriptorContainerChild = [
+  'GradeDescriptor',
+  'TextEvaluationDescriptor',
+  'CategorizedEvaluationDescriptor',
+] as const;
 const ChoiceDescriptorChild = ['Result'] as const;
 export async function getChildren<T extends IAbstractEntity>(
   entity: T,
@@ -338,6 +346,8 @@ export async function getChildren<T extends IAbstractEntity>(
       return WhQuestionDescriptorChild;
     case 'ChoiceDescriptor':
       return ChoiceDescriptorChild;
+    case 'EvaluationDescriptorContainer':
+      return EvaluationDescriptorContainerChild;
     default:
       return [];
   }

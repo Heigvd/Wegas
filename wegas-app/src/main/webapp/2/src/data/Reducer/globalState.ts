@@ -425,7 +425,8 @@ export function createVariable(
     | IListDescriptor
     | IQuestionDescriptor
     | IChoiceDescriptor
-    | IWhQuestionDescriptor,
+    | IWhQuestionDescriptor
+    | IPeerReviewDescriptor,
   actions: EditorAction<IAbstractEntity> = {},
 ) {
   return ActionCreator.VARIABLE_CREATE({
