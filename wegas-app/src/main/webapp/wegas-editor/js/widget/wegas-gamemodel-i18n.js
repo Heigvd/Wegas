@@ -1441,7 +1441,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             var data = e.target.get("data");
             Y.Wegas.Panel.confirm("Generate (and override) " + data.target + " translation from " + data.source + "?",
                 Y.bind(function() {
-                    this.transactions = this.transactios || {};
+                    this.transactions = this.transactions || {};
                     this.showOverlay();
 
                     var tId = Y.Wegas.Facade.GameModel.sendRequest({
@@ -1545,7 +1545,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                     source: lang.code,
                                     target: langCode,
                                     value: textToTranslate,
-                                    targetNodeId: targetNode.get("id")
+                                    targetNodeId: targetNode.generateID()
                                 }
                             });
                         } else {
