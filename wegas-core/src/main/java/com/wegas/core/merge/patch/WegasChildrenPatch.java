@@ -137,6 +137,9 @@ public final class WegasChildrenPatch extends WegasPatch {
                             // no refiId means new object, set it
                             m.setRefId(m.getClass().getSimpleName() + ":#" + i + ":" + Helper.genToken(6));
                         }
+                        if (theMap.containsKey(m.getRefId())) {
+                            throw WegasErrorMessage.error("RefId " + m.getRefId() + " already exists in " + this);
+                        }
                         theMap.put(m.getRefId(), get);
                     }
                 }
@@ -150,7 +153,11 @@ public final class WegasChildrenPatch extends WegasPatch {
                     if (primitive) {
                         theMap.put(get, get);
                     } else {
-                        theMap.put(((Mergeable) get).getRefId(), get);
+                        String key = ((Mergeable) get).getRefId();
+                        if (theMap.containsKey(key)) {
+                            throw WegasErrorMessage.error("RefId " + key + " already exists in " + this);
+                        }
+                        theMap.put(key, get);
                     }
                 }
             }
@@ -411,7 +418,7 @@ public final class WegasChildrenPatch extends WegasPatch {
         } else {
             StringBuilder sb = new StringBuilder(this.indentString(indent));
             sb.append(this.identifier);
-            for (String child :items){
+            for (String child : items) {
                 newLine(sb, 0);
                 sb.append(child);
             }
