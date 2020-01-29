@@ -290,6 +290,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      * @return the gameModel
      */
     @JsonView({Views.LobbyI.class, Views.EditorI.class})
+    @Override
     public GameModel getGameModel() {
         return gameModel;
     }

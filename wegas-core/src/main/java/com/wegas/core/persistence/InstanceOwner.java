@@ -123,6 +123,10 @@ public interface InstanceOwner extends WithId {
     @JsonIgnore
     public WegasPermission getAssociatedWritePermission();
 
-    @JsonIgnore
+    /**
+     * 
+     * @return 
+     */
+    //@JsonIgnore /* Do not JsonIgnore here as Game must serialize the gameModel (Lobby case) */
     public GameModel getGameModel();
 }
