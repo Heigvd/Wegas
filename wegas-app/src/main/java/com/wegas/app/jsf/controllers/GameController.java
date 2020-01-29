@@ -141,7 +141,7 @@ public class GameController extends AbstractGameController {
             } catch (IOException ex) {
                 logger.error("Dispatch error: {}", ex);
             }
-        } else if (!currentPlayer.getGame().getStatus().equals(Game.Status.LIVE)) {
+        } else if ( currentPlayer.getGame().getStatus().equals(Game.Status.DELETE) || currentPlayer.getGame().getStatus().equals(Game.Status.SUPPRESSED)) {
             currentPlayer = null;
             errorController.gameDeleted();
         } else if (!requestManager.hasPlayerRight(currentPlayer)) {
