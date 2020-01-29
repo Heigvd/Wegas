@@ -1441,6 +1441,8 @@ public class RequestManager implements RequestManagerI {
         if (!(gameModel.isPersisted() || gameModelFacade.isPersisted(gameModel.getId())) // not yet persisted means the gameModel is being created right kown
             || hasDirectGameModelEditPermission(gameModel)) {
             return true;
+        } else if (gameModel.isReference() && hasGameModelPermission(gameModel.getBasedOn(), thePerm)) {
+            return true;
         } else if (gameModel.isPlay()) {
             /**
              * GameModel permission against a "PLAY" gameModel.

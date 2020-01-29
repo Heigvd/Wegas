@@ -94,6 +94,10 @@ import org.slf4j.LoggerFactory;
     name = "GameModel.findAllInstantiations",
     query = "SELECT gm FROM GameModel gm where gm.basedOn.id = :id"
 )
+@NamedQuery(
+    name = "GameModel.findReference",
+    query = "SELECT gm FROM GameModel gm where gm.basedOn.id = :id AND gm.type =  com.wegas.core.persistence.game.GameModel.GmType.REFERENCE"
+)
 @Table(
     indexes = {
         @Index(columnList = "createdby_id"),

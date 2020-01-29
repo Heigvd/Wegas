@@ -250,7 +250,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * Create variable instances for owner (not for its children !)
      *
      * @param gameModel the game model which define variabledescriptors
-     * @param owner owner to create instances for
+     * @param owner     owner to create instances for
      */
     public void createInstances(GameModel gameModel, InstanceOwner owner) {
         for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
@@ -275,7 +275,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * Revive instances directly owned by the given owner by firing {@link InstanceRevivedEvent} for each instances
+     * Revive instances directly owned by the given owner by firing {@link InstanceRevivedEvent} for
+     * each instances
      *
      * @param owner owner to revive instances for
      */
@@ -286,8 +287,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * Same as {@link #revivePrivateInstances(com.wegas.core.persistence.InstanceOwner) } but also revive instances
-     * owned by owner chilidren
+     * Same as {@link #revivePrivateInstances(com.wegas.core.persistence.InstanceOwner) } but also
+     * revive instances owned by owner chilidren
      *
      * @param owner instances owner
      */
@@ -333,7 +334,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * Same as {@link #create(com.wegas.core.persistence.game.GameModel) } but add a debug game to the gamemodel
+     * Same as {@link #create(com.wegas.core.persistence.game.GameModel) } but add a debug game to
+     * the gamemodel
      *
      * @param gm the gameModel to persist
      */
@@ -344,8 +346,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     /**
      * @param toUpdate GameModel to update
-     * @param source GameModel to fetch instance from
-     * @param player instances owner
+     * @param source   GameModel to fetch instance from
+     * @param player   instances owner
      *
      * @return the gameModel with default instance merged with player's ones
      */
@@ -464,7 +466,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         String newName = oName != null ? oName : "newLogId";
 
         TypedQuery<String> query = this.getEntityManager()
-                .createNamedQuery("GameModel.findDistinctLogIds", String.class);
+            .createNamedQuery("GameModel.findDistinctLogIds", String.class);
         List<String> usedLogIds = query.getResultList();
 
         return Helper.findUniqueLabel(newName, usedLogIds);
@@ -656,11 +658,13 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * Create a new scenario based on another gameModel (the source). The source GameModel must be either a MODEL or a
-     * SCENARIO.
+     * Create a new scenario based on another gameModel (the source). The source GameModel must be
+     * either a MODEL or a SCENARIO.
      * <ul>
-     * <li><b>MODEL:</b> the new scenario will be a copy of the model, whithout any PRIVATE content.</li>
-     * <li><b>SCENARIO:</b> the new scenario will be a copy of the source, including PRIVATE content</li>
+     * <li><b>MODEL:</b> the new scenario will be a copy of the model, whithout any PRIVATE
+     * content.</li>
+     * <li><b>SCENARIO:</b> the new scenario will be a copy of the source, including PRIVATE
+     * content</li>
      * </ul>
      *
      * @param sourceId id of the gameModel to based the new one on
@@ -766,6 +770,23 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         TypedQuery<GameModel> query = this.getEntityManager().createNamedQuery("GameModel.findAllInstantiations", GameModel.class);
         query.setParameter("id", gm.getId());
         return query.getResultList();
+    }
+
+    /**
+     * Do a JPA query to fetch the reference of the given model.
+     * 
+     * @param gm the model
+     *
+     * @return the reference of the model or null
+     */
+    public GameModel findReference(GameModel gm) {
+        try {
+            TypedQuery<GameModel> query = this.getEntityManager().createNamedQuery("GameModel.findReference", GameModel.class);
+            query.setParameter("id", gm.getId());
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     /**
@@ -938,16 +959,17 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * Someone can ask GameModelController#LiveEdition/ to inform a given audience such an entity is being edited. Thus,
-     * others users may display the new entity before it is fully flushed in database. client may also prevent users to
-     * edit this entity (prevent co-edition)
+     * Someone can ask GameModelController#LiveEdition/ to inform a given audience such an entity is
+     * being edited. Thus, others users may display the new entity before it is fully flushed in
+     * database. client may also prevent users to edit this entity (prevent co-edition)
      */
     public void liveUpdate(String channel, AbstractEntity entity) {
         websocketFacade.sendLiveUpdate(channel, entity.getClass().getSimpleName() + "_" + entity.getId(), entity, requestManager.getSocketId());
     }
 
     /**
-     * Find all gameModel matching the given type and the given status the current user has access too.
+     * Find all gameModel matching the given type and the given status the current user has access
+     * too.
      *
      * @param type
      * @param status
@@ -955,7 +977,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @return
      */
     public Collection<GameModel> findByTypeStatusAndUser(GameModel.GmType type,
-            GameModel.Status status) {
+        GameModel.Status status) {
         ArrayList<GameModel> gameModels = new ArrayList<>();
 
         Map<Long, List<String>> pMatrix = this.getPermissionMatrix(type, status);
@@ -972,13 +994,13 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     public Map<Long, List<String>> getPermissionMatrix(GameModel.GmType type,
-            GameModel.Status status) {
+        GameModel.Status status) {
         Map<Long, List<String>> pMatrix = new HashMap<>();
 
         String roleQuery = "SELECT p FROM Permission p WHERE "
-                + "(p.role.id in "
-                + "    (SELECT r.id FROM User u JOIN u.roles r WHERE u.id = :userId)"
-                + ")";
+            + "(p.role.id in "
+            + "    (SELECT r.id FROM User u JOIN u.roles r WHERE u.id = :userId)"
+            + ")";
 
         String userQuery = "SELECT p FROM Permission p WHERE p.user.id = :userId ";
 
@@ -1200,10 +1222,10 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             this.output = new StringBuilder();
 
             this.generator = DiffRowGenerator.create()
-                    .showInlineDiffs(true)
-                    .inlineDiffByWord(true)
-                    .mergeOriginalRevised(true)
-                    .build();
+                .showInlineDiffs(true)
+                .inlineDiffByWord(true)
+                .mergeOriginalRevised(true)
+                .build();
         }
 
         /**
@@ -1307,7 +1329,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
          * @throws InvocationTargetException
          */
         private void update(Object newValue, Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references)
-                throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
             if (field.getType() == WegasFieldProperties.FieldType.CHILDREN) {
                 Object get = field.getPropertyDescriptor().getReadMethod().invoke(ancestors.peekFirst());
                 if (get instanceof Map) {

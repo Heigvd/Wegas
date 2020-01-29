@@ -539,13 +539,7 @@ public class ModelFacade {
      * @return the reference or null
      */
     public GameModel getReference(GameModel model) {
-        Collection<GameModel> implementations = gameModelFacade.getImplementations(model);
-        for (GameModel gm : implementations) {
-            if (gm.isReference()) {
-                return gm;
-            }
-        }
-        return null;
+        return gameModelFacade.findReference(model);
     }
 
     /**
