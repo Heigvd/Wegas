@@ -670,6 +670,9 @@ public class ModelFacade {
                     if (langNameToCode.get(gml.getLang()) != null) {
                         errors.add("GameModel " + gameModel + " " + gml.getLang() + " has the wrong code of "
                                 + gml.getCode() + " rather than " + langNameToCode.get(gml.getLang()) + "!");
+                    }else {
+                        gml.forceRefId(null);
+                        gml.assertRefId();
                     }
                 }
             }
