@@ -93,7 +93,6 @@ export default function translatable<P extends EndProps>(
           );
 
     const currTranslation = pvalue.translations[lang];
-
     return (
       <Comp
         {...(props as any)} // https://github.com/Microsoft/TypeScript/issues/28748
@@ -105,7 +104,7 @@ export default function translatable<P extends EndProps>(
             translations: {
               ...pvalue.translations,
               [lang]: {
-                ...{ status: '' },
+                status: '',
                 ...pvalue.translations[lang],
                 translation: value,
                 lang,

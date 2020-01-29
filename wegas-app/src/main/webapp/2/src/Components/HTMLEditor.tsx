@@ -28,9 +28,10 @@ import {
 } from '../Editor/Components/FormView/commonView';
 import { LabeledView, Labeled } from '../Editor/Components/FormView/labeled';
 import { FileBrowser } from '../Editor/Components/FileBrowser/FileBrowser';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { classesCTX } from './Contexts/ClassesProvider';
 import { debounceAction } from '../Helper/debounceAction';
+import { flexColumn, flex } from '../css/classes';
 
 const toolbar = css({
   width: '300px',
@@ -229,7 +230,7 @@ export default function HTMLEditor({
           )}
         </div>
         <TinyEditor
-          initialValue={value}
+          value={value}
           init={config(toolBarId, {
             testbutton: { text: 'test', className: 'testclass' },
           })}
@@ -294,7 +295,6 @@ export class LabeledHTMLEditor extends React.Component<HtmlProps, HtmlState> {
     oldProps: this.props,
     value: this.props.value || '<p></p>',
   };
-
   render() {
     return (
       <CommonViewContainer
@@ -303,7 +303,7 @@ export class LabeledHTMLEditor extends React.Component<HtmlProps, HtmlState> {
       >
         <Labeled {...this.props.view}>
           {({ labelNode, inputId }) => (
-            <div>
+            <div className={cx(flex, flexColumn)}>
               {labelNode}
               <HTMLEditor
                 value={this.state.value}

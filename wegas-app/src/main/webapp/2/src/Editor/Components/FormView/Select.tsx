@@ -1,10 +1,12 @@
 import * as React from 'react';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { CommonViewContainer, CommonView } from './commonView';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { Labeled, LabeledView } from './labeled';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { inputDefaultCSS } from './String';
+import { flex, flexColumn } from '../../../css/classes';
+import { ListDescriptorChild } from '../../editionConfig';
 
 interface Choice {
   value: {};
@@ -94,31 +96,60 @@ function SelectView(props: ISelectProps) {
     <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       <Labeled {...props.view}>
         {({ inputId, labelNode }) => (
-          <div>
-            <>
-              {labelNode}
-              {choices.length > 1 ? (
-                <select
-                  id={inputId}
-                  className={selectStyle}
-                  value={value}
-                  onChange={onChange}
-                  disabled={props.view.readOnly}
-                >
-                  {choices.map(genItems)}
-                </select>
-              ) : (
-                <span className={selectStyle}>
-                  {'string' === typeof choices[0]
-                    ? choices[0]
-                    : (choices[0] as Choice).label}
-                </span>
-              )}
-            </>
+          <div className={cx(flex, flexColumn)}>
+            {labelNode}
+            {choices.length > 1 ? (
+              <select
+                id={inputId}
+                className={selectStyle}
+                value={value}
+                onChange={onChange}
+                disabled={props.view.readOnly}
+              >
+                {choices.map(genItems)}
+              </select>
+            ) : (
+              <span className={selectStyle}>
+                {'string' === typeof choices[0]
+                  ? choices[0]
+                  : (choices[0] as Choice).label}
+              </span>
+            )}
           </div>
         )}
       </Labeled>
     </CommonViewContainer>
+  );
+}
+
+interface ListChildrenSelectViewProps extends WidgetProps.BaseProps {
+  view: CommonView & LabeledView;
+}
+
+export function ListChildrenSelectView(props: ListChildrenSelectViewProps) {
+  return (
+    <SelectView
+      {...props}
+      view={{
+        ...props.view,
+        choices: [...((ListDescriptorChild as unknown) as string[])],
+      }}
+    />
+  );
+}
+
+export function ListChildrenNullSelectView(props: ListChildrenSelectViewProps) {
+  return (
+    <SelectView
+      {...props}
+      view={{
+        ...props.view,
+        choices: [
+          { label: 'None', value: '' },
+          ...((ListDescriptorChild as unknown) as string[]),
+        ],
+      }}
+    />
   );
 }
 

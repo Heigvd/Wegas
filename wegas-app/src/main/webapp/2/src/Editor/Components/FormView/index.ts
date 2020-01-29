@@ -5,7 +5,10 @@ import StringInput from './String';
 import ObjectView from './Object';
 import Textarea from './Textarea';
 import BooleanView from './Boolean';
-import Select from './Select';
+import Select, {
+  ListChildrenSelectView,
+  ListChildrenNullSelectView,
+} from './Select';
 import ArrayWidget from './Array';
 import { Script } from './Script/Script';
 import { Code } from './Code';
@@ -45,6 +48,8 @@ export const DEFINED_VIEWS = {
   flatvariableselect: FlatVariableSelect,
   timestamp: TimestampView,
   statement: StatementView,
+  listchildren: ListChildrenSelectView,
+  listchildrennull: ListChildrenNullSelectView,
 };
 setDefaultWidgets(DEFINED_VIEWS);
 

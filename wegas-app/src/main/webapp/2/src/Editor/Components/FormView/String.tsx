@@ -3,7 +3,8 @@ import { debounce } from 'lodash-es';
 import { Labeled, LabeledView } from './labeled';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonViewContainer, CommonView } from './commonView';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
+import { flexColumn, flex } from '../../../css/classes';
 
 export interface StringInputProps
   extends WidgetProps.BaseProps<
@@ -85,7 +86,7 @@ export default class StringInput extends React.Component<
           {({ inputId, labelNode }) => {
             if (typeof view.rows === 'number') {
               return (
-                <>
+                <div className={cx(flex, flexColumn)}>
                   {labelNode}
                   <textarea
                     className={inputStyle}
@@ -99,7 +100,7 @@ export default class StringInput extends React.Component<
                     readOnly={view.readOnly}
                     autoComplete="off"
                   />
-                </>
+                </div>
               );
             }
             return (

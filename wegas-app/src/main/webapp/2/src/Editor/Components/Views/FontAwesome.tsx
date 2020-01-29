@@ -9,6 +9,7 @@ import {
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon, Props } from '@fortawesome/react-fontawesome';
 import { far } from '@fortawesome/free-regular-svg-icons';
+import { omit } from 'lodash-es';
 
 // These icon definitions MUST be added to library in order for React-Fontawsome to work properly
 library.add({
@@ -16,35 +17,20 @@ library.add({
   ...Object.keys(far).reduce((o, k) => ({ ...o, [k + 'r']: far[k] }), {}),
 });
 
-export type Icon = IconName | IconLookup | Props;
+export interface IconString {
+  value: string;
+  color?: React.CSSProperties['color'];
+  fontSize?: React.CSSProperties['fontSize'];
+  fontWeight?: React.CSSProperties['fontWeight'];
+}
+
+export type Icon = IconName | IconLookup | Props | IconString;
 export type Icons = Icon | Icon[];
 
 export const prefixes = [
   'fas',
   /*'fab',*/ 'far' /*'fal', 'fad'*/,
 ] as IconPrefix[];
-
-const defaultProps: Props = {
-  icon: 'unicorn',
-  mask: 'unicorn',
-  className: '',
-  color: '',
-  spin: false,
-  pulse: false,
-  border: false,
-  fixedWidth: false,
-  inverse: false,
-  listItem: false,
-  flip: 'both',
-  size: 'xs',
-  pull: 'left',
-  rotation: 90,
-  transform: '',
-  symbol: '',
-  style: {},
-  tabIndex: 0,
-  title: 'string',
-};
 
 export const icons = Object.values(fas).reduce(
   (o: {}, v: IconDefinition) =>
@@ -55,16 +41,26 @@ export const icons = Object.values(fas).reduce(
 );
 
 function isProps(icon: Icons): icon is Props {
-  return (
-    !Array.isArray(icon) &&
-    Object.keys(icon).filter(icon => Object.keys(defaultProps).includes(icon))
-      .length > 0
-  );
+  return !Array.isArray(icon) && typeof icon === 'object' && 'icon' in icon;
+}
+
+function isIconString(icon: Icons): icon is IconString {
+  return !Array.isArray(icon) && typeof icon === 'object' && 'value' in icon;
 }
 
 function IconDisplay({ icon }: { icon: Icon }) {
   return isProps(icon) ? (
     <FontAwesome fixedWidth {...icon} />
+  ) : isIconString(icon) ? (
+    <div
+      className="fa-layers svg-inline--fa fa-w-16 fa-fw"
+      style={{
+        display: 'table-cell',
+        verticalAlign: 'middle',
+      }}
+    >
+      <div style={omit(icon, 'value')}>{icon.value}</div>
+    </div>
   ) : (
     <FontAwesome fixedWidth icon={icon} />
   );

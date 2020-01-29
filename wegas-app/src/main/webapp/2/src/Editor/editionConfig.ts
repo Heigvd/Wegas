@@ -5,7 +5,7 @@ import { entityIs } from '../data/entities';
 import { editStateMachine, editVariable } from '../data/Reducer/globalState';
 import { ThunkResult } from '../data/store';
 import { TYPESTRING } from 'jsoninput/typings/types';
-import { Icon } from './Components/Views/FontAwesome';
+import { Icon, Icons } from './Components/Views/FontAwesome';
 
 export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 
@@ -202,7 +202,7 @@ export async function getMethodConfig<T extends IAbstractEntity>(
 
 export function getIcon<T extends IAbstractEntity>(
   entity: T,
-): Icon | Icon[] | undefined {
+): Icons | undefined {
   switch (entity['@class'] as WegasClassNames) {
     case 'ChoiceDescriptor':
       return 'check-square';
@@ -211,7 +211,7 @@ export function getIcon<T extends IAbstractEntity>(
     case 'ListDescriptor':
       return 'folder';
     case 'NumberDescriptor':
-      return 'chart-line';
+      return ['circle', { value: 'ℝ', color: 'white', fontSize: '0.7em' }];
     case 'QuestionDescriptor':
       return 'question-circle';
     case 'Result':
@@ -300,7 +300,7 @@ export function getLabel<T extends IAbstractEntity>(
   }
   return '';
 }
-const ListDescriptorChild = [
+export const ListDescriptorChild = [
   'NumberDescriptor',
   'StringDescriptor',
   'ListDescriptor',
@@ -315,7 +315,6 @@ const ListDescriptorChild = [
   'DialogueDescriptor',
   'ResourceDescriptor',
   'PeerReviewDescriptor',
-  'TaskDescriptor',
   'FSMDescriptor',
 ] as const;
 const QuestionDescriptorChild = [

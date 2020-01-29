@@ -25,9 +25,6 @@ import {
   flex,
   relative,
   expand,
-  hideOverflow,
-  autoScroll,
-  absoute,
   showOverflow,
 } from '../../css/classes';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
@@ -443,7 +440,7 @@ class StateMachineEditor extends React.Component<
           this.moveTransition(info, transition);
         }
       });
-      plumb.bind('connectionAborted', async connection => {
+      plumb.bind('connectionAborted', connection => {
         const left = parseInt((connection.target as HTMLElement).style.left);
         const top = parseInt((connection.target as HTMLElement).style.top);
         const src = Number(connection.sourceId);
