@@ -109,8 +109,7 @@ public class UserFacade extends BaseFacade<User> {
             newUser.addAccount(new GuestJpaAccount());
             this.merge(newUser);
 
-            Subject subject = SecurityUtils.getSubject();
-            subject.login(new GuestToken(newUser.getMainAccount().getId()));
+            requestManager.login(new GuestToken(newUser.getMainAccount().getId()));
 
             return newUser;
         }
@@ -143,7 +142,7 @@ public class UserFacade extends BaseFacade<User> {
             UsernamePasswordToken shiroToken = new UsernamePasswordToken(email, token);
             shiroToken.setRememberMe(false);
             try {
-                subject.login(shiroToken);
+                requestManager.login(subject, shiroToken);
                 User user = this.getCurrentUser();
                 AbstractAccount mainAccount = user.getMainAccount();
                 if (mainAccount instanceof JpaAccount) {
@@ -167,7 +166,7 @@ public class UserFacade extends BaseFacade<User> {
             if (gAccount instanceof GuestJpaAccount) {
                 logger.error("Logged as guest");
                 guest = gAccount.getUser();
-                subject.logout();
+                requestManager.logout(subject);
             }
         }
 
@@ -175,7 +174,7 @@ public class UserFacade extends BaseFacade<User> {
         UsernamePasswordToken token = new UsernamePasswordToken(authInfo.getLogin(), authInfo.getPassword());
         token.setRememberMe(authInfo.isRemember());
         try {
-            subject.login(token);
+            requestManager.login(subject, token);
             if (authInfo.isAgreed()) {
                 AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
                 if (account instanceof JpaAccount) {
@@ -208,7 +207,7 @@ public class UserFacade extends BaseFacade<User> {
                  * full account -> let's upgrade
                  */
                 GuestJpaAccount from = (GuestJpaAccount) accountFacade.find((Long) subject.getPrincipal());
-                subject.logout();
+                requestManager.logout(subject);
                 return this.upgradeGuest(from, account);
             } else {
                 // Check if e-mail is already taken and if yes return a localized error message:
@@ -236,7 +235,7 @@ public class UserFacade extends BaseFacade<User> {
         if (subject.isRunAs()) {
             subject.releaseRunAs();
         } else {
-            subject.logout();
+            requestManager.logout(subject);
         }
     }
 
