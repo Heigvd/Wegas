@@ -10,7 +10,7 @@ import { deepUpdate } from '../../data/updateUtils';
 import { StoreConsumer, StoreDispatch, store } from '../../data/store';
 import { AvailableViews } from './FormView';
 import { cx } from 'emotion';
-import { flex, grow, flexColumn, expand } from '../../css/classes';
+import { flex, grow, flexColumn, expand, noOverflow } from '../../css/classes';
 import { Edition } from '../../data/Reducer/globalState';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import { MessageString } from './MessageString';
