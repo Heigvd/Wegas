@@ -727,20 +727,14 @@ interface ExpressionEditorState {
 
 interface ExpressionEditorProps extends ScriptView {
   statement: Statement;
-<<<<<<< HEAD
   id?: string;
-=======
->>>>>>> wysyg-scripts
   onChange?: (expression: Statement | Statement[]) => void;
   onDelete?: () => void;
 }
 
 export function ExpressionEditor({
   statement,
-<<<<<<< HEAD
   id,
-=======
->>>>>>> wysyg-scripts
   mode,
   scriptableClassFilter,
   onChange,

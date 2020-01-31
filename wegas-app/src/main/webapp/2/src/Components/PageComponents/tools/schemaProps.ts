@@ -4,6 +4,7 @@ import {
 } from '../../../Editor/Components/FormView/Script/Script';
 import { TYPESTRING } from 'jsoninput/typings/types';
 import { DEFINED_VIEWS } from '../../../Editor/Components/FormView';
+import { WegasMethod } from '../../../Editor/editionConfig';
 
 type SchemaPrimitive =
   | 'boolean'
@@ -98,7 +99,7 @@ export const schemaProps = {
   custom: (
     label?: string,
     required: boolean = true,
-    type?: TYPESTRING,
+    type?: WegasMethod['returns'],
     viewType?: keyof typeof DEFINED_VIEWS,
     value?: number,
     index: number = 0,
