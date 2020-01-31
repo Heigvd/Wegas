@@ -62,11 +62,8 @@ import { TYPESTRING, WidgetProps } from 'jsoninput/typings/types';
 import { themeVar } from '../../../../Components/Theme';
 import { VariableDescriptor } from '../../../../data/selectors';
 import { isStatement } from '@babel/types';
-<<<<<<< HEAD
 import { CommonView, CommonViewContainer } from '../commonView';
 import { LabeledView, Labeled } from '../labeled';
-=======
->>>>>>> wysyg-scripts
 
 const expressionEditorStyle = css({
   backgroundColor: themeVar.primaryHoverColor,
@@ -708,6 +705,7 @@ const makeShema = (
             comparator: schemaProps.custom(
               undefined,
               false,
+              scriptMethod.returns,
               scriptMethod.returns,
               undefined,
               scriptMethod.parameters.length + 3,
