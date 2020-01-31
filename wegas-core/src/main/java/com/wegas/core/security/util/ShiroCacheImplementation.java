@@ -8,12 +8,15 @@
 package com.wegas.core.security.util;
 
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IMap;
 import com.wegas.core.Helper;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import javax.naming.NamingException;
 import org.apache.shiro.cache.CacheException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -23,8 +26,11 @@ public class ShiroCacheImplementation implements org.apache.shiro.cache.Cache {
 
     private static final String MAP_NAME = "hz_shiro_sessions";
 
+    private static final Logger logger = LoggerFactory.getLogger(ShiroCacheImplementation.class);
+
     /**
-     * Since there is no CDI context here, we cannot @Inject HazelcastInstance or @Inject Cache<?, ?>
+     * Since there is no CDI context here, we cannot @Inject HazelcastInstance or @Inject
+     * Cache<?, ?>
      * This methods stands here to replace this behaviour
      *
      * @return the cache
@@ -32,8 +38,13 @@ public class ShiroCacheImplementation implements org.apache.shiro.cache.Cache {
      * @throws NamingException fails to retrieve the hazelcast cast, major issue
      */
     private Map<Object, Object> getCache() throws NamingException {
+        //long start = System.currentTimeMillis();
         HazelcastInstance hzInstance = Helper.jndiLookup(Helper.getWegasProperty("hazelcast.jndi_name"), HazelcastInstance.class);
-    return hzInstance.getMap(MAP_NAME);
+
+        IMap<Object, Object> map = hzInstance.getMap(MAP_NAME);
+//        long duration = System.currentTimeMillis() - start;
+//        logger.error("Get Shiro Hz Cache in {} ms", duration);
+        return map;
     }
 
     @Override

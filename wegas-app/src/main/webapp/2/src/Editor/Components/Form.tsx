@@ -1,7 +1,7 @@
 import * as React from 'react';
 import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
-import { defaultPadding } from '../../css/classes';
+import { defaultPadding, expand } from '../../css/classes';
 import './FormView';
 import { Button } from '../../Components/Inputs/Button/Button';
 import { ConfirmButton } from '../../Components/Inputs/Button/ConfirmButton';
@@ -31,7 +31,7 @@ export class Form<T> extends React.Component<
     // Used to reset Form (for default values)
     id: number;
   }
-  > {
+> {
   form?: JSONForm;
   static getDerivedStateFromProps(
     nextProps: FormProps<any>,
@@ -55,7 +55,7 @@ export class Form<T> extends React.Component<
   }
   render() {
     return (
-      <Toolbar>
+      <Toolbar className={expand}>
         <Toolbar.Header>
           {this.props.update && (
             <Button

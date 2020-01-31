@@ -300,7 +300,8 @@ public abstract class AbstractArquillianTestMinimal {
         Subject subject = SecurityUtils.getSubject();
         userFacade.logout();
         if (user.getUser().getMainAccount() instanceof GuestJpaAccount) {
-            subject.login(new GuestToken(user.getUser().getMainAccount().getId()));
+            GuestToken guestToken = new GuestToken(user.getUser().getMainAccount().getId());
+            requestManager.login(subject, guestToken);
         } else {
             AuthenticationInformation info = new AuthenticationInformation();
             info.setAgreed(Boolean.TRUE);
@@ -310,7 +311,8 @@ public abstract class AbstractArquillianTestMinimal {
 
             userFacade.authenticate(info);
 
-            subject.login(new UsernamePasswordToken(user.getUsername(), user.getPassword()));
+            requestManager.login(subject, new UsernamePasswordToken(user.getUsername(), user.getPassword()));
+            requestManager.setPlayer(null);
         }
 
         User currentUser = userFacade.getCurrentUser();
@@ -322,7 +324,7 @@ public abstract class AbstractArquillianTestMinimal {
     public User login(String username, String password) {
         Subject subject = SecurityUtils.getSubject();
         userFacade.logout();
-        subject.login(new UsernamePasswordToken(username, password));
+        requestManager.login(subject, new UsernamePasswordToken(username, password));
         return userFacade.getCurrentUser();
     }
 

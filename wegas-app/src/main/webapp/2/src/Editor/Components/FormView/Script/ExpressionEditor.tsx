@@ -62,8 +62,11 @@ import { TYPESTRING, WidgetProps } from 'jsoninput/typings/types';
 import { themeVar } from '../../../../Components/Theme';
 import { VariableDescriptor } from '../../../../data/selectors';
 import { isStatement } from '@babel/types';
+<<<<<<< HEAD
 import { CommonView, CommonViewContainer } from '../commonView';
 import { LabeledView, Labeled } from '../labeled';
+=======
+>>>>>>> wysyg-scripts
 
 const expressionEditorStyle = css({
   backgroundColor: themeVar.primaryHoverColor,
@@ -724,14 +727,20 @@ interface ExpressionEditorState {
 
 interface ExpressionEditorProps extends ScriptView {
   statement: Statement;
+<<<<<<< HEAD
   id?: string;
+=======
+>>>>>>> wysyg-scripts
   onChange?: (expression: Statement | Statement[]) => void;
   onDelete?: () => void;
 }
 
 export function ExpressionEditor({
   statement,
+<<<<<<< HEAD
   id,
+=======
+>>>>>>> wysyg-scripts
   mode,
   scriptableClassFilter,
   onChange,

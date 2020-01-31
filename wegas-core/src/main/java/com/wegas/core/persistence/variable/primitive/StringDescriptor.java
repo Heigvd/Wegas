@@ -36,6 +36,7 @@ import com.wegas.editor.View.ArrayView;
 import com.wegas.editor.View.EntityArrayFiledSelect;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.View.I18nStringView;
 import com.wegas.editor.View.NumberView;
 import com.wegas.editor.Visible;
 import com.wegas.mcq.persistence.QuestionDescriptor.CheckPositiveness;
@@ -224,7 +225,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      */
     @Scriptable
     public void setValue(Player p,
-        @Param(view = @View(label = "", value = I18nHtmlView.class)) TranslatableContent value) {
+        @Param(view = @View(label = "", value = I18nStringView.class)) TranslatableContent value) {
         this.getInstance(p).setValue(value);
     }
 
