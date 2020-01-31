@@ -27,10 +27,20 @@ export interface WegasMethodParameter {
   view: AvailableViews;
 }
 
+export const wegasMethodReturnValues = ['number', 'string', 'boolean'] as const;
+
+export type WegasMethodReturnType = ValueOf<typeof wegasMethodReturnValues>;
+
+export function isWegasMethodReturnType(
+  value: string,
+): value is WegasMethodReturnType {
+  return (wegasMethodReturnValues as readonly string[]).includes(value);
+}
+
 export interface WegasMethod {
   label: string;
   parameters: WegasMethodParameter[];
-  returns: 'number' | 'string' | 'boolean';
+  returns: WegasMethodReturnType;
 }
 
 export interface MethodConfig {
