@@ -526,8 +526,8 @@ public class UserController {
         String secret = AaiConfigInfo.getAaiSecret(); // Ignored if empty !
         if (server.length() != 0 && !getRequestingIP(request).equals(server)
                 || secret.length() != 0 && !userDetails.getSecret().equals(secret)) {
-            logger.error("Real secret: {}, expected:{}", userDetails.getSecret(), secret);
-            logger.error("Real remote host : {}, expected: {}", getRequestingIP(request), server);
+            logger.trace("Real secret: {}, expected:{}", userDetails.getSecret(), secret);
+            logger.trace("Real remote host : {}, expected: {}", getRequestingIP(request), server);
             Enumeration<String> headerNames = request.getHeaderNames();
             if (headerNames != null) {
                 while (headerNames.hasMoreElements()) {
@@ -543,7 +543,7 @@ public class UserController {
         // It should not be possible for the caller (our AAI login server) to be already logged in...
         Subject subject = SecurityUtils.getSubject();
         if (subject.isAuthenticated()) {
-            subject.logout();
+            requestManager.logout(subject);
             throw WegasErrorMessage.error("Logging out an already logged in user (internal error?)");
         }
 
@@ -551,7 +551,7 @@ public class UserController {
             Long accountId = (Long) subject.getPrincipal();
             AaiToken token = new AaiToken(accountId, userDetails);
             token.setRememberMe(userDetails.isRememberMe());
-            subject.login(token);
+            requestManager.login(subject, token);
             accountFacade.refreshAaiAccount(userDetails);
             return new AaiLoginResponse("Login successful", true, false);
         } catch (AuthenticationException aex) {
@@ -562,7 +562,7 @@ public class UserController {
             try {
                 AaiToken token = new AaiToken((Long) account.getId(), userDetails);
                 token.setRememberMe(userDetails.isRememberMe());
-                subject.login(token);
+                requestManager.login(subject, token);
             } catch (AuthenticationException aex2) {
                 return new AaiLoginResponse("New account created, could not login to it", false, true);
             }

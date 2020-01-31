@@ -7,7 +7,9 @@
  */
 package com.wegas.core.security.facebook;
 
+import com.wegas.core.ejb.RequestManager;
 import java.io.IOException;
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,8 +18,8 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 
 /**
- * Simple Facebook Login Handling, doesn't actually do anything except display
- * page confirming login successfull.
+ * Simple Facebook Login Handling, doesn't actually do anything except display page confirming login
+ * successfull.
  *
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -27,10 +29,14 @@ public class FacebookLoginServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
+    @Inject
+    private RequestManager requestManager;
+
     /**
      *
      * @param request
      * @param response
+     *
      * @throws ServletException
      * @throws IOException
      */
@@ -41,7 +47,7 @@ public class FacebookLoginServlet extends HttpServlet {
         String code = request.getParameter("code");
         FacebookToken facebookToken = new FacebookToken(code);
         try {
-            SecurityUtils.getSubject().login(facebookToken);
+            requestManager.login(facebookToken);
             //response.sendRedirect(response.encodeRedirectURL("index.jsp"));
         } catch (AuthenticationException ae) {
             throw new ServletException(ae);
@@ -51,6 +57,7 @@ public class FacebookLoginServlet extends HttpServlet {
     /**
      * @param request
      * @param response
+     *
      * @throws ServletException
      * @throws IOException
      * @see HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
@@ -58,7 +65,7 @@ public class FacebookLoginServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException {
+        IOException {
         System.out.println("Unexpected doPost ...");
     }
 }
