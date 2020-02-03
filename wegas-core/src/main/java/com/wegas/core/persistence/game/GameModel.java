@@ -458,7 +458,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
-     * get the set of all descriptor from the game model
+     * get the set of all descriptors from the game model
      *
      * @return all variable descriptors
      */

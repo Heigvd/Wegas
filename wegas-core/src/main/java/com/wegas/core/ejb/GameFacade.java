@@ -17,6 +17,7 @@ import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.persistence.game.Populatable.Status;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
@@ -118,14 +119,15 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Create (persist) a new game base on a gameModel identified by gameModelId. This gameModel will first been
-     * duplicated (to freeze it against original gameModel update) Then, the game will be attached to this duplicate.
+     * Create (persist) a new game base on a gameModel identified by gameModelId. This gameModel
+     * will first been duplicated (to freeze it against original gameModel update) Then, the game
+     * will be attached to this duplicate.
      * <p>
-     * The game will contains a DebugTeam, which contains itself a test player. This team/testPlayer will be immediately
-     * usable since theirs variableInstance are create synchronously.
+     * The game will contains a DebugTeam, which contains itself a test player. This team/testPlayer
+     * will be immediately usable since theirs variableInstance are create synchronously.
      *
      * @param gameModelId id of the gameModel to create a new game for
-     * @param game the game to persist
+     * @param game        the game to persist
      *
      * @throws java.lang.CloneNotSupportedException
      *
@@ -157,11 +159,11 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      * Persist a new game within the given gameModel
      * <p>
-     * The game will contains a DebugTeam, which contains itself a test player. This team/testPlayer will be immediately
-     * usable since theirs variableInstance are create synchronously.
+     * The game will contains a DebugTeam, which contains itself a test player. This team/testPlayer
+     * will be immediately usable since theirs variableInstance are create synchronously.
      *
      * @param gameModel the gameModel to add the game in
-     * @param game the game to persist within the gameModel
+     * @param game      the game to persist within the gameModel
      */
     private void create(final GameModel gameModel, final Game game) {
         requestManager.assertCanInstantiateGameModel(gameModel);
@@ -278,7 +280,7 @@ public class GameFacade extends BaseFacade<Game> {
 
         // This is for retrocompatibility w/ game models that do not habe DebugGame
         if (entity.getGameModel().getGames().size() <= 1
-                && !(entity.getGameModel().getGames().get(0) instanceof DebugGame)) {// This is for retrocompatibility w/ game models that do not habe DebugGame
+            && !(entity.getGameModel().getGames().get(0) instanceof DebugGame)) {// This is for retrocompatibility w/ game models that do not habe DebugGame
             gameModelFacade.remove(entity.getGameModel());
         } else {
             getEntityManager().remove(entity);
@@ -319,9 +321,9 @@ public class GameFacade extends BaseFacade<Game> {
 
     public Game findByStatusAndToken(final String token, Game.Status status) {
         final TypedQuery<Game> tq = getEntityManager()
-                .createNamedQuery("Game.findByToken", Game.class)
-                .setParameter("token", token)
-                .setParameter("status", status);
+            .createNamedQuery("Game.findByToken", Game.class)
+            .setParameter("token", token)
+            .setParameter("status", status);
         try {
             return tq.getSingleResult();
         } catch (NoResultException ex) {
@@ -342,15 +344,16 @@ public class GameFacade extends BaseFacade<Game> {
 
     /**
      * @param gameModelId
-     * @param orderBy not used...
+     * @param orderBy     not used...
      *
-     * @return all games belonging to the gameModel identified by gameModelId but DebugGames, ordered by creation time
+     * @return all games belonging to the gameModel identified by gameModelId but DebugGames,
+     *         ordered by creation time
      */
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
         return getEntityManager().createQuery("SELECT g FROM Game g "
-                + "WHERE TYPE(g) != DebugGame AND g.gameModel.id = :gameModelId ORDER BY g.createdTime DESC", Game.class)
-                .setParameter("gameModelId", gameModelId)
-                .getResultList();
+            + "WHERE TYPE(g) != DebugGame AND g.gameModel.id = :gameModelId ORDER BY g.createdTime DESC", Game.class)
+            .setParameter("gameModelId", gameModelId)
+            .getResultList();
     }
 
     /**
@@ -399,9 +402,9 @@ public class GameFacade extends BaseFacade<Game> {
         // it was time consuming
         // New way is to fetch permissions first and extract games from this list
         String roleQuery = "SELECT p FROM Permission p WHERE "
-                + "(p.role.id in "
-                + "    (SELECT r.id FROM User u JOIN u.roles r WHERE u.id = :userId)"
-                + ")";
+            + "(p.role.id in "
+            + "    (SELECT r.id FROM User u JOIN u.roles r WHERE u.id = :userId)"
+            + ")";
 
         String userQuery = "SELECT p FROM Permission p WHERE p.user.id = :userId";
 
@@ -439,8 +442,9 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      * Create a new player within a team for the user identified by userId
      *
-     * @param teamId id of the team to join
-     * @param userId id of the user to create a player for, may be null to create an anonymous player
+     * @param teamId     id of the team to join
+     * @param userId     id of the user to create a player for, may be null to create an anonymous
+     *                   player
      * @param playerName common name of the player
      * @param languages
      *
@@ -458,10 +462,10 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Same as {@link #joinTeam(java.lang.Long, java.lang.Long, java.lang.String)} but anonymously. (for testing
-     * purpose)
+     * Same as {@link #joinTeam(java.lang.Long, java.lang.Long, java.lang.String)} but anonymously.
+     * (for testing purpose)
      *
-     * @param teamId id of the team to join
+     * @param teamId     id of the team to join
      * @param playerName common name of the player
      *
      * @return a new player anonymous player who just joined the team
@@ -613,18 +617,18 @@ public class GameFacade extends BaseFacade<Game> {
     private void loadOverviews(XlsxSpreadsheet xlsx, Game game, boolean includeTestPlayer) {
         Player p = game.getTestPlayer();
         String script = ""
-                + "var result= [];"
-                + "if (WegasDashboard){"
-                + "  result = WegasDashboard.getAllOverviews(true);"
-                + "}"
-                + "result;";
+            + "var result= [];"
+            + "if (WegasDashboard){"
+            + "  result = WegasDashboard.getAllOverviews(true);"
+            + "}"
+            + "result;";
 
         CellStyle titleStyle = xlsx.createHeaderStyle();
         titleStyle.setAlignment(HorizontalAlignment.CENTER);
 
         CellStyle subtitleStyle = xlsx.createSmallerHeaderStyle();
 
-        ScriptObjectMirror overviews = (ScriptObjectMirror) scriptFacade.eval(p, new Script(script), null);
+        ScriptObjectMirror overviews = (ScriptObjectMirror) scriptFacade.eval(p, new Script(script), (VariableDescriptor) null);
 
         for (Object oSheet : overviews.values()) {
             ScriptObjectMirror sheetData = (ScriptObjectMirror) oSheet;
@@ -701,7 +705,7 @@ public class GameFacade extends BaseFacade<Game> {
 
                             Object value = teamData.get(itemId);
 
-                            if (kind.equals("inbox") || kind.equals("text")){
+                            if (kind.equals("inbox") || kind.equals("text")) {
                                 value = ((ScriptObjectMirror) value).getMember("body");
                             }
 

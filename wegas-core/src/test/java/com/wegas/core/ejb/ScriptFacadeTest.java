@@ -9,6 +9,7 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
@@ -53,7 +54,7 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
         final Script s = new Script();
         s.setLanguage("JavaScript");
         s.setContent("Variable.find(gameModel, \"" + VARIABLENAME + "\").setValue(self, \"" + VALUE2 + "\");");
-        scriptFacade.eval(player.getId(), s, null);
+        scriptFacade.eval(player.getId(), s, (VariableDescriptor) null);
         logger.info("Tested " + scriptFacade);
 
         // Verify the new value
@@ -63,7 +64,7 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
         //Test with events
         final Script testEvent = new Script("Event.on('testEvent', function(o){Variable.find(gameModel,'" + VARIABLENAME + "').getInstance(self).setValue(o.value);});\nEvent.fire('testEvent', {'value':'" + VALUE + "'});");
         testEvent.setLanguage("JavaScript");
-        scriptFacade.eval(player.getId(), testEvent, null);
+        scriptFacade.eval(player.getId(), testEvent, (VariableDescriptor) null);
         Assert.assertEquals(VALUE, ((StringInstance) variableInstanceFacade.find(stringDescriptor.getId(), player.getId())).getValue());
     }
 
@@ -72,14 +73,14 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
         Script rnd100 = new Script("JavaScript", "var sum = 0, i; for (i=0;i<100;i++){sum+= Math.random();} sum;");
 
         requestFacade.getRequestManager().setEnv(RequestManager.RequestEnvironment.STD);
-        Double rnd1 = (Double) scriptFacade.eval(player, rnd100, null);
+        Double rnd1 = (Double) scriptFacade.eval(player, rnd100, (VariableDescriptor) null);
 
         requestFacade.getRequestManager().setEnv(RequestManager.RequestEnvironment.TEST);
-        Double rnd_bypassed = (Double) scriptFacade.eval(player, rnd100, null);
+        Double rnd_bypassed = (Double) scriptFacade.eval(player, rnd100, (VariableDescriptor) null);
 
         requestFacade.getRequestManager().setEnv(RequestManager.RequestEnvironment.STD);
 
-        Double rnd2 = (Double) scriptFacade.eval(player, rnd100, null);
+        Double rnd2 = (Double) scriptFacade.eval(player, rnd100, (VariableDescriptor) null);
 
         Assert.assertTrue(rnd1 > 0.0);
         Assert.assertEquals(0.0, rnd_bypassed, 0.001);
@@ -91,9 +92,9 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
         Script condition = new Script("JavaScript", "Event.fired(\"myEvent\") && Math.random() * 100 < 1 && Variable.find(gameModel, \"x\").getValue(self)!==0;");
 
         //Standard Mode -> since first event has not been
-        Boolean result = (Boolean) scriptFacade.eval(player, condition, null);
+        Boolean result = (Boolean) scriptFacade.eval(player, condition, (VariableDescriptor) null);
 
-        WegasScriptException ex = scriptCheck.validate(condition, player, null);
+        WegasScriptException ex = scriptCheck.validate(condition, player, (VariableDescriptor) null);
 
         System.out.println("R1: " + result);
         System.out.println("Ex: " + ex);
@@ -110,13 +111,12 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
 
         String script2 = "GameModelFacade.find(1);";
 
-
         int tick = 10_000;
 
         while (true) {
             i++;
             requestManager.setCurrentScriptContext(null);
-            scriptFacade.eval(player, new Script("JavaScript", script0), null);
+            scriptFacade.eval(player, new Script("JavaScript", script0), (VariableDescriptor) null);
             if (i % tick == 0) {
                 t = System.currentTimeMillis();
                 logger.error(" {}x: {}", tick, t - now);
@@ -152,10 +152,10 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.create(scenario.getId(), numberDescriptor);
 
         scriptFacade.timeoutEval(player.getId(),
-                new Script("JavaScript", "Variable.find(gameModel, 'testnum').setValue(self, " + VALUE + ");"));
+            new Script("JavaScript", "Variable.find(gameModel, 'testnum').setValue(self, " + VALUE + ");"));
         Assert.assertEquals(VALUE,
-                ((NumberInstance) variableInstanceFacade.find(numberDescriptor.getId(), player.getId())).getValue(),
-                0.0001);
+            ((NumberInstance) variableInstanceFacade.find(numberDescriptor.getId(), player.getId())).getValue(),
+            0.0001);
         // Parser doing hoisting this, test for a correct injection.
         scriptFacade.timeoutEval(player.getId(), new Script("JavaScript", "(function a(c){c(); while(0){}\nfunction b(){c();}})(function(){})"));
     }

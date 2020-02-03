@@ -14,6 +14,7 @@ import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import java.util.Collection;
@@ -136,7 +137,7 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
         }
         if (requestManager.getCurrentScriptContext() == null) {
             /* init script context, declared eventListeners are not yet in memory */
-            scriptFacace.eval(player, new Script(""), null);
+            scriptFacace.eval(player, new Script(""), (VariableDescriptor) null);
         }
         /*
          * Make sure to set eventFired after context initiation because events 
@@ -169,8 +170,8 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
     /**
      * @param eventName
      *
-     * @return Object[] array of corresponding parameters fired. Length
-     *         correspond to number of times eventName has been fired.
+     * @return Object[] array of corresponding parameters fired. Length correspond to number of
+     *         times eventName has been fired.
      */
     public Object[] getFiredParameters(String eventName) {
         if (this.eventsFired.containsKey(eventName)) {
@@ -190,7 +191,8 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
     }
 
     /**
-     * check if the event has been fired. If it's the case, count this event consumption within eventCounter
+     * check if the event has been fired. If it's the case, count this event consumption within
+     * eventCounter
      *
      * @param eventName
      *

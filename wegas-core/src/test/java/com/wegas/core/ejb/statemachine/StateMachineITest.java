@@ -13,6 +13,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
@@ -85,11 +86,10 @@ public class StateMachineITest extends AbstractArquillianTest {
         login(user41);
         teamFacade.create(game.getId(), team4);
 
-
         WegasUser user11 = this.signup("user11@local");
         login(user11);
         Player testPlayer11 = gameFacade.joinTeam(team.getId(), "TestPlayer11", null);
-        
+
         login(user41);
         Player testPlayer41 = gameFacade.joinTeam(team4.getId(), "testPlayer41", null);
 
@@ -122,7 +122,7 @@ public class StateMachineITest extends AbstractArquillianTest {
 
         login(trainer);
         gameModelFacade.reset(scenario.getId());
-        
+
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer11)).getValue(), 0.0);
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer41)).getValue(), 0.0);
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), player21)).getValue(), 0.0);
@@ -133,7 +133,6 @@ public class StateMachineITest extends AbstractArquillianTest {
          */
         Assert.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
 
-        
         WegasUser user43 = this.signup("user43@local");
         login(user43);
         Player testPlayer43 = gameFacade.joinTeam(team4.getId(), "TestPlayer43", null);
@@ -152,7 +151,7 @@ public class StateMachineITest extends AbstractArquillianTest {
         login(trainer);
         gameModelFacade.reset(scenario.getId());
         Assert.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
-        
+
         WegasUser user32 = this.signup("user32@local");
         login(user32);
         Player testPlayer32 = gameFacade.joinTeam(team3.getId(), "TestPlayer32", null);
@@ -247,7 +246,7 @@ public class StateMachineITest extends AbstractArquillianTest {
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, " + ENDVAL + ");"));
         variableDescriptorFacade.create(scenario.getId(), trigger);
 
-        scriptFacade.eval(player, new Script("JavaScript", "Event.on('testEvent', function(e){print('args: ' + e)});Event.fire('testEvent', " + ENDVAL + ")"), null);
+        scriptFacade.eval(player, new Script("JavaScript", "Event.on('testEvent', function(e){print('args: ' + e)});Event.fire('testEvent', " + ENDVAL + ")"), (VariableDescriptor) null);
         requestFacade.commit();
         Assert.assertEquals(ENDVAL, ((NumberInstance) variableInstanceFacade.find(number.getId(), player.getId())).getValue(), 0);
     }

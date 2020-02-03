@@ -17,8 +17,8 @@ import java.util.Map.Entry;
  * @author cyril
  */
 /**
- * Used to store Events during run. Prevent passing multiple event transitions
- * with same event if less events where thrown. StateMachineInstance dependant.
+ * Used to store Events during run. Prevent passing multiple event transitions with same event if
+ * less events where thrown. StateMachineInstance dependant.
  */
 public class StateMachineEventCounter {
 
@@ -57,6 +57,18 @@ public class StateMachineEventCounter {
         this.currentEventsCounter.clear();
     }
 
+    void acceptCurrent(StateMachineInstance instance, Map<String, Integer> counters) {
+        for (Entry<String, Integer> entry : counters.entrySet()) {
+            Integer count = entry.getValue();
+            while (count > 0) {
+                count--;
+                this.increase(instance, entry.getKey());
+            }
+        }
+        this.clearCurrents();
+
+    }
+
     public void acceptCurrent(StateMachineInstance instance) {
         for (Entry<String, Integer> entry : currentEventsCounter.entrySet()) {
             Integer count = entry.getValue();
@@ -85,4 +97,13 @@ public class StateMachineEventCounter {
             return 0;
         }
     }
+
+    public Map<String, Integer> getCurrents() {
+        Map<String, Integer> clone = new HashMap<>();
+        for (Entry<String, Integer> entry : this.currentEventsCounter.entrySet()) {
+            clone.put(entry.getKey(), entry.getValue());
+        }
+        return clone;
+    }
+
 }

@@ -10,6 +10,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.persistence.User;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import javax.ejb.EJBException;
@@ -42,7 +43,7 @@ public class SecurityTest extends AbstractArquillianTest {
     @Test(expected = WegasScriptException.class)
     public void testQuit() {
         String script = "quit();";
-        scriptFacade.eval(player, new Script("JavaScript", script), null);
+        scriptFacade.eval(player, new Script("JavaScript", script), (VariableDescriptor) null);
     }
 
     @Test(expected = AuthenticationException.class)
@@ -67,7 +68,7 @@ public class SecurityTest extends AbstractArquillianTest {
         script += "query2.executeUpdate();";
         script += "} catch (e) {print(e);}";
 
-        scriptFacade.eval(player, new Script("JavaScript", script), null);
+        scriptFacade.eval(player, new Script("JavaScript", script), (VariableDescriptor) null);
 
         login("root", password);
         User currentUser = userFacade.getCurrentUser();
@@ -89,7 +90,7 @@ public class SecurityTest extends AbstractArquillianTest {
         script += "subject.runAs(token);";
         script += "} catch (e) {print(e);}";
 
-        scriptFacade.eval(player, new Script("JavaScript", script), null);
+        scriptFacade.eval(player, new Script("JavaScript", script), (VariableDescriptor) null);
 
         logger.error("CURRENT: {}", requestFacade.getCurrentUser().getId());
         Assert.assertEquals(user.getUser(), requestFacade.getCurrentUser()); // assert su has failed
@@ -100,20 +101,20 @@ public class SecurityTest extends AbstractArquillianTest {
         login(user);
         String script = "java.lang.Runtime.getRuntime().exec('ls /');";
 
-        scriptFacade.eval(player, new Script("JavaScript", script), null);
+        scriptFacade.eval(player, new Script("JavaScript", script), (VariableDescriptor) null);
     }
 
     @Test(expected = WegasScriptException.class)
     public void testSystem() {
         login(user);
         String script = "java.lang.System.getProperties();";
-        scriptFacade.eval(player, new Script("JavaScript", script), null);
+        scriptFacade.eval(player, new Script("JavaScript", script), (VariableDescriptor) null);
     }
 
     @Test(expected = WegasScriptException.class)
     public void testThread() {
         login(user);
         String script = "java.lang.Thread.currentThread().interrupt();";
-        scriptFacade.eval(player, new Script("JavaScript", script), null);
+        scriptFacade.eval(player, new Script("JavaScript", script), (VariableDescriptor) null);
     }
 }

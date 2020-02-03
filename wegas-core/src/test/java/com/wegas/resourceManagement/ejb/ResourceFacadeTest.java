@@ -9,6 +9,7 @@ package com.wegas.resourceManagement.ejb;
 
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.resourceManagement.persistence.Activity;
 import com.wegas.resourceManagement.persistence.Assignment;
 import com.wegas.resourceManagement.persistence.BurndownDescriptor;
@@ -65,12 +66,12 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         resourceFacade.assign(res.getInstance(player).getId(), task.getInstance(player).getId());
 
         assertEquals(
-                ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getTaskInstance(),
-                task.getInstance(player));
+            ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getTaskInstance(),
+            task.getInstance(player));
 
         assertEquals(
-                ((TaskDescriptor) variableDescriptorFacade.find(task.getId())).getInstance(player).getAssignments().get(0).getResourceInstance(),
-                res.getInstance(player));
+            ((TaskDescriptor) variableDescriptorFacade.find(task.getId())).getInstance(player).getAssignments().get(0).getResourceInstance(),
+            res.getInstance(player));
 
         variableDescriptorFacade.remove(task.getId());
 
@@ -101,8 +102,8 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         resourceFacade.assign(res.getInstance(player).getId(), task.getInstance(player).getId());
 
         assertEquals(
-                ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getTaskInstance(),
-                task.getInstance(player));
+            ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getTaskInstance(),
+            task.getInstance(player));
 
         // Clean
         variableDescriptorFacade.remove(res.getId());
@@ -130,8 +131,8 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         resourceFacade.assign(res.getInstance(player).getId(), task.getInstance(player).getId());
 
         assertEquals(
-                ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getTaskInstance(),
-                task.getInstance(player));
+            ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getTaskInstance(),
+            task.getInstance(player));
 
         // Clean
         variableDescriptorFacade.remove(res.getId());
@@ -223,8 +224,8 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         resourceFacade.assign(res.getInstance(player).getId(), task.getInstance(player).getId());
 
         assertEquals(
-                ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getTaskInstance(),
-                task.getInstance(player));
+            ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getTaskInstance(),
+            task.getInstance(player));
 
         Assignment assignment = resourceFacade.findAssignment(res.getInstance(player).getId(), task.getInstance(player).getId());
         resourceFacade.removeAssignment(assignment.getId());
@@ -408,7 +409,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         /*
          * Delete task2
          */
-variableDescriptorFacade.remove(task2.getId());
+        variableDescriptorFacade.remove(task2.getId());
 
 
         /*
@@ -645,20 +646,20 @@ variableDescriptorFacade.remove(task2.getId());
         task.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task);
         String script = "var paul = Variable.find(gameModel, \"paul\");\n"
-                + "var paulI = paul.getInstance(self);\n"
-                + "var task = Variable.find(gameModel, \"task\");\n"
-                + "var taskI = task.getInstance(self);\n"
-                + "ResourceFacade.assign(paulI.getId(), taskI.getId());\n";
+            + "var paulI = paul.getInstance(self);\n"
+            + "var task = Variable.find(gameModel, \"task\");\n"
+            + "var taskI = task.getInstance(self);\n"
+            + "ResourceFacade.assign(paulI.getId(), taskI.getId());\n";
 
-        scriptFacade.eval(player, new Script("javascript", script), null); //
+        scriptFacade.eval(player, new Script("javascript", script), (VariableDescriptor) null); //
 
         String script2 = "var paul = Variable.find(gameModel, \"paul\");\n"
-                + "var paulI = paul.getInstance(self);\n"
-                + "var task = Variable.find(gameModel, \"task\");\n"
-                + "var taskI = task.getInstance(self);\n"
-                + "ResourceFacade.removeAssignment(ResourceFacade.findAssignment(paulI.getId(), taskI.getId()).getId());\n";
+            + "var paulI = paul.getInstance(self);\n"
+            + "var task = Variable.find(gameModel, \"task\");\n"
+            + "var taskI = task.getInstance(self);\n"
+            + "ResourceFacade.removeAssignment(ResourceFacade.findAssignment(paulI.getId(), taskI.getId()).getId());\n";
 
-        scriptFacade.eval(player, new Script("javascript", script2), null);
+        scriptFacade.eval(player, new Script("javascript", script2), (VariableDescriptor) null);
 
         // Clean
         variableDescriptorFacade.remove(res.getId());
@@ -767,8 +768,8 @@ variableDescriptorFacade.remove(task2.getId());
         resourceFacade.createActivity(res.getInstance(player).getId(), task.getInstance(player).getId());
 
         assertEquals(
-                ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getActivities().get(0).getTaskInstance(),
-                task.getInstance(player));
+            ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getActivities().get(0).getTaskInstance(),
+            task.getInstance(player));
 
         // Clean
         variableDescriptorFacade.remove(res.getId());
@@ -791,8 +792,8 @@ variableDescriptorFacade.remove(task2.getId());
         resourceFacade.addOccupation(res.getInstance(player).getId(), false, 1);
 
         assertEquals(
-                ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getOccupations().get(0).getResourceInstance(),
-                res.getInstance(player));
+            ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getOccupations().get(0).getResourceInstance(),
+            res.getInstance(player));
 
         // Clean
         variableDescriptorFacade.remove(res.getId());
@@ -813,8 +814,8 @@ variableDescriptorFacade.remove(task2.getId());
         resourceFacade.addOccupation(res.getInstance(player).getId(), true, 1);
 
         assertEquals(
-                ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getOccupations().get(0).getResourceInstance(),
-                res.getInstance(player));
+            ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getOccupations().get(0).getResourceInstance(),
+            res.getInstance(player));
 
         // Clean
         variableDescriptorFacade.remove(res.getId());
@@ -913,8 +914,8 @@ variableDescriptorFacade.remove(task2.getId());
         resourceFacade.moveAssignment(assignment.getId(), 0);
 
         assertEquals(
-                ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getId(),
-                assignment.getId());
+            ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getId(),
+            assignment.getId());
 
         // Clean
         variableDescriptorFacade.remove(res.getId());
@@ -946,7 +947,7 @@ variableDescriptorFacade.remove(task2.getId());
 
         //test on work variable because if it match, requierements work.
         assertEquals(((TaskInstance) variableInstanceFacade.find(task.getInstance(player).getId())).getRequirements().get(0).getWork(),
-                requirement.getWork());
+            requirement.getWork());
 
         // Clean
         variableDescriptorFacade.remove(task.getId());

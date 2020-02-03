@@ -41,7 +41,7 @@ public class MessageFacadeTest extends AbstractArquillianTest {
     @Inject
     private ScriptController scriptController;
 
-    private void exec(Player player,  String script) throws NamingException{
+    private void exec(Player player, String script) throws NamingException {
         final Script s = new Script();
         s.setLanguage("JavaScript");
         s.setContent(script);
@@ -70,7 +70,6 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         //NPE
         this.exec(player, "Variable.find(gameModel, \"inbox\").sendMessage(self, \"from5\", \"date\", \"subject\", \"body\", \"token\", [\"att1\"]);");
         this.exec(player, "Variable.find(gameModel, \"inbox\").sendDatedMessage(self, \"from6\", \"date\", \"subject\", \"body\", [\"att\"]);");
-
 
         //get inbox
         VariableDescriptor vd = variableDescriptorFacade.find(player.getGameModel(), "inbox");
@@ -106,7 +105,7 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(
-                new Script("print(\"sending\");var inbox = Variable.find(" + inbox.getId() + "); inbox.sendMessage(self, \"test\", \"test\", \"test\");"));
+            new Script("print(\"sending\");var inbox = Variable.find(" + inbox.getId() + "); inbox.sendMessage(self, \"test\", \"test\", \"test\");"));
         variableDescriptorFacade.create(scenario.getId(), trigger);
 
         // Reset
@@ -137,8 +136,8 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setPostTriggerEvent(
-                new Script("Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg1\");\n"
-                        + "Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg2\");\n"));
+            new Script("Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg1\");\n"
+                + "Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg2\");\n"));
         variableDescriptorFacade.create(scenario.getId(), trigger);
 
         // Reset
@@ -148,7 +147,7 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         // Test
         assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
         assertEquals("msg2", ii.getMessages().get(0).getBody().translateOrEmpty(player));
-        scriptFacade.eval(player, new Script("Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg out\");"), null);
+        scriptFacade.eval(player, new Script("Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg out\");"), (VariableDescriptor) null);
         // Clean up
         variableDescriptorFacade.remove(inbox.getId());
         variableDescriptorFacade.remove(trigger.getId());
@@ -175,7 +174,7 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         trigger.setOneShot(false);
         trigger.setDisableSelf(false);
         trigger.setPostTriggerEvent(
-                new Script("Variable.find(gameModel, 'inbox').sendDatedMessage(self, \"test\", \"now\" ,\"test\", \"msg1\", []);\n"));
+            new Script("Variable.find(gameModel, 'inbox').sendDatedMessage(self, \"test\", \"now\" ,\"test\", \"msg1\", []);\n"));
         variableDescriptorFacade.create(scenario.getId(), trigger);
 
         TriggerDescriptor trig = new TriggerDescriptor();
@@ -184,7 +183,7 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         trig.setOneShot(false);
         trig.setDisableSelf(false);
         trig.setPostTriggerEvent(
-                new Script("Variable.find(gameModel, 'inbox').sendDatedMessage(self, \"test\", \"now\" ,\"test\", \"msg2\", []);\n"));
+            new Script("Variable.find(gameModel, 'inbox').sendDatedMessage(self, \"test\", \"now\" ,\"test\", \"msg2\", []);\n"));
         variableDescriptorFacade.create(scenario.getId(), trig);
 
         gameModelFacade.reset(scenario.getId());
@@ -212,12 +211,12 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.flush();
 
         String script = "var inbox = Variable.find(gameModel, \"inbox\");"
-                + "var inbox2 = Variable.find(gameModel, \"inbox\");"
-                + "var inbox3 = Variable.find(gameModel, \"inbox\");"
-                + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
-                + "inbox2.sendMessage(self, \"test\", \"test\", \"test\");\n"
-                + "inbox3.sendMessage(self, \"test\", \"test\", \"test\");\n";
-        scriptFacade.eval(player, new Script("javascript", script), null);
+            + "var inbox2 = Variable.find(gameModel, \"inbox\");"
+            + "var inbox3 = Variable.find(gameModel, \"inbox\");"
+            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
+            + "inbox2.sendMessage(self, \"test\", \"test\", \"test\");\n"
+            + "inbox3.sendMessage(self, \"test\", \"test\", \"test\");\n";
+        scriptFacade.eval(player, new Script("javascript", script), (VariableDescriptor) null);
 
         variableDescriptorFacade.flush();
         // Test
@@ -249,11 +248,11 @@ public class MessageFacadeTest extends AbstractArquillianTest {
          */
 
         String script = "var inbox = Variable.find(gameModel, \"inbox\");"
-                + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
-                + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
-                + "var inbox2 = Variable.find(gameModel, \"inbox\");"
-                + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n";
-        scriptFacade.eval(player, new Script("javascript", script), null);
+            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
+            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
+            + "var inbox2 = Variable.find(gameModel, \"inbox\");"
+            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n";
+        scriptFacade.eval(player, new Script("javascript", script), (VariableDescriptor) null);
 
         /*
         ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.eclipse.persistence.logging")).setLevel(Level.WARN);
@@ -291,13 +290,13 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         Long inboxId = inbox.getId();
 
         String script = "var inbox = Variable.find(" + inboxId + ");"
-                + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
-                + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
-                + "var inbox2 = Variable.find(" + inboxId + ");"
-                + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
-                + "var inbox3 = Variable.find(" + inboxId + ");"
-                + "inbox2.sendMessage(self, \"test\", \"test\", \"test\");\n";
-        scriptFacade.eval(player, new Script("javascript", script), null);
+            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
+            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
+            + "var inbox2 = Variable.find(" + inboxId + ");"
+            + "inbox.sendMessage(self, \"test\", \"test\", \"test\");\n"
+            + "var inbox3 = Variable.find(" + inboxId + ");"
+            + "inbox2.sendMessage(self, \"test\", \"test\", \"test\");\n";
+        scriptFacade.eval(player, new Script("javascript", script), (VariableDescriptor) null);
 
         // Test
         assertEquals(4, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());

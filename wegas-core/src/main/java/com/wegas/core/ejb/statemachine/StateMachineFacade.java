@@ -27,15 +27,23 @@ import com.wegas.core.persistence.variable.statemachine.DialogueState;
 import com.wegas.core.persistence.variable.statemachine.DialogueTransition;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.script.CompiledScript;
+import javax.script.ScriptException;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -62,7 +70,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
     private PlayerFacade playerFacade;
 
     @Inject
-    private ScriptFacade scriptManager;
+    private ScriptFacade scriptFacade;
 
     @Inject
     private ScriptEventFacade scriptEvent;
@@ -168,8 +176,8 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                         break; // already have a valid transition
                     }
                     if (transition instanceof DialogueTransition
-                            && ((DialogueTransition) transition).getActionText() != null
-                            && !((DialogueTransition) transition).getActionText().translateOrEmpty(player).isEmpty()) {                 // Dialogue, don't eval if not null or empty
+                        && ((DialogueTransition) transition).getActionText() != null
+                        && !((DialogueTransition) transition).getActionText().translateOrEmpty(player).isEmpty()) {                 // Dialogue, don't eval if not null or empty
 
                         logger.trace("Ignore dialogue transition (explicit user action is requiered)");
                         continue;
@@ -179,7 +187,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                     } else {
                         try {
                             logger.trace("Eval the condition \"{}\"", transition.getTriggerCondition().getContent());
-                            validTransition = (Boolean) scriptManager.eval(player, transition, sm);
+                            validTransition = (Boolean) scriptFacade.eval(player, transition, sm);
                             //validTransition = (Boolean) scriptManager.eval(player, transition.getTriggerCondition(), sm);
                             logger.trace("Eval result: {}", validTransition);
                         } catch (EJBException ex) {
@@ -198,7 +206,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                     if (validTransition == null) {
                         logger.trace("Condition return null !");
                         throw WegasErrorMessage.error("Please review condition [" + sm.getLabel() + "]:\n"
-                                + transition.getTriggerCondition().getContent());
+                            + transition.getTriggerCondition().getContent());
                     } else if (validTransition) {
                         logger.trace("Valid transition found");
                         if (passedTransitions.contains(transition)) {
@@ -243,7 +251,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                 scripts.add(fsmi.getCurrentState().getOnEnterEvent());
 
                 try {
-                    scriptManager.eval(player, scripts, fsmi.getDescriptor());
+                    scriptFacade.eval(player, scripts, fsmi.getDescriptor());
                 } catch (WegasScriptException ex) {
                     ex.setScript("StateMachines impacts");
                     requestManager.addException(ex);
@@ -254,7 +262,298 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
             steps = this.doSteps(player, passedTransitions, stateMachineDescriptors, steps);
         }
         return steps;
+    }
 
+    private Integer loop_doSteps(Player player, List<AbstractTransition> passedTransitions, List<AbstractStateMachineDescriptor> stateMachineDescriptors) throws WegasScriptException {
+        int steps = 0;
+
+        boolean loop;
+        do {
+            loop = false;
+            Map<StateMachineInstance, AbstractTransition> selectedTransitions = new HashMap<>();
+
+            StateMachineInstance smi;
+            Boolean validTransition;
+            Boolean transitionPassed = false;
+
+            for (AbstractStateMachineDescriptor sm : stateMachineDescriptors) {
+                logger.trace("Process FSM {}", sm);
+                if (sm != null) {
+                    validTransition = false;
+                    smi = (StateMachineInstance) variableDescriptorFacade.getInstance(sm, player);
+                    AbstractState currentState = smi.getCurrentState();
+                    if (!smi.getEnabled() || currentState == null) { // a state may not be defined : remove statemachine's state when a player is inside that state
+                        continue;
+                    }
+                    for (AbstractTransition transition : (List<AbstractTransition>) currentState.getSortedTransitions()) {
+                        logger.trace("Process FSM Transition {}", transition);
+                        requestManager.getEventCounter().clearCurrents();
+
+                        if (validTransition) {
+                            break; // already have a valid transition
+                        }
+                        if (transition instanceof DialogueTransition
+                            && ((DialogueTransition) transition).getActionText() != null
+                            && !((DialogueTransition) transition).getActionText().translateOrEmpty(player).isEmpty()) {                 // Dialogue, don't eval if not null or empty
+
+                            logger.trace("Ignore dialogue transition (explicit user action is requiered)");
+                            continue;
+                        } else if (this.isNotDefined(transition.getTriggerCondition())) {
+                            logger.trace("Select This transition (no condition defined)");
+                            validTransition = true;
+                        } else {
+                            try {
+                                logger.trace("Eval the condition \"{}\"", transition.getTriggerCondition().getContent());
+                                validTransition = (Boolean) scriptFacade.eval(player, transition, sm);
+                                //validTransition = (Boolean) scriptFacade.eval(player, transition.getTriggerCondition(), sm);
+                                logger.trace("Eval result: {}", validTransition);
+                            } catch (EJBException ex) {
+                                logger.error("Transition eval exception: FSM {}:{}:{}", sm.getName(), sm.getId(), transition.getTriggerCondition().getContent());
+                                throw ex;
+                            } catch (WegasScriptException ex) {
+                                logger.trace("WegasScriptException: {}", ex);
+                                String script = ex.getScript();
+                                Long stateId = transition.getState().getIndex();
+                                Long nextStateId = transition.getNextStateId();
+                                ex.setScript("Transition from state #" + stateId + " to state #" + nextStateId + " of StateMachine \"" + sm.getLabel() + "\"");
+                                requestManager.addException(ex);
+                                //validTransition still false
+                            }
+                        }
+                        if (validTransition == null) {
+                            logger.trace("Condition return null !");
+                            throw WegasErrorMessage.error("Please review condition [" + sm.getLabel() + "]:\n"
+                                + transition.getTriggerCondition().getContent());
+                        } else if (validTransition) {
+                            logger.trace("Valid transition found");
+                            if (passedTransitions.contains(transition)) {
+                                /* Loop prevention : that player already passed through this transiton */
+                                logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
+                            } else {
+                                requestManager.getEventCounter().acceptCurrent(smi);
+                                passedTransitions.add(transition);
+                                smi.setCurrentStateId(transition.getNextStateId());
+
+                                selectedTransitions.put(smi, transition);
+                                smi.transitionHistoryAdd(transition.getId());
+                                transitionPassed = true;
+                                if (sm instanceof TriggerDescriptor) {
+                                    TriggerDescriptor td = (TriggerDescriptor) sm;
+                                    if (td.isDisableSelf()) {
+                                        smi.setEnabled(false);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (transitionPassed) {
+                /* Apply all selectes transitions at the same time */
+ /* WHAT ? */
+ /*@DIRTY, @TODO : find something else : Running scripts overrides previous state change Only for first Player (resetEvent). */
+ /* Fixed by lib, currently commenting it  @removeme */
+                //            this.getAllStateMachines(player.getGameModel());
+                logger.trace("Walk Selected Transitions");
+
+                for (Map.Entry<StateMachineInstance, AbstractTransition> entry : selectedTransitions.entrySet()) {
+
+                    StateMachineInstance fsmi = entry.getKey();
+                    AbstractTransition transition = entry.getValue();
+                    List<Script> scripts = new ArrayList<>();
+
+                    scripts.add(transition.getPreStateImpact());
+                    scripts.add(fsmi.getCurrentState().getOnEnterEvent());
+                    loop = true;
+
+                    try {
+                        scriptFacade.eval(player, scripts, fsmi.getDescriptor());
+                    } catch (WegasScriptException ex) {
+                        ex.setScript("StateMachines impacts");
+                        requestManager.addException(ex);
+                        logger.warn("Script failed ", ex);
+                    }
+                }
+            }
+        } while (loop);
+        return steps;
+    }
+
+    public static final class TransitionParam {
+
+        private final AbstractStateMachineDescriptor fsm;
+        private final StateMachineInstance fsmInstance;
+        private final AbstractTransition transition;
+        private final String condition;
+
+        private Map<String, Integer> counters;
+
+        public TransitionParam(AbstractStateMachineDescriptor fsm, StateMachineInstance fsmInstance, AbstractTransition transition, String condition) {
+            this.fsm = fsm;
+            this.fsmInstance = fsmInstance;
+            this.transition = transition;
+            this.condition = condition;
+        }
+
+        public String getCondition() {
+            return condition;
+        }
+
+        public Map<String, Integer> getCounters() {
+            return counters;
+        }
+
+        public void setCounters(Map<String, Integer> counters) {
+            this.counters = counters;
+        }
+
+        public AbstractStateMachineDescriptor getFsm() {
+            return fsm;
+        }
+
+        public StateMachineInstance getFsmInstance() {
+            return fsmInstance;
+        }
+
+        public AbstractTransition getTransition() {
+            return transition;
+        }
+    }
+
+    private static CompiledScript scriptHelper = null;
+
+    private void loadHelper(Player player) {
+
+        if (this.scriptHelper == null) {
+            InputStream resourceAsStream = this.getClass().getResourceAsStream("/helpers/stateMachineHelper.js");
+            InputStreamReader isr = new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8);
+            try {
+                this.scriptHelper = scriptFacade.compile(isr);
+            } catch (ScriptException ex) {
+                throw new WegasScriptException("StageMachineHelper error");
+            }
+        }
+
+        scriptFacade.eval(player, this.scriptHelper);
+    }
+
+    /**
+     * Eval all current ransition in one big eval
+     * @param player
+     * @param passedTransitions
+     * @param stateMachineDescriptors
+     * @return
+     * @throws WegasScriptException 
+     */
+    private Integer doSteps_oneBigEval(Player player, List<AbstractTransition> passedTransitions, 
+        List<AbstractStateMachineDescriptor> stateMachineDescriptors) throws WegasScriptException {
+        boolean loop;
+        int steps = 0;
+        Map<String, Object> params = new HashMap<>();
+        params.put("EventCounter", requestManager.getEventCounter());
+        loadHelper(player);
+
+        do {
+            loop = false;
+            steps++;
+
+            List<List<TransitionParam>> fsmParam = new ArrayList<>();
+            params.put("stateMachines", fsmParam);
+
+            // First, collect all transition to eval
+            for (AbstractStateMachineDescriptor fsmD : stateMachineDescriptors) {
+                if (fsmD != null) {
+                    logger.trace("Process FSM {}", fsmD);
+
+                    StateMachineInstance smi = (StateMachineInstance) variableDescriptorFacade.getInstance(fsmD, player);
+                    AbstractState currentState = smi.getCurrentState();
+
+                    // a state may not be defined : remove statemachine's state when a player is inside that state
+                    if (smi.getEnabled() && currentState != null) {
+
+                        List<TransitionParam> transitions = new ArrayList<>();
+                        for (AbstractTransition transition : (List<AbstractTransition>) currentState.getSortedTransitions()) {
+                            logger.trace("Process FSM Transition {}", transition);
+
+                            if (transition instanceof DialogueTransition
+                                && ((DialogueTransition) transition).getActionText() != null
+                                && !((DialogueTransition) transition).getActionText().translateOrEmpty(player).isEmpty()) {
+                                // Dialogue, don't eval if not null or empty
+                            } else if (this.isNotDefined(transition.getTriggerCondition())) {
+                                transitions.add(new TransitionParam(fsmD, smi, transition, "true"));
+                            } else {
+                                transitions.add(new TransitionParam(fsmD, smi, transition, transition.getTriggerCondition().getContent()));
+                            }
+                        }
+
+                        if (!transitions.isEmpty()) {
+                            fsmParam.add(transitions);
+                        }
+                    }
+                }
+
+            }
+
+            if (!fsmParam.isEmpty()) {
+                try {
+                    Script script = new Script("FSMHelper.evalTransitions()");
+
+                    ScriptObjectMirror selectedTransitions = (ScriptObjectMirror) scriptFacade.eval(player, script, params);
+                    if (selectedTransitions.isArray()) {
+                        for (Object item : selectedTransitions.values()) {
+                            if (item instanceof TransitionParam) {
+                                TransitionParam selectedTransition = (TransitionParam) item;
+                                AbstractTransition transition = selectedTransition.getTransition();
+
+                                logger.trace("Valid transition found: {}", selectedTransition);
+                                if (passedTransitions.contains(selectedTransition.getTransition())) {
+                                    /* Loop prevention : that player already passed through this transiton */
+                                    logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
+                                } else {
+                                    loop = true;
+                                    AbstractStateMachineDescriptor sm = selectedTransition.getFsm();
+                                    StateMachineInstance smi = selectedTransition.getFsmInstance();
+
+                                    requestManager.getEventCounter().acceptCurrent(smi, selectedTransition.getCounters());
+                                    passedTransitions.add(transition);
+                                    smi.setCurrentStateId(transition.getNextStateId());
+
+                                    smi.transitionHistoryAdd(transition.getId());
+
+                                    if (sm instanceof TriggerDescriptor) {
+                                        TriggerDescriptor td = (TriggerDescriptor) sm;
+                                        if (td.isDisableSelf()) {
+                                            smi.setEnabled(false);
+                                        }
+                                    }
+
+                                    List<Script> scripts = new ArrayList<>();
+
+                                    scripts.add(transition.getPreStateImpact());
+                                    scripts.add(smi.getCurrentState().getOnEnterEvent());
+
+                                    try {
+                                        scriptFacade.eval(player, scripts, sm);
+                                    } catch (WegasScriptException ex) {
+                                        ex.setScript("StateMachines impacts");
+                                        requestManager.addException(ex);
+                                        logger.warn("Script failed ", ex);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (EJBException ex) {
+                    //logger.error("Transition eval exception: FSM {}:{}:{}", sm.getName(), sm.getId(), transition.getTriggerCondition().getContent());
+                    throw ex;
+                } catch (WegasScriptException ex) {
+                    requestManager.addException(ex);
+                    //validTransition still false
+                }
+            }
+        } while (loop);
+
+        return steps;
     }
 
     /**
@@ -266,7 +565,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
      */
     private Boolean isNotDefined(Script script) {
         return script == null || script.getContent() == null
-                || script.getContent().equals("");
+            || script.getContent().equals("");
     }
 
     public StateMachineInstance doTransition(Long gameModelId, Long playerId, Long stateMachineDescriptorId, Long transitionId) {
@@ -284,7 +583,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
             AbstractTransition aTransition = findTransition(transitionId);
 
             if (aTransition instanceof DialogueTransition
-                    && currentState.equals(aTransition.getState())) {
+                && currentState.equals(aTransition.getState())) {
                 DialogueTransition transition = (DialogueTransition) aTransition;
 
                 if (isTransitionValid(transition, playerId, dd)) {
@@ -301,7 +600,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                     if (fsmI.getCurrentState().getOnEnterEvent() != null) {
                         impacts.add(fsmI.getCurrentState().getOnEnterEvent());
                     }
-                    scriptManager.eval(player, impacts, fsmD);
+                    scriptFacade.eval(player, impacts, fsmD);
 
                     try {
                         scriptEvent.fire(player, "dialogueResponse", new TransitionTraveled(dd, fsmI, transition, currentState, nextState));
@@ -313,6 +612,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
             }
         }
         return fsmI;
+
     }
 
     /**
@@ -327,10 +627,10 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
         final public DialogueState to;
 
         private TransitionTraveled(DialogueDescriptor descriptor,
-                StateMachineInstance instance,
-                DialogueTransition transition,
-                DialogueState from,
-                DialogueState to) {
+            StateMachineInstance instance,
+            DialogueTransition transition,
+            DialogueState from,
+            DialogueState to) {
             this.descriptor = descriptor;
             this.instance = instance;
             this.transition = transition;
@@ -355,7 +655,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
         boolean valid = true;
 
         if (transition.getTriggerCondition() != null && !transition.getTriggerCondition().getContent().equals("")) {
-            valid = (Boolean) scriptManager.eval(playerId, transition.getTriggerCondition(), context);
+            valid = (Boolean) scriptFacade.eval(playerId, transition.getTriggerCondition(), context);
         }
         return valid;
     }
