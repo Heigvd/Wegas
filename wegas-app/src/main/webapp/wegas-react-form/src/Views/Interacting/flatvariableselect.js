@@ -17,6 +17,7 @@ function genChoices(items, level, maxLevel, classFilter, selectable) {
     if (level <= maxLevel) {
         items.forEach(i => {
             if (i.get('@class') === 'ListDescriptor' ||
+                i.get('@class') === 'QuestionDescriptor' ||
                 i.get('@class') === 'WhQuestionDescriptor') {
                 const newItems = genChoices(
                     i.get('items'),
