@@ -241,8 +241,8 @@ const global: Reducer<Readonly<GlobalState>> = u(
         state.methods = {
           ...state.methods,
           [action.payload.name]: {
-            types: action.payload.types,
-            array: action.payload.array,
+            returnTypes: action.payload.returnTypes,
+            returnStyle: action.payload.returnStyle,
             method: action.payload.method,
           },
         };
@@ -576,10 +576,10 @@ export function searchUsage(
  */
 export const setMethod = (
   name: GlobalMethodPayload['name'],
-  types: GlobalMethodPayload['types'],
-  array: GlobalMethodPayload['array'],
+  types: GlobalMethodPayload['returnTypes'],
+  array: GlobalMethodPayload['returnStyle'],
   method: GlobalMethodPayload['method'],
-) => ActionCreator.EDITOR_SET_METHOD({ name, types, array, method });
+) => ActionCreator.EDITOR_SET_METHOD({ name, returnTypes: types, returnStyle: array, method });
 
 /**
  * setSchema - Sets a custom view for WegasEntities in form components

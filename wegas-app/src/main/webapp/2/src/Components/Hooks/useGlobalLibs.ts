@@ -16,12 +16,15 @@ import methodGlobalSrc from '!!raw-loader!../../../types/scripts/MethodGlobals.d
 import schemaGlobalSrc from '!!raw-loader!../../../types/scripts/SchemaGlobals.d.ts';
 // @ts-ignore
 import classesGlobalSrc from '!!raw-loader!../../../types/scripts/ClassesGlobals.d.ts';
+// @ts-ignore
+import serverMethodsSrc from '!!raw-loader!../../../types/scripts/ServerMethods.d.ts';
+
 import { refDifferent } from './storeHookFactory';
 
 // We'll keep it for later uses
 // const cleanLib = (libSrc: string) => libSrc.replace(/^(export )/gm, '');
 
-export function useGlobalLibs(clientScript?: boolean) {
+export function useGlobalLibs() {
   const globalLibs = React.useRef<MonacoDefinitionsLibraries[]>([]);
   const { classes } = React.useContext(classesCTX);
 
@@ -67,10 +70,12 @@ export function useGlobalLibs(clientScript?: boolean) {
         interface GlobalMethods {\n${Object.keys(globalMethods).reduce(
           (s, k) => {
             const method = globalMethods[k];
-            const isArray = method.array === 'array';
+            const isArray = method.returnStyle === 'array';
             return (
               s +
-              `'${k}' : () => ${isArray ? ' (' : ' '} ${method.types.reduce(
+              `'${k}' : () => ${
+                isArray ? ' (' : ' '
+              } ${method.returnTypes.reduce(
                 (s, t, i) => s + (i > 0 ? ' | ' : '') + t,
                 '',
               )} ${isArray ? ')[]' : ''};\n`
@@ -78,9 +83,7 @@ export function useGlobalLibs(clientScript?: boolean) {
           },
           '',
         )}}
-        interface MethodClass ${
-          clientScript ? 'extends GlobalMethodClass ' : ''
-        }{
+        interface MethodClass extends GlobalMethodClass {
           getMethod: <T extends keyof GlobalMethods>(name : T) => GlobalMethods[T];
         }
         declare const Methods : MethodClass
@@ -89,9 +92,7 @@ export function useGlobalLibs(clientScript?: boolean) {
           (s, k) => s + `\n  | '${k}'`,
           '',
         )}}
-        interface SchemaClass ${
-          clientScript ? 'extends GlobalSchemaClass ' : ''
-        }{
+        interface SchemaClass extends GlobalSchemaClass {
           removeSchema: (name: GlobalSchemas) => void;
         }
         declare const Schemas : SchemaClass
@@ -105,7 +106,11 @@ export function useGlobalLibs(clientScript?: boolean) {
           removeClass: (className: GlobalClasses) => void;
         }
         declare const Classes : ClassesClass
-    
+
+        declare const RequestManager : IRequestManager
+        declare const Event : IEvent
+        declare const DelayedEvent : IDelayedEvent
+
         `;
   }, refDifferent);
 
@@ -118,6 +123,7 @@ export function useGlobalLibs(clientScript?: boolean) {
             ${methodGlobalSrc}\n
             ${schemaGlobalSrc}\n
             ${classesGlobalSrc}\n
+            ${serverMethodsSrc}\n
             ${libs}\n
           `,
         name: 'VariablesTypes.d.ts',

@@ -4,7 +4,9 @@ import {
 } from '../../../Editor/Components/FormView/Script/Script';
 import { TYPESTRING } from 'jsoninput/typings/types';
 import { DEFINED_VIEWS } from '../../../Editor/Components/FormView';
-import { WegasMethod } from '../../../Editor/editionConfig';
+import { WegasMethod, WegasTypeString } from '../../../Editor/editionConfig';
+import { Item } from '../../../Editor/Components/FormView/TreeVariableSelect';
+import { emptyStatement, Statement } from '@babel/types';
 
 type SchemaPrimitive =
   | 'boolean'
@@ -235,10 +237,10 @@ export const schemaProps = {
     label?: string,
     required: boolean = true,
     classFilter: WegasClassNames[] = [],
-    scriptable: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
+    items?: Item[],
   ) => ({
     required,
     type: 'string',
@@ -248,9 +250,32 @@ export const schemaProps = {
       classFilter,
       featureLevel,
       label,
-      scriptable,
       type: 'variableselect',
       layout,
+      items,
+    },
+  }),
+  tree: (
+    label?: string,
+    items?: Item[],
+    required: boolean = true,
+    classFilter: WegasClassNames[] = [],
+    type: WegasTypeString = 'string',
+    featureLevel: FeatureLevel = 'DEFAULT',
+    index: number = 0,
+    layout?: SchemaLayout,
+  ) => ({
+    required,
+    type,
+    index,
+    view: {
+      index,
+      classFilter,
+      featureLevel,
+      label,
+      type: 'treeselect',
+      layout,
+      items,
     },
   }),
   scriptVariable: (
@@ -315,6 +340,7 @@ export const schemaProps = {
     required: boolean = true,
     scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
     mode: ScriptMode = 'SET',
+    value: Statement = emptyStatement(),
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
@@ -322,6 +348,7 @@ export const schemaProps = {
     required,
     type: 'object',
     index,
+    value,
     view: {
       index,
       featureLevel,

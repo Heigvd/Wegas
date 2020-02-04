@@ -137,6 +137,14 @@ export function useGlobals() {
   };
 }
 
+export function safeClientTSScriptEval<ReturnValue>(script: string) {
+  try {
+    return clientScriptEval<ReturnValue>(ts.transpile(script));
+  } catch (e) {
+    return undefined;
+  }
+}
+
 export function clientScriptEval<ReturnValue>(script: string) {
   return (
     ((sandbox.contentWindow as unknown) as {

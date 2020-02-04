@@ -15,6 +15,7 @@ import { Code } from './Code';
 import {
   TreeVariableSelect,
   ScripableVariableSelect,
+  TreeVSelect,
 } from './TreeVariableSelect';
 import translatable from './translatable';
 import EntityArrayFieldSelect from './EntityArrayFieldSelect';
@@ -50,6 +51,7 @@ export const DEFINED_VIEWS = {
   statement: StatementView,
   listchildren: ListChildrenSelectView,
   listchildrennull: ListChildrenNullSelectView,
+  treeselect: TreeVSelect,
 };
 setDefaultWidgets(DEFINED_VIEWS);
 

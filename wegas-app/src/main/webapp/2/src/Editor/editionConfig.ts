@@ -22,10 +22,25 @@ export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 
 export type WegasTypeString = TYPESTRING | 'identifier';
 
-export interface WegasMethodParameter {
-  type?: WegasTypeString | WegasTypeString[];
-  view: AvailableViews;
-}
+// export interface WegasMethodParameter{
+//   type?: WegasTypeString | WegasTypeString[];
+//   value?: unknown;
+//   const?: unknown;
+//   properties?: {props:string]:SimpleSchema};
+//   required?: boolean;
+//   view: AvailableViews;
+// }
+
+export type WegasMethodParameter = {
+  type:
+    | 'string'
+    | 'number'
+    | 'array'
+    | 'object'
+    | 'boolean'
+    | 'identifier'
+    | 'null';
+} & Schema<AvailableViews>;
 
 export const wegasMethodReturnValues = ['number', 'string', 'boolean'] as const;
 
@@ -40,7 +55,7 @@ export function isWegasMethodReturnType(
 export interface WegasMethod {
   label: string;
   parameters: WegasMethodParameter[];
-  returns: WegasMethodReturnType;
+  returns?: WegasMethodReturnType;
 }
 
 export interface MethodConfig {

@@ -28,7 +28,6 @@ import {
   ObjectExpression,
   objectExpression,
   objectProperty,
-  emptyStatement,
 } from '@babel/types';
 import generate from '@babel/generator';
 import {
@@ -55,13 +54,18 @@ import { parse } from '@babel/parser';
 import { omit } from 'lodash';
 import { IconButton } from '../../../../Components/Inputs/Button/IconButton';
 import { MessageString } from '../../MessageString';
-import { wlog } from '../../../../Helper/wegaslog';
 import { TYPESTRING, WidgetProps } from 'jsoninput/typings/types';
 import { themeVar } from '../../../../Components/Theme';
-import { VariableDescriptor } from '../../../../data/selectors';
+import { GameModel } from '../../../../data/selectors';
 import { isStatement } from '@babel/types';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { LabeledView, Labeled } from '../labeled';
+import { SCRIPTS, getGlobalMethodConfig } from './globalMethods';
+import { genVarItems, StringOrT } from '../TreeVariableSelect';
+import { useStore } from '../../../../data/store';
+import { safeClientTSScriptEval } from '../../../../Components/Hooks/useScript';
+import { Item } from '../../Tree/TreeSelect';
+import { pick } from 'lodash-es';
 
 const expressionEditorStyle = css({
   backgroundColor: themeVar.primaryHoverColor,
@@ -103,7 +107,7 @@ type ImpactStatement = Statement & {
   expression: ImpactExpression;
 };
 
-const isVariableMethodStatement = (
+const isImpactStatement = (
   statement: Expression | Statement,
 ): statement is ImpactStatement =>
   isExpressionStatement(statement) &&
@@ -159,7 +163,7 @@ const isConditionStatement = (
 ): statement is ConditionStatement =>
   isExpressionStatement(statement) &&
   isBinaryExpression(statement.expression) &&
-  isVariableMethodStatement({
+  isImpactStatement({
     ...statement,
     type: 'ExpressionStatement',
     expression: statement.expression.left,
@@ -242,6 +246,22 @@ const variableToASTNode = (
   }
 };
 
+const generateExpressionWithInitValue = (value: string) => {
+  const parsedStatements = parse(value, {
+    sourceType: 'script',
+  }).program.body;
+  if (parsedStatements.length > 0) {
+    const parsedStatement = parsedStatements[0];
+    if (isExpressionStatement(parsedStatement)) {
+      const parsedExpression = parsedStatement.expression;
+      if (isCallExpression(parsedExpression)) {
+        return parsedExpression;
+      }
+    }
+  }
+  return callExpression();
+};
+
 const generateImpactExpression = (
   scriptAttributes: IForcedAttributes,
   schemaAttributes: IArgumentSchemaAtributes,
@@ -249,10 +269,7 @@ const generateImpactExpression = (
 ) => {
   return callExpression(
     memberExpression(
-      callExpression(
-        memberExpression(identifier('Variable'), identifier('find')),
-        [identifier('gameModel'), stringLiteral(scriptAttributes.variableName)],
-      ),
+      generateExpressionWithInitValue(scriptAttributes.initExpression.script),
       identifier(scriptAttributes.methodName),
     ),
     Object.keys(
@@ -327,19 +344,23 @@ const filterOperators = (
       value: k,
     }));
 
-interface IForcedAttributes {
+type EpressionType = 'variable' | 'global';
+
+interface IParameterAttributes {
   [param: number]: unknown;
-  variableName: string;
+}
+
+interface IForcedAttributes extends IParameterAttributes {
+  initExpression: ScriptItemValue;
   methodName: string;
 }
 
-interface IAttributes {
-  [param: number]: unknown;
-  variableName?: string;
+interface IAttributes extends IParameterAttributes {
+  initExpression?: ScriptItemValue;
   methodName?: string;
 }
 const defaultAttributes: IAttributes = {
-  variableName: undefined,
+  initExpression: undefined,
   methodName: undefined,
 };
 
@@ -419,14 +440,25 @@ interface IArgumentSchemaAtributes {
     oldType: WegasTypeString;
   };
 }
-interface ISchemaAttributes extends IArgumentSchemaAtributes {
-  variableName: ReturnType<typeof schemaProps['variable']>;
+interface IInitSchemaAttributes extends IArgumentSchemaAtributes {
+  initExpression: ReturnType<typeof schemaProps['tree']>;
+}
+
+interface ISchemaAttributes extends IInitSchemaAttributes {
   methodName: ReturnType<typeof schemaProps['select']>;
 }
 interface IConditionSchemaAttributes extends ISchemaAttributes {
   operator: ReturnType<typeof schemaProps['select']>;
   comparator: ReturnType<typeof schemaProps['custom']>;
 }
+interface IUnknownSchema {
+  description: string;
+  properties:
+    | IInitSchemaAttributes
+    | ISchemaAttributes
+    | IConditionSchemaAttributes;
+}
+
 const isConditionSchemaAttributes = (
   schemaAttributes: ISchemaAttributes | IConditionSchemaAttributes,
 ): schemaAttributes is IConditionSchemaAttributes => {
@@ -435,88 +467,159 @@ const isConditionSchemaAttributes = (
     (schemaAttributes as unknown) as IAttributes | IConditionAttributes,
   );
 };
+function genGlobalItems<T = string>(
+  mode?: ScriptMode,
+  decorateFn?: (value: string) => T,
+): Item<StringOrT<typeof decorateFn, T>>[] {
+  return Object.entries(SCRIPTS[mode === 'GET' ? 'condition' : 'impact']).map(
+    ([k, v]) => ({
+      label: v.label,
+      value: decorateFn ? decorateFn(k) : k,
+    }),
+  );
+}
 
-const makeShema = (
-  methods: MethodConfig,
+interface ScriptItemValue {
+  type: EpressionType;
+  script: string;
+}
+
+const makeItems: (value: string, type: EpressionType) => ScriptItemValue = (
+  value,
+  type,
+) => ({
+  type,
+  script: type === 'global' ? value : `Variable.find(gameModel,'${value}')`,
+});
+
+const makeSchemaInitExpression = (
+  variableIds: number[],
+  mode?: ScriptMode,
+  scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
+) => ({
+  initExpression: schemaProps.tree(
+    undefined,
+    [
+      {
+        label: 'Variables',
+        items: genVarItems(
+          variableIds,
+          undefined,
+          scriptableClassFilter,
+          value => makeItems(value, 'variable'),
+        ),
+        value: 'Variables',
+        selectable: false,
+      },
+      {
+        label: 'Global methods',
+        items: genGlobalItems(mode, value => makeItems(value, 'global')),
+        value: 'Global methods',
+        selectable: false,
+      },
+    ],
+    false,
+    undefined,
+    'object',
+    'DEFAULT',
+    0,
+    'inline',
+  ),
+});
+
+const makeSchemaParameters = (
+  parameters: WegasMethodParameter[],
+  index: number,
+) =>
+  parameters.reduce(
+    (o, p, i) => ({
+      ...o,
+      [i]: {
+        ...p,
+        index: index + i,
+        type: p.type === 'identifier' ? 'string' : p.type,
+        oldType: p.type,
+        view: {
+          ...p.view,
+          index: index + i,
+          layout: 'inline',
+        },
+      },
+    }),
+    {},
+  );
+
+const makeGlobalMethodSchema = (
+  variableIds: number[],
   scriptMethod?: WegasMethod,
   mode?: ScriptMode,
   scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
 ): {
   description: string;
-  properties: ISchemaAttributes | IConditionSchemaAttributes;
-} => {
-  return {
-    description: 'scriptExpressionSchema',
-    properties: {
-      variableName: schemaProps.variable(
-        undefined,
-        false,
-        undefined,
-        false,
-        'DEFAULT',
-        0,
-        'inline',
-      ),
-      methodName: schemaProps.select(
-        undefined,
-        false,
-        Object.keys(methods).map(k => ({
-          label: methods[k].label,
-          value: k,
-        })),
-        'string',
-        'DEFAULT',
-        1,
-        'inline',
-      ),
-      ...(scriptMethod
-        ? scriptMethod.parameters.reduce(
-            (o, p, i) => ({
-              ...o,
-              [i]: {
-                ...p,
-                index: 2 + i,
-                type: p.type === 'identifier' ? 'string' : p.type,
-                oldType: p.type,
-                view: {
-                  ...p.view,
-                  index: 2 + i,
-                  layout: 'inline',
-                },
-              },
-            }),
-            {},
-          )
-        : {}),
-      ...(scriptMethod && isScriptCondition(mode, scriptableClassFilter)
-        ? {
-            operator: schemaProps.select(
-              undefined,
-              false,
-              filterOperators(scriptMethod.returns),
-              'string',
-              'DEFAULT',
-              scriptMethod.parameters.length + 2,
-              'inline',
-            ),
-            comparator: schemaProps.custom(
-              undefined,
-              false,
-              scriptMethod.returns,
-              scriptMethod.returns,
-              undefined,
-              scriptMethod.parameters.length + 3,
-              'inline',
-            ),
-          }
-        : {}),
-    },
-  };
-};
+  properties: IInitSchemaAttributes;
+} => ({
+  description: 'GlobalMethodSchema',
+  properties: {
+    ...makeSchemaInitExpression(variableIds, mode, scriptableClassFilter),
+    ...(scriptMethod ? makeSchemaParameters(scriptMethod.parameters, 1) : {}),
+  },
+});
+
+const makeVariableMethodSchema = (
+  variableIds: number[],
+  methods?: MethodConfig,
+  scriptMethod?: WegasMethod,
+  mode?: ScriptMode,
+  scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
+): IUnknownSchema => ({
+  description: 'VariableMethodSchema',
+  properties: {
+    ...makeSchemaInitExpression(variableIds, mode, scriptableClassFilter),
+    ...(methods && Object.keys(methods).length > 0
+      ? {
+          methodName: schemaProps.select(
+            undefined,
+            false,
+            Object.keys(methods).map(k => ({
+              label: methods[k].label,
+              value: k,
+            })),
+            'string',
+            'DEFAULT',
+            1,
+            'inline',
+          ),
+        }
+      : {}),
+    ...(scriptMethod ? makeSchemaParameters(scriptMethod.parameters, 2) : {}),
+    ...(scriptMethod && isScriptCondition(mode, scriptableClassFilter)
+      ? {
+          operator: schemaProps.select(
+            undefined,
+            false,
+            filterOperators(scriptMethod.returns),
+            'string',
+            'DEFAULT',
+            scriptMethod.parameters.length + 2,
+            'inline',
+          ),
+          comparator: schemaProps.custom(
+            undefined,
+            false,
+            scriptMethod.returns,
+            scriptMethod.returns,
+            undefined,
+            scriptMethod.parameters.length + 3,
+            'inline',
+          ),
+        }
+      : {}),
+  },
+});
 
 interface ExpressionEditorState {
   attributes?: IAttributes | IConditionAttributes;
-  schema?: ReturnType<typeof makeShema>;
+  schema?: ReturnType<typeof makeVariableMethodSchema>;
   statement?: Statement;
 }
 
@@ -524,7 +627,6 @@ interface ExpressionEditorProps extends ScriptView {
   statement: Statement;
   id?: string;
   onChange?: (expression: Statement | Statement[]) => void;
-  onDelete?: () => void;
 }
 
 export function ExpressionEditor({
@@ -533,21 +635,25 @@ export function ExpressionEditor({
   mode,
   scriptableClassFilter,
   onChange,
-  onDelete,
 }: ExpressionEditorProps) {
-  //const [currentStatement, setCurrentStatement] = React.useState(statement);
   const [error, setError] = React.useState();
   const [srcMode, setSrcMode] = React.useState(false);
   const [newSrc, setNewSrc] = React.useState();
   const [formState, setFormState] = React.useState<ExpressionEditorState>({});
+  const variableIds = useStore(() => GameModel.selectCurrent().itemsIds);
 
   const parseStatement = React.useCallback(
-    (statement: Statement) => {
+    (statement: Statement): IAttributes | IConditionAttributes | undefined => {
       if (!isEmptyStatement(statement)) {
         if (isScriptCondition(mode, scriptableClassFilter)) {
           if (isConditionStatement(statement)) {
             return {
-              variableName: getVariable(statement.expression.left),
+              initExpression: {
+                type: 'variable',
+                script: `Variable.find(gameModel,'${getVariable(
+                  statement.expression.left,
+                )}')`,
+              },
               methodName: getMethodName(statement.expression.left),
               ...getParameters(statement.expression.left),
               operator: getOperator(statement.expression),
@@ -557,9 +663,14 @@ export function ExpressionEditor({
             setError('Cannot be parsed as a condition');
           }
         } else {
-          if (isVariableMethodStatement(statement)) {
+          if (isImpactStatement(statement)) {
             return {
-              variableName: getVariable(statement.expression),
+              initExpression: {
+                type: 'variable',
+                script: `Variable.find(gameModel,'${getVariable(
+                  statement.expression,
+                )}')`,
+              },
               methodName: getMethodName(statement.expression),
               ...getParameters(statement.expression),
             };
@@ -575,7 +686,7 @@ export function ExpressionEditor({
   const generateStatement = React.useCallback(
     (
       attributes: IAttributes | IConditionAttributes,
-      properties: ISchemaAttributes | IConditionSchemaAttributes,
+      properties: IUnknownSchema['properties'],
     ) => {
       try {
         let newStatement;
@@ -613,17 +724,90 @@ export function ExpressionEditor({
     [mode, scriptableClassFilter],
   );
 
-  const computeState = React.useCallback(
+  const finalizeComputation = React.useCallback(
     (
       value: IAttributes | IConditionAttributes | Statement,
-      formErrored?: boolean,
+      attributes: IConditionAttributes,
+      schema: IUnknownSchema,
     ) => {
+      let statement: Statement | undefined;
+
+      // If the statement has just been updated from outside, save it in the state
+      if (isStatement(value)) {
+        statement = value;
+      }
+      // If the statement has just been generated, send via onChange
+      else {
+        statement = generateStatement(attributes, schema.properties);
+        if (statement) {
+          setError(undefined);
+          onChange && onChange(statement);
+          setNewSrc(undefined);
+        }
+      }
+      setFormState({
+        attributes,
+        schema,
+        statement,
+      });
+    },
+    [generateStatement, onChange],
+  );
+
+  const computeParameters = React.useCallback(
+    (
+      newAttributes: IInitSchemaAttributes | IAttributes | IConditionAttributes,
+      schemaProperties: IInitSchemaAttributes,
+      valueIsStatement: boolean,
+    ): IParameterAttributes => {
+      // Getting parameters in the actual form
+      // let parameters = omit(
+      //   newAttributes,
+      //   Object.keys(defaultConditionAttributes),
+      // );
+
+      const parameters: IParameterAttributes = {};
+      Object.keys(schemaProperties).map((k: string) => {
+        const nK = Number(k);
+        // // Removing unused parameters
+        // if (schemaProperties[nK] === undefined) {
+        //   parameters = omit(parameters, k);
+        // }
+        // Do not clean values if they come from an external statement
+        if (!isNaN(nK)) {
+          if (
+            valueIsStatement &&
+            typeof newAttributes[nK] !== schemaProperties[nK].type
+          ) {
+            setError(`Argument ${k} is not of the good type`);
+          } else {
+            // Trying to translate parameter from previous type to new type (undefined if fails)
+            parameters[nK] = typeCleaner(
+              newAttributes[nK],
+              schemaProperties[nK].type as WegasTypeString,
+            );
+          }
+        }
+      });
+      return parameters;
+    },
+    [],
+  );
+
+  const computeState = React.useCallback(
+    (value: IAttributes | IConditionAttributes | Statement) => {
       let testAttributes: IAttributes | IConditionAttributes | undefined;
       let newAttributes: IAttributes | IConditionAttributes;
       let statement: Statement | undefined;
       const valueIsStatement = isStatement(value);
       if (isStatement(value)) {
-        testAttributes = parseStatement(value);
+        if (isEmptyStatement(value)) {
+          testAttributes = isScriptCondition(mode, scriptableClassFilter)
+            ? defaultConditionAttributes
+            : defaultAttributes;
+        } else {
+          testAttributes = parseStatement(value);
+        }
         if (!testAttributes) {
           setError('Statement cannot be parsed');
           return;
@@ -640,131 +824,144 @@ export function ExpressionEditor({
       };
 
       let attributes: IConditionAttributes = {
-        variableName: newAttributes.variableName,
+        initExpression: newAttributes.initExpression,
         methodName: undefined,
         ...newConditionAttributes,
       };
 
-      // Getting variable descriptor and checking if exists
-      const variable = VariableDescriptor.findByName(
-        newAttributes.variableName,
-      );
-      if (variable) {
-        // Getting methods of the descriptor
-        getMethodConfig(variable).then(res => {
-          // Getting allowedMethods and checking if current method exists in allowed methods
-          const allowedMethods = filterMethods(res, mode);
-          if (
-            newAttributes.methodName &&
-            allowedMethods[newAttributes.methodName]
-          ) {
-            attributes.methodName = newAttributes.methodName;
-          } else if (valueIsStatement) {
-            attributes.methodName = newAttributes.methodName;
-            setError('Statement contains unknown method name');
-          }
+      let variable: IVariableDescriptor | undefined;
 
+      if (attributes.initExpression) {
+        if (attributes.initExpression.type === 'global') {
           // Building shema for these methods and selected method (if selected method is undefined then no shema for argument is built)
-          const schema = makeShema(
-            allowedMethods,
-            newAttributes.methodName
-              ? allowedMethods[newAttributes.methodName]
-              : undefined,
+          const schema = makeGlobalMethodSchema(
+            variableIds,
+            getGlobalMethodConfig(
+              attributes.initExpression.script,
+              isScriptCondition(mode, scriptableClassFilter),
+            ),
             mode,
             scriptableClassFilter,
           );
 
-          // Getting parameters in the actual form
-          const parameters = omit(newAttributes, Object.keys(attributes));
-          Object.keys(parameters).map((k: string) => {
-            const nK = Number(k);
-            // Removing unused parameters
-            if (schema.properties[nK] === undefined) {
-              attributes = omit(attributes, k);
-            }
-            //Do not clean values if they come from an external statement
-            else if (
-              valueIsStatement &&
-              typeof newAttributes[nK] !== schema.properties[nK].type
-            ) {
-              setError(`Argument ${k} is not of the good type`);
-            } else {
-              // Trying to translate parameter from previous type to new type (undefined if fails)
-              attributes[nK] = typeCleaner(
-                newAttributes[nK],
-                schema.properties[nK].type as WegasTypeString,
-              );
-            }
-          });
+          attributes = {
+            ...attributes,
+            ...computeParameters(
+              attributes,
+              schema.properties,
+              valueIsStatement,
+            ),
+          };
 
-          // Removing operator to atribute if doesn't exists in shema
-          if (!('operator' in schema.properties)) {
-            if (valueIsStatement && 'operator' in newAttributes) {
-              setError('An impact should not contain an operator');
-              attributes.operator = (newAttributes as IConditionAttributes).operator;
-            } else {
-              attributes = omit(attributes, 'operator');
-            }
-          } else {
-            //Removing operator if not allowed
-            if (
-              !schema.properties.operator.enum.includes(
-                (newAttributes as IConditionAttributes).operator,
-              )
-            ) {
-              if (valueIsStatement) {
-                setError('Operator unknown');
-                attributes.operator = (newAttributes as IConditionAttributes).operator;
-              } else {
-                attributes.operator = undefined;
+          finalizeComputation(value, attributes, schema);
+        } else {
+          variable = safeClientTSScriptEval<IVariableDescriptor>(
+            attributes.initExpression.script,
+          );
+          if (variable) {
+            // Getting methods of the descriptor
+            getMethodConfig(variable).then(res => {
+              // Getting allowedMethods and checking if current method exists in allowed methods
+              const allowedMethods = filterMethods(res, mode);
+              if (
+                newAttributes.methodName &&
+                allowedMethods[newAttributes.methodName]
+              ) {
+                attributes.methodName = newAttributes.methodName;
+              } else if (valueIsStatement) {
+                attributes.methodName = newAttributes.methodName;
+                setError('Statement contains unknown method name');
               }
-            } else {
-              attributes.operator = (newAttributes as IConditionAttributes).operator;
-            }
-          }
 
-          // Removing copmparator to atribute if doesn't exists in shema
-          if (!('comparator' in schema.properties)) {
-            attributes = omit(attributes, 'comparator');
-          }
-          //Do not clean values if they come from an external statement
-          else if (
-            valueIsStatement &&
-            typeof (newAttributes as IConditionAttributes).comparator !==
-              schema.properties.comparator.type
-          ) {
-            setError('Comparator type mismatch');
-          } else {
-            //Trying to translate operator
-            attributes.comparator = typeCleaner(
-              (newAttributes as IConditionAttributes).comparator,
-              schema.properties.comparator.type as WegasTypeString,
-            );
-          }
+              // Building shema for these methods and selected method (if selected method is undefined then no shema for argument is built)
+              const schema = makeVariableMethodSchema(
+                variableIds,
+                allowedMethods,
+                newAttributes.methodName
+                  ? allowedMethods[newAttributes.methodName]
+                  : undefined,
+                mode,
+                scriptableClassFilter,
+              );
 
-          // If the statement has just been updated from outside, save it in the state
-          if (isStatement(value)) {
-            statement = value;
-          }
-          // If the statement has just been generated, send via onChange
-          else {
-            statement = generateStatement(attributes, schema.properties);
-            if (statement) {
-              setError(undefined);
-              onChange && onChange(statement);
-              setNewSrc(undefined);
-            }
-          }
+              // Getting parameters in the current form
+              attributes = {
+                ...attributes,
+                ...computeParameters(
+                  newAttributes,
+                  schema.properties,
+                  valueIsStatement,
+                ),
+              };
 
-          setFormState({
-            attributes,
-            schema,
-            statement,
-          });
-        });
+              // Removing operator to atribute if doesn't exists in shema
+              if (!('operator' in schema.properties)) {
+                if (valueIsStatement && 'operator' in newAttributes) {
+                  setError('An impact should not contain an operator');
+                  attributes.operator = (newAttributes as IConditionAttributes).operator;
+                } else {
+                  attributes = omit(attributes, 'operator');
+                }
+              } else {
+                //Removing operator if not allowed
+                if (
+                  !schema.properties.operator.enum.includes(
+                    (newAttributes as IConditionAttributes).operator,
+                  )
+                ) {
+                  if (valueIsStatement) {
+                    setError('Operator unknown');
+                    attributes.operator = (newAttributes as IConditionAttributes).operator;
+                  } else {
+                    attributes.operator = undefined;
+                  }
+                } else {
+                  attributes.operator = (newAttributes as IConditionAttributes).operator;
+                }
+              }
+
+              // Removing copmparator to atribute if doesn't exists in shema
+              if (!('comparator' in schema.properties)) {
+                attributes = omit(attributes, 'comparator');
+              }
+              //Do not clean values if they come from an external statement
+              else if (
+                valueIsStatement &&
+                typeof (newAttributes as IConditionAttributes).comparator !==
+                  schema.properties.comparator.type
+              ) {
+                setError('Comparator type mismatch');
+              } else {
+                //Trying to translate operator
+                attributes.comparator = typeCleaner(
+                  (newAttributes as IConditionAttributes).comparator,
+                  schema.properties.comparator.type as WegasTypeString,
+                );
+              }
+
+              finalizeComputation(value, attributes, schema);
+            });
+          }
+        }
       }
+      if (
+        !attributes.initExpression ||
+        (attributes.initExpression.type === 'variable' && !variable)
+      )
+        setFormState({
+          attributes,
+          schema: makeGlobalMethodSchema(variableIds),
+          statement,
+        });
     },
-    [mode, scriptableClassFilter, parseStatement, generateStatement, onChange],
+    [
+      mode,
+      scriptableClassFilter,
+      parseStatement,
+      variableIds,
+      computeParameters,
+      finalizeComputation,
+    ],
   );
 
   const onScripEditorSave = React.useCallback(
@@ -784,7 +981,7 @@ export function ExpressionEditor({
         setError(e.message);
       }
     },
-    [computeState],
+    [onChange],
   );
 
   React.useEffect(
@@ -833,7 +1030,6 @@ export function ExpressionEditor({
             noGutter
             minimap={false}
             returnType={returnTypes(mode, scriptableClassFilter)}
-            //onBlur={() => newSrc !== undefined && onScripEditorSave(newSrc)}
             onSave={onScripEditorSave}
           />
         </div>
@@ -843,27 +1039,6 @@ export function ExpressionEditor({
           schema={formState.schema}
           onChange={(v, e) => {
             if (e && e.length > 0) {
-              // const newValues = e.reduce((o, err) => {
-              //   const property = err.property.match(
-              //     /(^instance\[([0-9]*)\]$)|(^instance\.(([a-z]|[0-9])*)$)/,
-              //   );
-              //   if (property != null) {
-              //     const numberKey = property[2];
-              //     const stringKey = property[4];
-              //     if (numberKey != null) {
-              //       return {
-              //         ...o,
-              //         [numberKey]: typeCleaner(v[numberKey], err.argument[0]),
-              //       };
-              //     } else if (stringKey != null) {
-              //       return {
-              //         ...o,
-              //         [stringKey]: typeCleaner(v[stringKey], err.argument[0]),
-              //       };
-              //     }
-              //   }
-              //   return o;
-              // }, {});
               setFormState(fs => {
                 const errorStatement = fs.schema
                   ? generateStatement(v, fs.schema.properties)
@@ -878,13 +1053,11 @@ export function ExpressionEditor({
             } else {
               computeState(v);
             }
-            // console.log(e);
-            // computeState(v);
           }}
           context={
             formState.attributes
               ? {
-                  variableName: formState.attributes.variableName,
+                  initExpression: formState.attributes.initExpression,
                 }
               : {}
           }

@@ -158,7 +158,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   );
 
   const extraLibs: MonacoDefinitionsLibraries[] = [
-    ...useGlobalLibs(clientScript),
+    ...useGlobalLibs(),
     { name: 'defaultLib:lib.d.ts', content: libes5 },
   ];
 

@@ -16,7 +16,7 @@ interface WegasScriptEditorNameAndTypes extends WegasEntitesNamesAndClasses {
 }
 
 interface ArrayedTypeMap<T = {}> {
-  undefined: T[keyof T];
+  single: T[keyof T];
   array: T[keyof T][];
 }
 
@@ -27,20 +27,20 @@ type WegasScriptEditorReturnType = WegasScriptEditorNameAndTypes[WegasScriptEdit
 type ArrayedAndNot<T extends {}> = ArrayedTypeMap<T>[keyof ArrayedTypeMap];
 
 type GlobalMethodAdd = <
-  T extends keyof WegasScriptEditorNameAndTypes,
-  AT extends ArrayedTypeMap<Pick<WegasScriptEditorNameAndTypes, T>>,
-  A extends keyof AT
+  RT extends keyof WegasScriptEditorNameAndTypes,
+  ART extends ArrayedTypeMap<Pick<WegasScriptEditorNameAndTypes, RT>>,
+  RA extends keyof ART
 >(
   name: string,
-  types: T[],
-  array: A,
-  method: () => AT[A],
+  returnTypes: RT[],
+  returnStyle: RA,
+  method: () => ART[RA],
 ) => void;
 
 interface GlobalMethodPayload {
   name: string;
-  types: WegasScriptEditorReturnTypeName[];
-  array: keyof ArrayedTypeMap;
+  returnTypes: WegasScriptEditorReturnTypeName[];
+  returnStyle: keyof ArrayedTypeMap;
   method: () => unknown;
 }
 

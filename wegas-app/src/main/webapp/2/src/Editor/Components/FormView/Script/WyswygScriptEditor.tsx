@@ -46,7 +46,9 @@ export function WyswygScriptEditor({
         }}
         value={{
           statements:
-            expressions == null ? [] : expressions.map(e => ({ statement: e })),
+            expressions == null
+              ? []
+              : expressions.map(e => ({ statement: e ? e : emptyStatement() })),
         }}
         onChange={value =>
           onChange(

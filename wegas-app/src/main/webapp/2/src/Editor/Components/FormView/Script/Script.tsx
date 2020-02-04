@@ -104,7 +104,6 @@ function concatStatementsToCondition(statements: Statement[]): Statement[] {
 
   if (canBeMerged && binaryExpressions.length > 1) {
     const test = concatBinaryExpressionsToLogicalExpression(binaryExpressions);
-    //debugger;
     return [expressionStatement(test)];
   } else {
     throw Error("Condition's expressions cannot be merged");
@@ -234,7 +233,10 @@ export function Script({
                     onChange={onCodeChange}
                     minimap={false}
                     noGutter={true}
-                    returnType={view.scriptableClassFilter}
+                    returnType={returnTypes(
+                      view.mode,
+                      view.scriptableClassFilter,
+                    )}
                   />
                 </div>
               ) : (
@@ -260,10 +262,7 @@ export function Script({
                     onCodeChange(generate(returnedProgram).code);
                   }}
                   mode={view.mode}
-                  scriptableClassFilter={returnTypes(
-                    view.mode,
-                    view.scriptableClassFilter,
-                  )}
+                  scriptableClassFilter={view.scriptableClassFilter}
                 />
               )}
             </>
