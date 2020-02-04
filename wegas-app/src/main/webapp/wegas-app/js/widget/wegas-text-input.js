@@ -418,10 +418,11 @@ YUI.add('wegas-text-input', function(Y) {
             var payload = this.getPayload(content);
             var textInstance = payload.descriptor.getInstance().toObject();
 
-            var oneTr = textInstance.trValue.translations[I18n.getCode()];
-            oneTr.translation = content;
             textInstance.trValue.translations = {};
-            textInstance.trValue.translations[I18n.getCode()] = oneTr;
+            textInstance.trValue.translations[I18n.getCode()] = {
+                status: "",
+                translation: content,
+            };
 
             this.fire('editing', payload);
 
