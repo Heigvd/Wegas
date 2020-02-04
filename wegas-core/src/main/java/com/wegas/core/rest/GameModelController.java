@@ -14,6 +14,7 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.cron.EjbTimerFacade;
 import com.wegas.core.exception.client.WegasIncompatibleType;
 import com.wegas.core.merge.patch.WegasEntityPatch;
+import com.wegas.core.merge.patch.WegasPatch.PatchDiff;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.Status;
@@ -174,7 +175,7 @@ public class GameModelController {
 
     @GET
     @Path("{modelId: [1-9][0-9]*}/Diff")
-    public String diff(@PathParam("modelId") Long modelId) throws IOException, RepositoryException {
+    public PatchDiff diff(@PathParam("modelId") Long modelId) throws IOException, RepositoryException {
 
         GameModel model = gameModelFacade.find(modelId);
 

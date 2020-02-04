@@ -394,8 +394,8 @@ public abstract class WegasPatch {
         return this.print(0).toString();
     }
 
-    public String diff(){
-        return this.printDiffOnly(0);
+    public PatchDiff diff(){
+        return this.buildDiff();
     }
 
     /**
@@ -417,16 +417,6 @@ public abstract class WegasPatch {
         return sb;
     }
 
-    protected abstract String printDiffOnly(int ident);
-
-    protected String indentString(int ident) {
-        String indent = "";
-        for (int i = 0; i < ident; i++) {
-            indent += "  ";
-        }
-        return indent;
-    }
-
     protected void indent(StringBuilder sb, int ident) {
         for (int i = 0; i < ident; i++) {
             sb.append("  ");
@@ -444,4 +434,10 @@ public abstract class WegasPatch {
         }
         return this.vdf;
     }
+
+
+    protected abstract PatchDiff buildDiff();
+
+    public static abstract class PatchDiff{
+    };
 }
