@@ -1048,6 +1048,14 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         Y.Wegas.Helper.getTranslationAttr({type: HTML})
                     ]
                 },
+                setValueIfChanged: {
+                    label: 'set (if changed)',
+                    className: 'wegas-method-returnline wegas-advanced-features',
+                    arguments: [
+                        SELFARG,
+                        Y.Wegas.Helper.getTranslationAttr({type: HTML})
+                    ]
+                },
                 getValue: {
                     label: VALUE,
                     returns: STRING,

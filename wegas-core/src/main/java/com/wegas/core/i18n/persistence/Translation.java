@@ -40,10 +40,10 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(
-        name = "translatablecontent_translations",
-        indexes = {
-            @Index(columnList = "translatablecontent_id")
-        }
+    name = "translatablecontent_translations",
+    indexes = {
+        @Index(columnList = "translatablecontent_id")
+    }
 )
 @IdClass(Translation.TranslationKey.class)
 public class Translation implements WithPermission {
@@ -84,7 +84,7 @@ public class Translation implements WithPermission {
     @JsonIgnore
     @Id
     @WegasEntityProperty(initOnly = true, optional = false, nullable = false,
-            view = @View(label = "Language", readOnly = true, value = StringView.class))
+        view = @View(label = "Language", readOnly = true, value = StringView.class))
     @JsonView(Views.IndexI.class)
     private String lang;
 
@@ -101,13 +101,13 @@ public class Translation implements WithPermission {
     @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
     @Column(name = "tr")
     @WegasEntityProperty(searchable = true, view = @View(label = "Text"),
-            proposal = EmptyString.class,
-            optional = false, nullable = false)
+        proposal = EmptyString.class,
+        optional = false, nullable = false)
     private String translation;
 
     @WegasEntityProperty(initOnly = true, view = @View(label = "Status"),
-            proposal = EmptyString.class,
-            optional = false, nullable = false)
+        proposal = EmptyString.class,
+        optional = false, nullable = false)
     private String status;
 
     public Translation() {
@@ -259,13 +259,13 @@ public class Translation implements WithPermission {
     }
 
     @WegasExtraProperty(
-            nullable = false,
-            view = @View(
-                    label = "RefID",
-                    readOnly = true,
-                    value = StringView.class,
-                    index = -800
-            )
+        nullable = false,
+        view = @View(
+            label = "RefID",
+            readOnly = true,
+            value = StringView.class,
+            index = -800
+        )
     )
     @Override
     public String getRefId() {
