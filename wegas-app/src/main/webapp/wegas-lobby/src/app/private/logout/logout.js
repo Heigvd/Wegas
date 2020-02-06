@@ -23,6 +23,10 @@ angular.module('private.logout', [])
                 UsersModel.clearCache();
                 GroupsModel.clearCache();
                 WegasPusher.disconnect();
+                // Remove Pusher-specific localStorage items:
+                localStorage.removeItem('pusherTransportEncrypted');
+                localStorage.removeItem('pusherTransportTLS');
+                localStorage.removeItem('pusherTransportUnencrypted'); // Exists only in developer mode
                 $state.go("wegas.public.login");
             });
         });
