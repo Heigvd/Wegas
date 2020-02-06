@@ -341,7 +341,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "SCENARIO";
 
             this.languages.add(new Y.Wegas.Text({
-                content: "<div class='language" + (!id ? " unsaved" : "") + (readonly ? " readonly" : "") + "' data-language-code='" + code + "'" + "' data-language-id='" + id + "'>" +
+                content: "<div class='language" + (!id ? " unsaved" : "") + (readonly ? "" : "") + "' data-language-code='" + code + "'" + "' data-language-id='" + id + "'>" +
                     (id ? "<div><span class='language-title'>" + lang + " (" + code + ")" + "</span><span class='save-all-container'><i class='wegas-language-save-all fa fa-save'></i></span></div>" : "") +
                     "<div class='form'>" +
                     "<div><label>Code:</label> <input size='5'" + (readonly ? " readonly" : "") + " class='language-code' value='" + code + "'></div>" +
