@@ -1531,6 +1531,18 @@
     user-select: none;
     text-align: right;
     background: #eeeaea;
+    vertical-align: top;
+}
+
+.wegas-model-propagator .modal-content pre {
+    display: inline-block;
+}
+
+.wegas-model-propagator .modal-content .change .line-change {
+    width: calc(100% - 35px);
+    overflow-wrap: anywhere;
+    overflow-x: auto;
+    white-space: pre-wrap;
 }
 
 .wegas-model-propagator .modal-content .change .line-change .editNewInline,

@@ -57,12 +57,12 @@ YUI.add('wegas-model-propagator', function(Y) {
                         if (diff.changes.length > 1) {
                             output += "<span class='line-number'>" + change.lineNumber + "</span>";
                         }
-                        output += "<span class='line-change'>" + change.content + "</span>";
+                        output += "<pre class='line-change change-tag-" + change.tag + "'>" + change.content + "</pre>";
                         output += "</div>";
                     } else {
                         output += "<div class='side2side-change'>";
-                        output += "<span class='old'>" + change.oldValue + "</span>";
-                        output += "<span class='new'>" + change.newValue + "</span>";
+                        output += "<pre class='old'>" + change.oldValue + "</pre>";
+                        output += "<pre class='new'>" + change.newValue + "</pre>";
                         output += "</div>";
                     }
                 }

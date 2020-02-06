@@ -221,10 +221,12 @@ public final class WegasPrimitivePatch extends WegasPatch {
 
         private final int lineNumber;
         private final String content;
+        private final String tag;
 
-        public LineChange(int lineNumber, String content) {
+        public LineChange(int lineNumber, String content, DiffRow.Tag tag) {
             this.lineNumber = lineNumber;
             this.content = content;
+            this.tag = tag.name();
         }
 
         public int getLineNumber() {
@@ -233,6 +235,10 @@ public final class WegasPrimitivePatch extends WegasPatch {
 
         public String getContent() {
             return content;
+        }
+
+        public String getTag(){
+            return tag;
         }
     }
 
@@ -270,10 +276,10 @@ public final class WegasPrimitivePatch extends WegasPatch {
                 for (int i = 0; i < rows.size(); i++) {
                     DiffRow row = rows.get(i);
                     if (row.getTag() != DiffRow.Tag.EQUAL) {
-                        changes.add(new LineChange(i, row.getOldLine()));
+                        changes.add(new LineChange(i, row.getOldLine(), row.getTag()));
                         skip = false;
                     } else if (!skip) {
-                        changes.add(new LineChange(i, "[...]"));
+                        changes.add(new LineChange(i, "[...]", row.getTag()));
                         skip = true;
                     }
                 }
