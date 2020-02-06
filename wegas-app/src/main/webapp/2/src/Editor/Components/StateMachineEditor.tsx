@@ -441,8 +441,10 @@ class StateMachineEditor extends React.Component<
         }
       });
       plumb.bind('connectionAborted', connection => {
-        const left = parseInt((connection.target as HTMLElement).style.left);
-        const top = parseInt((connection.target as HTMLElement).style.top);
+        const str_left = (connection.target as HTMLElement).style.left;
+        const str_top = (connection.target as HTMLElement).style.top;
+        const left = parseInt(str_left ? str_left : "0");
+        const top = parseInt(str_top ? str_top : "0");
         const src = Number(connection.sourceId);
         this.createState({ left, top }, src);
       });

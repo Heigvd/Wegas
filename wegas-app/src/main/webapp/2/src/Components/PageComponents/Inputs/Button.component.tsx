@@ -37,7 +37,7 @@ registerComponent(
     'Button',
     'cube',
     {
-      action: schemaProps.script('Action', undefined, undefined, 'SET'),
+      action: schemaProps.script('Action', undefined, 'SET'),
       label: schemaProps.string('Label'),
     },
     [],

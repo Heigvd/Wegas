@@ -36,26 +36,14 @@ export type CodeLanguage =
   | 'JSON'
   | 'PlainText';
 
-export function scriptIsCondition(
-  mode?: ScriptMode,
-  scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
-) {
-  return (
-    mode === 'GET' &&
-    (scriptableClassFilter === undefined ||
-      scriptableClassFilter.includes('boolean'))
-  );
+export function isScriptCondition(mode?: ScriptMode) {
+  return mode === 'GET';
 }
 
 export function returnTypes(
   mode?: ScriptMode,
-  scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
 ): WegasScriptEditorReturnTypeName[] | undefined {
-  return mode === 'GET'
-    ? ['boolean']
-    : mode === 'SET' && mode === undefined
-    ? ['void']
-    : scriptableClassFilter;
+  return mode === 'GET' ? ['boolean'] : ['void'];
 }
 
 function conditionVisitor(
@@ -112,12 +100,11 @@ function concatStatementsToCondition(statements: Statement[]): Statement[] {
 
 export interface ScriptView {
   mode?: ScriptMode;
-  scriptableClassFilter?: WegasScriptEditorReturnTypeName[];
 }
 
-interface ScriptProps
+export interface ScriptProps
   extends WidgetProps.BaseProps<LabeledView & CommonView & ScriptView> {
-  value?: string | IScript;
+  value?: string | IScript | undefined;
   context?: IVariableDescriptor<IVariableInstance>;
   onChange: (code: IScript) => void;
 }
@@ -187,10 +174,7 @@ export function Script({
         let newExpressions = parse(scriptContent, { sourceType: 'script' })
           .program.body;
 
-        if (
-          scriptIsCondition(view.mode, view.scriptableClassFilter) &&
-          newExpressions.length === 1
-        ) {
+        if (isScriptCondition(view.mode) && newExpressions.length === 1) {
           const condition = newExpressions[0];
           if (isExpressionStatement(condition)) {
             newExpressions = conditionVisitor(condition.expression);
@@ -206,7 +190,7 @@ export function Script({
     } catch (e) {
       setError([e.message]);
     }
-  }, [scriptContent, view.mode, view.scriptableClassFilter]);
+  }, [scriptContent, view.mode]);
 
   return (
     <CommonViewContainer view={view} errorMessage={error}>
@@ -233,10 +217,7 @@ export function Script({
                     onChange={onCodeChange}
                     minimap={false}
                     noGutter={true}
-                    returnType={returnTypes(
-                      view.mode,
-                      view.scriptableClassFilter,
-                    )}
+                    returnType={returnTypes(view.mode)}
                   />
                 </div>
               ) : (
@@ -246,9 +227,7 @@ export function Script({
                     let returnedProgram = program(
                       expressions ? expressions : [],
                     );
-                    if (
-                      scriptIsCondition(view.mode, view.scriptableClassFilter)
-                    ) {
+                    if (isScriptCondition(view.mode)) {
                       try {
                         returnedProgram = program(
                           concatStatementsToCondition(e),
@@ -262,7 +241,6 @@ export function Script({
                     onCodeChange(generate(returnedProgram).code);
                   }}
                   mode={view.mode}
-                  scriptableClassFilter={view.scriptableClassFilter}
                 />
               )}
             </>

@@ -5,7 +5,7 @@ import { entityIs } from '../data/entities';
 import { editStateMachine, editVariable } from '../data/Reducer/globalState';
 import { ThunkResult } from '../data/store';
 import { TYPESTRING } from 'jsoninput/typings/types';
-import { Icon, Icons } from './Components/Views/FontAwesome';
+import { Icons } from './Components/Views/FontAwesome';
 
 export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
 

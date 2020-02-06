@@ -191,12 +191,15 @@ function ArrayDropzone({ onDrop, className, style }: ArrayDropzoneProps) {
   );
 }
 
-interface IArrayProps
+export interface IArrayProps
   extends WidgetProps.ArrayProps<
     {
       choices?: { label: React.ReactNode; value: string }[];
       tooltip?: string;
       disabled?: boolean;
+      // TODO : Use the following view props!
+      highlight?: boolean;
+      sortable?: boolean;
     } & CommonView &
       LabeledView
   > {

@@ -8,7 +8,7 @@ import { inputDefaultCSS } from './String';
 import { flex, flexColumn } from '../../../css/classes';
 import { ListDescriptorChild } from '../../editionConfig';
 
-interface Choice {
+export interface Choice {
   value: {};
   label?: string;
   disabled?: boolean;
@@ -25,7 +25,7 @@ interface ISelectProps extends WidgetProps.BaseProps {
   } & CommonView &
     LabeledView;
 }
-interface IAsyncSelectProps extends WidgetProps.BaseProps {
+export interface IAsyncSelectProps extends WidgetProps.BaseProps {
   view: {
     choices: (() => Promise<Choices>) | Choices;
   } & CommonView &

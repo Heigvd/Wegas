@@ -1,4 +1,4 @@
-import { MethodConfig } from '../../../editionConfig';
+import { MethodConfig } from '../../../../editionConfig';
 
 interface ScriptStore {
   impact: MethodConfig;
@@ -75,8 +75,8 @@ export const SCRIPTS: ScriptStore = {
 };
 
 export function getGlobalMethodConfig(
+  condition: boolean,
   globalMethod: string,
-  isCondition: boolean,
 ) {
-  return SCRIPTS[isCondition ? 'condition' : 'impact'][globalMethod];
+  return SCRIPTS[condition ? 'condition' : 'impact'][globalMethod];
 }

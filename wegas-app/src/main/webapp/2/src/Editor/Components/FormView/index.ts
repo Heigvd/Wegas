@@ -24,7 +24,7 @@ import { LabeledHTMLEditor } from '../../../Components/HTMLEditor';
 import { TimestampView } from './Timestamp';
 import { VariableInput } from './Script/VariableInput';
 import PageSelect from './PageSelect';
-import StatementView from './Script/ExpressionEditor';
+import StatementView from './Script/Expressions/ExpressionEditor';
 
 export const DEFINED_VIEWS = {
   hidden,

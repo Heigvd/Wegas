@@ -39,12 +39,9 @@ registerComponent(
     'Question',
     'question',
     {
-      question: schemaProps.scriptVariable(
-        'Question',
-        true,
-        ['QuestionDescriptor'],
-        true,
-      ),
+      question: schemaProps.scriptVariable('Question', true, [
+        'QuestionDescriptor',
+      ]),
     },
     ['string'],
     () => ({}),

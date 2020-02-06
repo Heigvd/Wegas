@@ -1,33 +1,55 @@
 import {
   ScriptMode,
   CodeLanguage,
+  ScriptProps,
 } from '../../../Editor/Components/FormView/Script/Script';
-import { TYPESTRING } from 'jsoninput/typings/types';
+import { TYPESTRING, Schema, WidgetProps } from 'jsoninput/typings/types';
 import { DEFINED_VIEWS } from '../../../Editor/Components/FormView';
-import { WegasMethod, WegasTypeString } from '../../../Editor/editionConfig';
-import { Item } from '../../../Editor/Components/FormView/TreeVariableSelect';
+import { WegasMethod } from '../../../Editor/editionConfig';
 import { emptyStatement, Statement } from '@babel/types';
+import { BooleanProps } from '../../../Editor/Components/FormView/Boolean';
+import { StringInputProps } from '../../../Editor/Components/FormView/String';
+import { CodeProps } from '../../../Editor/Components/FormView/Code';
+import { IAsyncSelectProps } from '../../../Editor/Components/FormView/Select';
+import { PageSelectProps } from '../../../Editor/Components/FormView/PageSelect';
+import { Item } from '../../../Editor/Components/Tree/TreeSelect';
+import {
+  TreeVariableSelectProps,
+  ScripableVariableSelectProps,
+  TreeVSelectProps,
+} from '../../../Editor/Components/FormView/TreeVariableSelect';
+import { IArrayProps } from '../../../Editor/Components/FormView/Array';
+import { StatementViewProps } from '../../../Editor/Components/FormView/Script/Expressions/ExpressionEditor';
 
-type SchemaPrimitive =
-  | 'boolean'
-  | 'number'
-  | 'string'
-  | 'object'
-  | 'array'
-  | 'never'
-  | 'void'
-  | 'undefined'
-  | 'unknown';
+// type SchemaPrimitive =
+//   | 'boolean'
+//   | 'number'
+//   | 'string'
+//   | 'object'
+//   | 'array'
+//   | 'never'
+//   | 'void'
+//   | 'undefined'
+//   | 'unknown';
+
+type TypedProps<T extends { view: {} }> = Schema<
+  T['view'] & {
+    type: keyof typeof DEFINED_VIEWS;
+  }
+>;
 
 type SchemaLayout = 'inline' | 'shortInline';
 
 export interface SelectItem {
   label: string;
-  value: unknown;
+  value: {};
 }
 
 export const schemaProps = {
-  hidden: (required: boolean = true, type: SchemaPrimitive = 'array') => ({
+  hidden: (
+    required: boolean = true,
+    type: TYPESTRING | TYPESTRING[] = 'array',
+  ): TypedProps<WidgetProps.BaseProps> => ({
     required,
     type,
     index: 0,
@@ -43,7 +65,7 @@ export const schemaProps = {
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
-  ) => ({
+  ): TypedProps<BooleanProps> => ({
     required,
     type: 'boolean',
     value,
@@ -54,6 +76,7 @@ export const schemaProps = {
       featureLevel,
       label,
       layout,
+      type: 'boolean',
     },
   }),
   number: (
@@ -64,8 +87,7 @@ export const schemaProps = {
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
-  ) => ({
-    featureLevel,
+  ): TypedProps<StringInputProps> => ({
     required,
     type: 'number',
     value,
@@ -86,7 +108,7 @@ export const schemaProps = {
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
-  ) => ({
+  ): TypedProps<StringInputProps> => ({
     required,
     type: 'string',
     value,
@@ -96,54 +118,54 @@ export const schemaProps = {
       layout,
       featureLevel,
       label,
+      type: 'string',
     },
   }),
-  custom: (
+  custom: <T extends keyof typeof DEFINED_VIEWS>(
     label?: string,
     required: boolean = true,
     type?: WegasMethod['returns'],
-    viewType?: keyof typeof DEFINED_VIEWS,
+    viewType?: T,
     value?: number,
     index: number = 0,
     layout?: SchemaLayout,
     readOnly: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
-  ) => ({
-    featureLevel,
-    required,
-    type,
-    value,
-    index,
-    view: {
-      index,
+  ) =>
+    /* TODO : Improve  */
+    /*: TypedProps<Parameters<typeof DEFINED_VIEWS[T]>[0]>*/
+    ({
       featureLevel,
-      label,
-      layout,
-      readOnly,
-      type: viewType,
-    },
-  }),
+      required,
+      type,
+      value,
+      index,
+      view: {
+        index,
+        featureLevel,
+        label,
+        layout,
+        readOnly,
+        type: viewType,
+      },
+    }),
   script: (
     label?: string,
     required: boolean = true,
-    scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
     mode: ScriptMode = 'SET',
     language?: 'JavaScript' | 'JSON' | 'TypeScript' | 'CSS',
     value?: string,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
-  ) => ({
+  ): TypedProps<ScriptProps> => ({
     required,
     type: 'object',
-    value:
-      value !== undefined
-        ? {
-            '@class': 'Script',
-            value,
-            language,
-          }
-        : value,
+    value: {
+      '@class': 'Script',
+      content: value || '',
+      language: language || 'JavaScript',
+    },
     index,
     view: {
       index,
@@ -151,7 +173,6 @@ export const schemaProps = {
       label,
       mode,
       type: 'script',
-      scriptableClassFilter,
       layout,
     },
   }),
@@ -163,7 +184,7 @@ export const schemaProps = {
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
-  ) => ({
+  ): TypedProps<CodeProps> => ({
     required,
     type: 'object',
     value,
@@ -181,25 +202,25 @@ export const schemaProps = {
     label?: string,
     required: boolean = true,
     values: readonly (string | SelectItem)[] = [],
-    returnType: SchemaPrimitive = 'string',
+    returnType: TYPESTRING | TYPESTRING[] = 'string',
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
-  ) => {
-    let enumerated: readonly unknown[] = [];
-    let choices: readonly SelectItem[] = [];
+  ): TypedProps<IAsyncSelectProps> & { enum: readonly unknown[] } => {
+    let enumerator: readonly unknown[] = [];
+    let choices: SelectItem[] = [];
     if (values.length > 0) {
       if (typeof values[0] === 'string') {
-        enumerated = values;
+        enumerator = values;
         choices = values.map((v: string) => ({ label: v, value: v }));
       } else {
-        enumerated = values.map((v: SelectItem) => v.value);
+        enumerator = values.map((v: SelectItem) => v.value);
         choices = values as SelectItem[];
       }
     }
 
     return {
-      enum: enumerated,
+      enum: enumerator,
       required,
       type: returnType,
       index,
@@ -219,7 +240,7 @@ export const schemaProps = {
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
-  ) => {
+  ): TypedProps<PageSelectProps> => {
     return {
       required,
       type: 'object',
@@ -240,8 +261,8 @@ export const schemaProps = {
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
-    items?: Item[],
-  ) => ({
+    items?: Item<string>[],
+  ): TypedProps<TreeVariableSelectProps> => ({
     required,
     type: 'string',
     index,
@@ -255,16 +276,16 @@ export const schemaProps = {
       items,
     },
   }),
-  tree: (
+  tree: <T>(
     label?: string,
-    items?: Item[],
+    items?: Item<T>[],
     required: boolean = true,
     classFilter: WegasClassNames[] = [],
-    type: WegasTypeString = 'string',
+    type: TYPESTRING | TYPESTRING[] = 'string',
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
-  ) => ({
+  ): TypedProps<TreeVSelectProps<T>> => ({
     required,
     type,
     index,
@@ -282,11 +303,10 @@ export const schemaProps = {
     label?: string,
     required: boolean = true,
     classFilter: WegasClassNames[] = [],
-    scriptable: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
-  ) => ({
+  ): TypedProps<ScripableVariableSelectProps> => ({
     required,
     type: 'object',
     index,
@@ -295,16 +315,15 @@ export const schemaProps = {
       classFilter,
       featureLevel,
       label,
-      scriptable,
       type: 'scriptableVariableSelect',
       layout,
     },
   }),
-  array: <T>(
+  array: (
     label?: string,
     itemShema: {} = {},
-    onChildAdd?: (newChild: T) => void,
-    onChildRemove?: (index: number) => void,
+    // onChildAdd?: (value?: T) => void,
+    // onChildRemove?: (index: number) => void,
     requiredItems: boolean = false,
     itemType: TYPESTRING = 'object',
     required: boolean = true,
@@ -313,7 +332,7 @@ export const schemaProps = {
     layout?: SchemaLayout,
     highlight: boolean = true,
     sortable: boolean = false,
-  ) => ({
+  ): TypedProps<IArrayProps> => ({
     required,
     items: {
       // description:"shemaprops.array.items",
@@ -321,8 +340,8 @@ export const schemaProps = {
       required: requiredItems,
       type: itemType,
     },
-    onChildAdd,
-    onChildRemove,
+    // onChildAdd,
+    // onChildRemove,
     type: 'array',
     index,
     view: {
@@ -338,13 +357,12 @@ export const schemaProps = {
   statement: (
     label?: string,
     required: boolean = true,
-    scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
     mode: ScriptMode = 'SET',
     value: Statement = emptyStatement(),
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
-  ) => ({
+  ): TypedProps<StatementViewProps> => ({
     required,
     type: 'object',
     index,
@@ -355,7 +373,6 @@ export const schemaProps = {
       label,
       type: 'statement',
       layout,
-      scriptableClassFilter,
       mode,
     },
   }),

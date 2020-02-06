@@ -11,7 +11,7 @@ import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
 import { omit } from 'lodash-es';
 
-interface PageSelectProps extends WidgetProps.BaseProps {
+export interface PageSelectProps extends WidgetProps.BaseProps {
   view: CommonView & LabeledView;
   value?: IScript;
   onChange: (code: IScript) => void;

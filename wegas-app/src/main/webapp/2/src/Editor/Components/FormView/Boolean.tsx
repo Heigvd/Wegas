@@ -2,7 +2,8 @@ import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { Labeled, LabeledView } from './labeled';
 import { CommonViewContainer, CommonView } from './commonView';
-interface BooleanProps extends WidgetProps.BaseProps<CommonView & LabeledView> {
+export interface BooleanProps
+  extends WidgetProps.BaseProps<CommonView & LabeledView> {
   value?: boolean;
 }
 export default class BooleanView extends React.Component<BooleanProps> {

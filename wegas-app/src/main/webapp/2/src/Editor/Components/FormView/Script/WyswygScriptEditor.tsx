@@ -21,7 +21,6 @@ export function WyswygScriptEditor({
   expressions,
   onChange,
   mode,
-  scriptableClassFilter,
 }: WyswygScriptEditorProps) {
   return (
     <div className={scriptStyle} key={expressions ? expressions.length : -1}>
@@ -32,12 +31,7 @@ export function WyswygScriptEditor({
             statements: schemaProps.array(
               undefined,
               {
-                statement: schemaProps.statement(
-                  undefined,
-                  true,
-                  scriptableClassFilter,
-                  mode,
-                ),
+                statement: schemaProps.statement(undefined, true, mode),
               },
               //()=>expressions.push(),
               // onExpressionDelete,

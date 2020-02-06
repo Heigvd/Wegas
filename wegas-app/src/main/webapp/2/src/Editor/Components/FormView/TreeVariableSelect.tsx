@@ -14,7 +14,6 @@ import { IconButton } from '../../../Components/Inputs/Button/IconButton';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { toScriptableClassName } from '../../../Helper/wegasClassNames';
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
-import { omit } from 'lodash';
 import { scriptEditStyle } from './Script/Script';
 
 const treeCss = css({
@@ -106,7 +105,7 @@ function labelForValue<T>(items: Item<T>[], value?: T) {
   }
   return '';
 }
-export interface TreeVariableSelectProps<T>
+export interface TreeVSelectProps<T>
   extends WidgetProps.BaseProps<
     CommonView &
       LabeledView & {
@@ -116,8 +115,11 @@ export interface TreeVariableSelectProps<T>
   > {
   value?: T;
 }
+
+export type TreeVariableSelectProps = TreeVSelectProps<string>;
+
 export class TreeVSelect<T> extends React.Component<
-  TreeVariableSelectProps<T> & { items: Item<T>[] },
+  TreeVSelectProps<T> & { items: Item<T>[] },
   { search: string; searching: boolean }
 > {
   state = {
@@ -204,8 +206,8 @@ export class TreeVSelect<T> extends React.Component<
   }
 }
 
-export function TreeVariableSelect<T>(
-  props: TreeVariableSelectProps<T>,
+export function TreeVariableSelect(
+  props: TreeVariableSelectProps,
 ): JSX.Element {
   const items = useStore(() => GameModel.selectCurrent().itemsIds);
   const varItems = genVarItems(items, undefined, props.view.classFilter);
@@ -223,8 +225,8 @@ export function TreeVariableSelect<T>(
   return <TreeVSelect {...props} items={filteredItems} />;
 }
 
-interface ScripableVariableSelectProps
-  extends Omit<TreeVariableSelectProps<string>, 'value' | 'onChange'> {
+export interface ScripableVariableSelectProps
+  extends Omit<TreeVariableSelectProps, 'value' | 'onChange'> {
   value?: IScript;
   onChange: (code: IScript) => void;
 }

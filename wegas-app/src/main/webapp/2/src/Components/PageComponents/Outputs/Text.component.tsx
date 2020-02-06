@@ -23,12 +23,7 @@ registerComponent(
     'Text',
     'paragraph',
     {
-      script: schemaProps.scriptVariable(
-        'Variable',
-        true,
-        ['TextDescriptor'],
-        true,
-      ),
+      script: schemaProps.scriptVariable('Variable', true, ['TextDescriptor']),
       className: schemaProps.string('ClassName', false),
     },
     ['ISTextDescriptor'],
