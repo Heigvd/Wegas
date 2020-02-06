@@ -6,6 +6,8 @@ angular.module('private', [
     'wegas.models.scenarios',
     'wegas.models.teams',
     'wegas.service.pusher',
+    'pascalprecht.translate',
+    'wegas.service.wegasTranslations',
     'private.player',
     'private.profile',
     'private.trainer',
@@ -26,10 +28,10 @@ angular.module('private', [
                     templateUrl: 'app/private/private.tmpl.html'
                 }
             }
-        })
-    ;
+        });
+
 })
-.controller('PrivateCtrl', function PrivateCtrl($state, Auth, $translate, $scope, $q, $http, $sce, WegasPusher) {
+.controller('PrivateCtrl', function PrivateCtrl($rootScope, $state, Auth, $translate, $scope, $q, $http, $sce, WegasPusher) {
     "use strict";
     var privateCtrl = this;
 
@@ -76,6 +78,19 @@ angular.module('private', [
         return $sce.trustAsResourceUrl(src);
     };
 
+    function getCommonsLang () {
+        var frList = ['fr', 'fr-fr', 'fr-ch', 'fr-mc', 'fr-ca', 'fr-lu'],
+            isFr = false,
+            language = window.navigator.userLanguage || window.navigator.language;
+        language = language.toLowerCase();
+        frList.forEach(function(frCode) {
+            if (language.toLowerCase() === frCode) {
+                isFr = true;
+            }
+        });
+        return isFr ? 'fr' : 'en';
+    };
+    
     //privateCtrl.loading = 0;
 
     Auth.getAuthenticatedUser().then(function(user){
@@ -85,7 +100,17 @@ angular.module('private', [
         } else {
             console.log("starting Pusher");
             WegasPusher.start();
-            var config = localStorage.getObject("wegas-config");
+            var config = localStorage.getObject("wegas-config"),
+                lang = (config && config.commons && config.commons.language) || $rootScope.language || getCommonsLang();
+            if (!config) {
+                config = {};
+            }
+            if (!config.users) {
+                config.users = {};
+            }
+            if (!config.commons) {
+                config.commons = { language: lang };
+            }
             if (config.users[user.email]) {
                 if (config.commons.language !== config.users[user.email].language) {
                     config.commons.language = config.users[user.email].language;
