@@ -1533,12 +1533,16 @@ YUI.add('wegas-text-input', function(Y) {
         },
         updateFromUl: function(e) {
             if (!this.get('readonly.evaluated')) {
-                this.updateValue(e.target.getData().value === "true");
+                // toggle
+                var clickedValue = e.target.getData().value === "true";
+                var isSelected = e.target.hasClass("selected");
+                var newValue = clickedValue ? !isSelected : isSelected; // XOR
+                this.updateValue(newValue);
             }
         }
     }, {
-        /** @lends Y.Wegas.StringInput */
-        EDITORNAME: 'StringInput',
+        /** @lends Y.Wegas.BooleanInput */
+        EDITORNAME: 'BooleanInput',
         ATTRS: {
             /**
              * The target variable, returned either based on the name attribute,
