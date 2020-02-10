@@ -20,6 +20,8 @@ import { expressionStatement } from '@babel/types';
 import { LogicalExpression } from '@babel/types';
 import { logicalExpression } from '@babel/types';
 import { isBinaryExpression } from '@babel/types';
+import { emptyStatement } from '@babel/types';
+import { Menu } from '../../../../Components/Menu';
 
 export const scriptEditStyle = css({
   height: '5em',
@@ -36,6 +38,10 @@ export type CodeLanguage =
   | 'JSON'
   | 'PlainText';
 
+const operators = ['&&', '||'] as const;
+
+type Operator = typeof operators[number];
+
 export function isScriptCondition(mode?: ScriptMode) {
   return mode === 'GET';
 }
@@ -43,43 +49,52 @@ export function isScriptCondition(mode?: ScriptMode) {
 export function returnTypes(
   mode?: ScriptMode,
 ): WegasScriptEditorReturnTypeName[] | undefined {
-  return mode === 'GET' ? ['boolean'] : ['void'];
+  return isScriptCondition(mode) ? ['boolean'] : undefined;
 }
 
 function conditionVisitor(
+  operator: Operator,
   expression: Expression,
   prevStatement: Statement[] = [],
 ): Statement[] {
-  if (isLogicalExpression(expression) && expression.operator === '&&') {
-    return conditionVisitor(expression.left, [
-      ...prevStatement,
+  if (isLogicalExpression(expression) && expression.operator === operator) {
+    return conditionVisitor(operator, expression.left, [
       expressionStatement(expression.right),
+      ...prevStatement,
     ]);
   } else {
-    return [...prevStatement, expressionStatement(expression)];
+    return [expressionStatement(expression), ...prevStatement];
   }
 }
 
 function concatBinaryExpressionsToLogicalExpression(
+  operator: Operator,
   binaryExpressions: BinaryExpression[],
   index: number = 0,
 ): LogicalExpression {
   if (index === binaryExpressions.length - 2) {
     return logicalExpression(
-      '&&',
-      binaryExpressions[index + 1],
+      operator,
       binaryExpressions[index],
+      binaryExpressions[index + 1],
     );
   } else {
     return logicalExpression(
-      '&&',
-      concatBinaryExpressionsToLogicalExpression(binaryExpressions, index + 1),
+      operator,
       binaryExpressions[index],
+      concatBinaryExpressionsToLogicalExpression(
+        operator,
+        binaryExpressions,
+        index + 1,
+      ),
     );
   }
 }
 
-function concatStatementsToCondition(statements: Statement[]): Statement[] {
+function concatStatementsToCondition(
+  operator: Operator,
+  statements: Statement[],
+): Statement[] {
   const binaryExpressions: BinaryExpression[] = [];
   let canBeMerged = true;
   statements.forEach(s => {
@@ -90,9 +105,14 @@ function concatStatementsToCondition(statements: Statement[]): Statement[] {
     }
   });
 
+  //binaryExpressions.reverse();
+
   if (canBeMerged && binaryExpressions.length > 1) {
-    const test = concatBinaryExpressionsToLogicalExpression(binaryExpressions);
-    return [expressionStatement(test)];
+    const binaryCondition = concatBinaryExpressionsToLogicalExpression(
+      operator,
+      binaryExpressions,
+    );
+    return [expressionStatement(binaryCondition)];
   } else {
     throw Error("Condition's expressions cannot be merged");
   }
@@ -119,9 +139,8 @@ export function Script({
   const [error, setError] = React.useState(errorMessage);
   const [srcMode, setSrcMode] = React.useState(false);
   const [scriptContent, setScriptContent] = React.useState('');
-  const [expressions, setExpressions] = React.useState<Statement[] | null>(
-    null,
-  );
+  const [statements, setStatements] = React.useState<Statement[] | null>(null);
+  const [operator, setOperator] = React.useState<Operator>(operators[0]);
 
   const isServerScript = view.mode === 'SET';
 
@@ -136,18 +155,46 @@ export function Script({
 
   const onCodeChange = React.useCallback(
     (value: string) => {
-      debounceAction('ScriptEditorOnChange', () => {
-        onChange({
-          '@class': 'Script',
-          language: 'JavaScript',
-          content: value,
-        });
-        setScriptContent(() => {
-          return value;
-        });
+      setScriptContent(value);
+      onChange({
+        '@class': 'Script',
+        language: 'JavaScript',
+        content: value,
       });
     },
     [onChange],
+  );
+
+  const onStatementsChange = React.useCallback(
+    (statements: Statement[], operator: Operator) => {
+      let returnedProgram = program(statements ? statements : []);
+      if (isScriptCondition(view.mode)) {
+        try {
+          returnedProgram = program(
+            concatStatementsToCondition(operator, statements),
+          );
+        } catch (e) {
+          setError([e.message]);
+        }
+      } else {
+        returnedProgram = program(statements);
+      }
+      onCodeChange(generate(returnedProgram).code);
+    },
+    [onCodeChange, view.mode],
+  );
+
+  const onSelectOperator = React.useCallback(
+    (operator: Operator) => {
+      setOperator(operator);
+      if (!error && !srcMode) {
+        // TODO : Something could be done when in src mode
+        if (statements !== null) {
+          onStatementsChange(statements, operator);
+        }
+      }
+    },
+    [error, onStatementsChange, srcMode, statements],
   );
 
   React.useEffect(() => {
@@ -169,7 +216,7 @@ export function Script({
   React.useEffect(() => {
     try {
       if (scriptContent === '') {
-        setExpressions(null);
+        setStatements(null);
       } else {
         let newExpressions = parse(scriptContent, { sourceType: 'script' })
           .program.body;
@@ -177,20 +224,20 @@ export function Script({
         if (isScriptCondition(view.mode) && newExpressions.length === 1) {
           const condition = newExpressions[0];
           if (isExpressionStatement(condition)) {
-            newExpressions = conditionVisitor(condition.expression);
+            newExpressions = conditionVisitor(operator, condition.expression);
           } else {
-            setError(['The script cannot be parsed as a condition']);
+            setError(['The script cannot be parsed']);
           }
         } else {
           setError(['The script cannot be parsed as a condition']);
         }
-        setExpressions(newExpressions);
+        setStatements(newExpressions);
       }
       setError(undefined);
     } catch (e) {
       setError([e.message]);
     }
-  }, [scriptContent, view.mode]);
+  }, [operator, scriptContent, view.mode]);
 
   return (
     <CommonViewContainer view={view} errorMessage={error}>
@@ -209,11 +256,17 @@ export function Script({
               {isServerScript && (
                 <IconButton icon="play" onClick={testScript} />
               )}
+              {isScriptCondition(view.mode) && (
+                <Menu
+                  label={operator}
+                  items={operators.map(o => ({ label: o }))}
+                  onSelect={({ label }) => onSelectOperator(label)}
+                />
+              )}
               {srcMode ? (
                 <div className={scriptEditStyle}>
                   <WegasScriptEditor
                     value={scriptContent}
-                    onBlur={onCodeChange}
                     onChange={onCodeChange}
                     minimap={false}
                     noGutter={true}
@@ -222,23 +275,24 @@ export function Script({
                 </div>
               ) : (
                 <WyswygScriptEditor
-                  expressions={expressions}
+                  expressions={statements}
                   onChange={e => {
-                    let returnedProgram = program(
-                      expressions ? expressions : [],
-                    );
-                    if (isScriptCondition(view.mode)) {
-                      try {
-                        returnedProgram = program(
-                          concatStatementsToCondition(e),
-                        );
-                      } catch (e) {
-                        setError([e.message]);
-                      }
-                    } else {
-                      returnedProgram = program(e);
-                    }
-                    onCodeChange(generate(returnedProgram).code);
+                    onStatementsChange(e, operator);
+                    // let returnedProgram = program(
+                    //   expressions ? expressions : [],
+                    // );
+                    // if (isScriptCondition(view.mode)) {
+                    //   try {
+                    //     returnedProgram = program(
+                    //       concatStatementsToCondition(operator, e),
+                    //     );
+                    //   } catch (e) {
+                    //     setError([e.message]);
+                    //   }
+                    // } else {
+                    //   returnedProgram = program(e);
+                    // }
+                    // onCodeChange(generate(returnedProgram).code);
                   }}
                   mode={view.mode}
                 />

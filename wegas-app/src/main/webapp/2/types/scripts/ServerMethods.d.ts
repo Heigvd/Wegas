@@ -1,9 +1,6 @@
 // Idealy, wenerate it
 interface IRequestManager {
-  sendCustomEvent: (
-    type: 'popupEvent',
-    payload: { timeout: number; content: string },
-  ) => void;
+  sendCustomEvent: (type: 'popupEvent', payload: { content: string }) => void;
 }
 
 interface IEvent {

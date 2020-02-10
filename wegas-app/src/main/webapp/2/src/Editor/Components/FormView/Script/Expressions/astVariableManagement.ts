@@ -216,6 +216,8 @@ export const variableToASTNode = (
         ),
       );
     }
+    case 'undefined':
+      return identifier(usedType);
     default:
       throw Error(
         `Type ${variableType} for method arguments not implemented yet`,

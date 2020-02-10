@@ -22,35 +22,37 @@ export function WyswygScriptEditor({
   onChange,
   mode,
 }: WyswygScriptEditorProps) {
+  // These state and effect are here just to avoid loosing focus when changes occures
+  const [expr, setExpr] = React.useState(expressions);
+  React.useEffect(() => {
+    setExpr(expressions);
+  }, [expressions]);
+
   return (
-    <div className={scriptStyle} key={expressions ? expressions.length : -1}>
+    <div className={scriptStyle}>
       <Form
         schema={{
           description: 'multipleStatementForm',
           properties: {
-            statements: schemaProps.array(
-              undefined,
-              {
-                statement: schemaProps.statement(undefined, true, mode),
-              },
-              //()=>expressions.push(),
-              // onExpressionDelete,
-            ),
+            statements: schemaProps.array(undefined, {
+              statement: schemaProps.statement(undefined, true, mode),
+            }),
           },
         }}
         value={{
           statements:
-            expressions == null
+            expr == null
               ? []
-              : expressions.map(e => ({ statement: e ? e : emptyStatement() })),
+              : expr.map(e => ({ statement: e ? e : emptyStatement() })),
         }}
-        onChange={value =>
-          onChange(
-            value.statements.map((s: { statement: Statement }) =>
+        onChange={value => {
+          const cleanValue = value.statements.map(
+            (s: { statement: Statement }) =>
               s ? s.statement : emptyStatement(),
-            ),
-          )
-        }
+          );
+          setExpr(cleanValue);
+          onChange(cleanValue);
+        }}
       />
     </div>
   );

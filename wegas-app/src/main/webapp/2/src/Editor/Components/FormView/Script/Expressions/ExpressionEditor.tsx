@@ -39,7 +39,7 @@ import {
   returnTypes,
 } from '../Script';
 import { useStore } from '../../../../../data/store';
-import { GameModel } from '../../../../../data/selectors';
+import { GameModel, VariableDescriptor } from '../../../../../data/selectors';
 import { methodParse, generateMethodStatement } from './astMethodManagement';
 import {
   isConditionStatement,
@@ -64,6 +64,9 @@ import { MessageString } from '../../../MessageString';
 import { WegasScriptEditor } from '../../../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';
 import { LabeledView, Labeled } from '../../labeled';
+import { debounceAction } from '../../../../../Helper/debounceAction';
+import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory';
+import { pick } from 'lodash-es';
 
 const expressionEditorStyle = css({
   backgroundColor: themeVar.primaryHoverColor,
@@ -97,7 +100,18 @@ export function ExpressionEditor({
   const [srcMode, setSrcMode] = React.useState(false);
   const [newSrc, setNewSrc] = React.useState();
   const [formState, setFormState] = React.useState<ExpressionEditorState>({});
-  const variableIds = useStore(() => GameModel.selectCurrent().itemsIds);
+
+  // Getting variables id
+  // First it was done with GameModel.selectCurrent().itemsIds but this array is always full even if the real object are not loaded yet
+  // The new way to get itemIds goes directy into the descriptors state and filter to get only the first layer of itemIds
+  const variableIds = useStore(
+    s =>
+      Object.keys(s.variableDescriptors)
+        .map(Number)
+        .filter(k => !isNaN(k))
+        .filter(k => GameModel.selectCurrent().itemsIds.includes(k)),
+    deepDifferent,
+  );
 
   const parseStatement = React.useCallback(
     (
@@ -206,17 +220,19 @@ export function ExpressionEditor({
       // If the statement has just been generated, send via onChange
       else {
         statement = generateStatement(attributes, schema.properties);
-        if (statement) {
-          setError(undefined);
-          onChange && onChange(statement);
-          setNewSrc(undefined);
-        }
       }
+
+      // Always setting the state before sending change because the value returned is compared with the current state
       setFormState({
         attributes,
         schema,
         statement,
       });
+      if (!isStatement(value) && statement) {
+        setError(undefined);
+        onChange && onChange(statement);
+        setNewSrc(undefined);
+      }
     },
     [generateStatement, onChange],
   );
@@ -308,19 +324,27 @@ export function ExpressionEditor({
           );
 
           // Avoid getting old parameters value if method changes for global methods
-          // detection is made with valueIsStatement because if the value is a statement it means that
-          // the attributes were already parsed and it is not a method change.
-          const cleanAttributes = !isStatement(value) ? value : newAttributes;
+          const cleanAttributes =
+            formState.attributes &&
+            deepDifferent(
+              formState.attributes.initExpression,
+              newAttributes.initExpression,
+            )
+              ? pick(newAttributes, 'initExpression')
+              : newAttributes;
 
-          attributes = {
-            ...cleanAttributes,
-            ...computeParameters(
-              cleanAttributes,
-              schema.properties,
-              !valueIsStatement,
-            ),
-          };
-
+          // Getting parameters in the current form (removing old attributes like variable method, operator or comparator)
+          attributes = pick(
+            {
+              ...cleanAttributes,
+              ...computeParameters(
+                cleanAttributes,
+                schema.properties,
+                !valueIsStatement,
+              ),
+            },
+            Object.keys(schema.properties),
+          );
           finalizeComputation(value, attributes as IInitAttributes, schema);
         } else {
           variable = safeClientTSScriptEval<IVariableDescriptor>(
@@ -351,7 +375,7 @@ export function ExpressionEditor({
                 mode,
               );
 
-              // Getting parameters in the current form
+              // Getting parameters in the current form (removing old attributes like variable method, operator or comparator)
               attributes = {
                 ...attributes,
                 ...computeParameters(
@@ -425,7 +449,14 @@ export function ExpressionEditor({
           statement,
         });
     },
-    [mode, parseStatement, variableIds, computeParameters, finalizeComputation],
+    [
+      mode,
+      parseStatement,
+      variableIds,
+      computeParameters,
+      finalizeComputation,
+      formState,
+    ],
   );
 
   const onScripEditorSave = React.useCallback(
@@ -452,8 +483,14 @@ export function ExpressionEditor({
     () => {
       if (
         !formState.statement ||
-        generate(formState.statement) !== generate(statement)
+        generate(formState.statement).code !== generate(statement).code
       ) {
+        console.log('OLD');
+        console.log(
+          formState.statement ? generate(formState.statement).code : '',
+        );
+        console.log('NEW');
+        console.log(generate(statement).code);
         computeState(statement);
       }
     },

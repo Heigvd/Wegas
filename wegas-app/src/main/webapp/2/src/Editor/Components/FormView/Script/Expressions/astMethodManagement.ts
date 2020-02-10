@@ -164,6 +164,7 @@ export function methodParse(
     }
   } catch (e) {
     wlog('Method parser error');
+    wlog(e);
   }
 }
 
