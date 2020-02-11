@@ -10,7 +10,7 @@ export const SCRIPTS: ScriptStore = {
       label: 'Send popup',
       parameters: [
         {
-          type: 'string' as 'string',
+          type: 'string',
           value: 'popupEvent',
           const: 'popupEvent',
           view: {
@@ -18,7 +18,7 @@ export const SCRIPTS: ScriptStore = {
           },
         },
         {
-          type: 'object' as 'object',
+          type: 'object',
           properties: {
             content: {
               type: 'string',
@@ -34,7 +34,7 @@ export const SCRIPTS: ScriptStore = {
       label: 'Fire event',
       parameters: [
         {
-          type: 'string' as 'string',
+          type: 'string',
           required: true,
         },
       ],
@@ -43,17 +43,17 @@ export const SCRIPTS: ScriptStore = {
       label: 'Fire delayed event',
       parameters: [
         {
-          type: 'number' as 'number',
+          type: 'number',
           required: true,
           view: { label: 'Minutes' },
         },
         {
-          type: 'number' as 'number',
+          type: 'number',
           required: true,
           view: { label: 'Seconds' },
         },
         {
-          type: 'string' as 'string',
+          type: 'string',
           required: true,
           view: { label: 'Event name' },
         },
@@ -66,17 +66,10 @@ export const SCRIPTS: ScriptStore = {
       label: 'Event has been fired',
       parameters: [
         {
-          type: 'string' as 'string',
+          type: 'string',
           required: true,
         },
       ],
     },
   },
 };
-
-export function getGlobalMethodConfig(
-  condition: boolean,
-  globalMethod: string,
-) {
-  return SCRIPTS[condition ? 'condition' : 'impact'][globalMethod];
-}

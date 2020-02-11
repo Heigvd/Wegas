@@ -5,8 +5,6 @@ import {
   WegasMethod,
 } from '../../../../editionConfig';
 
-import { TYPESTRING } from 'jsoninput/typings/types';
-
 import { schemaProps } from '../../../../../Components/PageComponents/tools/schemaProps';
 
 import { pick } from 'lodash-es';
@@ -17,7 +15,8 @@ import { Item } from '../../../Tree/TreeSelect';
 
 import { StringOrT, genVarItems } from '../../TreeVariableSelect';
 
-import { SCRIPTS } from './globalMethods';
+import { store } from '../../../../../data/store';
+import { TYPESTRING } from 'jsoninput/typings/types';
 
 const booleanOperators = {
   '===': { label: 'equals' },
@@ -29,7 +28,7 @@ const booleanOperators = {
 
 export type WegasOperators = keyof typeof booleanOperators;
 
-export type ExpressionType = 'variable' | 'global';
+export type ExpressionType = 'variable' | 'global' | 'boolean';
 
 export interface SelectOperator {
   label: string;
@@ -209,12 +208,22 @@ export function genGlobalItems<T = string>(
   mode?: ScriptMode,
   decorateFn?: (value: string) => T,
 ): Item<StringOrT<typeof decorateFn, T>>[] {
-  return Object.entries(SCRIPTS[mode === 'GET' ? 'condition' : 'impact']).map(
-    ([k, v]) => ({
-      label: v.label,
+  return Object.entries(store.getState().global.serverMethods)
+    .filter(
+      ([_k, v]) =>
+        v !== undefined &&
+        (isScriptCondition(mode)
+          ? v.returns !== undefined
+          : v.returns === undefined),
+    )
+    .map(([k, v]) => ({
+      label: v!.label,
       value: decorateFn ? decorateFn(k) : k,
-    }),
-  );
+    }));
+}
+
+export function getGlobalMethodConfig(globalMethod: string) {
+  return store.getState().global.serverMethods[globalMethod];
 }
 
 export const makeItems: (
@@ -248,6 +257,15 @@ export const makeSchemaInitExpression = (
         label: 'Global methods',
         items: genGlobalItems(mode, value => makeItems(value, 'global')),
         value: 'Global methods',
+        selectable: false,
+      },
+      {
+        label: 'Booleans',
+        items: [
+          { label: 'True', value: 'true' },
+          { label: 'False', value: 'false' },
+        ],
+        value: 'Booleans',
         selectable: false,
       },
     ],

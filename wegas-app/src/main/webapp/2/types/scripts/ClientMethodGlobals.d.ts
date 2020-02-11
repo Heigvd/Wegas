@@ -26,7 +26,14 @@ type WegasScriptEditorReturnType = WegasScriptEditorNameAndTypes[WegasScriptEdit
 
 type ArrayedAndNot<T extends {}> = ArrayedTypeMap<T>[keyof ArrayedTypeMap];
 
-type GlobalMethodAdd = <
+/**
+ * Add a custom client method that can be used in client scripts
+ * @param name - the name of the method
+ * @param types - the returned types of the method
+ * @param array - the method will return a signle object or an array of objects
+ * @param method - the method to add
+ */
+type ClientMethodAdd = <
   RT extends keyof WegasScriptEditorNameAndTypes,
   ART extends ArrayedTypeMap<Pick<WegasScriptEditorNameAndTypes, RT>>,
   RA extends keyof ART
@@ -37,15 +44,15 @@ type GlobalMethodAdd = <
   method: () => ART[RA],
 ) => void;
 
-interface GlobalMethodPayload {
+interface ClientMethodPayload {
   name: string;
   returnTypes: WegasScriptEditorReturnTypeName[];
   returnStyle: keyof ArrayedTypeMap;
   method: () => unknown;
 }
 
-interface GlobalMethodClass {
-  addMethod: GlobalMethodAdd;
+interface GlobalClientMethodClass {
+  addMethod: ClientMethodAdd;
   getMethod: (
     name: string,
   ) => () => ArrayedAndNot<WegasScriptEditorNameAndTypes>;

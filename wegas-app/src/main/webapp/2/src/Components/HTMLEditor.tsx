@@ -21,7 +21,6 @@ import 'tinymce/skins/ui/oxide/skin.min.css';
 import { Editor as TinyEditor } from '@tinymce/tinymce-react';
 import { Modal } from './Modal';
 import { generateAbsolutePath, fileURL } from '../API/files.api';
-import { WidgetProps } from 'jsoninput/typings/types';
 import {
   CommonView,
   CommonViewContainer,
@@ -32,6 +31,7 @@ import { css, cx } from 'emotion';
 import { classesCTX } from './Contexts/ClassesProvider';
 import { debounceAction } from '../Helper/debounceAction';
 import { flexColumn, flex } from '../css/classes';
+import { WidgetProps } from 'jsoninput/typings/types';
 
 const toolbar = css({
   width: '300px',

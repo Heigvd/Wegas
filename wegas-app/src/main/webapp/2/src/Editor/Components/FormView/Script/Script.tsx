@@ -9,10 +9,15 @@ import { store } from '../../../../data/store';
 import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../../data/selectors';
 import { WyswygScriptEditor } from './WyswygScriptEditor';
-import { Statement, program, BinaryExpression } from '@babel/types';
+import {
+  Statement,
+  program,
+  BinaryExpression,
+  isBooleanLiteral,
+  BooleanLiteral,
+} from '@babel/types';
 import { parse } from '@babel/parser';
 import generate from '@babel/generator';
-import { debounceAction } from '../../../../Helper/debounceAction';
 import { Expression } from '@babel/types';
 import { isExpressionStatement } from '@babel/types';
 import { isLogicalExpression } from '@babel/types';
@@ -20,7 +25,6 @@ import { expressionStatement } from '@babel/types';
 import { LogicalExpression } from '@babel/types';
 import { logicalExpression } from '@babel/types';
 import { isBinaryExpression } from '@babel/types';
-import { emptyStatement } from '@babel/types';
 import { Menu } from '../../../../Components/Menu';
 
 export const scriptEditStyle = css({
@@ -52,13 +56,13 @@ export function returnTypes(
   return isScriptCondition(mode) ? ['boolean'] : undefined;
 }
 
-function conditionVisitor(
+function conditionGenerator(
   operator: Operator,
   expression: Expression,
   prevStatement: Statement[] = [],
 ): Statement[] {
   if (isLogicalExpression(expression) && expression.operator === operator) {
-    return conditionVisitor(operator, expression.left, [
+    return conditionGenerator(operator, expression.left, [
       expressionStatement(expression.right),
       ...prevStatement,
     ]);
@@ -69,7 +73,7 @@ function conditionVisitor(
 
 function concatBinaryExpressionsToLogicalExpression(
   operator: Operator,
-  binaryExpressions: BinaryExpression[],
+  binaryExpressions: (BinaryExpression | BooleanLiteral)[],
   index: number = 0,
 ): LogicalExpression {
   if (index === binaryExpressions.length - 2) {
@@ -95,10 +99,13 @@ function concatStatementsToCondition(
   operator: Operator,
   statements: Statement[],
 ): Statement[] {
-  const binaryExpressions: BinaryExpression[] = [];
+  const binaryExpressions: (BinaryExpression | BooleanLiteral)[] = [];
   let canBeMerged = true;
   statements.forEach(s => {
-    if (isExpressionStatement(s) && isBinaryExpression(s.expression)) {
+    if (
+      isExpressionStatement(s) &&
+      (isBinaryExpression(s.expression) || isBooleanLiteral(s.expression))
+    ) {
       binaryExpressions.push(s.expression);
     } else {
       canBeMerged = false;
@@ -224,7 +231,7 @@ export function Script({
         if (isScriptCondition(view.mode) && newExpressions.length === 1) {
           const condition = newExpressions[0];
           if (isExpressionStatement(condition)) {
-            newExpressions = conditionVisitor(operator, condition.expression);
+            newExpressions = conditionGenerator(operator, condition.expression);
           } else {
             setError(['The script cannot be parsed']);
           }

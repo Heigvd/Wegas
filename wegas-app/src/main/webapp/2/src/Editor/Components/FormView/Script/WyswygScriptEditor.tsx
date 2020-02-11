@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { ScriptView } from './Script';
-import { Statement } from '@babel/types';
+import { ScriptView, isScriptCondition } from './Script';
+import { Statement, expressionStatement, booleanLiteral } from '@babel/types';
 import { css } from 'emotion';
 import { emptyStatement } from '@babel/types';
 import Form from 'jsoninput';
@@ -48,7 +48,11 @@ export function WyswygScriptEditor({
         onChange={value => {
           const cleanValue = value.statements.map(
             (s: { statement: Statement }) =>
-              s ? s.statement : emptyStatement(),
+              s
+                ? s.statement
+                : isScriptCondition(mode)
+                ? expressionStatement(booleanLiteral(true))
+                : emptyStatement(),
           );
           setExpr(cleanValue);
           onChange(cleanValue);

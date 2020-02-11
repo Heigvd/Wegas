@@ -16,14 +16,14 @@ interface IName {
 
 interface IEntityArrayFieldSelectProps extends WidgetProps.BaseProps {
   context?: {
-      variableName?: string;
-  },
+    variableName?: string;
+  };
   view: {
     returnAttr: string;
     scope: 'instance' | string;
     field: string;
     context?: {
-        entity: string;
+      entity: string;
     };
     name: IName;
   } & CommonView &

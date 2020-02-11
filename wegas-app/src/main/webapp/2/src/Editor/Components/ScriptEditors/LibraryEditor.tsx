@@ -21,7 +21,6 @@ import {
   clientScriptEval,
   useGlobals,
 } from '../../../Components/Hooks/useScript';
-import * as ts from 'typescript';
 import { Menu } from '../../../Components/Menu';
 import { MessageString } from '../MessageString';
 
@@ -482,7 +481,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           });
           if (scriptType === 'ClientScript') {
             try {
-              clientScriptEval(ts.transpile(libEntry.library.content));
+              clientScriptEval(libEntry.library.content);
             } catch (e) {
               setModalState({
                 type: 'warning',

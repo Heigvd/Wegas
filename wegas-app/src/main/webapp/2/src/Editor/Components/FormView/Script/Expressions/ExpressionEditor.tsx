@@ -4,6 +4,8 @@ import {
   isEmptyStatement,
   expressionStatement,
   isStatement,
+  isExpressionStatement,
+  isBooleanLiteral,
 } from '@babel/types';
 import generate from '@babel/generator';
 import Form from 'jsoninput';
@@ -30,6 +32,7 @@ import {
   makeGlobalMethodSchema,
   filterMethods,
   IConditionSchemaAttributes,
+  getGlobalMethodConfig,
 } from './expressionEditorHelpers';
 import {
   ScriptView,
@@ -39,7 +42,7 @@ import {
   returnTypes,
 } from '../Script';
 import { useStore } from '../../../../../data/store';
-import { GameModel, VariableDescriptor } from '../../../../../data/selectors';
+import { GameModel } from '../../../../../data/selectors';
 import { methodParse, generateMethodStatement } from './astMethodManagement';
 import {
   isConditionStatement,
@@ -56,15 +59,14 @@ import {
   isWegasMethodReturnType,
   WegasTypeString,
   getMethodConfig,
+  WegasMethod,
 } from '../../../../editionConfig';
-import { getGlobalMethodConfig } from './globalMethods';
 import { safeClientTSScriptEval } from '../../../../../Components/Hooks/useScript';
 import { IconButton } from '../../../../../Components/Inputs/Button/IconButton';
 import { MessageString } from '../../../MessageString';
 import { WegasScriptEditor } from '../../../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';
 import { LabeledView, Labeled } from '../../labeled';
-import { debounceAction } from '../../../../../Helper/debounceAction';
 import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory';
 import { pick } from 'lodash-es';
 
@@ -99,7 +101,9 @@ export function ExpressionEditor({
   const [error, setError] = React.useState();
   const [srcMode, setSrcMode] = React.useState(false);
   const [newSrc, setNewSrc] = React.useState();
-  const [formState, setFormState] = React.useState<ExpressionEditorState>({});
+  const [formState, setFormState] = React.useState<ExpressionEditorState>({
+    statement,
+  });
 
   // Getting variables id
   // First it was done with GameModel.selectCurrent().itemsIds but this array is always full even if the real object are not loaded yet
@@ -117,7 +121,17 @@ export function ExpressionEditor({
     (
       statement: Statement,
     ): IInitAttributes | IAttributes | IConditionAttributes | undefined => {
-      if (!isEmptyStatement(statement)) {
+      if (
+        isExpressionStatement(statement) &&
+        isBooleanLiteral(statement.expression)
+      ) {
+        return {
+          initExpression: {
+            type: 'boolean',
+            script: statement.expression.value ? 'true' : 'false',
+          },
+        };
+      } else {
         const newAttributes = methodParse(statement, 'Variable');
         if (newAttributes) {
           return newAttributes;
@@ -158,6 +172,18 @@ export function ExpressionEditor({
     },
     [mode],
   );
+
+  // React.useEffect(()=>{
+  //   const parsedAttributes = parseStatement(statement);
+
+  //   const generatedSchema = generateSchema(parsedAttributes);
+
+  //   setFormState(fs=>({
+  //     ...fs,
+
+  //     statement
+  //   }))
+  // },[statement])
 
   const generateStatement = React.useCallback(
     (attributes: IInitAttributes, properties: IUnknownSchema['properties']) => {
@@ -317,9 +343,8 @@ export function ExpressionEditor({
           schema = makeGlobalMethodSchema(
             variableIds,
             getGlobalMethodConfig(
-              isScriptCondition(mode),
               attributes.initExpression.script,
-            ),
+            ) as WegasMethod,
             mode,
           );
 

@@ -11,13 +11,13 @@ import entitiesSrc from '!!raw-loader!../../../types/generated/WegasScriptableEn
 // @ts-ignore
 import editorGlobalSrc from '!!raw-loader!../../../types/scripts/EditorGlobals.d.ts';
 // @ts-ignore
-import methodGlobalSrc from '!!raw-loader!../../../types/scripts/MethodGlobals.d.ts';
+import clientMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ClientMethodGlobals.d.ts';
 // @ts-ignore
 import schemaGlobalSrc from '!!raw-loader!../../../types/scripts/SchemaGlobals.d.ts';
 // @ts-ignore
 import classesGlobalSrc from '!!raw-loader!../../../types/scripts/ClassesGlobals.d.ts';
 // @ts-ignore
-import serverMethodsSrc from '!!raw-loader!../../../types/scripts/ServerMethods.d.ts';
+import serverMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ServerMethodsGlobals.d.ts';
 
 import { refDifferent } from './storeHookFactory';
 
@@ -38,7 +38,7 @@ export function useGlobalLibs() {
       return newObject;
     }, {});
 
-    const globalMethods = s.global.methods;
+    const globalMethods = s.global.clientMethods;
     const globalSchemas = s.global.schemas.views;
 
     const currentLanguages = Object.values(
@@ -67,7 +67,7 @@ export function useGlobalLibs() {
         }
         declare const Editor: EditorClass;
     
-        interface GlobalMethods {\n${Object.keys(globalMethods).reduce(
+        interface ClientMethods {\n${Object.keys(globalMethods).reduce(
           (s, k) => {
             const method = globalMethods[k];
             const isArray = method.returnStyle === 'array';
@@ -83,10 +83,10 @@ export function useGlobalLibs() {
           },
           '',
         )}}
-        interface MethodClass extends GlobalMethodClass {
-          getMethod: <T extends keyof GlobalMethods>(name : T) => GlobalMethods[T];
+        interface ClientMethodClass extends GlobalClientMethodClass {
+          getMethod: <T extends keyof ClientMethods>(name : T) => ClientMethods[T];
         }
-        declare const Methods : MethodClass
+        declare const ClientMethods : ClientMethodClass;
     
         type GlobalSchemas = ${Object.keys(globalSchemas).reduce(
           (s, k) => s + `\n  | '${k}'`,
@@ -95,7 +95,7 @@ export function useGlobalLibs() {
         interface SchemaClass extends GlobalSchemaClass {
           removeSchema: (name: GlobalSchemas) => void;
         }
-        declare const Schemas : SchemaClass
+        declare const Schemas : SchemaClass;
         
         type GlobalClasses = ${
           classes.length === 0
@@ -105,11 +105,13 @@ export function useGlobalLibs() {
         interface ClassesClass extends GlobalClassesClass{
           removeClass: (className: GlobalClasses) => void;
         }
-        declare const Classes : ClassesClass
+        declare const Classes : ClassesClass;
 
-        declare const RequestManager : IRequestManager
-        declare const Event : IEvent
-        declare const DelayedEvent : IDelayedEvent
+        declare const ServerMethods : GlobalServerMethodClass;
+
+        declare const RequestManager : WRequestManager;
+        declare const Event : WEvent;
+        declare const DelayedEvent : WDelayedEvent;
 
         `;
   }, refDifferent);
@@ -120,10 +122,10 @@ export function useGlobalLibs() {
         content: `
             ${entitiesSrc}\n
             ${editorGlobalSrc}\n
-            ${methodGlobalSrc}\n
+            ${clientMethodGlobalSrc}\n
+            ${serverMethodGlobalSrc}\n
             ${schemaGlobalSrc}\n
             ${classesGlobalSrc}\n
-            ${serverMethodsSrc}\n
             ${libs}\n
           `,
         name: 'VariablesTypes.d.ts',

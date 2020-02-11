@@ -4,7 +4,6 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import { Labeled, LabeledView } from './labeled';
 import { inputStyle } from './String';
 
-
 export interface TimestampProps
   extends WidgetProps.BaseProps<
     {
@@ -17,10 +16,9 @@ export interface TimestampProps
   value?: number;
 }
 
-
 export function TimestampView(props: TimestampProps) {
   const date = props.value ? new Date(props.value) : new Date();
-  const value = date.toLocaleDateString() + " " + date.toLocaleTimeString()
+  const value = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
   return (
     <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       <Labeled {...props.view}>
@@ -35,7 +33,7 @@ export function TimestampView(props: TimestampProps) {
               readOnly={true}
               disabled={true}
               autoComplete="off"
-              />
+            />
           </>
         )}
       </Labeled>

@@ -44,7 +44,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
         try {
           clientScriptEval(libraries.JS[libKey].content);
         } catch (e) {
-          wlog(libraries.JS[libKey].content);
+          wlog(libKey);
           wlog(e);
         }
       }),
