@@ -43,12 +43,15 @@ const handleStyle = css({
 });
 
 function Adder(props: WidgetProps.ArrayProps & IArrayProps & { id: string }) {
+  const { userOnChildAdd } = props.view;
   if (Array.isArray(props.view.choices)) {
     return (
       <Menu
         items={props.view.choices}
         icon="plus-circle"
-        onSelect={({ value }) => props.onChildAdd(value)}
+        onSelect={({ value }) =>
+          userOnChildAdd ? userOnChildAdd(value) : props.onChildAdd(value)
+        }
       />
     );
   }
@@ -56,7 +59,7 @@ function Adder(props: WidgetProps.ArrayProps & IArrayProps & { id: string }) {
     <IconButton
       id={props.id}
       icon="plus-circle"
-      onClick={() => props.onChildAdd()}
+      onClick={() => (userOnChildAdd ? userOnChildAdd() : props.onChildAdd())}
       tooltip={props.view.tooltip}
     />
   );
@@ -197,6 +200,7 @@ export interface IArrayProps
       choices?: { label: React.ReactNode; value: string }[];
       tooltip?: string;
       disabled?: boolean;
+      userOnChildAdd?: (value?: {}) => void;
       // TODO : Use the following view props!
       highlight?: boolean;
       sortable?: boolean;
@@ -211,7 +215,6 @@ function ArrayWidget(props: IArrayProps) {
   const { maxItems = Infinity, minItems = 0 } = props.schema;
   const disabled = props.view.disabled;
   const readOnly = props.view.readOnly;
-
   return (
     <CommonViewContainer errorMessage={props.errorMessage} view={props.view}>
       <Labeled label={props.view.label} description={props.view.description}>

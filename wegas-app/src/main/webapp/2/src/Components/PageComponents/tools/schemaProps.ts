@@ -322,7 +322,7 @@ export const schemaProps = {
   array: (
     label?: string,
     itemShema: {} = {},
-    // onChildAdd?: (value?: T) => void,
+    userOnChildAdd?: (value?: {}) => void,
     // onChildRemove?: (index: number) => void,
     requiredItems: boolean = false,
     itemType: TYPESTRING = 'object',
@@ -340,7 +340,6 @@ export const schemaProps = {
       required: requiredItems,
       type: itemType,
     },
-    // onChildAdd,
     // onChildRemove,
     type: 'array',
     index,
@@ -352,6 +351,7 @@ export const schemaProps = {
       layout,
       highlight,
       sortable,
+      userOnChildAdd,
     },
   }),
   statement: (

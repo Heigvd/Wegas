@@ -147,7 +147,7 @@ export function useGlobals() {
   };
 }
 
-export function safeClientTSScriptEval<ReturnValue>(script: string) {
+export function safeClientScriptEval<ReturnValue>(script: string) {
   try {
     return clientScriptEval<ReturnValue>(script);
   } catch (e) {

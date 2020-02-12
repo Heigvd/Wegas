@@ -188,7 +188,7 @@ export async function getEntityActions(
   return { edit: editVariable };
 }
 
-export async function getMethodConfig<T extends IAbstractEntity>(
+export async function getVariableMethodConfig<T extends IAbstractEntity>(
   entity: T,
 ): Promise<MethodConfig> {
   return fetchConfig(entity['@class'] + '.json').then(res =>

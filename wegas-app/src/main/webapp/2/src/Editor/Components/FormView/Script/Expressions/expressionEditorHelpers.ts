@@ -3,6 +3,7 @@ import {
   WegasTypeString,
   MethodConfig,
   WegasMethod,
+  getVariableMethodConfig,
 } from '../../../../editionConfig';
 
 import { schemaProps } from '../../../../../Components/PageComponents/tools/schemaProps';
@@ -17,6 +18,8 @@ import { StringOrT, genVarItems } from '../../TreeVariableSelect';
 
 import { store } from '../../../../../data/store';
 import { TYPESTRING } from 'jsoninput/typings/types';
+import { safeClientScriptEval } from '../../../../../Components/Hooks/useScript';
+import { Statement } from '@babel/types';
 
 const booleanOperators = {
   '===': { label: 'equals' },
@@ -89,9 +92,11 @@ export interface IConditionSchemaAttributes extends ISchemaAttributes {
   operator: ReturnType<typeof schemaProps['select']>;
   comparator: ReturnType<typeof schemaProps['custom']>;
 }
-export interface IUnknownSchema {
+export interface WyiswygExpressionSchema {
   description: string;
-  properties: IParameterSchemaAtributes;
+  properties: Partial<
+    IInitSchemaAttributes | ISchemaAttributes | IConditionSchemaAttributes
+  >;
 }
 
 export const isFilledObject = (
@@ -137,7 +142,7 @@ export const isConditionSchemaAttributes = (
 ): scriptAttributes is IConditionSchemaAttributes =>
   isFilledObject(defaultConditionAttributes, scriptAttributes);
 
-export const filterMethods = (
+export const filterVariableMethods = (
   methods: MethodConfig,
   mode?: ScriptMode,
 ): MethodConfig =>
@@ -223,7 +228,47 @@ export function genGlobalItems<T = string>(
 }
 
 export function getGlobalMethodConfig(globalMethod: string) {
-  return store.getState().global.serverMethods[globalMethod];
+  return {
+    [globalMethod]: store.getState().global.serverMethods[globalMethod],
+  } as MethodConfig;
+}
+
+interface MethodSearcher {
+  type: ExpressionType;
+}
+interface GlobalMethodSearcher extends MethodSearcher {
+  type: 'global';
+  value: string;
+}
+interface VariableMethodSearcher extends MethodSearcher {
+  type: 'variable';
+  value?: IVariableDescriptor;
+  mode?: ScriptMode;
+}
+interface BooleanMethodSearcher extends MethodSearcher {
+  type: 'boolean';
+}
+export type MethodSearchers =
+  | GlobalMethodSearcher
+  | VariableMethodSearcher
+  | BooleanMethodSearcher;
+
+export async function getMethodConfig(
+  methodSearcher: MethodSearchers,
+): Promise<MethodConfig> {
+  switch (methodSearcher.type) {
+    case 'global':
+      return getGlobalMethodConfig(methodSearcher.value);
+    case 'variable':
+      return methodSearcher.value
+        ? filterVariableMethods(
+            await getVariableMethodConfig(methodSearcher.value),
+            methodSearcher.mode,
+          )
+        : {};
+    default:
+      return {};
+  }
 }
 
 export const makeItems: (
@@ -259,15 +304,19 @@ export const makeSchemaInitExpression = (
         value: 'Global methods',
         selectable: false,
       },
-      {
-        label: 'Booleans',
-        items: [
-          { label: 'True', value: 'true' },
-          { label: 'False', value: 'false' },
-        ],
-        value: 'Booleans',
-        selectable: false,
-      },
+      ...(isScriptCondition(mode)
+        ? [
+            {
+              label: 'Booleans',
+              items: [
+                { label: 'True', value: 'true' },
+                { label: 'False', value: 'false' },
+              ],
+              value: 'Booleans',
+              selectable: false,
+            },
+          ]
+        : []),
     ],
     false,
     undefined,
@@ -278,9 +327,28 @@ export const makeSchemaInitExpression = (
   ),
 });
 
+export const makeSchemaMethodSelector = (methods?: MethodConfig) => ({
+  ...(methods && Object.keys(methods).length > 0
+    ? {
+        methodName: schemaProps.select(
+          undefined,
+          false,
+          Object.keys(methods).map(k => ({
+            label: methods[k].label,
+            value: k,
+          })),
+          'string',
+          'DEFAULT',
+          1,
+          'inline',
+        ),
+      }
+    : {}),
+});
+
 export const makeSchemaParameters = (
-  parameters: WegasMethodParameter[],
   index: number,
+  parameters: WegasMethodParameter[],
 ) =>
   parameters.reduce(
     (o, p, i) => ({
@@ -300,6 +368,35 @@ export const makeSchemaParameters = (
     {},
   );
 
+export const makeSchemaConditionAttributes = (
+  index: number,
+  method?: WegasMethod,
+  mode?: ScriptMode,
+) => ({
+  ...(method && isScriptCondition(mode) && method.returns !== 'boolean'
+    ? {
+        operator: schemaProps.select(
+          undefined,
+          false,
+          filterOperators(method.returns),
+          'string',
+          'DEFAULT',
+          method.parameters.length + index,
+          'inline',
+        ),
+        comparator: schemaProps.custom(
+          undefined,
+          false,
+          method.returns,
+          method.returns,
+          undefined,
+          method.parameters.length + index,
+          'inline',
+        ),
+      }
+    : {}),
+});
+
 export const makeGlobalMethodSchema = (
   variableIds: number[],
   scriptMethod?: WegasMethod,
@@ -312,7 +409,7 @@ export const makeGlobalMethodSchema = (
   description: 'GlobalMethodSchema',
   properties: {
     ...makeSchemaInitExpression(variableIds, mode, scriptableClassFilter),
-    ...(scriptMethod ? makeSchemaParameters(scriptMethod.parameters, 1) : {}),
+    ...(scriptMethod ? makeSchemaParameters(1, scriptMethod.parameters) : {}),
   },
 });
 
@@ -322,48 +419,78 @@ export const makeVariableMethodSchema = (
   scriptMethod?: WegasMethod,
   mode?: ScriptMode,
   scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
-): IUnknownSchema => ({
+): WyiswygExpressionSchema => ({
   description: 'VariableMethodSchema',
   properties: {
     ...makeSchemaInitExpression(variableIds, mode, scriptableClassFilter),
-    ...(methods && Object.keys(methods).length > 0
-      ? {
-          methodName: schemaProps.select(
-            undefined,
-            false,
-            Object.keys(methods).map(k => ({
-              label: methods[k].label,
-              value: k,
-            })),
-            'string',
-            'DEFAULT',
-            1,
-            'inline',
-          ),
-        }
-      : {}),
-    ...(scriptMethod ? makeSchemaParameters(scriptMethod.parameters, 2) : {}),
-    ...(scriptMethod && isScriptCondition(mode)
-      ? {
-          operator: schemaProps.select(
-            undefined,
-            false,
-            filterOperators(scriptMethod.returns),
-            'string',
-            'DEFAULT',
-            scriptMethod.parameters.length + 2,
-            'inline',
-          ),
-          comparator: schemaProps.custom(
-            undefined,
-            false,
-            scriptMethod.returns,
-            scriptMethod.returns,
-            undefined,
-            scriptMethod.parameters.length + 3,
-            'inline',
-          ),
-        }
-      : {}),
+    ...makeSchemaMethodSelector(methods),
+    ...(scriptMethod ? makeSchemaParameters(2, scriptMethod.parameters) : {}),
+    ...makeSchemaConditionAttributes(2, scriptMethod, mode),
   },
 });
+
+export const generateSchema = async (
+  attributes: Partial<IInitAttributes | IAttributes | IConditionAttributes>,
+  variableIds: number[],
+  mode?: ScriptMode,
+): Promise<WyiswygExpressionSchema> => {
+  let newSchemaProps:
+    | IInitSchemaAttributes
+    | ISchemaAttributes
+    | IConditionSchemaAttributes = {
+    ...makeSchemaInitExpression(variableIds, mode),
+  };
+
+  if (attributes.initExpression) {
+    const type = attributes.initExpression.type;
+    const script = attributes.initExpression.script;
+    const variable = safeClientScriptEval<IVariableDescriptor>(script);
+    let configArg: MethodSearchers;
+    switch (type) {
+      case 'global':
+        configArg = { type, value: script };
+        break;
+      case 'variable':
+        configArg = { type, value: variable, mode };
+        break;
+      default:
+        configArg = { type };
+    }
+
+    const methods = await getMethodConfig(configArg);
+    let method: WegasMethod | undefined = undefined;
+    switch (type) {
+      case 'global': {
+        method = methods[script];
+        break;
+      }
+      case 'variable': {
+        const methodName = (attributes as IAttributes).methodName;
+        if (methodName) {
+          method = methods[methodName];
+        }
+        break;
+      }
+    }
+
+    let propsIndex = 1;
+    if (type === 'variable') {
+      propsIndex += 1;
+      newSchemaProps = {
+        ...newSchemaProps,
+        ...makeSchemaMethodSelector(methods),
+      };
+    }
+
+    newSchemaProps = {
+      ...newSchemaProps,
+      ...(method ? makeSchemaParameters(propsIndex, method.parameters) : {}),
+      ...makeSchemaConditionAttributes(propsIndex, method, mode),
+    };
+  }
+
+  return {
+    description: 'WyiswygExpression',
+    properties: newSchemaProps,
+  };
+};

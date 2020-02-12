@@ -15,6 +15,7 @@ import {
   BinaryExpression,
   isBooleanLiteral,
   BooleanLiteral,
+  isCallExpression,
 } from '@babel/types';
 import { parse } from '@babel/parser';
 import generate from '@babel/generator';
@@ -26,6 +27,7 @@ import { LogicalExpression } from '@babel/types';
 import { logicalExpression } from '@babel/types';
 import { isBinaryExpression } from '@babel/types';
 import { Menu } from '../../../../Components/Menu';
+import { CallExpression } from '@babel/types';
 
 export const scriptEditStyle = css({
   height: '5em',
@@ -73,7 +75,7 @@ function conditionGenerator(
 
 function concatBinaryExpressionsToLogicalExpression(
   operator: Operator,
-  binaryExpressions: (BinaryExpression | BooleanLiteral)[],
+  binaryExpressions: (BinaryExpression | BooleanLiteral | CallExpression)[],
   index: number = 0,
 ): LogicalExpression {
   if (index === binaryExpressions.length - 2) {
@@ -99,12 +101,18 @@ function concatStatementsToCondition(
   operator: Operator,
   statements: Statement[],
 ): Statement[] {
-  const binaryExpressions: (BinaryExpression | BooleanLiteral)[] = [];
+  const binaryExpressions: (
+    | BinaryExpression
+    | BooleanLiteral
+    | CallExpression
+  )[] = [];
   let canBeMerged = true;
   statements.forEach(s => {
     if (
       isExpressionStatement(s) &&
-      (isBinaryExpression(s.expression) || isBooleanLiteral(s.expression))
+      (isBinaryExpression(s.expression) ||
+        isBooleanLiteral(s.expression) ||
+        isCallExpression(s.expression))
     ) {
       binaryExpressions.push(s.expression);
     } else {
@@ -114,12 +122,16 @@ function concatStatementsToCondition(
 
   //binaryExpressions.reverse();
 
-  if (canBeMerged && binaryExpressions.length > 1) {
-    const binaryCondition = concatBinaryExpressionsToLogicalExpression(
-      operator,
-      binaryExpressions,
-    );
-    return [expressionStatement(binaryCondition)];
+  if (canBeMerged) {
+    if (binaryExpressions.length === 1) {
+      return [expressionStatement(binaryExpressions[0])];
+    } else {
+      const binaryCondition = concatBinaryExpressionsToLogicalExpression(
+        operator,
+        binaryExpressions,
+      );
+      return [expressionStatement(binaryCondition)];
+    }
   } else {
     throw Error("Condition's expressions cannot be merged");
   }
