@@ -23,10 +23,10 @@ export function WyswygScriptEditor({
   mode,
 }: WyswygScriptEditorProps) {
   // These state and effect are here just to avoid loosing focus when changes occures
-  const [expr, setExpr] = React.useState(expressions);
-  React.useEffect(() => {
-    setExpr(expressions);
-  }, [expressions]);
+  // const [expr, setExpr] = React.useState(expressions);
+  // React.useEffect(() => {
+  //   setExpr(expressions);
+  // }, [expressions]);
 
   return (
     <div className={scriptStyle}>
@@ -40,8 +40,14 @@ export function WyswygScriptEditor({
                 statement: schemaProps.statement(undefined, true, mode),
               },
               () =>
+                // onChange([
+                //   ...(expr == null ? [] : expr),
+                //   isScriptCondition(mode)
+                //     ? expressionStatement(booleanLiteral(true))
+                //     : emptyStatement(),
+                // ]),
                 onChange([
-                  ...(expr == null ? [] : expr),
+                  ...(expressions == null ? [] : expressions),
                   isScriptCondition(mode)
                     ? expressionStatement(booleanLiteral(true))
                     : emptyStatement(),
@@ -51,12 +57,12 @@ export function WyswygScriptEditor({
         }}
         value={{
           statements:
-            expr == null
+            expressions == null
               ? []
-              : expr.map(e => ({ statement: e ? e : emptyStatement() })),
+              : expressions.map(e => ({ statement: e ? e : emptyStatement() })),
         }}
         onChange={value => {
-          const cleanValue = value.statements.map(
+          const cleanValue: Statement[] = value.statements.map(
             (s: { statement: Statement }) =>
               s
                 ? s.statement
@@ -64,7 +70,7 @@ export function WyswygScriptEditor({
                 ? expressionStatement(booleanLiteral(true))
                 : emptyStatement(),
           );
-          setExpr(cleanValue);
+          // setExpr(cleanValue);
           onChange(cleanValue);
         }}
       />

@@ -44,8 +44,6 @@ import { omit } from 'lodash-es';
 import { parse } from 'babylon';
 import {
   WegasOperators,
-  IParameterAttributes,
-  IParameterSchemaAtributes,
   defaultConditionAttributes,
   IAttributes,
   IConditionAttributes,
@@ -55,6 +53,8 @@ import {
   isConditionAttributes,
   isConditionSchemaAttributes,
   isAttributes,
+  PartialAttributes,
+  PartialSchemaAttributes,
 } from './expressionEditorHelpers';
 import {
   WegasTypeString,
@@ -128,8 +128,7 @@ export const allowedArgumentTypes = {
 };
 
 export function methodParameterParse(node: Node | null) {
-  for (const entry of Object.entries(allowedArgumentTypes)) {
-    const typeMethods = entry[1];
+  for (const typeMethods of Object.values(allowedArgumentTypes)) {
     if (typeMethods.checker(node)) {
       // @ts-ignore we can ignore the ts error here as we ensured the node's type with the checker
       return typeMethods.parser(node, methodParameterParse);
@@ -158,7 +157,7 @@ export function methodParse(
       if (!isCallExpression(expression)) {
         throwParseError('The first expression is not a call expression');
       } else {
-        const parameters: IParameterAttributes = expression.arguments
+        const parameters: PartialAttributes = expression.arguments
           .map(methodParameterParse)
           .reduce((o, a, i) => ({ ...o, [i]: a }), {});
         let callee = expression.callee;
@@ -201,9 +200,7 @@ export function methodParse(
 }
 
 export const generateMethodStatement = (
-  scriptAttributes: Partial<
-    IInitAttributes | IAttributes | IConditionAttributes
-  >,
+  scriptAttributes: PartialAttributes,
   schemaAttributes: WyiswygExpressionSchema['properties'],
   tolerateTypeVariation?: boolean,
 ) => {
@@ -262,6 +259,10 @@ export type ConditionStatement = Statement & {
   expression: ConditionExpression;
 };
 
+export type ConditionCallStatement = Statement & {
+  expression: ImpactExpression;
+};
+
 export const isLiteralExpression = (
   expression: Expression,
 ): expression is Literal =>
@@ -296,24 +297,7 @@ export const listToObject: <T>(list: T[]) => { [id: string]: T } = list =>
   list.reduce((o, p, i) => ({ ...o, [i]: p }), {});
 
 export const getParameters = (expression: CallExpression) =>
-  listToObject(
-    expression.arguments.map(a => {
-      switch (a.type) {
-        case 'StringLiteral':
-          return (a as StringLiteral).value;
-        case 'NumericLiteral':
-          return (a as NumericLiteral).value;
-        default: {
-          const code = generate(a).code;
-          try {
-            return JSON.parse(code);
-          } catch {
-            return code;
-          }
-        }
-      }
-    }),
-  );
+  listToObject(expression.arguments.map(methodParameterParse));
 
 export const isConditionStatement = (
   statement: Statement,
@@ -326,6 +310,11 @@ export const isConditionStatement = (
     expression: statement.expression.left,
   }) &&
   isLiteralExpression(statement.expression.right);
+
+export const isConditionCallStatement = (
+  statement: Statement,
+): statement is ConditionCallStatement =>
+  isExpressionStatement(statement) && isCallExpression(statement.expression);
 
 export const getOperator = (expression: ConditionExpression) =>
   expression.operator;
@@ -413,7 +402,7 @@ export const variableToASTNode = (
 
 export const generateCallExpression = (
   callee: Expression,
-  scriptAttributes: IParameterAttributes,
+  scriptAttributes: PartialAttributes,
   schemaAttributes: WyiswygExpressionSchema['properties'],
   tolerateTypeVariation?: boolean,
 ) =>
@@ -448,7 +437,7 @@ export const generateExpressionWithInitValue = (value: string) => {
 
 export const generateImpactExpression = (
   scriptAttributes: IAttributes,
-  schemaAttributes: IParameterSchemaAtributes,
+  schemaAttributes: PartialSchemaAttributes,
   tolerateTypeVariation?: boolean,
 ) =>
   generateCallExpression(
@@ -463,7 +452,7 @@ export const generateImpactExpression = (
 
 export const generateConditionStatement = (
   scriptAttributes: IConditionAttributes,
-  schemaAttributes: IParameterSchemaAtributes,
+  schemaAttributes: PartialSchemaAttributes,
   methodReturn: WegasMethodReturnType,
   tolerateTypeVariation?: boolean,
 ) =>
@@ -513,6 +502,21 @@ export const parseStatement = (
     if (newAttributes) {
       return { attributes: newAttributes, error };
     } else if (isScriptCondition(mode)) {
+      if (isConditionCallStatement(statement)) {
+        return {
+          attributes: {
+            initExpression: {
+              type: 'variable',
+              script: `Variable.find(gameModel,'${getVariable(
+                statement.expression,
+              )}')`,
+            },
+            methodName: getMethodName(statement.expression),
+            ...getParameters(statement.expression),
+          },
+          error,
+        };
+      }
       if (isConditionStatement(statement)) {
         return {
           attributes: {

@@ -28,6 +28,7 @@ import { logicalExpression } from '@babel/types';
 import { isBinaryExpression } from '@babel/types';
 import { Menu } from '../../../../Components/Menu';
 import { CallExpression } from '@babel/types';
+import { isEmptyStatement } from '@babel/types';
 
 export const scriptEditStyle = css({
   height: '5em',
@@ -116,7 +117,7 @@ function concatStatementsToCondition(
     ) {
       binaryExpressions.push(s.expression);
     } else {
-      canBeMerged = false;
+      canBeMerged = isEmptyStatement(s);
     }
   });
 
@@ -187,7 +188,7 @@ export function Script({
   const onStatementsChange = React.useCallback(
     (statements: Statement[], operator: Operator) => {
       let returnedProgram = program(statements ? statements : []);
-      if (isScriptCondition(view.mode)) {
+      if (statements.length > 0 && isScriptCondition(view.mode)) {
         try {
           returnedProgram = program(
             concatStatementsToCondition(operator, statements),
@@ -227,10 +228,12 @@ export function Script({
   }, [error]);
 
   React.useEffect(() => {
-    setScriptContent(
-      value == null ? '' : typeof value === 'string' ? value : value.content,
-    );
-  }, [value]);
+    const newValue =
+      value == null ? '' : typeof value === 'string' ? value : value.content;
+    if (scriptContent !== newValue) {
+      setScriptContent(newValue);
+    }
+  }, [value, scriptContent]);
 
   React.useEffect(() => {
     try {
@@ -240,15 +243,20 @@ export function Script({
         let newExpressions = parse(scriptContent, { sourceType: 'script' })
           .program.body;
 
-        if (isScriptCondition(view.mode) && newExpressions.length === 1) {
-          const condition = newExpressions[0];
-          if (isExpressionStatement(condition)) {
-            newExpressions = conditionGenerator(operator, condition.expression);
+        if (isScriptCondition(view.mode)) {
+          if (newExpressions.length === 1) {
+            const condition = newExpressions[0];
+            if (isExpressionStatement(condition)) {
+              newExpressions = conditionGenerator(
+                operator,
+                condition.expression,
+              );
+            } else {
+              setError(['The script cannot be parsed']);
+            }
           } else {
-            setError(['The script cannot be parsed']);
+            setError(['The script cannot be parsed as a condition']);
           }
-        } else {
-          setError(['The script cannot be parsed as a condition']);
         }
         setStatements(newExpressions);
       }
@@ -297,21 +305,6 @@ export function Script({
                   expressions={statements}
                   onChange={e => {
                     onStatementsChange(e, operator);
-                    // let returnedProgram = program(
-                    //   expressions ? expressions : [],
-                    // );
-                    // if (isScriptCondition(view.mode)) {
-                    //   try {
-                    //     returnedProgram = program(
-                    //       concatStatementsToCondition(operator, e),
-                    //     );
-                    //   } catch (e) {
-                    //     setError([e.message]);
-                    //   }
-                    // } else {
-                    //   returnedProgram = program(e);
-                    // }
-                    // onCodeChange(generate(returnedProgram).code);
                   }}
                   mode={view.mode}
                 />

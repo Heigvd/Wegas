@@ -75,6 +75,10 @@ export const defaultConditionAttributes: Partial<IConditionAttributes> = {
   comparator: undefined,
 };
 
+export type PartialAttributes = Partial<
+  IInitAttributes | IAttributes | IConditionAttributes
+>;
+
 export interface IParameterSchemaAtributes {
   [param: number]: WegasMethodParameter & {
     type: TYPESTRING;
@@ -92,11 +96,12 @@ export interface IConditionSchemaAttributes extends ISchemaAttributes {
   operator: ReturnType<typeof schemaProps['select']>;
   comparator: ReturnType<typeof schemaProps['custom']>;
 }
+export type PartialSchemaAttributes = Partial<
+  IInitSchemaAttributes | ISchemaAttributes | IConditionSchemaAttributes
+>;
 export interface WyiswygExpressionSchema {
   description: string;
-  properties: Partial<
-    IInitSchemaAttributes | ISchemaAttributes | IConditionSchemaAttributes
-  >;
+  properties: PartialSchemaAttributes;
 }
 
 export const isFilledObject = (
@@ -113,32 +118,32 @@ export const isFilledObject = (
 };
 
 export const isInitAttributes = (
-  scriptAttributes: IParameterAttributes,
+  scriptAttributes: PartialAttributes,
 ): scriptAttributes is IInitAttributes =>
   isFilledObject(defaultInitAttributes, scriptAttributes);
 
 export const isAttributes = (
-  scriptAttributes: IParameterAttributes,
+  scriptAttributes: PartialAttributes,
 ): scriptAttributes is IAttributes =>
   isFilledObject(defaultAttributes, scriptAttributes);
 
 export const isConditionAttributes = (
-  scriptAttributes: IParameterAttributes,
+  scriptAttributes: PartialAttributes,
 ): scriptAttributes is IConditionAttributes =>
   isFilledObject(defaultConditionAttributes, scriptAttributes);
 
 export const isInitSchemaAttributes = (
-  scriptAttributes: IParameterSchemaAtributes,
+  scriptAttributes: PartialSchemaAttributes,
 ): scriptAttributes is IInitSchemaAttributes =>
   isFilledObject(defaultInitAttributes, scriptAttributes);
 
 export const isSchemaAttributes = (
-  scriptAttributes: IParameterSchemaAtributes,
+  scriptAttributes: PartialSchemaAttributes,
 ): scriptAttributes is ISchemaAttributes =>
   isFilledObject(defaultAttributes, scriptAttributes);
 
 export const isConditionSchemaAttributes = (
-  scriptAttributes: IParameterSchemaAtributes,
+  scriptAttributes: PartialSchemaAttributes,
 ): scriptAttributes is IConditionSchemaAttributes =>
   isFilledObject(defaultConditionAttributes, scriptAttributes);
 
@@ -276,7 +281,7 @@ export const makeItems: (
   type: ExpressionType,
 ) => ScriptItemValue = (value, type) => ({
   type,
-  script: type === 'global' ? value : `Variable.find(gameModel,'${value}')`,
+  script: type === 'variable' ? `Variable.find(gameModel,'${value}')` : value,
 });
 
 export const makeSchemaInitExpression = (
@@ -309,8 +314,8 @@ export const makeSchemaInitExpression = (
             {
               label: 'Booleans',
               items: [
-                { label: 'True', value: 'true' },
-                { label: 'False', value: 'false' },
+                { label: 'True', value: makeItems('true', 'boolean') },
+                { label: 'False', value: makeItems('false', 'boolean') },
               ],
               value: 'Booleans',
               selectable: false,
@@ -430,7 +435,7 @@ export const makeVariableMethodSchema = (
 });
 
 export const generateSchema = async (
-  attributes: Partial<IInitAttributes | IAttributes | IConditionAttributes>,
+  attributes: PartialAttributes,
   variableIds: number[],
   mode?: ScriptMode,
 ): Promise<WyiswygExpressionSchema> => {

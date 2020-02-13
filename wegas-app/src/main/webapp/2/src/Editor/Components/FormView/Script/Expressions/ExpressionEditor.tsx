@@ -30,6 +30,7 @@ import {
   IConditionSchemaAttributes,
   getGlobalMethodConfig,
   generateSchema,
+  PartialAttributes,
 } from './expressionEditorHelpers';
 import {
   ScriptView,
@@ -74,7 +75,7 @@ const expressionEditorStyle = css({
 });
 
 interface ExpressionEditorState {
-  attributes?: Partial<IConditionAttributes>;
+  attributes?: PartialAttributes;
   // schema?: ReturnType<typeof makeVariableMethodSchema>;
   schema?: WyiswygExpressionSchema;
   statement?: Statement;
@@ -157,9 +158,7 @@ export function ExpressionEditor({
   const [error, setError] = React.useState();
   const [srcMode, setSrcMode] = React.useState(false);
   const [newSrc, setNewSrc] = React.useState();
-  const [formState, setFormState] = React.useState<ExpressionEditorState>({
-    statement,
-  });
+  const [formState, setFormState] = React.useState<ExpressionEditorState>({});
 
   // Getting variables id
   // First it was done with GameModel.selectCurrent().itemsIds but this array is always full even if the real object are not loaded yet
@@ -175,28 +174,28 @@ export function ExpressionEditor({
 
   React.useEffect(
     () => {
-      // if (
-      //   !formState.statement ||
-      //   generate(formState.statement).code !== generate(statement).code
-      // ) {
-      try {
-        const { attributes, error } = parseStatement(statement, mode);
-        if (error !== undefined) {
-          setError(error);
-        }
-        generateSchema(attributes, variableIds, mode).then(schema => {
-          // TODO : Validation here
+      if (
+        !formState.statement ||
+        generate(formState.statement).code !== generate(statement).code
+      ) {
+        try {
+          const { attributes, error } = parseStatement(statement, mode);
+          if (error !== undefined) {
+            setError(error);
+          }
+          generateSchema(attributes, variableIds, mode).then(schema => {
+            // TODO : Validation here
 
-          setFormState({
-            attributes,
-            schema,
-            statement,
+            setFormState({
+              attributes,
+              schema,
+              statement,
+            });
           });
-        });
-      } catch (e) {
-        setError(e.message);
+        } catch (e) {
+          setError(e.message);
+        }
       }
-      // }
     },
     /* eslint-disable react-hooks/exhaustive-deps */
     /* Linter disabled for the following line to allow reparsing only when a new statement is given to the component
@@ -307,6 +306,10 @@ export function ExpressionEditor({
       generateSchema(attributes, variableIds, mode).then(
         (schema: WyiswygExpressionSchema) => {
           const schemaProperties = schema.properties;
+
+          //Remove additional properties that doesn't fit schema
+          newAttributes = pick(newAttributes, Object.keys(schemaProperties));
+
           newAttributes = {
             ...newAttributes,
             ...(Object.keys(schemaProperties)
@@ -330,19 +333,15 @@ export function ExpressionEditor({
               ) as IParameterSchemaAtributes),
           };
 
-          // Removing operator to atribute if doesn't exists in shema
-          if (!('operator' in schemaProperties)) {
-            newAttributes = omit(newAttributes, 'operator');
-          }
+          if (isConditionSchemaAttributes(schemaProperties)) {
+            //Verify the chosen operator and change it if not in the operator list
+            newAttributes.operator = schemaProperties.operator.enum.includes(
+              newAttributes.operator,
+            )
+              ? newAttributes.operator
+              : undefined;
 
-          // Removing comparator to atribute if doesn't exists in shema
-          if (
-            !('comparator' in schemaProperties) ||
-            schemaProperties.comparator === undefined
-          ) {
-            newAttributes = omit(newAttributes, 'comparator');
-          } else {
-            //Trying to translate operator
+            //Trying to translate comparator
             newAttributes.comparator = typeCleaner(
               (newAttributes as IConditionAttributes).comparator,
               schemaProperties.comparator.type as WegasTypeString,
@@ -611,16 +610,18 @@ export function ExpressionEditor({
           value={formState.attributes}
           schema={formState.schema}
           onChange={(v, e) => {
-            if (e && e.length > 0) {
-              setFormState(fs => ({
-                ...fs,
-                attributes: v,
-                statement: fs.schema
-                  ? generateStatement(v, fs.schema, mode)
-                  : undefined,
-              }));
-            } else {
-              computeState(v);
+            if (deepDifferent(v, formState.attributes)) {
+              if (e && e.length > 0) {
+                setFormState(fs => ({
+                  ...fs,
+                  attributes: v,
+                  statement: fs.schema
+                    ? generateStatement(v, fs.schema, mode)
+                    : undefined,
+                }));
+              } else {
+                computeState(v);
+              }
             }
           }}
           context={
