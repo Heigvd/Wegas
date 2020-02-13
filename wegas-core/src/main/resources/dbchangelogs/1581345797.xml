@@ -1,0 +1,27 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="maxence" id="1581345808245-1">
+        <createTable tableName="statictextdescriptor">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="statictextdescriptor_pkey"/>
+            </column>
+            <column name="text_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="maxence" id="1581345808245-2">
+        <createTable tableName="statictextinstance">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="statictextinstance_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="maxence (generated)" id="1581345808245-3">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="statictextdescriptor" constraintName="fk_statictextdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" />
+    </changeSet>
+    <changeSet author="maxence (generated)" id="1581345808245-4">
+        <addForeignKeyConstraint baseColumnNames="text_id" baseTableName="statictextdescriptor" constraintName="fk_statictextdescriptor_text_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent" />
+    </changeSet>
+    <changeSet author="maxence (generated)" id="1581345808245-5">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="statictextinstance" constraintName="fk_statictextinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" />
+    </changeSet>
+</databaseChangeLog>

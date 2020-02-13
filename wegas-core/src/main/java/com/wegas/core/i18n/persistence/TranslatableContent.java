@@ -70,12 +70,12 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
-            sameEntityOnly = true, view = @View(
-                    label = "Version",
-                    readOnly = true,
-                    value = NumberView.class,
-                    featureLevel = ADVANCED
-            )
+        sameEntityOnly = true, view = @View(
+            label = "Version",
+            readOnly = true,
+            value = NumberView.class,
+            featureLevel = ADVANCED
+        )
     )
     @JsonView(Views.IndexI.class)
     private Long version;
@@ -92,8 +92,8 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
      */
     @JsonIgnore
     @WegasEntityProperty(searchable = true, callback = TranslatableCallback.class,
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label = "Translations"))
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(label = "Translations"))
     @OneToMany(mappedBy = "translatableContent", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @PrivateOwned
     private List<Translation> translations = new ArrayList<>();
@@ -310,9 +310,9 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     }
 
     /**
-     * Returns the most preferred translation according to given languages.
-     * returns the first translation which is not empty. If all translation are empty
-     * returns, the first non null, returns null o otherwise
+     * Returns the most preferred translation according to given languages. returns the first
+     * translation which is not empty. If all translation are empty returns, the first non null,
+     * returns null o otherwise
      *
      * @param languages languages codes sorted by preference
      *
@@ -389,6 +389,16 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         return trC;
     }
 
+    public TranslatableContent clone() {
+        TranslatableContent trC = new TranslatableContent();
+        for (Translation t : this.getRawTranslations()) {
+            trC.getRawTranslations().add(
+                new Translation(t.getLang(), t.getTranslation(), 
+                    t.getStatus(), trC));
+        }
+        return trC;
+    }
+
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         Broadcastable owner = this.getOwner();
@@ -416,9 +426,8 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     }
 
     /**
-     * Convenient method to use within merge implementation.
-     * other may be null, in this case, null is returned.
-     * target may be null, a brand new object will be returned.
+     * Convenient method to use within merge implementation. other may be null, in this case, null
+     * is returned. target may be null, a brand new object will be returned.
      * <p>
      * <p>
      * in merge example: this.setField(TranslatableContent.merger(this.getField(), o.getField()))

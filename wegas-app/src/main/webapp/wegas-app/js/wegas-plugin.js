@@ -565,46 +565,40 @@ YUI.add('wegas-plugin', function(Y) {
      *  @extends Y.Plugin.Action
      *  @constructor
      */
-    var ExecuteScriptAction = Y.Base.create(
-        'ExecuteScriptAction',
-        Action,
-        [],
-        {
-            execute: function() {
-                if (!this.get(HOST).get('disabled')) {
-                    Wegas.Panel.confirmPlayerAction(
-                        Y.bind(function() {
-                            this.showOverlay();
-                            Wegas.Facade.Variable.script.remoteEval(
-                                this.get('onClick'),
-                                {
-                                    on: {
-                                        success: Y.bind(function() {
-                                            this.hideOverlay();
-                                        }, this),
-                                        failure: Y.bind(this.hideOverlay, this)
-                                    }
+    var ExecuteScriptAction = Y.Base.create('ExecuteScriptAction', Action, [], {
+        execute: function() {
+            if (!this.get(HOST).get('disabled')) {
+                Wegas.Panel.confirmPlayerAction(
+                    Y.bind(function() {
+                        this.showOverlay();
+                        Wegas.Facade.Variable.script.remoteEval(
+                            this.get('onClick'),
+                            {
+                                on: {
+                                    success: Y.bind(function() {
+                                        this.hideOverlay();
+                                    }, this),
+                                    failure: Y.bind(this.hideOverlay, this)
                                 }
-                            );
-                        }, this)
+                            }
                         );
-                }
+                    }, this)
+                    );
             }
-        },
-        {
-            NS: 'ExecuteScriptAction',
-            ATTRS: {
-                onClick: {
-                    type: 'object',
-                    value: {},
-                    view: {
-                        type: 'script',
-                        label: 'On click'
-                    }
+        }
+    }, {
+        NS: 'ExecuteScriptAction',
+        ATTRS: {
+            onClick: {
+                type: 'object',
+                value: {},
+                view: {
+                    type: 'script',
+                    label: 'On click'
                 }
             }
         }
-    );
+    });
     Plugin.ExecuteScriptAction = ExecuteScriptAction;
 
 
@@ -692,36 +686,37 @@ YUI.add('wegas-plugin', function(Y) {
      *  @extends Y.Plugin.Action
      *  @constructor
      */
-    var ConfirmExecuteScriptAction = Y.Base.create(
-        'ConfirmExecuteScriptAction',
-        ExecuteScriptAction,
-        [],
-        {
-            execute: function() {
-                if (!this.get(HOST).get('disabled')) {
-                    Wegas.Panel.confirm(
-                        Y.Template.Micro.compile(this.get('message') || '')(),
-                        Y.bind(
-                            ConfirmExecuteScriptAction.superclass.execute,
-                            this
-                            )
-                        );
-                }
-            }
-        },
-        {
-            NS: 'ExecuteScriptAction',
-            ATTRS: {
-                message: {
-                    type: 'string',
-                    value: '',
-                    view: {
-                        label: 'Message'
-                    }
-                }
+    var ConfirmExecuteScriptAction = Y.Base.create('ConfirmExecuteScriptAction',
+        ExecuteScriptAction, [], {
+        execute: function() {
+            if (!this.get(HOST).get('disabled')) {
+                Wegas.Panel.confirm(
+                    I18n.tVar(this.get("messageVariable.evaluated"), this.get("message")),
+                    Y.bind(ConfirmExecuteScriptAction.superclass.execute, this));
             }
         }
-    );
+    }, {
+        NS: 'ExecuteScriptAction',
+        ATTRS: {
+            message: {
+                type: 'string',
+                value: '',
+                view: {
+                    label: 'Message'
+                }
+            },
+            messageVariable: {
+                type: 'object',
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                view: {
+                    type: 'variableselect',
+                    label: 'Variable',
+                    classFilter: ['TextDescriptor', 'StringDescriptor',
+                        'ListDescriptor', 'StaticTextDescriptor']
+                }
+            },
+        }
+    });
     Plugin.ConfirmExecuteScriptAction = ConfirmExecuteScriptAction;
 
 

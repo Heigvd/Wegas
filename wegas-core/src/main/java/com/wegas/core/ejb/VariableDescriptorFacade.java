@@ -28,6 +28,8 @@ import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
+import com.wegas.core.persistence.variable.primitive.StaticTextDescriptor;
+import com.wegas.core.persistence.variable.primitive.StaticTextInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.primitive.TextDescriptor;
@@ -114,8 +116,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         if (beans == null) {
             logger.error("INIT BEANS");
             beans = new Beanjection(variableInstanceFacade, this,
-                    resourceFacade, iterationFacade,
-                    reviewingFacade, userFacade, teamFacade, questionDescriptorFacade);
+                resourceFacade, iterationFacade,
+                reviewingFacade, userFacade, teamFacade, questionDescriptorFacade);
         }
         return beans;
     }
@@ -166,7 +168,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * @return the new descriptor
      */
     public VariableDescriptor createChild(final GameModel gameModel, final DescriptorListI<VariableDescriptor> list,
-            final VariableDescriptor entity, boolean resetNames) {
+        final VariableDescriptor entity, boolean resetNames) {
 
         List<String> usedNames = this.findDistinctNames(gameModel, entity.getRefId());
         List<TranslatableContent> usedLabels = this.findDistinctLabels(list);
@@ -530,44 +532,85 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         return this.changeScopeRecursively(this.find(vdId), newScopeType);
     }
 
-    public VariableDescriptor convertToList(VariableDescriptor vd) {
+    public VariableDescriptor convertToStaticText(VariableDescriptor vd) {
 
-        TranslatableContent label = null;
-        if (vd instanceof TextDescriptor) {
-            TextInstance ti = (TextInstance) vd.getDefaultInstance();
-            label = ti.getTrValue();
-            ti.setTrValue(null);
-        } else if (vd instanceof StringDescriptor) {
-            StringInstance si = (StringInstance) vd.getDefaultInstance();
-            label = si.getTrValue();
-            si.setTrValue(null);
-        }
+        if (vd != null) {
+            TranslatableContent label = vd.getLabel().clone();
+            TranslatableContent value = null;
+            if (vd instanceof TextDescriptor) {
+                TextInstance ti = (TextInstance) vd.getDefaultInstance();
+                value = ti.getTrValue().clone();
+            } else if (vd instanceof StringDescriptor) {
+                StringInstance si = (StringInstance) vd.getDefaultInstance();
+                value = si.getTrValue().clone();
+            }
 
-        if (label != null) {
-            ListDescriptor ld = new ListDescriptor();
-            ld.setDefaultInstance(new ListInstance());
-            ld.setEditorTag(vd.getEditorTag());
-            String vdName = vd.getName();
-            ld.setScope(new GameModelScope());
-            ld.getScope().setBroadcastScope("GameScope");
+            if (value != null) {
+                StaticTextDescriptor staticText = new StaticTextDescriptor();
+                staticText.setDefaultInstance(new StaticTextInstance());
+                staticText.setEditorTag(vd.getEditorTag());
+                String vdName = vd.getName();
+                staticText.setScope(new GameModelScope());
+                staticText.getScope().setBroadcastScope("GameScope");
 
-            ld.setLabel(label);
+                DescriptorListI parent = vd.getParent();
+                GameModel gameModel = vd.getGameModel();
 
-            DescriptorListI parent = vd.getParent();
-            GameModel gameModel = vd.getGameModel();
+                this.remove(vd);
+                requestManager.getEntityManager().flush();
 
-            this.remove(vd);
+                staticText.setLabel(label);
+                staticText.setText(value);
 
-            this.createChild(gameModel, parent, ld, false);
+                this.createChild(gameModel, parent, staticText, false);
 
-            ld.setName(vdName);
+                staticText.setName(vdName);
+            }
         }
 
         return vd;
     }
 
-    public VariableDescriptor convertToList(Long vdId) {
-        return this.convertToList(this.find(vdId));
+    public VariableDescriptor convertToStaticText(Long vdId) {
+        return this.convertToStaticText(this.find(vdId));
+    }
+
+    public VariableDescriptor convertToText(VariableDescriptor vd) {
+
+        if (vd != null) {
+            TranslatableContent label = vd.getLabel().clone();
+            TranslatableContent value = null;
+            if (vd instanceof StaticTextDescriptor) {
+                value = ((StaticTextDescriptor) vd).getText().clone();
+                if (value != null) {
+                    TextDescriptor text = new TextDescriptor();
+                    text.setDefaultInstance(new TextInstance());
+                    text.setEditorTag(vd.getEditorTag());
+                    String vdName = vd.getName();
+                    text.setScope(new TeamScope());
+                    text.getScope().setBroadcastScope("TeamScope");
+
+                    text.getDefaultInstance().setTrValue(value);
+
+                    DescriptorListI parent = vd.getParent();
+                    GameModel gameModel = vd.getGameModel();
+
+                    this.remove(vd);
+                    requestManager.getEntityManager().flush();
+
+                    text.setName(vdName);
+                    text.setLabel(label);
+
+                    this.createChild(gameModel, parent, text, false);
+                }
+            }
+        }
+
+        return vd;
+    }
+
+    public VariableDescriptor convertToText(Long vdId) {
+        return this.convertToText(this.find(vdId));
     }
 
     @Override
@@ -654,7 +697,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * @param gameModel
      * @param refId
      *
-     * @return all descriptor names already in use within the gameModel excluding description with given refId
+     * @return all descriptor names already in use within the gameModel excluding description with
+     *         given refId
      */
     public List<String> findDistinctNames(final GameModel gameModel, String refId) {
         TypedQuery<String> query;
@@ -675,8 +719,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     /**
      * @param container
      *
-     * @return all descriptor labels already in use within the given descriptor
-     *         container
+     * @return all descriptor labels already in use within the given descriptor container
      */
     public List<TranslatableContent> findDistinctLabels(final DescriptorListI<? extends VariableDescriptor> container) {
         if (container instanceof GameModel) {
@@ -706,8 +749,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     }
 
     /**
-     * For backward compatibility, use find(final GameModel gameModel, final
-     * String name) instead.
+     * For backward compatibility, use find(final GameModel gameModel, final String name) instead.
      *
      * @param gameModel
      * @param name
@@ -738,8 +780,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         final CriteriaQuery<VariableDescriptor> cq = cb.createQuery(VariableDescriptor.class);
         final Root<VariableDescriptor> variableDescriptor = cq.from(VariableDescriptor.class);
         cq.where(cb.and(
-                cb.equal(variableDescriptor.get("gameModel").get("id"), gameModel.getId()),
-                cb.equal(variableDescriptor.get("label"), label)));
+            cb.equal(variableDescriptor.get("gameModel").get("id"), gameModel.getId()),
+            cb.equal(variableDescriptor.get("label"), label)));
         final TypedQuery<VariableDescriptor> q = getEntityManager().createQuery(cq);
         try {
             return q.getSingleResult();
@@ -836,8 +878,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     }
 
     /**
-     * This method will move the target entity to the root level of the game
-     * model at index i
+     * This method will move the target entity to the root level of the game model at index i
      *
      * @param descriptorId
      * @param index

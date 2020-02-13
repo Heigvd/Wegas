@@ -1017,11 +1017,11 @@ YUI.add("wegas-editor-entityaction", function(Y) {
     });
     Plugin.ReleaseVariableAction = ReleaseVariableAction;
 
-    var ConvertToListAction = Y.Base.create("ConvertToListAction", EntityAction, [], {
+    var ConvertToTextAction = Y.Base.create("ConvertToTextAction", EntityAction, [], {
         execute: function() {
             this.showOverlay();
             Y.Wegas.Facade.Variable.cache.sendRequest({
-                request: '/' + this.get(ENTITY).get("id") + "/ConvertToList",
+                request: '/' + this.get(ENTITY).get("id") + "/ConvertToText",
                 cfg: {
                     method: 'PUT'
                 },
@@ -1032,11 +1032,34 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             });
         }
     }, {
-        NS: "ConvertToListAction",
+        NS: "ConvertToTextAction",
         ATTRS: {
         }
     });
-    Plugin.ConvertToListAction = ConvertToListAction;
+    Plugin.ConvertToTextAction = ConvertToTextAction;
+
+
+    var ConvertToStaticTextAction = Y.Base.create("ConvertToStaticTextAction", EntityAction, [], {
+        execute: function() {
+            this.showOverlay();
+            Y.Wegas.Facade.Variable.cache.sendRequest({
+                request: '/' + this.get(ENTITY).get("id") + "/ConvertToStaticText",
+                cfg: {
+                    method: 'PUT'
+                },
+                on: {
+                    success: Y.bind(this.hideOverlay, this),
+                    failure: Y.bind(this.hideOverlay, this)
+                }
+            });
+        }
+    }, {
+        NS: "ConvertToStaticTextAction",
+        ATTRS: {
+        }
+    });
+    Plugin.ConvertToStaticTextAction = ConvertToStaticTextAction;
+
 
     /**
      * @class

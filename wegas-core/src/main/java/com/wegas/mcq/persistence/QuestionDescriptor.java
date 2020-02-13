@@ -82,7 +82,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     private TranslatableContent description;
 
     /**
-     * Set this to true when the choice is to be selh
+     * Set this to true when the choice is to be self
      * radio/checkbox
      */
     @Column(columnDefinition = "boolean default false")

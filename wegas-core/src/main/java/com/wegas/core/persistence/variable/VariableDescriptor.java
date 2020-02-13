@@ -149,6 +149,7 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
     @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class),
     @JsonSubTypes.Type(name = "TextDescriptor", value = TextDescriptor.class),
+    @JsonSubTypes.Type(name = "StaticTextDescriptor", value = StaticTextDescriptor.class),
     @JsonSubTypes.Type(name = "BooleanDescriptor", value = BooleanDescriptor.class),
     @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class),
     @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class),

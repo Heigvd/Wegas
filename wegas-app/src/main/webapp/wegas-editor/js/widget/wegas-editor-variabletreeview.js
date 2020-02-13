@@ -311,6 +311,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 case 'TaskDescriptor':
                 case 'StringDescriptor':
                 case 'TextDescriptor':
+                case 'StaticTextDescriptor':
                 case 'NumberDescriptor':
                 case 'BooleanDescriptor':
                 case 'InboxDescriptor':
