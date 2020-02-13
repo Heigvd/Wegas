@@ -86,7 +86,8 @@ export const allowedArgumentTypes = {
   identifier: {
     checker: isIdentifier,
     generator: identifier,
-    parser: (expression: Identifier) => expression.name,
+    parser: (expression: Identifier) =>
+      expression.name === 'undefined' ? undefined : expression.name,
   },
   null: {
     checker: isNullLiteral,

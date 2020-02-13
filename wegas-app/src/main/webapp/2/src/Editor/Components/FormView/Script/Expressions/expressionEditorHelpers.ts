@@ -207,6 +207,12 @@ export const typeCleaner = (
       case 'null': {
         return defaultValue ? defaultValue : null;
       }
+      case 'array': {
+        return defaultValue ? defaultValue : [];
+      }
+      case 'object': {
+        return defaultValue ? defaultValue : {};
+      }
       default: {
         return defaultValue ? defaultValue : undefined;
       }
