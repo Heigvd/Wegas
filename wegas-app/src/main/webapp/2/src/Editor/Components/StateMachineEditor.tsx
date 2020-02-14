@@ -39,7 +39,12 @@ const editorStyle = css({
     zIndex: 3,
     padding: 5,
     border: '1px solid',
+    borderRadius: '5px;',
     backgroundColor: 'white',
+    maxWidth: '120px',
+    maxHeight: '5em',
+    overflow: 'hidden',
+
     '&.jtk-hover': {
       zIndex: 10,
     },
@@ -72,7 +77,7 @@ export const searchWithState = (
 };
 
 const JS_PLUMB_OPTIONS: Defaults = {
-  Anchor: ['Continuous', { faces: ['top', 'left', 'bottom'] }],
+  Anchor: ['Continuous', { faces: ['top', 'left', 'bottom', 'right'] }],
   //                    Anchor: ["Perimeter", {shape: "Rectangle", anchorCount: 120}],
   ConnectionsDetachable: true,
   ReattachConnections: false,
@@ -82,7 +87,7 @@ const JS_PLUMB_OPTIONS: Defaults = {
     // @ts-ignore
     radius: 8,
   },
-  Connector: ['Flowchart', {}],
+  Connector: ['Straight', {}],
   ConnectionOverlays: [
     [
       'Arrow',
@@ -95,7 +100,7 @@ const JS_PLUMB_OPTIONS: Defaults = {
     ],
   ],
   PaintStyle: {
-    strokeWidth: 4,
+    strokeWidth: 1,
     stroke: themeVar.primaryColor,
     //@ts-ignore
     outlineStroke: 'white',
@@ -158,6 +163,7 @@ class StateMachineEditor extends React.Component<
         const { states } = state.stateMachine;
         states[from].transitions.push({
           '@class': 'Transition',
+          label: '',
           nextStateId: to,
           triggerCondition: {
             '@class': 'Script',
@@ -241,6 +247,7 @@ class StateMachineEditor extends React.Component<
         if (transitionSource != undefined) {
           store.stateMachine.states[transitionSource].transitions.push({
             '@class': 'Transition',
+            label: '',
             nextStateId: nextId,
             triggerCondition: {
               '@class': 'Script',
@@ -508,15 +515,16 @@ export default function StateMachineEditorWithMeta() {
 const stateStyle = css({
   width: '10em',
   height: '5em',
-  border: '1px solid',
+  border: '2px solid',
   zIndex: 2,
   backgroundColor: 'rgba(255, 255, 255, 0.8)',
 });
 const initialStateStyle = css({
-  border: '3px double',
+  border: '6px double',
 });
 const currentStateStyle = css({
   borderColor: themeVar.primaryColor,
+  backgroundColor: themeVar.warningColor,
 });
 const sourceStyle = css({
   display: 'inline-block',
@@ -676,13 +684,23 @@ class Transition extends React.Component<{
   componentDidUpdate() {
     this.updateData();
   }
+  buildLabel(label: string, condition: string, impact: string){
+      if (label){
+          return label;
+      } else {
+        return (condition ? "Condition: " + condition + ' ' : '') + 
+          (impact ? "Impact: " + impact + ' ' : '');
+      }
+  }
   updateData = () => {
-    const { triggerCondition } = this.props.transition;
-    const label = triggerCondition ? triggerCondition.content : '';
+    const {triggerCondition, label, preStateImpact } = this.props.transition;
+
     try {
       this.connection!.setParameter('transition', this.props.transition);
       this.connection!.setParameter('transitionIndex', this.props.position);
-      this.connection!.setLabel(label);
+      this.connection!.setLabel(this.buildLabel(label, 
+        triggerCondition ? triggerCondition.content : '', 
+        preStateImpact ? preStateImpact.content : ''));
 
       // "(this.connection! as any)" is compulsory since jsPlumb is not fully implemented for TS
       if (this.isBeingSearched()) {
