@@ -7,6 +7,7 @@
  */
 package com.wegas.core.rest;
 
+import com.wegas.core.tools.FindAndReplacePayload;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.ModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipInputStream;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -154,14 +156,14 @@ public class GameModelController {
         });
 
         return Response.ok(sb.toString(), "text/csv")
-                .header("Content-Disposition", "attachment; filename="
-                        + "variables.csv").build();
+            .header("Content-Disposition", "attachment; filename="
+                + "variables.csv").build();
     }
 
     @GET
     @Path("{modelId: [1-9][0-9]*}/Integrate/{scenarioId: [1-9][0-9]*}")
     public GameModel integrate(@PathParam("modelId") Long modelId,
-            @PathParam("scenarioId") Long scenarioId) throws IOException, RepositoryException {
+        @PathParam("scenarioId") Long scenarioId) throws IOException, RepositoryException {
 
         GameModel model = gameModelFacade.find(modelId);
         GameModel scenario = gameModelFacade.find(scenarioId);
@@ -185,7 +187,6 @@ public class GameModelController {
 
         return diff.diff();
     }
-
 
     @GET
     @Path("Release/{scenarioId: [1-9][0-9]*}")
@@ -272,7 +273,7 @@ public class GameModelController {
     @POST
     @Path("{templateGameModelId : [1-9][0-9]*}/UpdateFromPlayer/{playerId: [1-9][0-9]*}")
     public GameModel updateFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
-            @PathParam("playerId") Long playerId) throws IOException {
+        @PathParam("playerId") Long playerId) throws IOException {
 
         GameModel gm = gameModelFacade.setDefaultInstancesFromPlayer(templateGameModelId, playerId);
         gameModelFacade.reset(gm);
@@ -283,11 +284,10 @@ public class GameModelController {
     /**
      * EXPERIMENTAL & BUGGY
      * <p>
-     * Create a new gameModel based on given player instances status (new
-     * gameModel default instance fetch from player ones)
+     * Create a new gameModel based on given player instances status (new gameModel default instance
+     * fetch from player ones)
      * <p>
-     * This one is Buggy since several instances merge are not cross-gameModel
-     * compliant
+     * This one is Buggy since several instances merge are not cross-gameModel compliant
      *
      * @param templateGameModelId
      * @param playerId
@@ -299,7 +299,7 @@ public class GameModelController {
     @POST
     @Path("{templateGameModelId : [1-9][0-9]*}/CreateFromPlayer/{playerId: [1-9][0-9]*}")
     public GameModel createFromPlayer(@PathParam("templateGameModelId") Long templateGameModelId,
-            @PathParam("playerId") Long playerId) throws IOException {
+        @PathParam("playerId") Long playerId) throws IOException {
 
         GameModel duplicate = gameModelFacade.createFromPlayer(templateGameModelId, playerId);
 
@@ -318,7 +318,7 @@ public class GameModelController {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public GameModel upload(@FormDataParam("file") InputStream file,
-            @FormDataParam("file") FormDataBodyPart details) throws IOException, RepositoryException {
+        @FormDataParam("file") FormDataBodyPart details) throws IOException, RepositoryException {
 
         GameModel gameModel;
 
@@ -329,7 +329,7 @@ public class GameModelController {
             gameModelFacade.createWithDebugGame(gameModel);
             return gameModel;
         } else if (details.getContentDisposition().getFileName().endsWith(".wgz")) {
-            try (ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
+            try ( ZipInputStream zip = new ZipInputStream(file, StandardCharsets.UTF_8)) {
                 return gameModelFacade.unzip(zip);
             }
         } else {
@@ -354,9 +354,9 @@ public class GameModelController {
         String filename = URLEncoder.encode(gameModelFacade.find(gameModelId).getName().replaceAll("\\" + "s+", "_") + ".wgz", StandardCharsets.UTF_8.displayName());
 
         return Response.ok(output, "application/zip").
-                header("content-disposition",
-                        "attachment; filename="
-                        + filename).build();
+            header("content-disposition",
+                "attachment; filename="
+                + filename).build();
     }
 
     /**
@@ -377,7 +377,7 @@ public class GameModelController {
     @Path("{entityId : [1-9][0-9]*}/{filename: .*\\.json}")
     public Response downloadJSON(@PathParam("entityId") Long entityId, @PathParam("filename") String filename) throws UnsupportedEncodingException {
         return Response.ok(this.get(entityId))
-                .header("Content-Disposition", "attachment; filename=" + URLEncoder.encode(filename, StandardCharsets.UTF_8.displayName())).build();
+            .header("Content-Disposition", "attachment; filename=" + URLEncoder.encode(filename, StandardCharsets.UTF_8.displayName())).build();
     }
 
     /**
@@ -460,7 +460,7 @@ public class GameModelController {
     @GET
     @Path("permissions/{type: [A-Z]*}/status/{status: [A-Z]*}")
     public Map<Long, List<String>> getPermissionsMatrix(@PathParam("status") final GameModel.Status status,
-            @PathParam("type") final GameModel.GmType type) {
+        @PathParam("type") final GameModel.GmType type) {
         return gameModelFacade.getPermissionMatrix(type, status);
     }
 
@@ -489,8 +489,8 @@ public class GameModelController {
     @GET
     @Path("type/{type: [A-Z]*}/status/{status: [A-Z]*}")
     public Collection<GameModel> findByTypeAndStatus(
-            @PathParam("type") final GameModel.GmType type,
-            @PathParam("status") final GameModel.Status status) {
+        @PathParam("type") final GameModel.GmType type,
+        @PathParam("status") final GameModel.Status status) {
         return gameModelFacade.findByTypeStatusAndUser(type, status);
     }
 
@@ -499,8 +499,7 @@ public class GameModelController {
      *
      * @param status
      *
-     * @return the number of gameModel with the given status the current user
-     *         has access too
+     * @return the number of gameModel with the given status the current user has access too
      */
     @GET
     @Path("status/{status: [A-Z]*}/count")
@@ -514,14 +513,13 @@ public class GameModelController {
      * @param type
      * @param status
      *
-     * @return the number of gameModel with the given status the current user
-     *         has access too
+     * @return the number of gameModel with the given status the current user has access too
      */
     @GET
     @Path("type/{type: [A-Z]*}/status/{status: [A-Z]*}/count")
     public int countByTypeAndStatus(
-            @PathParam("type") final GameModel.GmType type,
-            @PathParam("status") final GameModel.Status status) {
+        @PathParam("type") final GameModel.GmType type,
+        @PathParam("status") final GameModel.Status status) {
         return this.findByTypeAndStatus(type, status).size();
     }
 
@@ -550,8 +548,7 @@ public class GameModelController {
     }
 
     /**
-     * Delete all gameModel the current user has access too (set status =
-     * delete)
+     * Delete all gameModel the current user has access too (set status = delete)
      *
      * @return all deleted gameModel
      */
@@ -587,14 +584,20 @@ public class GameModelController {
     @POST
     @Path("{gameModelId: [1-9][0-9]*}/FindAndReplace")
     public String findAndReplace(@PathParam("gameModelId") Long gameModelId,
-            FindAndReplacePayload payload) {
+        FindAndReplacePayload payload) {
         return gameModelFacade.findAndReplace(gameModelId, payload);
+    }
+
+    @GET
+    @Path("{gameModelId: [1-9][0-9]*}/FindAllFiredEvents")
+    public Set<String> findFiredEvents(@PathParam("gameModelId") Long gameModelId) {
+        return gameModelFacade.findAllFiredEvents(gameModelId);
     }
 
     @GET
     @Path("{gameModelId: [1-9][0-9]*}/TestPlayer")
     public Player getTestPlayer(
-            @PathParam("gameModelId") Long gameModelId
+        @PathParam("gameModelId") Long gameModelId
     ) {
         if (gameModelId != null) {
             return playerFacade.findDebugPlayerByGameModelId(gameModelId);
@@ -604,7 +607,7 @@ public class GameModelController {
 
     @POST
     @Path("LiveEdition/{channel}")
-    public void propagateLiveEdition(@PathParam("channel") String channel, AbstractEntity entity){
+    public void propagateLiveEdition(@PathParam("channel") String channel, AbstractEntity entity) {
         gameModelFacade.liveUpdate(channel, entity);
     }
 }

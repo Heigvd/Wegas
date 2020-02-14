@@ -11,6 +11,7 @@ import HiddenView from './Views/hidden';
 import EntityArrayFieldSelect from './Views/Interacting/entityarrayfieldselect';
 import FlatVariableSelect from './Views/Interacting/flatvariableselect';
 import PageSelect from './Views/Interacting/pageselect';
+import EventSelect from './Views/Interacting/eventselect';
 import PluginElement from './Views/Interacting/pluginelement';
 import TreeVariableSelect from './Views/Interacting/treevariableselect';
 import ObjectView from './Views/object';
@@ -47,6 +48,7 @@ setDefaultWidgets({
     object: ObjectView,
     pageloaderselect: PageLoaderSelect,
     pageselect: PageSelect,
+    eventselect: EventSelect,
     plugin: PluginElement,
     script: MultiVariableMethod,
     scriptcondition: MultiVariableCondition,
