@@ -678,7 +678,7 @@ YUI.add("wegas-i18n", function(Y) {
                         return I18n.t(theVar.get("text"))
                     } else if (theVar instanceof Y.Wegas.persistence.TextDescriptor
                         || theVar instanceof Y.Wegas.persistence.StringDescriptor) {
-                        return I18n.t(theVar.get("trValue"));
+                        return I18n.t(theVar.getInstance().get("trValue"));
                     } else {
                         return I18n.t(theVar.get("label"));
                     }
