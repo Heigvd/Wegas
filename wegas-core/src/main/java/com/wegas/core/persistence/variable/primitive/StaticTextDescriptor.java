@@ -27,7 +27,7 @@ import javax.persistence.Table;
 @Entity
 @Table(
     indexes = {
-        @Index(columnList = "description_id")
+        @Index(columnList = "text_id")
     }
 )
 public class StaticTextDescriptor extends VariableDescriptor<StaticTextInstance> {

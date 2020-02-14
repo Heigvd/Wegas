@@ -24,4 +24,9 @@
     <changeSet author="maxence (generated)" id="1581345808245-5">
         <addForeignKeyConstraint baseColumnNames="id" baseTableName="statictextinstance" constraintName="fk_statictextinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" />
     </changeSet>
+    <changeSet author="maxence (generated)" id="1581345808245-6">
+        <createIndex indexName="index_statictextdescriptor_text_id" tableName="statictextdescriptor">
+            <column name="text_id"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
