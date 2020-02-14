@@ -220,6 +220,9 @@ YUI.add("wegas-entitychooser", function(Y) {
                             items[i].get("name") + "'>" + label + "</li>");
 
                         if (getLabel) {
+                            if (typeof getLabel === "string"){
+                                getLabel = eval("(" + getLabel + ")");
+                            }
                             label = getLabel(items[i], items[i].get("name"), function(name, the_label) {
                                 entityBox.one("[data-name='" + name + "']").setContent(I18n.t(the_label));
                             });
@@ -335,6 +338,7 @@ YUI.add("wegas-entitychooser", function(Y) {
                     }
                 },
                 widgets: {
+                    type: "object",
                     required: true,
                     view: {type: "hidden"}
                 },
@@ -352,13 +356,14 @@ YUI.add("wegas-entitychooser", function(Y) {
                     type: "object",
                     value: {},
                     view: {
+                        label: "user counters",
                         type: "hidden"
                     }
                 },
                 flatten: {
                     type: "boolean",
                     value: true,
-                    view: {label: "flatter"}
+                    view: {label: "flatten"}
                 }
             }
         });
