@@ -1013,8 +1013,16 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                     }
                 }
             } else {
-                if (condition) {
-                    label = "<div class=\"transition-label-content\">" + condition + "</div>";
+                label = "";
+                if (entity.get("label")) {
+                    label = "<div style='text-align: center;'>" + entity.get("label") + "</div>";
+                } else {
+                    if (condition) {
+                        label += "<div class=\"transition-label-title\">Condition: </div><div class=\"transition-label-content\" >" + condition + "</div>";
+                    }
+                    if (impact) {
+                        label += "<div class=\"transition-label-title\">Impact: </div><div class=\"transition-label-content\" >" + impact + "</div>";
+                    }
                 }
             }
 
