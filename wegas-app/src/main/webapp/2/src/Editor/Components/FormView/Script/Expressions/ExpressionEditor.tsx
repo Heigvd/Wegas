@@ -36,6 +36,7 @@ import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory'
 import { pick } from 'lodash-es';
 import { CallExpression } from '@babel/types';
 import { StringLiteral } from '@babel/types';
+import { ResizeHandle } from '../../../ResizeHandle';
 
 const expressionEditorStyle = css({
   backgroundColor: themeVar.primaryHoverColor,
@@ -94,7 +95,23 @@ export function ExpressionEditor({
             setError(error);
           }
           generateSchema(attributes, variableIds, mode).then(schema => {
-            // TODO : Validation here
+            // Validating statement with schema
+            for (const [key, argument] of Object.entries(attributes)) {
+              const numberKey = Number(key);
+              const argType = Array.isArray(argument)
+                ? 'array'
+                : typeof argument;
+              if (!isNaN(numberKey)) {
+                const schemaArgument = schema.properties[numberKey];
+                if (!schemaArgument) {
+                  setError('To much arguments');
+                } else if (argType !== schemaArgument.type) {
+                  setError(
+                    `Argument type mismatch.\nExpected type : ${schemaArgument.type}\nArgument type : ${argType}`,
+                  );
+                }
+              }
+            }
 
             setFormState({
               attributes,
@@ -255,22 +272,27 @@ export function ExpressionEditor({
         <div className={scriptEditStyle}>
           <MessageString type="error" value={error} duration={10000} />
           {newSrc !== undefined && (
-            <IconButton icon="save" onClick={() => onScripEditorSave(newSrc)} />
+            <IconButton
+              icon="check"
+              onClick={() => onScripEditorSave(newSrc)}
+            />
           )}
-          <WegasScriptEditor
-            value={
-              newSrc === undefined
-                ? formState.statement
-                  ? generate(formState.statement).code
-                  : ''
-                : newSrc
-            }
-            onChange={setNewSrc}
-            noGutter
-            minimap={false}
-            returnType={returnTypes(mode)}
-            onSave={onScripEditorSave}
-          />
+          <ResizeHandle minSize={100}>
+            <WegasScriptEditor
+              value={
+                newSrc === undefined
+                  ? formState.statement
+                    ? generate(formState.statement).code
+                    : ''
+                  : newSrc
+              }
+              onChange={setNewSrc}
+              noGutter
+              minimap={false}
+              returnType={returnTypes(mode)}
+              onSave={onScripEditorSave}
+            />
+          </ResizeHandle>
         </div>
       ) : (
         <Form

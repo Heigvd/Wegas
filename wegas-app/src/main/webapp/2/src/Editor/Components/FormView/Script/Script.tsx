@@ -4,7 +4,7 @@ import { LabeledView, Labeled } from '../labeled';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { IconButton } from '../../../../Components/Inputs/Button/IconButton';
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { store } from '../../../../data/store';
 import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../../data/selectors';
@@ -29,9 +29,19 @@ import { isBinaryExpression } from '@babel/types';
 import { Menu } from '../../../../Components/Menu';
 import { CallExpression } from '@babel/types';
 import { isEmptyStatement } from '@babel/types';
+import { Centered } from '../../../../Components/Layouts/Centered';
+import {
+  centeredContent,
+  expand,
+  schrink,
+  flex,
+  grow,
+  flexColumn,
+} from '../../../../css/classes';
+import { ResizeHandle } from '../../ResizeHandle';
 
 export const scriptEditStyle = css({
-  height: '5em',
+  // height: '5em',
   marginTop: '0.8em',
   width: '500px',
 });
@@ -158,29 +168,34 @@ export function Script({
 }: ScriptProps) {
   const [error, setError] = React.useState(errorMessage);
   const [srcMode, setSrcMode] = React.useState(false);
-  const [scriptContent, setScriptContent] = React.useState('');
+  const script = React.useRef('');
   const [statements, setStatements] = React.useState<Statement[] | null>(null);
   const [operator, setOperator] = React.useState<Operator>(operators[0]);
 
   const isServerScript = view.mode === 'SET';
 
-  const testScript = React.useCallback(() => {
-    try {
-      store.dispatch(runScript(scriptContent, Player.selectCurrent(), context));
-      setError(undefined);
-    } catch (error) {
-      setError([error.message]);
-    }
-  }, [context, scriptContent]);
+  const testScript = React.useCallback(
+    value => {
+      try {
+        store.dispatch(runScript(value, Player.selectCurrent(), context));
+        setError(undefined);
+      } catch (error) {
+        setError([error.message]);
+      }
+    },
+    [context],
+  );
 
   const onCodeChange = React.useCallback(
     (value: string) => {
-      setScriptContent(value);
-      onChange({
-        '@class': 'Script',
-        language: 'JavaScript',
-        content: value,
-      });
+      if (value !== script.current) {
+        script.current = value;
+        onChange({
+          '@class': 'Script',
+          language: 'JavaScript',
+          content: value,
+        });
+      }
     },
     [onChange],
   );
@@ -230,18 +245,20 @@ export function Script({
   React.useEffect(() => {
     const newValue =
       value == null ? '' : typeof value === 'string' ? value : value.content;
-    if (scriptContent !== newValue) {
-      setScriptContent(newValue);
+    if (script.current !== newValue) {
+      script.current = newValue;
     }
-  }, [value, scriptContent]);
+  }, [value]);
 
   React.useEffect(() => {
     try {
-      if (scriptContent === '') {
+      const newValue =
+        value == null ? '' : typeof value === 'string' ? value : value.content;
+      if (newValue === '') {
         setStatements(null);
       } else {
-        let newExpressions = parse(scriptContent, { sourceType: 'script' })
-          .program.body;
+        let newExpressions = parse(newValue, { sourceType: 'script' }).program
+          .body;
 
         if (isScriptCondition(view.mode)) {
           if (newExpressions.length === 1) {
@@ -264,7 +281,7 @@ export function Script({
     } catch (e) {
       setError([e.message]);
     }
-  }, [operator, scriptContent, view.mode]);
+  }, [operator, value, view.mode]);
 
   return (
     <CommonViewContainer view={view} errorMessage={error}>
@@ -281,7 +298,10 @@ export function Script({
                 />
               )}
               {isServerScript && (
-                <IconButton icon="play" onClick={testScript} />
+                <IconButton
+                  icon="play"
+                  onClick={() => testScript(script.current)}
+                />
               )}
               {isScriptCondition(view.mode) && (
                 <Menu
@@ -291,15 +311,15 @@ export function Script({
                 />
               )}
               {srcMode ? (
-                <div className={scriptEditStyle}>
+                <ResizeHandle minSize={200}>
                   <WegasScriptEditor
-                    value={scriptContent}
+                    value={script.current}
                     onChange={onCodeChange}
                     minimap={false}
                     noGutter={true}
                     returnType={returnTypes(view.mode)}
                   />
-                </div>
+                </ResizeHandle>
               ) : (
                 <WyswygScriptEditor
                   expressions={statements}

@@ -7,6 +7,8 @@ export interface IconButtonProps /*extends Props*/ {
   icon: Icons;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onMouseDown?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onMouseUp?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onMouseMove?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   label?: React.ReactNode;
   disabled?: boolean;
   pressed?: boolean;
@@ -51,6 +53,8 @@ export const IconButton: React.FunctionComponent<IconButtonProps> = (
   const {
     onClick,
     onMouseDown,
+    onMouseUp,
+    onMouseMove,
     disabled,
     tooltip,
     tabIndex,
@@ -78,6 +82,14 @@ export const IconButton: React.FunctionComponent<IconButtonProps> = (
         onMouseDown != null
           ? event => !disabled && onMouseDown(event)
           : onMouseDown
+      }
+      onMouseUp={
+        onMouseUp != null ? event => !disabled && onMouseUp(event) : onMouseUp
+      }
+      onMouseMove={
+        onMouseMove != null
+          ? event => !disabled && onMouseMove(event)
+          : onMouseMove
       }
       className={cx(shapeStyle, className, {
         [disabledStyle]: Boolean(disabled),

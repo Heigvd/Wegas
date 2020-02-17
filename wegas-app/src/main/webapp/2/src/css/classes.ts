@@ -37,11 +37,13 @@ export const showOverflow = css({
   overflow: 'visible',
 });
 
-
 // Size
 export const expand = css({
   width: '100%',
   height: '100%',
+});
+export const schrink = css({
+  width: 'fit-content',
 });
 
 // Flex
@@ -74,27 +76,27 @@ export const foregroundContent = css({
 
 /* Paddings */
 export const defaultPaddingLeft = css({
-  marginLeft: "10px"
+  marginLeft: '10px',
 });
 
 export const defaultPaddingRight = css({
-  marginRight: "10px"
+  marginRight: '10px',
 });
 
 export const defaultPaddingTop = css({
-  marginTop: "10px"
+  marginTop: '10px',
 });
 
 export const defaultPaddingBottom = css({
-  marginTop: "10px"
+  marginTop: '10px',
 });
 
 export const defaultPadding = cx(
   defaultPaddingTop,
   defaultPaddingRight,
   defaultPaddingBottom,
-  defaultPaddingLeft
-)
+  defaultPaddingLeft,
+);
 
 // Components
 export const button = css({
