@@ -107,7 +107,7 @@ YUI.add("wegas-accounting-balance", function(Y) {
 
             localEditionEnabled = category.editable && editionEnabled;
 
-            html = "<div class=\"" + klass + "\">"
+            html = "<div class=\"" + klass + "\"><div class=\"wegas-balance-line\">"
                 + "<div class=\"wegas-balance-title\"><span>" + category.label + "</span></div>";
 
             if (localEditionEnabled) {
@@ -118,6 +118,7 @@ YUI.add("wegas-accounting-balance", function(Y) {
 
                 html += "<div class=\"wegas-balance-amount\"><span data-name='" + category.name + "'>" + category.amount + "</span></div>";
             }
+            html += "</div>";
 
             if (category.children.length > 0) {
                 html += "<div class=\"wegas-balance-category-items\">";
