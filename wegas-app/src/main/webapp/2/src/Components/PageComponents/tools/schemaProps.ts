@@ -49,10 +49,11 @@ export const schemaProps = {
   hidden: (
     required: boolean = true,
     type: TYPESTRING | TYPESTRING[] = 'array',
+    index: number = 0,
   ): TypedProps<WidgetProps.BaseProps> => ({
     required,
     type,
-    index: 0,
+    index,
     view: {
       type: 'hidden',
     },

@@ -372,8 +372,9 @@ export const variableToASTNode = (
   }
   switch (usedType) {
     case 'array':
-      arrayExpression((variable as unknown[]).map(v => variableToASTNode(v)));
-      throw Error(`Array type for method arguments not implemented yet`);
+      return arrayExpression(
+        (variable as unknown[]).map(v => variableToASTNode(v)),
+      );
     case 'boolean':
       return booleanLiteral(variable as boolean);
     case 'identifier':
@@ -411,13 +412,15 @@ export const generateCallExpression = (
     callee,
     Object.keys(
       omit(scriptAttributes, Object.keys(defaultConditionAttributes)),
-    ).map(arg =>
-      variableToASTNode(
-        scriptAttributes[Number(arg)],
-        schemaAttributes[Number(arg)].oldType,
+    ).map(arg => {
+      const numberArg = Number(arg);
+      const schemaArg = schemaAttributes[numberArg];
+      return variableToASTNode(
+        scriptAttributes[numberArg],
+        schemaArg ? schemaArg.oldType : undefined,
         tolerateTypeVariation,
-      ),
-    ),
+      );
+    }),
   );
 
 export const generateExpressionWithInitValue = (value: string) => {
@@ -506,6 +509,7 @@ export const parseStatement = (
       if (isConditionCallStatement(statement)) {
         return {
           attributes: {
+            variableName: getVariable(statement.expression),
             initExpression: {
               type: 'variable',
               script: `Variable.find(gameModel,'${getVariable(

@@ -50,7 +50,7 @@ function EntityArrayFieldSelect(props: IEntityArrayFieldSelectProps) {
     ? VariableDescriptor.first('name', context.variableName)
     : props.formValue;
   if (!computedEntity) {
-    return null;
+    return <pre>No context found, variableName needed</pre>;
   }
 
   const results: unknown =

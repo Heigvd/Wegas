@@ -19,7 +19,6 @@ import { StringOrT, genVarItems } from '../../TreeVariableSelect';
 import { store } from '../../../../../data/store';
 import { TYPESTRING } from 'jsoninput/typings/types';
 import { safeClientScriptEval } from '../../../../../Components/Hooks/useScript';
-import { Statement } from '@babel/types';
 
 const booleanOperators = {
   '===': { label: 'equals' },
@@ -49,9 +48,11 @@ export interface IParameterAttributes {
 
 export interface IInitAttributes extends IParameterAttributes {
   initExpression: ScriptItemValue;
+  variableName?: string;
 }
 
 export const defaultInitAttributes: Partial<IInitAttributes> = {
+  variableName: undefined,
   initExpression: undefined,
 };
 
@@ -175,8 +176,12 @@ export const typeCleaner = (
   required?: boolean,
   defaultValue?: unknown,
 ) => {
-  const variableCurrentType = typeof variable;
+  const variableCurrentType = Array.isArray(variable)
+    ? 'array'
+    : typeof variable;
   if (variableCurrentType === expectedType) {
+    return variable;
+  } else if (typeof variable === 'undefined' && !required) {
     return variable;
   } else {
     switch (expectedType) {
@@ -295,6 +300,7 @@ export const makeSchemaInitExpression = (
   mode?: ScriptMode,
   scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
 ) => ({
+  variableName: schemaProps.hidden(false, 'string', 1000),
   initExpression: schemaProps.tree(
     undefined,
     [
@@ -370,9 +376,10 @@ export const makeSchemaParameters = (
         type: p.type === 'identifier' ? 'string' : p.type,
         oldType: p.type,
         view: {
+          // label: i + ' ' + JSON.stringify(p.view),
           ...p.view,
           index: index + i,
-          layout: 'inline',
+          //layout: 'inline',
         },
       },
     }),

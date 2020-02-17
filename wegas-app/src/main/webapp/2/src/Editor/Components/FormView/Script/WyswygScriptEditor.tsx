@@ -23,10 +23,10 @@ export function WyswygScriptEditor({
   mode,
 }: WyswygScriptEditorProps) {
   // These state and effect are here just to avoid loosing focus when changes occures
-  // const [expr, setExpr] = React.useState(expressions);
-  // React.useEffect(() => {
-  //   setExpr(expressions);
-  // }, [expressions]);
+  const [expr, setExpr] = React.useState(expressions);
+  React.useEffect(() => {
+    setExpr(expressions);
+  }, [expressions]);
 
   return (
     <div className={scriptStyle}>
@@ -40,26 +40,29 @@ export function WyswygScriptEditor({
                 statement: schemaProps.statement(undefined, true, mode),
               },
               () =>
-                // onChange([
-                //   ...(expr == null ? [] : expr),
-                //   isScriptCondition(mode)
-                //     ? expressionStatement(booleanLiteral(true))
-                //     : emptyStatement(),
-                // ]),
                 onChange([
-                  ...(expressions == null ? [] : expressions),
+                  ...(expr == null ? [] : expr),
                   isScriptCondition(mode)
                     ? expressionStatement(booleanLiteral(true))
                     : emptyStatement(),
                 ]),
+              // onChange([
+              //   ...(expressions == null ? [] : expressions),
+              //   isScriptCondition(mode)
+              //     ? expressionStatement(booleanLiteral(true))
+              //     : emptyStatement(),
+              // ]),
             ),
           },
         }}
         value={{
           statements:
-            expressions == null
+            // expressions == null
+            // ? []
+            // : expressions.map(e => ({ statement: e ? e : emptyStatement() })),
+            expr == null
               ? []
-              : expressions.map(e => ({ statement: e ? e : emptyStatement() })),
+              : expr.map(e => ({ statement: e ? e : emptyStatement() })),
         }}
         onChange={value => {
           const cleanValue: Statement[] = value.statements.map(
@@ -70,7 +73,7 @@ export function WyswygScriptEditor({
                 ? expressionStatement(booleanLiteral(true))
                 : emptyStatement(),
           );
-          // setExpr(cleanValue);
+          setExpr(cleanValue);
           onChange(cleanValue);
         }}
       />
