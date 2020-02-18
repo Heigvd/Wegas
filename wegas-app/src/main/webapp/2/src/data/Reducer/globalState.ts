@@ -79,9 +79,10 @@ export interface GlobalState extends EditingState {
     status: string;
     socket_id?: string;
   };
-  methods: {
-    [name: string]: Omit<GlobalMethodPayload, 'name'>;
+  clientMethods: {
+    [name: string]: Omit<ClientMethodPayload, 'name'>;
   };
+  serverMethods: GlobalServerMethods;
   schemas: {
     filtered: {
       [classFilter: string]: keyof GlobalState['schemas']['views'];
@@ -237,17 +238,23 @@ const global: Reducer<Readonly<GlobalState>> = u(
       case ActionType.PUSHER_SOCKET:
         state.pusherStatus = action.payload;
         return;
-      case ActionType.EDITOR_SET_METHOD:
-        state.methods = {
-          ...state.methods,
+      case ActionType.EDITOR_SET_CLIENT_METHOD:
+        state.clientMethods = {
+          ...state.clientMethods,
           [action.payload.name]: {
-            types: action.payload.types,
-            array: action.payload.array,
+            returnTypes: action.payload.returnTypes,
+            returnStyle: action.payload.returnStyle,
             method: action.payload.method,
           },
         };
         return;
-      case ActionType.EDITOR_SET_SCHEMA: {
+      case ActionType.EDITOR_REGISTER_SERVER_METHOD:
+        state.serverMethods = {
+          ...state.serverMethods,
+          [action.payload.method]: action.payload.schema,
+        };
+        return;
+      case ActionType.EDITOR_SET_VARIABLE_SCHEMA: {
         const filters = state.schemas.filtered;
         const views = state.schemas.views;
 
@@ -275,6 +282,8 @@ const global: Reducer<Readonly<GlobalState>> = u(
           }
         }
         return;
+        //         case ActionType.EDITOR_SET_VARIABLE_METHOD: {
+        // return}
       }
       default:
         state.events = eventManagement(state, action);
@@ -293,7 +302,8 @@ const global: Reducer<Readonly<GlobalState>> = u(
     pageEdit: false,
     pageSrc: false,
     events: [],
-    methods: {},
+    clientMethods: {},
+    serverMethods: {},
     schemas: {
       filtered: {},
       unfiltered: [],
@@ -421,7 +431,12 @@ export function editFile(
  */
 export function createVariable(
   cls: string,
-  parent?: IListDescriptor | IQuestionDescriptor | IChoiceDescriptor,
+  parent?:
+    | IListDescriptor
+    | IQuestionDescriptor
+    | IChoiceDescriptor
+    | IWhQuestionDescriptor
+    | IPeerReviewDescriptor,
   actions: EditorAction<IAbstractEntity> = {},
 ) {
   return ActionCreator.VARIABLE_CREATE({
@@ -565,16 +580,38 @@ export function searchUsage(
 }
 
 /**
- * Add a custom method to the gameModel's global state
+ * Add a custom client method that can be used in client scripts
  * @param name - the name of the method
+ * @param types - the returned types of the method
+ * @param array - the method will return a signle object or an array of objects
  * @param method - the method to add
  */
-export const setMethod = (
-  name: GlobalMethodPayload['name'],
-  types: GlobalMethodPayload['types'],
-  array: GlobalMethodPayload['array'],
-  method: GlobalMethodPayload['method'],
-) => ActionCreator.EDITOR_SET_METHOD({ name, types, array, method });
+export const setClientMethod = (
+  name: ClientMethodPayload['name'],
+  types: ClientMethodPayload['returnTypes'],
+  array: ClientMethodPayload['returnStyle'],
+  method: ClientMethodPayload['method'],
+) =>
+  ActionCreator.EDITOR_SET_CLIENT_METHOD({
+    name,
+    returnTypes: types,
+    returnStyle: array,
+    method,
+  });
+
+/**
+ * Register a server method that can be used in wysywig
+ * @param method - the method to add (ex: "Something.Else.call")
+ * @param schema - method's schema including : label, return type (optionnal) and the parameter's shemas
+ */
+export const registerServerMethod = (
+  method: ServerMethodPayload['method'],
+  schema?: ServerMethodPayload['schema'],
+) =>
+  ActionCreator.EDITOR_REGISTER_SERVER_METHOD({
+    method,
+    schema,
+  });
 
 /**
  * setSchema - Sets a custom view for WegasEntities in form components
@@ -587,7 +624,7 @@ export function setSchema(
   schemaFN?: CustomSchemaFN,
   simpleFilter?: WegasClassNames,
 ) {
-  return ActionCreator.EDITOR_SET_SCHEMA({
+  return ActionCreator.EDITOR_SET_VARIABLE_SCHEMA({
     name,
     schemaFN,
     simpleFilter,

@@ -19,7 +19,6 @@ import { Menu } from './Menu';
 import { TextPrompt } from '../Editor/Components/TextPrompt';
 import { ConfirmButton } from './Inputs/Button/ConfirmButton';
 import { NumberSlider } from './Inputs/Button/NumberSlider';
-import { wlog } from '../Helper/wegaslog';
 import { MessageString } from '../Editor/Components/MessageString';
 
 const colorButton = (color: string, bgColor?: string) =>
@@ -52,8 +51,6 @@ function MyColorPicker({ color, bgColor, onChange }: MyColorPickerProps) {
   useOnClickOutside(pickerZone, () => {
     setDisplayed(false);
   });
-
-  wlog(Color(bgColor).lightness());
 
   return (
     <div className={flex} ref={pickerZone}>

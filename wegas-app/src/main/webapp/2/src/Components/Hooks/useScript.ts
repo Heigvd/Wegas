@@ -21,7 +21,8 @@ interface GlobalClasses {
   self?: Readonly<Readonly<IPlayer>>;
   Variable: GlobalVariableClass;
   Editor: GlobalEditorClass;
-  Methods: GlobalMethodClass;
+  ClientMethods: GlobalClientMethodClass;
+  ServerMethods: GlobalServerMethodClass;
   Schemas: GlobalSchemaClass;
   Classes: GlobalClassesClass;
 }
@@ -78,9 +79,9 @@ export function useGlobals() {
       selectLang(typeof lang === 'string' ? lang : lang.code),
   };
 
-  const addMethod: GlobalMethodAdd = (name, types, array, method) => {
+  const addMethod: ClientMethodAdd = (name, types, array, method) => {
     store.dispatch(
-      Actions.EditorActions.setMethod(
+      Actions.EditorActions.setClientMethod(
         name,
         types,
         array as keyof ArrayedTypeMap,
@@ -104,13 +105,22 @@ export function useGlobals() {
   //       [6666]
   //   ]);
 
-  // Methods class
-  globals.Methods = {
+  // ClientMethods class
+  globals.ClientMethods = {
     addMethod: addMethod,
     getMethod: (name: string) => {
-      return store.getState().global.methods[name]
+      return store.getState().global.clientMethods[name]
         .method as () => WegasScriptEditorReturnType;
     },
+  };
+
+  const registerMethod: ServerMethodRegister = (method, schema) => {
+    store.dispatch(Actions.EditorActions.registerServerMethod(method, schema));
+  };
+
+  // ServerMethods class
+  globals.ServerMethods = {
+    registerMethod,
   };
 
   // Schemas class
@@ -137,13 +147,21 @@ export function useGlobals() {
   };
 }
 
+export function safeClientScriptEval<ReturnValue>(script: string) {
+  try {
+    return clientScriptEval<ReturnValue>(script);
+  } catch (e) {
+    return undefined;
+  }
+}
+
 export function clientScriptEval<ReturnValue>(script: string) {
   return (
     ((sandbox.contentWindow as unknown) as {
       eval: (code: string) => ReturnValue;
     })
       // 'undefined' so that an empty script don't return '"use strict"'
-      .eval('"use strict";undefined;' + script)
+      .eval('"use strict";undefined;' + ts.transpile(script))
   );
 }
 
@@ -155,7 +173,7 @@ export function clientScriptEval<ReturnValue>(script: string) {
 export function useScript<ReturnValue>(script: string) {
   useGlobals();
   const fn = useCallback(
-    () => clientScriptEval<ReturnValue>(ts.transpile(script)), // 'undefined' so that an empty script don't return '"use strict"'
+    () => clientScriptEval<ReturnValue>(script), // 'undefined' so that an empty script don't return '"use strict"'
     [script],
   );
   return useStore(fn);

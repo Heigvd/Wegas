@@ -15,7 +15,7 @@ interface Item<T> {
 export interface MenuProps<T extends Item<T>> {
   onSelect: (item: T, keyEvent: ModifierKeysEvent) => void;
   onOpen?: () => void;
-  items: T[];
+  items: readonly T[];
   label?: React.ReactNode;
   icon?: IconName;
   direction?: 'left' | 'down' | 'right' | 'top';

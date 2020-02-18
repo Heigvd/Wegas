@@ -13,7 +13,6 @@ import { cx } from 'emotion';
 import { flex, grow, flexColumn } from '../../css/classes';
 import { Edition } from '../../data/Reducer/globalState';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
-import { wlog } from '../../Helper/wegaslog';
 import { MessageString } from './MessageString';
 
 export interface EditorProps<T> {
@@ -138,7 +137,6 @@ function _overrideSchema(
 export function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
   const gameModel = GameModel.selectCurrent();
   if (gameModel.type === 'SCENARIO') {
-    wlog(_overrideSchema(cloneDeep(schema), entity));
     return _overrideSchema(cloneDeep(schema), entity);
     /*if (gameModel.basedOnId && gameModel.basedOnId >= 0) {
       // Editing a scenario which depends on a model -> some properties are read-only
@@ -183,9 +181,9 @@ async function WindowedEditor<T extends IMergeable>({
   // First try to get schema from simple filters
   const customSchemas = store.getState().global.schemas;
   let customSchema: SimpleSchema | void;
-  const simpleCustomShemaName = customSchemas.filtered[pathEntity['@class']];
-  if (simpleCustomShemaName !== undefined) {
-    const nfSchema = customSchemas.views[simpleCustomShemaName](
+  const simpleCustomSchemaName = customSchemas.filtered[pathEntity['@class']];
+  if (simpleCustomSchemaName !== undefined) {
+    const nfSchema = customSchemas.views[simpleCustomSchemaName](
       pathEntity as TypedEntity,
       schema,
     );
@@ -193,7 +191,7 @@ async function WindowedEditor<T extends IMergeable>({
       customSchema = nfSchema;
     }
   }
-  // Then try to get shema from complex filters
+  // Then try to get schema from complex filters
   for (const schemaName of customSchemas.unfiltered) {
     const nfSchema = customSchemas.views[schemaName](
       pathEntity as TypedEntity,
@@ -204,7 +202,6 @@ async function WindowedEditor<T extends IMergeable>({
       break;
     }
   }
-  wlog(pathEntity);
   return (
     <div className={cx(flex, grow, flexColumn)}>
       <MessageString
@@ -229,7 +226,6 @@ async function WindowedEditor<T extends IMergeable>({
           entity,
           customSchema !== undefined ? customSchema : schema,
         )}
-        // schema={overrideSchema(entity, schema)}
       />
     </div>
   );

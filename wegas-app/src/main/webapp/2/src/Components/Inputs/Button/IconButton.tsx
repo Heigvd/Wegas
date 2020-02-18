@@ -1,28 +1,14 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
-import {
-  FontAwesome,
-  Icon,
-} from '../../../Editor/Components/Views/FontAwesome';
+import { Icons, IconComp } from '../../../Editor/Components/Views/FontAwesome';
 import { themeVar } from '../../Theme';
-import * as iconModules from '@fortawesome/free-solid-svg-icons';
-import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { IconPrefix, IconName } from '@fortawesome/fontawesome-svg-core';
-
-export const prefixes = ['fas', 'fab', 'far', 'fal', 'fad'] as IconPrefix[];
-
-export const icons = Object.values(iconModules).reduce(
-  (o: {}, v: IconDefinition) =>
-    typeof v === 'object' && 'iconName' in v && v.iconName !== undefined
-      ? { ...o, [v.iconName]: v }
-      : o,
-  {},
-);
 
 export interface IconButtonProps /*extends Props*/ {
-  icon: Icon | Icon[];
+  icon: Icons;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onMouseDown?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onMouseUp?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onMouseMove?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   label?: React.ReactNode;
   disabled?: boolean;
   pressed?: boolean;
@@ -32,6 +18,7 @@ export interface IconButtonProps /*extends Props*/ {
   prefixedLabel?: boolean;
   type?: 'submit' | 'reset';
   className?: string;
+  ref?: React.ClassAttributes<HTMLButtonElement>['ref'];
 }
 const defaultActiveStyle = css({ color: themeVar.primaryDarkerColor });
 
@@ -60,24 +47,14 @@ const disabledStyle = css({
   },
 });
 
-function isIconName(icon: Icon): icon is IconName {
-  return typeof icon === 'string';
-}
-
-export function IconComp({ icon }: { icon: Icon }) {
-  return isIconName(icon) ? (
-    <FontAwesome fixedWidth icon={icon} />
-  ) : (
-    <FontAwesome fixedWidth {...icon} />
-  );
-}
-
 export const IconButton: React.FunctionComponent<IconButtonProps> = (
   props: IconButtonProps,
 ) => {
   const {
     onClick,
     onMouseDown,
+    onMouseUp,
+    onMouseMove,
     disabled,
     tooltip,
     tabIndex,
@@ -88,10 +65,12 @@ export const IconButton: React.FunctionComponent<IconButtonProps> = (
     type,
     className,
     icon,
+    ref,
   } = props;
 
   return (
     <button
+      ref={ref}
       id={id}
       type={type}
       title={tooltip}
@@ -104,21 +83,21 @@ export const IconButton: React.FunctionComponent<IconButtonProps> = (
           ? event => !disabled && onMouseDown(event)
           : onMouseDown
       }
+      onMouseUp={
+        onMouseUp != null ? event => !disabled && onMouseUp(event) : onMouseUp
+      }
+      onMouseMove={
+        onMouseMove != null
+          ? event => !disabled && onMouseMove(event)
+          : onMouseMove
+      }
       className={cx(shapeStyle, className, {
         [disabledStyle]: Boolean(disabled),
         [defaultActiveStyle]: Boolean(pressed),
       })}
     >
       {prefixedLabel && label}
-      {Array.isArray(icon) ? (
-        <span className="fa-layers fa-fw">
-          {icon.map((ic, i) => (
-            <IconComp key={JSON.stringify(ic) + String(i)} icon={ic} />
-          ))}
-        </span>
-      ) : (
-        <IconComp icon={icon} />
-      )}
+      <IconComp icon={icon} />
       {!prefixedLabel && label}
     </button>
   );

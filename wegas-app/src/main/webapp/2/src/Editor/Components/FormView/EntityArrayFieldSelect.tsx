@@ -16,14 +16,14 @@ interface IName {
 
 interface IEntityArrayFieldSelectProps extends WidgetProps.BaseProps {
   context?: {
-      variableName?: string;
-  },
+    variableName?: string;
+  };
   view: {
     returnAttr: string;
     scope: 'instance' | string;
     field: string;
     context?: {
-        entity: string;
+      entity: string;
     };
     name: IName;
   } & CommonView &
@@ -50,7 +50,7 @@ function EntityArrayFieldSelect(props: IEntityArrayFieldSelectProps) {
     ? VariableDescriptor.first('name', context.variableName)
     : props.formValue;
   if (!computedEntity) {
-    return null;
+    return <pre>No context found, variableName needed</pre>;
   }
 
   const results: unknown =

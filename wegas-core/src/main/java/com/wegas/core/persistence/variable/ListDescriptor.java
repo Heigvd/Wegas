@@ -17,8 +17,13 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.annotations.WegasEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.JSONSchema.JSONArray;
+import com.wegas.editor.JSONSchema.JSONString;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.View.EntityArrayFiledSelect;
+import com.wegas.editor.View.ListChildrenTypeNullView;
+import com.wegas.editor.View.ListChildrenTypeView;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -53,6 +58,7 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
      */
     @ElementCollection
     @WegasEntityProperty(view = @View(label = "Allowed types"),
+            schema = JSONArrayOfChildrenType.class,
             optional = false, nullable = false, proposal = EmptyArray.class)
     private Set<String> allowedTypes = new HashSet<>();
 
@@ -61,7 +67,7 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
      */
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyString.class,
-            view = @View(label = "Default child type"))
+            view = @View(label = "Default child type", value=ListChildrenTypeNullView.class))
     private String addShortcut = "";
 
     /**
@@ -179,6 +185,15 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
             }
         }
         return acc;
+    }
+    
+    public static class JSONArrayOfChildrenType extends JSONArray {
+
+        public JSONArrayOfChildrenType() {
+            JSONString aValues = new JSONString(false);
+            aValues.setView(new ListChildrenTypeView());
+            this.setItems(aValues);
+        }
     }
 
     /*@PrePersist

@@ -5,13 +5,17 @@ import StringInput from './String';
 import ObjectView from './Object';
 import Textarea from './Textarea';
 import BooleanView from './Boolean';
-import Select from './Select';
+import Select, {
+  ListChildrenSelectView,
+  ListChildrenNullSelectView,
+} from './Select';
 import ArrayWidget from './Array';
 import { Script } from './Script/Script';
 import { Code } from './Code';
 import {
   TreeVariableSelect,
   ScripableVariableSelect,
+  TreeVSelect,
 } from './TreeVariableSelect';
 import translatable from './translatable';
 import EntityArrayFieldSelect from './EntityArrayFieldSelect';
@@ -20,6 +24,7 @@ import { LabeledHTMLEditor } from '../../../Components/HTMLEditor';
 import { TimestampView } from './Timestamp';
 import { VariableInput } from './Script/VariableInput';
 import PageSelect from './PageSelect';
+import StatementView from './Script/Expressions/ExpressionEditor';
 
 export const DEFINED_VIEWS = {
   hidden,
@@ -43,6 +48,10 @@ export const DEFINED_VIEWS = {
   entityarrayfieldselect: EntityArrayFieldSelect,
   flatvariableselect: FlatVariableSelect,
   timestamp: TimestampView,
+  statement: StatementView,
+  listchildren: ListChildrenSelectView,
+  listchildrennull: ListChildrenNullSelectView,
+  treeselect: TreeVSelect,
 };
 setDefaultWidgets(DEFINED_VIEWS);
 

@@ -8,7 +8,6 @@ import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { QuestionDescriptorAPI } from '../../API/questionDescriptor.api';
 import { isSelected, getReply } from '../proxyfy/methods/ChoiceDescriptor';
 import { getInstance } from '../methods/VariableDescriptorMethods';
-import { wlog } from '../../Helper/wegaslog';
 
 export interface VariableInstanceState {
   [id: string]: Readonly<IVariableInstance> | undefined;
@@ -161,7 +160,6 @@ export function cancelReply(
     const gameModelId = getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     const reply = getReply(choice)(p);
-    wlog(reply);
     if (p.id == null || !reply) {
       throw Error('Missing persisted player');
     }

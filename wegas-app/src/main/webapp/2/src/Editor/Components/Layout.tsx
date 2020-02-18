@@ -4,7 +4,6 @@ import Header from './Header';
 import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
-// const PageDisplay = React.lazy(() => import('./Page/PageDisplay.old'));
 const PageEditor = React.lazy(() => import('./Page/PageEditor'));
 const TreeView = React.lazy(() => import('./Variable/VariableTree'));
 const EntityEditor = React.lazy(() => import('./EntityEditor'));
@@ -26,7 +25,6 @@ const layout = css({
 
 export const availableLayoutTabs = {
   Variables: <TreeView />,
-  // Page: <PageDisplay />,
   StateMachine: <StateMachineEditor />,
   Editor: <EntityEditor />,
   Files: <FileBrowserWithMeta />,

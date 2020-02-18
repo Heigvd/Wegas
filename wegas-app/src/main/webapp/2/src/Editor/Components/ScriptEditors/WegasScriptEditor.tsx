@@ -67,7 +67,13 @@ const formatScriptToFunction = (
 };
 
 export function WegasScriptEditor(props: WegasScriptEditorProps) {
-  const { value, returnType, clientScript, onChange, onBlur, onSave } = props;
+  const {
+    value,
+    returnType,
+    /*TODO : allow non server methods here clientScript,*/ onChange,
+    onBlur,
+    onSave,
+  } = props;
   const language = props.language ? props.language : 'typescript';
   let editorLock: ((editor: MonacoSCodeEditor) => void) | undefined = undefined;
   const editorRef = React.useRef<MonacoSCodeEditor>();
@@ -158,7 +164,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   );
 
   const extraLibs: MonacoDefinitionsLibraries[] = [
-    ...useGlobalLibs(clientScript),
+    ...useGlobalLibs(),
     { name: 'defaultLib:lib.d.ts', content: libes5 },
   ];
 

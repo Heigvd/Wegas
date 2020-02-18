@@ -7,7 +7,7 @@ import { toLower } from 'lodash';
 import { CodeLanguage, scriptEditStyle } from './Script/Script';
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
 
-interface CodeProps
+export interface CodeProps
   extends WidgetProps.BaseProps<
     LabeledView & CommonView & { language?: CodeLanguage }
   > {
