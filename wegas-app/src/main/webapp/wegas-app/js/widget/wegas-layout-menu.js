@@ -235,12 +235,7 @@ YUI.add('wegas-layout-menu', function(Y) {
         },
         getLabel: function() {
             if (this.get("label")) {
-                var labelDesc = this.get("label.evaluated");
-                if (labelDesc instanceof Y.Wegas.persistence.ListDescriptor) {
-                    return I18n.t(labelDesc.getLabel());
-                } else {
-                    return labelDesc.getInstance().get("value");
-                }
+                return I18n.tVar(this.get("label.evaluated"));
             } else {
                 return this.get("name");
             }
@@ -275,6 +270,7 @@ YUI.add('wegas-layout-menu', function(Y) {
                     type: 'variableselect',
                     label: 'Label',
                     classFilter: [
+                        "StaticTextDescriptor", "StringDescriptor", // use the text
                         "TextDescriptor", "StringDescriptor", // use the value
                         "ListDescriptor" // use the label
                     ]

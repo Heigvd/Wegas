@@ -96,11 +96,11 @@ public abstract class WegasPatch {
     protected VariableDescriptorFacade vdf;
 
     protected WegasPatch(Object identifier, Integer order,
-            Method getter, Method setter,
-            WegasCallback fieldCallback,
-            boolean ignoreNull, boolean sameEntityOnly,
-            boolean initOnly, boolean recursive,
-            ProtectionLevel protectionLevel) {
+        Method getter, Method setter,
+        WegasCallback fieldCallback,
+        boolean ignoreNull, boolean sameEntityOnly,
+        boolean initOnly, boolean recursive,
+        ProtectionLevel protectionLevel) {
         this.identifier = identifier;
         this.order = order;
         this.getter = getter;
@@ -114,7 +114,8 @@ public abstract class WegasPatch {
     }
 
     /**
-     * Get all callbacks to take into account for this patch (entity + entity super classed + field + user callbacks)
+     * Get all callbacks to take into account for this patch (entity + entity super classed + field
+     * + user callbacks)
      *
      * @param userCallback callback specific to patch
      *
@@ -188,17 +189,19 @@ public abstract class WegasPatch {
     }
 
     protected abstract LifecycleCollector apply(GameModel targetGameModel, Deque<Mergeable> ancestors,
-            Object targetObject, WegasCallback callback, PatchMode parentMode, Visibility visibility,
-            LifecycleCollector collector, Integer numPass, boolean bypassVisibility);
+        Object targetObject, WegasCallback callback, PatchMode parentMode, Visibility visibility,
+        LifecycleCollector collector, Integer numPass, boolean bypassVisibility);
 
     /**
-     * Guess current mode according to protectionLevel, current visibility, and parent mode and visibility
+     * Guess current mode according to protectionLevel, current visibility, and parent mode and
+     * visibility
      *
      * @param inheritedVisibility visibility of parent
      * @param visibility          optional current visibility
      *
-     * @return current mode OVERRIDE if visibility equals INTERNAL or PROTECTED or if parent mode is OVERRIDE and the parent child link allow to cascade OVERRIDE
-     *         , UPDATE in all other case
+     * @return current mode OVERRIDE if visibility equals INTERNAL or PROTECTED or if parent mode is
+     *         OVERRIDE and the parent child link allow to cascade OVERRIDE , UPDATE in all other
+     *         case
      */
     protected PatchMode updateOrOverride(Visibility inheritedVisibility, Visibility visibility) {
         logger.trace("override ? (inheritedV: {}, ownVisibility: {}; protection: {}", inheritedVisibility, visibility, protectionLevel);
@@ -219,8 +222,8 @@ public abstract class WegasPatch {
                 break;
             case INHERITED:
                 if (eVisibility == Visibility.INTERNAL
-                        || eVisibility == Visibility.PROTECTED
-                        || eVisibility == Visibility.INHERITED) {
+                    || eVisibility == Visibility.PROTECTED
+                    || eVisibility == Visibility.INHERITED) {
                     return PatchMode.OVERRIDE;
                 }
                 break;
@@ -333,8 +336,8 @@ public abstract class WegasPatch {
                         mode = PatchMode.SKIP;
                     }
                     // FROM NULL TO NULL !!!
-                    logger.error("Patch Null2Null: Target: {}, From: {}; To: {}; ParentMode: {}; inheritedVisibility: {}; Visibility: {}; protectionLevel: {}; => mode: {}", 
-                            target, from, to, parentMode, inheritedVisibility, visibility, protectionLevel, mode);
+                    logger.error("Patch Null2Null: Target: {}, From: {}; To: {}; ParentMode: {}; inheritedVisibility: {}; Visibility: {}; protectionLevel: {}; => mode: {}",
+                        target, from, to, parentMode, inheritedVisibility, visibility, protectionLevel, mode);
                 }
             }
         }
@@ -379,16 +382,20 @@ public abstract class WegasPatch {
         }
 
         return !bypassVisibility // target is never protected when bypassing visibilities
-                && effectiveTarget != null && effectiveTarget.belongsToProtectedGameModel() // and target is protected
-                && this.toEntity != null
-                && (effectiveAbstractEntity != null && !effectiveAbstractEntity.isPersisted()
-                || this.toEntity.belongsToProtectedGameModel() // toEntity is also protected (ie allows changes from upstream)
-                );
+            && effectiveTarget != null && effectiveTarget.belongsToProtectedGameModel() // and target is protected
+            && this.toEntity != null
+            && (effectiveAbstractEntity != null && !effectiveAbstractEntity.isPersisted()
+            || this.toEntity.belongsToProtectedGameModel() // toEntity is also protected (ie allows changes from upstream)
+            );
     }
 
     @Override
     public String toString() {
         return this.print(0).toString();
+    }
+
+    public PatchDiff diff(){
+        return this.buildDiff();
     }
 
     /**
@@ -427,4 +434,10 @@ public abstract class WegasPatch {
         }
         return this.vdf;
     }
+
+
+    protected abstract PatchDiff buildDiff();
+
+    public static abstract class PatchDiff{
+    };
 }

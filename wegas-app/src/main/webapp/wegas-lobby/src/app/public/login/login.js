@@ -22,6 +22,12 @@ angular.module('public.login', [])
             $scope.languages = WegasTranslations.languages;
 
             $scope.changeLanguage = function(key) {
+                if (!config) {
+                    config = {};
+                }
+                if (!config.commons) {
+                    config.commons = {};
+                }
                 config.commons.language = key;
                 $scope.currentLanguage = key;
                 $translate.use(key);

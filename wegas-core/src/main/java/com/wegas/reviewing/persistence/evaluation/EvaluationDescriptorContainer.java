@@ -12,7 +12,9 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
@@ -61,8 +63,8 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(value = Hidden.class, label = ""))
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(value = Hidden.class, label = ""))
     @NotNull
     private List<EvaluationDescriptor> evaluations = new ArrayList<>();
 
@@ -110,7 +112,7 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
      * @return list of EvaluationDescriptor
      */
     public List<EvaluationDescriptor> getEvaluations() {
-        return evaluations;
+        return Helper.copyAndSortModifiable(this.evaluations, new EntityComparators.OrderComparator<>());
     }
 
     /**
@@ -120,7 +122,9 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
      */
     public void setEvaluations(List<EvaluationDescriptor> evaluations) {
         this.evaluations = evaluations;
+        int i = 0;
         for (EvaluationDescriptor ed : this.evaluations) {
+            ed.setIndex(i++);
             ed.setContainer(this);
         }
     }

@@ -13,7 +13,7 @@ angular.module('private.logout', [])
         ;
     })
     .controller('LogoutController',
-        function LogoutController($state, Auth, SessionsModel, ScenariosModel, TeamsModel, UsersModel, GroupsModel, WegasPusher) {
+        function LogoutController($rootScope, $state, Auth, SessionsModel, ScenariosModel, TeamsModel, UsersModel, GroupsModel, WegasPusher) {
             "use strict";
             Auth.logout().then(function(response) {
                 $("body").removeClass("player scenarist trainer admin guest");
@@ -23,6 +23,15 @@ angular.module('private.logout', [])
                 UsersModel.clearCache();
                 GroupsModel.clearCache();
                 WegasPusher.disconnect();
+                // To properly handle re-logins, store current language in global
+                // variable instead of localStorage, which will be deleted:
+                var cfg = localStorage.getObject("wegas-config");
+                $rootScope.language = cfg.commons.language;
+                // Delete player-level localStorage items, while keeping trainer and scenarist items:
+                localStorage.removeItem("wegas-config");
+                localStorage.removeItem('pusherTransportEncrypted');
+                localStorage.removeItem('pusherTransportTLS');
+                localStorage.removeItem('pusherTransportUnencrypted'); // Exists only in developer mode
                 $state.go("wegas.public.login");
             });
         });

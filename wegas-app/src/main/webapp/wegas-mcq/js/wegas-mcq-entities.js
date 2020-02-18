@@ -568,6 +568,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                 type: "entityarrayfieldselect",
                                 returnAttr: "name",
                                 field: "results",
+                                layout: "shortInline"
                             }
                         }]
                 },

@@ -120,7 +120,8 @@ YUI().use(function(Y) {
                     "StringDescriptor",
                     "StringInstance",
                     "TextDescriptor",
-                    "TextInstance"
+                    "TextInstance",
+                    "StaticTextDescriptor"
                 ]
             },
             "wegas-statemachine-entities": {

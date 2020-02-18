@@ -1509,3 +1509,49 @@
     font-size: 18px;
     text-align: center;
 }
+
+.wegas-model-propagator {
+
+}
+
+.wegas-model-propagator .modal-title {
+    font-size: 24px;
+}
+
+.wegas-model-propagator .modal-content .diff {
+    padding-left: 1em;
+    border-left: 1px dashed lightgray;
+}
+
+.wegas-model-propagator .modal-content .change .line-number {
+    display: inline-block;
+    width: 25px;
+    padding-right: 5px;
+    color: gray;
+    user-select: none;
+    text-align: right;
+    background: #eeeaea;
+    vertical-align: top;
+}
+
+.wegas-model-propagator .modal-content pre {
+    display: inline-block;
+}
+
+.wegas-model-propagator .modal-content .change .line-change {
+    width: calc(100% - 35px);
+    overflow-wrap: anywhere;
+    overflow-x: auto;
+    white-space: pre-wrap;
+}
+
+.wegas-model-propagator .modal-content .change .line-change .editNewInline,
+.wegas-model-propagator .modal-content .side2side-change .new {
+    background-color: #acf2bd;
+}
+
+.wegas-model-propagator .modal-content .change .line-change .editOldInline,
+.wegas-model-propagator .modal-content .side2side-change .old {
+    background-color: #fdb8c0;
+    text-decoration: line-through;
+}

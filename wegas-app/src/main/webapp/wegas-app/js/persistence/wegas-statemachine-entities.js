@@ -373,6 +373,13 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             "@class": {
                 value: "Transition",
             },
+            label: {
+                type: [NULL, STRING],
+                "transient": false,
+                view: {
+                    label: "Label"
+                }
+            },
             triggerCondition: {
                 type: [NULL, OBJECT],
                 properties: {

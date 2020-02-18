@@ -668,6 +668,27 @@ YUI.add("wegas-i18n", function(Y) {
             t: function(key, args) {
                 return translate(key, args);
             },
+            tVar: function(variable, fallback) {
+                var theVar = variable;
+                if (typeof variable === "string") {
+                    theVar = Y.Wegas.Facade.cahe.find("name", variable);
+                }
+                if (theVar) {
+                    if (theVar instanceof Y.Wegas.persistence.StaticTextDescriptor) {
+                        return I18n.t(theVar.get("text"))
+                    } else if (theVar instanceof Y.Wegas.persistence.TextDescriptor
+                        || theVar instanceof Y.Wegas.persistence.StringDescriptor) {
+                        return I18n.t(theVar.getInstance().get("trValue"));
+                    } else {
+                        return I18n.t(theVar.get("label"));
+                    }
+                }
+
+                if (typeof fallback === "object") {
+                    return I18n.t(fallback);
+                }
+                return Y.Template.Micro.compile(fallback || '')();
+            },
             getTrStatus: function(trc, code) {
                 return getTrStatus(trc, code);
             },

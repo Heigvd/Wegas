@@ -5,12 +5,15 @@
  * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-package com.wegas.core.rest;
+package com.wegas.core.tools;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelLanguage;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -113,15 +116,22 @@ public class FindAndReplacePayload {
         return languages;
     }
 
+    public void setLangsFromGameModel(GameModel gm) {
+        this.langs.clear();
+        for (GameModelLanguage lang : gm.getRawLanguages()) {
+            this.langs.add(lang.getCode());
+        }
+    }
+
     public void setLanguages(JsonNode languages) {
         this.languages = languages;
 
         if (this.languages != null) {
             this.langs.clear();
             Iterator<Map.Entry<String, JsonNode>> fields = this.languages.fields();
-            while(fields.hasNext()){
+            while (fields.hasNext()) {
                 Map.Entry<String, JsonNode> next = fields.next();
-                if (next.getValue().asBoolean()){
+                if (next.getValue().asBoolean()) {
                     this.langs.add(next.getKey());
                 }
             }
