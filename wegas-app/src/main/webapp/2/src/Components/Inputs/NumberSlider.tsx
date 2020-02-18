@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Interpolation, css } from 'emotion';
 import Slider from 'react-input-slider';
-import { debounceAction } from '../../../Helper/debounceAction';
-import { textCenter } from '../../../css/classes';
+import { debounceAction } from '../../Helper/debounceAction';
+import { textCenter } from '../../css/classes';
 
 const valueDisplayStyle = css({
   textAlign: 'center',

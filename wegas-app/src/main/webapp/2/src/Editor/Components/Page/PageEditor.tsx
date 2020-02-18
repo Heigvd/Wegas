@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
-import { ConfirmButton } from '../../../Components/Inputs/Button/ConfirmButton';
+import { ConfirmButton } from '../../../Components/Inputs/ConfirmButton';
 import { Menu } from '../../../Components/Menu';
 import { PageAPI } from '../../../API/pages.api';
 import { GameModel } from '../../../data/selectors';
@@ -8,7 +8,7 @@ import {
   JSONandJSEditor,
   OnSaveStatus,
 } from '../ScriptEditors/JSONandJSEditor';
-import { IconButton } from '../../../Components/Inputs/Button/IconButton';
+import { IconButton } from '../../../Components/Inputs/IconButton';
 import { TextPrompt } from '../TextPrompt';
 import { compare, deepClone } from 'fast-json-patch';
 import { ComponentPalette, DnDComponent } from './ComponentPalette';
@@ -17,9 +17,9 @@ import { ReflexElement, ReflexContainer, ReflexSplitter } from 'react-reflex';
 import { splitter } from '../LinearTabLayout/LinearLayout';
 import ComponentEditor from './ComponentEditor';
 import { PageLoader } from './PageLoader';
-import { Button } from '../../../Components/Inputs/Button/Button';
+import { Button } from '../../../Components/Inputs/Button';
 import { MessageString } from '../MessageString';
-import { Toggler } from '../../../Components/Inputs/Button/Toggler';
+import { Toggler } from '../../../Components/Inputs/Toggler';
 import { css } from 'emotion';
 
 const innerButtonStyle = css({

@@ -5,7 +5,7 @@ import { PageAPI } from '../../../API/pages.api';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonView } from './commonView';
 import { LabeledView } from './labeled';
-import { IconButton } from '../../../Components/Inputs/Button/IconButton';
+import { IconButton } from '../../../Components/Inputs/IconButton';
 import { scriptEditStyle } from './Script/Script';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';

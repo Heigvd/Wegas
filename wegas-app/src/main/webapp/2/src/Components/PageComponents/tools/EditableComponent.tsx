@@ -8,9 +8,9 @@ import {
 import { useDrop, DropTargetMonitor } from 'react-dnd';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { themeVar } from '../../Theme';
-import { IconButton } from '../../Inputs/Button/IconButton';
-import { ConfirmButton } from '../../Inputs/Button/ConfirmButton';
-import { Toggler, TogglerProps } from '../../Inputs/Button/Toggler';
+import { IconButton } from '../../Inputs/IconButton';
+import { ConfirmButton } from '../../Inputs/ConfirmButton';
+import { Toggler, TogglerProps } from '../../Inputs/Toggler';
 import List from '../../Layouts/List';
 import { expand } from '../../../css/classes';
 import { Centered } from '../../Layouts/Centered';

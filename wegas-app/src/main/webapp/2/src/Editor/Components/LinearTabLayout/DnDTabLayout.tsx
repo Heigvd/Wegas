@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useDrop, DropTargetMonitor } from 'react-dnd';
 import { Tab, dndAcceptType, DragTab, DropTab } from './DnDTabs';
-import { IconButton } from '../../../Components/Inputs/Button/IconButton';
+import { IconButton } from '../../../Components/Inputs/IconButton';
 import { Toolbar } from '../../../Components/Toolbar';
 import { Menu } from '../../../Components/Menu';
 import { Reparentable } from '../Reparentable';

@@ -7,7 +7,7 @@ import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { css, cx } from 'emotion';
 import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
 import { themeVar } from '../../Theme';
-import { IconButton } from '../../Inputs/Button/IconButton';
+import { IconButton } from '../../Inputs/IconButton';
 import {
   selectAndValidate,
   toggleReply,
@@ -20,7 +20,7 @@ import {
   isUnread,
 } from '../../../data/proxyfy/methods/QuestionDescriptor';
 import { isSelected } from '../../../data/proxyfy/methods/ChoiceDescriptor';
-import { Button } from '../../Inputs/Button/Button';
+import { Button } from '../../Inputs/Button';
 
 const unreadSignalStyle = css({ margin: '3px' });
 const choiceContainerStyle = css({

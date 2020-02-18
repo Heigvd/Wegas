@@ -3,7 +3,7 @@ import { cx, css } from 'emotion';
 import { flex, flexWrap, button } from '../../../css/classes';
 import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
 import { themeVar } from '../../../Components/Theme';
-import { IconButton } from '../../../Components/Inputs/Button/IconButton';
+import { IconButton } from '../../../Components/Inputs/IconButton';
 import { useDrag } from 'react-dnd';
 
 const componentStyle = css({

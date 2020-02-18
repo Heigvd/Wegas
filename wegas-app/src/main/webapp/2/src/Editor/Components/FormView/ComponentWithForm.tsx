@@ -16,7 +16,7 @@ import { InstancesEditorProps } from '../Variable/InstancesEditor';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { Toolbar } from '../../../Components/Toolbar';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { Button } from '../../../Components/Inputs/Button/Button';
+import { Button } from '../../../Components/Inputs/Button';
 
 const growBig = css({
   flex: '30 1 auto',

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { LabeledView, Labeled } from '../labeled';
 import { CommonView, CommonViewContainer } from '../commonView';
-import { IconButton } from '../../../../Components/Inputs/Button/IconButton';
+import { IconButton } from '../../../../Components/Inputs/IconButton';
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
 import { css } from 'emotion';
 import { store } from '../../../../data/store';

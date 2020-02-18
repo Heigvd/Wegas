@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IconButton } from '../../Components/Inputs/Button/IconButton';
+import { IconButton } from '../../Components/Inputs/IconButton';
 import { Modal } from '../../Components/Modal';
 import { Actions } from '../../data';
 import { editorLabel } from '../../data/methods/VariableDescriptorMethods';

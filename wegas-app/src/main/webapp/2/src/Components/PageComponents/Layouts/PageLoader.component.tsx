@@ -47,7 +47,7 @@ registerComponent(
   pageComponentFactory(
     PlayerPageLoader,
     'PageLoader',
-    'windows',
+    'window-maximize',
     {
       selectedPageId: schemaProps.pageSelect('Page', false),
     },

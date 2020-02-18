@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Downshift, { StateChangeOptions } from 'downshift';
 import { css, cx } from 'emotion';
-import { IconButton } from './Inputs/Button/IconButton';
+import { IconButton } from './Inputs/IconButton';
 import { withDefault } from '../Editor/Components/Views/FontAwesome';
 import { useKeyboard } from './Hooks/useKeyboard';
 import { themeVar } from './Theme';

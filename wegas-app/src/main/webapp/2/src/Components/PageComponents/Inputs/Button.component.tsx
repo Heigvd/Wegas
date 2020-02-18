@@ -7,7 +7,7 @@ import {
   PageComponentMandatoryProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { Button } from '../../Inputs/Button/Button';
+import { Button } from '../../Inputs/Button';
 
 interface PlayerButtonProps extends PageComponentMandatoryProps {
   label: string;

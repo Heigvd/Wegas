@@ -39,6 +39,7 @@ module.exports = {
     // eslint@6.8.0
     '@typescript-eslint/ban-ts-ignore': 'off',
     '@typescript-eslint/no-inferrable-types': 'off',
+    '@typescript-eslint/no-empty-function': 'off'
   },
   overrides: [
     {

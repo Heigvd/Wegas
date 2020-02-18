@@ -9,7 +9,7 @@ import {
   NumberSlider,
   DisplayMode,
   displayModes,
-} from '../../Inputs/Button/NumberSlider';
+} from '../../Inputs/NumberSlider';
 import { useVariableInstance } from '../../Hooks/useVariable';
 import { store } from '../../../data/store';
 import { Interpolation } from 'emotion';

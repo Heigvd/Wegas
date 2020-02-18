@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IconButton } from '../../../../Components/Inputs/Button/IconButton';
+import { IconButton } from '../../../../Components/Inputs/IconButton';
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
 import Form from 'jsoninput';
 import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';

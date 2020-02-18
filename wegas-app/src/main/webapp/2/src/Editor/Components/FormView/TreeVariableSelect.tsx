@@ -10,7 +10,7 @@ import { CommonViewContainer, CommonView } from './commonView';
 import { LabeledView, Labeled } from './labeled';
 import { inputStyle } from './String';
 import { css } from 'emotion';
-import { IconButton } from '../../../Components/Inputs/Button/IconButton';
+import { IconButton } from '../../../Components/Inputs/IconButton';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { toScriptableClassName } from '../../../Helper/wegasClassNames';
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
