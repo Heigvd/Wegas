@@ -1,13 +1,12 @@
-import { useCallback } from 'react';
+import * as React from 'react';
 import { proxyfy } from '../../data/proxyfy';
 import { Player, VariableDescriptor as VDSelect } from '../../data/selectors';
 import { useStore, store } from '../../data/store';
 import { featuresCTX } from '../Contexts/FeaturesProvider';
-import * as React from 'react';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
 import { useGameModel } from './useGameModel';
 import { Actions } from '../../data';
-import * as ts from 'typescript';
+import { transpile } from 'typescript';
 import { classesCTX } from '../Contexts/ClassesProvider';
 
 interface GlobalVariableClass {
@@ -161,7 +160,7 @@ export function clientScriptEval<ReturnValue>(script: string) {
       eval: (code: string) => ReturnValue;
     })
       // 'undefined' so that an empty script don't return '"use strict"'
-      .eval('"use strict";undefined;' + ts.transpile(script))
+      .eval('"use strict";undefined;' + transpile(script))
   );
 }
 
@@ -172,7 +171,7 @@ export function clientScriptEval<ReturnValue>(script: string) {
  */
 export function useScript<ReturnValue>(script: string) {
   useGlobals();
-  const fn = useCallback(
+  const fn = React.useCallback(
     () => clientScriptEval<ReturnValue>(script), // 'undefined' so that an empty script don't return '"use strict"'
     [script],
   );
