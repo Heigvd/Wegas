@@ -4,7 +4,7 @@ import { LabeledView, Labeled } from '../labeled';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { IconButton } from '../../../../Components/Inputs/Button/IconButton';
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
-import { css, cx } from 'emotion';
+import { css } from 'emotion';
 import { store } from '../../../../data/store';
 import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../../data/selectors';
@@ -29,15 +29,6 @@ import { isBinaryExpression } from '@babel/types';
 import { Menu } from '../../../../Components/Menu';
 import { CallExpression } from '@babel/types';
 import { isEmptyStatement } from '@babel/types';
-import { Centered } from '../../../../Components/Layouts/Centered';
-import {
-  centeredContent,
-  expand,
-  schrink,
-  flex,
-  grow,
-  flexColumn,
-} from '../../../../css/classes';
 import { ResizeHandle } from '../../ResizeHandle';
 
 export const scriptEditStyle = css({
