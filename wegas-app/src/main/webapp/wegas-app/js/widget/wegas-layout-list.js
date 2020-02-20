@@ -119,9 +119,6 @@ YUI.add('wegas-layout-list', function(Y) {
             name: {
                 value: "List",
                 type: "string",
-                visible: function(_val, formVal){
-                    return !formVal.hasOwnProperty("@pageId");
-                },
                 view: {
                     label: "Layout name",
                 }

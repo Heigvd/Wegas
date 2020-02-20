@@ -1588,15 +1588,12 @@ YUI.add('wegas-datasource', function(Y) {
             var pe = Y.clone(entity);
             delete pe["@pageId"];
             this.index = null;
-            return this.sendRequest({
-                request: "",
-                cfg: {
+            return this.sendRequest({request: "", cfg: {
                     method: PUT,
                     data: Y.JSON.stringify(pe)
                 },
                 on: {
                     success: Y.bind(function(e) {
-
                         if (callback instanceof Function) {
                             this.getIndex(Y.bind(callback,
                                 callback,
@@ -1608,6 +1605,25 @@ YUI.add('wegas-datasource', function(Y) {
                     }, this)
                 }
             });
+        },
+        createFolder: function(entity, callback) {
+            var folder = Y.clone(entity);
+            this.index = null;
+            /*return this.sendRequest({request: "",
+             cfg: {
+             method: PUT,
+             data: Y.JSON.stringify(pe)
+             },
+             on: {
+             success: Y.bind(function(e) {
+             if (callback instanceof Function) {
+             this.getIndex(Y.bind(callback, callback, e.response.results, e.data.getResponseHeader("Page")));
+             } else {
+             this.getIndex();
+             }
+             }, this)
+             }
+             });*/
         },
         /**
          * @function
@@ -1646,13 +1662,16 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             });
         },
-        editMeta: function(pageId, meta, callback) {
+        renameItem: function(path, name, callback) {
             this.index = null;
             return this.sendRequest({
-                request: "" + pageId + "/meta",
+                request: "rename",
                 cfg: {
                     method: PUT,
-                    data: meta
+                    data: {
+                        path: path,
+                        name: name
+                    }
                 },
                 on: {
                     success: Y.bind(function(e) {

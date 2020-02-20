@@ -1973,101 +1973,114 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * Script mapper
      */
-    persistence.Script = Base.create(
-        'Script',
-        persistence.Entity,
-        [],
-        {
-            initializer: function() {
-                this.publish('evaluated');
-                this._inProgress = false;
-            },
-            /*
-             * Conditional script to test. Error resolve to true
-             * @returns {Promise}
-             */
-            localEval: function() {
-                return new Y.Promise(
-                    Y.bind(function(resolve) {
-                        if (this.get('content') === '') {
-                            // empty scripts resolve to true
-                            resolve(true);
-                            return;
-                        }
-                        if (Wegas.Facade.Variable.script['eval']) {
-                            if (!this._inProgress) {
-                                this._inProgress = true;
-                                Wegas.Facade.Variable.script['eval'](
-                                    this.get('content'),
-                                    {
-                                        on: {
-                                            success: Y.bind(function(data) {
-                                                if (
-                                                    data.response.entity ===
-                                                    true
-                                                    ) {
-                                                    resolve(true);
-                                                } else {
-                                                    resolve(false);
-                                                }
-                                                this._inProgress = false;
-                                            }, this),
-                                            failure: Y.bind(function() {
-                                                resolve(false);
-                                                this._inProgress = false;
-                                            }, this)
-                                        }
-                                    }
-                                );
-                            } else {
-                                Y.log('evaluation in progress');
-                            }
-                        }
-                    }, this)
-                    );
-            },
-            isEmpty: function() {
-                return this.content === null || this.content === '';
-            }
+    persistence.Script = Base.create('Script', persistence.Entity, [], {
+        initializer: function() {
+            this.publish('evaluated');
+            this._inProgress = false;
         },
-        {
-            ATTRS: {
-                id: {
-                    value: undefined, // An Embeddable has no ID !!! Forcing it
-                    readOnly: true,
-                    transient: true
-                },
-                '@class': {
-                    value: 'Script'
-                },
-                content: {
-                    type: STRING,
-                    format: TEXT,
-                    view: {
-                        label: 'content'
-                    },
-                    setter: function(v) {
-                        this._result = null;
-                        return v;
+        /*
+         * Conditional script to test. Error resolve to true
+         * @returns {Promise}
+         */
+        localEval: function() {
+            return new Y.Promise(
+                Y.bind(function(resolve) {
+                    if (this.get('content') === '') {
+                        // empty scripts resolve to true
+                        resolve(true);
+                        return;
                     }
+                    if (Wegas.Facade.Variable.script['eval']) {
+                        if (!this._inProgress) {
+                            this._inProgress = true;
+                            Wegas.Facade.Variable.script['eval'](
+                                this.get('content'),
+                                {
+                                    on: {
+                                        success: Y.bind(function(data) {
+                                            if (
+                                                data.response.entity ===
+                                                true
+                                                ) {
+                                                resolve(true);
+                                            } else {
+                                                resolve(false);
+                                            }
+                                            this._inProgress = false;
+                                        }, this),
+                                        failure: Y.bind(function() {
+                                            resolve(false);
+                                            this._inProgress = false;
+                                        }, this)
+                                    }
+                                }
+                            );
+                        } else {
+                            Y.log('evaluation in progress');
+                        }
+                    }
+                }, this)
+                );
+        },
+        isEmpty: function() {
+            return this.content === null || this.content === '';
+        }
+    }, {
+        ATTRS: {
+            id: {
+                value: undefined, // An Embeddable has no ID !!! Forcing it
+                readOnly: true,
+                transient: true
+            },
+            '@class': {
+                value: 'Script'
+            },
+            content: {
+                type: STRING,
+                format: TEXT,
+                view: {
+                    label: 'content'
+                },
+                setter: function(v) {
+                    this._result = null;
+                    return v;
                 }
             }
         }
-    );
+    });
     /**
      *
      */
-    persistence.PageMeta = Base.create(
-        'wegas-pagemeta',
-        persistence.Entity,
-        [],
-        {},
+    persistence.PageMeta = Base.create('wegas-pagemeta', persistence.Entity, [], {}, {
+        EDITORNAME: 'Page properties',
+        ATTRS: {
+            id: {
+                type: STRING,
+                setter: function(val) {
+                    // override setter from Entity
+                    return val;
+                },
+                view: {
+                    label: "Id",
+                    readOnly: true
+                }
+            },
+            name: {
+                type: STRING,
+                optional: true,
+                view: {label: "Name"}
+            }
+        }
+    });
+
+    persistence.PageFolderMeta = Base.create('wegas-pagefoldermeta', persistence.Entity, [], {},
         {
-            EDITORNAME: 'Page properties',
+            EDITORNAME: 'Page Folder properties',
             ATTRS: {
                 name: {
                     type: STRING,
-                    optional: true
+                    optional: true,
+                    view: {label: "Name"}
                 }
             }
         }
@@ -2075,106 +2088,97 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * BooleanDescriptor mapper
      */
-    persistence.BooleanDescriptor = Base.create(
-        'BooleanDescriptor',
-        persistence.VariableDescriptor,
-        [persistence.PrimitiveDescriptor],
-        {
-            getIconCss: function() {
-                return 'fa fa-toggle-on';
-            }
-        },
-        {
-            ATTRS: {
-                '@class': {
-                    value: 'BooleanDescriptor'
-                },
-                value: {
-                    transient: true,
-                    getter: function() {
-                        if (this.getInstance()) {
-                            return this.getInstance().get(VALUE);
-                        } else {
-                            return null;
-                        }
-                    }
-                },
-                defaultValue: {
-                    type: BOOLEAN,
-                    value: false,
-                    transient: true
-                },
-                defaultInstance: {
-                    properties: {
-                        '@class': {
-                            type: STRING,
-                            value: 'BooleanInstance',
-                            view: {
-                                type: HIDDEN
-                            }
-                        },
-                        id: IDATTRDEF,
-                        version: VERSION_ATTR_DEF,
-                        refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
-                        parentId: IDATTRDEF,
-                        parentType: {
-                            type: "string",
-                            view: {type: HIDDEN}
-                        },
-                        value: {
-                            type: BOOLEAN,
-                            view: {
-                                label: 'Default value'
-                            }
-                        }
+    persistence.BooleanDescriptor = Base.create('BooleanDescriptor', persistence.VariableDescriptor,
+        [persistence.PrimitiveDescriptor], {
+        getIconCss: function() {
+            return 'fa fa-toggle-on';
+        }
+    }, {
+        ATTRS: {
+            '@class': {
+                value: 'BooleanDescriptor'
+            },
+            value: {
+                transient: true,
+                getter: function() {
+                    if (this.getInstance()) {
+                        return this.getInstance().get(VALUE);
+                    } else {
+                        return null;
                     }
                 }
             },
-            /**
-             * Defines methods available in wysiwyge script editor
-             */
-            METHODS: {
-                setValue: {
-                    label: 'set',
-                    arguments: [
-                        SELFARG,
-                        {
-                            type: BOOLEAN,
-                            value: true,
-                            required: true
+            defaultValue: {
+                type: BOOLEAN,
+                value: false,
+                transient: true
+            },
+            defaultInstance: {
+                properties: {
+                    '@class': {
+                        type: STRING,
+                        value: 'BooleanInstance',
+                        view: {
+                            type: HIDDEN
                         }
-                    ]
-                },
-                getValue: {
-                    label: "is true",
-                    returns: BOOLEAN,
-                    arguments: [SELFARG]
-                },
-                isFalse: {
-                    label: "is false",
-                    returns: BOOLEAN,
-                    arguments: [SELFARG]
+                    },
+                    id: IDATTRDEF,
+                    version: VERSION_ATTR_DEF,
+                    refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
+                    parentId: IDATTRDEF,
+                    parentType: {
+                        type: "string",
+                        view: {type: HIDDEN}
+                    },
+                    value: {
+                        type: BOOLEAN,
+                        view: {
+                            label: 'Default value'
+                        }
+                    }
                 }
             }
+        },
+        /**
+         * Defines methods available in wysiwyge script editor
+         */
+        METHODS: {
+            setValue: {
+                label: 'set',
+                arguments: [
+                    SELFARG,
+                    {
+                        type: BOOLEAN,
+                        value: true,
+                        required: true
+                    }
+                ]
+            },
+            getValue: {
+                label: "is true",
+                returns: BOOLEAN,
+                arguments: [SELFARG]
+            },
+            isFalse: {
+                label: "is false",
+                returns: BOOLEAN,
+                arguments: [SELFARG]
+            }
         }
+    }
     );
     /**
      * BooleanInstance mapper
      */
-    persistence.BooleanInstance = Base.create(
-        'BooleanInstance',
-        persistence.VariableInstance,
-        [],
-        {},
-        {
-            ATTRS: {
-                '@class': {
-                    value: 'BooleanInstance'
-                },
-                value: {
-                    type: BOOLEAN
-                }
+    persistence.BooleanInstance = Base.create('BooleanInstance', persistence.VariableInstance, [],
+        {}, {
+        ATTRS: {
+            '@class': {
+                value: 'BooleanInstance'
+            },
+            value: {
+                type: BOOLEAN
             }
         }
-    );
+    });
 });

@@ -50,9 +50,10 @@ public class PageTest extends AbstractArquillianTest {
     }
 
     @After
-    public void after() throws RepositoryException {
+    public void after() throws RepositoryException, JsonProcessingException {
         pageFacade.deletePage(gameModel, "1");
-        Assert.assertEquals(0, pageFacade.getPageIndex(gameModel).size());
+        Assert.assertEquals(0, 
+            pageFacade.getPageIndex(gameModel).getRoot().getItems().size());
     }
 
     @Test
@@ -77,11 +78,12 @@ public class PageTest extends AbstractArquillianTest {
     }
 
     @Test
-    public void crud() throws RepositoryException {
+    public void crud() throws RepositoryException, JsonProcessingException {
         // Create done in before
         // Read
         final Page page = pageFacade.getPage(gameModel, "1");
-        Assert.assertEquals(1, pageFacade.getPageIndex(gameModel).size());
+        Assert.assertEquals(1, 
+            pageFacade.getPageIndex(gameModel).getRoot().getItems().size());
 
         Assert.assertEquals(
                 ((ObjectNode) pageContent.deepCopy())
@@ -94,13 +96,15 @@ public class PageTest extends AbstractArquillianTest {
         jsonNode.put("@name", "Second Page");
         Page page1 = pageFacade.createPage(gameModel, "1", jsonNode);
 
-        Assert.assertEquals(1, pageFacade.getPageIndex(gameModel).size());
-        Assert.assertEquals("Second Page", pageFacade.getPage(gameModel, "1").getName());
+        Assert.assertEquals(1, 
+            pageFacade.getPageIndex(gameModel).getRoot().getItems().size());
+        Assert.assertEquals("Second Page", 
+            pageFacade.getPage(gameModel, "1").getName());
         // Delete done in after
     }
 
     @Test
-    public void testPagesRollback() throws RepositoryException {
+    public void testPagesRollback() throws RepositoryException, JsonProcessingException {
 
         // first descriptor
         NumberDescriptor desc1 = new NumberDescriptor("x");
@@ -114,11 +118,13 @@ public class PageTest extends AbstractArquillianTest {
 
         variableDescriptorFacade.create(gameModel.getId(), desc2);
 
-        Assert.assertEquals(1, pageFacade.getPageIndex(gameModel).size());
+        Assert.assertEquals(1, 
+            pageFacade.getPageIndex(gameModel).getRoot().getItems().size());
 
         jcrTestFacade.addAPage(gameModel.getId(), "b name", "2");
 
-        Assert.assertEquals(2, pageFacade.getPageIndex(gameModel).size());
+        Assert.assertEquals(2, 
+            pageFacade.getPageIndex(gameModel).getRoot().getItems().size());
 
         try {
             jcrTestFacade.addPageAndRename(gameModel.getId(), "c name", "3", "a");
@@ -128,7 +134,8 @@ public class PageTest extends AbstractArquillianTest {
         }
 
         // no new page
-        Assert.assertEquals(2, pageFacade.getPageIndex(gameModel).size());
+        Assert.assertEquals(2,
+            pageFacade.getPageIndex(gameModel).getRoot().getItems().size());
         GameModel gm = gameModelFacade.find(gameModel.getId());
         for (VariableDescriptor vd : gm.getVariableDescriptors()) {
             logger.error("VD: {}", vd);
