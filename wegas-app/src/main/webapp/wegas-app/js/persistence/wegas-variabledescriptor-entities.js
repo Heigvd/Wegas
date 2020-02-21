@@ -1803,7 +1803,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             value: "", // prevent undefined as Java will interprets such a value as a literat "undefined" !
                             view: {
                                 label: 'Token',
-                                className: 'wegas-advanced-feature',
                                 description: 'Message identifier used to reference the message within FSM/Trigger conditions'
                             }
                         },
