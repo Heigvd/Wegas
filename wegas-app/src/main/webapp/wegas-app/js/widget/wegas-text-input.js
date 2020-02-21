@@ -1203,7 +1203,7 @@ YUI.add('wegas-text-input', function(Y) {
             }
             this.on('save', this._save);
 
-            var sortable = this.getSortable();
+            var sortable = this.getSortable() && !this.get('readonly.evaluated');
 
             if (sortable) {
                 var selectedsContainer = CB.one(".selecteds");
