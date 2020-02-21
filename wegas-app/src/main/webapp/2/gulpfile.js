@@ -1,11 +1,10 @@
-// eslint-disable-next-line
+/* global require */
+/* eslint-disable @typescript-eslint/no-var-requires */
 const gulp = require('gulp');
 const webpack = require('webpack');
-
 const config = require('./webpack.config');
 
-gulp.task('default', ['build']);
-gulp.task('build', callback => {
+gulp.task('default', callback => {
     webpack({ ...config, mode: 'production' }, (err, stats) => {
         if (err) return callback(err);
         if (stats.hasErrors()) {

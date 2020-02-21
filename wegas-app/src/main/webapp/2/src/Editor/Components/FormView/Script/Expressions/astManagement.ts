@@ -38,10 +38,9 @@ import {
   callExpression,
   memberExpression,
   binaryExpression,
+  emptyStatement,
 } from '@babel/types';
-import generate from 'babel-generator';
 import { omit } from 'lodash-es';
-import { parse } from 'babylon';
 import {
   WegasOperators,
   defaultConditionAttributes,
@@ -64,6 +63,8 @@ import {
 import { wlog } from '../../../../../Helper/wegaslog';
 import { ScriptMode, isScriptCondition } from '../Script';
 import { isEmptyStatement } from '@babel/types';
+import generate from '@babel/generator';
+import { parse } from '@babel/parser';
 
 /////////////////////////////////////////////
 // METHODS //////////////////////////////////
@@ -223,7 +224,7 @@ export const generateMethodStatement = (
       }
     }
   }
-  return expressionStatement();
+  return emptyStatement();
 };
 
 /////////////////////////////////////////////
@@ -436,7 +437,7 @@ export const generateExpressionWithInitValue = (value: string) => {
       }
     }
   }
-  return callExpression();
+  return callExpression(identifier('undefined'), []);
 };
 
 export const generateImpactExpression = (

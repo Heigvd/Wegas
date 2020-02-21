@@ -16,19 +16,16 @@ import {
   isBooleanLiteral,
   BooleanLiteral,
   isCallExpression,
+  Expression,
+  isExpressionStatement,
+  isLogicalExpression,
+  expressionStatement,
+  LogicalExpression,
+  logicalExpression,isBinaryExpression,CallExpression,isEmptyStatement
 } from '@babel/types';
 import { parse } from '@babel/parser';
 import generate from '@babel/generator';
-import { Expression } from '@babel/types';
-import { isExpressionStatement } from '@babel/types';
-import { isLogicalExpression } from '@babel/types';
-import { expressionStatement } from '@babel/types';
-import { LogicalExpression } from '@babel/types';
-import { logicalExpression } from '@babel/types';
-import { isBinaryExpression } from '@babel/types';
 import { Menu } from '../../../../Components/Menu';
-import { CallExpression } from '@babel/types';
-import { isEmptyStatement } from '@babel/types';
 import { ResizeHandle } from '../../ResizeHandle';
 
 export const scriptEditStyle = css({
