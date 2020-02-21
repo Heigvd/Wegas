@@ -1,10 +1,10 @@
 import * as React from 'react';
 import 'brace';
-import AceEditor, { IAceEditorProps } from 'react-ace';
+import AceEditor, { AceEditorProps } from 'react-ace';
 import 'brace/mode/javascript';
 import 'brace/theme/kuroir';
 
-export default function JSEditor(props: IAceEditorProps) {
+export default function JSEditor(props: AceEditorProps) {
     return (
         <AceEditor
             width="100%"
